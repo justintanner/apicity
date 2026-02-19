@@ -48,7 +48,7 @@ importers:
         specifier: ^1.0.0
         version: 1.6.1(@types/node@20.19.33)
 
-  packages/provider/keiai: {}
+  packages/provider/kie: {}
 
   packages/provider/kimi25: {}
 

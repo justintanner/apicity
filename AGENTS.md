@@ -4,7 +4,7 @@ This file provides guidelines for AI agents working in this repository.
 
 ## Project Overview
 
-TypeScript monorepo for AI provider packages (@bareapi/kimi25, @bareapi/keiai).
+TypeScript monorepo for AI provider packages (@bareapi/kimi25, @bareapi/kie).
 Uses pnpm workspaces, ES modules, and Vitest for testing.
 
 ## Build/Lint/Test Commands
@@ -16,7 +16,7 @@ pnpm install
 # Build all packages
 pnpm run build
 pnpm run build:kimi25    # Build specific package
-pnpm run build:keiai
+pnpm run build:kie
 
 # Linting
 pnpm run lint            # Check linting

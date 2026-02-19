@@ -1,13 +1,13 @@
-# @bareapi/keiai
+# @bareapi/kie
 
-Kei AI provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).
+Kie provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).
 
 ## Installation
 
 ```bash
-npm install @bareapi/keiai
+npm install @bareapi/kie
 # or
-pnpm add @bareapi/keiai
+pnpm add @bareapi/kie
 ```
 
 ## Supported Models
@@ -26,10 +26,10 @@ pnpm add @bareapi/keiai
 ### Basic Example
 
 ```typescript
-import { keiai } from "@bareapi/keiai";
+import { kie } from "@bareapi/kie";
 
-const provider = keiai({
-  apiKey: process.env.KEI_AI_API_KEY!,
+const provider = kie({
+  apiKey: process.env.KIE_API_KEY!,
 });
 
 // Generate a video with Kling 3.0
@@ -145,13 +145,13 @@ const result = await provider.generate({
 
 ## API Reference
 
-### `keiai(options)`
+### `kie(options)`
 
-Creates a Kei AI provider instance.
+Creates a Kie provider instance.
 
 **Options:**
 
-- `apiKey` (string, required): Your Kei AI API key
+- `apiKey` (string, required): Your Kie API key
 - `baseURL` (string, optional): Custom API base URL
 - `timeout` (number, optional): Request timeout in milliseconds (default: 30000)
 - `fetch` (function, optional): Custom fetch implementation

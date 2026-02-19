@@ -22,7 +22,7 @@ This project is based on [TetherAI](https://github.com/nbursa/TetherAI) by Nenad
 ```
 packages/provider/
 ├── kimi25/   – @bareapi/kimi25 (Moonshot AI / Kimi chat models)
-└── keiai/    – @bareapi/keiai (KIE AI media generation)
+└── kie/      – @bareapi/kie (KIE AI media generation)
 ```
 
 Each package is standalone with zero dependencies. Copy-paste the architecture and middleware as needed.
@@ -55,17 +55,17 @@ for await (const chunk of provider.streamChat(request)) {
 }
 ```
 
-### Kei AI (Media Generation)
+### Kie (Media Generation)
 
 ```bash
-npm install @bareapi/keiai
+npm install @bareapi/kie
 ```
 
 ```typescript
-import { keiai } from "@bareapi/keiai";
+import { kie } from "@bareapi/kie";
 
-const provider = keiai({
-  apiKey: process.env.KEI_AI_API_KEY!,
+const provider = kie({
+  apiKey: process.env.KIE_API_KEY!,
 });
 
 // Generate an image
@@ -91,9 +91,9 @@ Kimi25 (Moonshot AI) provider for chat completions.
 - **Models**: `kimi-k2-5` (131K context)
 - **Middleware**: Retry, fallback built-in
 
-### [@bareapi/keiai](packages/provider/keiai)
+### [@bareapi/kie](packages/provider/kie)
 
-Kei AI provider for media generation.
+Kie provider for media generation.
 
 - **Zero Dependencies**: Everything included
 - **Video Models**: Kling 3.0, Grok Imagine

@@ -1,5 +1,5 @@
-// Supported Kei AI media models
-export type KeiAIMediaModel =
+// Supported Kie media models
+export type KieMediaModel =
   | "kling-3.0/video"
   | "grok-imagine/text-to-image"
   | "grok-imagine/image-to-image"
@@ -13,8 +13,8 @@ export type MediaType = "image" | "video";
 // Task status (internal representation)
 export type TaskStatus = "pending" | "processing" | "completed" | "failed";
 
-// Kei AI API task states (from recordInfo endpoint)
-export type KeiAITaskState =
+// Kie API task states (from recordInfo endpoint)
+export type KieTaskState =
   | "waiting"
   | "queuing"
   | "generating"
@@ -37,7 +37,7 @@ export interface MultiShotPrompt {
 
 // Base media request
 export interface MediaRequest {
-  model: KeiAIMediaModel;
+  model: KieMediaModel;
   callBackUrl?: string;
 }
 
@@ -154,7 +154,7 @@ export interface TaskResponse {
 export interface TaskStatusDetails {
   taskId: string;
   status: TaskStatus;
-  state?: KeiAITaskState;
+  state?: KieTaskState;
   progress?: number;
   model?: string;
   param?: string;
@@ -186,7 +186,7 @@ export interface TaskResult {
 }
 
 // Provider options
-export interface KeiAIOptions {
+export interface KieOptions {
   apiKey: string;
   baseURL?: string;
   timeout?: number;
@@ -206,27 +206,27 @@ export interface WaitOptions extends PollingOptions {
 }
 
 // Error class
-export class KeiAIError extends Error {
+export class KieError extends Error {
   readonly status: number;
   readonly code?: string;
 
   constructor(message: string, status: number, code?: string) {
     super(message);
-    this.name = "KeiAIError";
+    this.name = "KieError";
     this.status = status;
     this.code = code;
   }
 }
 
 // Credits response
-export interface KeiAICreditsResponse {
+export interface KieCreditsResponse {
   balance: number;
   totalUsed: number;
   currency: string;
 }
 
 // Provider interface
-export interface KeiAIProvider {
+export interface KieProvider {
   createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
   getTaskStatus(taskId: string): Promise<TaskStatusDetails>;
   waitForTask(taskId: string, options?: WaitOptions): Promise<TaskResult>;
@@ -234,7 +234,7 @@ export interface KeiAIProvider {
     req: MediaGenerationRequest,
     options?: WaitOptions
   ): Promise<TaskResult>;
-  getCredits(): Promise<KeiAICreditsResponse>;
+  getCredits(): Promise<KieCreditsResponse>;
   validateModel(modelId: string): boolean;
   getModels(): string[];
   getModelType(modelId: string): MediaType | null;

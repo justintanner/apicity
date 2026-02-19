@@ -1,7 +1,7 @@
 {
   "name": "bareapi",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @bareapi/kimi25 and @bareapi/keiai",
+  "description": "Standalone AI provider packages - @bareapi/kimi25 and @bareapi/kie",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,9 +14,9 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimi25 && pnpm run build:keiai",
+    "build": "pnpm run build:kimi25 && pnpm run build:kie",
     "build:kimi25": "pnpm --filter @bareapi/kimi25 run build",
-    "build:keiai": "pnpm --filter @bareapi/keiai run build",
+    "build:kie": "pnpm --filter @bareapi/kie run build",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "lint": "eslint .",

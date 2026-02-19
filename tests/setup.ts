@@ -3,7 +3,7 @@ process.env.NODE_ENV = "test";
 
 // Mock API keys
 process.env.KIMI25_API_KEY = "sk-test-key";
-process.env.KEI_AI_API_KEY = "sk-test-key";
+process.env.KIE_API_KEY = "sk-test-key";
 
 // Export mock responses for reuse
 export const mockKimi25Response = {
@@ -28,7 +28,7 @@ export const mockKimi25Response = {
   },
 };
 
-export const mockKeiAIResponse = {
+export const mockKieResponse = {
   code: 200,
   msg: "success",
   data: {

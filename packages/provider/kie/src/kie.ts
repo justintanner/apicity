@@ -4,15 +4,15 @@ import {
   TaskStatusDetails,
   TaskResult,
   WaitOptions,
-  KeiAIOptions,
-  KeiAIProvider,
+  KieOptions,
+  KieProvider,
   MediaType,
-  KeiAIError,
-  KeiAICreditsResponse,
+  KieError,
+  KieCreditsResponse,
 } from "./types";
 import { TaskPoller } from "./polling";
 
-interface KeiAIApiResponse {
+interface KieApiResponse {
   code: number;
   msg: string;
   data?: {
@@ -34,7 +34,7 @@ const SUPPORTED_MODELS: Record<
   "nano-banana-pro": { type: "image", supported: true },
 };
 
-export function keiai(opts: KeiAIOptions): KeiAIProvider {
+export function kie(opts: KieOptions): KieProvider {
   const baseURL = opts.baseURL ?? "https://api.kei.ai";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
@@ -47,7 +47,7 @@ export function keiai(opts: KeiAIOptions): KeiAIProvider {
 
       try {
         if (!this.validateModel(req.model)) {
-          throw new KeiAIError(`Unsupported model: ${req.model}`, 400);
+          throw new KieError(`Unsupported model: ${req.model}`, 400);
         }
 
         const res = await doFetch(`${baseURL}/api/v1/jobs/createTask`, {
@@ -63,7 +63,7 @@ export function keiai(opts: KeiAIOptions): KeiAIProvider {
         clearTimeout(timeoutId);
 
         if (!res.ok) {
-          let message = `Kei AI API error: ${res.status}`;
+          let message = `Kie API error: ${res.status}`;
           try {
             const errorData: unknown = await res.json();
             if (
@@ -72,28 +72,25 @@ export function keiai(opts: KeiAIOptions): KeiAIProvider {
               "msg" in errorData &&
               typeof (errorData as { msg?: string }).msg === "string"
             ) {
-              message = `Kei AI API error ${res.status}: ${(errorData as { msg: string }).msg}`;
+              message = `Kie API error ${res.status}: ${(errorData as { msg: string }).msg}`;
             }
           } catch {
             // ignore parse errors
           }
-          throw new KeiAIError(message, res.status);
+          throw new KieError(message, res.status);
         }
 
-        const data: KeiAIApiResponse = await res.json();
+        const data: KieApiResponse = await res.json();
 
         if (data.code !== 200 || !data.data?.taskId) {
-          throw new KeiAIError(
-            data.msg || `API error: ${data.code}`,
-            data.code
-          );
+          throw new KieError(data.msg || `API error: ${data.code}`, data.code);
         }
 
         return { taskId: data.data.taskId };
       } catch (error) {
         clearTimeout(timeoutId);
-        if (error instanceof KeiAIError) throw error;
-        throw new KeiAIError(`Failed to create task: ${error}`, 500);
+        if (error instanceof KieError) throw error;
+        throw new KieError(`Failed to create task: ${error}`, 500);
       }
     },
 
@@ -130,7 +127,7 @@ export function keiai(opts: KeiAIOptions): KeiAIProvider {
       return SUPPORTED_MODELS[modelId]?.type || null;
     },
 
-    async getCredits(): Promise<KeiAICreditsResponse> {
+    async getCredits(): Promise<KieCreditsResponse> {
       const res = await doFetch(`${baseURL}/api/v1/chat/credit`, {
         method: "GET",
         headers: {
@@ -140,10 +137,7 @@ export function keiai(opts: KeiAIOptions): KeiAIProvider {
       });
 
       if (!res.ok) {
-        throw new KeiAIError(
-          `Failed to get credits: ${res.status}`,
-          res.status
-        );
+        throw new KieError(`Failed to get credits: ${res.status}`, res.status);
       }
 
       interface CreditsApiResponse {
@@ -155,7 +149,7 @@ export function keiai(opts: KeiAIOptions): KeiAIProvider {
       const response: CreditsApiResponse = await res.json();
 
       if (response.code !== 200 || response.data === undefined) {
-        throw new KeiAIError(
+        throw new KieError(
           response.msg || `API error: ${response.code}`,
           response.code
         );

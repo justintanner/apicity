@@ -39,8 +39,8 @@ jobs:
         run: |
           test -f packages/provider/kimi25/dist/src/index.js
           test -f packages/provider/kimi25/dist/src/index.d.ts
-          test -f packages/provider/keiai/dist/src/index.js
-          test -f packages/provider/keiai/dist/src/index.d.ts
+          test -f packages/provider/kie/dist/src/index.js
+          test -f packages/provider/kie/dist/src/index.d.ts
 
       - name: Lint
         run: pnpm run lint

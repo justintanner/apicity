@@ -1,15 +1,15 @@
 // Export main provider function
-export { keiai } from "./keiai";
+export { kie } from "./kie";
 
 // Export error class
-export { KeiAIError } from "./types";
+export { KieError } from "./types";
 
 // Export polling utilities
 export { TaskPoller } from "./polling";
 
 // Export all types
 export type {
-  KeiAIMediaModel,
+  KieMediaModel,
   MediaType,
   TaskStatus,
   KlingElement,
@@ -25,8 +25,8 @@ export type {
   TaskResponse,
   TaskStatusDetails,
   TaskResult,
-  KeiAIOptions,
+  KieOptions,
   PollingOptions,
   WaitOptions,
-  KeiAIProvider,
+  KieProvider,
 } from "./types";

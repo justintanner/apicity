@@ -18,10 +18,7 @@ export default defineConfig({
         __dirname,
         "./packages/provider/kimi25/src"
       ),
-      "@bareapi/keiai": path.resolve(
-        __dirname,
-        "./packages/provider/keiai/src"
-      ),
+      "@bareapi/kie": path.resolve(__dirname, "./packages/provider/kie/src"),
     },
   },
 });

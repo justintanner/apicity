@@ -3,18 +3,18 @@ import {
   TaskStatusDetails,
   TaskResult,
   WaitOptions,
-  KeiAIError,
-  KeiAITaskState,
+  KieError,
+  KieTaskState,
 } from "./types";
 
-// Kei AI API response structure from recordInfo endpoint
-interface KeiAIApiResponse {
+// Kie API response structure from recordInfo endpoint
+interface KieApiResponse {
   code: number;
   msg: string;
   data?: {
     taskId?: string;
     model?: string;
-    state?: KeiAITaskState;
+    state?: KieTaskState;
     param?: string;
     resultJson?: string;
     failCode?: string;
@@ -28,7 +28,7 @@ interface KeiAIApiResponse {
 }
 
 // Parsed result from resultJson
-interface KeiAIResultJson {
+interface KieResultJson {
   resultUrls?: string[];
   [key: string]: unknown;
 }
@@ -57,16 +57,16 @@ export class TaskPoller {
     );
 
     if (!res.ok) {
-      throw new KeiAIError(
+      throw new KieError(
         `Failed to get task status: ${res.status}`,
         res.status
       );
     }
 
-    const response: KeiAIApiResponse = await res.json();
+    const response: KieApiResponse = await res.json();
 
     if (response.code !== 200) {
-      throw new KeiAIError(
+      throw new KieError(
         response.msg || `API error: ${response.code}`,
         response.code
       );
@@ -74,14 +74,14 @@ export class TaskPoller {
 
     const data = response.data;
     if (!data) {
-      throw new KeiAIError("No data in API response", 500);
+      throw new KieError("No data in API response", 500);
     }
 
     // Parse resultJson if present
-    let parsedResult: KeiAIResultJson | undefined;
+    let parsedResult: KieResultJson | undefined;
     if (data.resultJson) {
       try {
-        parsedResult = JSON.parse(data.resultJson) as KeiAIResultJson;
+        parsedResult = JSON.parse(data.resultJson) as KieResultJson;
       } catch {
         // Ignore parse errors
       }
@@ -133,7 +133,7 @@ export class TaskPoller {
     while (attempts < maxAttempts) {
       const elapsed = Date.now() - startTime;
       if (elapsed > timeoutMs) {
-        throw new KeiAIError(`Task polling timeout after ${timeoutMs}ms`, 408);
+        throw new KieError(`Task polling timeout after ${timeoutMs}ms`, 408);
       }
 
       const status = await this.getTaskStatus(taskId);
@@ -180,16 +180,16 @@ export class TaskPoller {
       await this.sleep(Math.floor(backoffDelay));
     }
 
-    throw new KeiAIError(
+    throw new KieError(
       `Task polling exceeded max attempts (${maxAttempts})`,
       408
     );
   }
 
-  private mapStateToStatus(state?: KeiAITaskState): TaskStatus {
+  private mapStateToStatus(state?: KieTaskState): TaskStatus {
     if (!state) return "pending";
 
-    const stateMap: Record<KeiAITaskState, TaskStatus> = {
+    const stateMap: Record<KieTaskState, TaskStatus> = {
       waiting: "pending",
       queuing: "processing",
       generating: "processing",

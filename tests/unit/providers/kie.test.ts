@@ -1,7 +1,7 @@
-// Tests for the keiai provider
+// Tests for the kie provider
 import { describe, it, expect, vi } from "vitest";
 
-describe("keiai provider", () => {
+describe("kie provider", () => {
   interface TaskResponse {
     taskId: string;
   }
@@ -19,7 +19,7 @@ describe("keiai provider", () => {
     input: Record<string, unknown>;
   }
 
-  interface KeiAIProvider {
+  interface KieProvider {
     createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
     getTaskStatus(taskId: string): Promise<{
       taskId: string;
@@ -38,7 +38,7 @@ describe("keiai provider", () => {
     getModelType(modelId: string): "image" | "video" | null;
   }
 
-  function createMockProvider(): KeiAIProvider {
+  function createMockProvider(): KieProvider {
     return {
       createTask: vi.fn().mockResolvedValue({ taskId: "test-task-id" }),
       getTaskStatus: vi.fn().mockResolvedValue({

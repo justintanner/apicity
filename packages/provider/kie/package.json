@@ -1,7 +1,7 @@
 {
-  "name": "@bareapi/keiai",
+  "name": "@bareapi/kie",
   "version": "0.1.0",
-  "description": "Kei AI provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).",
+  "description": "Kie provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).",
   "license": "MIT",
   "repository": "github:justintanner/bareapi",
   "type": "module",

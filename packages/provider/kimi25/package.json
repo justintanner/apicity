@@ -1,0 +1,39 @@
+{
+  "name": "@bareapi/kimi25",
+  "version": "0.1.0",
+  "description": "Kimi25 (Moonshot AI) provider for BareAPI - completely standalone with streaming-first API and built-in middleware.",
+  "license": "MIT",
+  "repository": "github:justintanner/bareapi",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "kimi",
+    "moonshot",
+    "kimi-k2-5",
+    "chat",
+    "streaming",
+    "bareapi"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  }
+}

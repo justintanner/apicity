@@ -1,0 +1,39 @@
+{
+  "name": "@bareapi/keiai",
+  "version": "0.1.0",
+  "description": "Kei AI provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).",
+  "license": "MIT",
+  "repository": "github:justintanner/bareapi",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "kei",
+    "kling",
+    "grok",
+    "video-generation",
+    "image-generation",
+    "bareapi"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  }
+}

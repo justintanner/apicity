@@ -1,0 +1,57 @@
+{
+  "name": "bareapi",
+  "version": "1.0.0",
+  "description": "Standalone AI provider packages - @bareapi/kimi25 and @bareapi/keiai",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.12.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "workspaces": [
+    "packages/*/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "pnpm run build:kimi25 && pnpm run build:keiai",
+    "build:kimi25": "pnpm --filter @bareapi/kimi25 run build",
+    "build:keiai": "pnpm --filter @bareapi/keiai run build",
+    "clean": "rm -rf packages/provider/*/dist",
+    "prelint": "pnpm run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "test": "vitest --config tests/vitest.config.ts",
+    "test:run": "vitest run --config tests/vitest.config.ts",
+    "test:ui": "vitest --ui --config tests/vitest.config.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@pollyjs/adapter-fetch": "^6.0.6",
+    "@pollyjs/core": "^6.0.6",
+    "@pollyjs/persister-fs": "^6.0.6",
+    "@types/node": "^20.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "globals": "^14.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "typescript-eslint": "^7.0.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "ai",
+    "kimi",
+    "moonshot",
+    "kei",
+    "media",
+    "chat",
+    "streaming",
+    "typescript"
+  ],
+  "author": "Justin Tanner",
+  "license": "MIT",
+  "repository": "github:justintanner/bareapi"
+}

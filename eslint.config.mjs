@@ -5,7 +5,12 @@ import prettier from "eslint-plugin-prettier";
 
 export default [
   {
-    ignores: ["node_modules", "dist", ".next", "coverage"],
+    ignores: [
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.next/**",
+      "**/coverage/**",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

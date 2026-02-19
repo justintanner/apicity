@@ -21,9 +21,7 @@ describe("keiai provider", () => {
 
   interface KeiAIProvider {
     createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
-    getTaskStatus(
-      taskId: string
-    ): Promise<{
+    getTaskStatus(taskId: string): Promise<{
       taskId: string;
       status: string;
       result?: { urls?: string[] };

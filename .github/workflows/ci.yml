@@ -37,8 +37,8 @@ jobs:
 
       - name: Verify provider artifacts
         run: |
-          test -f packages/provider/kimi25/dist/src/index.js
-          test -f packages/provider/kimi25/dist/src/index.d.ts
+          test -f packages/provider/moonshot/dist/src/index.js
+          test -f packages/provider/moonshot/dist/src/index.d.ts
           test -f packages/provider/kie/dist/src/index.js
           test -f packages/provider/kie/dist/src/index.d.ts
 

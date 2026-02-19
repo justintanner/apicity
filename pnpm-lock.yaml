@@ -50,7 +50,7 @@ importers:
 
   packages/provider/kie: {}
 
-  packages/provider/kimi25: {}
+  packages/provider/moonshot: {}
 
 packages:
 

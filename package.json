@@ -1,7 +1,7 @@
 {
   "name": "bareapi",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @bareapi/kimi25 and @bareapi/kie",
+  "description": "Standalone AI provider packages - @bareapi/moonshot and @bareapi/kie",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,8 +14,8 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimi25 && pnpm run build:kie",
-    "build:kimi25": "pnpm --filter @bareapi/kimi25 run build",
+    "build": "pnpm run build:moonshot && pnpm run build:kie",
+    "build:moonshot": "pnpm --filter @bareapi/moonshot run build",
     "build:kie": "pnpm --filter @bareapi/kie run build",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
@@ -43,12 +43,13 @@
   },
   "keywords": [
     "ai",
-    "kimi",
     "moonshot",
+    "kimi",
     "kei",
     "media",
     "chat",
     "streaming",
+    "embeddings",
     "typescript"
   ],
   "author": "Justin Tanner",

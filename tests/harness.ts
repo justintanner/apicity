@@ -28,7 +28,7 @@ export function setupPolly(recordingName: string): PollyContext {
     recordFailedRequests: true,
     timing: Timing.fixed(0),
     matchRequestsBy: {
-      headers: { exclude: ["authorization", "user-agent"] },
+      headers: { exclude: ["authorization", "user-agent", "x-api-key"] },
     },
   });
 
@@ -38,6 +38,9 @@ export function setupPolly(recordingName: string): PollyContext {
     for (const header of entries) {
       if (header.name?.toLowerCase() === "authorization") {
         header.value = "Bearer ***";
+      }
+      if (header.name?.toLowerCase() === "x-api-key") {
+        header.value = "***";
       }
     }
   });

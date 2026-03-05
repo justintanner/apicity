@@ -1,10 +1,10 @@
-# AGENTS.md - Coding Guidelines for bareapi
+# AGENTS.md - Coding Guidelines for nakedapi
 
 This file provides guidelines for AI agents working in this repository.
 
 ## Project Overview
 
-TypeScript monorepo for AI provider packages (@bareapi/kimicoding, @bareapi/kie, @bareapi/xai).
+TypeScript monorepo for AI provider packages (@nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai).
 Uses pnpm workspaces, ES modules, and Vitest for testing.
 
 ## Build/Lint/Test Commands

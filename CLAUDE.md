@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-BareAPI is a TypeScript monorepo of standalone AI provider packages (`@bareapi/kimicoding`, `@bareapi/kie`, `@bareapi/xai`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+NakedAPI is a TypeScript monorepo of standalone AI provider packages (`@nakedapi/kimicoding`, `@nakedapi/kie`, `@nakedapi/xai`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 ## Commands
 
@@ -58,7 +58,7 @@ Two Vitest configs with separate test suites:
 - **Unit tests** (`tests/vitest.config.ts`): `tests/unit/**/*.test.ts` — uses `tests/setup.ts` for mock data, excludes `tests/integration/`
 - **Integration tests** (`tests/vitest.integration.ts`): `tests/integration/**/*.test.ts` — uses Polly.js (`tests/harness.ts`) for HTTP record/replay, 30s timeout
 
-Both configs alias `@bareapi/*` to source directories so tests run against source (not dist).
+Both configs alias `@nakedapi/*` to source directories so tests run against source (not dist).
 
 Integration tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting.
 

@@ -14,12 +14,12 @@ export default defineConfig({
       reporter: ["text", "json", "html", "lcov"],
     },
     alias: {
-      "@bareapi/kimicoding": path.resolve(
+      "@nakedapi/kimicoding": path.resolve(
         __dirname,
         "./packages/provider/kimicoding/src"
       ),
-      "@bareapi/kie": path.resolve(__dirname, "./packages/provider/kie/src"),
-      "@bareapi/xai": path.resolve(__dirname, "./packages/provider/xai/src"),
+      "@nakedapi/kie": path.resolve(__dirname, "./packages/provider/kie/src"),
+      "@nakedapi/xai": path.resolve(__dirname, "./packages/provider/xai/src"),
     },
   },
 });

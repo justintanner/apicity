@@ -1,13 +1,13 @@
-# @bareapi/kie
+# @nakedapi/kie
 
 Kie provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).
 
 ## Installation
 
 ```bash
-npm install @bareapi/kie
+npm install @nakedapi/kie
 # or
-pnpm add @bareapi/kie
+pnpm add @nakedapi/kie
 ```
 
 ## Supported Models
@@ -26,7 +26,7 @@ pnpm add @bareapi/kie
 ### Basic Example
 
 ```typescript
-import { kie } from "@bareapi/kie";
+import { kie } from "@nakedapi/kie";
 
 const provider = kie({
   apiKey: process.env.KIE_API_KEY!,

@@ -1,9 +1,9 @@
-# BareAPI
+# NakedAPI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build](https://github.com/justintanner/bareapi/actions/workflows/ci.yml/badge.svg)](https://github.com/justintanner/bareapi/actions)
+[![Build](https://github.com/justintanner/nakedapi/actions/workflows/ci.yml/badge.svg)](https://github.com/justintanner/nakedapi/actions)
 
-BareAPI is a **standalone-first** TypeScript platform for integrating AI providers. Each package is **completely self-contained** with no external dependencies.
+NakedAPI is a **standalone-first** TypeScript platform for integrating AI providers. Each package is **completely self-contained** with no external dependencies.
 
 ## Credit
 
@@ -22,9 +22,9 @@ This project is based on [TetherAI](https://github.com/nbursa/TetherAI) by Nenad
 
 ```
 packages/provider/
-├── kimicoding/  – @bareapi/kimicoding (Kimi for Coding, Anthropic Messages API)
-├── kie/         – @bareapi/kie (KIE AI media generation, chat, audio)
-└── xai/         – @bareapi/xai (X.AI / Grok chat and search)
+├── kimicoding/  – @nakedapi/kimicoding (Kimi for Coding, Anthropic Messages API)
+├── kie/         – @nakedapi/kie (KIE AI media generation, chat, audio)
+└── xai/         – @nakedapi/xai (X.AI / Grok chat and search)
 ```
 
 Each package is standalone with zero dependencies. Copy-paste the architecture and middleware as needed.
@@ -34,11 +34,11 @@ Each package is standalone with zero dependencies. Copy-paste the architecture a
 ### Kimi for Coding (Chat)
 
 ```bash
-npm install @bareapi/kimicoding
+npm install @nakedapi/kimicoding
 ```
 
 ```typescript
-import { kimicoding, type ChatRequest } from "@bareapi/kimicoding";
+import { kimicoding, type ChatRequest } from "@nakedapi/kimicoding";
 
 const provider = kimicoding({
   apiKey: process.env.KIMI_CODING_API_KEY!,
@@ -60,11 +60,11 @@ for await (const chunk of provider.streamChat(request)) {
 ### Kie (Media Generation)
 
 ```bash
-npm install @bareapi/kie
+npm install @nakedapi/kie
 ```
 
 ```typescript
-import { kie } from "@bareapi/kie";
+import { kie } from "@nakedapi/kie";
 
 const provider = kie({
   apiKey: process.env.KIE_API_KEY!,
@@ -85,11 +85,11 @@ console.log("Image URL:", result.imageUrl);
 ### xAI (Grok Chat & Search)
 
 ```bash
-npm install @bareapi/xai
+npm install @nakedapi/xai
 ```
 
 ```typescript
-import { xai } from "@bareapi/xai";
+import { xai } from "@nakedapi/xai";
 
 const provider = xai({
   apiKey: process.env.XAI_API_KEY!,
@@ -110,7 +110,7 @@ console.log(searchResult.content);
 
 ## Available Providers
 
-### [@bareapi/kimicoding](packages/provider/kimicoding)
+### [@nakedapi/kimicoding](packages/provider/kimicoding)
 
 Kimi for Coding provider using Anthropic Messages API format.
 
@@ -120,7 +120,7 @@ Kimi for Coding provider using Anthropic Messages API format.
 - **Models**: `k2p5` (262,144 context, 32,768 max output)
 - **Middleware**: Retry, fallback built-in
 
-### [@bareapi/kie](packages/provider/kie)
+### [@nakedapi/kie](packages/provider/kie)
 
 Kie provider for media generation, chat, and audio.
 
@@ -131,7 +131,7 @@ Kie provider for media generation, chat, and audio.
 - **Sub-Providers**: Veo (Google video), Suno (music generation), Chat
 - **Task Polling**: Built-in polling with progress callbacks
 
-### [@bareapi/xai](packages/provider/xai)
+### [@nakedapi/xai](packages/provider/xai)
 
 X.AI / Grok provider for chat and search.
 
@@ -146,7 +146,7 @@ X.AI / Grok provider for chat and search.
 Both `kimicoding` and `kie` providers support the same middleware pattern:
 
 ```typescript
-import { kimicoding, withRetry, withFallback } from "@bareapi/kimicoding";
+import { kimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
 
 const provider = withRetry(kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! }), {
   retries: 3,

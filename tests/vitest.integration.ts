@@ -10,12 +10,12 @@ export default defineConfig({
     exclude: ["node_modules", "dist"],
     testTimeout: 30000,
     alias: {
-      "@bareapi/kimicoding": path.resolve(
+      "@nakedapi/kimicoding": path.resolve(
         __dirname,
         "../packages/provider/kimicoding/src"
       ),
-      "@bareapi/kie": path.resolve(__dirname, "../packages/provider/kie/src"),
-      "@bareapi/xai": path.resolve(__dirname, "../packages/provider/xai/src"),
+      "@nakedapi/kie": path.resolve(__dirname, "../packages/provider/kie/src"),
+      "@nakedapi/xai": path.resolve(__dirname, "../packages/provider/xai/src"),
     },
   },
 });

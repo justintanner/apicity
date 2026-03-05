@@ -1,9 +1,9 @@
 {
-  "name": "@bareapi/xai",
+  "name": "@nakedapi/xai",
   "version": "0.1.0",
   "description": "X.AI / Grok provider for chat and search.",
   "license": "MIT",
-  "repository": "github:justintanner/bareapi",
+  "repository": "github:justintanner/nakedapi",
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -25,7 +25,7 @@
     "grok",
     "chat",
     "search",
-    "bareapi"
+    "nakedapi"
   ],
   "author": "Justin Tanner",
   "engines": {

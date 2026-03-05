@@ -1,7 +1,7 @@
 {
-  "name": "bareapi",
+  "name": "nakedapi",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @bareapi/kimicoding, @bareapi/kie, and @bareapi/xai",
+  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, and @nakedapi/xai",
   "private": true,
   "type": "module",
   "engines": {
@@ -15,9 +15,9 @@
   ],
   "scripts": {
     "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai",
-    "build:kimicoding": "pnpm --filter @bareapi/kimicoding run build",
-    "build:kie": "pnpm --filter @bareapi/kie run build",
-    "build:xai": "pnpm --filter @bareapi/xai run build",
+    "build:kimicoding": "pnpm --filter @nakedapi/kimicoding run build",
+    "build:kie": "pnpm --filter @nakedapi/kie run build",
+    "build:xai": "pnpm --filter @nakedapi/xai run build",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "lint": "eslint .",
@@ -65,5 +65,5 @@
   ],
   "author": "Justin Tanner",
   "license": "MIT",
-  "repository": "github:justintanner/bareapi"
+  "repository": "github:justintanner/nakedapi"
 }

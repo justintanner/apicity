@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@bareapi/kie";
+import { kie } from "@nakedapi/kie";
 
 describe("kie integration", () => {
   let ctx: PollyContext;

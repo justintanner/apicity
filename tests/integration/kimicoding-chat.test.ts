@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kimicoding, type ChatStreamChunk } from "@bareapi/kimicoding";
+import { kimicoding, type ChatStreamChunk } from "@nakedapi/kimicoding";
 
 describe("kimicoding integration", () => {
   let ctx: PollyContext;

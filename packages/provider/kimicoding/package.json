@@ -1,9 +1,9 @@
 {
-  "name": "@bareapi/kimicoding",
+  "name": "@nakedapi/kimicoding",
   "version": "0.1.0",
-  "description": "Kimi for Coding provider for BareAPI - completely standalone with Anthropic Messages API format, streaming-first, and built-in middleware.",
+  "description": "Kimi for Coding provider for NakedAPI - completely standalone with Anthropic Messages API format, streaming-first, and built-in middleware.",
   "license": "MIT",
-  "repository": "github:justintanner/bareapi",
+  "repository": "github:justintanner/nakedapi",
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -27,7 +27,7 @@
     "anthropic",
     "chat",
     "streaming",
-    "bareapi"
+    "nakedapi"
   ],
   "author": "Justin Tanner",
   "engines": {

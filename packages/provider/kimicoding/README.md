@@ -1,15 +1,15 @@
-# @bareapi/kimicoding
+# @nakedapi/kimicoding
 
-Kimi for Coding provider for BareAPI - **completely standalone** with Anthropic Messages API format, streaming-first API, and built-in middleware.
+Kimi for Coding provider for NakedAPI - **completely standalone** with Anthropic Messages API format, streaming-first API, and built-in middleware.
 
 ## Installation
 
 ```bash
-npm install @bareapi/kimicoding
+npm install @nakedapi/kimicoding
 # or
-yarn add @bareapi/kimicoding
+yarn add @nakedapi/kimicoding
 # or
-pnpm add @bareapi/kimicoding
+pnpm add @nakedapi/kimicoding
 ```
 
 **No other dependencies required!**
@@ -17,7 +17,7 @@ pnpm add @bareapi/kimicoding
 ## Quick Start
 
 ```typescript
-import { kimicoding, type ChatRequest } from "@bareapi/kimicoding";
+import { kimicoding, type ChatRequest } from "@nakedapi/kimicoding";
 
 // Create provider
 const provider = kimicoding({
@@ -50,7 +50,7 @@ for await (const chunk of provider.streamChat(request)) {
 ### Streaming
 
 ```typescript
-import { kimicoding } from "@bareapi/kimicoding";
+import { kimicoding } from "@nakedapi/kimicoding";
 
 const provider = kimicoding({ apiKey: "your-api-key" });
 
@@ -79,7 +79,7 @@ console.log(response.usage); // token counts
 ## Middleware Usage
 
 ```typescript
-import { kimicoding, withRetry, withFallback } from "@bareapi/kimicoding";
+import { kimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
 
 const baseProvider = kimicoding({
   apiKey: process.env.KIMI_CODING_API_KEY!,

@@ -1,8 +1,34 @@
 export type Role = "user" | "assistant" | "system" | "tool";
 
+export interface Base64ImageSource {
+  type: "base64";
+  media_type: "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+  data: string;
+}
+
+export interface UrlImageSource {
+  type: "url";
+  url: string;
+}
+
+export type ImageSource = Base64ImageSource | UrlImageSource;
+
+export interface TextContentBlock {
+  type: "text";
+  text: string;
+}
+
+export interface ImageContentBlock {
+  type: "image";
+  source: ImageSource;
+}
+
+export type ContentBlock = TextContentBlock | ImageContentBlock;
+export type MessageContent = string | ContentBlock[];
+
 export interface ChatMessage {
   role: Role;
-  content: string;
+  content: MessageContent;
 }
 
 export interface ChatRequest {

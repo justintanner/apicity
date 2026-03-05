@@ -3,6 +3,9 @@ import {
   ChatStreamChunk,
   ChatResponse,
   ChatMessage,
+  MessageContent,
+  TextContentBlock,
+  ImageContentBlock,
   KimiCodingOptions,
   KimiCodingError,
   KimiCodingProvider,
@@ -34,6 +37,32 @@ function mapStopReason(
   return "stop";
 }
 
+function extractTextFromContent(content: MessageContent): string {
+  if (typeof content === "string") return content;
+  return content
+    .filter((block): block is TextContentBlock => block.type === "text")
+    .map((block) => block.text)
+    .join("");
+}
+
+export function textBlock(text: string): TextContentBlock {
+  return { type: "text", text };
+}
+
+export function imageBase64(
+  data: string,
+  mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp"
+): ImageContentBlock {
+  return {
+    type: "image",
+    source: { type: "base64", media_type: mediaType, data },
+  };
+}
+
+export function imageUrl(url: string): ImageContentBlock {
+  return { type: "image", source: { type: "url", url } };
+}
+
 function extractSystem(
   messages: ChatMessage[],
   systemPrompt?: string
@@ -43,7 +72,7 @@ function extractSystem(
 
   for (const msg of messages) {
     if (msg.role === "system") {
-      systemMessages.push(msg.content);
+      systemMessages.push(extractTextFromContent(msg.content));
     } else {
       filteredMessages.push(msg);
     }

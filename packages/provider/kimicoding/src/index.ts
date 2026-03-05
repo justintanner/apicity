@@ -1,4 +1,4 @@
-export { kimicoding } from "./kimicoding";
+export { kimicoding, textBlock, imageBase64, imageUrl } from "./kimicoding";
 
 export { KimiCodingError } from "./types";
 
@@ -14,4 +14,11 @@ export type {
   Provider,
   KimiCodingOptions,
   KimiCodingProvider,
+  ContentBlock,
+  TextContentBlock,
+  ImageContentBlock,
+  ImageSource,
+  Base64ImageSource,
+  UrlImageSource,
+  MessageContent,
 } from "./types";

@@ -76,6 +76,18 @@ const result = await provider.generate({
 });
 
 console.log("Image URL:", result.imageUrl);
+
+// Upload a local file to get a public URL for generation endpoints
+const upload = await provider.uploadMedia({
+  file: new Blob([fileBuffer]),
+  filename: "photo.png",
+});
+
+// Use the URL with an image-to-video model
+const video = await provider.generate({
+  model: "grok-imagine/image-to-video",
+  input: { image_urls: [upload.downloadUrl] },
+});
 ```
 
 ### xAI (Grok Chat & Search)
@@ -125,6 +137,7 @@ Kie provider for media generation, chat, and audio.
 - **Image Models**: Grok Imagine, Nano Banana Pro, Nano Banana 2, GPT Image, Seedream
 - **Audio Models**: ElevenLabs text-to-dialogue, sound effects, speech-to-text
 - **Sub-Providers**: Veo (Google video), Suno (music generation), Chat
+- **File Upload**: Upload local media files to get public URLs for generation endpoints
 - **Task Polling**: Built-in polling with progress callbacks
 
 ### [@nakedapi/xai](packages/provider/xai)

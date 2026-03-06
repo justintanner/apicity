@@ -30,6 +30,7 @@ interface KieApiResponse {
 // Parsed result from resultJson
 interface KieResultJson {
   resultUrls?: string[];
+  resultObject?: Record<string, unknown>;
   [key: string]: unknown;
 }
 
@@ -118,6 +119,7 @@ export class TaskPoller {
         ? {
             urls: parsedResult.resultUrls,
             resultUrls: parsedResult.resultUrls,
+            resultObject: parsedResult.resultObject,
           }
         : undefined,
       error:
@@ -167,6 +169,7 @@ export class TaskPoller {
           taskId,
           status: "completed",
           urls,
+          resultObject: status.result?.resultObject,
           metadata: {
             model: status.model,
             costTime: status.costTime,

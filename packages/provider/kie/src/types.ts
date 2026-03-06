@@ -319,6 +319,7 @@ export interface TaskStatusDetails {
   result?: {
     urls?: string[];
     resultUrls?: string[];
+    resultObject?: Record<string, unknown>;
     video_url?: string;
     image_url?: string;
     [key: string]: unknown;
@@ -337,6 +338,7 @@ export interface TaskResult {
   taskId: string;
   status: "completed" | "failed";
   urls: string[];
+  resultObject?: Record<string, unknown>;
   videoUrl?: string;
   imageUrl?: string;
   error?: string;

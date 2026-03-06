@@ -91,9 +91,8 @@ export interface GrokTextToImageRequest extends MediaRequest {
 export interface GrokImageToImageRequest extends MediaRequest {
   model: "grok-imagine/image-to-image";
   input: {
-    prompt: string;
-    image_url: string;
-    aspect_ratio?: "2:3" | "3:2" | "1:1" | "16:9" | "9:16";
+    prompt?: string;
+    image_urls: [string];
   };
 }
 
@@ -116,7 +115,7 @@ export interface GrokImageToVideoRequest extends MediaRequest {
     task_id?: string;
     index?: number;
     mode?: "fun" | "normal" | "spicy";
-    duration?: "6" | "10";
+    duration?: "6" | "10" | "15";
     resolution?: "480p" | "720p";
   };
 }

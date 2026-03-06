@@ -1,20 +1,9 @@
-import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { kimicoding, textBlock, imageBase64 } from "@nakedapi/kimicoding";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const provider = kimicoding({
   apiKey: process.env.KIMI_CODING_API_KEY || "your-api-key-here",
   timeout: 60000,
 });
-
-// Load a sample image as base64
-function loadImage(filename) {
-  const data = readFileSync(resolve(__dirname, filename));
-  return data.toString("base64");
-}
 
 // Create a tiny 1x1 red PNG programmatically (no external file needed)
 function makeRedPixelPng() {

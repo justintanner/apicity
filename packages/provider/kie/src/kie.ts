@@ -9,6 +9,8 @@ import {
   MediaType,
   KieError,
   KieCreditsResponse,
+  UploadMediaRequest,
+  UploadMediaResponse,
 } from "./types";
 import { TaskPoller } from "./polling";
 import { createVeoProvider } from "./veo";
@@ -22,6 +24,39 @@ interface KieApiResponse {
     taskId?: string;
     [key: string]: unknown;
   };
+}
+
+interface KieUploadApiResponse {
+  success: boolean;
+  code: number;
+  data?: {
+    downloadUrl?: string;
+  };
+}
+
+const MIME_TYPES: Record<string, string> = {
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  gif: "image/gif",
+  webp: "image/webp",
+  bmp: "image/bmp",
+  svg: "image/svg+xml",
+  mp4: "video/mp4",
+  webm: "video/webm",
+  mov: "video/quicktime",
+  avi: "video/x-msvideo",
+  mp3: "audio/mpeg",
+  wav: "audio/wav",
+  ogg: "audio/ogg",
+  flac: "audio/flac",
+  aac: "audio/aac",
+  m4a: "audio/mp4",
+};
+
+function inferMimeType(filename: string): string | undefined {
+  const ext = filename.split(".").pop()?.toLowerCase();
+  return ext ? MIME_TYPES[ext] : undefined;
 }
 
 // Supported models configuration
@@ -47,6 +82,7 @@ const SUPPORTED_MODELS: Record<
 
 export function kie(opts: KieOptions): KieProvider {
   const baseURL = opts.baseURL ?? "https://api.kie.ai";
+  const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
   const poller = new TaskPoller(baseURL, opts.apiKey, doFetch);
@@ -125,6 +161,81 @@ export function kie(opts: KieOptions): KieProvider {
     ): Promise<TaskResult> {
       const { taskId } = await this.createTask(req);
       return this.waitForTask(taskId, options);
+    },
+
+    async uploadMedia(req: UploadMediaRequest): Promise<UploadMediaResponse> {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      try {
+        const mimeType = req.mimeType ?? inferMimeType(req.filename);
+        if (!mimeType) {
+          throw new KieError(
+            `Cannot determine MIME type for: ${req.filename}`,
+            400
+          );
+        }
+
+        if (
+          !mimeType.startsWith("image/") &&
+          !mimeType.startsWith("video/") &&
+          !mimeType.startsWith("audio/")
+        ) {
+          throw new KieError(
+            `Unsupported MIME type: ${mimeType}. Must be image/*, video/*, or audio/*`,
+            400
+          );
+        }
+
+        const timestamp = Date.now();
+        const uploadPath = `uploads/${timestamp}_${req.filename}`;
+
+        const formData = new FormData();
+        const file = new File([req.file], req.filename, { type: mimeType });
+        formData.append("file", file);
+        formData.append("uploadPath", uploadPath);
+
+        const res = await doFetch(`${uploadBaseURL}/api/file-stream-upload`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${opts.apiKey}`,
+          },
+          body: formData,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          let message = `Kie upload error: ${res.status}`;
+          try {
+            const errorData: unknown = await res.json();
+            if (
+              typeof errorData === "object" &&
+              errorData !== null &&
+              "msg" in errorData &&
+              typeof (errorData as { msg?: string }).msg === "string"
+            ) {
+              message = `Kie upload error ${res.status}: ${(errorData as { msg: string }).msg}`;
+            }
+          } catch {
+            // ignore parse errors
+          }
+          throw new KieError(message, res.status);
+        }
+
+        const data: KieUploadApiResponse = await res.json();
+
+        if (!data.success || !data.data?.downloadUrl) {
+          throw new KieError(`Upload failed: code ${data.code}`, data.code);
+        }
+
+        return { downloadUrl: data.data.downloadUrl };
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof KieError) throw error;
+        throw new KieError(`Failed to upload media: ${error}`, 500);
+      }
     },
 
     validateModel(modelId: string): boolean {

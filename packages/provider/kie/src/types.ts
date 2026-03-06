@@ -343,10 +343,23 @@ export interface TaskResult {
   metadata?: Record<string, unknown>;
 }
 
+// Upload media request
+export interface UploadMediaRequest {
+  file: Blob;
+  filename: string;
+  mimeType?: string;
+}
+
+// Upload media response
+export interface UploadMediaResponse {
+  downloadUrl: string;
+}
+
 // Provider options
 export interface KieOptions {
   apiKey: string;
   baseURL?: string;
+  uploadBaseURL?: string;
   timeout?: number;
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
@@ -392,6 +405,7 @@ export interface KieProvider {
     req: MediaGenerationRequest,
     options?: WaitOptions
   ): Promise<TaskResult>;
+  uploadMedia(req: UploadMediaRequest): Promise<UploadMediaResponse>;
   getCredits(): Promise<KieCreditsResponse>;
   validateModel(modelId: string): boolean;
   getModels(): string[];

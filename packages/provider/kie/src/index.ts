@@ -48,6 +48,8 @@ export type {
   WaitOptions,
   KieProvider,
   KieCreditsResponse,
+  UploadMediaRequest,
+  UploadMediaResponse,
 } from "./types";
 
 // Export polling endpoint types

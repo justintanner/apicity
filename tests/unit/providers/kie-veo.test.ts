@@ -2,23 +2,6 @@
 import { describe, it, expect, vi } from "vitest";
 
 describe("kie veo provider", () => {
-  interface TaskResult {
-    taskId: string;
-    status: "completed" | "failed";
-    urls: string[];
-    videoUrl?: string;
-    error?: string;
-  }
-
-  interface TaskStatusDetails {
-    taskId: string;
-    status: string;
-    state?: string;
-    result?: { urls?: string[]; resultUrls?: string[] };
-    error?: string;
-    failMsg?: string;
-  }
-
   interface VeoGenerateRequest {
     prompt: string;
     model?: "veo3" | "veo3_fast";
@@ -39,43 +22,16 @@ describe("kie veo provider", () => {
   }
 
   interface VeoProvider {
-    generate(req: VeoGenerateRequest): Promise<TaskResult>;
-    extend(req: VeoExtendRequest): Promise<TaskResult>;
+    generate(req: VeoGenerateRequest): Promise<{ taskId: string }>;
+    extend(req: VeoExtendRequest): Promise<{ taskId: string }>;
     createTask(req: VeoGenerateRequest): Promise<{ taskId: string }>;
-    getTaskStatus(taskId: string): Promise<TaskStatusDetails>;
-    waitForTask(taskId: string): Promise<TaskResult>;
   }
 
   function createMockVeoProvider(): VeoProvider {
     return {
-      generate: vi.fn().mockResolvedValue({
-        taskId: "veo-task-123",
-        status: "completed",
-        urls: ["https://example.com/video.mp4"],
-        videoUrl: "https://example.com/video.mp4",
-      }),
-      extend: vi.fn().mockResolvedValue({
-        taskId: "veo-extend-456",
-        status: "completed",
-        urls: ["https://example.com/extended.mp4"],
-        videoUrl: "https://example.com/extended.mp4",
-      }),
+      generate: vi.fn().mockResolvedValue({ taskId: "veo-task-123" }),
+      extend: vi.fn().mockResolvedValue({ taskId: "veo-extend-456" }),
       createTask: vi.fn().mockResolvedValue({ taskId: "veo-task-123" }),
-      getTaskStatus: vi.fn().mockResolvedValue({
-        taskId: "veo-task-123",
-        status: "completed",
-        state: "success",
-        result: {
-          urls: ["https://example.com/video.mp4"],
-          resultUrls: ["https://example.com/video.mp4"],
-        },
-      }),
-      waitForTask: vi.fn().mockResolvedValue({
-        taskId: "veo-task-123",
-        status: "completed",
-        urls: ["https://example.com/video.mp4"],
-        videoUrl: "https://example.com/video.mp4",
-      }),
     };
   }
 
@@ -86,8 +42,7 @@ describe("kie veo provider", () => {
       model: "veo3_fast",
       aspectRatio: "16:9",
     });
-    expect(result.status).toBe("completed");
-    expect(result.videoUrl).toBe("https://example.com/video.mp4");
+    expect(result.taskId).toBe("veo-task-123");
   });
 
   it("should generate with reference images", async () => {
@@ -98,7 +53,7 @@ describe("kie veo provider", () => {
       generationType: "REFERENCE_2_VIDEO",
       imageUrls: ["https://example.com/ref1.jpg"],
     });
-    expect(result.status).toBe("completed");
+    expect(result.taskId).toBe("veo-task-123");
   });
 
   it("should extend a completed video", async () => {
@@ -108,8 +63,7 @@ describe("kie veo provider", () => {
       prompt: "Continue the scene with a zoom out",
       model: "fast",
     });
-    expect(result.status).toBe("completed");
-    expect(result.videoUrl).toBe("https://example.com/extended.mp4");
+    expect(result.taskId).toBe("veo-extend-456");
   });
 
   it("should create a task and return taskId", async () => {
@@ -118,27 +72,5 @@ describe("kie veo provider", () => {
       prompt: "A beautiful sunset",
     });
     expect(taskId).toBe("veo-task-123");
-  });
-
-  it("should get task status", async () => {
-    const veo = createMockVeoProvider();
-    const status = await veo.getTaskStatus("veo-task-123");
-    expect(status.status).toBe("completed");
-    expect(status.state).toBe("success");
-  });
-
-  it("should handle failed status", async () => {
-    const veo = createMockVeoProvider();
-    (veo.getTaskStatus as ReturnType<typeof vi.fn>).mockResolvedValue({
-      taskId: "veo-fail-789",
-      status: "failed",
-      state: "fail",
-      error: "Content policy violation",
-      failMsg: "Content policy violation",
-    });
-
-    const status = await veo.getTaskStatus("veo-fail-789");
-    expect(status.status).toBe("failed");
-    expect(status.error).toBe("Content policy violation");
   });
 });

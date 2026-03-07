@@ -2,25 +2,6 @@
 import { describe, it, expect, vi } from "vitest";
 
 describe("kie suno provider", () => {
-  interface SunoResult {
-    taskId: string;
-    status: "completed" | "failed";
-    urls: string[];
-    title?: string;
-    duration?: number;
-    trackCount?: number;
-    error?: string;
-  }
-
-  interface TaskStatusDetails {
-    taskId: string;
-    status: string;
-    state?: string;
-    result?: { urls?: string[]; resultUrls?: string[] };
-    error?: string;
-    failMsg?: string;
-  }
-
   interface SunoGenerateRequest {
     prompt: string;
     style?: string;
@@ -32,40 +13,14 @@ describe("kie suno provider", () => {
   }
 
   interface SunoProvider {
-    generate(req: SunoGenerateRequest): Promise<SunoResult>;
+    generate(req: SunoGenerateRequest): Promise<{ taskId: string }>;
     createTask(req: SunoGenerateRequest): Promise<{ taskId: string }>;
-    getTaskStatus(taskId: string): Promise<TaskStatusDetails>;
-    waitForTask(taskId: string): Promise<SunoResult>;
   }
 
   function createMockSunoProvider(): SunoProvider {
     return {
-      generate: vi.fn().mockResolvedValue({
-        taskId: "suno-task-123",
-        status: "completed",
-        urls: ["https://example.com/track.mp3"],
-        title: "Sunset Jazz",
-        duration: 180,
-        trackCount: 2,
-      }),
+      generate: vi.fn().mockResolvedValue({ taskId: "suno-task-123" }),
       createTask: vi.fn().mockResolvedValue({ taskId: "suno-task-123" }),
-      getTaskStatus: vi.fn().mockResolvedValue({
-        taskId: "suno-task-123",
-        status: "completed",
-        state: "success",
-        result: {
-          urls: ["https://example.com/track.mp3"],
-          resultUrls: ["https://example.com/track.mp3"],
-        },
-      }),
-      waitForTask: vi.fn().mockResolvedValue({
-        taskId: "suno-task-123",
-        status: "completed",
-        urls: ["https://example.com/track.mp3"],
-        title: "Sunset Jazz",
-        duration: 180,
-        trackCount: 2,
-      }),
     };
   }
 
@@ -74,10 +29,7 @@ describe("kie suno provider", () => {
     const result = await suno.generate({
       prompt: "A smooth jazz ballad with piano and saxophone",
     });
-    expect(result.status).toBe("completed");
-    expect(result.title).toBe("Sunset Jazz");
-    expect(result.duration).toBe(180);
-    expect(result.trackCount).toBe(2);
+    expect(result.taskId).toBe("suno-task-123");
   });
 
   it("should generate instrumental music", async () => {
@@ -87,7 +39,7 @@ describe("kie suno provider", () => {
       instrumental: true,
       model: "V4_5",
     });
-    expect(result.status).toBe("completed");
+    expect(result.taskId).toBe("suno-task-123");
   });
 
   it("should generate with custom mode options", async () => {
@@ -99,7 +51,7 @@ describe("kie suno provider", () => {
       title: "City Walk",
       negativeTags: "heavy metal",
     });
-    expect(result.status).toBe("completed");
+    expect(result.taskId).toBe("suno-task-123");
   });
 
   it("should create a task and return taskId", async () => {
@@ -109,27 +61,5 @@ describe("kie suno provider", () => {
       model: "V5",
     });
     expect(taskId).toBe("suno-task-123");
-  });
-
-  it("should get task status", async () => {
-    const suno = createMockSunoProvider();
-    const status = await suno.getTaskStatus("suno-task-123");
-    expect(status.status).toBe("completed");
-  });
-
-  it("should handle failed generation", async () => {
-    const suno = createMockSunoProvider();
-    (suno.generate as ReturnType<typeof vi.fn>).mockResolvedValue({
-      taskId: "suno-fail-456",
-      status: "failed",
-      urls: [],
-      error: "Content policy violation",
-    });
-
-    const result = await suno.generate({
-      prompt: "Something inappropriate",
-    });
-    expect(result.status).toBe("failed");
-    expect(result.error).toBe("Content policy violation");
   });
 });

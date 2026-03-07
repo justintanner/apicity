@@ -66,8 +66,8 @@ const provider = kie({
   apiKey: process.env.KIE_API_KEY!,
 });
 
-// Generate an image
-const result = await provider.generate({
+// Create an image generation task
+const { taskId } = await provider.createTask({
   model: "nano-banana-pro",
   input: {
     prompt: "A serene mountain landscape",
@@ -75,7 +75,7 @@ const result = await provider.generate({
   },
 });
 
-console.log("Image URL:", result.imageUrl);
+console.log("Task ID:", taskId);
 
 // Upload a local file to get a public URL for generation endpoints
 const upload = await provider.uploadMedia({
@@ -84,7 +84,7 @@ const upload = await provider.uploadMedia({
 });
 
 // Use the URL with an image-to-video model
-const video = await provider.generate({
+const video = await provider.createTask({
   model: "grok-imagine/image-to-video",
   input: { image_urls: [upload.downloadUrl] },
 });
@@ -138,7 +138,6 @@ Kie provider for media generation, chat, and audio.
 - **Audio Models**: ElevenLabs text-to-dialogue, sound effects, speech-to-text
 - **Sub-Providers**: Veo (Google video), Suno (music generation), Chat
 - **File Upload**: Upload local media files to get public URLs for generation endpoints
-- **Task Polling**: Built-in polling with progress callbacks
 
 ### [@nakedapi/xai](packages/provider/xai)
 

@@ -32,8 +32,8 @@ const provider = kie({
   apiKey: process.env.KIE_API_KEY!,
 });
 
-// Generate a video with Kling 3.0
-const result = await provider.generate({
+// Create a video generation task with Kling 3.0
+const { taskId } = await provider.createTask({
   model: "kling-3.0/video",
   input: {
     prompt: "A futuristic cityscape with flying cars at sunset",
@@ -44,13 +44,13 @@ const result = await provider.generate({
   },
 });
 
-console.log("Video URL:", result.videoUrl);
+console.log("Task ID:", taskId);
 ```
 
 ### Grok Imagine - Text to Image
 
 ```typescript
-const result = await provider.generate({
+const { taskId } = await provider.createTask({
   model: "grok-imagine/text-to-image",
   input: {
     prompt: "A serene mountain landscape at dawn with misty valleys",
@@ -58,13 +58,13 @@ const result = await provider.generate({
   },
 });
 
-console.log("Image URL:", result.imageUrl);
+console.log("Task ID:", taskId);
 ```
 
 ### Grok Imagine - Text to Video
 
 ```typescript
-const result = await provider.generate({
+const { taskId } = await provider.createTask({
   model: "grok-imagine/text-to-video",
   input: {
     prompt: "A time-lapse of flowers blooming in a garden",
@@ -73,13 +73,13 @@ const result = await provider.generate({
   },
 });
 
-console.log("Video URL:", result.videoUrl);
+console.log("Task ID:", taskId);
 ```
 
 ### Nano Banana Pro
 
 ```typescript
-const result = await provider.generate({
+const { taskId } = await provider.createTask({
   model: "nano-banana-pro",
   input: {
     prompt: "A detailed illustration of a vintage bicycle in a Parisian street",
@@ -89,44 +89,13 @@ const result = await provider.generate({
   },
 });
 
-console.log("Image URL:", result.imageUrl);
-```
-
-### Async Task Creation with Polling
-
-```typescript
-// Create task and poll manually
-const { taskId } = await provider.createTask({
-  model: "kling-3.0/video",
-  input: {
-    prompt: "A cat playing with a ball of yarn",
-    sound: true,
-    duration: "5",
-    mode: "std",
-    multi_shots: false,
-  },
-});
-
 console.log("Task ID:", taskId);
-
-// Poll for status manually
-const status = await provider.getTaskStatus(taskId);
-console.log("Status:", status.status);
-
-// Or wait for completion with progress callback
-const result = await provider.waitForTask(taskId, {
-  intervalMs: 3000,
-  maxAttempts: 100,
-  onProgress: (status) => {
-    console.log(`Progress: ${status.status}`);
-  },
-});
 ```
 
 ### Kling 3.0 Multi-Shot Video
 
 ```typescript
-const result = await provider.generate({
+const { taskId } = await provider.createTask({
   model: "kling-3.0/video",
   input: {
     image_urls: ["https://example.com/first-frame.jpg"],
@@ -159,9 +128,6 @@ Creates a Kie provider instance.
 **Methods:**
 
 - `createTask(req)`: Creates a media generation task
-- `getTaskStatus(taskId)`: Gets the current status of a task
-- `waitForTask(taskId, options)`: Waits for a task to complete
-- `generate(req, options)`: Creates a task and waits for completion
 - `validateModel(modelId)`: Checks if a model is supported
 - `getModels()`: Returns list of supported models
 - `getModelType(modelId)`: Returns the media type for a model

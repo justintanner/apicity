@@ -48,7 +48,7 @@ packages/provider/<name>/
 ```
 
 **kimicoding** — Anthropic Messages API format (`/v1/messages`), model `k2p5`, supports vision (base64 + URL images)
-**kie** — Media generation (video/image/audio) with task polling, sub-providers (veo, suno, chat)
+**kie** — Media generation (video/image/audio), sub-providers (veo, suno, chat)
 **xai** — OpenAI-compatible chat API with X/Twitter search tool
 
 ### Testing

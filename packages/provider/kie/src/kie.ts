@@ -1,9 +1,6 @@
 import {
   MediaGenerationRequest,
   TaskResponse,
-  TaskStatusDetails,
-  TaskResult,
-  WaitOptions,
   KieOptions,
   KieProvider,
   MediaType,
@@ -12,7 +9,6 @@ import {
   UploadMediaRequest,
   UploadMediaResponse,
 } from "./types";
-import { TaskPoller } from "./polling";
 import { createVeoProvider } from "./veo";
 import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
@@ -85,8 +81,6 @@ export function kie(opts: KieOptions): KieProvider {
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
-  const poller = new TaskPoller(baseURL, opts.apiKey, doFetch);
-
   return {
     veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
     suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
@@ -142,25 +136,6 @@ export function kie(opts: KieOptions): KieProvider {
         if (error instanceof KieError) throw error;
         throw new KieError(`Failed to create task: ${error}`, 500);
       }
-    },
-
-    async getTaskStatus(taskId: string): Promise<TaskStatusDetails> {
-      return poller.getTaskStatus(taskId);
-    },
-
-    async waitForTask(
-      taskId: string,
-      options?: WaitOptions
-    ): Promise<TaskResult> {
-      return poller.waitForTask(taskId, options);
-    },
-
-    async generate(
-      req: MediaGenerationRequest,
-      options?: WaitOptions
-    ): Promise<TaskResult> {
-      const { taskId } = await this.createTask(req);
-      return this.waitForTask(taskId, options);
     },
 
     async uploadMedia(req: UploadMediaRequest): Promise<UploadMediaResponse> {

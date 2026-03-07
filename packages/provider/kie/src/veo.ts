@@ -1,4 +1,4 @@
-import { KieError, TaskResult, TaskStatusDetails, WaitOptions } from "./types";
+import { KieError } from "./types";
 import { kieRequest } from "./request";
 
 export type VeoModel = "veo3" | "veo3_fast";
@@ -28,69 +28,15 @@ export interface VeoExtendRequest {
 }
 
 export interface VeoProvider {
-  generate(req: VeoGenerateRequest, options?: WaitOptions): Promise<TaskResult>;
-  extend(req: VeoExtendRequest, options?: WaitOptions): Promise<TaskResult>;
+  generate(req: VeoGenerateRequest): Promise<{ taskId: string }>;
+  extend(req: VeoExtendRequest): Promise<{ taskId: string }>;
   createTask(req: VeoGenerateRequest): Promise<{ taskId: string }>;
-  getTaskStatus(taskId: string): Promise<TaskStatusDetails>;
-  waitForTask(taskId: string, options?: WaitOptions): Promise<TaskResult>;
 }
 
 interface VeoSubmitResponse {
   code: number;
   data?: {
     taskId?: string;
-  };
-}
-
-interface VeoStatusResponse {
-  success: boolean;
-  data?: {
-    successFlag: number | null;
-    response?: {
-      resultUrls?: string[];
-    };
-    errorMessage?: string | null;
-    errorCode?: string | null;
-  };
-}
-
-function parseVeoStatus(
-  taskId: string,
-  response: VeoStatusResponse
-): TaskStatusDetails {
-  const data = response.data;
-  if (!data) {
-    throw new KieError("No data in Veo status response", 500);
-  }
-
-  const flag = data.successFlag;
-
-  if (flag === 1) {
-    const urls = data.response?.resultUrls ?? [];
-    return {
-      taskId,
-      status: "completed",
-      state: "success",
-      result: { urls, resultUrls: urls },
-    };
-  }
-
-  if (flag === 0) {
-    return {
-      taskId,
-      status: "processing",
-      state: "generating",
-    };
-  }
-
-  // null or other = failed
-  const errorMsg = data.errorMessage || data.errorCode || "Veo task failed";
-  return {
-    taskId,
-    status: "failed",
-    state: "fail",
-    error: String(errorMsg),
-    failMsg: String(errorMsg),
   };
 }
 
@@ -150,90 +96,9 @@ export function createVeoProvider(
     return { taskId: res.data.taskId };
   }
 
-  async function getTaskStatus(taskId: string): Promise<TaskStatusDetails> {
-    const res = await kieRequest<VeoStatusResponse>(
-      `${baseURL}/api/v1/veo/record-info?taskId=${encodeURIComponent(taskId)}`,
-      { method: "GET", ...requestOpts }
-    );
-
-    return parseVeoStatus(taskId, res);
-  }
-
-  async function waitForTask(
-    taskId: string,
-    options: WaitOptions = {}
-  ): Promise<TaskResult> {
-    const {
-      intervalMs = 3000,
-      maxAttempts = 300,
-      timeoutMs = 900000,
-      onProgress,
-    } = options;
-
-    const startTime = Date.now();
-    let attempts = 0;
-
-    while (attempts < maxAttempts) {
-      if (Date.now() - startTime > timeoutMs) {
-        throw new KieError(
-          `Veo task polling timeout after ${timeoutMs}ms`,
-          408
-        );
-      }
-
-      const status = await getTaskStatus(taskId);
-      attempts++;
-
-      if (onProgress) onProgress(status);
-
-      if (status.status === "completed") {
-        const urls = status.result?.resultUrls ?? status.result?.urls ?? [];
-        return {
-          taskId,
-          status: "completed",
-          urls,
-          videoUrl: urls[0],
-        };
-      }
-
-      if (status.status === "failed") {
-        return {
-          taskId,
-          status: "failed",
-          urls: [],
-          error: status.failMsg ?? status.error ?? "Veo task failed",
-        };
-      }
-
-      const delay = Math.min(intervalMs * Math.pow(1.1, attempts), 30000);
-      await new Promise((resolve) => setTimeout(resolve, Math.floor(delay)));
-    }
-
-    throw new KieError(
-      `Veo task polling exceeded max attempts (${maxAttempts})`,
-      408
-    );
-  }
-
   return {
-    async generate(
-      req: VeoGenerateRequest,
-      options?: WaitOptions
-    ): Promise<TaskResult> {
-      const { taskId } = await submitGenerate(req);
-      return waitForTask(taskId, options);
-    },
-
-    async extend(
-      req: VeoExtendRequest,
-      options?: WaitOptions
-    ): Promise<TaskResult> {
-      const { taskId } = await submitExtend(req);
-      return waitForTask(taskId, options);
-    },
-
+    generate: submitGenerate,
+    extend: submitExtend,
     createTask: submitGenerate,
-    getTaskStatus,
-    waitForTask,
   };
 }

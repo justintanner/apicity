@@ -18,17 +18,6 @@ export type KieMediaModel =
 // Media generation types
 export type MediaType = "image" | "video" | "audio" | "transcription";
 
-// Task status (internal representation)
-export type TaskStatus = "pending" | "processing" | "completed" | "failed";
-
-// Kie API task states (from recordInfo endpoint)
-export type KieTaskState =
-  | "waiting"
-  | "queuing"
-  | "generating"
-  | "success"
-  | "fail";
-
 // Kling element for video generation
 export interface KlingElement {
   name: string;
@@ -307,43 +296,6 @@ export interface TaskResponse {
   taskId: string;
 }
 
-// Task status details (from Kei AI API recordInfo endpoint)
-export interface TaskStatusDetails {
-  taskId: string;
-  status: TaskStatus;
-  state?: KieTaskState;
-  progress?: number;
-  model?: string;
-  param?: string;
-  result?: {
-    urls?: string[];
-    resultUrls?: string[];
-    resultObject?: Record<string, unknown>;
-    video_url?: string;
-    image_url?: string;
-    [key: string]: unknown;
-  };
-  error?: string;
-  failCode?: string;
-  failMsg?: string;
-  createTime?: number;
-  updateTime?: number;
-  completeTime?: number;
-  costTime?: number;
-}
-
-// Completed task result
-export interface TaskResult {
-  taskId: string;
-  status: "completed" | "failed";
-  urls: string[];
-  resultObject?: Record<string, unknown>;
-  videoUrl?: string;
-  imageUrl?: string;
-  error?: string;
-  metadata?: Record<string, unknown>;
-}
-
 // Upload media request
 export interface UploadMediaRequest {
   file: Blob;
@@ -363,18 +315,6 @@ export interface KieOptions {
   uploadBaseURL?: string;
   timeout?: number;
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
-}
-
-// Polling options
-export interface PollingOptions {
-  intervalMs?: number;
-  maxAttempts?: number;
-  timeoutMs?: number;
-}
-
-// Wait options
-export interface WaitOptions extends PollingOptions {
-  onProgress?: (status: TaskStatusDetails) => void;
 }
 
 // Error class
@@ -400,12 +340,6 @@ export interface KieCreditsResponse {
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
   createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
-  getTaskStatus(taskId: string): Promise<TaskStatusDetails>;
-  waitForTask(taskId: string, options?: WaitOptions): Promise<TaskResult>;
-  generate(
-    req: MediaGenerationRequest,
-    options?: WaitOptions
-  ): Promise<TaskResult>;
   uploadMedia(req: UploadMediaRequest): Promise<UploadMediaResponse>;
   getCredits(): Promise<KieCreditsResponse>;
   validateModel(modelId: string): boolean;

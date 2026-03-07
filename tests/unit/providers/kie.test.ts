@@ -6,14 +6,6 @@ describe("kie provider", () => {
     taskId: string;
   }
 
-  interface TaskResult {
-    taskId: string;
-    status: "completed" | "failed";
-    urls: string[];
-    imageUrl?: string;
-    videoUrl?: string;
-  }
-
   interface MediaGenerationRequest {
     model: string;
     input: Record<string, unknown>;
@@ -22,11 +14,11 @@ describe("kie provider", () => {
   type MediaType = "image" | "video" | "audio" | "transcription";
 
   interface VeoProvider {
-    generate(req: Record<string, unknown>): Promise<TaskResult>;
+    generate(req: Record<string, unknown>): Promise<{ taskId: string }>;
   }
 
   interface SunoProvider {
-    generate(req: Record<string, unknown>): Promise<TaskResult>;
+    generate(req: Record<string, unknown>): Promise<{ taskId: string }>;
   }
 
   interface KieChatProvider {
@@ -42,13 +34,6 @@ describe("kie provider", () => {
 
   interface KieProvider {
     createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
-    getTaskStatus(taskId: string): Promise<{
-      taskId: string;
-      status: string;
-      result?: { urls?: string[] };
-    }>;
-    waitForTask(taskId: string): Promise<TaskResult>;
-    generate(req: MediaGenerationRequest): Promise<TaskResult>;
     uploadMedia(req: {
       file: Blob;
       filename: string;
@@ -104,25 +89,6 @@ describe("kie provider", () => {
   function createMockProvider(): KieProvider {
     return {
       createTask: vi.fn().mockResolvedValue({ taskId: "test-task-id" }),
-      getTaskStatus: vi.fn().mockResolvedValue({
-        taskId: "test-task-id",
-        status: "completed",
-        result: {
-          urls: ["https://example.com/image.png"],
-        },
-      }),
-      waitForTask: vi.fn().mockResolvedValue({
-        taskId: "test-task-id",
-        status: "completed",
-        urls: ["https://example.com/image.png"],
-        imageUrl: "https://example.com/image.png",
-      }),
-      generate: vi.fn().mockResolvedValue({
-        taskId: "test-task-id",
-        status: "completed",
-        urls: ["https://example.com/image.png"],
-        imageUrl: "https://example.com/image.png",
-      }),
       uploadMedia: vi.fn().mockResolvedValue({
         downloadUrl: "https://kieai.redpandaai.co/uploads/test.png",
       }),
@@ -139,22 +105,10 @@ describe("kie provider", () => {
         .fn()
         .mockImplementation((modelId: string) => MODEL_TYPES[modelId] ?? null),
       veo: {
-        generate: vi.fn().mockResolvedValue({
-          taskId: "veo-task-id",
-          status: "completed",
-          urls: ["https://example.com/video.mp4"],
-          videoUrl: "https://example.com/video.mp4",
-        }),
+        generate: vi.fn().mockResolvedValue({ taskId: "veo-task-id" }),
       },
       suno: {
-        generate: vi.fn().mockResolvedValue({
-          taskId: "suno-task-id",
-          status: "completed",
-          urls: ["https://example.com/audio.mp3"],
-          title: "Test Track",
-          duration: 120,
-          trackCount: 1,
-        }),
+        generate: vi.fn().mockResolvedValue({ taskId: "suno-task-id" }),
       },
       chat: {
         chat: vi.fn().mockResolvedValue({
@@ -213,7 +167,7 @@ describe("kie provider", () => {
     expect(result.taskId).toBe("test-task-id");
   });
 
-  it("should generate media with seedance model", async () => {
+  it("should create task with seedance model", async () => {
     const provider = createMockProvider();
     const req: MediaGenerationRequest = {
       model: "bytedance/seedance-1.5-pro",
@@ -224,11 +178,11 @@ describe("kie provider", () => {
       },
     };
 
-    const result = await provider.generate(req);
-    expect(result.status).toBe("completed");
+    const result = await provider.createTask(req);
+    expect(result.taskId).toBe("test-task-id");
   });
 
-  it("should generate media with nano-banana-2", async () => {
+  it("should create task with nano-banana-2", async () => {
     const provider = createMockProvider();
     const req: MediaGenerationRequest = {
       model: "nano-banana-2",
@@ -239,11 +193,11 @@ describe("kie provider", () => {
       },
     };
 
-    const result = await provider.generate(req);
-    expect(result.status).toBe("completed");
+    const result = await provider.createTask(req);
+    expect(result.taskId).toBe("test-task-id");
   });
 
-  it("should generate media with elevenlabs dialogue", async () => {
+  it("should create task with elevenlabs dialogue", async () => {
     const provider = createMockProvider();
     const req: MediaGenerationRequest = {
       model: "elevenlabs/text-to-dialogue-v3",
@@ -256,8 +210,8 @@ describe("kie provider", () => {
       },
     };
 
-    const result = await provider.generate(req);
-    expect(result.status).toBe("completed");
+    const result = await provider.createTask(req);
+    expect(result.taskId).toBe("test-task-id");
   });
 
   it("should access veo sub-provider", async () => {
@@ -266,8 +220,7 @@ describe("kie provider", () => {
       prompt: "A rocket launch",
       model: "veo3_fast",
     });
-    expect(result.status).toBe("completed");
-    expect(result.videoUrl).toBe("https://example.com/video.mp4");
+    expect(result.taskId).toBe("veo-task-id");
   });
 
   it("should access suno sub-provider", async () => {
@@ -276,7 +229,7 @@ describe("kie provider", () => {
       prompt: "A jazz ballad",
       model: "V4_5",
     });
-    expect(result.status).toBe("completed");
+    expect(result.taskId).toBe("suno-task-id");
   });
 
   it("should access chat sub-provider", async () => {

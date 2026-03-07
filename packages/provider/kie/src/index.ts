@@ -4,9 +4,6 @@ export { kie } from "./kie";
 // Export error class
 export { KieError } from "./types";
 
-// Export polling utilities
-export { TaskPoller } from "./polling";
-
 // Export sub-provider factory functions
 export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";
@@ -19,7 +16,6 @@ export { sseToIterable } from "./sse";
 export type {
   KieMediaModel,
   MediaType,
-  TaskStatus,
   KlingElement,
   MultiShotPrompt,
   MediaRequest,
@@ -41,19 +37,12 @@ export type {
   SoraWatermarkRequest,
   MediaGenerationRequest,
   TaskResponse,
-  TaskStatusDetails,
-  TaskResult,
   KieOptions,
-  PollingOptions,
-  WaitOptions,
   KieProvider,
   KieCreditsResponse,
   UploadMediaRequest,
   UploadMediaResponse,
 } from "./types";
-
-// Export polling endpoint types
-export type { PollerEndpoints } from "./polling";
 
 // Export sub-provider types
 export type {
@@ -64,12 +53,7 @@ export type {
   VeoProvider,
 } from "./veo";
 
-export type {
-  SunoModel,
-  SunoGenerateRequest,
-  SunoResult,
-  SunoProvider,
-} from "./suno";
+export type { SunoModel, SunoGenerateRequest, SunoProvider } from "./suno";
 
 export type {
   KieChatContentPart,

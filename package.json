@@ -1,7 +1,7 @@
 {
   "name": "nakedapi",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, and @nakedapi/xai",
+  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai, and @nakedapi/openai",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,7 +14,8 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai",
+    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai",
+    "build:openai": "pnpm --filter @nakedapi/openai run build",
     "build:kimicoding": "pnpm --filter @nakedapi/kimicoding run build",
     "build:kie": "pnpm --filter @nakedapi/kie run build",
     "build:xai": "pnpm --filter @nakedapi/xai run build",
@@ -61,6 +62,7 @@
     "chat",
     "streaming",
     "embeddings",
+    "openai",
     "typescript"
   ],
   "author": "Justin Tanner",

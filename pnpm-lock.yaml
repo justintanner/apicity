@@ -63,6 +63,8 @@ importers:
 
   packages/provider/kimicoding: {}
 
+  packages/provider/openai: {}
+
   packages/provider/xai: {}
 
 packages:

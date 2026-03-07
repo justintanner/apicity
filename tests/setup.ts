@@ -3,6 +3,7 @@ process.env.NODE_ENV = "test";
 process.env.KIMI_CODING_API_KEY = "sk-test-key";
 process.env.KIE_API_KEY = "sk-test-key";
 process.env.XAI_API_KEY = "sk-test-key";
+process.env.OPENAI_API_KEY = "sk-test-key";
 
 export const mockKimiCodingResponse = {
   id: "test-id",

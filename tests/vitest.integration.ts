@@ -9,6 +9,7 @@ export default defineConfig({
     include: ["tests/integration/**/*.test.{ts,tsx}"],
     exclude: ["node_modules", "dist"],
     testTimeout: 30000,
+    setupFiles: ["tests/integration-setup.ts"],
     alias: {
       "@nakedapi/kimicoding": path.resolve(
         __dirname,
@@ -16,6 +17,10 @@ export default defineConfig({
       ),
       "@nakedapi/kie": path.resolve(__dirname, "../packages/provider/kie/src"),
       "@nakedapi/xai": path.resolve(__dirname, "../packages/provider/xai/src"),
+      "@nakedapi/openai": path.resolve(
+        __dirname,
+        "../packages/provider/openai/src"
+      ),
     },
   },
 });

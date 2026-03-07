@@ -20,6 +20,10 @@ export default defineConfig({
       ),
       "@nakedapi/kie": path.resolve(__dirname, "./packages/provider/kie/src"),
       "@nakedapi/xai": path.resolve(__dirname, "./packages/provider/xai/src"),
+      "@nakedapi/openai": path.resolve(
+        __dirname,
+        "./packages/provider/openai/src"
+      ),
     },
   },
 });

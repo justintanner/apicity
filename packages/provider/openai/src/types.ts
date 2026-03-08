@@ -6,10 +6,23 @@ export interface OpenAiOptions {
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
 
+// Content part for vision messages
+export interface OpenAiTextPart {
+  type: "text";
+  text: string;
+}
+
+export interface OpenAiImageUrlPart {
+  type: "image_url";
+  image_url: { url: string; detail?: "auto" | "low" | "high" };
+}
+
+export type OpenAiContentPart = OpenAiTextPart | OpenAiImageUrlPart;
+
 // Chat message
 export interface OpenAiMessage {
   role: "user" | "assistant" | "system";
-  content: string;
+  content: string | OpenAiContentPart[];
 }
 
 // Transcription request

@@ -8,6 +8,9 @@ export { OpenAiError } from "./types";
 export type {
   OpenAiOptions,
   OpenAiMessage,
+  OpenAiTextPart,
+  OpenAiImageUrlPart,
+  OpenAiContentPart,
   OpenAiToolFunction,
   OpenAiTool,
   OpenAiToolCall,

@@ -21,6 +21,7 @@ export default defineConfig({
         __dirname,
         "../packages/provider/openai/src"
       ),
+      "@nakedapi/fal": path.resolve(__dirname, "../packages/provider/fal/src"),
     },
   },
 });

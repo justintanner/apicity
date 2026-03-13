@@ -30,7 +30,8 @@
     "test:ui": "vitest --ui --config tests/vitest.config.ts",
     "test:integration": "vitest run --config tests/vitest.integration.ts",
     "test:integration:record": "POLLY_MODE=record vitest run --config tests/vitest.integration.ts",
-    "harness": "npx tsx tests/harness-ui.ts"
+    "harness": "npx tsx tests/harness-ui.ts",
+    "sigcheck": "npx tsx scripts/sigcheck.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

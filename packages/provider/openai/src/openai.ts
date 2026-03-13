@@ -123,49 +123,55 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
   }
 
   return {
-    async chat(
-      req: OpenAiChatRequest,
-      signal?: AbortSignal
-    ): Promise<OpenAiChatResponse> {
-      const body: Record<string, unknown> = {
-        model: req.model ?? "gpt-5.4-2026-03-05",
-        messages: req.messages,
-      };
-      if (req.temperature !== undefined) body.temperature = req.temperature;
-      if (req.max_completion_tokens !== undefined)
-        body.max_completion_tokens = req.max_completion_tokens;
-      else if (req.max_tokens !== undefined) body.max_tokens = req.max_tokens;
-      if (req.tools) body.tools = req.tools;
-      if (req.tool_choice) body.tool_choice = req.tool_choice;
-      if (req.response_format) body.response_format = req.response_format;
+    v1: {
+      chat: {
+        async completions(
+          req: OpenAiChatRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiChatResponse> {
+          const body: Record<string, unknown> = {
+            model: req.model ?? "gpt-5.4-2026-03-05",
+            messages: req.messages,
+          };
+          if (req.temperature !== undefined) body.temperature = req.temperature;
+          if (req.max_completion_tokens !== undefined)
+            body.max_completion_tokens = req.max_completion_tokens;
+          else if (req.max_tokens !== undefined)
+            body.max_tokens = req.max_tokens;
+          if (req.tools) body.tools = req.tools;
+          if (req.tool_choice) body.tool_choice = req.tool_choice;
+          if (req.response_format) body.response_format = req.response_format;
 
-      const data = await makeRequest<OpenAIChatCompletion>(
-        "/chat/completions",
-        jsonRequest(body),
-        signal
-      );
-      return parseResponse(data);
-    },
+          const data = await makeRequest<OpenAIChatCompletion>(
+            "/chat/completions",
+            jsonRequest(body),
+            signal
+          );
+          return parseResponse(data);
+        },
+      },
+      audio: {
+        async transcriptions(
+          req: OpenAiTranscribeRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiTranscribeResponse> {
+          const form = new FormData();
+          form.append("file", req.file);
+          form.append("model", req.model ?? "gpt-4o-mini-transcribe");
+          form.append("response_format", "json");
+          if (req.language !== undefined) form.append("language", req.language);
+          if (req.prompt !== undefined) form.append("prompt", req.prompt);
+          if (req.temperature !== undefined)
+            form.append("temperature", String(req.temperature));
 
-    async transcribe(
-      req: OpenAiTranscribeRequest,
-      signal?: AbortSignal
-    ): Promise<OpenAiTranscribeResponse> {
-      const form = new FormData();
-      form.append("file", req.file);
-      form.append("model", req.model ?? "gpt-4o-mini-transcribe");
-      form.append("response_format", "json");
-      if (req.language !== undefined) form.append("language", req.language);
-      if (req.prompt !== undefined) form.append("prompt", req.prompt);
-      if (req.temperature !== undefined)
-        form.append("temperature", String(req.temperature));
-
-      const data = await makeRequest<{ text: string }>(
-        "/audio/transcriptions",
-        { headers: {}, body: form },
-        signal
-      );
-      return { text: data.text };
+          const data = await makeRequest<{ text: string }>(
+            "/audio/transcriptions",
+            { headers: {}, body: form },
+            signal
+          );
+          return { text: data.text };
+        },
+      },
     },
   };
 }

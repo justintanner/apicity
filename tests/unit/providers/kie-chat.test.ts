@@ -35,27 +35,42 @@ describe("kie chat provider", () => {
   }
 
   interface KieChatProvider {
-    chat(req: KieChatRequest, signal?: AbortSignal): Promise<KieChatResponse>;
+    gpt52: {
+      v1: {
+        chat: {
+          completions(
+            req: KieChatRequest,
+            signal?: AbortSignal
+          ): Promise<KieChatResponse>;
+        };
+      };
+    };
   }
 
   function createMockChatProvider(): KieChatProvider {
     return {
-      chat: vi.fn().mockResolvedValue({
-        content: "Hello! How can I help you today?",
-        model: "gpt-5.2",
-        usage: {
-          promptTokens: 10,
-          completionTokens: 8,
-          totalTokens: 18,
+      gpt52: {
+        v1: {
+          chat: {
+            completions: vi.fn().mockResolvedValue({
+              content: "Hello! How can I help you today?",
+              model: "gpt-5.2",
+              usage: {
+                promptTokens: 10,
+                completionTokens: 8,
+                totalTokens: 18,
+              },
+              finishReason: "stop",
+            }),
+          },
         },
-        finishReason: "stop",
-      }),
+      },
     };
   }
 
   it("should send a simple text message", async () => {
     const chat = createMockChatProvider();
-    const result = await chat.chat({
+    const result = await chat.gpt52.v1.chat.completions({
       messages: [{ role: "user", content: "Hello" }],
     });
     expect(result.content).toBe("Hello! How can I help you today?");
@@ -65,7 +80,7 @@ describe("kie chat provider", () => {
 
   it("should track usage tokens", async () => {
     const chat = createMockChatProvider();
-    const result = await chat.chat({
+    const result = await chat.gpt52.v1.chat.completions({
       messages: [{ role: "user", content: "Hello" }],
     });
     expect(result.usage.promptTokens).toBe(10);
@@ -75,13 +90,13 @@ describe("kie chat provider", () => {
 
   it("should support system messages", async () => {
     const chat = createMockChatProvider();
-    await chat.chat({
+    await chat.gpt52.v1.chat.completions({
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Hello" },
       ],
     });
-    expect(chat.chat).toHaveBeenCalledWith({
+    expect(chat.gpt52.v1.chat.completions).toHaveBeenCalledWith({
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Hello" },
@@ -91,7 +106,7 @@ describe("kie chat provider", () => {
 
   it("should support vision with image_url content parts", async () => {
     const chat = createMockChatProvider();
-    await chat.chat({
+    await chat.gpt52.v1.chat.completions({
       messages: [
         {
           role: "user",
@@ -105,17 +120,17 @@ describe("kie chat provider", () => {
         },
       ],
     });
-    expect(chat.chat).toHaveBeenCalled();
+    expect(chat.gpt52.v1.chat.completions).toHaveBeenCalled();
   });
 
   it("should support temperature and max_tokens", async () => {
     const chat = createMockChatProvider();
-    await chat.chat({
+    await chat.gpt52.v1.chat.completions({
       messages: [{ role: "user", content: "Be creative" }],
       temperature: 0.9,
       max_tokens: 500,
     });
-    expect(chat.chat).toHaveBeenCalledWith({
+    expect(chat.gpt52.v1.chat.completions).toHaveBeenCalledWith({
       messages: [{ role: "user", content: "Be creative" }],
       temperature: 0.9,
       max_tokens: 500,
@@ -124,14 +139,16 @@ describe("kie chat provider", () => {
 
   it("should support structured output with json_object format", async () => {
     const chat = createMockChatProvider();
-    (chat.chat as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      chat.gpt52.v1.chat.completions as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       content: '{"name": "test", "value": 42}',
       model: "gpt-5.2",
       usage: { promptTokens: 15, completionTokens: 10, totalTokens: 25 },
       finishReason: "stop",
     });
 
-    const result = await chat.chat({
+    const result = await chat.gpt52.v1.chat.completions({
       messages: [{ role: "user", content: "Return JSON" }],
       response_format: { type: "json_object" },
     });
@@ -140,13 +157,13 @@ describe("kie chat provider", () => {
 
   it("should support multi-turn conversations", async () => {
     const chat = createMockChatProvider();
-    await chat.chat({
+    await chat.gpt52.v1.chat.completions({
       messages: [
         { role: "user", content: "What is 2+2?" },
         { role: "assistant", content: "4" },
         { role: "user", content: "And 3+3?" },
       ],
     });
-    expect(chat.chat).toHaveBeenCalled();
+    expect(chat.gpt52.v1.chat.completions).toHaveBeenCalled();
   });
 });

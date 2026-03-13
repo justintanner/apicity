@@ -27,10 +27,21 @@ export interface VeoExtendRequest {
   watermark?: string;
 }
 
-export interface VeoProvider {
+interface VeoVeoNamespace {
   generate(req: VeoGenerateRequest): Promise<{ taskId: string }>;
   extend(req: VeoExtendRequest): Promise<{ taskId: string }>;
-  createTask(req: VeoGenerateRequest): Promise<{ taskId: string }>;
+}
+
+interface VeoV1Namespace {
+  veo: VeoVeoNamespace;
+}
+
+interface VeoApiNamespace {
+  v1: VeoV1Namespace;
+}
+
+export interface VeoProvider {
+  api: VeoApiNamespace;
 }
 
 interface VeoSubmitResponse {
@@ -97,8 +108,13 @@ export function createVeoProvider(
   }
 
   return {
-    generate: submitGenerate,
-    extend: submitExtend,
-    createTask: submitGenerate,
+    api: {
+      v1: {
+        veo: {
+          generate: submitGenerate,
+          extend: submitExtend,
+        },
+      },
+    },
   };
 }

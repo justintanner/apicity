@@ -4,8 +4,10 @@ This file provides guidelines for AI agents working in this repository.
 
 ## Project Overview
 
-TypeScript monorepo for AI provider packages (@nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai).
+TypeScript monorepo for AI provider packages (@nakedapi/openai, @nakedapi/xai, @nakedapi/fal, @nakedapi/kimicoding, @nakedapi/kie).
 Uses pnpm workspaces, ES modules, and Vitest for testing.
+
+Provider method paths mirror their upstream API endpoint paths (e.g., `provider.v1.chat.completions()` maps to `POST /v1/chat/completions`). Callable namespaces use `Object.assign` for dual-purpose nodes. Local helpers like `getModels()` stay flat on the provider root.
 
 ## Build/Lint/Test Commands
 
@@ -70,7 +72,7 @@ import { sseToIterable } from "./sse";
 
 ### Naming Conventions
 
-- Functions: camelCase (e.g., `streamChat`, `createTask`)
+- Functions: camelCase (e.g., `completions`, `createTask`)
 - Types/Interfaces: PascalCase (e.g., `ChatRequest`, `Provider`)
 - Error classes: PascalCase ending with "Error" (e.g., `KimiCodingError`)
 - Private helpers: camelCase with descriptive names

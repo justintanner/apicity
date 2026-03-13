@@ -295,20 +295,32 @@ export interface FalDeletePayloadsResponse {
 
 // ==================== Provider ====================
 
-// Provider interface
-export interface FalProvider {
-  models(
-    params?: FalModelSearchParams,
-    signal?: AbortSignal
-  ): Promise<FalModelSearchResponse>;
-  pricing(
-    params: FalPricingParams,
-    signal?: AbortSignal
-  ): Promise<FalPricingResponse>;
-  estimateCost(
+// Namespace types
+interface FalModelsPricingNamespace {
+  (params: FalPricingParams, signal?: AbortSignal): Promise<FalPricingResponse>;
+  estimate(
     req: FalEstimateRequest,
     signal?: AbortSignal
   ): Promise<FalEstimateResponse>;
+}
+
+interface FalModelsRequestsNamespace {
+  byEndpoint(
+    params: FalRequestsParams,
+    signal?: AbortSignal
+  ): Promise<FalRequestsResponse>;
+  payloads(
+    params: FalDeletePayloadsParams,
+    signal?: AbortSignal
+  ): Promise<FalDeletePayloadsResponse>;
+}
+
+interface FalModelsNamespace {
+  (
+    params?: FalModelSearchParams,
+    signal?: AbortSignal
+  ): Promise<FalModelSearchResponse>;
+  pricing: FalModelsPricingNamespace;
   usage(
     params?: FalUsageParams,
     signal?: AbortSignal
@@ -317,12 +329,14 @@ export interface FalProvider {
     params: FalAnalyticsParams,
     signal?: AbortSignal
   ): Promise<FalAnalyticsResponse>;
-  requests(
-    params: FalRequestsParams,
-    signal?: AbortSignal
-  ): Promise<FalRequestsResponse>;
-  deletePayloads(
-    params: FalDeletePayloadsParams,
-    signal?: AbortSignal
-  ): Promise<FalDeletePayloadsResponse>;
+  requests: FalModelsRequestsNamespace;
+}
+
+interface FalV1Namespace {
+  models: FalModelsNamespace;
+}
+
+// Provider interface
+export interface FalProvider {
+  v1: FalV1Namespace;
 }

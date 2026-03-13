@@ -41,7 +41,7 @@ const provider = kie({
 });
 
 // Create a video generation task with Kling 3.0
-const { taskId } = await provider.createTask({
+const { taskId } = await provider.api.v1.jobs.createTask({
   model: "kling-3.0/video",
   input: {
     prompt: "A futuristic cityscape with flying cars at sunset",
@@ -58,7 +58,7 @@ console.log("Task ID:", taskId);
 ### Grok Imagine - Text to Image
 
 ```typescript
-const { taskId } = await provider.createTask({
+const { taskId } = await provider.api.v1.jobs.createTask({
   model: "grok-imagine/text-to-image",
   input: {
     prompt: "A serene mountain landscape at dawn with misty valleys",
@@ -72,7 +72,7 @@ console.log("Task ID:", taskId);
 ### Grok Imagine - Text to Video
 
 ```typescript
-const { taskId } = await provider.createTask({
+const { taskId } = await provider.api.v1.jobs.createTask({
   model: "grok-imagine/text-to-video",
   input: {
     prompt: "A time-lapse of flowers blooming in a garden",
@@ -92,7 +92,7 @@ import { readFile } from "node:fs/promises";
 const buffer = await readFile("./my-image.png");
 const file = new Blob([buffer], { type: "image/png" });
 
-const { downloadUrl } = await provider.uploadMedia({
+const { downloadUrl } = await provider.api.fileStreamUpload({
   file,
   filename: "my-image.png",
 });
@@ -105,7 +105,7 @@ console.log("Uploaded to:", downloadUrl);
 Convert a kie.ai file URL into a temporary downloadable link (valid 20 minutes):
 
 ```typescript
-const { url } = await provider.getDownloadUrl(
+const { url } = await provider.api.v1.common.downloadUrl(
   "https://cdn.kie.ai/files/some-generated-video.mp4"
 );
 
@@ -115,7 +115,7 @@ console.log("Download from:", url);
 ### Check Task Status
 
 ```typescript
-const task = await provider.getTask(taskId);
+const task = await provider.api.v1.jobs.recordInfo(taskId);
 
 if (task.state === "success") {
   console.log("Result URLs:", task.result?.resultUrls);
@@ -129,7 +129,7 @@ if (task.state === "success") {
 ### Nano Banana Pro
 
 ```typescript
-const { taskId } = await provider.createTask({
+const { taskId } = await provider.api.v1.jobs.createTask({
   model: "nano-banana-pro",
   input: {
     prompt: "A detailed illustration of a vintage bicycle in a Parisian street",
@@ -145,7 +145,7 @@ console.log("Task ID:", taskId);
 ### Kling 3.0 Multi-Shot Video
 
 ```typescript
-const { taskId } = await provider.createTask({
+const { taskId } = await provider.api.v1.jobs.createTask({
   model: "kling-3.0/video",
   input: {
     image_urls: ["https://example.com/first-frame.jpg"],
@@ -175,23 +175,26 @@ Creates a Kie provider instance.
 - `timeout` (number, optional): Request timeout in milliseconds (default: 30000)
 - `fetch` (function, optional): Custom fetch implementation
 
-**Methods:**
+**API methods:**
 
-- `createTask(req)`: Creates a media generation task
-- `getTask(taskId)`: Returns current task state, progress, and results
-- `uploadMedia(req)`: Uploads a file and returns a hosted URL
-- `getDownloadUrl(url)`: Converts a kie.ai file URL to a temporary download link (20 min)
-- `getCredits()`: Returns account credit balance
-- `validateModel(modelId)`: Checks if a model is supported
-- `getModels()`: Returns list of supported models
-- `getModelType(modelId)`: Returns the media type for a model
+- `provider.api.v1.jobs.createTask(req)`: Creates a media generation task
+- `provider.api.v1.jobs.recordInfo(taskId)`: Returns current task state, progress, and results
+- `provider.api.fileStreamUpload(req)`: Uploads a file and returns a hosted URL
+- `provider.api.v1.common.downloadUrl(url)`: Converts a kie.ai file URL to a temporary download link (20 min)
+- `provider.api.v1.chat.credit()`: Returns account credit balance
+
+**Local methods:**
+
+- `provider.validateModel(modelId)`: Checks if a model is supported
+- `provider.getModels()`: Returns list of supported models
+- `provider.getModelType(modelId)`: Returns the media type for a model
 
 **Sub-providers:**
 
-- `provider.veo.generate(req)`: Generate video with Veo (veo3, veo3_fast)
-- `provider.veo.extend(req)`: Extend an existing Veo video
-- `provider.suno.generate(req)`: Generate music with Suno
-- `provider.chat.chat(req)`: Chat completions (GPT-5.2)
+- `provider.veo.api.v1.veo.generate(req)`: Generate video with Veo (veo3, veo3_fast)
+- `provider.veo.api.v1.veo.extend(req)`: Extend an existing Veo video
+- `provider.suno.api.v1.generate(req)`: Generate music with Suno
+- `provider.chat.gpt52.v1.chat.completions(req)`: Chat completions (GPT-5.2)
 
 ## License
 

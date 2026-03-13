@@ -93,40 +93,67 @@ describe("fal provider", () => {
     }>;
   }
 
-  interface FalProvider {
-    models(
-      params?: unknown,
-      signal?: AbortSignal
-    ): Promise<FalModelSearchResponse>;
-    pricing(
-      params: { endpointId: string | string[] },
-      signal?: AbortSignal
-    ): Promise<FalPricingResponse>;
-    estimateCost(
-      req: unknown,
-      signal?: AbortSignal
-    ): Promise<FalEstimateResponse>;
+  interface FalModelsCallable {
+    (params?: unknown, signal?: AbortSignal): Promise<FalModelSearchResponse>;
+    pricing: FalPricingCallable;
     usage(params?: unknown, signal?: AbortSignal): Promise<FalUsageResponse>;
     analytics(
       params: { endpointId: string | string[] },
       signal?: AbortSignal
     ): Promise<FalAnalyticsResponse>;
-    requests(
-      params: {
-        endpointId: string;
-        status?: "success" | "error" | "user_error";
-      },
+    requests: {
+      byEndpoint(
+        params: {
+          endpointId: string;
+          status?: "success" | "error" | "user_error";
+        },
+        signal?: AbortSignal
+      ): Promise<FalRequestsResponse>;
+      payloads(
+        params: { requestId: string; idempotencyKey?: string },
+        signal?: AbortSignal
+      ): Promise<FalDeletePayloadsResponse>;
+    };
+  }
+
+  interface FalPricingCallable {
+    (
+      params: { endpointId: string | string[] },
       signal?: AbortSignal
-    ): Promise<FalRequestsResponse>;
-    deletePayloads(
-      params: { requestId: string; idempotencyKey?: string },
-      signal?: AbortSignal
-    ): Promise<FalDeletePayloadsResponse>;
+    ): Promise<FalPricingResponse>;
+    estimate(req: unknown, signal?: AbortSignal): Promise<FalEstimateResponse>;
+  }
+
+  interface FalProvider {
+    v1: {
+      models: FalModelsCallable;
+    };
   }
 
   function createMockProvider(): FalProvider {
-    return {
-      models: vi.fn().mockResolvedValue({
+    const pricing = Object.assign(
+      vi.fn().mockResolvedValue({
+        prices: [
+          {
+            endpointId: "fal-ai/flux/dev",
+            unitPrice: 0.025,
+            unit: "image",
+            currency: "USD",
+          },
+        ],
+        nextCursor: null,
+        hasMore: false,
+      }),
+      {
+        estimate: vi.fn().mockResolvedValue({
+          estimateType: "unit_price",
+          totalCost: 1.25,
+          currency: "USD",
+        }),
+      }
+    );
+    const models = Object.assign(
+      vi.fn().mockResolvedValue({
         models: [
           {
             endpointId: "fal-ai/flux/dev",
@@ -149,88 +176,81 @@ describe("fal provider", () => {
         nextCursor: null,
         hasMore: false,
       }),
-      pricing: vi.fn().mockResolvedValue({
-        prices: [
-          {
-            endpointId: "fal-ai/flux/dev",
-            unitPrice: 0.025,
-            unit: "image",
-            currency: "USD",
-          },
-        ],
-        nextCursor: null,
-        hasMore: false,
-      }),
-      estimateCost: vi.fn().mockResolvedValue({
-        estimateType: "unit_price",
-        totalCost: 1.25,
-        currency: "USD",
-      }),
-      usage: vi.fn().mockResolvedValue({
-        nextCursor: null,
-        hasMore: false,
-        timeSeries: [
-          {
-            bucket: "2025-01-15T00:00:00-05:00",
-            results: [
+      {
+        pricing,
+        usage: vi.fn().mockResolvedValue({
+          nextCursor: null,
+          hasMore: false,
+          timeSeries: [
+            {
+              bucket: "2025-01-15T00:00:00-05:00",
+              results: [
+                {
+                  endpointId: "fal-ai/flux/dev",
+                  unit: "image",
+                  quantity: 4,
+                  unitPrice: 0.1,
+                  cost: 0.4,
+                  currency: "USD",
+                },
+              ],
+            },
+          ],
+        }),
+        analytics: vi.fn().mockResolvedValue({
+          nextCursor: null,
+          hasMore: false,
+          timeSeries: [
+            {
+              bucket: "2025-01-15T12:00:00-05:00",
+              results: [
+                {
+                  endpointId: "fal-ai/flux/dev",
+                  requestCount: 1500,
+                  successCount: 1450,
+                },
+              ],
+            },
+          ],
+        }),
+        requests: {
+          byEndpoint: vi.fn().mockResolvedValue({
+            nextCursor: "Mg==",
+            hasMore: true,
+            items: [
               {
+                requestId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
                 endpointId: "fal-ai/flux/dev",
-                unit: "image",
-                quantity: 4,
-                unitPrice: 0.1,
-                cost: 0.4,
-                currency: "USD",
+                startedAt: "2025-01-01T00:00:05Z",
+                sentAt: "2025-01-01T00:00:01Z",
+                endedAt: "2025-01-01T00:00:08Z",
+                statusCode: 200,
+                duration: 7.8,
               },
             ],
-          },
-        ],
-      }),
-      analytics: vi.fn().mockResolvedValue({
-        nextCursor: null,
-        hasMore: false,
-        timeSeries: [
-          {
-            bucket: "2025-01-15T12:00:00-05:00",
-            results: [
+          }),
+          payloads: vi.fn().mockResolvedValue({
+            cdnDeleteResults: [
               {
-                endpointId: "fal-ai/flux/dev",
-                requestCount: 1500,
-                successCount: 1450,
+                link: "https://v3.fal.media/files/abc123/output.png",
+                exception: null,
               },
             ],
-          },
-        ],
-      }),
-      requests: vi.fn().mockResolvedValue({
-        nextCursor: "Mg==",
-        hasMore: true,
-        items: [
-          {
-            requestId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-            endpointId: "fal-ai/flux/dev",
-            startedAt: "2025-01-01T00:00:05Z",
-            sentAt: "2025-01-01T00:00:01Z",
-            endedAt: "2025-01-01T00:00:08Z",
-            statusCode: 200,
-            duration: 7.8,
-          },
-        ],
-      }),
-      deletePayloads: vi.fn().mockResolvedValue({
-        cdnDeleteResults: [
-          {
-            link: "https://v3.fal.media/files/abc123/output.png",
-            exception: null,
-          },
-        ],
-      }),
+          }),
+        },
+      }
+    );
+    return {
+      v1: {
+        models,
+      },
     };
   }
 
   describe("models", () => {
     it("should return a list of models", async () => {
       const provider = createMockProvider();
-      const result = await provider.models();
+      const result = await provider.v1.models();
 
       expect(result.models).toHaveLength(1);
       expect(result.models[0].endpointId).toBe("fal-ai/flux/dev");
@@ -240,25 +260,25 @@ describe("fal provider", () => {
 
     it("should support pagination", async () => {
       const provider = createMockProvider();
-      await provider.models({ limit: 10 });
+      await provider.v1.models({ limit: 10 });
 
-      expect(provider.models).toHaveBeenCalledWith({ limit: 10 });
+      expect(provider.v1.models).toHaveBeenCalledWith({ limit: 10 });
     });
 
     it("should support searching by endpoint ID", async () => {
       const provider = createMockProvider();
-      await provider.models({ endpointId: "fal-ai/flux/dev" });
+      await provider.v1.models({ endpointId: "fal-ai/flux/dev" });
 
-      expect(provider.models).toHaveBeenCalledWith({
+      expect(provider.v1.models).toHaveBeenCalledWith({
         endpointId: "fal-ai/flux/dev",
       });
     });
 
     it("should support searching by query", async () => {
       const provider = createMockProvider();
-      await provider.models({ q: "image generation" });
+      await provider.v1.models({ q: "image generation" });
 
-      expect(provider.models).toHaveBeenCalledWith({
+      expect(provider.v1.models).toHaveBeenCalledWith({
         q: "image generation",
       });
     });
@@ -267,7 +287,7 @@ describe("fal provider", () => {
   describe("pricing", () => {
     it("should return pricing for a specific endpoint", async () => {
       const provider = createMockProvider();
-      const result = await provider.pricing({
+      const result = await provider.v1.models.pricing({
         endpointId: "fal-ai/flux/dev",
       });
 
@@ -279,11 +299,11 @@ describe("fal provider", () => {
 
     it("should support multiple endpoint IDs", async () => {
       const provider = createMockProvider();
-      await provider.pricing({
+      await provider.v1.models.pricing({
         endpointId: ["fal-ai/flux/dev", "fal-ai/flux/schnell"],
       });
 
-      expect(provider.pricing).toHaveBeenCalledWith({
+      expect(provider.v1.models.pricing).toHaveBeenCalledWith({
         endpointId: ["fal-ai/flux/dev", "fal-ai/flux/schnell"],
       });
     });
@@ -292,7 +312,7 @@ describe("fal provider", () => {
   describe("estimateCost", () => {
     it("should estimate cost using unit price", async () => {
       const provider = createMockProvider();
-      const result = await provider.estimateCost({
+      const result = await provider.v1.models.pricing.estimate({
         estimateType: "unit_price",
         endpoints: {
           "fal-ai/flux/dev": { unitQuantity: 50 },
@@ -306,15 +326,15 @@ describe("fal provider", () => {
 
     it("should estimate cost using historical API price", async () => {
       const provider = createMockProvider();
-      (provider.estimateCost as ReturnType<typeof vi.fn>).mockResolvedValueOnce(
-        {
-          estimateType: "historical_api_price",
-          totalCost: 3.75,
-          currency: "USD",
-        }
-      );
+      (
+        provider.v1.models.pricing.estimate as ReturnType<typeof vi.fn>
+      ).mockResolvedValueOnce({
+        estimateType: "historical_api_price",
+        totalCost: 3.75,
+        currency: "USD",
+      });
 
-      const result = await provider.estimateCost({
+      const result = await provider.v1.models.pricing.estimate({
         estimateType: "historical_api_price",
         endpoints: {
           "fal-ai/flux/dev": { callQuantity: 100 },
@@ -328,7 +348,7 @@ describe("fal provider", () => {
   describe("usage", () => {
     it("should return usage data", async () => {
       const provider = createMockProvider();
-      const result = await provider.usage();
+      const result = await provider.v1.models.usage();
 
       expect(result.timeSeries).toBeDefined();
       expect(result.timeSeries?.[0].results[0].quantity).toBe(4);
@@ -337,12 +357,12 @@ describe("fal provider", () => {
 
     it("should support date range filtering", async () => {
       const provider = createMockProvider();
-      await provider.usage({
+      await provider.v1.models.usage({
         start: "2025-01-01",
         end: "2025-01-31",
       });
 
-      expect(provider.usage).toHaveBeenCalledWith({
+      expect(provider.v1.models.usage).toHaveBeenCalledWith({
         start: "2025-01-01",
         end: "2025-01-31",
       });
@@ -350,9 +370,9 @@ describe("fal provider", () => {
 
     it("should support endpoint filtering", async () => {
       const provider = createMockProvider();
-      await provider.usage({ endpointId: "fal-ai/flux/dev" });
+      await provider.v1.models.usage({ endpointId: "fal-ai/flux/dev" });
 
-      expect(provider.usage).toHaveBeenCalledWith({
+      expect(provider.v1.models.usage).toHaveBeenCalledWith({
         endpointId: "fal-ai/flux/dev",
       });
     });
@@ -361,7 +381,7 @@ describe("fal provider", () => {
   describe("analytics", () => {
     it("should return analytics data", async () => {
       const provider = createMockProvider();
-      const result = await provider.analytics({
+      const result = await provider.v1.models.analytics({
         endpointId: "fal-ai/flux/dev",
       });
 
@@ -372,9 +392,9 @@ describe("fal provider", () => {
 
     it("should require endpoint ID", async () => {
       const provider = createMockProvider();
-      await provider.analytics({ endpointId: "fal-ai/flux/dev" });
+      await provider.v1.models.analytics({ endpointId: "fal-ai/flux/dev" });
 
-      expect(provider.analytics).toHaveBeenCalledWith({
+      expect(provider.v1.models.analytics).toHaveBeenCalledWith({
         endpointId: "fal-ai/flux/dev",
       });
     });
@@ -383,7 +403,7 @@ describe("fal provider", () => {
   describe("requests", () => {
     it("should return request history", async () => {
       const provider = createMockProvider();
-      const result = await provider.requests({
+      const result = await provider.v1.models.requests.byEndpoint({
         endpointId: "fal-ai/flux/dev",
       });
 
@@ -396,12 +416,12 @@ describe("fal provider", () => {
 
     it("should support status filtering", async () => {
       const provider = createMockProvider();
-      await provider.requests({
+      await provider.v1.models.requests.byEndpoint({
         endpointId: "fal-ai/flux/dev",
         status: "success",
       });
 
-      expect(provider.requests).toHaveBeenCalledWith({
+      expect(provider.v1.models.requests.byEndpoint).toHaveBeenCalledWith({
         endpointId: "fal-ai/flux/dev",
         status: "success",
       });
@@ -411,7 +431,7 @@ describe("fal provider", () => {
   describe("deletePayloads", () => {
     it("should delete request payloads", async () => {
       const provider = createMockProvider();
-      const result = await provider.deletePayloads({
+      const result = await provider.v1.models.requests.payloads({
         requestId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       });
 
@@ -421,12 +441,12 @@ describe("fal provider", () => {
 
     it("should support idempotency key", async () => {
       const provider = createMockProvider();
-      await provider.deletePayloads({
+      await provider.v1.models.requests.payloads({
         requestId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         idempotencyKey: "unique-key-123",
       });
 
-      expect(provider.deletePayloads).toHaveBeenCalledWith({
+      expect(provider.v1.models.requests.payloads).toHaveBeenCalledWith({
         requestId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
         idempotencyKey: "unique-key-123",
       });

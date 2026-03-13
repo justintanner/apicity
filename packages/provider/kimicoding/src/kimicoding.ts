@@ -137,144 +137,155 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     };
   }
 
+  async function* streamImpl(
+    req: ChatRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<ChatStreamChunk> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const requestBody = buildRequestBody(req, true);
+
+      const res = await doFetch(`${baseURL}v1/messages`, {
+        method: "POST",
+        headers: buildHeaders(),
+        body: JSON.stringify(requestBody),
+        signal: signal || controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `KimiCoding error: ${res.status}`;
+        try {
+          const raw: unknown = await res.json();
+          if (
+            isAnthropicErrorBody(raw) &&
+            typeof raw.error?.message === "string"
+          ) {
+            message = `KimiCoding error ${res.status}: ${raw.error.message}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KimiCodingError(message, res.status);
+      }
+
+      for await (const { event, data } of sseToIterable(res)) {
+        if (event === "message_stop") {
+          yield { delta: "", done: true };
+          break;
+        }
+
+        if (event === "content_block_delta") {
+          try {
+            const parsed: AnthropicStreamEvent = JSON.parse(data);
+            if (parsed.delta?.type === "text_delta" && parsed.delta.text) {
+              yield { delta: parsed.delta.text };
+            }
+          } catch {
+            // ignore non-JSON lines
+          }
+        }
+
+        if (event === "message_delta") {
+          try {
+            const parsed: AnthropicStreamEvent = JSON.parse(data);
+            if (parsed.delta?.stop_reason) {
+              yield {
+                delta: "",
+                done: true,
+                finishReason: mapStopReason(parsed.delta.stop_reason),
+                usage: parsed.usage
+                  ? {
+                      promptTokens: parsed.usage.input_tokens ?? 0,
+                      completionTokens: parsed.usage.output_tokens ?? 0,
+                      totalTokens:
+                        (parsed.usage.input_tokens ?? 0) +
+                        (parsed.usage.output_tokens ?? 0),
+                    }
+                  : undefined,
+              };
+            }
+          } catch {
+            // ignore parse errors
+          }
+        }
+      }
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  async function chatImpl(
+    req: ChatRequest,
+    signal?: AbortSignal
+  ): Promise<ChatResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const requestBody = buildRequestBody(req, false);
+
+      const res = await doFetch(`${baseURL}v1/messages`, {
+        method: "POST",
+        headers: buildHeaders(),
+        body: JSON.stringify(requestBody),
+        signal: signal || controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `KimiCoding error: ${res.status}`;
+        try {
+          const raw: unknown = await res.json();
+          if (
+            isAnthropicErrorBody(raw) &&
+            typeof raw.error?.message === "string"
+          ) {
+            message = `KimiCoding error ${res.status}: ${raw.error.message}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KimiCodingError(message, res.status);
+      }
+
+      const data: AnthropicMessage = await res.json();
+
+      return {
+        content: extractTextContent(data.content),
+        model: data.model || req.model,
+        usage: data.usage
+          ? {
+              promptTokens: data.usage.input_tokens || 0,
+              completionTokens: data.usage.output_tokens || 0,
+              totalTokens:
+                (data.usage.input_tokens || 0) +
+                (data.usage.output_tokens || 0),
+            }
+          : {
+              promptTokens: 0,
+              completionTokens: 0,
+              totalTokens: 0,
+            },
+        finishReason: mapStopReason(data.stop_reason),
+        metadata: { id: data.id },
+      };
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  const messages = Object.assign(chatImpl, { stream: streamImpl });
+
   return {
-    async *streamChat(
-      req: ChatRequest,
-      signal?: AbortSignal
-    ): AsyncIterable<ChatStreamChunk> {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      try {
-        const requestBody = buildRequestBody(req, true);
-
-        const res = await doFetch(`${baseURL}v1/messages`, {
-          method: "POST",
-          headers: buildHeaders(),
-          body: JSON.stringify(requestBody),
-          signal: signal || controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          let message = `KimiCoding error: ${res.status}`;
-          try {
-            const raw: unknown = await res.json();
-            if (
-              isAnthropicErrorBody(raw) &&
-              typeof raw.error?.message === "string"
-            ) {
-              message = `KimiCoding error ${res.status}: ${raw.error.message}`;
-            }
-          } catch {
-            // ignore parse errors
-          }
-          throw new KimiCodingError(message, res.status);
-        }
-
-        for await (const { event, data } of sseToIterable(res)) {
-          if (event === "message_stop") {
-            yield { delta: "", done: true };
-            break;
-          }
-
-          if (event === "content_block_delta") {
-            try {
-              const parsed: AnthropicStreamEvent = JSON.parse(data);
-              if (parsed.delta?.type === "text_delta" && parsed.delta.text) {
-                yield { delta: parsed.delta.text };
-              }
-            } catch {
-              // ignore non-JSON lines
-            }
-          }
-
-          if (event === "message_delta") {
-            try {
-              const parsed: AnthropicStreamEvent = JSON.parse(data);
-              if (parsed.delta?.stop_reason) {
-                yield {
-                  delta: "",
-                  done: true,
-                  finishReason: mapStopReason(parsed.delta.stop_reason),
-                  usage: parsed.usage
-                    ? {
-                        promptTokens: parsed.usage.input_tokens ?? 0,
-                        completionTokens: parsed.usage.output_tokens ?? 0,
-                        totalTokens:
-                          (parsed.usage.input_tokens ?? 0) +
-                          (parsed.usage.output_tokens ?? 0),
-                      }
-                    : undefined,
-                };
-              }
-            } catch {
-              // ignore parse errors
-            }
-          }
-        }
-      } finally {
-        clearTimeout(timeoutId);
-      }
-    },
-
-    async chat(req: ChatRequest, signal?: AbortSignal): Promise<ChatResponse> {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      try {
-        const requestBody = buildRequestBody(req, false);
-
-        const res = await doFetch(`${baseURL}v1/messages`, {
-          method: "POST",
-          headers: buildHeaders(),
-          body: JSON.stringify(requestBody),
-          signal: signal || controller.signal,
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          let message = `KimiCoding error: ${res.status}`;
-          try {
-            const raw: unknown = await res.json();
-            if (
-              isAnthropicErrorBody(raw) &&
-              typeof raw.error?.message === "string"
-            ) {
-              message = `KimiCoding error ${res.status}: ${raw.error.message}`;
-            }
-          } catch {
-            // ignore parse errors
-          }
-          throw new KimiCodingError(message, res.status);
-        }
-
-        const data: AnthropicMessage = await res.json();
-
-        return {
-          content: extractTextContent(data.content),
-          model: data.model || req.model,
-          usage: data.usage
-            ? {
-                promptTokens: data.usage.input_tokens || 0,
-                completionTokens: data.usage.output_tokens || 0,
-                totalTokens:
-                  (data.usage.input_tokens || 0) +
-                  (data.usage.output_tokens || 0),
-              }
-            : {
-                promptTokens: 0,
-                completionTokens: 0,
-                totalTokens: 0,
-              },
-          finishReason: mapStopReason(data.stop_reason),
-          metadata: { id: data.id },
-        };
-      } finally {
-        clearTimeout(timeoutId);
-      }
+    coding: {
+      v1: {
+        messages,
+      },
     },
 
     async getModels(): Promise<string[]> {

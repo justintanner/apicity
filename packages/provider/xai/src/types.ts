@@ -134,27 +134,48 @@ export interface XaiVideoResult {
   [key: string]: unknown;
 }
 
-// Provider interface
-export interface XaiProvider {
-  chat(req: XaiChatRequest, signal?: AbortSignal): Promise<XaiChatResponse>;
+// Namespace types
+interface XaiChatCompletionsMethod {
+  (req: XaiChatRequest, signal?: AbortSignal): Promise<XaiChatResponse>;
   search(query: string, signal?: AbortSignal): Promise<XaiChatResponse>;
-  generateImage(
+}
+
+interface XaiChatNamespace {
+  completions: XaiChatCompletionsMethod;
+}
+
+interface XaiImagesNamespace {
+  generations(
     req: XaiImageGenerateRequest,
     signal?: AbortSignal
   ): Promise<XaiImageResponse>;
-  editImage(
+  edits(
     req: XaiImageEditRequest,
     signal?: AbortSignal
   ): Promise<XaiImageResponse>;
-  generateVideo(
+}
+
+interface XaiVideosNamespace {
+  (requestId: string, signal?: AbortSignal): Promise<XaiVideoResult>;
+  generations(
     req: XaiVideoGenerateRequest,
     signal?: AbortSignal
   ): Promise<XaiVideoAsyncResponse>;
-  editVideo(
+  edits(
     req: XaiVideoEditRequest,
     signal?: AbortSignal
   ): Promise<XaiVideoAsyncResponse>;
-  getVideo(requestId: string, signal?: AbortSignal): Promise<XaiVideoResult>;
+}
+
+interface XaiV1Namespace {
+  chat: XaiChatNamespace;
+  images: XaiImagesNamespace;
+  videos: XaiVideosNamespace;
+}
+
+// Provider interface
+export interface XaiProvider {
+  v1: XaiV1Namespace;
 }
 
 // Error class

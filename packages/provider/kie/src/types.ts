@@ -372,13 +372,34 @@ export interface KieCreditsResponse {
   currency: string;
 }
 
+// Namespace types
+interface KieJobsNamespace {
+  createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
+  recordInfo(taskId: string): Promise<KieTaskInfo>;
+}
+
+interface KieCommonNamespace {
+  downloadUrl(url: string): Promise<DownloadUrlResponse>;
+}
+
+interface KieCreditNamespace {
+  credit(): Promise<KieCreditsResponse>;
+}
+
+interface KieV1Namespace {
+  jobs: KieJobsNamespace;
+  common: KieCommonNamespace;
+  chat: KieCreditNamespace;
+}
+
+interface KieApiNamespace {
+  v1: KieV1Namespace;
+  fileStreamUpload(req: UploadMediaRequest): Promise<UploadMediaResponse>;
+}
+
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
-  createTask(req: MediaGenerationRequest): Promise<TaskResponse>;
-  getTask(taskId: string): Promise<KieTaskInfo>;
-  uploadMedia(req: UploadMediaRequest): Promise<UploadMediaResponse>;
-  getDownloadUrl(url: string): Promise<DownloadUrlResponse>;
-  getCredits(): Promise<KieCreditsResponse>;
+  api: KieApiNamespace;
   validateModel(modelId: string): boolean;
   getModels(): string[];
   getModelType(modelId: string): MediaType | null;

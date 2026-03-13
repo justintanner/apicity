@@ -96,16 +96,30 @@ export interface OpenAiChatResponse {
   toolCalls?: OpenAiToolCall[];
 }
 
-// Provider interface
-export interface OpenAiProvider {
-  chat(
-    req: OpenAiChatRequest,
-    signal?: AbortSignal
-  ): Promise<OpenAiChatResponse>;
-  transcribe(
+// Namespace types
+interface OpenAiChatCompletionsMethod {
+  (req: OpenAiChatRequest, signal?: AbortSignal): Promise<OpenAiChatResponse>;
+}
+
+interface OpenAiChatNamespace {
+  completions: OpenAiChatCompletionsMethod;
+}
+
+interface OpenAiAudioNamespace {
+  transcriptions(
     req: OpenAiTranscribeRequest,
     signal?: AbortSignal
   ): Promise<OpenAiTranscribeResponse>;
+}
+
+interface OpenAiV1Namespace {
+  chat: OpenAiChatNamespace;
+  audio: OpenAiAudioNamespace;
+}
+
+// Provider interface
+export interface OpenAiProvider {
+  v1: OpenAiV1Namespace;
 }
 
 // Error class

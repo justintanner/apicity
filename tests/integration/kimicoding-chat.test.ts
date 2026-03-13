@@ -14,7 +14,7 @@ describe("kimicoding integration", () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.chat({
+    const result = await provider.coding.v1.messages({
       model: "k2p5",
       messages: [{ role: "user", content: "hi" }],
       temperature: 0,
@@ -32,7 +32,7 @@ describe("kimicoding integration", () => {
     });
     const chunks: string[] = [];
     let gotDone = false;
-    for await (const chunk of provider.streamChat({
+    for await (const chunk of provider.coding.v1.messages.stream({
       model: "k2p5",
       messages: [{ role: "user", content: "hi" }],
       temperature: 0,
@@ -52,7 +52,7 @@ describe("kimicoding integration", () => {
     });
     const redPixel =
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
-    const result = await provider.chat({
+    const result = await provider.coding.v1.messages({
       model: "k2p5",
       messages: [
         {
@@ -85,7 +85,7 @@ describe("kimicoding integration", () => {
     const redPixel =
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
     const chunks: ChatStreamChunk[] = [];
-    for await (const chunk of provider.streamChat({
+    for await (const chunk of provider.coding.v1.messages.stream({
       model: "k2p5",
       messages: [
         {

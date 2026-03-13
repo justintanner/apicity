@@ -18,7 +18,7 @@ describe("xai image generation integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A simple red apple on a white background",
         model: "grok-imagine-image",
         n: 1,
@@ -33,7 +33,7 @@ describe("xai image generation integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A simple blue circle",
         model: "grok-imagine-image",
         n: 2,
@@ -49,7 +49,7 @@ describe("xai image generation integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A mountain landscape",
         model: "grok-imagine-image",
         aspect_ratio: "16:9",
@@ -63,7 +63,7 @@ describe("xai image generation integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A simple geometric pattern",
         model: "grok-imagine-image",
         resolution: "1k",
@@ -77,7 +77,7 @@ describe("xai image generation integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A green leaf",
         model: "grok-imagine-image",
         response_format: "b64_json",
@@ -105,7 +105,7 @@ describe("xai image generation integration", () => {
 
       // For this test, we use a publicly accessible image URL
       // In practice, this would be a URL from a previous generation or a public image
-      const result = await provider.editImage({
+      const result = await provider.v1.images.edits({
         prompt: "Add a colorful background to this image",
         model: "grok-imagine-image",
         image: {
@@ -124,7 +124,7 @@ describe("xai image generation integration", () => {
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
 
-      const result = await provider.editImage({
+      const result = await provider.v1.images.edits({
         prompt: "Make this image more vibrant",
         model: "grok-imagine-image",
         image: {

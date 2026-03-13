@@ -22,22 +22,32 @@ describe("kie veo provider", () => {
   }
 
   interface VeoProvider {
-    generate(req: VeoGenerateRequest): Promise<{ taskId: string }>;
-    extend(req: VeoExtendRequest): Promise<{ taskId: string }>;
-    createTask(req: VeoGenerateRequest): Promise<{ taskId: string }>;
+    api: {
+      v1: {
+        veo: {
+          generate(req: VeoGenerateRequest): Promise<{ taskId: string }>;
+          extend(req: VeoExtendRequest): Promise<{ taskId: string }>;
+        };
+      };
+    };
   }
 
   function createMockVeoProvider(): VeoProvider {
     return {
-      generate: vi.fn().mockResolvedValue({ taskId: "veo-task-123" }),
-      extend: vi.fn().mockResolvedValue({ taskId: "veo-extend-456" }),
-      createTask: vi.fn().mockResolvedValue({ taskId: "veo-task-123" }),
+      api: {
+        v1: {
+          veo: {
+            generate: vi.fn().mockResolvedValue({ taskId: "veo-task-123" }),
+            extend: vi.fn().mockResolvedValue({ taskId: "veo-extend-456" }),
+          },
+        },
+      },
     };
   }
 
   it("should generate a video with text prompt", async () => {
     const veo = createMockVeoProvider();
-    const result = await veo.generate({
+    const result = await veo.api.v1.veo.generate({
       prompt: "A rocket launch at sunset",
       model: "veo3_fast",
       aspectRatio: "16:9",
@@ -47,7 +57,7 @@ describe("kie veo provider", () => {
 
   it("should generate with reference images", async () => {
     const veo = createMockVeoProvider();
-    const result = await veo.generate({
+    const result = await veo.api.v1.veo.generate({
       prompt: "Similar style video",
       model: "veo3_fast",
       generationType: "REFERENCE_2_VIDEO",
@@ -58,7 +68,7 @@ describe("kie veo provider", () => {
 
   it("should extend a completed video", async () => {
     const veo = createMockVeoProvider();
-    const result = await veo.extend({
+    const result = await veo.api.v1.veo.extend({
       taskId: "veo-task-123",
       prompt: "Continue the scene with a zoom out",
       model: "fast",
@@ -66,9 +76,9 @@ describe("kie veo provider", () => {
     expect(result.taskId).toBe("veo-extend-456");
   });
 
-  it("should create a task and return taskId", async () => {
+  it("should generate a task and return taskId", async () => {
     const veo = createMockVeoProvider();
-    const { taskId } = await veo.createTask({
+    const { taskId } = await veo.api.v1.veo.generate({
       prompt: "A beautiful sunset",
     });
     expect(taskId).toBe("veo-task-123");

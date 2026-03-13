@@ -73,12 +73,25 @@ export interface ChatResponse {
   metadata?: Record<string, unknown>;
 }
 
-export interface Provider {
-  streamChat(
+// Namespace types
+interface KimiCodingMessagesNamespace {
+  (req: ChatRequest, signal?: AbortSignal): Promise<ChatResponse>;
+  stream(
     req: ChatRequest,
     signal?: AbortSignal
   ): AsyncIterable<ChatStreamChunk>;
-  chat(req: ChatRequest, signal?: AbortSignal): Promise<ChatResponse>;
+}
+
+interface KimiCodingV1Namespace {
+  messages: KimiCodingMessagesNamespace;
+}
+
+interface KimiCodingCodingNamespace {
+  v1: KimiCodingV1Namespace;
+}
+
+export interface Provider {
+  coding: KimiCodingCodingNamespace;
   getModels(): Promise<string[]>;
   validateModel(modelId: string): boolean;
   getMaxTokens(modelId: string): number;

@@ -18,7 +18,7 @@ describe("xai video integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateVideo({
+      const result = await provider.v1.videos.generations({
         prompt: "A cat playing with a ball",
         model: "grok-imagine-video",
       });
@@ -31,7 +31,7 @@ describe("xai video integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateVideo({
+      const result = await provider.v1.videos.generations({
         prompt: "A sunset over the ocean",
         model: "grok-imagine-video",
         duration: 6,
@@ -45,7 +45,7 @@ describe("xai video integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.generateVideo({
+      const result = await provider.v1.videos.generations({
         prompt: "A simple animation of falling rain",
       });
 
@@ -66,7 +66,7 @@ describe("xai video integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.editVideo({
+      const result = await provider.v1.videos.edits({
         prompt: "Add snow to the scene",
         model: "grok-imagine-video",
         video: {
@@ -82,7 +82,7 @@ describe("xai video integration", () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.editVideo({
+      const result = await provider.v1.videos.edits({
         prompt: "Make the colors more vibrant",
         video: {
           url: "https://example.com/video.mp4",

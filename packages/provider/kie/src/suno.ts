@@ -13,9 +13,16 @@ export interface SunoGenerateRequest {
   title?: string;
 }
 
-export interface SunoProvider {
+interface SunoV1Namespace {
   generate(req: SunoGenerateRequest): Promise<{ taskId: string }>;
-  createTask(req: SunoGenerateRequest): Promise<{ taskId: string }>;
+}
+
+interface SunoApiNamespace {
+  v1: SunoV1Namespace;
+}
+
+export interface SunoProvider {
+  api: SunoApiNamespace;
 }
 
 interface SunoSubmitResponse {
@@ -60,7 +67,10 @@ export function createSunoProvider(
   }
 
   return {
-    generate: createTask,
-    createTask,
+    api: {
+      v1: {
+        generate: createTask,
+      },
+    },
   };
 }

@@ -14,7 +14,7 @@ describe("kie integration", () => {
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.chat.chat({
+    const result = await provider.chat.gpt52.v1.chat.completions({
       messages: [{ role: "user", content: "Say hello in one sentence." }],
       temperature: 0,
     });
@@ -27,7 +27,7 @@ describe("kie integration", () => {
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",
     });
-    const credits = await provider.getCredits();
+    const credits = await provider.api.v1.chat.credit();
     expect(credits.balance).toBeGreaterThanOrEqual(0);
     expect(credits.currency).toBe("credits");
   });

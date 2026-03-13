@@ -177,20 +177,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   }
 
-  return {
-    async models(
-      params?: FalModelSearchParams,
-      signal?: AbortSignal
-    ): Promise<FalModelSearchResponse> {
-      return makeRequest<FalModelSearchResponse>(
-        "GET",
-        "/models",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-
-    async pricing(
+  const pricing = Object.assign(
+    async function pricing(
       params: FalPricingParams,
       signal?: AbortSignal
     ): Promise<FalPricingResponse> {
@@ -201,44 +189,23 @@ export function fal(opts: FalOptions): FalProvider {
         signal
       );
     },
+    {
+      async estimate(
+        req: FalEstimateRequest,
+        signal?: AbortSignal
+      ): Promise<FalEstimateResponse> {
+        return makeRequest<FalEstimateResponse>(
+          "POST",
+          "/models/pricing/estimate",
+          req as unknown as Record<string, unknown>,
+          signal
+        );
+      },
+    }
+  );
 
-    async estimateCost(
-      req: FalEstimateRequest,
-      signal?: AbortSignal
-    ): Promise<FalEstimateResponse> {
-      return makeRequest<FalEstimateResponse>(
-        "POST",
-        "/models/pricing/estimate",
-        req as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-
-    async usage(
-      params?: FalUsageParams,
-      signal?: AbortSignal
-    ): Promise<FalUsageResponse> {
-      return makeRequest<FalUsageResponse>(
-        "GET",
-        "/models/usage",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-
-    async analytics(
-      params: FalAnalyticsParams,
-      signal?: AbortSignal
-    ): Promise<FalAnalyticsResponse> {
-      return makeRequest<FalAnalyticsResponse>(
-        "GET",
-        "/models/analytics",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-
-    async requests(
+  const requests = {
+    async byEndpoint(
       params: FalRequestsParams,
       signal?: AbortSignal
     ): Promise<FalRequestsResponse> {
@@ -250,7 +217,7 @@ export function fal(opts: FalOptions): FalProvider {
       );
     },
 
-    async deletePayloads(
+    async payloads(
       params: FalDeletePayloadsParams,
       signal?: AbortSignal
     ): Promise<FalDeletePayloadsResponse> {
@@ -265,6 +232,55 @@ export function fal(opts: FalOptions): FalProvider {
         signal,
         headers
       );
+    },
+  };
+
+  const models = Object.assign(
+    async function models(
+      params?: FalModelSearchParams,
+      signal?: AbortSignal
+    ): Promise<FalModelSearchResponse> {
+      return makeRequest<FalModelSearchResponse>(
+        "GET",
+        "/models",
+        params as unknown as Record<string, unknown>,
+        signal
+      );
+    },
+    {
+      pricing,
+
+      async usage(
+        params?: FalUsageParams,
+        signal?: AbortSignal
+      ): Promise<FalUsageResponse> {
+        return makeRequest<FalUsageResponse>(
+          "GET",
+          "/models/usage",
+          params as unknown as Record<string, unknown>,
+          signal
+        );
+      },
+
+      async analytics(
+        params: FalAnalyticsParams,
+        signal?: AbortSignal
+      ): Promise<FalAnalyticsResponse> {
+        return makeRequest<FalAnalyticsResponse>(
+          "GET",
+          "/models/analytics",
+          params as unknown as Record<string, unknown>,
+          signal
+        );
+      },
+
+      requests,
+    }
+  );
+
+  return {
+    v1: {
+      models,
     },
   };
 }

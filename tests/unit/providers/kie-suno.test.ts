@@ -13,20 +13,26 @@ describe("kie suno provider", () => {
   }
 
   interface SunoProvider {
-    generate(req: SunoGenerateRequest): Promise<{ taskId: string }>;
-    createTask(req: SunoGenerateRequest): Promise<{ taskId: string }>;
+    api: {
+      v1: {
+        generate(req: SunoGenerateRequest): Promise<{ taskId: string }>;
+      };
+    };
   }
 
   function createMockSunoProvider(): SunoProvider {
     return {
-      generate: vi.fn().mockResolvedValue({ taskId: "suno-task-123" }),
-      createTask: vi.fn().mockResolvedValue({ taskId: "suno-task-123" }),
+      api: {
+        v1: {
+          generate: vi.fn().mockResolvedValue({ taskId: "suno-task-123" }),
+        },
+      },
     };
   }
 
   it("should generate music with default model", async () => {
     const suno = createMockSunoProvider();
-    const result = await suno.generate({
+    const result = await suno.api.v1.generate({
       prompt: "A smooth jazz ballad with piano and saxophone",
     });
     expect(result.taskId).toBe("suno-task-123");
@@ -34,7 +40,7 @@ describe("kie suno provider", () => {
 
   it("should generate instrumental music", async () => {
     const suno = createMockSunoProvider();
-    const result = await suno.generate({
+    const result = await suno.api.v1.generate({
       prompt: "An upbeat electronic dance track",
       instrumental: true,
       model: "V4_5",
@@ -44,7 +50,7 @@ describe("kie suno provider", () => {
 
   it("should generate with custom mode options", async () => {
     const suno = createMockSunoProvider();
-    const result = await suno.generate({
+    const result = await suno.api.v1.generate({
       prompt: "Verse 1: Walking down the street...",
       style: "pop rock",
       customMode: true,
@@ -54,9 +60,9 @@ describe("kie suno provider", () => {
     expect(result.taskId).toBe("suno-task-123");
   });
 
-  it("should create a task and return taskId", async () => {
+  it("should generate a task and return taskId", async () => {
     const suno = createMockSunoProvider();
-    const { taskId } = await suno.createTask({
+    const { taskId } = await suno.api.v1.generate({
       prompt: "A lullaby",
       model: "V5",
     });

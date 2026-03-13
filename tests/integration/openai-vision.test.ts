@@ -22,7 +22,7 @@ describe("openai vision", () => {
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       model: "gpt-5.4-2026-03-05",
       messages: [
         {

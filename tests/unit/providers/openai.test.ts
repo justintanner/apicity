@@ -52,37 +52,49 @@ describe("openai provider", () => {
   }
 
   interface OpenAiProvider {
-    chat(
-      req: OpenAiChatRequest,
-      signal?: AbortSignal
-    ): Promise<OpenAiChatResponse>;
-    transcribe(
-      req: { file: Blob; model?: string; language?: string },
-      signal?: AbortSignal
-    ): Promise<OpenAiTranscribeResponse>;
+    v1: {
+      chat: {
+        completions(
+          req: OpenAiChatRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiChatResponse>;
+      };
+      audio: {
+        transcriptions(
+          req: { file: Blob; model?: string; language?: string },
+          signal?: AbortSignal
+        ): Promise<OpenAiTranscribeResponse>;
+      };
+    };
   }
 
   function createMockProvider(): OpenAiProvider {
     return {
-      chat: vi.fn().mockResolvedValue({
-        content: "Hello! How can I help you today?",
-        model: "gpt-5.4-2026-03-05",
-        usage: {
-          promptTokens: 12,
-          completionTokens: 8,
-          totalTokens: 20,
+      v1: {
+        chat: {
+          completions: vi.fn().mockResolvedValue({
+            content: "Hello! How can I help you today?",
+            model: "gpt-5.4-2026-03-05",
+            usage: {
+              promptTokens: 12,
+              completionTokens: 8,
+              totalTokens: 20,
+            },
+            finishReason: "stop",
+          }),
         },
-        finishReason: "stop",
-      }),
-      transcribe: vi.fn().mockResolvedValue({
-        text: "Hello world, this is a test transcription.",
-      }),
+        audio: {
+          transcriptions: vi.fn().mockResolvedValue({
+            text: "Hello world, this is a test transcription.",
+          }),
+        },
+      },
     };
   }
 
   it("should send a chat message", async () => {
     const provider = createMockProvider();
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Hello!" }],
     });
     expect(result.content).toBe("Hello! How can I help you today?");
@@ -91,7 +103,7 @@ describe("openai provider", () => {
 
   it("should track usage tokens", async () => {
     const provider = createMockProvider();
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Hello" }],
     });
     expect(result.usage.promptTokens).toBe(12);
@@ -101,11 +113,11 @@ describe("openai provider", () => {
 
   it("should support custom model selection", async () => {
     const provider = createMockProvider();
-    await provider.chat({
+    await provider.v1.chat.completions({
       model: "gpt-5.4-2026-03-05",
       messages: [{ role: "user", content: "Hello" }],
     });
-    expect(provider.chat).toHaveBeenCalledWith({
+    expect(provider.v1.chat.completions).toHaveBeenCalledWith({
       model: "gpt-5.4-2026-03-05",
       messages: [{ role: "user", content: "Hello" }],
     });
@@ -113,12 +125,12 @@ describe("openai provider", () => {
 
   it("should support temperature and max_tokens", async () => {
     const provider = createMockProvider();
-    await provider.chat({
+    await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Be creative" }],
       temperature: 0.8,
       max_tokens: 1000,
     });
-    expect(provider.chat).toHaveBeenCalledWith({
+    expect(provider.v1.chat.completions).toHaveBeenCalledWith({
       messages: [{ role: "user", content: "Be creative" }],
       temperature: 0.8,
       max_tokens: 1000,
@@ -127,7 +139,9 @@ describe("openai provider", () => {
 
   it("should support tool calls in response", async () => {
     const provider = createMockProvider();
-    (provider.chat as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      provider.v1.chat.completions as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       content: "",
       model: "gpt-5.4-2026-03-05",
       usage: { promptTokens: 20, completionTokens: 15, totalTokens: 35 },
@@ -144,7 +158,7 @@ describe("openai provider", () => {
       ],
     });
 
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "What's the weather in SF?" }],
       tools: [
         {
@@ -167,31 +181,31 @@ describe("openai provider", () => {
 
   it("should support system messages", async () => {
     const provider = createMockProvider();
-    await provider.chat({
+    await provider.v1.chat.completions({
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Hello" },
       ],
     });
-    expect(provider.chat).toHaveBeenCalled();
+    expect(provider.v1.chat.completions).toHaveBeenCalled();
   });
 
   it("should transcribe audio", async () => {
     const provider = createMockProvider();
     const file = new Blob(["fake-audio"], { type: "audio/mp3" });
-    const result = await provider.transcribe({ file });
+    const result = await provider.v1.audio.transcriptions({ file });
     expect(result.text).toBe("Hello world, this is a test transcription.");
   });
 
   it("should pass model and language to transcribe", async () => {
     const provider = createMockProvider();
     const file = new Blob(["fake-audio"], { type: "audio/mp3" });
-    await provider.transcribe({
+    await provider.v1.audio.transcriptions({
       file,
       model: "gpt-4o-mini-transcribe",
       language: "en",
     });
-    expect(provider.transcribe).toHaveBeenCalledWith({
+    expect(provider.v1.audio.transcriptions).toHaveBeenCalledWith({
       file,
       model: "gpt-4o-mini-transcribe",
       language: "en",

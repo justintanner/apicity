@@ -81,22 +81,32 @@ describe("xai provider", () => {
     data: XaiGeneratedImage[];
   }
 
-  interface XaiProvider {
-    chat(req: XaiChatRequest, signal?: AbortSignal): Promise<XaiChatResponse>;
+  interface XaiChatCompletions {
+    (req: XaiChatRequest, signal?: AbortSignal): Promise<XaiChatResponse>;
     search(query: string, signal?: AbortSignal): Promise<XaiChatResponse>;
-    generateImage(
-      req: XaiImageGenerateRequest,
-      signal?: AbortSignal
-    ): Promise<XaiImageResponse>;
-    editImage(
-      req: XaiImageEditRequest,
-      signal?: AbortSignal
-    ): Promise<XaiImageResponse>;
+  }
+
+  interface XaiProvider {
+    v1: {
+      chat: {
+        completions: XaiChatCompletions;
+      };
+      images: {
+        generations(
+          req: XaiImageGenerateRequest,
+          signal?: AbortSignal
+        ): Promise<XaiImageResponse>;
+        edits(
+          req: XaiImageEditRequest,
+          signal?: AbortSignal
+        ): Promise<XaiImageResponse>;
+      };
+    };
   }
 
   function createMockProvider(): XaiProvider {
-    return {
-      chat: vi.fn().mockResolvedValue({
+    const completions = Object.assign(
+      vi.fn().mockResolvedValue({
         content: "I'm Grok, nice to meet you!",
         model: "grok-4-fast",
         usage: {
@@ -106,37 +116,48 @@ describe("xai provider", () => {
         },
         finishReason: "stop",
       }),
-      search: vi.fn().mockResolvedValue({
-        content: '{"urls": ["https://x.com/user/status/123"]}',
-        model: "grok-4-fast",
-        usage: {
-          promptTokens: 50,
-          completionTokens: 30,
-          totalTokens: 80,
+      {
+        search: vi.fn().mockResolvedValue({
+          content: '{"urls": ["https://x.com/user/status/123"]}',
+          model: "grok-4-fast",
+          usage: {
+            promptTokens: 50,
+            completionTokens: 30,
+            totalTokens: 80,
+          },
+          finishReason: "stop",
+        }),
+      }
+    );
+    return {
+      v1: {
+        chat: {
+          completions,
         },
-        finishReason: "stop",
-      }),
-      generateImage: vi.fn().mockResolvedValue({
-        data: [
-          {
-            url: "https://api.x.ai/images/123.jpg",
-            revised_prompt: "A cat in a tree",
-          },
-        ],
-      }),
-      editImage: vi.fn().mockResolvedValue({
-        data: [
-          {
-            url: "https://api.x.ai/images/456.jpg",
-          },
-        ],
-      }),
+        images: {
+          generations: vi.fn().mockResolvedValue({
+            data: [
+              {
+                url: "https://api.x.ai/images/123.jpg",
+                revised_prompt: "A cat in a tree",
+              },
+            ],
+          }),
+          edits: vi.fn().mockResolvedValue({
+            data: [
+              {
+                url: "https://api.x.ai/images/456.jpg",
+              },
+            ],
+          }),
+        },
+      },
     };
   }
 
   it("should send a chat message", async () => {
     const provider = createMockProvider();
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Hello Grok!" }],
     });
     expect(result.content).toBe("I'm Grok, nice to meet you!");
@@ -145,7 +166,7 @@ describe("xai provider", () => {
 
   it("should track usage tokens", async () => {
     const provider = createMockProvider();
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Hello" }],
     });
     expect(result.usage.promptTokens).toBe(12);
@@ -155,11 +176,11 @@ describe("xai provider", () => {
 
   it("should support custom model selection", async () => {
     const provider = createMockProvider();
-    await provider.chat({
+    await provider.v1.chat.completions({
       model: "grok-4-fast",
       messages: [{ role: "user", content: "Hello" }],
     });
-    expect(provider.chat).toHaveBeenCalledWith({
+    expect(provider.v1.chat.completions).toHaveBeenCalledWith({
       model: "grok-4-fast",
       messages: [{ role: "user", content: "Hello" }],
     });
@@ -167,12 +188,12 @@ describe("xai provider", () => {
 
   it("should support temperature and max_tokens", async () => {
     const provider = createMockProvider();
-    await provider.chat({
+    await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Be creative" }],
       temperature: 0.8,
       max_tokens: 1000,
     });
-    expect(provider.chat).toHaveBeenCalledWith({
+    expect(provider.v1.chat.completions).toHaveBeenCalledWith({
       messages: [{ role: "user", content: "Be creative" }],
       temperature: 0.8,
       max_tokens: 1000,
@@ -181,14 +202,18 @@ describe("xai provider", () => {
 
   it("should perform a search", async () => {
     const provider = createMockProvider();
-    const result = await provider.search("latest SpaceX launch videos");
+    const result = await provider.v1.chat.completions.search(
+      "latest SpaceX launch videos"
+    );
     expect(result.content).toContain("urls");
     expect(result.model).toBe("grok-4-fast");
   });
 
   it("should support tool calls in response", async () => {
     const provider = createMockProvider();
-    (provider.chat as ReturnType<typeof vi.fn>).mockResolvedValue({
+    (
+      provider.v1.chat.completions as ReturnType<typeof vi.fn>
+    ).mockResolvedValue({
       content: "",
       model: "grok-4-fast",
       usage: { promptTokens: 20, completionTokens: 15, totalTokens: 35 },
@@ -205,7 +230,7 @@ describe("xai provider", () => {
       ],
     });
 
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "What's the weather in SF?" }],
       tools: [
         {
@@ -228,19 +253,19 @@ describe("xai provider", () => {
 
   it("should support system messages", async () => {
     const provider = createMockProvider();
-    await provider.chat({
+    await provider.v1.chat.completions({
       messages: [
         { role: "system", content: "You are a pirate." },
         { role: "user", content: "Hello" },
       ],
     });
-    expect(provider.chat).toHaveBeenCalled();
+    expect(provider.v1.chat.completions).toHaveBeenCalled();
   });
 
   describe("image generation", () => {
     it("should generate an image", async () => {
       const provider = createMockProvider();
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A cat in a tree",
       });
       expect(result.data).toHaveLength(1);
@@ -250,14 +275,16 @@ describe("xai provider", () => {
 
     it("should generate multiple images", async () => {
       const provider = createMockProvider();
-      (provider.generateImage as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (
+        provider.v1.images.generations as ReturnType<typeof vi.fn>
+      ).mockResolvedValue({
         data: [
           { url: "https://api.x.ai/images/1.jpg" },
           { url: "https://api.x.ai/images/2.jpg" },
           { url: "https://api.x.ai/images/3.jpg" },
         ],
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A futuristic city",
         n: 3,
       });
@@ -266,11 +293,11 @@ describe("xai provider", () => {
 
     it("should support custom model for image generation", async () => {
       const provider = createMockProvider();
-      await provider.generateImage({
+      await provider.v1.images.generations({
         prompt: "A cat",
         model: "grok-imagine-image-pro",
       });
-      expect(provider.generateImage).toHaveBeenCalledWith({
+      expect(provider.v1.images.generations).toHaveBeenCalledWith({
         prompt: "A cat",
         model: "grok-imagine-image-pro",
       });
@@ -278,12 +305,12 @@ describe("xai provider", () => {
 
     it("should support aspect_ratio and resolution", async () => {
       const provider = createMockProvider();
-      await provider.generateImage({
+      await provider.v1.images.generations({
         prompt: "A mountain landscape",
         aspect_ratio: "16:9",
         resolution: "2k",
       });
-      expect(provider.generateImage).toHaveBeenCalledWith({
+      expect(provider.v1.images.generations).toHaveBeenCalledWith({
         prompt: "A mountain landscape",
         aspect_ratio: "16:9",
         resolution: "2k",
@@ -292,7 +319,9 @@ describe("xai provider", () => {
 
     it("should support base64 response format", async () => {
       const provider = createMockProvider();
-      (provider.generateImage as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (
+        provider.v1.images.generations as ReturnType<typeof vi.fn>
+      ).mockResolvedValue({
         data: [
           {
             b64_json: "base64encodedimagedata...",
@@ -300,7 +329,7 @@ describe("xai provider", () => {
           },
         ],
       });
-      const result = await provider.generateImage({
+      const result = await provider.v1.images.generations({
         prompt: "A cat in a tree",
         response_format: "b64_json",
       });
@@ -310,7 +339,7 @@ describe("xai provider", () => {
 
     it("should edit an image", async () => {
       const provider = createMockProvider();
-      const result = await provider.editImage({
+      const result = await provider.v1.images.edits({
         prompt: "Add a hat to this cat",
         image: {
           url: "https://example.com/cat.jpg",
@@ -323,7 +352,7 @@ describe("xai provider", () => {
 
     it("should edit multiple images", async () => {
       const provider = createMockProvider();
-      await provider.editImage({
+      await provider.v1.images.edits({
         prompt: "Combine these images",
         images: [
           { url: "https://example.com/cat.jpg", type: "image_url" },
@@ -331,7 +360,7 @@ describe("xai provider", () => {
         ],
         aspect_ratio: "1:1",
       });
-      expect(provider.editImage).toHaveBeenCalledWith({
+      expect(provider.v1.images.edits).toHaveBeenCalledWith({
         prompt: "Combine these images",
         images: [
           { url: "https://example.com/cat.jpg", type: "image_url" },
@@ -344,8 +373,11 @@ describe("xai provider", () => {
     it("should support AbortSignal", async () => {
       const provider = createMockProvider();
       const controller = new AbortController();
-      await provider.generateImage({ prompt: "A cat" }, controller.signal);
-      expect(provider.generateImage).toHaveBeenCalledWith(
+      await provider.v1.images.generations(
+        { prompt: "A cat" },
+        controller.signal
+      );
+      expect(provider.v1.images.generations).toHaveBeenCalledWith(
         { prompt: "A cat" },
         controller.signal
       );

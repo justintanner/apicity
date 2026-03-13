@@ -46,37 +46,49 @@ export function withRetry(
   const factor = opts.factor ?? 2;
   const jitter = opts.jitter ?? true;
 
-  return {
-    async *streamChat(
-      req: ChatRequest,
-      signal?: AbortSignal
-    ): AsyncIterable<ChatStreamChunk> {
-      let attempt = 0;
+  async function* retryStream(
+    req: ChatRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<ChatStreamChunk> {
+    let attempt = 0;
 
-      while (true) {
-        try {
-          for await (const chunk of provider.streamChat(req, signal)) {
-            yield chunk;
-          }
-          return;
-        } catch (e) {
-          attempt += 1;
-          if (attempt > retries || !isTransientError(e) || signal?.aborted) {
-            throw e;
-          }
-
-          const delay = baseMs * Math.pow(factor, attempt - 1);
-          const wait = jitter
-            ? Math.floor(delay * (0.8 + Math.random() * 0.4))
-            : delay;
-
-          await sleep(wait);
+    while (true) {
+      try {
+        for await (const chunk of provider.coding.v1.messages.stream(
+          req,
+          signal
+        )) {
+          yield chunk;
         }
-      }
-    },
+        return;
+      } catch (e) {
+        attempt += 1;
+        if (attempt > retries || !isTransientError(e) || signal?.aborted) {
+          throw e;
+        }
 
-    async chat(req: ChatRequest, signal?: AbortSignal) {
-      return provider.chat(req, signal);
+        const delay = baseMs * Math.pow(factor, attempt - 1);
+        const wait = jitter
+          ? Math.floor(delay * (0.8 + Math.random() * 0.4))
+          : delay;
+
+        await sleep(wait);
+      }
+    }
+  }
+
+  const messages = Object.assign(
+    async (req: ChatRequest, signal?: AbortSignal) => {
+      return provider.coding.v1.messages(req, signal);
+    },
+    { stream: retryStream }
+  );
+
+  return {
+    coding: {
+      v1: {
+        messages,
+      },
     },
 
     async getModels() {
@@ -106,29 +118,41 @@ export function withFallback(
     throw new Error("withFallback requires at least one provider");
   }
 
-  return {
-    async *streamChat(
-      req: ChatRequest,
-      signal?: AbortSignal
-    ): AsyncIterable<ChatStreamChunk> {
-      let lastError: unknown;
-      for (let i = 0; i < providers.length; i++) {
-        try {
-          for await (const chunk of providers[i].streamChat(req, signal)) {
-            yield chunk;
-          }
-          return;
-        } catch (e) {
-          lastError = e;
-          opts.onFallback?.(e, i);
-          // continue to next provider
+  async function* fallbackStream(
+    req: ChatRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<ChatStreamChunk> {
+    let lastError: unknown;
+    for (let i = 0; i < providers.length; i++) {
+      try {
+        for await (const chunk of providers[i].coding.v1.messages.stream(
+          req,
+          signal
+        )) {
+          yield chunk;
         }
+        return;
+      } catch (e) {
+        lastError = e;
+        opts.onFallback?.(e, i);
+        // continue to next provider
       }
-      throw lastError;
-    },
+    }
+    throw lastError;
+  }
 
-    async chat(req: ChatRequest, signal?: AbortSignal) {
-      return providers[0].chat(req, signal);
+  const messages = Object.assign(
+    async (req: ChatRequest, signal?: AbortSignal) => {
+      return providers[0].coding.v1.messages(req, signal);
+    },
+    { stream: fallbackStream }
+  );
+
+  return {
+    coding: {
+      v1: {
+        messages,
+      },
     },
 
     async getModels() {

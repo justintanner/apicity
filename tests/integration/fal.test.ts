@@ -14,7 +14,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.models({ limit: 5 });
+    const result = await provider.v1.models({ limit: 5 });
     expect(result.models).toBeDefined();
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);
@@ -26,7 +26,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.models({ q: "flux", limit: 3 });
+    const result = await provider.v1.models({ q: "flux", limit: 3 });
     expect(result.models).toBeDefined();
     expect(result.models.length).toBeGreaterThan(0);
   });
@@ -36,7 +36,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.pricing({
+    const result = await provider.v1.models.pricing({
       endpointId: "fal-ai/flux/dev",
     });
     expect(result.prices).toBeDefined();
@@ -50,7 +50,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.estimateCost({
+    const result = await provider.v1.models.pricing.estimate({
       estimateType: "unit_price",
       endpoints: {
         "fal-ai/flux/dev": { unitQuantity: 100 },
@@ -68,7 +68,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.analytics({
+    const result = await provider.v1.models.analytics({
       endpointId: "fal-ai/flux/dev",
     });
     expect(result).toBeDefined();
@@ -80,7 +80,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.requests({
+    const result = await provider.v1.models.requests.byEndpoint({
       endpointId: "fal-ai/flux/dev",
       limit: 5,
     });

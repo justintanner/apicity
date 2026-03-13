@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-NakedAPI is a TypeScript monorepo of standalone AI provider packages (`@nakedapi/kimicoding`, `@nakedapi/kie`, `@nakedapi/xai`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+NakedAPI is a TypeScript monorepo of standalone AI provider packages (`@nakedapi/openai`, `@nakedapi/xai`, `@nakedapi/fal`, `@nakedapi/kimicoding`, `@nakedapi/kie`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 ## Commands
 
@@ -35,7 +35,7 @@ pnpm run test:run tests/unit/providers/kimicoding.test.ts
 
 ### Provider Pattern
 
-All providers follow the same factory function pattern — a function that takes an options object (containing `apiKey`, optional `baseURL`, `timeout`, `fetch`) and returns a provider object with methods like `chat()`, `streamChat()`, `getModels()`, `validateModel()`, `getMaxTokens()`.
+All providers follow the same factory function pattern — a function that takes an options object (containing `apiKey`, optional `baseURL`, `timeout`, `fetch`) and returns a provider object whose method paths mirror the upstream API endpoint paths (e.g., `provider.v1.chat.completions()` for `/v1/chat/completions`). Local helper methods like `getModels()`, `validateModel()`, `getMaxTokens()` stay flat on the provider root. Callable namespaces (via `Object.assign`) serve dual purposes — e.g., `v1.models(params)` is callable and also has child methods like `v1.models.pricing(params)`.
 
 ```
 packages/provider/<name>/
@@ -47,9 +47,11 @@ packages/provider/<name>/
     middleware.ts  # withRetry, withFallback (kimicoding)
 ```
 
-**kimicoding** — Anthropic Messages API format (`/v1/messages`), model `k2p5`, supports vision (base64 + URL images)
-**kie** — Media generation (video/image/audio), sub-providers (veo, suno, chat)
-**xai** — OpenAI-compatible chat API with X/Twitter search tool
+**openai** — OpenAI chat completions and audio transcription (`provider.v1.chat.completions()`, `provider.v1.audio.transcriptions()`)
+**xai** — xAI chat, search, images, and video (`provider.v1.chat.completions()`, `.search()`, `provider.v1.images.generations()`, `provider.v1.videos.generations()`)
+**fal** — Fal platform model management (`provider.v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests`)
+**kimicoding** — Anthropic Messages API format (`provider.coding.v1.messages()`, `.stream()`), model `k2p5`, supports vision
+**kie** — Media generation (video/image/audio), `provider.api.v1.jobs.createTask()`, sub-providers (veo, suno, chat)
 
 ### Testing
 

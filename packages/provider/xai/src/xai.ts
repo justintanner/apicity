@@ -281,8 +281,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   }
 
-  return {
-    async chat(
+  const completions = Object.assign(
+    async function completions(
       req: XaiChatRequest,
       signal?: AbortSignal
     ): Promise<XaiChatResponse> {
@@ -298,104 +298,120 @@ export function xai(opts: XaiOptions): XaiProvider {
       const data = await makeRequest("/chat/completions", body, signal);
       return parseResponse(data);
     },
-
-    async search(
-      query: string,
-      signal?: AbortSignal
-    ): Promise<XaiChatResponse> {
-      const body = {
-        model: "grok-4-fast",
-        messages: [{ role: "user", content: query }],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "x_search",
-              description: "Search X for relevant content",
-              parameters: {
-                type: "object",
-                properties: {
-                  query: { type: "string" },
-                  enable_video_understanding: { type: "boolean" },
+    {
+      async search(
+        query: string,
+        signal?: AbortSignal
+      ): Promise<XaiChatResponse> {
+        const body = {
+          model: "grok-4-fast",
+          messages: [{ role: "user", content: query }],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "x_search",
+                description: "Search X for relevant content",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    query: { type: "string" },
+                    enable_video_understanding: { type: "boolean" },
+                  },
                 },
               },
             },
-          },
-        ],
-        tool_choice: "auto",
-        temperature: 0,
-      };
+          ],
+          tool_choice: "auto",
+          temperature: 0,
+        };
 
-      const data = await makeRequest("/chat/completions", body, signal);
-      return parseResponse(data);
-    },
+        const data = await makeRequest("/chat/completions", body, signal);
+        return parseResponse(data);
+      },
+    }
+  );
 
-    async generateImage(
-      req: XaiImageGenerateRequest,
-      signal?: AbortSignal
-    ): Promise<XaiImageResponse> {
-      const body: Record<string, unknown> = {
-        model: req.model ?? "grok-imagine-image",
-        prompt: req.prompt,
-      };
-      if (req.n !== undefined) body.n = req.n;
-      if (req.response_format !== undefined)
-        body.response_format = req.response_format;
-      if (req.aspect_ratio !== undefined) body.aspect_ratio = req.aspect_ratio;
-      if (req.resolution !== undefined) body.resolution = req.resolution;
-
-      return await makeImageRequest("/images/generations", body, signal);
-    },
-
-    async editImage(
-      req: XaiImageEditRequest,
-      signal?: AbortSignal
-    ): Promise<XaiImageResponse> {
-      const body: Record<string, unknown> = {
-        model: req.model ?? "grok-imagine-image",
-        prompt: req.prompt,
-      };
-      if (req.image) body.image = req.image;
-      if (req.images) body.images = req.images;
-      if (req.n !== undefined) body.n = req.n;
-      if (req.response_format !== undefined)
-        body.response_format = req.response_format;
-      if (req.aspect_ratio !== undefined) body.aspect_ratio = req.aspect_ratio;
-
-      return await makeImageRequest("/images/edits", body, signal);
-    },
-
-    async generateVideo(
-      req: XaiVideoGenerateRequest,
-      signal?: AbortSignal
-    ): Promise<XaiVideoAsyncResponse> {
-      const body: Record<string, unknown> = {
-        model: req.model ?? "grok-imagine-video",
-        prompt: req.prompt,
-      };
-      if (req.duration !== undefined) body.duration = req.duration;
-
-      return await makeJsonPostRequest("/videos/generations", body, signal);
-    },
-
-    async editVideo(
-      req: XaiVideoEditRequest,
-      signal?: AbortSignal
-    ): Promise<XaiVideoAsyncResponse> {
-      const body: Record<string, unknown> = {
-        model: req.model ?? "grok-imagine-video",
-        prompt: req.prompt,
-        video: req.video,
-      };
-
-      return await makeJsonPostRequest("/videos/edits", body, signal);
-    },
-
-    async getVideo(
+  const videos = Object.assign(
+    async function videos(
       requestId: string,
       signal?: AbortSignal
     ): Promise<XaiVideoResult> {
       return await makeGetRequest(`/videos/${requestId}`, signal);
+    },
+    {
+      async generations(
+        req: XaiVideoGenerateRequest,
+        signal?: AbortSignal
+      ): Promise<XaiVideoAsyncResponse> {
+        const body: Record<string, unknown> = {
+          model: req.model ?? "grok-imagine-video",
+          prompt: req.prompt,
+        };
+        if (req.duration !== undefined) body.duration = req.duration;
+
+        return await makeJsonPostRequest("/videos/generations", body, signal);
+      },
+
+      async edits(
+        req: XaiVideoEditRequest,
+        signal?: AbortSignal
+      ): Promise<XaiVideoAsyncResponse> {
+        const body: Record<string, unknown> = {
+          model: req.model ?? "grok-imagine-video",
+          prompt: req.prompt,
+          video: req.video,
+        };
+
+        return await makeJsonPostRequest("/videos/edits", body, signal);
+      },
+    }
+  );
+
+  return {
+    v1: {
+      chat: {
+        completions,
+      },
+      images: {
+        async generations(
+          req: XaiImageGenerateRequest,
+          signal?: AbortSignal
+        ): Promise<XaiImageResponse> {
+          const body: Record<string, unknown> = {
+            model: req.model ?? "grok-imagine-image",
+            prompt: req.prompt,
+          };
+          if (req.n !== undefined) body.n = req.n;
+          if (req.response_format !== undefined)
+            body.response_format = req.response_format;
+          if (req.aspect_ratio !== undefined)
+            body.aspect_ratio = req.aspect_ratio;
+          if (req.resolution !== undefined) body.resolution = req.resolution;
+
+          return await makeImageRequest("/images/generations", body, signal);
+        },
+
+        async edits(
+          req: XaiImageEditRequest,
+          signal?: AbortSignal
+        ): Promise<XaiImageResponse> {
+          const body: Record<string, unknown> = {
+            model: req.model ?? "grok-imagine-image",
+            prompt: req.prompt,
+          };
+          if (req.image) body.image = req.image;
+          if (req.images) body.images = req.images;
+          if (req.n !== undefined) body.n = req.n;
+          if (req.response_format !== undefined)
+            body.response_format = req.response_format;
+          if (req.aspect_ratio !== undefined)
+            body.aspect_ratio = req.aspect_ratio;
+
+          return await makeImageRequest("/images/edits", body, signal);
+        },
+      },
+      videos,
     },
   };
 }

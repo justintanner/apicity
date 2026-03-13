@@ -30,7 +30,7 @@ const request: ChatRequest = {
   messages: [{ role: "user", content: "Hello!" }],
 };
 
-for await (const chunk of provider.streamChat(request)) {
+for await (const chunk of provider.coding.v1.messages.stream(request)) {
   if (chunk.delta) {
     process.stdout.write(chunk.delta);
   }
@@ -61,7 +61,7 @@ const request = {
   maxTokens: 8192,
 };
 
-for await (const chunk of provider.streamChat(request)) {
+for await (const chunk of provider.coding.v1.messages.stream(request)) {
   if (chunk.delta) {
     process.stdout.write(chunk.delta);
   }
@@ -71,7 +71,7 @@ for await (const chunk of provider.streamChat(request)) {
 ### Non-Streaming
 
 ```typescript
-const response = await provider.chat(request);
+const response = await provider.coding.v1.messages(request);
 console.log(response.content);
 console.log(response.usage); // token counts
 ```
@@ -86,8 +86,8 @@ const provider = kimicoding({
   timeout: 60000,
 });
 
-provider
-  .chat({
+provider.coding.v1
+  .messages({
     model: "k2p5",
     messages: [{ role: "user", content: "What is the capital of France?" }],
     maxTokens: 256,
@@ -96,7 +96,7 @@ provider
     console.log(response.content);
 
     // Chain a vision request
-    return provider.chat({
+    return provider.coding.v1.messages({
       model: "k2p5",
       messages: [
         {

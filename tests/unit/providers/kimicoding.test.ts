@@ -11,18 +11,27 @@ import type {
 } from "../../../packages/provider/kimicoding/src";
 
 function createMockProvider(): KimiCodingProvider {
-  return {
-    streamChat: vi.fn().mockImplementation(async function* (_req: ChatRequest) {
-      yield { delta: "Hello", done: false };
-      yield { delta: " world", done: false };
-      yield { delta: "", done: true };
-    }),
-    chat: vi.fn().mockResolvedValue({
+  const messages = Object.assign(
+    vi.fn().mockResolvedValue({
       content: "Hello! How can I help you today?",
       model: "k2p5",
       usage: { promptTokens: 10, completionTokens: 8, totalTokens: 18 },
       finishReason: "stop",
     }),
+    {
+      stream: vi.fn().mockImplementation(async function* (_req: ChatRequest) {
+        yield { delta: "Hello", done: false };
+        yield { delta: " world", done: false };
+        yield { delta: "", done: true };
+      }),
+    }
+  );
+  return {
+    coding: {
+      v1: {
+        messages,
+      },
+    },
     getModels: vi.fn().mockResolvedValue(["k2p5"]),
     validateModel: vi
       .fn()
@@ -54,7 +63,7 @@ describe("kimicoding provider", () => {
     };
 
     const chunks: ChatStreamChunk[] = [];
-    for await (const chunk of provider.streamChat(req)) {
+    for await (const chunk of provider.coding.v1.messages.stream(req)) {
       chunks.push(chunk);
     }
 
@@ -71,7 +80,7 @@ describe("kimicoding provider", () => {
       messages: [{ role: "user", content: "Hello!" }],
     };
 
-    const response = await provider.chat(req);
+    const response = await provider.coding.v1.messages(req);
 
     expect(response.content).toBe("Hello! How can I help you today?");
     expect(response.model).toBe("k2p5");
@@ -105,7 +114,7 @@ describe("kimicoding provider", () => {
         },
       ],
     };
-    const response = await provider.chat(req);
+    const response = await provider.coding.v1.messages(req);
     expect(response.content).toBeTruthy();
   });
 
@@ -115,7 +124,7 @@ describe("kimicoding provider", () => {
       model: "k2p5",
       messages: [{ role: "user", content: "Hello!" }],
     };
-    const response = await provider.chat(req);
+    const response = await provider.coding.v1.messages(req);
     expect(response.content).toBe("Hello! How can I help you today?");
   });
 

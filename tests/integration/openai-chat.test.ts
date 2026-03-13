@@ -17,7 +17,7 @@ describe("openai integration", () => {
     const provider = openai({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.chat({
+    const result = await provider.v1.chat.completions({
       messages: [{ role: "user", content: "Say hello in one sentence." }],
       temperature: 0,
     });

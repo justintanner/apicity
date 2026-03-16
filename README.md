@@ -127,18 +127,92 @@ const searchResult = await provider.search("latest TypeScript news");
 
 ## Middleware
 
+The `@nakedapi/kimicoding` package ships two composable middleware wrappers that decorate any provider. Both work with `coding.v1.messages()` and `.stream()`.
+
+### `withRetry` — Exponential Backoff
+
+Automatically retries on transient errors (HTTP 429 and 5xx). Works for both single-shot and streaming calls.
+
+```typescript
+import { kimicoding, withRetry } from "@nakedapi/kimicoding";
+
+const provider = withRetry(
+  kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! }),
+  {
+    retries: 3,   // max retry attempts (default: 2)
+    baseMs: 500,  // initial delay in ms (default: 300)
+    factor: 2,    // exponential multiplier (default: 2)
+    jitter: true, // randomize delay ±20% (default: true)
+  }
+);
+
+// Single-shot — retries transparently on failure
+const response = await provider.coding.v1.messages({
+  model: "k2p5",
+  messages: [{ role: "user", content: "Explain monads in one sentence." }],
+});
+
+// Streaming — retries the full stream on failure
+for await (const chunk of provider.coding.v1.messages.stream({
+  model: "k2p5",
+  messages: [{ role: "user", content: "Write a haiku about TypeScript." }],
+})) {
+  if (chunk.delta) process.stdout.write(chunk.delta);
+}
+```
+
+### `withFallback` — Multi-Provider Failover
+
+Tries each provider in order. If one fails, the next picks up. Useful for redundant API keys, separate accounts, or mixing providers.
+
+```typescript
+import { kimicoding, withFallback } from "@nakedapi/kimicoding";
+
+const provider = withFallback(
+  [
+    kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_PRIMARY! }),
+    kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_BACKUP! }),
+  ],
+  {
+    onFallback: (error, index) => {
+      console.warn(`Provider ${index} failed, falling back:`, error);
+    },
+  }
+);
+
+// If the primary key hits a rate limit, the backup takes over
+const response = await provider.coding.v1.messages({
+  model: "k2p5",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Composing Middleware
+
+`withRetry` and `withFallback` return the same `Provider` interface, so they can be stacked:
+
 ```typescript
 import { kimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
 
-const provider = withRetry(kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! }), {
-  retries: 3,
-  baseMs: 500,
-});
-
-const fallback = withFallback([
-  kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! }),
-  kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! }),
+// Each provider retries individually, then fallback switches providers
+const provider = withFallback([
+  withRetry(kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! }), {
+    retries: 2,
+    baseMs: 300,
+  }),
+  withRetry(kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! }), {
+    retries: 2,
+    baseMs: 300,
+  }),
 ]);
+
+for await (const chunk of provider.coding.v1.messages.stream({
+  model: "k2p5",
+  messages: [{ role: "user", content: "Summarize this repo." }],
+  maxTokens: 1024,
+})) {
+  if (chunk.delta) process.stdout.write(chunk.delta);
+}
 ```
 
 ## Testing

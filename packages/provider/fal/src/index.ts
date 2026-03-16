@@ -4,6 +4,10 @@ export { fal } from "./fal";
 // Export error class
 export { FalError } from "./types";
 
+// Export middleware
+export { withRetry, withFallback } from "./middleware";
+export type { RetryOptions, FallbackOptions } from "./middleware";
+
 // Export all types
 export type {
   FalOptions,

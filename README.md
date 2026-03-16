@@ -127,33 +127,84 @@ const searchResult = await provider.search("latest TypeScript news");
 
 ## Middleware
 
-The `@nakedapi/kimicoding` package ships two composable middleware wrappers that decorate any provider. Both work with `coding.v1.messages()` and `.stream()`.
+Every package exports `withRetry` and `withFallback` — generic function-level wrappers that work with any `(req, signal?) => Promise<T>` call. `@nakedapi/kimicoding` additionally exports `withStreamRetry` and `withStreamFallback` for async iterables.
 
 ### `withRetry` — Exponential Backoff
 
-Automatically retries on transient errors (HTTP 429 and 5xx). Works for both single-shot and streaming calls.
+Wraps a single API call with automatic retries on transient errors (HTTP 429 and 5xx).
 
 ```typescript
-import { kimicoding, withRetry } from "@nakedapi/kimicoding";
+import { openai, withRetry } from "@nakedapi/openai";
 
-const provider = withRetry(
-  kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! }),
+const provider = openai({ apiKey: process.env.OPENAI_API_KEY! });
+
+const chat = withRetry(provider.v1.chat.completions, {
+  retries: 3,   // max retry attempts (default: 2)
+  baseMs: 500,  // initial delay in ms (default: 300)
+  factor: 2,    // exponential multiplier (default: 2)
+  jitter: true, // randomize delay ±20% (default: true)
+});
+
+const response = await chat({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Explain monads in one sentence." }],
+});
+```
+
+Works the same way across all providers:
+
+```typescript
+import { xai, withRetry } from "@nakedapi/xai";
+
+const provider = xai({ apiKey: process.env.XAI_API_KEY! });
+const chat = withRetry(provider.v1.chat.completions);
+```
+
+### `withFallback` — Multi-Function Failover
+
+Tries each function in order. If one fails, the next picks up. Useful for redundant API keys, separate accounts, or mixing providers.
+
+```typescript
+import { openai, withFallback } from "@nakedapi/openai";
+
+const primary = openai({ apiKey: process.env.OPENAI_KEY_PRIMARY! });
+const backup = openai({ apiKey: process.env.OPENAI_KEY_BACKUP! });
+
+const chat = withFallback(
+  [primary.v1.chat.completions, backup.v1.chat.completions],
   {
-    retries: 3,   // max retry attempts (default: 2)
-    baseMs: 500,  // initial delay in ms (default: 300)
-    factor: 2,    // exponential multiplier (default: 2)
-    jitter: true, // randomize delay ±20% (default: true)
+    onFallback: (error, index) => {
+      console.warn(`Function ${index} failed, falling back:`, error);
+    },
   }
 );
 
-// Single-shot — retries transparently on failure
-const response = await provider.coding.v1.messages({
-  model: "k2p5",
-  messages: [{ role: "user", content: "Explain monads in one sentence." }],
+const response = await chat({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Hello!" }],
+});
+```
+
+### Streaming Middleware (kimicoding)
+
+`@nakedapi/kimicoding` exports `withStreamRetry` and `withStreamFallback` for wrapping streaming calls that return `AsyncIterable`:
+
+```typescript
+import {
+  kimicoding,
+  withStreamRetry,
+  withStreamFallback,
+} from "@nakedapi/kimicoding";
+
+const provider = kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! });
+
+// Retry the full stream on transient failure
+const stream = withStreamRetry(provider.coding.v1.messages.stream, {
+  retries: 2,
+  baseMs: 300,
 });
 
-// Streaming — retries the full stream on failure
-for await (const chunk of provider.coding.v1.messages.stream({
+for await (const chunk of stream({
   model: "k2p5",
   messages: [{ role: "user", content: "Write a haiku about TypeScript." }],
 })) {
@@ -161,58 +212,27 @@ for await (const chunk of provider.coding.v1.messages.stream({
 }
 ```
 
-### `withFallback` — Multi-Provider Failover
-
-Tries each provider in order. If one fails, the next picks up. Useful for redundant API keys, separate accounts, or mixing providers.
-
-```typescript
-import { kimicoding, withFallback } from "@nakedapi/kimicoding";
-
-const provider = withFallback(
-  [
-    kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_PRIMARY! }),
-    kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_BACKUP! }),
-  ],
-  {
-    onFallback: (error, index) => {
-      console.warn(`Provider ${index} failed, falling back:`, error);
-    },
-  }
-);
-
-// If the primary key hits a rate limit, the backup takes over
-const response = await provider.coding.v1.messages({
-  model: "k2p5",
-  messages: [{ role: "user", content: "Hello!" }],
-});
-```
-
 ### Composing Middleware
 
-`withRetry` and `withFallback` return the same `Provider` interface, so they can be stacked:
+Since wrappers return plain functions with the same signature, they compose naturally:
 
 ```typescript
 import { kimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
 
-// Each provider retries individually, then fallback switches providers
-const provider = withFallback([
-  withRetry(kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! }), {
-    retries: 2,
-    baseMs: 300,
-  }),
-  withRetry(kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! }), {
-    retries: 2,
-    baseMs: 300,
-  }),
+const p1 = kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! });
+const p2 = kimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! });
+
+// Each function retries individually, then fallback switches
+const chat = withFallback([
+  withRetry(p1.coding.v1.messages, { retries: 2, baseMs: 300 }),
+  withRetry(p2.coding.v1.messages, { retries: 2, baseMs: 300 }),
 ]);
 
-for await (const chunk of provider.coding.v1.messages.stream({
+const response = await chat({
   model: "k2p5",
   messages: [{ role: "user", content: "Summarize this repo." }],
   maxTokens: 1024,
-})) {
-  if (chunk.delta) process.stdout.write(chunk.delta);
-}
+});
 ```
 
 ## Testing

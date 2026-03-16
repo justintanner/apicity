@@ -4,6 +4,10 @@ export { kie } from "./kie";
 // Export error class
 export { KieError } from "./types";
 
+// Export middleware
+export { withRetry, withFallback } from "./middleware";
+export type { RetryOptions, FallbackOptions } from "./middleware";
+
 // Export sub-provider factory functions
 export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";

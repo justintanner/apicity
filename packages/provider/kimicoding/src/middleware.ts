@@ -1,11 +1,12 @@
-import type { Provider, ChatRequest, ChatStreamChunk } from "./types";
-
-// Retry middleware
 export interface RetryOptions {
   retries?: number;
   baseMs?: number;
   factor?: number;
   jitter?: boolean;
+}
+
+export interface FallbackOptions {
+  onFallback?: (error: unknown, index: number) => void;
 }
 
 function isTransientError(e: unknown): boolean {
@@ -37,30 +38,21 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function withRetry(
-  provider: Provider,
+export function withRetry<TReq, TRes>(
+  fn: (req: TReq, signal?: AbortSignal) => Promise<TRes>,
   opts: RetryOptions = {}
-): Provider {
+): (req: TReq, signal?: AbortSignal) => Promise<TRes> {
   const retries = opts.retries ?? 2;
   const baseMs = opts.baseMs ?? 300;
   const factor = opts.factor ?? 2;
   const jitter = opts.jitter ?? true;
 
-  async function* retryStream(
-    req: ChatRequest,
-    signal?: AbortSignal
-  ): AsyncIterable<ChatStreamChunk> {
+  return async (req: TReq, signal?: AbortSignal): Promise<TRes> => {
     let attempt = 0;
 
     while (true) {
       try {
-        for await (const chunk of provider.coding.v1.messages.stream(
-          req,
-          signal
-        )) {
-          yield chunk;
-        }
-        return;
+        return await fn(req, signal);
       } catch (e) {
         attempt += 1;
         if (attempt > retries || !isTransientError(e) || signal?.aborted) {
@@ -75,96 +67,128 @@ export function withRetry(
         await sleep(wait);
       }
     }
-  }
-
-  const messages = Object.assign(
-    async (req: ChatRequest, signal?: AbortSignal) => {
-      return provider.coding.v1.messages(req, signal);
-    },
-    { stream: retryStream }
-  );
-
-  return {
-    coding: {
-      v1: {
-        messages,
-      },
-    },
-
-    async getModels() {
-      return provider.getModels();
-    },
-
-    validateModel(modelId: string) {
-      return provider.validateModel(modelId);
-    },
-
-    getMaxTokens(modelId: string) {
-      return provider.getMaxTokens(modelId);
-    },
   };
 }
 
-// Fallback middleware
-export interface FallbackOptions {
-  onFallback?: (error: unknown, index: number) => void;
-}
-
-export function withFallback(
-  providers: Provider[],
+export function withFallback<TReq, TRes>(
+  fns: Array<(req: TReq, signal?: AbortSignal) => Promise<TRes>>,
   opts: FallbackOptions = {}
-): Provider {
-  if (providers.length === 0) {
-    throw new Error("withFallback requires at least one provider");
+): (req: TReq, signal?: AbortSignal) => Promise<TRes> {
+  if (fns.length === 0) {
+    throw new Error("withFallback requires at least one function");
   }
 
-  async function* fallbackStream(
-    req: ChatRequest,
-    signal?: AbortSignal
-  ): AsyncIterable<ChatStreamChunk> {
+  return async (req: TReq, signal?: AbortSignal): Promise<TRes> => {
     let lastError: unknown;
-    for (let i = 0; i < providers.length; i++) {
+    for (let i = 0; i < fns.length; i++) {
       try {
-        for await (const chunk of providers[i].coding.v1.messages.stream(
-          req,
-          signal
-        )) {
-          yield chunk;
-        }
-        return;
+        return await fns[i](req, signal);
       } catch (e) {
         lastError = e;
         opts.onFallback?.(e, i);
-        // continue to next provider
       }
     }
     throw lastError;
+  };
+}
+
+export function withStreamRetry<TReq, TChunk>(
+  fn: (req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk>,
+  opts: RetryOptions = {}
+): (req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk> {
+  const retries = opts.retries ?? 2;
+  const baseMs = opts.baseMs ?? 300;
+  const factor = opts.factor ?? 2;
+  const jitter = opts.jitter ?? true;
+
+  return (req: TReq, signal?: AbortSignal): AsyncIterable<TChunk> => ({
+    [Symbol.asyncIterator]() {
+      let attempt = 0;
+      let iterator: AsyncIterator<TChunk> | null = null;
+      let done = false;
+
+      return {
+        async next(): Promise<IteratorResult<TChunk>> {
+          while (true) {
+            if (done) return { value: undefined, done: true };
+
+            if (!iterator) {
+              iterator = fn(req, signal)[Symbol.asyncIterator]();
+            }
+
+            try {
+              const result = await iterator.next();
+              if (result.done) {
+                done = true;
+              }
+              return result;
+            } catch (e) {
+              attempt += 1;
+              iterator = null;
+
+              if (
+                attempt > retries ||
+                !isTransientError(e) ||
+                signal?.aborted
+              ) {
+                throw e;
+              }
+
+              const delay = baseMs * Math.pow(factor, attempt - 1);
+              const wait = jitter
+                ? Math.floor(delay * (0.8 + Math.random() * 0.4))
+                : delay;
+
+              await sleep(wait);
+            }
+          }
+        },
+      };
+    },
+  });
+}
+
+export function withStreamFallback<TReq, TChunk>(
+  fns: Array<(req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk>>,
+  opts: FallbackOptions = {}
+): (req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk> {
+  if (fns.length === 0) {
+    throw new Error("withStreamFallback requires at least one function");
   }
 
-  const messages = Object.assign(
-    async (req: ChatRequest, signal?: AbortSignal) => {
-      return providers[0].coding.v1.messages(req, signal);
-    },
-    { stream: fallbackStream }
-  );
+  return (req: TReq, signal?: AbortSignal): AsyncIterable<TChunk> => ({
+    [Symbol.asyncIterator]() {
+      let fnIndex = 0;
+      let iterator: AsyncIterator<TChunk> | null = null;
+      let done = false;
 
-  return {
-    coding: {
-      v1: {
-        messages,
-      },
-    },
+      return {
+        async next(): Promise<IteratorResult<TChunk>> {
+          while (true) {
+            if (done) return { value: undefined, done: true };
 
-    async getModels() {
-      return providers[0].getModels();
-    },
+            if (!iterator) {
+              iterator = fns[fnIndex](req, signal)[Symbol.asyncIterator]();
+            }
 
-    validateModel(modelId: string) {
-      return providers[0].validateModel(modelId);
-    },
+            try {
+              const result = await iterator.next();
+              if (result.done) {
+                done = true;
+              }
+              return result;
+            } catch (e) {
+              opts.onFallback?.(e, fnIndex);
+              fnIndex += 1;
+              iterator = null;
 
-    getMaxTokens(modelId: string) {
-      return providers[0].getMaxTokens(modelId);
+              if (fnIndex >= fns.length) {
+                throw e;
+              }
+            }
+          }
+        },
+      };
     },
-  };
+  });
 }

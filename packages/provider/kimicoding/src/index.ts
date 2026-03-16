@@ -2,7 +2,14 @@ export { kimicoding, textBlock, imageBase64, imageUrl } from "./kimicoding";
 
 export { KimiCodingError } from "./types";
 
-export { withRetry, withFallback } from "./middleware";
+export {
+  withRetry,
+  withFallback,
+  withStreamRetry,
+  withStreamFallback,
+} from "./middleware";
+
+export type { RetryOptions, FallbackOptions } from "./middleware";
 
 export { sseToIterable } from "./sse";
 

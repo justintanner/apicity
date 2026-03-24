@@ -112,10 +112,23 @@ const HTML = `<!DOCTYPE html>
   #approve-btn { background: #a6e3a1; color: #1e1e2e; }
   #approve-btn:hover { background: #94e2d5; }
   #approve-btn:disabled { opacity: .4; cursor: default; }
+  #check-btn { background: #89b4fa; color: #1e1e2e; }
+  #check-btn:hover { background: #74c7ec; }
+  #check-btn:disabled { opacity: .4; cursor: default; }
+  #check-btn.hidden { display: none; }
   #status-msg { font-size: 12px; color: #a6adc8; }
   .empty { padding: 40px; text-align: center; color: #6c7086; font-size: 14px; }
   .b64-img-preview { max-width: 320px; max-height: 240px; border-radius: 6px; border: 1px solid #313244; display: block; margin: 4px 0; }
   .b64-truncated { color: #6c7086; font-style: italic; }
+  #check-result { margin-top: 12px; }
+  #check-result video { max-width: 100%; max-height: 360px; border-radius: 6px; border: 1px solid #313244; display: block; margin: 8px 0; }
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+  .status-badge.pending { background: #f9e2af; color: #1e1e2e; }
+  .status-badge.done { background: #a6e3a1; color: #1e1e2e; }
+  .status-badge.failed { background: #f38ba8; color: #1e1e2e; }
+  .status-badge.expired { background: #6c7086; color: #cdd6f4; }
+  .progress-bar { background: #313244; border-radius: 4px; height: 8px; margin: 8px 0; overflow: hidden; }
+  .progress-fill { background: #89b4fa; height: 100%; transition: width 0.3s; }
 </style>
 </head>
 <body>
@@ -128,6 +141,7 @@ const HTML = `<!DOCTYPE html>
   <div class="pane" id="res-pane"></div>
   <div id="actions">
     <button id="approve-btn" disabled>Approve</button>
+    <button id="check-btn" class="hidden">Check Result</button>
     <span id="status-msg"></span>
   </div>
 </div>
@@ -206,6 +220,36 @@ function tryParseJson(text) {
   try { return JSON.stringify(JSON.parse(text), null, 2); } catch { return text; }
 }
 
+function getVideoRequestId(rec) {
+  for (var i = 0; i < rec.entries.length; i++) {
+    var entry = rec.entries[i];
+    var url = entry.request.url || "";
+    if (url.includes("/videos/generations") || url.includes("/videos/edits")) {
+      try {
+        var body = JSON.parse(entry.response.content.text || "{}");
+        if (body.request_id) return body.request_id;
+      } catch {}
+    }
+  }
+  return null;
+}
+
+function renderCheckResult(data) {
+  var html = '<div class="pane-label">Video Status</div>';
+  html += '<span class="status-badge ' + data.status + '">' + data.status + '</span>';
+  if (typeof data.progress === "number") {
+    var pct = data.progress > 1 ? data.progress : data.progress * 100;
+    html += '<span style="font-size:13px;color:#a6adc8">' + Math.round(pct) + '%</span>';
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+  }
+  if (data.video && data.video.url) {
+    html += '<video controls autoplay src="' + data.video.url + '"></video>';
+    html += '<div style="margin-top:4px"><a href="' + data.video.url + '" target="_blank" style="color:#89b4fa;font-size:12px">Open in new tab</a></div>';
+  }
+  html += '<pre class="body">' + syntaxHighlight(JSON.stringify(data, null, 2)) + '</pre>';
+  return html;
+}
+
 function renderEntry(entry) {
   const req = entry.request;
   const res = entry.response;
@@ -219,7 +263,8 @@ function renderEntry(entry) {
   document.getElementById("res-pane").innerHTML =
     '<div class="pane-label">Response ' + res.status + ' ' + res.statusText + '</div>' +
     renderHeaders(res.headers) +
-    (res.content?.text ? '<pre class="body">' + inlineBase64Images(syntaxHighlight(tryParseJson(res.content.text))) + '</pre>' : '');
+    (res.content?.text ? '<pre class="body">' + inlineBase64Images(syntaxHighlight(tryParseJson(res.content.text))) + '</pre>' : '') +
+    '<div id="check-result"></div>';
 }
 
 function render() {
@@ -237,11 +282,21 @@ function render() {
   });
 
   const btn = document.getElementById("approve-btn");
+  const checkBtn = document.getElementById("check-btn");
   if (selected !== null && recordings[selected]) {
     const rec = recordings[selected];
     renderEntry(rec.entries[0] || { request: { method: "", url: "about:blank", headers: [] }, response: { status: 0, statusText: "", headers: [], content: {} } });
     btn.disabled = rec.gitStatus === "clean";
     document.getElementById("status-msg").textContent = rec.gitStatus === "clean" ? "Already approved" : "";
+    var reqId = getVideoRequestId(rec);
+    if (reqId) {
+      checkBtn.classList.remove("hidden");
+      checkBtn.dataset.requestId = reqId;
+    } else {
+      checkBtn.classList.add("hidden");
+    }
+  } else {
+    checkBtn.classList.add("hidden");
   }
 }
 
@@ -262,6 +317,34 @@ document.getElementById("approve-btn").addEventListener("click", async () => {
   } else {
     document.getElementById("status-msg").textContent = "Failed to approve";
   }
+});
+
+document.getElementById("check-btn").addEventListener("click", async () => {
+  var btn = document.getElementById("check-btn");
+  var requestId = btn.dataset.requestId;
+  if (!requestId) return;
+  var statusMsg = document.getElementById("status-msg");
+  var resultDiv = document.getElementById("check-result");
+  btn.disabled = true;
+  statusMsg.textContent = "Checking...";
+  try {
+    var res = await fetch("/api/check-video", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ request_id: requestId }),
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      statusMsg.textContent = data.error || "Check failed";
+      if (resultDiv) resultDiv.innerHTML = "";
+    } else {
+      statusMsg.textContent = "Status: " + data.status;
+      if (resultDiv) resultDiv.innerHTML = renderCheckResult(data);
+    }
+  } catch (err) {
+    statusMsg.textContent = "Error: " + err.message;
+  }
+  btn.disabled = false;
 });
 
 fetch("/api/recordings").then(r => r.json()).then(data => {
@@ -303,6 +386,43 @@ const server = http.createServer((req, res) => {
         gitAdd(filePath);
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ ok: true }));
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: String(err) }));
+      }
+    });
+    return;
+  }
+
+  if (req.method === "POST" && req.url === "/api/check-video") {
+    let body = "";
+    req.on("data", (chunk: Buffer) => {
+      body += chunk.toString();
+    });
+    req.on("end", async () => {
+      try {
+        const { request_id } = JSON.parse(body) as {
+          request_id: string;
+        };
+        const apiKey = process.env.XAI_API_KEY;
+        if (!apiKey) {
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "XAI_API_KEY not set" }));
+          return;
+        }
+        if (!request_id) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ error: "Missing request_id" }));
+          return;
+        }
+        const apiRes = await fetch(`https://api.x.ai/v1/videos/${request_id}`, {
+          headers: { Authorization: `Bearer ${apiKey}` },
+        });
+        const data = await apiRes.json();
+        res.writeHead(apiRes.status, {
+          "Content-Type": "application/json",
+        });
+        res.end(JSON.stringify(data));
       } catch (err) {
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: String(err) }));

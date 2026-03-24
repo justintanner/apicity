@@ -77,7 +77,7 @@ export interface KlingMotionControlRequest extends MediaRequest {
     prompt?: string;
     input_urls: string[];
     video_urls: string[];
-    mode?: "std" | "pro";
+    mode?: "720p" | "1080p";
     character_orientation?: "video" | "image";
     background_source?: "input_video" | "input_image";
   };

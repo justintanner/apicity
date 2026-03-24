@@ -107,6 +107,9 @@ const HTML = `<!DOCTYPE html>
   .dot.clean { background: #a6e3a1; }
   .dot.modified { background: #f9e2af; }
   .dot.new { background: #f38ba8; }
+  .review-badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; margin-left: auto; flex-shrink: 0; }
+  .review-badge.needs-review { background: #f38ba8; color: #1e1e2e; }
+  .review-badge.approved { background: #a6e3a1; color: #1e1e2e; }
   .pane { overflow-y: auto; padding: 16px; min-width: 0; }
   .pane-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a6adc8; margin-bottom: 8px; }
   .body-wrap { position: relative; margin: 8px -16px 0; }
@@ -540,8 +543,11 @@ function render() {
     for (var j = 0; j < items.length; j++) {
       var item = items[j];
       var isActive = selected === item.idx;
+      var badge = item.rec.gitStatus === "clean"
+        ? ''
+        : '<span class="review-badge needs-review">review</span>';
       html += '<div class="rec-item' + (isActive ? ' active' : '') + '" data-idx="' + item.idx + '">' +
-        '<span class="dot ' + item.rec.gitStatus + '"></span>' + item.test + '</div>';
+        '<span class="dot ' + item.rec.gitStatus + '"></span>' + item.test + badge + '</div>';
       if (isActive && item.rec.entries.length > 1) {
         for (var e = 0; e < item.rec.entries.length; e++) {
           html += '<div class="entry-item' + (selectedEntry === e ? ' active' : '') + '" data-idx="' + item.idx + '" data-entry="' + e + '">' +
@@ -580,7 +586,14 @@ function render() {
     renderEntry(rec.entries[selectedEntry] || { request: { method: "", url: "about:blank", headers: [] }, response: { status: 0, statusText: "", headers: [], content: {} } });
     btn.disabled = rec.gitStatus === "clean";
     copyLlmBtn.disabled = false;
-    document.getElementById("status-msg").textContent = rec.gitStatus === "clean" ? "Already approved" : "";
+    var statusMsg = document.getElementById("status-msg");
+    if (rec.gitStatus === "clean") {
+      statusMsg.textContent = "Approved";
+      statusMsg.style.color = "#a6e3a1";
+    } else {
+      statusMsg.textContent = "Pending review — approve to stage for commit";
+      statusMsg.style.color = "#f38ba8";
+    }
 
     var reqId = getVideoRequestId(rec);
     var kieTaskId = getKieTaskId(rec);
@@ -613,7 +626,9 @@ document.getElementById("approve-btn").addEventListener("click", async () => {
   });
   if (res.ok) {
     rec.gitStatus = "clean";
-    document.getElementById("status-msg").textContent = "Approved and staged";
+    var msg = document.getElementById("status-msg");
+    msg.textContent = "Approved";
+    msg.style.color = "#a6e3a1";
     document.getElementById("approve-btn").disabled = true;
     render();
   } else {

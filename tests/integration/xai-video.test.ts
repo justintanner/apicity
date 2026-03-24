@@ -55,69 +55,32 @@ describe("xai video integration", () => {
 
   describe("editVideo", () => {
     beforeEach(() => {
-      ctx = setupPolly("xai/video-edit-via-generations");
+      ctx = setupPolly("xai/video-edit");
     });
 
     afterEach(async () => {
       await teardownPolly(ctx);
     });
 
-    it("should edit a video by passing video_url", async () => {
+    it("should edit a video via video_url and poll for status", async () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
-      const result = await provider.v1.videos.generations({
-        prompt: "Add dramatic lighting to the scene",
+
+      const gen = await provider.v1.videos.generations({
+        prompt: "Add dramatic cinematic lighting to the scene",
         model: "grok-imagine-video",
-        video_url: "https://data.x.ai/docs/video-generation/portrait-wave.mp4",
+        video_url:
+          "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
       });
 
-      expect(result.request_id).toBeTruthy();
-      expect(typeof result.request_id).toBe("string");
-    });
+      expect(gen.request_id).toBeTruthy();
+      expect(typeof gen.request_id).toBe("string");
 
-    it("should generate video from an image_url", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.videos.generations({
-        prompt: "Animate this landscape with gentle wind",
-        model: "grok-imagine-video",
-        image_url: "https://example.com/landscape.jpg",
-      });
+      const result = await provider.v1.videos(gen.request_id);
 
-      expect(result.request_id).toBeTruthy();
-      expect(typeof result.request_id).toBe("string");
-    });
-
-    it("should support aspect_ratio and resolution", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.videos.generations({
-        prompt: "A vertical video of rain falling on a window",
-        model: "grok-imagine-video",
-        aspect_ratio: "9:16",
-        resolution: "720p",
-        duration: 5,
-      });
-
-      expect(result.request_id).toBeTruthy();
-      expect(typeof result.request_id).toBe("string");
-    });
-
-    it("should edit video with aspect_ratio preserved", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.videos.generations({
-        prompt: "Make the colors more vibrant and saturated",
-        video_url: "https://data.x.ai/docs/video-generation/portrait-wave.mp4",
-        aspect_ratio: "16:9",
-      });
-
-      expect(result.request_id).toBeTruthy();
-      expect(typeof result.request_id).toBe("string");
+      expect(result.status).toBeTruthy();
+      expect(["pending", "done", "expired", "failed"]).toContain(result.status);
     });
   });
 

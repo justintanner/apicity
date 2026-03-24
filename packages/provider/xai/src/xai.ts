@@ -344,6 +344,15 @@ export function xai(opts: XaiOptions): XaiProvider {
         req: XaiVideoGenerateRequest,
         signal?: AbortSignal
       ): Promise<XaiVideoAsyncResponse> {
+        if (req.video_url !== undefined) {
+          const body: Record<string, unknown> = {
+            model: req.model ?? "grok-imagine-video",
+            prompt: req.prompt,
+            video: { url: req.video_url },
+          };
+          return await makeJsonPostRequest("/videos/edits", body, signal);
+        }
+
         const body: Record<string, unknown> = {
           model: req.model ?? "grok-imagine-video",
           prompt: req.prompt,
@@ -353,7 +362,6 @@ export function xai(opts: XaiOptions): XaiProvider {
           body.aspect_ratio = req.aspect_ratio;
         if (req.resolution !== undefined) body.resolution = req.resolution;
         if (req.image_url !== undefined) body.image_url = req.image_url;
-        if (req.video_url !== undefined) body.video_url = req.video_url;
 
         return await makeJsonPostRequest("/videos/generations", body, signal);
       },

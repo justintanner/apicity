@@ -90,8 +90,8 @@ const HTML = `<!DOCTYPE html>
   ::-webkit-scrollbar-thumb { background: #45475a; border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
   ::-webkit-scrollbar-thumb:hover { background: #585b70; }
   ::-webkit-scrollbar-corner { background: #11111b; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; background: #1e1e2e; color: #cdd6f4; height: 100vh; display: grid; grid-template-columns: 240px 4px 1fr 4px 1fr; }
-  #sidebar { background: #181825; display: flex; flex-direction: column; height: 100vh; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; background: #1e1e2e; color: #cdd6f4; height: 100vh; display: grid; grid-template-columns: 240px 4px 1fr 4px 1fr; grid-template-rows: 1fr auto; }
+  #sidebar { background: #181825; display: flex; flex-direction: column; overflow-y: auto; }
   #sidebar h2 { padding: 8px 16px; font-size: 14px; color: #a6adc8; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
   #rec-list { flex: 1; overflow-y: auto; }
   .resize-handle { background: #313244; cursor: col-resize; position: relative; transition: background 0.15s; }
@@ -107,7 +107,7 @@ const HTML = `<!DOCTYPE html>
   .dot.clean { background: #a6e3a1; }
   .dot.modified { background: #f9e2af; }
   .dot.new { background: #f38ba8; }
-  .pane { height: 100vh; overflow-y: auto; padding: 16px; min-width: 0; }
+  .pane { overflow-y: auto; padding: 16px; min-width: 0; }
   .pane-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a6adc8; margin-bottom: 8px; }
   .body-wrap { position: relative; margin: 8px -16px 0; }
   .body-wrap .copy-btn { position: absolute; top: 6px; right: 6px; background: #313244; border: none; border-radius: 4px; color: #a6adc8; cursor: pointer; padding: 5px 6px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
@@ -118,7 +118,8 @@ const HTML = `<!DOCTYPE html>
   .json-num { color: #fab387; }
   .json-bool { color: #cba6f7; }
   .json-null { color: #6c7086; }
-  #actions { padding: 12px 16px; background: #181825; border-top: 1px solid #313244; display: flex; gap: 12px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+  #actions { grid-column: 1 / -1; padding: 12px 16px; background: #181825; border-top: 1px solid #313244; display: flex; gap: 12px; align-items: center; }
+  #actions .spacer { flex: 1; }
   #actions button { padding: 8px 20px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 600; }
   #approve-btn { background: #a6e3a1; color: #1e1e2e; }
   #approve-btn:hover { background: #94e2d5; }
@@ -127,6 +128,9 @@ const HTML = `<!DOCTYPE html>
   #refresh-btn:hover { background: #74c7ec; }
   #refresh-btn:disabled { opacity: .4; cursor: default; }
   #refresh-btn.hidden { display: none; }
+  #copy-llm-btn { background: #89b4fa; color: #1e1e2e; }
+  #copy-llm-btn:hover { background: #74c7ec; }
+  #copy-llm-btn:disabled { opacity: .4; cursor: default; }
   #status-msg { font-size: 12px; color: #a6adc8; }
   .empty { padding: 40px; text-align: center; color: #6c7086; font-size: 14px; }
   .b64-img-preview { max-width: 320px; max-height: 240px; border-radius: 6px; border: 1px solid #313244; display: block; margin: 4px 0; }
@@ -148,16 +152,18 @@ const HTML = `<!DOCTYPE html>
 <div id="sidebar">
   <h2>Generations</h2>
   <div id="rec-list"></div>
-  <div id="actions">
-    <button id="approve-btn" disabled>Approve</button>
-    <button id="refresh-btn" class="hidden">Refresh</button>
-    <span id="status-msg"></span>
-  </div>
 </div>
 <div class="resize-handle" id="resize-1"></div>
 <div class="pane" id="req-pane"><div class="empty">Select a recording</div></div>
 <div class="resize-handle" id="resize-2"></div>
 <div class="pane" id="res-pane"></div>
+<div id="actions">
+  <button id="approve-btn" disabled>Approve</button>
+  <button id="refresh-btn" class="hidden">Refresh</button>
+  <span id="status-msg"></span>
+  <div class="spacer"></div>
+  <button id="copy-llm-btn" disabled>Copy for LLM</button>
+</div>
 <script>
 let recordings = [];
 let selected = null;
@@ -464,6 +470,34 @@ function autoEvalXaiVideo(rec, gen) {
   });
 }
 
+function buildTransactionText(entry) {
+  var req = entry.request;
+  var res = entry.response;
+  var lines = [];
+  lines.push("REQUEST");
+  lines.push(req.method + " " + new URL(req.url).pathname);
+  for (var i = 0; i < req.headers.length; i++) {
+    var h = req.headers[i];
+    var val = h.name.toLowerCase() === "authorization" ? redactAuth(h.value) : h.value;
+    lines.push(titleCaseHeader(h.name) + ": " + val);
+  }
+  if (req.postData && req.postData.text) {
+    lines.push("");
+    lines.push(tryParseJson(req.postData.text));
+  }
+  lines.push("");
+  lines.push("RESPONSE " + res.status + " " + res.statusText);
+  for (var j = 0; j < res.headers.length; j++) {
+    var rh = res.headers[j];
+    lines.push(titleCaseHeader(rh.name) + ": " + rh.value);
+  }
+  if (res.content && res.content.text) {
+    lines.push("");
+    lines.push(tryParseJson(res.content.text));
+  }
+  return lines.join("\\n");
+}
+
 function renderEntry(entry) {
   const req = entry.request;
   const res = entry.response;
@@ -540,10 +574,12 @@ function render() {
 
   var btn = document.getElementById("approve-btn");
   var refreshBtn = document.getElementById("refresh-btn");
+  var copyLlmBtn = document.getElementById("copy-llm-btn");
   if (selected !== null && recordings[selected]) {
     var rec = recordings[selected];
     renderEntry(rec.entries[selectedEntry] || { request: { method: "", url: "about:blank", headers: [] }, response: { status: 0, statusText: "", headers: [], content: {} } });
     btn.disabled = rec.gitStatus === "clean";
+    copyLlmBtn.disabled = false;
     document.getElementById("status-msg").textContent = rec.gitStatus === "clean" ? "Already approved" : "";
 
     var reqId = getVideoRequestId(rec);
@@ -562,6 +598,7 @@ function render() {
     autoEvalXaiVideo(rec, gen);
   } else {
     refreshBtn.classList.add("hidden");
+    copyLlmBtn.disabled = true;
   }
 }
 
@@ -619,6 +656,19 @@ document.getElementById("refresh-btn").addEventListener("click", async () => {
     statusMsg.textContent = "Error: " + err.message;
   }
   btn.disabled = false;
+});
+
+document.getElementById("copy-llm-btn").addEventListener("click", function() {
+  if (selected === null) return;
+  var rec = recordings[selected];
+  var entry = rec.entries[selectedEntry];
+  if (!entry) return;
+  var text = buildTransactionText(entry);
+  var btn = document.getElementById("copy-llm-btn");
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = "Copied!";
+    setTimeout(function() { btn.textContent = "Copy for LLM"; }, 1200);
+  });
 });
 
 document.addEventListener("click", function(e) {

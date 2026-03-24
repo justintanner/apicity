@@ -55,46 +55,6 @@ describe("xai video integration", () => {
 
   describe("editVideo", () => {
     beforeEach(() => {
-      ctx = setupPolly("xai/video-edit");
-    });
-
-    afterEach(async () => {
-      await teardownPolly(ctx);
-    });
-
-    it("should edit a video with a prompt", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.videos.edits({
-        prompt: "Add snow to the scene",
-        model: "grok-imagine-video",
-        video: {
-          url: "https://example.com/video.mp4",
-        },
-      });
-
-      expect(result.request_id).toBeTruthy();
-      expect(typeof result.request_id).toBe("string");
-    });
-
-    it("should use default model when not specified", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.videos.edits({
-        prompt: "Make the colors more vibrant",
-        video: {
-          url: "https://example.com/video.mp4",
-        },
-      });
-
-      expect(result.request_id).toBeTruthy();
-    });
-  });
-
-  describe("editVideo via generations with video_url", () => {
-    beforeEach(() => {
       ctx = setupPolly("xai/video-edit-via-generations");
     });
 

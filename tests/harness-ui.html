@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>NakedAPI Harness</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  ::-webkit-scrollbar { width: 12px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
+  ::-webkit-scrollbar-thumb { background: #45475a; border-radius: 6px; border: 3px solid transparent; background-clip: padding-box; }
+  ::-webkit-scrollbar-thumb:hover { background: #585b70; }
+  ::-webkit-scrollbar-corner { background: #11111b; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; background: #1e1e2e; color: #cdd6f4; height: 100vh; display: grid; grid-template-rows: auto 1fr; overflow: hidden; }
+
+  /* Topbar */
+  #topbar { display: flex; align-items: center; padding: 8px 16px; background: #181825; border-bottom: 1px solid #313244; gap: 8px; flex-shrink: 0; z-index: 100; }
+  #topbar-left { display: flex; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap; }
+  #topbar-right { flex-shrink: 0; }
+  #branding { font-size: 16px; font-weight: 700; color: #89b4fa; letter-spacing: 0.5px; }
+
+  /* Custom Dropdown */
+  #test-selector { position: relative; }
+  #test-selector-btn { background: #313244; border: 1px solid #45475a; border-radius: 6px; color: #cdd6f4; padding: 6px 12px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; min-width: 280px; max-width: 480px; font-family: inherit; }
+  #test-selector-btn:hover { background: #45475a; }
+  #test-selector-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; text-align: left; }
+  .selector-arrow { font-size: 10px; flex-shrink: 0; }
+  #test-selector-dropdown { position: absolute; top: 100%; left: 0; margin-top: 4px; background: #181825; border: 1px solid #45475a; border-radius: 8px; min-width: 340px; max-width: 520px; max-height: 70vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 200; }
+  #test-selector-dropdown.hidden { display: none; }
+  .dd-section { padding: 6px 12px; font-size: 11px; color: #6c7086; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+  .dd-item { padding: 6px 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; }
+  .dd-item:hover { background: #313244; }
+  .dd-item.active { background: #313244; border-left-color: #89b4fa; }
+  .dd-pipe-label { padding: 6px 12px 6px 20px; font-size: 12px; color: #cba6f7; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .dd-pipe-label:hover { background: #313244; }
+  .dd-pipe-step { padding: 6px 12px 6px 36px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; }
+  .dd-pipe-step:hover { background: #313244; }
+  .dd-pipe-step.active { background: #313244; border-left-color: #cba6f7; }
+  .dd-pipe-hidden { display: none; }
+  .dd-wf-item { padding: 6px 12px 6px 28px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; }
+  .dd-wf-item:hover { background: #313244; }
+  .dd-wf-item.active { background: #313244; border-left-color: #cba6f7; }
+  .dd-wf-item.locked { opacity: 0.5; cursor: default; }
+  .dd-arrow { font-size: 10px; transition: transform 0.15s; display: inline-block; }
+  .dd-arrow.collapsed { transform: rotate(-90deg); }
+
+  /* Columns */
+  #columns { display: grid; overflow: hidden; min-height: 0; }
+  .column { overflow-y: auto; padding: 16px; min-width: 0; }
+  .resize-handle { background: #313244; cursor: col-resize; position: relative; transition: background 0.15s; }
+  .resize-handle:hover, .resize-handle.dragging { background: #89b4fa; }
+
+  /* Dots */
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+  .dot.clean { background: #a6e3a1; }
+  .dot.modified { background: #f9e2af; }
+  .dot.new { background: #f38ba8; }
+  .dot.locked { background: #585b70; }
+  .dot.ready { background: #f9e2af; }
+  .dot.running { background: #89b4fa; animation: pulse 1.5s infinite; }
+  .dot.completed { background: #a6e3a1; }
+  .dot.failed { background: #f38ba8; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+  /* Review badges */
+  .review-badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; margin-left: auto; flex-shrink: 0; }
+  .review-badge.needs-review { background: #f38ba8; color: #1e1e2e; }
+  .review-badge.approved { background: #a6e3a1; color: #1e1e2e; }
+
+  /* Entry cards */
+  .entry-card { background: #181825; border: 1px solid #313244; border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .entry-header { padding: 8px 12px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #313244; background: #11111b; font-size: 13px; }
+  .entry-num { background: #89b4fa; color: #1e1e2e; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .entry-label { color: #cdd6f4; font-weight: 600; }
+  .entry-status { margin-left: auto; color: #a6adc8; font-size: 12px; }
+  .headers-details { margin: 0; }
+  .headers-details summary { padding: 8px 12px; cursor: pointer; color: #6c7086; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .headers-details summary:hover { color: #a6adc8; }
+
+  /* Pane labels */
+  .pane-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #a6adc8; margin-bottom: 8px; }
+
+  /* Body wrap and copy */
+  .body-wrap { position: relative; margin: 0; }
+  .body-wrap .copy-btn { position: absolute; top: 6px; right: 6px; background: #313244; border: none; border-radius: 4px; color: #a6adc8; cursor: pointer; padding: 5px 6px; font-size: 11px; display: flex; align-items: center; justify-content: center; z-index: 1; }
+  .body-wrap .copy-btn:hover { background: #45475a; color: #cdd6f4; }
+  pre.body { background: #11111b; border-radius: 0; padding: 12px 16px; margin: 0; overflow: auto; font-size: 12px; line-height: 1.5; white-space: pre-wrap; word-break: break-all; }
+
+  /* JSON highlighting */
+  .json-key { color: #89b4fa; }
+  .json-str { color: #a6e3a1; }
+  .json-num { color: #fab387; }
+  .json-bool { color: #cba6f7; }
+  .json-null { color: #6c7086; }
+
+  /* Buttons */
+  #topbar button { padding: 6px 14px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; flex-shrink: 0; font-family: inherit; }
+  #approve-btn { background: #a6e3a1; color: #1e1e2e; }
+  #approve-btn:hover { background: #94e2d5; }
+  #approve-btn:disabled { opacity: .4; cursor: default; }
+  #run-btn { background: #f9e2af; color: #1e1e2e; }
+  #run-btn:hover { background: #f5c2e7; }
+  #run-btn:disabled { opacity: .4; cursor: default; }
+  .hidden { display: none !important; }
+  #refresh-btn { background: #89b4fa; color: #1e1e2e; }
+  #refresh-btn:hover { background: #74c7ec; }
+  #refresh-btn:disabled { opacity: .4; cursor: default; }
+  #save-output-btn { background: #cba6f7; color: #1e1e2e; }
+  #save-output-btn:hover { background: #b4befe; }
+  #save-output-btn:disabled { opacity: .4; cursor: default; }
+  #reset-btn { background: #45475a; color: #cdd6f4; }
+  #reset-btn:hover { background: #f38ba8; color: #1e1e2e; }
+  #run-all-btn { background: #f9e2af; color: #1e1e2e; }
+  #run-all-btn:hover { background: #f5c2e7; }
+  #run-all-btn:disabled { opacity: .4; cursor: default; }
+  #refresh-all-btn { background: #89b4fa; color: #1e1e2e; }
+  #refresh-all-btn:hover { background: #74c7ec; }
+  #refresh-all-btn:disabled { opacity: .4; cursor: default; }
+  #copy-llm-btn { background: #89b4fa; color: #1e1e2e; }
+  #copy-llm-btn:hover { background: #74c7ec; }
+  #copy-llm-btn:disabled { opacity: .4; cursor: default; }
+  #status-msg { font-size: 12px; color: #a6adc8; }
+
+  /* Media previews */
+  .b64-img-preview { max-width: 320px; max-height: 240px; border-radius: 6px; border: 1px solid #313244; display: block; margin: 4px 0; }
+  .video-preview { max-width: 480px; max-height: 320px; border-radius: 6px; border: 1px solid #313244; display: block; margin: 4px 0; }
+  .audio-preview { max-width: 320px; border-radius: 6px; display: block; margin: 4px 0; }
+  .b64-truncated { color: #6c7086; font-style: italic; }
+
+  /* Status badges */
+  .status-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+  .status-badge.pending { background: #f9e2af; color: #1e1e2e; }
+  .status-badge.done { background: #a6e3a1; color: #1e1e2e; }
+  .status-badge.failed { background: #f38ba8; color: #1e1e2e; }
+  .status-badge.expired { background: #6c7086; color: #cdd6f4; }
+  .progress-bar { background: #313244; border-radius: 4px; height: 8px; margin: 8px 0; overflow: hidden; }
+  .progress-fill { background: #89b4fa; height: 100%; transition: width 0.3s; }
+
+  /* Info column */
+  .info-section { margin-bottom: 16px; }
+  .info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6c7086; margin-bottom: 4px; }
+  .info-model { display: inline-block; background: #cba6f7; color: #1e1e2e; padding: 2px 10px; border-radius: 4px; font-size: 13px; font-weight: 600; }
+  .info-endpoint { font-family: monospace; font-size: 12px; color: #89b4fa; margin-top: 4px; }
+  .info-prompt { font-size: 14px; line-height: 1.6; color: #cdd6f4; background: #11111b; padding: 12px; border-radius: 6px; white-space: pre-wrap; word-break: break-word; }
+  .info-prompt .role-tag { display: inline-block; background: #313244; color: #a6adc8; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+  .info-params { display: flex; flex-wrap: wrap; gap: 6px; }
+  .info-param { background: #313244; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+  .info-param .pk { color: #6c7086; }
+  .info-param .pv { color: #cdd6f4; }
+  .info-asset { max-width: 100%; max-height: 200px; border-radius: 6px; border: 1px solid #313244; margin: 4px 0; display: block; }
+  .info-entries-note { font-size: 11px; color: #6c7086; margin-top: 4px; }
+
+  /* Compare grid */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .compare-cell { background: #181825; border-radius: 8px; padding: 16px; border: 1px solid #313244; display: flex; flex-direction: column; }
+  .compare-cell .model-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .compare-cell .model-name { font-size: 14px; font-weight: 600; color: #cba6f7; }
+  .compare-cell .model-desc { font-size: 11px; color: #6c7086; margin-bottom: 8px; }
+  .compare-cell .compare-image { max-width: 100%; border-radius: 6px; border: 1px solid #313244; margin-top: 8px; }
+  .compare-cell .cell-status { font-size: 12px; color: #a6adc8; margin-top: 4px; }
+  #columns.compare-mode #col-responses { display: none; }
+  #columns.compare-mode #resize-2 { display: none; }
+
+  /* Alignment spacer */
+  .alignment-spacer { flex-shrink: 0; }
+
+  /* Pipeline context */
+  .pipeline-context { padding: 8px 12px; background: #11111b; border: 1px solid #313244; border-radius: 6px; margin-bottom: 12px; font-size: 12px; color: #a6adc8; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .pipeline-context .pipe-name { color: #cba6f7; font-weight: 600; }
+  .pipeline-context .pipe-step { color: #89b4fa; }
+  .pipeline-context .pipe-input { color: #a6e3a1; }
+
+  /* Workflow step list in info column */
+  .wf-step-list { list-style: none; padding: 0; }
+  .wf-step-item { padding: 6px 8px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-radius: 4px; border-left: 3px solid transparent; }
+  .wf-step-item:hover { background: #313244; }
+  .wf-step-item.active { background: #313244; border-left-color: #cba6f7; }
+  .wf-step-item.locked { opacity: 0.5; cursor: default; }
+  .wf-step-item .step-num { color: #6c7086; font-size: 11px; min-width: 16px; }
+  .step-description { color: #a6adc8; font-size: 12px; font-style: italic; margin-bottom: 12px; }
+
+  /* Empty state */
+  .empty { padding: 40px; text-align: center; color: #6c7086; font-size: 14px; }
+</style>
+</head>
+<body>
+<header id="topbar">
+  <div id="topbar-left">
+    <div id="test-selector">
+      <button id="test-selector-btn">
+        <span id="test-selector-label">Select a recording...</span>
+        <span class="selector-arrow">&#x25BE;</span>
+      </button>
+      <div id="test-selector-dropdown" class="hidden"></div>
+    </div>
+    <button id="approve-btn" disabled>Approve</button>
+    <button id="run-btn" class="hidden">Run</button>
+    <button id="run-all-btn" class="hidden">Run All</button>
+    <button id="refresh-btn" class="hidden">Refresh</button>
+    <button id="refresh-all-btn" class="hidden">Refresh All</button>
+    <button id="save-output-btn" class="hidden" disabled>Save Output</button>
+    <button id="copy-llm-btn" disabled>Copy for LLM</button>
+    <span id="status-msg"></span>
+    <div style="flex:1"></div>
+    <button id="reset-btn" class="hidden">Reset</button>
+  </div>
+  <div id="topbar-right">
+    <span id="branding">NakedAPI</span>
+  </div>
+</header>
+<div id="columns">
+  <div id="col-info" class="column"><div class="empty">Select a recording</div></div>
+  <div class="resize-handle" id="resize-1"></div>
+  <div id="col-requests" class="column"></div>
+  <div class="resize-handle" id="resize-2"></div>
+  <div id="col-responses" class="column"></div>
+</div>
+<script>
+/* === State === */
+var recordings = [];
+var selected = null;
+var renderGeneration = 0;
+var collapsedPipelines = {};
+var e2eOutputs = {};
+var lastRefreshResult = null;
+var workflowData = [];
+var selectedWorkflow = null;
+var selectedWfStep = null;
+var collapsedWorkflows = {};
+var dropdownOpen = false;
+var alignObserver = null;
+
+/* === Data Loading === */
+function loadE2EOutputs() {
+  fetch("/api/e2e-outputs").then(function(r) { return r.json(); }).then(function(data) {
+    e2eOutputs = data || {};
+  }).catch(function() { e2eOutputs = {}; });
+}
+
+/* === HAR Parsing Utilities === */
+function isE2EStep(recName) {
+  return /\/e2e-[^/]+\/step-\d+/.test(recName);
+}
+
+function parseE2EStep(recName) {
+  var m = recName.match(/^([^/]+)\/e2e-([^/]+)\/step-(\d+)-(.+?)(?:_\d+)?$/);
+  if (!m) {
+    m = recName.match(/^([^/]+)_\d+\/e2e-([^/]+)_\d+\/step-(\d+)-(.+?)(?:_\d+)?$/);
+  }
+  if (!m) return null;
+  return { provider: m[1].replace(/_\d+$/, ""), pipeline: m[2].replace(/_\d+$/, ""), stepNum: parseInt(m[3]), stepName: m[4].replace(/_\d+$/, "") };
+}
+
+function getE2ERecordingName(rec) {
+  var parts = rec.name.split("/");
+  var clean = parts.map(function(p) { return p.replace(/_\d+$/, ""); });
+  return clean.join("/");
+}
+
+function detectStepOutputs(rec) {
+  var outputs = {};
+  for (var i = 0; i < rec.entries.length; i++) {
+    var text = rec.entries[i].response && rec.entries[i].response.content && rec.entries[i].response.content.text;
+    if (!text) continue;
+    try {
+      var body = JSON.parse(text);
+      if (body.data && Array.isArray(body.data) && body.data[0] && body.data[0].url) {
+        outputs.image_url = body.data[0].url;
+      }
+      if (body.request_id) outputs.request_id = body.request_id;
+      if (body.video && body.video.url) outputs.video_url = body.video.url;
+      if (body.data && body.data.taskId) outputs.task_id = body.data.taskId;
+    } catch(e) {}
+  }
+  return outputs;
+}
+
+function displayName(recName) {
+  var parts = recName.split("/");
+  var provider = parts[0].replace(/_\d+$/, "");
+  var test = parts.length > 1 ? parts[1].replace(/_\d+$/, "") : parts[0];
+  return { provider: provider, test: test };
+}
+
+function entryLabel(entry) {
+  try {
+    var u = new URL(entry.request.url);
+    var segments = u.pathname.split("/").filter(Boolean);
+    var last = segments[segments.length - 1] || u.pathname;
+    return entry.request.method + " /" + last;
+  } catch(e) { return entry.request.method; }
+}
+
+function getVideoRequestId(rec) {
+  for (var i = 0; i < rec.entries.length; i++) {
+    var entry = rec.entries[i];
+    var url = entry.request.url || "";
+    if (url.indexOf("/videos/generations") !== -1 || url.indexOf("/videos/edits") !== -1) {
+      try {
+        var body = JSON.parse(entry.response.content.text || "{}");
+        if (body.request_id) return body.request_id;
+      } catch(e) {}
+    }
+  }
+  return null;
+}
+
+function getKieTaskId(rec) {
+  for (var i = rec.entries.length - 1; i >= 0; i--) {
+    var entry = rec.entries[i];
+    var url = entry.request.url || "";
+    if (url.indexOf("/api/v1/jobs/createTask") !== -1) {
+      try {
+        var body = JSON.parse(entry.response.content.text || "{}");
+        if (body.data && body.data.taskId) return body.data.taskId;
+      } catch(e) {}
+    }
+  }
+  return null;
+}
+
+/* === Rendering Utilities === */
+function escapeHtml(str) {
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function inferMimeType(b64) {
+  if (b64.startsWith("/9j/")) return "image/jpeg";
+  if (b64.startsWith("iVBOR")) return "image/png";
+  if (b64.startsWith("R0lGOD")) return "image/gif";
+  if (b64.startsWith("UklGR")) return "image/webp";
+  return null;
+}
+
+function syntaxHighlight(json) {
+  if (typeof json !== "string") json = JSON.stringify(json, null, 2);
+  return json
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"([^"]+)"\s*:/g, '<span class="json-key">"$1"</span>:')
+    .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g, ': <span class="json-num">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
+    .replace(/: (null)/g, ': <span class="json-null">$1</span>');
+}
+
+function inlineMediaPreviews(html) {
+  // b64_json keys (xAI image responses)
+  html = html.replace(
+    /(<span class="json-key">"b64_json"<\/span>:\s*<span class="json-str">")(([A-Za-z0-9+\/=]{40})([A-Za-z0-9+\/=]*))"<\/span>/g,
+    function(match, prefix, fullB64, first40) {
+      var mime = inferMimeType(fullB64) || "image/jpeg";
+      return prefix + first40 + '...<span class="b64-truncated">[' + fullB64.length + ' chars]</span>"</span>' +
+        '<img class="b64-img-preview" src="data:' + mime + ';base64,' + fullB64 + '">';
+    }
+  );
+  // "data" keys with 100+ base64 chars
+  html = html.replace(
+    /(<span class="json-key">"data"<\/span>:\s*<span class="json-str">")(([A-Za-z0-9+\/=]{100,}))"<\/span>/g,
+    function(match, prefix, fullB64) {
+      var mime = inferMimeType(fullB64);
+      if (!mime) return match;
+      return prefix + fullB64.substring(0, 40) + '...<span class="b64-truncated">[' + fullB64.length + ' chars]</span>"</span>' +
+        '<img class="b64-img-preview" src="data:' + mime + ';base64,' + fullB64 + '">';
+    }
+  );
+  // "url" keys with data:image URIs
+  html = html.replace(
+    /(<span class="json-key">"url"<\/span>:\s*<span class="json-str">")(data:image\/[a-z+]+;base64,([A-Za-z0-9+\/=]{40})([A-Za-z0-9+\/=]*))"<\/span>/g,
+    function(match, prefix, fullUri) {
+      return prefix + fullUri.substring(0, 40) + '...<span class="b64-truncated">[' + fullUri.length + ' chars]</span>"</span>' +
+        '<img class="b64-img-preview" src="' + fullUri + '">';
+    }
+  );
+  // "url" keys with HTTP image URLs
+  html = html.replace(
+    /(<span class="json-key">"url"<\/span>:\s*<span class="json-str">")(https?:\/\/[^"]*\.(?:jpe?g|png|gif|webp|svg)(?:[^"]*)?)"<\/span>/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><img class="b64-img-preview" src="' + fullUrl + '">';
+    }
+  );
+  // "url" keys with HTTP video URLs
+  html = html.replace(
+    /(<span class="json-key">"url"<\/span>:\s*<span class="json-str">")(https?:\/\/[^"]*\.(?:mp4|webm|mov|ogg)(?:[^"]*)?)"<\/span>/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><video class="video-preview" controls src="' + fullUrl + '"></video>';
+    }
+  );
+  // "video_url" keys with HTTP URLs
+  html = html.replace(
+    /(<span class="json-key">"video_url"<\/span>:\s*<span class="json-str">")(https?:\/\/[^"]*)"<\/span>/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><video class="video-preview" controls src="' + fullUrl + '"></video>';
+    }
+  );
+  // "url" keys with HTTP audio URLs
+  html = html.replace(
+    /(<span class="json-key">"url"<\/span>:\s*<span class="json-str">")(https?:\/\/[^"]*\.(?:mp3|wav|flac|aac)(?:[^"]*)?)"<\/span>/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><audio class="audio-preview" controls src="' + fullUrl + '"></audio>';
+    }
+  );
+  // Generic image URLs in any string value
+  html = html.replace(
+    /(<span class="json-str">")(https?:\/\/[^"]*\.(?:jpe?g|png|gif|webp|svg)(?:\?[^"]*)?)"<\/span>(?!<img)/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><img class="b64-img-preview" src="' + fullUrl + '">';
+    }
+  );
+  // Generic video URLs in any string value
+  html = html.replace(
+    /(<span class="json-str">")(https?:\/\/[^"]*\.(?:mp4|webm|mov)(?:\?[^"]*)?)"<\/span>(?!<video)/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><video class="video-preview" controls src="' + fullUrl + '"></video>';
+    }
+  );
+  // Generic audio URLs in any string value
+  html = html.replace(
+    /(<span class="json-str">")(https?:\/\/[^"]*\.(?:mp3|wav|flac|aac)(?:\?[^"]*)?)"<\/span>(?!<audio)/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><audio class="audio-preview" controls src="' + fullUrl + '"></audio>';
+    }
+  );
+  // "task_id" / "taskId" keys — clickable preview
+  html = html.replace(
+    /(<span class="json-key">"task_?[iI]d"<\/span>:\s*<span class="json-str">")(([a-f0-9]{20,}))"<\/span>/gi,
+    function(match, prefix, taskId) {
+      return prefix + taskId + '"</span>' +
+        ' <a href="#" class="task-id-preview" data-taskid="' + taskId + '" style="color:#89b4fa;font-size:11px;text-decoration:none" title="Preview source task">[preview]</a>' +
+        '<div class="task-id-result" data-for="' + taskId + '"></div>';
+    }
+  );
+  // "url" keys with HTTP URLs, no recognized extension — try as image
+  html = html.replace(
+    /(<span class="json-key">"url"<\/span>:\s*<span class="json-str">")(https?:\/\/[^"]+)"<\/span>(?!<img|<video|<audio)/gi,
+    function(match, prefix, fullUrl) {
+      return prefix + fullUrl + '"</span><img class="b64-img-preview" src="' + fullUrl + '" onerror="this.style.display=&apos;none&apos;">';
+    }
+  );
+  return html;
+}
+
+function redactAuth(val) { return /^bearer\s/i.test(val) ? "Bearer ***" : val; }
+
+function wrapBody(rawText, highlightedHtml) {
+  var escaped = rawText.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+  return '<div class="body-wrap"><button class="copy-btn" data-raw="' + escaped + '"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button><pre class="body">' + highlightedHtml + '</pre></div>';
+}
+
+function titleCaseHeader(name) {
+  return name.replace(/\b[a-z]/g, function(c) { return c.toUpperCase(); });
+}
+
+function renderHeaders(headers) {
+  var lines = [];
+  var raw = [];
+  for (var i = 0; i < headers.length; i++) {
+    var h = headers[i];
+    var name = titleCaseHeader(h.name);
+    var val = h.name.toLowerCase() === "authorization" ? redactAuth(h.value) : h.value;
+    lines.push('<span class="json-key">' + name + '</span>: <span class="json-str">' + val + '</span>');
+    raw.push(name + ": " + val);
+  }
+  return wrapBody(raw.join("\n"), lines.join("\n"));
+}
+
+function tryParseJson(text) {
+  try { return JSON.stringify(JSON.parse(text), null, 2); } catch(e) { return text; }
+}
+
+function buildTransactionText(entry) {
+  var req = entry.request;
+  var res = entry.response;
+  var lines = [];
+  lines.push("REQUEST");
+  try { lines.push(req.method + " " + new URL(req.url).pathname); } catch(e) { lines.push(req.method + " " + req.url); }
+  for (var i = 0; i < req.headers.length; i++) {
+    var h = req.headers[i];
+    var val = h.name.toLowerCase() === "authorization" ? redactAuth(h.value) : h.value;
+    lines.push(titleCaseHeader(h.name) + ": " + val);
+  }
+  if (req.postData && req.postData.text) {
+    lines.push("");
+    lines.push(tryParseJson(req.postData.text));
+  }
+  lines.push("");
+  lines.push("RESPONSE " + res.status + " " + res.statusText);
+  for (var j = 0; j < res.headers.length; j++) {
+    var rh = res.headers[j];
+    lines.push(titleCaseHeader(rh.name) + ": " + rh.value);
+  }
+  if (res.content && res.content.text) {
+    lines.push("");
+    lines.push(tryParseJson(res.content.text));
+  }
+  return lines.join("\n");
+}
+
+/* === Async Status Rendering === */
+function renderCheckResult(data) {
+  var html = '<div class="pane-label">Video Status</div>';
+  html += '<span class="status-badge ' + data.status + '">' + data.status + '</span>';
+  if (typeof data.progress === "number") {
+    var pct = data.progress > 1 ? data.progress : data.progress * 100;
+    html += '<span style="font-size:13px;color:#a6adc8">' + Math.round(pct) + '%</span>';
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+  }
+  if (data.video && data.video.url) {
+    html += '<video controls src="' + data.video.url + '" style="max-width:100%;max-height:360px;border-radius:6px;border:1px solid #313244;display:block;margin:8px 0"></video>';
+    html += '<div style="margin-top:4px"><a href="' + data.video.url + '" target="_blank" style="color:#89b4fa;font-size:12px">Open in new tab</a></div>';
+  }
+  html += '<pre class="body">' + syntaxHighlight(JSON.stringify(data, null, 2)) + '</pre>';
+  return html;
+}
+
+function renderKieCheckResult(data) {
+  var rec = data.data || data;
+  var html = '<div class="pane-label">KIE Task Status</div>';
+  var state = rec.state || "unknown";
+  var badgeClass = state === "success" ? "done" : state === "fail" ? "failed" : "pending";
+  html += '<span class="status-badge ' + badgeClass + '">' + state + '</span>';
+  if (typeof rec.progress === "number") {
+    html += '<span style="font-size:13px;color:#a6adc8"> ' + rec.progress + '%</span>';
+    html += '<div class="progress-bar"><div class="progress-fill" style="width:' + rec.progress + '%"></div></div>';
+  }
+  if (rec.resultJson) {
+    try {
+      var result = JSON.parse(rec.resultJson);
+      if (result.resultUrls && result.resultUrls.length) {
+        for (var i = 0; i < result.resultUrls.length; i++) {
+          var u = result.resultUrls[i];
+          if (/\.mp4|video/i.test(u)) {
+            html += '<video controls src="' + u + '" style="max-width:100%;max-height:360px;border-radius:6px;border:1px solid #313244;display:block;margin:8px 0"></video>';
+          } else if (/\.png|\.jpg|\.jpeg|\.webp|image/i.test(u)) {
+            html += '<img class="b64-img-preview" src="' + u + '">';
+          } else if (/\.mp3|\.wav|\.flac|\.aac|audio/i.test(u)) {
+            html += '<audio class="audio-preview" controls src="' + u + '"></audio>';
+          }
+          html += '<div style="margin-top:4px"><a href="' + u + '" target="_blank" style="color:#89b4fa;font-size:12px">Open in new tab</a></div>';
+        }
+      }
+    } catch(e) {}
+  }
+  html += '<pre class="body">' + syntaxHighlight(JSON.stringify(data, null, 2)) + '</pre>';
+  return html;
+}
+
+function checkKieTask(taskId, targetEl, gen) {
+  targetEl.innerHTML = '<span style="color:#a6adc8;font-size:12px">Loading...</span>';
+  fetch("/api/check-kie-task", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ task_id: taskId }),
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (gen !== undefined && renderGeneration !== gen) return;
+    if (data.error) {
+      targetEl.innerHTML = '<span style="color:#f38ba8;font-size:12px">' + data.error + '</span>';
+    } else {
+      targetEl.innerHTML = renderKieCheckResult(data);
+    }
+  }).catch(function(err) {
+    if (gen !== undefined && renderGeneration !== gen) return;
+    targetEl.innerHTML = '<span style="color:#f38ba8;font-size:12px">Error: ' + err.message + '</span>';
+  });
+}
+
+function autoEvalKieTaskIds(gen) {
+  var taskLinks = document.querySelectorAll(".task-id-preview");
+  taskLinks.forEach(function(link) {
+    var taskId = link.dataset.taskid;
+    var resultDiv = document.querySelector('.task-id-result[data-for="' + taskId + '"]');
+    if (resultDiv && !resultDiv.innerHTML) {
+      checkKieTask(taskId, resultDiv, gen);
+    }
+  });
+}
+
+function autoEvalFromResponse(rec, entryIdx, gen) {
+  var entry = rec.entries[entryIdx];
+  if (!entry) return;
+  try {
+    var body = JSON.parse(entry.response.content.text || "{}");
+    var taskId = body.data && body.data.taskId;
+    if (!taskId) return;
+    var resultDiv = document.getElementById("check-result-" + entryIdx);
+    if (resultDiv) checkKieTask(taskId, resultDiv, gen);
+  } catch(e) {}
+}
+
+function autoEvalXaiVideo(rec, gen) {
+  var reqId = getVideoRequestId(rec);
+  if (!reqId) return;
+  var targetIdx = rec.entries.length - 1;
+  for (var i = 0; i < rec.entries.length; i++) {
+    var url = rec.entries[i].request.url || "";
+    if (url.indexOf("/videos/generations") !== -1 || url.indexOf("/videos/edits") !== -1) {
+      targetIdx = i; break;
+    }
+  }
+  var resultDiv = document.getElementById("check-result-" + targetIdx);
+  if (!resultDiv) return;
+  resultDiv.innerHTML = '<span style="color:#a6adc8;font-size:12px">Loading video status...</span>';
+  fetch("/api/check-video", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ request_id: reqId }),
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (renderGeneration !== gen) return;
+    if (data.error) {
+      resultDiv.innerHTML = '<span style="color:#f38ba8;font-size:12px">' + data.error + '</span>';
+    } else {
+      resultDiv.innerHTML = renderCheckResult(data);
+    }
+  }).catch(function(err) {
+    if (renderGeneration !== gen) return;
+    resultDiv.innerHTML = '<span style="color:#f38ba8;font-size:12px">Error: ' + err.message + '</span>';
+  });
+}
+
+/* === Info Extraction === */
+function extractInfo(rec) {
+  var info = { model: null, endpoint: null, prompts: [], params: {}, assets: [] };
+  var entry = rec.entries[0];
+  if (!entry) return info;
+
+  try {
+    var url = new URL(entry.request.url);
+    info.endpoint = entry.request.method + " " + url.pathname;
+  } catch(e) {
+    info.endpoint = entry.request.method + " " + entry.request.url;
+  }
+
+  if (!entry.request.postData || !entry.request.postData.text) {
+    try {
+      var qurl = new URL(entry.request.url);
+      qurl.searchParams.forEach(function(v, k) { info.params[k] = v; });
+    } catch(e) {}
+    return info;
+  }
+
+  try {
+    var body = JSON.parse(entry.request.postData.text);
+    info.model = body.model || null;
+
+    // Messages (OpenAI/Anthropic format)
+    if (body.messages && Array.isArray(body.messages)) {
+      for (var i = 0; i < body.messages.length; i++) {
+        var msg = body.messages[i];
+        if (typeof msg.content === "string") {
+          info.prompts.push({ role: msg.role, text: msg.content });
+        } else if (Array.isArray(msg.content)) {
+          var textParts = [];
+          for (var j = 0; j < msg.content.length; j++) {
+            var part = msg.content[j];
+            if (part.type === "text") {
+              textParts.push(part.text);
+            } else if (part.type === "image_url" && part.image_url) {
+              info.assets.push(part.image_url.url);
+            } else if (part.type === "image" && part.source && part.source.data) {
+              var mime = part.source.media_type || inferMimeType(part.source.data) || "image/png";
+              info.assets.push("data:" + mime + ";base64," + part.source.data);
+            }
+          }
+          if (textParts.length) {
+            info.prompts.push({ role: msg.role, text: textParts.join("\n") });
+          }
+        }
+      }
+    }
+
+    // Top-level prompt
+    if (body.prompt && typeof body.prompt === "string") {
+      info.prompts.push({ role: "prompt", text: body.prompt });
+    }
+    // input.prompt (KIE)
+    if (body.input && body.input.prompt) {
+      info.prompts.push({ role: "prompt", text: body.input.prompt });
+    }
+
+    // Assets
+    if (body.image && body.image.url) info.assets.push(body.image.url);
+    if (body.reference_images && Array.isArray(body.reference_images)) {
+      for (var k = 0; k < body.reference_images.length; k++) {
+        if (body.reference_images[k].url) info.assets.push(body.reference_images[k].url);
+      }
+    }
+    if (body.input && body.input.image_urls && Array.isArray(body.input.image_urls)) {
+      for (var k2 = 0; k2 < body.input.image_urls.length; k2++) {
+        info.assets.push(body.input.image_urls[k2]);
+      }
+    }
+
+    // Params
+    var skipKeys = { messages: 1, prompt: 1, model: 1, image: 1, input: 1, reference_images: 1 };
+    for (var pk in body) {
+      if (!skipKeys[pk] && body.hasOwnProperty(pk)) info.params[pk] = body[pk];
+    }
+    if (body.input && typeof body.input === "object") {
+      var inputSkip = { prompt: 1, image_urls: 1, video_urls: 1, input_urls: 1 };
+      for (var ik in body.input) {
+        if (!inputSkip[ik] && body.input.hasOwnProperty(ik)) info.params[ik] = body.input[ik];
+      }
+    }
+  } catch(e) {}
+  return info;
+}
+
+/* === Column Renderers === */
+function renderInfoColumn(rec) {
+  var col = document.getElementById("col-info");
+  var info = extractInfo(rec);
+  var dn = displayName(rec.name);
+  var html = "";
+
+  // Title & status
+  html += '<div class="info-section">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+  html += '<span class="dot ' + rec.gitStatus + '"></span>';
+  html += '<span style="font-size:14px;font-weight:600">' + escapeHtml(dn.test) + '</span>';
+  if (rec.gitStatus !== "clean") html += '<span class="review-badge needs-review">review</span>';
+  html += '</div>';
+  html += '</div>';
+
+  // Model & endpoint
+  if (info.model || info.endpoint) {
+    html += '<div class="info-section">';
+    if (info.model) {
+      html += '<div class="info-label">Model</div>';
+      html += '<span class="info-model">' + escapeHtml(info.model) + '</span>';
+    }
+    if (info.endpoint) html += '<div class="info-endpoint">' + escapeHtml(info.endpoint) + '</div>';
+    html += '</div>';
+  }
+
+  // Prompts
+  if (info.prompts.length) {
+    html += '<div class="info-section">';
+    html += '<div class="info-label">Prompt</div>';
+    for (var i = 0; i < info.prompts.length; i++) {
+      var p = info.prompts[i];
+      html += '<div class="info-prompt"><div class="role-tag">' + escapeHtml(p.role) + '</div><br>' + escapeHtml(p.text) + '</div>';
+      if (i < info.prompts.length - 1) html += '<div style="height:8px"></div>';
+    }
+    html += '</div>';
+  }
+
+  // Assets
+  if (info.assets.length) {
+    html += '<div class="info-section">';
+    html += '<div class="info-label">Assets (' + info.assets.length + ')</div>';
+    for (var a = 0; a < info.assets.length; a++) {
+      html += '<img class="info-asset" src="' + info.assets[a] + '" onerror="this.style.display=&apos;none&apos;">';
+    }
+    html += '</div>';
+  }
+
+  // Params
+  var paramKeys = Object.keys(info.params);
+  if (paramKeys.length) {
+    html += '<div class="info-section">';
+    html += '<div class="info-label">Parameters</div>';
+    html += '<div class="info-params">';
+    for (var pi = 0; pi < paramKeys.length; pi++) {
+      var pKey = paramKeys[pi];
+      var pVal = info.params[pKey];
+      var pStr = typeof pVal === "object" ? JSON.stringify(pVal) : String(pVal);
+      if (pStr.length > 60) pStr = pStr.substring(0, 57) + "...";
+      html += '<span class="info-param"><span class="pk">' + escapeHtml(pKey) + ':</span> <span class="pv">' + escapeHtml(pStr) + '</span></span>';
+    }
+    html += '</div></div>';
+  }
+
+  // Entry count
+  if (rec.entries.length > 1) {
+    html += '<div class="info-entries-note">' + rec.entries.length + ' HTTP entries in this recording</div>';
+  }
+
+  // Pipeline context for E2E
+  var parsed = parseE2EStep(rec.name);
+  if (parsed) {
+    var pipeSteps = [];
+    for (var si = 0; si < recordings.length; si++) {
+      var pp = parseE2EStep(recordings[si].name);
+      if (pp && pp.pipeline === parsed.pipeline && pp.provider === parsed.provider) pipeSteps.push(pp);
+    }
+    html += '<div class="pipeline-context">';
+    html += '<span class="pipe-name">e2e-' + escapeHtml(parsed.pipeline) + '</span>';
+    html += '<span class="pipe-step">Step ' + parsed.stepNum + ' of ' + pipeSteps.length + ': ' + escapeHtml(parsed.stepName) + '</span>';
+    if (parsed.stepNum > 1) {
+      var prevKey = parsed.provider + "/e2e-" + parsed.pipeline + "/step-" + (parsed.stepNum - 1);
+      for (var epk in e2eOutputs) {
+        if (epk.indexOf(prevKey) === 0 || epk === prevKey) {
+          var prevOut = e2eOutputs[epk];
+          var inputKeys = Object.keys(prevOut);
+          if (inputKeys.length) {
+            html += '<span class="pipe-input">Input: ' + inputKeys.join(", ") + ' from step ' + (parsed.stepNum - 1) + '</span>';
+          }
+          break;
+        }
+      }
+    }
+    html += '</div>';
+  }
+
+  col.innerHTML = html;
+}
+
+function renderRequestColumn(rec) {
+  var col = document.getElementById("col-requests");
+  var html = '<div class="pane-label">Requests (' + rec.entries.length + ')</div>';
+
+  for (var i = 0; i < rec.entries.length; i++) {
+    var entry = rec.entries[i];
+    var req = entry.request;
+    var label = entryLabel(entry);
+    var status = entry.response.status + " " + entry.response.statusText;
+
+    html += '<div class="entry-card" id="entry-req-' + i + '">';
+    html += '<div class="entry-header">';
+    html += '<span class="entry-num">' + (i + 1) + '</span>';
+    html += '<span class="entry-label">' + escapeHtml(label) + '</span>';
+    html += '<span class="entry-status">' + escapeHtml(status) + '</span>';
+    html += '</div>';
+
+    html += '<details class="headers-details"><summary>Headers (' + req.headers.length + ')</summary>';
+    html += renderHeaders(req.headers);
+    html += '</details>';
+
+    if (req.postData && req.postData.text) {
+      var bodyText = tryParseJson(req.postData.text);
+      html += wrapBody(bodyText, inlineMediaPreviews(syntaxHighlight(bodyText)));
+    }
+
+    html += '</div>';
+  }
+
+  col.innerHTML = html;
+}
+
+function renderResponseColumn(rec) {
+  var col = document.getElementById("col-responses");
+  var html = '<div class="pane-label">Responses (' + rec.entries.length + ')</div>';
+
+  for (var i = 0; i < rec.entries.length; i++) {
+    var entry = rec.entries[i];
+    var res = entry.response;
+
+    html += '<div class="alignment-spacer" id="spacer-res-' + i + '"></div>';
+    html += '<div class="entry-card" id="entry-res-' + i + '">';
+    html += '<div class="entry-header">';
+    html += '<span class="entry-num" style="background:#a6e3a1">' + (i + 1) + '</span>';
+    html += '<span class="entry-label">' + res.status + ' ' + escapeHtml(res.statusText) + '</span>';
+    html += '</div>';
+
+    html += '<details class="headers-details"><summary>Headers (' + res.headers.length + ')</summary>';
+    html += renderHeaders(res.headers);
+    html += '</details>';
+
+    if (res.content && res.content.text) {
+      var bodyText = tryParseJson(res.content.text);
+      html += wrapBody(bodyText, inlineMediaPreviews(syntaxHighlight(bodyText)));
+    }
+
+    html += '<div id="check-result-' + i + '"></div>';
+    html += '</div>';
+  }
+
+  col.innerHTML = html;
+}
+
+function alignResponses(entryCount) {
+  requestAnimationFrame(function() {
+    for (var i = 0; i < entryCount; i++) {
+      var sp = document.getElementById("spacer-res-" + i);
+      if (sp) sp.style.height = "0px";
+    }
+    for (var i = 0; i < entryCount; i++) {
+      var reqCard = document.getElementById("entry-req-" + i);
+      var resCard = document.getElementById("entry-res-" + i);
+      var spacer = document.getElementById("spacer-res-" + i);
+      if (!reqCard || !resCard || !spacer) continue;
+      var diff = reqCard.offsetTop - resCard.offsetTop;
+      if (diff > 0) spacer.style.height = diff + "px";
+    }
+  });
+}
+
+/* === Workflow Renderers === */
+function renderWorkflowInfo(wf, stepIdx) {
+  var col = document.getElementById("col-info");
+  var step = wf.steps[stepIdx];
+  var html = '';
+
+  html += '<div class="info-section">';
+  html += '<div class="info-label">Workflow</div>';
+  html += '<div style="font-size:15px;font-weight:600;color:#cba6f7;margin-bottom:8px">' + escapeHtml(wf.name) + '</div>';
+  html += '</div>';
+
+  html += '<div class="info-section">';
+  html += '<div class="info-label">Steps</div>';
+  html += '<div class="wf-step-list">';
+  for (var i = 0; i < wf.steps.length; i++) {
+    var s = wf.steps[i];
+    var isActive = i === stepIdx;
+    var isLocked = wf.layout !== "compare" && s.status === "locked";
+    html += '<div class="wf-step-item' + (isActive ? " active" : "") + (isLocked ? " locked" : "") + '" data-wf="' + wf.id + '" data-step="' + i + '">';
+    html += '<span class="step-num">' + (i + 1) + '.</span>';
+    html += '<span class="dot ' + s.status + '"></span>';
+    html += escapeHtml(s.name);
+    html += '</div>';
+  }
+  html += '</div></div>';
+
+  if (step) {
+    html += '<div class="info-section">';
+    html += '<div class="info-label">Step ' + (stepIdx + 1) + '</div>';
+    html += '<div class="step-description">' + escapeHtml(step.description) + '</div>';
+    html += '</div>';
+  }
+
+  col.innerHTML = html;
+
+  col.querySelectorAll(".wf-step-item").forEach(function(el) {
+    el.addEventListener("click", function() {
+      var wfId = el.dataset.wf;
+      var si = parseInt(el.dataset.step);
+      var w = workflowData.find(function(ww) { return ww.id === wfId; });
+      if (w && w.steps[si] && w.steps[si].status === "locked") return;
+      selectedWfStep = si;
+      render();
+    });
+  });
+}
+
+function renderWorkflowRequest(wf, stepIdx) {
+  var col = document.getElementById("col-requests");
+  var step = wf.steps[stepIdx];
+  var html = '<div class="pane-label">Request</div>';
+
+  if (step && step.request) {
+    html += '<div class="entry-card">';
+    html += '<div class="entry-header">';
+    html += '<span class="entry-num">1</span>';
+    html += '<span class="entry-label">' + escapeHtml(step.request.method + ' ' + step.request.url) + '</span>';
+    html += '</div>';
+    if (step.request.body) {
+      var bodyStr = JSON.stringify(step.request.body, null, 2);
+      html += wrapBody(bodyStr, inlineMediaPreviews(syntaxHighlight(bodyStr)));
+    }
+    html += '</div>';
+  } else {
+    html += '<div class="empty">Click <strong>Run</strong> to execute this step</div>';
+  }
+
+  col.innerHTML = html;
+}
+
+function renderWorkflowResponse(wf, stepIdx) {
+  var col = document.getElementById("col-responses");
+  var step = wf.steps[stepIdx];
+  var html = '<div class="pane-label">Response</div>';
+
+  if (step && step.response) {
+    html += '<div class="entry-card">';
+    html += '<div class="entry-header">';
+    html += '<span class="entry-num" style="background:#a6e3a1">1</span>';
+    html += '<span class="entry-label">' + step.response.status + '</span>';
+    html += '</div>';
+    var resBody = JSON.stringify(step.response.body, null, 2);
+    html += wrapBody(resBody, inlineMediaPreviews(syntaxHighlight(resBody)));
+    html += '</div>';
+
+    if (step.outputs && Object.keys(step.outputs).length) {
+      html += '<div class="pane-label" style="margin-top:16px">Outputs</div>';
+      var outStr = JSON.stringify(step.outputs, null, 2);
+      html += '<div class="entry-card">' + wrapBody(outStr, inlineMediaPreviews(syntaxHighlight(outStr))) + '</div>';
+    }
+    html += '<div id="check-result"></div>';
+  } else {
+    html += '<div class="empty">Click Run to execute this step</div>';
+  }
+
+  col.innerHTML = html;
+}
+
+function renderCompareInfo(wf) {
+  var col = document.getElementById("col-info");
+  var html = '';
+
+  html += '<div class="info-section">';
+  html += '<div class="info-label">Workflow</div>';
+  html += '<div style="font-size:15px;font-weight:600;color:#cba6f7;margin-bottom:8px">' + escapeHtml(wf.name) + '</div>';
+  html += '</div>';
+
+  var setupInfo = wf.setupOutputs || {};
+  if (Object.keys(setupInfo).length > 0) {
+    html += '<div class="info-section">';
+    html += '<div class="info-label">Setup</div>';
+    for (var sk in setupInfo) {
+      var sv = setupInfo[sk];
+      var isImg = /\.(png|jpg|jpeg|gif|webp)$/i.test(sv);
+      html += '<div style="margin:4px 0;font-size:12px"><span style="color:#cba6f7">' + escapeHtml(sk) + ':</span> ';
+      if (isImg) {
+        html += '<img src="' + sv + '" style="max-height:80px;border-radius:4px;vertical-align:middle;margin-left:4px">';
+      } else {
+        html += '<span style="color:#a6adc8">' + escapeHtml(sv.substring(0, 80)) + (sv.length > 80 ? "\u2026" : "") + '</span>';
+      }
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+
+  var prompt = "";
+  if (wf.steps[0] && wf.steps[0].request && wf.steps[0].request.body) {
+    var body = wf.steps[0].request.body;
+    prompt = (body.input && body.input.prompt) || "";
+  }
+  if (prompt) {
+    html += '<div class="info-section">';
+    html += '<div class="info-label">Prompt</div>';
+    html += '<div class="info-prompt">' + escapeHtml(prompt) + '</div>';
+    html += '</div>';
+  }
+
+  html += '<div class="info-section">';
+  html += '<div class="info-label">Models (' + wf.steps.length + ')</div>';
+  for (var s = 0; s < wf.steps.length; s++) {
+    var step = wf.steps[s];
+    html += '<div style="display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px">';
+    html += '<span class="dot ' + step.status + '"></span>';
+    html += '<span style="color:#cba6f7;font-weight:600">' + escapeHtml(step.name) + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  col.innerHTML = html;
+}
+
+function renderCompareGrid(wf) {
+  var col = document.getElementById("col-requests");
+  var html = '<div class="pane-label">Comparison</div>';
+  html += '<div class="compare-grid">';
+
+  for (var s = 0; s < wf.steps.length; s++) {
+    var step = wf.steps[s];
+    html += '<div class="compare-cell">';
+    html += '<div class="model-header"><span class="dot ' + step.status + '"></span><span class="model-name">' + escapeHtml(step.name) + '</span></div>';
+    html += '<div class="model-desc">' + escapeHtml(step.description) + '</div>';
+
+    var mediaUrl = (step.outputs && (step.outputs.video_url || step.outputs.image_url)) || "";
+    var isVideo = /\.(mp4|webm|mov)$/i.test(mediaUrl) || (step.outputs && step.outputs.video_url);
+    if (mediaUrl && isVideo) {
+      html += '<video class="compare-image" src="' + mediaUrl + '" controls muted style="max-width:100%"></video>';
+    } else if (mediaUrl) {
+      html += '<img class="compare-image" src="' + mediaUrl + '" onerror="this.style.display=&apos;none&apos;">';
+    } else if (step.status === "failed") {
+      html += '<div class="cell-status" style="color:#f38ba8">' + escapeHtml(step.error || "Failed") + '</div>';
+    } else if (step.response) {
+      var asyncKeys = step.asyncOutputKeys || [];
+      var asyncDone = asyncKeys.length === 0 || (step.outputs && asyncKeys.every(function(k) { return k in step.outputs; }));
+      if (!asyncDone) {
+        html += '<div class="cell-status" style="color:#89b4fa">Generating\u2026 click Refresh All</div>';
+      }
+    } else {
+      html += '<div class="cell-status">Ready</div>';
+    }
+
+    if (step.request && step.request.body) {
+      html += '<details style="margin-top:8px"><summary style="cursor:pointer;color:#6c7086;font-size:11px">Request Payload</summary>';
+      html += '<pre class="body" style="font-size:11px;max-height:200px">' + syntaxHighlight(JSON.stringify(step.request.body, null, 2)) + '</pre>';
+      html += '</details>';
+    }
+    if (step.response) {
+      html += '<details style="margin-top:8px"><summary style="cursor:pointer;color:#6c7086;font-size:11px">Response JSON</summary>';
+      html += '<pre class="body" style="font-size:11px;max-height:200px">' + syntaxHighlight(JSON.stringify(step.response.body, null, 2)) + '</pre>';
+      html += '</details>';
+    }
+    html += '</div>';
+  }
+
+  html += '</div>';
+  col.innerHTML = html;
+}
+
+/* === Dropdown === */
+function getSelectionLabel() {
+  if (selectedWorkflow !== null) {
+    var wf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
+    if (wf) {
+      if (selectedWfStep !== null && wf.steps[selectedWfStep]) {
+        return wf.name + " \u2014 Step " + (selectedWfStep + 1) + ": " + wf.steps[selectedWfStep].name;
+      }
+      return wf.name;
+    }
+  }
+  if (selected !== null && recordings[selected]) {
+    var dn = displayName(recordings[selected].name);
+    return dn.provider + " / " + dn.test;
+  }
+  return "Select a recording...";
+}
+
+function populateDropdown() {
+  document.getElementById("test-selector-label").textContent = getSelectionLabel();
+  var dd = document.getElementById("test-selector-dropdown");
+  var html = "";
+
+  // Workflows
+  if (workflowData.length) {
+    html += '<div class="dd-section">Workflows</div>';
+    for (var w = 0; w < workflowData.length; w++) {
+      var wf = workflowData[w];
+      var isCollapsed = collapsedWorkflows[wf.id];
+      var arrowClass = isCollapsed ? " collapsed" : "";
+      var layoutBadge = wf.layout === "compare"
+        ? ' <span style="font-size:10px;color:#f9e2af;padding:1px 4px;background:#45475a;border-radius:3px">compare</span>'
+        : '';
+      html += '<div class="dd-pipe-label" data-wf="' + wf.id + '"><span class="dd-arrow' + arrowClass + '">\u25BE</span> ' + escapeHtml(wf.name) + layoutBadge + '</div>';
+      if (wf.layout !== "compare") {
+        for (var s = 0; s < wf.steps.length; s++) {
+          var step = wf.steps[s];
+          var isActive = selectedWorkflow === wf.id && selectedWfStep === s;
+          var hiddenClass = isCollapsed ? " dd-pipe-hidden" : "";
+          var lockedClass = step.status === "locked" ? " locked" : "";
+          html += '<div class="dd-wf-item' + (isActive ? " active" : "") + hiddenClass + lockedClass + '" data-wf="' + wf.id + '" data-step="' + s + '">';
+          html += '<span style="color:#6c7086;font-size:11px;min-width:16px">' + (s + 1) + '.</span>';
+          html += '<span class="dot ' + step.status + '"></span>';
+          html += escapeHtml(step.name) + '</div>';
+        }
+      }
+    }
+  }
+
+  // Recordings
+  var groups = {};
+  var groupOrder = [];
+  for (var i = 0; i < recordings.length; i++) {
+    var dn = displayName(recordings[i].name);
+    if (!groups[dn.provider]) { groups[dn.provider] = { regular: [], pipelines: {} }; groupOrder.push(dn.provider); }
+    var parsed = parseE2EStep(recordings[i].name);
+    if (parsed) {
+      var pipeKey = parsed.pipeline;
+      if (!groups[dn.provider].pipelines[pipeKey]) groups[dn.provider].pipelines[pipeKey] = [];
+      groups[dn.provider].pipelines[pipeKey].push({ idx: i, stepNum: parsed.stepNum, stepName: parsed.stepName, rec: recordings[i] });
+    } else {
+      groups[dn.provider].regular.push({ idx: i, test: dn.test, rec: recordings[i] });
+    }
+  }
+
+  for (var g = 0; g < groupOrder.length; g++) {
+    var provider = groupOrder[g];
+    var group = groups[provider];
+    html += '<div class="dd-section">' + escapeHtml(provider) + '</div>';
+
+    for (var j = 0; j < group.regular.length; j++) {
+      var item = group.regular[j];
+      var isActive = selected === item.idx;
+      var badge = item.rec.gitStatus === "clean" ? "" : '<span class="review-badge needs-review">review</span>';
+      html += '<div class="dd-item' + (isActive ? " active" : "") + '" data-idx="' + item.idx + '">';
+      html += '<span class="dot ' + item.rec.gitStatus + '"></span>' + escapeHtml(item.test) + badge + '</div>';
+    }
+
+    var pipeKeys = Object.keys(group.pipelines);
+    for (var p = 0; p < pipeKeys.length; p++) {
+      var pk = pipeKeys[p];
+      var steps = group.pipelines[pk].sort(function(a, b) { return a.stepNum - b.stepNum; });
+      var isColl = collapsedPipelines[provider + "/" + pk];
+      var arrCls = isColl ? " collapsed" : "";
+      html += '<div class="dd-pipe-label" data-pipe="' + provider + '/' + pk + '"><span class="dd-arrow' + arrCls + '">\u25BE</span> e2e-' + escapeHtml(pk) + '</div>';
+      for (var si = 0; si < steps.length; si++) {
+        var st = steps[si];
+        var stActive = selected === st.idx;
+        var stBadge = st.rec.gitStatus === "clean" ? "" : '<span class="review-badge needs-review">review</span>';
+        var hidCls = isColl ? " dd-pipe-hidden" : "";
+        html += '<div class="dd-pipe-step' + (stActive ? " active" : "") + hidCls + '" data-idx="' + st.idx + '">';
+        html += '<span style="color:#6c7086;font-size:11px;min-width:16px">' + st.stepNum + '.</span>';
+        html += '<span class="dot ' + st.rec.gitStatus + '"></span>';
+        html += escapeHtml(st.stepName) + stBadge + '</div>';
+      }
+    }
+  }
+
+  dd.innerHTML = html;
+
+  // Wire click handlers
+  dd.querySelectorAll(".dd-item").forEach(function(el) {
+    el.addEventListener("click", function(e) {
+      e.stopPropagation();
+      selected = parseInt(el.dataset.idx);
+      selectedWorkflow = null; selectedWfStep = null;
+      dropdownOpen = false; dd.classList.add("hidden");
+      render();
+    });
+  });
+  dd.querySelectorAll(".dd-pipe-step").forEach(function(el) {
+    el.addEventListener("click", function(e) {
+      e.stopPropagation();
+      selected = parseInt(el.dataset.idx);
+      selectedWorkflow = null; selectedWfStep = null;
+      dropdownOpen = false; dd.classList.add("hidden");
+      render();
+    });
+  });
+  dd.querySelectorAll(".dd-pipe-label").forEach(function(el) {
+    el.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var wfId = el.dataset.wf;
+      var pipe = el.dataset.pipe;
+      if (wfId) {
+        var wf = workflowData.find(function(w) { return w.id === wfId; });
+        if (wf && wf.layout === "compare") {
+          selectedWorkflow = wfId; selectedWfStep = null; selected = null;
+          dropdownOpen = false; dd.classList.add("hidden");
+          render();
+        } else {
+          collapsedWorkflows[wfId] = !collapsedWorkflows[wfId];
+          populateDropdown();
+        }
+      } else if (pipe) {
+        collapsedPipelines[pipe] = !collapsedPipelines[pipe];
+        populateDropdown();
+      }
+    });
+  });
+  dd.querySelectorAll(".dd-wf-item").forEach(function(el) {
+    el.addEventListener("click", function(e) {
+      e.stopPropagation();
+      var wfId = el.dataset.wf;
+      var stepIdx = parseInt(el.dataset.step);
+      var wf = workflowData.find(function(w) { return w.id === wfId; });
+      if (wf && wf.steps[stepIdx] && wf.steps[stepIdx].status === "locked") return;
+      selectedWorkflow = wfId; selectedWfStep = stepIdx; selected = null;
+      dropdownOpen = false; dd.classList.add("hidden");
+      render();
+    });
+  });
+}
+
+/* === Main Render === */
+function render() {
+  renderGeneration++;
+  var gen = renderGeneration;
+
+  populateDropdown();
+
+  var columnsEl = document.getElementById("columns");
+  var btn = document.getElementById("approve-btn");
+  var refreshBtn = document.getElementById("refresh-btn");
+  var runBtn = document.getElementById("run-btn");
+  var runAllBtn = document.getElementById("run-all-btn");
+  var refreshAllBtn = document.getElementById("refresh-all-btn");
+  var saveOutputBtn = document.getElementById("save-output-btn");
+  var resetBtn = document.getElementById("reset-btn");
+  var copyLlmBtn = document.getElementById("copy-llm-btn");
+  var statusMsg = document.getElementById("status-msg");
+
+  // Reset all buttons
+  runBtn.classList.add("hidden");
+  runAllBtn.classList.add("hidden");
+  refreshBtn.classList.add("hidden");
+  refreshAllBtn.classList.add("hidden");
+  saveOutputBtn.classList.add("hidden");
+  resetBtn.classList.add("hidden");
+  btn.disabled = true;
+  btn.textContent = "Approve";
+  copyLlmBtn.disabled = true;
+  statusMsg.textContent = "";
+  statusMsg.style.color = "#a6adc8";
+
+  // Disconnect previous alignment observer
+  if (alignObserver) { alignObserver.disconnect(); alignObserver = null; }
+
+  // Compare workflow mode
+  if (selectedWorkflow !== null) {
+    var compareWf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
+    if (compareWf && compareWf.layout === "compare" && selectedWfStep === null) {
+      columnsEl.classList.add("compare-mode");
+      renderCompareInfo(compareWf);
+      renderCompareGrid(compareWf);
+      document.getElementById("col-responses").innerHTML = "";
+
+      resetBtn.classList.remove("hidden");
+
+      var anyRunnable = compareWf.steps.some(function(s) { return (s.status === "ready" && !s.response) || s.status === "failed"; });
+      if (anyRunnable) { runAllBtn.classList.remove("hidden"); runAllBtn.disabled = false; }
+
+      var anyPending = compareWf.steps.some(function(s) {
+        if (!s.hasAsync || !s.response) return false;
+        var asyncKeys = s.asyncOutputKeys || [];
+        return asyncKeys.length > 0 && !(s.outputs && asyncKeys.every(function(k) { return k in s.outputs; }));
+      });
+      if (anyPending) { refreshAllBtn.classList.remove("hidden"); refreshAllBtn.disabled = false; }
+
+      var allDone = compareWf.steps.every(function(s) {
+        var asyncKeys = s.asyncOutputKeys || [];
+        return asyncKeys.length === 0 || (s.outputs && asyncKeys.every(function(k) { return k in s.outputs; }));
+      });
+      var allApproved = compareWf.steps.every(function(s) { return s.status === "completed"; });
+      btn.disabled = !allDone || allApproved;
+      btn.textContent = "Approve All";
+
+      if (!compareWf.steps.some(function(s) { return s.response; })) {
+        statusMsg.textContent = "Ready \u2014 click Run All"; statusMsg.style.color = "#f9e2af";
+      } else if (anyPending) {
+        statusMsg.textContent = "Generating\u2026 click Refresh All to poll"; statusMsg.style.color = "#89b4fa";
+      } else if (allDone && !allApproved) {
+        statusMsg.textContent = "All complete \u2014 review and approve"; statusMsg.style.color = "#a6e3a1";
+      } else if (allApproved) {
+        statusMsg.textContent = "All approved"; statusMsg.style.color = "#a6e3a1";
+      }
+      return;
+    }
+  }
+
+  columnsEl.classList.remove("compare-mode");
+
+  // Sequential workflow step mode
+  if (selectedWorkflow !== null && selectedWfStep !== null) {
+    var wf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
+    if (wf) {
+      var step = wf.steps[selectedWfStep];
+      renderWorkflowInfo(wf, selectedWfStep);
+      renderWorkflowRequest(wf, selectedWfStep);
+      renderWorkflowResponse(wf, selectedWfStep);
+
+      copyLlmBtn.disabled = !step.response;
+      resetBtn.classList.remove("hidden");
+
+      if ((step.status === "ready" && !step.response) || step.status === "failed") {
+        runBtn.classList.remove("hidden");
+        runBtn.disabled = false;
+        runBtn.dataset.wf = selectedWorkflow;
+        runBtn.dataset.step = String(selectedWfStep);
+      }
+
+      if (step.response && step.status !== "completed") {
+        var asyncKeys = step.asyncOutputKeys || [];
+        var asyncDone = asyncKeys.length === 0 || (step.outputs && asyncKeys.every(function(k) { return k in step.outputs; }));
+        btn.disabled = step.hasAsync && !asyncDone;
+        btn.textContent = selectedWfStep < wf.steps.length - 1 ? "Approve & Continue" : "Approve";
+      } else if (step.status === "completed") {
+        statusMsg.textContent = "Completed"; statusMsg.style.color = "#a6e3a1";
+      }
+
+      if (step.hasAsync && step.response && step.status !== "completed") {
+        refreshBtn.classList.remove("hidden");
+        refreshBtn.dataset.wfMode = "true";
+        refreshBtn.dataset.wf = selectedWorkflow;
+        refreshBtn.dataset.step = String(selectedWfStep);
+      }
+
+      if (step.status === "ready" && !step.response) {
+        statusMsg.textContent = "Ready \u2014 click Run"; statusMsg.style.color = "#f9e2af";
+      } else if (step.status === "ready" && step.response && step.hasAsync) {
+        statusMsg.textContent = "Running \u2014 click Refresh to poll"; statusMsg.style.color = "#89b4fa";
+      } else if (step.status === "ready" && step.response) {
+        statusMsg.textContent = "Review and approve"; statusMsg.style.color = "#f9e2af";
+      } else if (step.status === "failed") {
+        statusMsg.textContent = step.error || "Failed"; statusMsg.style.color = "#f38ba8";
+      }
+      return;
+    }
+  }
+
+  // Recording mode
+  if (selected !== null && recordings[selected]) {
+    var rec = recordings[selected];
+
+    renderInfoColumn(rec);
+    renderRequestColumn(rec);
+    renderResponseColumn(rec);
+
+    // Alignment
+    var entryCount = rec.entries.length;
+    alignResponses(entryCount);
+    if (typeof ResizeObserver !== "undefined" && entryCount > 1) {
+      alignObserver = new ResizeObserver(function() { alignResponses(entryCount); });
+      for (var oi = 0; oi < entryCount; oi++) {
+        var rc = document.getElementById("entry-req-" + oi);
+        var rsc = document.getElementById("entry-res-" + oi);
+        if (rc) alignObserver.observe(rc);
+        if (rsc) alignObserver.observe(rsc);
+      }
+    }
+
+    btn.disabled = rec.gitStatus === "clean";
+    copyLlmBtn.disabled = false;
+
+    if (rec.gitStatus === "clean") {
+      statusMsg.textContent = "Approved"; statusMsg.style.color = "#a6e3a1";
+    } else {
+      statusMsg.textContent = "Pending review \u2014 approve to stage for commit"; statusMsg.style.color = "#f38ba8";
+    }
+
+    var reqId = getVideoRequestId(rec);
+    var kieTaskId = getKieTaskId(rec);
+    if (reqId || kieTaskId) {
+      refreshBtn.classList.remove("hidden");
+      refreshBtn.dataset.wfMode = "false";
+      refreshBtn.dataset.requestId = reqId || kieTaskId;
+      refreshBtn.dataset.provider = reqId ? "xai" : "kie";
+    }
+
+    var parsed = parseE2EStep(rec.name);
+    if (parsed) {
+      saveOutputBtn.classList.remove("hidden");
+      var outputs = detectStepOutputs(rec);
+      if (lastRefreshResult && lastRefreshResult.video && lastRefreshResult.video.url) outputs.video_url = lastRefreshResult.video.url;
+      if (lastRefreshResult && lastRefreshResult.request_id) outputs.request_id = lastRefreshResult.request_id;
+      var outKeys = Object.keys(outputs);
+      if (outKeys.length > 0) {
+        saveOutputBtn.disabled = false;
+        saveOutputBtn.textContent = "Save " + outKeys.join(", ");
+        saveOutputBtn.dataset.recording = getE2ERecordingName(rec);
+        saveOutputBtn.dataset.outputs = JSON.stringify(outputs);
+      } else {
+        saveOutputBtn.disabled = true;
+        saveOutputBtn.textContent = "Save Output";
+      }
+    }
+
+    autoEvalKieTaskIds(gen);
+    for (var ei = 0; ei < rec.entries.length; ei++) { autoEvalFromResponse(rec, ei, gen); }
+    autoEvalXaiVideo(rec, gen);
+  } else {
+    document.getElementById("col-info").innerHTML = '<div class="empty">Select a recording</div>';
+    document.getElementById("col-requests").innerHTML = '';
+    document.getElementById("col-responses").innerHTML = '';
+  }
+}
+
+/* === Event Listeners === */
+
+// Dropdown toggle
+document.getElementById("test-selector-btn").addEventListener("click", function(e) {
+  e.stopPropagation();
+  var dd = document.getElementById("test-selector-dropdown");
+  dropdownOpen = !dropdownOpen;
+  if (dropdownOpen) { dd.classList.remove("hidden"); } else { dd.classList.add("hidden"); }
+});
+document.addEventListener("click", function() {
+  if (dropdownOpen) {
+    dropdownOpen = false;
+    document.getElementById("test-selector-dropdown").classList.add("hidden");
+  }
+});
+
+// Approve
+document.getElementById("approve-btn").addEventListener("click", async function() {
+  // Compare approve all
+  if (selectedWorkflow !== null && selectedWfStep === null) {
+    var compareWf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
+    if (compareWf && compareWf.layout === "compare") {
+      document.getElementById("status-msg").textContent = "Approving all...";
+      for (var s = 0; s < compareWf.steps.length; s++) {
+        await fetch("/api/workflow/approve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ workflowId: selectedWorkflow, stepIndex: s }),
+        });
+      }
+      var wfRes = await fetch("/api/workflows");
+      workflowData = await wfRes.json();
+      render();
+      return;
+    }
+  }
+  // Sequential workflow approve
+  if (selectedWorkflow !== null && selectedWfStep !== null) {
+    document.getElementById("status-msg").textContent = "Approving...";
+    var res = await fetch("/api/workflow/approve", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workflowId: selectedWorkflow, stepIndex: selectedWfStep }),
+    });
+    if (res.ok) {
+      var data = await res.json();
+      var wfRes2 = await fetch("/api/workflows");
+      workflowData = await wfRes2.json();
+      if (data.nextStep !== null) selectedWfStep = data.nextStep;
+      render();
+    } else {
+      document.getElementById("status-msg").textContent = "Failed to approve";
+    }
+    return;
+  }
+  // Recording approve
+  if (selected === null) return;
+  var rec = recordings[selected];
+  document.getElementById("status-msg").textContent = "Approving...";
+  var res2 = await fetch("/api/approve", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ path: rec.path }),
+  });
+  if (res2.ok) {
+    rec.gitStatus = "clean";
+    document.getElementById("status-msg").textContent = "Approved";
+    document.getElementById("status-msg").style.color = "#a6e3a1";
+    document.getElementById("approve-btn").disabled = true;
+    render();
+  } else {
+    document.getElementById("status-msg").textContent = "Failed to approve";
+  }
+});
+
+// Run
+document.getElementById("run-btn").addEventListener("click", async function() {
+  var btn = document.getElementById("run-btn");
+  var wfId = btn.dataset.wf;
+  var stepIdx = parseInt(btn.dataset.step);
+  if (!wfId) return;
+  btn.disabled = true;
+  document.getElementById("status-msg").textContent = "Running...";
+  document.getElementById("status-msg").style.color = "#89b4fa";
+  try {
+    var res = await fetch("/api/workflow/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workflowId: wfId, stepIndex: stepIdx }),
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      document.getElementById("status-msg").textContent = data.error || "Run failed";
+      document.getElementById("status-msg").style.color = "#f38ba8";
+      btn.disabled = false;
+      return;
+    }
+    var wfRes = await fetch("/api/workflows");
+    workflowData = await wfRes.json();
+    render();
+  } catch(err) {
+    document.getElementById("status-msg").textContent = "Error: " + err.message;
+    document.getElementById("status-msg").style.color = "#f38ba8";
+    btn.disabled = false;
+  }
+});
+
+// Run All
+document.getElementById("run-all-btn").addEventListener("click", async function() {
+  var btn = document.getElementById("run-all-btn");
+  btn.disabled = true;
+  document.getElementById("status-msg").textContent = "Running all models\u2026";
+  document.getElementById("status-msg").style.color = "#89b4fa";
+  try {
+    var res = await fetch("/api/workflow/run-all", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workflowId: selectedWorkflow }),
+    });
+    if (!res.ok) {
+      var data = await res.json();
+      document.getElementById("status-msg").textContent = data.error || "Run failed";
+      document.getElementById("status-msg").style.color = "#f38ba8";
+      btn.disabled = false;
+      return;
+    }
+    var wfRes = await fetch("/api/workflows");
+    workflowData = await wfRes.json();
+    render();
+  } catch(err) {
+    document.getElementById("status-msg").textContent = "Error: " + err.message;
+    document.getElementById("status-msg").style.color = "#f38ba8";
+    btn.disabled = false;
+  }
+});
+
+// Refresh All
+document.getElementById("refresh-all-btn").addEventListener("click", async function() {
+  var btn = document.getElementById("refresh-all-btn");
+  btn.disabled = true;
+  document.getElementById("status-msg").textContent = "Polling all models\u2026";
+  document.getElementById("status-msg").style.color = "#89b4fa";
+  try {
+    var res = await fetch("/api/workflow/poll-all", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ workflowId: selectedWorkflow }),
+    });
+    if (!res.ok) {
+      var data = await res.json();
+      document.getElementById("status-msg").textContent = data.error || "Poll failed";
+      document.getElementById("status-msg").style.color = "#f38ba8";
+    }
+    var wfRes = await fetch("/api/workflows");
+    workflowData = await wfRes.json();
+    render();
+  } catch(err) {
+    document.getElementById("status-msg").textContent = "Error: " + err.message;
+    document.getElementById("status-msg").style.color = "#f38ba8";
+  }
+  btn.disabled = false;
+});
+
+// Refresh
+document.getElementById("refresh-btn").addEventListener("click", async function() {
+  var btn = document.getElementById("refresh-btn");
+
+  // Workflow poll mode
+  if (btn.dataset.wfMode === "true") {
+    var wfId = btn.dataset.wf;
+    var stepIdx = parseInt(btn.dataset.step);
+    btn.disabled = true;
+    document.getElementById("status-msg").textContent = "Polling...";
+    document.getElementById("status-msg").style.color = "#89b4fa";
+    try {
+      var pollRes = await fetch("/api/workflow/poll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workflowId: wfId, stepIndex: stepIdx }),
+      });
+      var pollData = await pollRes.json();
+      if (!pollRes.ok) {
+        document.getElementById("status-msg").textContent = pollData.error || "Poll failed";
+        document.getElementById("status-msg").style.color = "#f38ba8";
+      } else {
+        var pct = typeof pollData.progress === "number" ? Math.round(pollData.progress > 1 ? pollData.progress : pollData.progress * 100) : "";
+        document.getElementById("status-msg").textContent = "Status: " + pollData.status + (pct ? " (" + pct + "%)" : "");
+        document.getElementById("status-msg").style.color = pollData.isDone ? "#a6e3a1" : pollData.isFailed ? "#f38ba8" : "#f9e2af";
+        var resultDiv = document.getElementById("check-result");
+        if (resultDiv) {
+          var pollBodyStr = JSON.stringify(pollData.body, null, 2);
+          resultDiv.innerHTML = '<div class="pane-label">Poll Result</div>' + wrapBody(pollBodyStr, inlineMediaPreviews(syntaxHighlight(pollBodyStr)));
+        }
+        if (pollData.isDone || pollData.isFailed) {
+          var wfRes = await fetch("/api/workflows");
+          workflowData = await wfRes.json();
+          render();
+          return;
+        }
+      }
+    } catch(err) {
+      document.getElementById("status-msg").textContent = "Error: " + err.message;
+      document.getElementById("status-msg").style.color = "#f38ba8";
+    }
+    btn.disabled = false;
+    return;
+  }
+
+  // Recording refresh mode
+  var requestId = btn.dataset.requestId;
+  var provider = btn.dataset.provider;
+  if (!requestId) return;
+  var statusMsg = document.getElementById("status-msg");
+  btn.disabled = true;
+  statusMsg.textContent = "Checking...";
+  try {
+    var endpoint = provider === "kie" ? "/api/check-kie-task" : "/api/check-video";
+    var bodyKey = provider === "kie" ? "task_id" : "request_id";
+    var payload = {};
+    payload[bodyKey] = requestId;
+    var res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    var data = await res.json();
+    if (!res.ok) {
+      statusMsg.textContent = data.error || "Check failed";
+    } else if (provider === "kie") {
+      var kRec = data.data || data;
+      statusMsg.textContent = "State: " + (kRec.state || "unknown");
+      lastRefreshResult = data;
+    } else {
+      statusMsg.textContent = "Status: " + data.status;
+      lastRefreshResult = data;
+    }
+    // Update save output button
+    if (selected !== null && recordings[selected]) {
+      var selRec = recordings[selected];
+      var selParsed = parseE2EStep(selRec.name);
+      if (selParsed) {
+        var saveBtn = document.getElementById("save-output-btn");
+        var outputs = detectStepOutputs(selRec);
+        if (lastRefreshResult && lastRefreshResult.video && lastRefreshResult.video.url) outputs.video_url = lastRefreshResult.video.url;
+        if (lastRefreshResult && lastRefreshResult.request_id) outputs.request_id = lastRefreshResult.request_id;
+        var outKeys = Object.keys(outputs);
+        if (outKeys.length > 0) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save " + outKeys.join(", ");
+          saveBtn.dataset.recording = getE2ERecordingName(selRec);
+          saveBtn.dataset.outputs = JSON.stringify(outputs);
+        }
+      }
+    }
+  } catch(err) {
+    statusMsg.textContent = "Error: " + err.message;
+  }
+  btn.disabled = false;
+});
+
+// Save Output
+document.getElementById("save-output-btn").addEventListener("click", async function() {
+  var btn = document.getElementById("save-output-btn");
+  var recording = btn.dataset.recording;
+  var outputs = btn.dataset.outputs;
+  if (!recording || !outputs) return;
+  btn.disabled = true;
+  var statusMsg = document.getElementById("status-msg");
+  statusMsg.textContent = "Saving outputs...";
+  try {
+    var res = await fetch("/api/save-step-output", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ recording: recording, outputs: JSON.parse(outputs) }),
+    });
+    if (res.ok) {
+      statusMsg.textContent = "Outputs saved"; statusMsg.style.color = "#a6e3a1";
+      btn.textContent = "Saved!";
+      loadE2EOutputs();
+      setTimeout(function() { btn.textContent = "Save Output"; }, 1200);
+    } else {
+      var data = await res.json();
+      statusMsg.textContent = data.error || "Failed to save"; statusMsg.style.color = "#f38ba8";
+      btn.disabled = false;
+    }
+  } catch(err) {
+    statusMsg.textContent = "Error: " + err.message; statusMsg.style.color = "#f38ba8";
+    btn.disabled = false;
+  }
+});
+
+// Reset
+document.getElementById("reset-btn").addEventListener("click", async function() {
+  if (selectedWorkflow === null) return;
+  var res = await fetch("/api/workflow/reset", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ workflowId: selectedWorkflow }),
+  });
+  if (res.ok) {
+    var wfRes = await fetch("/api/workflows");
+    workflowData = await wfRes.json();
+    selectedWfStep = 0;
+    render();
+  }
+});
+
+// Copy for LLM (all entries)
+document.getElementById("copy-llm-btn").addEventListener("click", function() {
+  var texts = [];
+  if (selected !== null && recordings[selected]) {
+    var rec = recordings[selected];
+    for (var i = 0; i < rec.entries.length; i++) {
+      texts.push(buildTransactionText(rec.entries[i]));
+    }
+  }
+  if (!texts.length) return;
+  var text = texts.join("\n\n---\n\n");
+  var btn = document.getElementById("copy-llm-btn");
+  navigator.clipboard.writeText(text).then(function() {
+    btn.textContent = "Copied!";
+    setTimeout(function() { btn.textContent = "Copy for LLM"; }, 1200);
+  });
+});
+
+// Copy button delegation
+document.addEventListener("click", function(e) {
+  var copyBtn = e.target.closest(".copy-btn");
+  if (copyBtn) {
+    var raw = copyBtn.dataset.raw;
+    navigator.clipboard.writeText(raw).then(function() {
+      copyBtn.textContent = "\u2713";
+      setTimeout(function() { copyBtn.innerHTML = "\u2398"; }, 1200);
+    });
+    return;
+  }
+  var link = e.target.closest(".task-id-preview");
+  if (!link) return;
+  e.preventDefault();
+  var taskId = link.dataset.taskid;
+  var resultDiv = document.querySelector('.task-id-result[data-for="' + taskId + '"]');
+  if (!resultDiv) return;
+  if (resultDiv.innerHTML) { resultDiv.innerHTML = ""; return; }
+  checkKieTask(taskId, resultDiv);
+});
+
+/* === Resize Handles === */
+(function() {
+  var cols = [300, 4, 0, 4, 0];
+  function applyGrid() {
+    document.getElementById("columns").style.gridTemplateColumns =
+      cols[0] + "px " + cols[1] + "px " + cols[2] + "px " + cols[3] + "px " + cols[4] + "px";
+  }
+  function initCols() {
+    var w = window.innerWidth;
+    var fixed = cols[0] + cols[1] + cols[3];
+    var remaining = w - fixed;
+    cols[2] = Math.floor(remaining / 2);
+    cols[4] = remaining - cols[2];
+    applyGrid();
+  }
+  initCols();
+  window.addEventListener("resize", initCols);
+
+  function setupHandle(handleId, leftIdx, rightIdx) {
+    var handle = document.getElementById(handleId);
+    handle.addEventListener("mousedown", function(e) {
+      e.preventDefault();
+      handle.classList.add("dragging");
+      var startX = e.clientX;
+      var startLeft = cols[leftIdx];
+      var startRight = cols[rightIdx];
+      var total = startLeft + startRight;
+      function onMove(ev) {
+        var dx = ev.clientX - startX;
+        var newLeft = Math.max(200, Math.min(total - 200, startLeft + dx));
+        cols[leftIdx] = newLeft;
+        cols[rightIdx] = total - newLeft;
+        applyGrid();
+      }
+      function onUp() {
+        handle.classList.remove("dragging");
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
+  }
+  setupHandle("resize-1", 0, 2);
+  setupHandle("resize-2", 2, 4);
+})();
+
+/* === Linked Scrolling === */
+(function() {
+  var reqCol = document.getElementById("col-requests");
+  var resCol = document.getElementById("col-responses");
+  var syncing = false;
+  reqCol.addEventListener("scroll", function() {
+    if (syncing) return;
+    syncing = true;
+    resCol.scrollTop = reqCol.scrollTop;
+    requestAnimationFrame(function() { syncing = false; });
+  });
+  resCol.addEventListener("scroll", function() {
+    if (syncing) return;
+    syncing = true;
+    reqCol.scrollTop = resCol.scrollTop;
+    requestAnimationFrame(function() { syncing = false; });
+  });
+})();
+
+/* === Init === */
+Promise.all([
+  fetch("/api/recordings").then(function(r) { return r.json(); }),
+  fetch("/api/workflows").then(function(r) { return r.json(); }),
+]).then(function(results) {
+  recordings = results[0];
+  workflowData = results[1] || [];
+  if (workflowData.length && workflowData[0].steps.length) {
+    selectedWorkflow = workflowData[0].id;
+    selectedWfStep = 0;
+  } else if (recordings.length) {
+    selected = 0;
+  }
+  loadE2EOutputs();
+  render();
+});
+</script>
+</body>
+</html>

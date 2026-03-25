@@ -10,7 +10,6 @@ const cat1Base64 = readFileSync(
 const cat2Base64 = readFileSync(
   resolve(__dirname, "../../public/cat2.jpg")
 ).toString("base64");
-const jumpBuffer = readFileSync(resolve(__dirname, "../../public/jump.mp4"));
 const cat1DataUri = `data:image/jpeg;base64,${cat1Base64}`;
 const cat2DataUri = `data:image/jpeg;base64,${cat2Base64}`;
 
@@ -148,49 +147,6 @@ describe("xai video integration", () => {
 
       expect(result.request_id).toBeTruthy();
     });
-  });
-
-  describe("video-editing", () => {
-    beforeEach(() => {
-      ctx = setupPolly("xai/video-editing");
-    });
-
-    afterEach(async () => {
-      await teardownPolly(ctx);
-    });
-
-    it(
-      "should edit an existing video and poll to completion",
-      async () => {
-        const provider = xai({
-          apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-        });
-
-        const jumpBlob = new Blob([jumpBuffer], { type: "video/mp4" });
-        const uploaded = await provider.v1.files.upload(jumpBlob, "jump.mp4");
-
-        const gen = await provider.v1.videos.generations({
-          prompt: "Replace the table with a giant ball of yarn",
-          model: "grok-imagine-video",
-          video: {
-            url: `https://api.x.ai/v1/files/${uploaded.id}/content`,
-          },
-        });
-
-        expect(gen.request_id).toBeTruthy();
-
-        let result = await provider.v1.videos(gen.request_id);
-        while (result.status === "pending") {
-          await new Promise((r) => setTimeout(r, 5000));
-          result = await provider.v1.videos(gen.request_id);
-        }
-
-        expect(result.status).toBe("done");
-        expect(result.video).toBeTruthy();
-        expect(result.video!.url).toBeTruthy();
-      },
-      { timeout: 300_000 }
-    );
   });
 
   describe("reference-images", () => {

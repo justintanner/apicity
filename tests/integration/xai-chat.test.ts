@@ -16,6 +16,7 @@ describe("xai integration", () => {
   it("should complete a chat request", async () => {
     const provider = xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
     const result = await provider.v1.chat.completions({
+      model: "grok-3-fast",
       messages: [{ role: "user", content: "Say hello in one sentence." }],
       temperature: 0,
     });

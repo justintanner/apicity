@@ -38,12 +38,13 @@ describe("xai video integration", () => {
       expect(typeof result.request_id).toBe("string");
     });
 
-    it("should use default model when not specified", async () => {
+    it("should generate a video with explicit model", async () => {
       const provider = xai({
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
       const result = await provider.v1.videos.generations({
         prompt: "A white cat sitting in the rain, cinematic",
+        model: "grok-imagine-video",
       });
 
       expect(result.request_id).toBeTruthy();
@@ -55,6 +56,7 @@ describe("xai video integration", () => {
       });
       const result = await provider.v1.videos.generations({
         prompt: "A white cat watching a sunset over the ocean",
+        model: "grok-imagine-video",
         duration: 6,
       });
 
@@ -67,6 +69,7 @@ describe("xai video integration", () => {
       });
       const result = await provider.v1.videos.generations({
         prompt: "A white cat jumping onto a shelf, vertical phone video",
+        model: "grok-imagine-video",
         aspect_ratio: "9:16",
       });
 
@@ -79,6 +82,7 @@ describe("xai video integration", () => {
       });
       const result = await provider.v1.videos.generations({
         prompt: "Timelapse of a white cat grooming itself",
+        model: "grok-imagine-video",
         resolution: "720p",
       });
 
@@ -93,6 +97,7 @@ describe("xai video integration", () => {
         prompt:
           "A white cat with heterochromia eyes walking across a rooftop " +
           "at golden hour, cinematic drone shot",
+        model: "grok-imagine-video",
         duration: 10,
         aspect_ratio: "16:9",
         resolution: "720p",
@@ -119,6 +124,7 @@ describe("xai video integration", () => {
         prompt:
           "The white cat slowly turns its head toward the camera, " +
           "soft bokeh background",
+        model: "grok-imagine-video",
         image: { url: cat1DataUri },
       });
 
@@ -132,6 +138,7 @@ describe("xai video integration", () => {
       });
       const result = await provider.v1.videos.generations({
         prompt: "Camera slowly zooms in on the cat, shallow depth of field",
+        model: "grok-imagine-video",
         image: { url: cat2DataUri },
         duration: 5,
         aspect_ratio: "16:9",
@@ -161,6 +168,7 @@ describe("xai video integration", () => {
           prompt:
             "Transform the flowers into glowing neon colors, " +
             "cyberpunk style with electric blue and pink highlights",
+          model: "grok-imagine-video",
           video: {
             url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
           },
@@ -200,6 +208,7 @@ describe("xai video integration", () => {
           "The white cat with heterochromia eyes from <IMAGE_1> and " +
           "<IMAGE_2> jumps onto a monitor on a desk, " +
           "fixed camera, cinematic lighting",
+        model: "grok-imagine-video",
         reference_images: [{ url: cat1DataUri }, { url: cat2DataUri }],
         duration: 6,
         aspect_ratio: "16:9",
@@ -218,6 +227,7 @@ describe("xai video integration", () => {
         prompt:
           "The white cat from <IMAGE_1> jumps onto a table, " +
           "cinematic lighting",
+        model: "grok-imagine-video",
         reference_images: [{ url: cat1DataUri }],
       });
 
@@ -242,6 +252,7 @@ describe("xai video integration", () => {
         });
         const gen = await provider.v1.videos.extensions({
           prompt: "The camera pans to reveal a mountain range in the distance",
+          model: "grok-imagine-video",
           video: {
             url: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
           },
@@ -279,6 +290,7 @@ describe("xai video integration", () => {
       });
       const gen = await provider.v1.videos.generations({
         prompt: "A white cat blinking slowly",
+        model: "grok-imagine-video",
       });
       const result = await provider.v1.videos(gen.request_id);
 
@@ -306,6 +318,7 @@ describe("xai video integration", () => {
           prompt:
             "The white cat with heterochromia eyes slowly turns its head " +
             "and jumps onto a monitor, fixed camera, cinematic lighting",
+          model: "grok-imagine-video",
           image: { url: cat1DataUri },
           duration: 6,
           aspect_ratio: "16:9",

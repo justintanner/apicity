@@ -1,6 +1,13 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { xai } from "@nakedapi/xai";
+
+const cat1Base64 = readFileSync(
+  resolve(__dirname, "../../public/cat1.jpg")
+).toString("base64");
+const cat1DataUri = `data:image/jpeg;base64,${cat1Base64}`;
 
 describe("xai image generation integration", () => {
   let ctx: PollyContext;
@@ -103,13 +110,11 @@ describe("xai image generation integration", () => {
         apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       });
 
-      // For this test, we use a publicly accessible image URL
-      // In practice, this would be a URL from a previous generation or a public image
       const result = await provider.v1.images.edits({
-        prompt: "Add a colorful background to this image",
+        prompt: "Render this as a pencil sketch with detailed shading",
         model: "grok-imagine-image",
         image: {
-          url: "https://picsum.photos/200/200",
+          url: cat1DataUri,
           type: "image_url",
         },
       });
@@ -125,10 +130,10 @@ describe("xai image generation integration", () => {
       });
 
       const result = await provider.v1.images.edits({
-        prompt: "Make this image more vibrant",
+        prompt: "Transform the cat into a watercolor painting with soft edges",
         model: "grok-imagine-image",
         image: {
-          url: "https://picsum.photos/200/200",
+          url: cat1DataUri,
           type: "image_url",
         },
         aspect_ratio: "1:1",

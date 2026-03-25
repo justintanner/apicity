@@ -1,6 +1,9 @@
 # Workflow state (ephemeral, harness-generated)
 tests/workflow-state.json
 
+# Cached media from harness workflows
+harness_media/
+
 # Logs
 logs
 *.log

@@ -20,6 +20,20 @@ const WORKFLOW_STATE_PATH = path.resolve(
   import.meta.dirname,
   "workflow-state.json"
 );
+const MEDIA_DIR = path.resolve(import.meta.dirname, "..", "harness_media");
+
+async function cacheMedia(taskId: string, remoteUrl: string): Promise<string> {
+  const ext = path.extname(new URL(remoteUrl).pathname) || ".bin";
+  const cacheFile = `kie_${taskId}${ext}`;
+  const cachePath = path.join(MEDIA_DIR, cacheFile);
+  if (fs.existsSync(cachePath)) return `/harness_media/${cacheFile}`;
+  const res = await fetch(remoteUrl);
+  if (!res.ok) return remoteUrl;
+  const buffer = Buffer.from(await res.arrayBuffer());
+  fs.mkdirSync(MEDIA_DIR, { recursive: true });
+  fs.writeFileSync(cachePath, buffer);
+  return `/harness_media/${cacheFile}`;
+}
 
 function readWorkflowState(): WorkflowState {
   if (fs.existsSync(WORKFLOW_STATE_PATH)) {
@@ -410,9 +424,26 @@ function renderCompareGrid() {
     if (stepDef) prompt = "Pending...";
   }
 
+  // Show setup info if workflow has setup dependencies
+  var setupInfo = wf.setupOutputs || {};
   var gridHtml = '<div class="pane-label">' + wf.name + '</div>';
+  if (Object.keys(setupInfo).length > 0) {
+    gridHtml += '<div style="padding:4px 16px 0;font-size:12px;color:#6c7086">';
+    for (var sk in setupInfo) {
+      var sv = setupInfo[sk];
+      var isImg = /\\.(png|jpg|jpeg|gif|webp)$/i.test(sv);
+      gridHtml += '<div style="margin:2px 0"><span style="color:#cba6f7">' + sk + ':</span> ';
+      if (isImg) {
+        gridHtml += '<img src="' + sv + '" style="max-height:40px;border-radius:4px;vertical-align:middle;margin-left:4px">';
+      } else {
+        gridHtml += '<span style="color:#a6adc8">' + sv.substring(0, 80) + (sv.length > 80 ? '\u2026' : '') + '</span>';
+      }
+      gridHtml += '</div>';
+    }
+    gridHtml += '</div>';
+  }
   if (prompt) {
-    gridHtml += '<div style="padding:8px 16px 0;font-size:13px;color:#a6adc8;line-height:1.5">' +
+    gridHtml += '<div style="padding:4px 16px 0;font-size:13px;color:#a6adc8;line-height:1.5">' +
       '<span style="color:#89b4fa;font-weight:600">Prompt:</span> ' +
       '<span style="color:#cdd6f4">' + prompt + '</span></div>';
   }
@@ -427,8 +458,13 @@ function renderCompareGrid() {
     gridHtml += '</div>';
     gridHtml += '<div class="model-desc">' + step.description + '</div>';
 
-    if (step.outputs && step.outputs.image_url) {
-      gridHtml += '<img class="compare-image" src="' + step.outputs.image_url + '" onerror="this.style.display=&quot;none&quot;">';
+    // Show media output (image or video)
+    var mediaUrl = (step.outputs && (step.outputs.video_url || step.outputs.image_url)) || "";
+    var isVideo = /\\.(mp4|webm|mov)$/i.test(mediaUrl) || (step.outputs && step.outputs.video_url);
+    if (mediaUrl && isVideo) {
+      gridHtml += '<video class="compare-image" src="' + mediaUrl + '" controls muted style="max-width:100%"></video>';
+    } else if (mediaUrl) {
+      gridHtml += '<img class="compare-image" src="' + mediaUrl + '" onerror="this.style.display=&quot;none&quot;">';
     } else if (step.status === "failed") {
       gridHtml += '<div class="cell-status" style="color:#f38ba8">' + (step.error || "Failed") + '</div>';
     } else if (step.response) {
@@ -441,6 +477,11 @@ function renderCompareGrid() {
       gridHtml += '<div class="cell-status">Ready</div>';
     }
 
+    if (step.request && step.request.body) {
+      gridHtml += '<details style="margin-top:8px"><summary style="cursor:pointer;color:#6c7086;font-size:11px">Request Payload</summary>';
+      gridHtml += '<pre class="body" style="font-size:11px;max-height:200px">' + syntaxHighlight(JSON.stringify(step.request.body, null, 2)) + '</pre>';
+      gridHtml += '</details>';
+    }
     if (step.response) {
       gridHtml += '<details style="margin-top:8px"><summary style="cursor:pointer;color:#6c7086;font-size:11px">Response JSON</summary>';
       gridHtml += '<pre class="body" style="font-size:11px;max-height:200px">' + syntaxHighlight(JSON.stringify(step.response.body, null, 2)) + '</pre>';
@@ -738,7 +779,7 @@ function renderKieCheckResult(data) {
           var u = result.resultUrls[i];
           if (/\\.mp4|video/i.test(u)) {
             html += '<video controls src="' + u + '" style="max-width:100%;max-height:360px;border-radius:6px;border:1px solid #313244;display:block;margin:8px 0"></video>';
-          } else if (/\\.png|.\\.jpg|\\.jpeg|\\.webp|image/i.test(u)) {
+          } else if (/\\.png|\\.jpg|\\.jpeg|\\.webp|image/i.test(u)) {
             html += '<img class="b64-img-preview" src="' + u + '">';
           } else if (/\\.mp3|\\.wav|\\.flac|\\.aac|audio/i.test(u)) {
             html += '<audio class="audio-preview" controls src="' + u + '"></audio>';
@@ -1805,6 +1846,7 @@ const server = http.createServer((req, res) => {
           id: wf.id,
           name: wf.name,
           layout: wf.layout || "sequential",
+          setupOutputs: state[wf.id]?.setupOutputs ?? {},
           steps: wf.steps.map((stepDef, i) => ({
             name: stepDef.name,
             description: stepDef.description,
@@ -1963,6 +2005,19 @@ const server = http.createServer((req, res) => {
             stepDef.async.outputExtractors
           );
           step.outputs = { ...step.outputs, ...asyncOutputs };
+          // Cache media files locally
+          const taskId = step.outputs?.task_id;
+          if (taskId) {
+            for (const [key, url] of Object.entries(step.outputs ?? {})) {
+              if (
+                key !== "task_id" &&
+                typeof url === "string" &&
+                url.startsWith("http")
+              ) {
+                step.outputs[key] = await cacheMedia(taskId, url);
+              }
+            }
+          }
           writeWorkflowState(state);
         }
         if (isFailed) {
@@ -2058,12 +2113,129 @@ const server = http.createServer((req, res) => {
         }
         const state = readWorkflowState();
         const steps = getOrInitWorkflowState(state, workflowId);
+
+        // Resolve setup inputs (cross-workflow refs + file uploads)
+        let setupVars: Record<string, string> = {};
+        if (state[workflowId].setupOutputs) {
+          setupVars = { ...state[workflowId].setupOutputs };
+        }
+        if (wf.setup) {
+          const needsSetup = Object.keys({
+            ...wf.setup.fromWorkflows,
+            ...wf.setup.uploads,
+          }).some((k) => !(k in setupVars));
+          if (needsSetup) {
+            // Resolve cross-workflow references
+            if (wf.setup.fromWorkflows) {
+              for (const [varName, ref] of Object.entries(
+                wf.setup.fromWorkflows
+              )) {
+                if (varName in setupVars) continue;
+                const refState = state[ref.workflowId];
+                const refStep = refState?.steps?.[String(ref.stepIndex)];
+                const val = refStep?.outputs?.[ref.outputKey];
+                if (!val) {
+                  res.writeHead(400, {
+                    "Content-Type": "application/json",
+                  });
+                  res.end(
+                    JSON.stringify({
+                      error: `Setup: ${ref.workflowId} step ${ref.stepIndex} output "${ref.outputKey}" not available. Run that workflow first.`,
+                    })
+                  );
+                  return;
+                }
+                setupVars[varName] = val;
+              }
+            }
+            // Upload local files
+            if (wf.setup.uploads) {
+              for (const [varName, filePath] of Object.entries(
+                wf.setup.uploads
+              )) {
+                if (varName in setupVars) continue;
+                const absPath = path.resolve(filePath);
+                if (!fs.existsSync(absPath)) {
+                  res.writeHead(400, {
+                    "Content-Type": "application/json",
+                  });
+                  res.end(
+                    JSON.stringify({
+                      error: `Setup: file not found: ${filePath}`,
+                    })
+                  );
+                  return;
+                }
+                const fileData = fs.readFileSync(absPath);
+                const fileName = path.basename(absPath);
+                const ext = path.extname(fileName).slice(1).toLowerCase();
+                const mimeMap: Record<string, string> = {
+                  png: "image/png",
+                  jpg: "image/jpeg",
+                  jpeg: "image/jpeg",
+                  gif: "image/gif",
+                  webp: "image/webp",
+                  mp4: "video/mp4",
+                };
+                const mime = mimeMap[ext] ?? "application/octet-stream";
+                const uploadPath = `uploads/${Date.now()}_${fileName}`;
+                const formData = new FormData();
+                formData.append(
+                  "file",
+                  new Blob([fileData], { type: mime }),
+                  fileName
+                );
+                formData.append("uploadPath", uploadPath);
+                const uploadRes = await fetch(
+                  "https://kieai.redpandaai.co/api/file-stream-upload",
+                  {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${apiKey}` },
+                    body: formData,
+                  }
+                );
+                if (!uploadRes.ok) {
+                  res.writeHead(500, {
+                    "Content-Type": "application/json",
+                  });
+                  res.end(
+                    JSON.stringify({
+                      error: `Upload failed for ${fileName}: ${uploadRes.status}`,
+                    })
+                  );
+                  return;
+                }
+                const uploadBody = (await uploadRes.json()) as {
+                  data?: { downloadUrl?: string };
+                  downloadUrl?: string;
+                };
+                const dlUrl =
+                  uploadBody.data?.downloadUrl ?? uploadBody.downloadUrl;
+                if (!dlUrl) {
+                  res.writeHead(500, {
+                    "Content-Type": "application/json",
+                  });
+                  res.end(
+                    JSON.stringify({
+                      error: `Upload returned no downloadUrl for ${fileName}`,
+                    })
+                  );
+                  return;
+                }
+                setupVars[varName] = dlUrl;
+              }
+            }
+            state[workflowId].setupOutputs = setupVars;
+            writeWorkflowState(state);
+          }
+        }
+
         const results = await Promise.allSettled(
           wf.steps.map(async (stepDef, i) => {
             const step = steps[String(i)];
             if (step.response) return { skipped: true };
             const resolvedBody = stepDef.request.body
-              ? resolveBody(stepDef.request.body, {})
+              ? resolveBody(stepDef.request.body, setupVars)
               : undefined;
             const apiRes = await fetch(stepDef.request.url, {
               method: stepDef.request.method,
@@ -2145,6 +2317,19 @@ const server = http.createServer((req, res) => {
                 stepDef.async.outputExtractors
               );
               step.outputs = { ...step.outputs, ...asyncOutputs };
+              // Cache media files locally
+              const taskId = step.outputs?.task_id;
+              if (taskId) {
+                for (const [key, url] of Object.entries(step.outputs ?? {})) {
+                  if (
+                    key !== "task_id" &&
+                    typeof url === "string" &&
+                    url.startsWith("http")
+                  ) {
+                    step.outputs[key] = await cacheMedia(taskId, url);
+                  }
+                }
+              }
             }
             if (isFailed) {
               step.status = "failed";
@@ -2203,6 +2388,38 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ error: String(err) }));
       }
     });
+    return;
+  }
+
+  if (req.method === "GET" && req.url?.startsWith("/harness_media/")) {
+    const fileName = path.basename(req.url);
+    const filePath = path.join(MEDIA_DIR, fileName);
+    if (!fs.existsSync(filePath)) {
+      res.writeHead(404);
+      res.end("Not found");
+      return;
+    }
+    const ext = path.extname(fileName).slice(1).toLowerCase();
+    const mimeTypes: Record<string, string> = {
+      mp4: "video/mp4",
+      webm: "video/webm",
+      mov: "video/quicktime",
+      png: "image/png",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      gif: "image/gif",
+      webp: "image/webp",
+      mp3: "audio/mpeg",
+      wav: "audio/wav",
+    };
+    const mime = mimeTypes[ext] ?? "application/octet-stream";
+    const stat = fs.statSync(filePath);
+    res.writeHead(200, {
+      "Content-Type": mime,
+      "Content-Length": stat.size,
+      "Cache-Control": "public, max-age=86400",
+    });
+    fs.createReadStream(filePath).pipe(res);
     return;
   }
 

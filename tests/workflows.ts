@@ -21,10 +21,19 @@ export interface WorkflowStepDefinition {
   async?: WorkflowAsyncConfig;
 }
 
+export interface WorkflowSetup {
+  uploads?: Record<string, string>;
+  fromWorkflows?: Record<
+    string,
+    { workflowId: string; stepIndex: number; outputKey: string }
+  >;
+}
+
 export interface WorkflowDefinition {
   id: string;
   name: string;
   layout?: "sequential" | "compare";
+  setup?: WorkflowSetup;
   steps: WorkflowStepDefinition[];
 }
 
@@ -40,6 +49,7 @@ export interface StepState {
 export interface WorkflowState {
   [workflowId: string]: {
     steps: Record<string, StepState>;
+    setupOutputs?: Record<string, string>;
   };
 }
 
@@ -468,6 +478,92 @@ export const workflows: WorkflowDefinition[] = [
           ...KIE_ASYNC,
           outputExtractors: {
             image_url: "data.resultJson.resultUrls.0",
+          },
+        },
+      },
+    ],
+  },
+  {
+    id: "kie-video-compare",
+    name: "KIE: first-frame video model comparison",
+    layout: "compare",
+    setup: {
+      fromWorkflows: {
+        background_url: {
+          workflowId: "kie-t2i-compare",
+          stepIndex: 0,
+          outputKey: "image_url",
+        },
+      },
+      uploads: {
+        cat_url: "public/cat.png",
+      },
+    },
+    steps: [
+      {
+        name: "kling-3.0",
+        description: "Kling 3.0 Video Pro (elements, 16:9, 5s)",
+        apiProvider: "kie",
+        request: {
+          method: "POST",
+          url: "https://api.kie.ai/api/v1/jobs/createTask",
+          body: {
+            model: "kling-3.0/video",
+            input: {
+              prompt:
+                "An orange cat walks onto a science fiction movie " +
+                "set, exploring the props and set pieces, " +
+                "cinematic lighting@element_cat",
+              image_urls: ["{{background_url}}"],
+              kling_elements: [
+                {
+                  name: "element_cat",
+                  description: "orange cat",
+                  element_input_urls: ["{{cat_url}}", "{{cat_url}}"],
+                },
+              ],
+              mode: "pro",
+              duration: "5",
+              aspect_ratio: "16:9",
+              sound: false,
+              multi_shots: false,
+              multi_prompt: [],
+            },
+          },
+        },
+        outputExtractors: { task_id: "data.taskId" },
+        async: {
+          ...KIE_ASYNC,
+          outputExtractors: {
+            video_url: "data.resultJson.resultUrls.0",
+          },
+        },
+      },
+      {
+        name: "grok-imagine",
+        description: "Grok Imagine image-to-video (720p, 6s)",
+        apiProvider: "kie",
+        request: {
+          method: "POST",
+          url: "https://api.kie.ai/api/v1/jobs/createTask",
+          body: {
+            model: "grok-imagine/image-to-video",
+            input: {
+              prompt:
+                "An orange cat walks onto the scene, exploring the " +
+                "props and set pieces, cinematic lighting, smooth motion",
+              image_urls: ["{{background_url}}"],
+              mode: "normal",
+              duration: "6",
+              resolution: "720p",
+            },
+          },
+        },
+        outputExtractors: { task_id: "data.taskId" },
+        async: {
+          ...KIE_ASYNC,
+          outputExtractors: {
+            video_url: "data.resultJson.resultUrls.0",
           },
         },
       },

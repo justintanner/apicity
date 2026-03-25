@@ -504,10 +504,9 @@ export const workflows: WorkflowDefinition[] = [
           body: {
             model: "grok-imagine-video",
             prompt:
-              "The orange tabby cat from <IMAGE_1> walks onto the " +
-              "science fiction movie set from <IMAGE_2>, sniffing at " +
-              "props and exploring the scene, cinematic lighting, " +
-              "smooth natural motion",
+              "The orange tabby cat from <IMAGE_1> jumps onto a " +
+              "monitor on the science fiction movie set from " +
+              "<IMAGE_2>, fixed camera, cinematic lighting",
             reference_images: [
               { url: "{{cat_url}}" },
               { url: "{{background_url}}" },
@@ -539,8 +538,8 @@ export const workflows: WorkflowDefinition[] = [
             model: "kling-3.0/video",
             input: {
               prompt:
-                "An orange cat walks onto a science fiction movie " +
-                "set, exploring the props and set pieces, " +
+                "An orange cat jumps onto a monitor on a science " +
+                "fiction movie set, fixed camera, " +
                 "cinematic lighting@element_cat",
               image_urls: ["{{background_url}}"],
               kling_elements: [
@@ -551,7 +550,7 @@ export const workflows: WorkflowDefinition[] = [
                 },
               ],
               mode: "pro",
-              duration: "5",
+              duration: "3",
               aspect_ratio: "16:9",
               sound: false,
               multi_shots: false,

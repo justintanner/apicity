@@ -9,6 +9,8 @@ import {
   XaiVideoExtendRequest,
   XaiVideoAsyncResponse,
   XaiVideoResult,
+  XaiFileObject,
+  XaiFileListResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -107,6 +109,101 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
+  const files = {
+    async upload(
+      file: Blob,
+      filename: string,
+      purpose = "assistants",
+      signal?: AbortSignal
+    ): Promise<XaiFileObject> {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      if (signal) {
+        signal.addEventListener("abort", () => controller.abort());
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file, filename);
+        formData.append("purpose", purpose);
+
+        const res = await doFetch(`${baseURL}/files`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${opts.apiKey}` },
+          body: formData,
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          let message = `XAI API error: ${res.status}`;
+          try {
+            const errorData: unknown = await res.json();
+            if (
+              typeof errorData === "object" &&
+              errorData !== null &&
+              "error" in errorData
+            ) {
+              const err = (errorData as { error: { message?: string } }).error;
+              if (err?.message) {
+                message = `XAI API error ${res.status}: ${err.message}`;
+              }
+            }
+          } catch {
+            // ignore parse errors
+          }
+          throw new XaiError(message, res.status);
+        }
+
+        return (await res.json()) as XaiFileObject;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof XaiError) throw error;
+        throw new XaiError(`XAI request failed: ${error}`, 500);
+      }
+    },
+
+    async list(signal?: AbortSignal): Promise<XaiFileListResponse> {
+      return await makeRequest("GET", "/files", undefined, signal);
+    },
+
+    async get(fileId: string, signal?: AbortSignal): Promise<XaiFileObject> {
+      return await makeRequest("GET", `/files/${fileId}`, undefined, signal);
+    },
+
+    async delete(
+      fileId: string,
+      signal?: AbortSignal
+    ): Promise<{ id: string; deleted: boolean }> {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      if (signal) {
+        signal.addEventListener("abort", () => controller.abort());
+      }
+
+      try {
+        const res = await doFetch(`${baseURL}/files/${fileId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${opts.apiKey}` },
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          throw new XaiError(`XAI API error: ${res.status}`, res.status);
+        }
+
+        return (await res.json()) as { id: string; deleted: boolean };
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof XaiError) throw error;
+        throw new XaiError(`XAI request failed: ${error}`, 500);
+      }
+    },
+  };
+
   return {
     v1: {
       chat: {
@@ -142,6 +239,7 @@ export function xai(opts: XaiOptions): XaiProvider {
         },
       },
       videos,
+      files,
     },
   };
 }

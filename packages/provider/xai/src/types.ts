@@ -115,6 +115,22 @@ export interface XaiImageResponse {
   data: XaiGeneratedImage[];
 }
 
+// File upload response
+export interface XaiFileObject {
+  id: string;
+  object: string;
+  bytes: number;
+  created_at: number;
+  filename: string;
+  purpose: string;
+}
+
+// File list response
+export interface XaiFileListResponse {
+  data: XaiFileObject[];
+  object: string;
+}
+
 // Video reference (image-to-video, editing, extension, reference images)
 export interface XaiVideoReference {
   url: string;
@@ -193,10 +209,26 @@ interface XaiVideosNamespace {
   ): Promise<XaiVideoAsyncResponse>;
 }
 
+interface XaiFilesNamespace {
+  upload(
+    file: Blob,
+    filename: string,
+    purpose?: string,
+    signal?: AbortSignal
+  ): Promise<XaiFileObject>;
+  list(signal?: AbortSignal): Promise<XaiFileListResponse>;
+  get(fileId: string, signal?: AbortSignal): Promise<XaiFileObject>;
+  delete(
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<{ id: string; deleted: boolean }>;
+}
+
 interface XaiV1Namespace {
   chat: XaiChatNamespace;
   images: XaiImagesNamespace;
   videos: XaiVideosNamespace;
+  files: XaiFilesNamespace;
 }
 
 // Provider interface

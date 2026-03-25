@@ -10,12 +10,9 @@ const cat1Base64 = readFileSync(
 const cat2Base64 = readFileSync(
   resolve(__dirname, "../../public/cat2.jpg")
 ).toString("base64");
-const jumpBase64 = readFileSync(
-  resolve(__dirname, "../../public/jump.mp4")
-).toString("base64");
+const jumpBuffer = readFileSync(resolve(__dirname, "../../public/jump.mp4"));
 const cat1DataUri = `data:image/jpeg;base64,${cat1Base64}`;
 const cat2DataUri = `data:image/jpeg;base64,${cat2Base64}`;
-const jumpDataUri = `data:video/mp4;base64,${jumpBase64}`;
 
 describe("xai video integration", () => {
   let ctx: PollyContext;
@@ -168,11 +165,15 @@ describe("xai video integration", () => {
         const provider = xai({
           apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
         });
+
+        const jumpBlob = new Blob([jumpBuffer], { type: "video/mp4" });
+        const uploaded = await provider.v1.files.upload(jumpBlob, "jump.mp4");
+
         const gen = await provider.v1.videos.generations({
-          prompt: "Edit the video so the cat jumps on a giant ball of yarn",
+          prompt: "Replace the table with a giant ball of yarn",
           model: "grok-imagine-video",
           video: {
-            url: jumpDataUri,
+            url: `https://api.x.ai/v1/files/${uploaded.id}/content`,
           },
         });
 

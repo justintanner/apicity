@@ -30,5 +30,7 @@ export type {
   XaiVideoAsyncResponse,
   XaiVideoData,
   XaiVideoResult,
+  XaiFileObject,
+  XaiFileListResponse,
   XaiProvider,
 } from "./types";

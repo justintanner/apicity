@@ -29,6 +29,7 @@ export interface OpenAiMessage {
 export interface OpenAiTranscribeRequest {
   file: Blob;
   model: string;
+  response_format?: string;
   language?: string;
   prompt?: string;
   temperature?: number;
@@ -137,12 +138,14 @@ export interface OpenAiProvider {
 // Error class
 export class OpenAiError extends Error {
   readonly status: number;
+  readonly body: unknown;
   readonly code?: string;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, body?: unknown, code?: string) {
     super(message);
     this.name = "OpenAiError";
     this.status = status;
+    this.body = body ?? null;
     this.code = code;
   }
 }

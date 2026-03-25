@@ -116,10 +116,12 @@ export interface KimiCodingOptions {
 
 export class KimiCodingError extends Error {
   readonly status: number;
-  constructor(message: string, status: number) {
+  readonly body: unknown;
+  constructor(message: string, status: number, body?: unknown) {
     super(message);
     this.name = "KimiCodingError";
     this.status = status;
+    this.body = body ?? null;
   }
 }
 

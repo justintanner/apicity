@@ -239,12 +239,14 @@ export interface XaiProvider {
 // Error class
 export class XaiError extends Error {
   readonly status: number;
+  readonly body: unknown;
   readonly code?: string;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, body?: unknown, code?: string) {
     super(message);
     this.name = "XaiError";
     this.status = status;
+    this.body = body ?? null;
     this.code = code;
   }
 }

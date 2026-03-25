@@ -21,13 +21,15 @@ export class FalError extends Error {
   readonly type: FalErrorType;
   readonly request_id?: string;
   readonly docs_url?: string;
+  readonly body: unknown;
 
   constructor(
     message: string,
     status: number,
     type: FalErrorType,
     request_id?: string,
-    docs_url?: string
+    docs_url?: string,
+    body?: unknown
   ) {
     super(message);
     this.name = "FalError";
@@ -35,6 +37,7 @@ export class FalError extends Error {
     this.type = type;
     this.request_id = request_id;
     this.docs_url = docs_url;
+    this.body = body ?? null;
   }
 }
 

@@ -40,6 +40,7 @@ describe("kimicoding integration", () => {
       max_tokens: 32768,
       messages: [{ role: "user", content: "hi" }],
       temperature: 0,
+      stream: true,
     })) {
       if (event.delta?.text) deltas.push(event.delta.text);
       if (event.delta?.stop_reason) gotStopReason = true;
@@ -112,6 +113,7 @@ describe("kimicoding integration", () => {
         },
       ],
       temperature: 0,
+      stream: true,
     })) {
       events.push(event);
     }

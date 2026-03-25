@@ -40,14 +40,11 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
 
       if (!res.ok) {
         let message = `OpenAI API error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const errorData: unknown = await res.json();
-          if (
-            typeof errorData === "object" &&
-            errorData !== null &&
-            "error" in errorData
-          ) {
-            const err = (errorData as { error: { message?: string } }).error;
+          body = await res.json();
+          if (typeof body === "object" && body !== null && "error" in body) {
+            const err = (body as { error: { message?: string } }).error;
             if (err?.message) {
               message = `OpenAI API error ${res.status}: ${err.message}`;
             }
@@ -55,7 +52,7 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         } catch {
           // ignore parse errors
         }
-        throw new OpenAiError(message, res.status);
+        throw new OpenAiError(message, res.status, body);
       }
 
       return (await res.json()) as T;
@@ -83,18 +80,11 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           req: OpenAiChatRequest,
           signal?: AbortSignal
         ): Promise<OpenAiChatResponse> {
-          const data = await makeRequest<OpenAiChatResponse>(
+          return await makeRequest<OpenAiChatResponse>(
             "/chat/completions",
             jsonRequest(req),
             signal
           );
-          if (data.error) {
-            throw new OpenAiError(
-              data.error.message ?? "Unknown API error",
-              500
-            );
-          }
-          return data;
         },
       },
       audio: {
@@ -105,7 +95,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           const form = new FormData();
           form.append("file", req.file);
           form.append("model", req.model);
-          form.append("response_format", "json");
+          if (req.response_format !== undefined)
+            form.append("response_format", req.response_format);
           if (req.language !== undefined) form.append("language", req.language);
           if (req.prompt !== undefined) form.append("prompt", req.prompt);
           if (req.temperature !== undefined)

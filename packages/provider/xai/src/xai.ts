@@ -54,14 +54,11 @@ export function xai(opts: XaiOptions): XaiProvider {
 
       if (!res.ok) {
         let message = `XAI API error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const errorData: unknown = await res.json();
-          if (
-            typeof errorData === "object" &&
-            errorData !== null &&
-            "error" in errorData
-          ) {
-            const err = (errorData as { error: { message?: string } }).error;
+          body = await res.json();
+          if (typeof body === "object" && body !== null && "error" in body) {
+            const err = (body as { error: { message?: string } }).error;
             if (err?.message) {
               message = `XAI API error ${res.status}: ${err.message}`;
             }
@@ -69,7 +66,7 @@ export function xai(opts: XaiOptions): XaiProvider {
         } catch {
           // ignore parse errors
         }
-        throw new XaiError(message, res.status);
+        throw new XaiError(message, res.status, body);
       }
 
       return (await res.json()) as T;
@@ -113,7 +110,7 @@ export function xai(opts: XaiOptions): XaiProvider {
     async upload(
       file: Blob,
       filename: string,
-      purpose = "assistants",
+      purpose?: string,
       signal?: AbortSignal
     ): Promise<XaiFileObject> {
       const controller = new AbortController();
@@ -125,7 +122,7 @@ export function xai(opts: XaiOptions): XaiProvider {
       try {
         const formData = new FormData();
         formData.append("file", file, filename);
-        formData.append("purpose", purpose);
+        if (purpose !== undefined) formData.append("purpose", purpose);
 
         const res = await doFetch(`${baseURL}/files`, {
           method: "POST",
@@ -138,14 +135,11 @@ export function xai(opts: XaiOptions): XaiProvider {
 
         if (!res.ok) {
           let message = `XAI API error: ${res.status}`;
+          let body: unknown = null;
           try {
-            const errorData: unknown = await res.json();
-            if (
-              typeof errorData === "object" &&
-              errorData !== null &&
-              "error" in errorData
-            ) {
-              const err = (errorData as { error: { message?: string } }).error;
+            body = await res.json();
+            if (typeof body === "object" && body !== null && "error" in body) {
+              const err = (body as { error: { message?: string } }).error;
               if (err?.message) {
                 message = `XAI API error ${res.status}: ${err.message}`;
               }
@@ -153,7 +147,7 @@ export function xai(opts: XaiOptions): XaiProvider {
           } catch {
             // ignore parse errors
           }
-          throw new XaiError(message, res.status);
+          throw new XaiError(message, res.status, body);
         }
 
         return (await res.json()) as XaiFileObject;
@@ -192,7 +186,17 @@ export function xai(opts: XaiOptions): XaiProvider {
         clearTimeout(timeoutId);
 
         if (!res.ok) {
-          throw new XaiError(`XAI API error: ${res.status}`, res.status);
+          let deleteBody: unknown = null;
+          try {
+            deleteBody = await res.json();
+          } catch {
+            // ignore parse errors
+          }
+          throw new XaiError(
+            `XAI API error: ${res.status}`,
+            res.status,
+            deleteBody
+          );
         }
 
         return (await res.json()) as { id: string; deleted: boolean };
@@ -211,16 +215,12 @@ export function xai(opts: XaiOptions): XaiProvider {
           req: XaiChatRequest,
           signal?: AbortSignal
         ): Promise<XaiChatResponse> {
-          const data = await makeRequest<XaiChatResponse>(
+          return await makeRequest<XaiChatResponse>(
             "POST",
             "/chat/completions",
             req,
             signal
           );
-          if (data.error) {
-            throw new XaiError(data.error.message ?? "Unknown API error", 500);
-          }
-          return data;
         },
       },
       images: {

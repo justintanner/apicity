@@ -91,10 +91,6 @@ export function kie(opts: KieOptions): KieProvider {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      if (!validateModel(req.model)) {
-        throw new KieError(`Unsupported model: ${req.model}`, 400);
-      }
-
       const res = await doFetch(`${baseURL}/api/v1/jobs/createTask`, {
         method: "POST",
         headers: {
@@ -109,29 +105,24 @@ export function kie(opts: KieOptions): KieProvider {
 
       if (!res.ok) {
         let message = `Kie API error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const errorData: unknown = await res.json();
+          body = await res.json();
           if (
-            typeof errorData === "object" &&
-            errorData !== null &&
-            "msg" in errorData &&
-            typeof (errorData as { msg?: string }).msg === "string"
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
           ) {
-            message = `Kie API error ${res.status}: ${(errorData as { msg: string }).msg}`;
+            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
           }
         } catch {
           // ignore parse errors
         }
-        throw new KieError(message, res.status);
+        throw new KieError(message, res.status, body);
       }
 
-      const data: TaskResponse = await res.json();
-
-      if (data.code !== 200 || !data.data?.taskId) {
-        throw new KieError(data.msg || `API error: ${data.code}`, data.code);
-      }
-
-      return data;
+      return (await res.json()) as TaskResponse;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof KieError) throw error;
@@ -160,29 +151,24 @@ export function kie(opts: KieOptions): KieProvider {
 
       if (!res.ok) {
         let message = `Kie API error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const errorData: unknown = await res.json();
+          body = await res.json();
           if (
-            typeof errorData === "object" &&
-            errorData !== null &&
-            "msg" in errorData &&
-            typeof (errorData as { msg?: string }).msg === "string"
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
           ) {
-            message = `Kie API error ${res.status}: ${(errorData as { msg: string }).msg}`;
+            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
           }
         } catch {
           // ignore parse errors
         }
-        throw new KieError(message, res.status);
+        throw new KieError(message, res.status, body);
       }
 
-      const data: KieTaskInfo = await res.json();
-
-      if (data.code !== 200 || !data.data) {
-        throw new KieError(data.msg || `API error: ${data.code}`, data.code);
-      }
-
-      return data;
+      return (await res.json()) as KieTaskInfo;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof KieError) throw error;
@@ -201,17 +187,6 @@ export function kie(opts: KieOptions): KieProvider {
       if (!mimeType) {
         throw new KieError(
           `Cannot determine MIME type for: ${req.filename}`,
-          400
-        );
-      }
-
-      if (
-        !mimeType.startsWith("image/") &&
-        !mimeType.startsWith("video/") &&
-        !mimeType.startsWith("audio/")
-      ) {
-        throw new KieError(
-          `Unsupported MIME type: ${mimeType}. Must be image/*, video/*, or audio/*`,
           400
         );
       }
@@ -237,29 +212,24 @@ export function kie(opts: KieOptions): KieProvider {
 
       if (!res.ok) {
         let message = `Kie upload error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const errorData: unknown = await res.json();
+          body = await res.json();
           if (
-            typeof errorData === "object" &&
-            errorData !== null &&
-            "msg" in errorData &&
-            typeof (errorData as { msg?: string }).msg === "string"
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
           ) {
-            message = `Kie upload error ${res.status}: ${(errorData as { msg: string }).msg}`;
+            message = `Kie upload error ${res.status}: ${(body as { msg: string }).msg}`;
           }
         } catch {
           // ignore parse errors
         }
-        throw new KieError(message, res.status);
+        throw new KieError(message, res.status, body);
       }
 
-      const data: UploadMediaResponse = await res.json();
-
-      if (!data.success || !data.data?.downloadUrl) {
-        throw new KieError(`Upload failed: code ${data.code}`, data.code);
-      }
-
-      return data;
+      return (await res.json()) as UploadMediaResponse;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof KieError) throw error;
@@ -286,29 +256,24 @@ export function kie(opts: KieOptions): KieProvider {
 
       if (!res.ok) {
         let message = `Kie API error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const errorData: unknown = await res.json();
+          body = await res.json();
           if (
-            typeof errorData === "object" &&
-            errorData !== null &&
-            "msg" in errorData &&
-            typeof (errorData as { msg?: string }).msg === "string"
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
           ) {
-            message = `Kie API error ${res.status}: ${(errorData as { msg: string }).msg}`;
+            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
           }
         } catch {
           // ignore parse errors
         }
-        throw new KieError(message, res.status);
+        throw new KieError(message, res.status, body);
       }
 
-      const data: DownloadUrlResponse = await res.json();
-
-      if (data.code !== 200 || !data.data) {
-        throw new KieError(data.msg || `API error: ${data.code}`, data.code);
-      }
-
-      return data;
+      return (await res.json()) as DownloadUrlResponse;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof KieError) throw error;
@@ -326,19 +291,20 @@ export function kie(opts: KieOptions): KieProvider {
     });
 
     if (!res.ok) {
-      throw new KieError(`Failed to get credits: ${res.status}`, res.status);
-    }
-
-    const response: KieCreditsResponse = await res.json();
-
-    if (response.code !== 200 || response.data === undefined) {
+      let body: unknown = null;
+      try {
+        body = await res.json();
+      } catch {
+        // ignore parse errors
+      }
       throw new KieError(
-        response.msg || `API error: ${response.code}`,
-        response.code
+        `Failed to get credits: ${res.status}`,
+        res.status,
+        body
       );
     }
 
-    return response;
+    return (await res.json()) as KieCreditsResponse;
   }
 
   return {

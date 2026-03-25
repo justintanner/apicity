@@ -378,12 +378,14 @@ export interface KieOptions {
 // Error class
 export class KieError extends Error {
   readonly status: number;
+  readonly body: unknown;
   readonly code?: string;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, body?: unknown, code?: string) {
     super(message);
     this.name = "KieError";
     this.status = status;
+    this.body = body ?? null;
     this.code = code;
   }
 }

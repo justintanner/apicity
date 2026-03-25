@@ -25,6 +25,7 @@ describe("openai transcribe", () => {
     const result = await provider.v1.audio.transcriptions({
       file,
       model: "gpt-4o-mini-transcribe",
+      response_format: "json",
     });
 
     expect(result).toHaveProperty("text");

@@ -1,20 +1,5 @@
 import { KieError } from "./types";
 
-interface KieApiResponse {
-  code: number;
-  msg: string;
-  data?: Record<string, unknown>;
-}
-
-function isKieApiResponse(value: unknown): value is KieApiResponse {
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "code" in value &&
-    typeof (value as KieApiResponse).code === "number"
-  );
-}
-
 export async function kieRequest<T>(
   url: string,
   opts: {
@@ -51,29 +36,24 @@ export async function kieRequest<T>(
 
     if (!res.ok) {
       let message = `Kie API error: ${res.status}`;
+      let body: unknown = null;
       try {
-        const errorData: unknown = await res.json();
+        body = await res.json();
         if (
-          typeof errorData === "object" &&
-          errorData !== null &&
-          "msg" in errorData &&
-          typeof (errorData as { msg?: string }).msg === "string"
+          typeof body === "object" &&
+          body !== null &&
+          "msg" in body &&
+          typeof (body as { msg?: string }).msg === "string"
         ) {
-          message = `Kie API error ${res.status}: ${(errorData as { msg: string }).msg}`;
+          message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
         }
       } catch {
         // ignore parse errors
       }
-      throw new KieError(message, res.status);
+      throw new KieError(message, res.status, body);
     }
 
-    const data: unknown = await res.json();
-
-    if (isKieApiResponse(data) && data.code !== 200) {
-      throw new KieError(data.msg || `API error: ${data.code}`, data.code);
-    }
-
-    return data as T;
+    return (await res.json()) as T;
   } catch (error) {
     clearTimeout(timeoutId);
     if (error instanceof KieError) throw error;

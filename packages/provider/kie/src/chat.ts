@@ -15,6 +15,7 @@ export interface KieChatRequest {
   messages: KieChatMessage[];
   temperature?: number;
   max_tokens?: number;
+  stream?: boolean;
   response_format?: {
     type: "text" | "json_object" | "json_schema";
     json_schema?: Record<string, unknown>;
@@ -81,9 +82,8 @@ export function createChatProvider(
             req: KieChatRequest,
             signal?: AbortSignal
           ): Promise<KieChatResponse> {
-            const chatTimeout = timeout > 30000 ? timeout : 90000;
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), chatTimeout);
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
 
             // Forward external signal to our controller
             if (signal) {
@@ -99,7 +99,7 @@ export function createChatProvider(
                     Authorization: `Bearer ${apiKey}`,
                     "Content-Type": "application/json",
                   },
-                  body: JSON.stringify({ ...req, stream: false }),
+                  body: JSON.stringify(req),
                   signal: controller.signal,
                 }
               );
@@ -108,36 +108,24 @@ export function createChatProvider(
 
               if (!res.ok) {
                 let message = `Kie Chat API error: ${res.status}`;
+                let body: unknown = null;
                 try {
-                  const errorData: unknown = await res.json();
+                  body = await res.json();
                   if (
-                    typeof errorData === "object" &&
-                    errorData !== null &&
-                    "msg" in errorData &&
-                    typeof (errorData as { msg?: string }).msg === "string"
+                    typeof body === "object" &&
+                    body !== null &&
+                    "msg" in body &&
+                    typeof (body as { msg?: string }).msg === "string"
                   ) {
-                    message = `Kie Chat API error ${res.status}: ${(errorData as { msg: string }).msg}`;
+                    message = `Kie Chat API error ${res.status}: ${(body as { msg: string }).msg}`;
                   }
                 } catch {
                   // ignore parse errors
                 }
-                throw new KieError(message, res.status);
+                throw new KieError(message, res.status, body);
               }
 
-              const data: KieChatResponse = await res.json();
-
-              if (data.error) {
-                throw new KieError(data.error, data.code ?? 500);
-              }
-
-              if (data.code && data.code !== 200) {
-                if (data.code === 402) {
-                  throw new KieError("Insufficient balance", 402);
-                }
-                throw new KieError(`API error: ${data.code}`, data.code);
-              }
-
-              return data;
+              return (await res.json()) as KieChatResponse;
             } catch (error) {
               clearTimeout(timeoutId);
               if (error instanceof KieError) throw error;

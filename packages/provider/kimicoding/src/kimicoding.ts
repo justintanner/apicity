@@ -65,7 +65,7 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
       const res = await doFetch(`${baseURL}v1/messages`, {
         method: "POST",
         headers: buildHeaders(),
-        body: JSON.stringify({ ...req, stream: true }),
+        body: JSON.stringify(req),
         signal: signal || controller.signal,
       });
 
@@ -73,18 +73,19 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
 
       if (!res.ok) {
         let message = `KimiCoding error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const raw: unknown = await res.json();
+          body = await res.json();
           if (
-            isAnthropicErrorBody(raw) &&
-            typeof raw.error?.message === "string"
+            isAnthropicErrorBody(body) &&
+            typeof body.error?.message === "string"
           ) {
-            message = `KimiCoding error ${res.status}: ${raw.error.message}`;
+            message = `KimiCoding error ${res.status}: ${body.error.message}`;
           }
         } catch {
           // ignore parse errors
         }
-        throw new KimiCodingError(message, res.status);
+        throw new KimiCodingError(message, res.status, body);
       }
 
       for await (const { event, data } of sseToIterable(res)) {
@@ -123,18 +124,19 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
 
       if (!res.ok) {
         let message = `KimiCoding error: ${res.status}`;
+        let body: unknown = null;
         try {
-          const raw: unknown = await res.json();
+          body = await res.json();
           if (
-            isAnthropicErrorBody(raw) &&
-            typeof raw.error?.message === "string"
+            isAnthropicErrorBody(body) &&
+            typeof body.error?.message === "string"
           ) {
-            message = `KimiCoding error ${res.status}: ${raw.error.message}`;
+            message = `KimiCoding error ${res.status}: ${body.error.message}`;
           }
         } catch {
           // ignore parse errors
         }
-        throw new KimiCodingError(message, res.status);
+        throw new KimiCodingError(message, res.status, body);
       }
 
       return (await res.json()) as AnthropicMessage;

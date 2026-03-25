@@ -114,14 +114,18 @@ export function fal(opts: FalOptions): FalProvider {
             res.status,
             errorData.error.type,
             errorData.error.request_id,
-            errorData.error.docs_url
+            errorData.error.docs_url,
+            errorData
           );
         }
 
         throw new FalError(
           `Fal API error: ${res.status}`,
           res.status,
-          "server_error"
+          "server_error",
+          undefined,
+          undefined,
+          errorData
         );
       }
 

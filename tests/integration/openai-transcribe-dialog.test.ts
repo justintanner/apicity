@@ -25,6 +25,7 @@ describe("openai transcribe dialog", () => {
     const result = await provider.v1.audio.transcriptions({
       file,
       model: "gpt-4o-mini-transcribe",
+      response_format: "json",
       language: "en",
     });
 

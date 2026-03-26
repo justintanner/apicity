@@ -845,12 +845,7 @@ function renderCompareCell(step) {
 function getSelectionLabel() {
   if (selectedWorkflow !== null) {
     var wf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
-    if (wf) {
-      if (selectedWfStep !== null && wf.steps[selectedWfStep]) {
-        return wf.name + " \u2014 " + wf.steps[selectedWfStep].name;
-      }
-      return wf.name;
-    }
+    if (wf) return wf.name;
   }
   if (selected !== null && recordings[selected]) {
     var dn = displayName(recordings[selected].name);
@@ -868,26 +863,13 @@ function populateDropdown() {
   // Workflows as flat items
   for (var w = 0; w < workflowData.length; w++) {
     var wf = workflowData[w];
-    if (wf.layout === "compare") {
-      var isActive = selectedWorkflow === wf.id && selectedWfStep === null;
-      var firstUrl = (wf.steps[0] && wf.steps[0].request) ? wf.steps[0].request.method + ' ' + wf.steps[0].request.url : '';
-      html += '<div class="dd-item' + (isActive ? " active" : "") + '" data-wf="' + wf.id + '">';
-      html += '<span class="dot ' + (wf.steps[0] ? wf.steps[0].status : 'ready') + '"></span>';
-      html += escapeHtml(wf.name);
-      if (firstUrl) html += '<div class="dd-endpoint">' + escapeHtml(firstUrl) + '</div>';
-      html += '</div>';
-    } else {
-      for (var s = 0; s < wf.steps.length; s++) {
-        var step = wf.steps[s];
-        var stepActive = selectedWorkflow === wf.id && selectedWfStep === s;
-        var stepUrl = step.request ? step.request.method + ' ' + step.request.url : '';
-        html += '<div class="dd-item' + (stepActive ? " active" : "") + (step.status === "locked" ? " locked" : "") + '" data-wf="' + wf.id + '" data-step="' + s + '">';
-        html += '<span class="dot ' + step.status + '"></span>';
-        html += escapeHtml(wf.name + ' \u2014 ' + step.name);
-        if (stepUrl) html += '<div class="dd-endpoint">' + escapeHtml(stepUrl) + '</div>';
-        html += '</div>';
-      }
-    }
+    var isActive = selectedWorkflow === wf.id;
+    var firstUrl = (wf.steps[0] && wf.steps[0].request) ? wf.steps[0].request.method + ' ' + wf.steps[0].request.url : '';
+    html += '<div class="dd-item' + (isActive ? " active" : "") + '" data-wf="' + wf.id + '">';
+    html += '<span class="dot ' + (wf.steps[0] ? wf.steps[0].status : 'ready') + '"></span>';
+    html += escapeHtml(wf.name) + ' <span style="color:#6c7086;font-size:11px">(' + wf.steps.length + ' steps)</span>';
+    if (firstUrl) html += '<div class="dd-endpoint">' + escapeHtml(firstUrl) + '</div>';
+    html += '</div>';
   }
 
   // All recordings as flat items
@@ -917,7 +899,7 @@ function populateDropdown() {
       if (el.classList.contains("locked")) return;
       if (el.dataset.wf) {
         selectedWorkflow = el.dataset.wf;
-        selectedWfStep = el.dataset.step !== undefined ? parseInt(el.dataset.step) : null;
+        selectedWfStep = null;
         selected = null;
       } else {
         selected = parseInt(el.dataset.idx);
@@ -967,7 +949,7 @@ function render() {
   // Compare workflow mode
   if (selectedWorkflow !== null) {
     var compareWf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
-    if (compareWf && compareWf.layout === "compare" && selectedWfStep === null) {
+    if (compareWf && compareWf.layout === "compare") {
       metaEl.innerHTML = '<span style="color:#cba6f7;font-weight:600">' + escapeHtml(compareWf.name) + '</span>' +
         '<span style="color:#6c7086">' + compareWf.steps.length + ' models</span>';
       metaEl.classList.remove("hidden");
@@ -1011,52 +993,75 @@ function render() {
     }
   }
 
-  // Sequential workflow step mode
-  if (selectedWorkflow !== null && selectedWfStep !== null) {
+  // Sequential workflow — all steps as columns
+  if (selectedWorkflow !== null) {
     var wf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
     if (wf) {
-      var step = wf.steps[selectedWfStep];
-
       metaEl.innerHTML = '<span style="color:#cba6f7;font-weight:600">' + escapeHtml(wf.name) + '</span>' +
-        '<span style="color:#6c7086">Step ' + (selectedWfStep + 1) + ' of ' + wf.steps.length + ': ' + escapeHtml(step.name) + '</span>';
+        '<span style="color:#6c7086">' + wf.steps.length + ' steps</span>';
       metaEl.classList.remove("hidden");
 
-      columnsEl.innerHTML = '<div class="txn-col">' + renderWorkflowStep(wf, selectedWfStep) + '</div>';
+      var wfHtml = '';
+      for (var si = 0; si < wf.steps.length; si++) {
+        wfHtml += '<div class="txn-col"><div class="pane-label" style="color:#cba6f7">' + escapeHtml(wf.steps[si].name) + '</div>' + renderWorkflowStep(wf, si) + '</div>';
+      }
+      columnsEl.innerHTML = wfHtml;
 
-      copyLlmBtn.disabled = !step.response;
+      copyLlmBtn.disabled = !wf.steps.some(function(s) { return s.response; });
       resetBtn.classList.remove("hidden");
 
-      if ((step.status === "ready" && !step.response) || step.status === "failed") {
+      // Find first runnable step
+      var runnableIdx = -1;
+      for (var ri = 0; ri < wf.steps.length; ri++) {
+        if ((wf.steps[ri].status === "ready" && !wf.steps[ri].response) || wf.steps[ri].status === "failed") {
+          runnableIdx = ri; break;
+        }
+      }
+      if (runnableIdx >= 0) {
         runBtn.classList.remove("hidden");
         runBtn.disabled = false;
         runBtn.dataset.wf = selectedWorkflow;
-        runBtn.dataset.step = String(selectedWfStep);
+        runBtn.dataset.step = String(runnableIdx);
       }
 
-      if (step.response && step.status !== "completed") {
-        var asyncKeys = step.asyncOutputKeys || [];
-        var asyncDone = asyncKeys.length === 0 || (step.outputs && asyncKeys.every(function(k) { return k in step.outputs; }));
-        btn.disabled = step.hasAsync && !asyncDone;
-        btn.textContent = selectedWfStep < wf.steps.length - 1 ? "Approve & Continue" : "Approve";
-      } else if (step.status === "completed") {
-        statusMsg.textContent = "Completed"; statusMsg.style.color = "#a6e3a1";
+      // Check if any step needs async polling
+      var asyncStep = -1;
+      for (var ai = 0; ai < wf.steps.length; ai++) {
+        var as = wf.steps[ai];
+        if (as.hasAsync && as.response && as.status !== "completed") {
+          asyncStep = ai; break;
+        }
       }
-
-      if (step.hasAsync && step.response && step.status !== "completed") {
+      if (asyncStep >= 0) {
         refreshBtn.classList.remove("hidden");
         refreshBtn.dataset.wfMode = "true";
         refreshBtn.dataset.wf = selectedWorkflow;
-        refreshBtn.dataset.step = String(selectedWfStep);
+        refreshBtn.dataset.step = String(asyncStep);
       }
 
-      if (step.status === "ready" && !step.response) {
-        statusMsg.textContent = "Ready \u2014 click Run"; statusMsg.style.color = "#f9e2af";
-      } else if (step.status === "ready" && step.response && step.hasAsync) {
+      // Approve button — approve next unapproved step that has a response
+      var approveIdx = -1;
+      for (var api = 0; api < wf.steps.length; api++) {
+        var aps = wf.steps[api];
+        if (aps.response && aps.status !== "completed") {
+          var aKeys = aps.asyncOutputKeys || [];
+          var aDone = aKeys.length === 0 || (aps.outputs && aKeys.every(function(k) { return k in aps.outputs; }));
+          if (!aps.hasAsync || aDone) { approveIdx = api; break; }
+        }
+      }
+      if (approveIdx >= 0) {
+        btn.disabled = false;
+        selectedWfStep = approveIdx;
+        btn.textContent = approveIdx < wf.steps.length - 1 ? "Approve & Continue" : "Approve";
+      }
+
+      var allCompleted = wf.steps.every(function(s) { return s.status === "completed"; });
+      if (allCompleted) {
+        statusMsg.textContent = "All steps completed"; statusMsg.style.color = "#a6e3a1";
+      } else if (runnableIdx >= 0) {
+        statusMsg.textContent = "Ready \u2014 click Run for " + wf.steps[runnableIdx].name; statusMsg.style.color = "#f9e2af";
+      } else if (asyncStep >= 0) {
         statusMsg.textContent = "Running \u2014 click Refresh to poll"; statusMsg.style.color = "#89b4fa";
-      } else if (step.status === "ready" && step.response) {
-        statusMsg.textContent = "Review and approve"; statusMsg.style.color = "#f9e2af";
-      } else if (step.status === "failed") {
-        statusMsg.textContent = step.error || "Failed"; statusMsg.style.color = "#f38ba8";
       }
       return;
     }
@@ -1137,7 +1142,7 @@ document.addEventListener("click", function() {
 // Approve
 document.getElementById("approve-btn").addEventListener("click", async function() {
   // Compare approve all
-  if (selectedWorkflow !== null && selectedWfStep === null) {
+  if (selectedWorkflow !== null) {
     var compareWf = workflowData.find(function(w) { return w.id === selectedWorkflow; });
     if (compareWf && compareWf.layout === "compare") {
       document.getElementById("status-msg").textContent = "Approving all...";
@@ -1163,10 +1168,9 @@ document.getElementById("approve-btn").addEventListener("click", async function(
       body: JSON.stringify({ workflowId: selectedWorkflow, stepIndex: selectedWfStep }),
     });
     if (res.ok) {
-      var data = await res.json();
       var wfRes2 = await fetch("/api/workflows");
       workflowData = await wfRes2.json();
-      if (data.nextStep !== null) selectedWfStep = data.nextStep;
+      selectedWfStep = null;
       render();
     } else {
       document.getElementById("status-msg").textContent = "Failed to approve";
@@ -1420,7 +1424,7 @@ document.getElementById("reset-btn").addEventListener("click", async function() 
   if (res.ok) {
     var wfRes = await fetch("/api/workflows");
     workflowData = await wfRes.json();
-    selectedWfStep = 0;
+    selectedWfStep = null;
     render();
   }
 });
@@ -1480,7 +1484,6 @@ Promise.all([
   workflowData = results[1] || [];
   if (workflowData.length && workflowData[0].steps.length) {
     selectedWorkflow = workflowData[0].id;
-    selectedWfStep = 0;
   } else if (recordings.length) {
     selected = 0;
   }

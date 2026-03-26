@@ -27,7 +27,7 @@ fi
 STAGED=$(git diff --cached --name-only --diff-filter=d | grep -E '\.(ts|tsx|js|mjs|cjs)$' || true)
 if [ -n "$STAGED" ]; then
   echo "Running format + lint gate..."
-  pnpm run format >/dev/null 2>&1
+  echo "$STAGED" | xargs npx prettier --write >/dev/null 2>&1
   echo "$STAGED" | xargs git add 2>/dev/null || true
   if ! pnpm run lint; then
     echo "COMMIT BLOCKED: lint errors. Run 'pnpm run lint:fix' to auto-fix." >&2

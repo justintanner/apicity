@@ -504,4 +504,5 @@ export interface KieProvider {
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;
   chat: import("./chat").KieChatProvider;
+  claude: import("./claude").KieClaudeProvider["claude"];
 }

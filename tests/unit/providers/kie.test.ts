@@ -370,10 +370,10 @@ describe("kie provider", () => {
       expect(schema.fields.resolution?.enum).toContain("4K");
     });
 
-    it("kling-3.0/video should be video with sound, duration, mode required", () => {
+    it("kling-3.0/video should be video with duration, mode required", () => {
       const schema = provider.modelInputSchemas["kling-3.0/video"];
       expect(schema.type).toBe("video");
-      expect(schema.fields.sound.required).toBe(true);
+      expect(schema.fields.sound.type).toBe("boolean");
       expect(schema.fields.duration.required).toBe(true);
       expect(schema.fields.mode.required).toBe(true);
       expect(schema.fields.mode.enum).toContain("pro");

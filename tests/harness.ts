@@ -25,6 +25,7 @@ export function setupPolly(recordingName: string): PollyContext {
     persisterOptions: {
       fs: { recordingsDir },
     },
+    recordIfMissing: mode === "record",
     recordFailedRequests: true,
     timing: Timing.fixed(0),
     matchRequestsBy: {

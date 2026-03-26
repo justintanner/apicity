@@ -80,8 +80,6 @@ jobs:
     if: github.event_name == 'pull_request'
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -104,20 +102,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate harness report
-        run: npx tsx tests/harness-report.ts >> $GITHUB_STEP_SUMMARY
+        run: npx tsx tests/harness-report.ts > harness-report.html
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
-      - name: Comment PR with harness summary
-        run: |
-          CHANGED=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD -- tests/recordings/ | wc -l)
-          if [ "$CHANGED" -gt 0 ]; then
-            gh pr comment ${{ github.event.pull_request.number }} \
-              --body "### Harness Report
-
-          **$CHANGED** HAR recording(s) changed in this PR.
-
-          [View full harness report](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) in the job summary."
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Upload HAR viewer
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-report
+          path: harness-report.html
+          retention-days: 30

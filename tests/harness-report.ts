@@ -1,27 +1,13 @@
 /**
- * Generates a GitHub-flavored markdown report of changed HAR recordings.
- * Used in CI via: npx tsx tests/harness-report.ts >> $GITHUB_STEP_SUMMARY
+ * Generates a self-contained HTML report of changed HAR recordings.
+ * Used in CI via: npx tsx tests/harness-report.ts > harness-report.html
  * Works locally too: npx tsx tests/harness-report.ts
  */
 
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-
-interface HarEntry {
-  request: {
-    method: string;
-    url: string;
-    headers: Array<{ name: string; value: string }>;
-    postData?: { text: string };
-  };
-  response: {
-    status: number;
-    statusText: string;
-    headers: Array<{ name: string; value: string }>;
-    content: { text?: string };
-  };
-}
+import { type HarEntry, type HarRecording } from "./har-data.js";
 
 interface ChangedRecording {
   filePath: string;
@@ -82,144 +68,48 @@ function getChangedRecordings(baseBranch: string): ChangedRecording[] {
 }
 
 function extractProvider(filePath: string): string {
-  // Path: tests/recordings/xai_3613880225/chat-hello_1014512442/recording.har
   const parts = filePath.split("/");
   const recordingsIdx = parts.indexOf("recordings");
   if (recordingsIdx < 0 || recordingsIdx + 1 >= parts.length) return "unknown";
   const providerDir = parts[recordingsIdx + 1];
-  // Strip hash suffix: "xai_3613880225" → "xai"
   return providerDir.replace(/_\d+$/, "");
 }
 
-function truncateLongStrings(obj: unknown, maxStringLen: number): unknown {
-  if (typeof obj === "string") {
-    if (obj.length > maxStringLen) {
-      return `[truncated: ${obj.length} chars]`;
-    }
-    return obj;
-  }
-  if (Array.isArray(obj)) {
-    return obj.map((item) => truncateLongStrings(item, maxStringLen));
-  }
-  if (obj !== null && typeof obj === "object") {
-    const result: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(obj)) {
-      result[key] = truncateLongStrings(value, maxStringLen);
-    }
-    return result;
-  }
-  return obj;
-}
-
-function formatBody(raw: string | undefined, maxLen: number): string {
-  if (!raw) return "_empty_";
-
-  try {
-    const parsed = JSON.parse(raw);
-    const truncated = truncateLongStrings(parsed, 1000);
-    const formatted = JSON.stringify(truncated, null, 2);
-    if (formatted.length > maxLen) {
-      return formatted.slice(0, maxLen) + "\n...";
-    }
-    return formatted;
-  } catch {
-    if (raw.length > maxLen) {
-      return raw.slice(0, maxLen) + "\n...";
-    }
-    return raw;
-  }
-}
-
-function getUrlPath(fullUrl: string): string {
-  try {
-    const url = new URL(fullUrl);
-    return url.pathname;
-  } catch {
-    return fullUrl;
-  }
-}
-
-function renderMarkdown(recordings: ChangedRecording[]): string {
-  const newCount = recordings.filter((r) => r.changeType === "new").length;
-  const modifiedCount = recordings.filter(
-    (r) => r.changeType === "modified"
-  ).length;
-
-  const lines: string[] = [];
-  lines.push("## Harness Report");
-  lines.push("");
-  lines.push(
-    `**${recordings.length} recording(s) changed** (${newCount} new, ${modifiedCount} modified)`
+function generateHtml(changed: ChangedRecording[]): string {
+  const viewerHtml = fs.readFileSync(
+    path.resolve(import.meta.dirname, "har-viewer.html"),
+    "utf-8"
   );
-  lines.push("");
-  lines.push("| Provider | Recording | Status | Transactions |");
-  lines.push("|----------|-----------|--------|--------------|");
 
-  for (const rec of recordings) {
-    const name = rec.recordingName.includes("/")
-      ? rec.recordingName.split("/").slice(1).join("/")
-      : rec.recordingName;
-    const badge = rec.changeType === "new" ? "new" : "modified";
-    lines.push(
-      `| ${rec.provider} | ${name} | ${badge} | ${rec.entries.length} |`
-    );
-  }
+  const harRecordings: HarRecording[] = changed.map((r) => ({
+    name: `${r.provider}/${r.recordingName}`,
+    source: r.filePath,
+    entries: r.entries,
+  }));
 
-  // Group by provider
-  const byProvider = new Map<string, ChangedRecording[]>();
-  for (const rec of recordings) {
-    const existing = byProvider.get(rec.provider) ?? [];
-    existing.push(rec);
-    byProvider.set(rec.provider, existing);
-  }
+  const data = {
+    recordings: harRecordings,
+    features: { gitApprove: false },
+  };
 
-  for (const [provider, recs] of byProvider) {
-    lines.push("");
-    lines.push("---");
-    lines.push(`### ${provider}`);
+  const dataScript = `<script>var HAR_DATA = ${JSON.stringify(data)};</script>`;
+  return viewerHtml.replace("</head>", dataScript + "\n</head>");
+}
 
-    for (const rec of recs) {
-      const name = rec.recordingName.includes("/")
-        ? rec.recordingName.split("/").slice(1).join("/")
-        : rec.recordingName;
-
-      lines.push("");
-      lines.push(`<details>`);
-      lines.push(
-        `<summary>${name} (${rec.changeType}) — ${rec.entries.length} transaction(s)</summary>`
-      );
-      lines.push("");
-
-      for (let i = 0; i < rec.entries.length; i++) {
-        const entry = rec.entries[i];
-        const urlPath = getUrlPath(entry.request.url);
-
-        lines.push(`#### ${entry.request.method} ${urlPath}`);
-        lines.push("");
-        lines.push("**Request**");
-        lines.push("```json");
-        lines.push(formatBody(entry.request.postData?.text, 500));
-        lines.push("```");
-        lines.push("");
-        lines.push(`**Response** \`${entry.response.status}\``);
-        lines.push("```json");
-        lines.push(formatBody(entry.response.content?.text, 500));
-        lines.push("```");
-        lines.push("");
-      }
-
-      lines.push("</details>");
-    }
-  }
-
-  return lines.join("\n");
+function generateEmptyHtml(): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Harness Report</title>
+<style>body{font-family:system-ui;background:#1e1e2e;color:#cdd6f4;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+p{font-size:16px;color:#6c7086}</style></head>
+<body><p>No recording changes in this PR.</p></body></html>`;
 }
 
 const baseBranch = getBaseBranch();
 const recordings = getChangedRecordings(baseBranch);
 
 if (recordings.length === 0) {
-  console.log("## Harness Report\n\nNo recording changes in this PR.");
+  console.log(generateEmptyHtml());
 } else {
-  console.log(renderMarkdown(recordings));
+  console.log(generateHtml(recordings));
 }

@@ -12,22 +12,22 @@ pnpm add @nakedapi/kie
 
 ## Supported Models
 
-| Model                              | Type           | Description                                           |
-| ---------------------------------- | -------------- | ----------------------------------------------------- |
-| `kling-3.0/video`                  | Video          | High-quality video generation with multi-shot support |
-| `grok-imagine/text-to-image`       | Image          | Text-to-image generation                              |
-| `grok-imagine/image-to-image`      | Image          | Image-to-image generation                             |
-| `grok-imagine/text-to-video`       | Video          | Text-to-video generation                              |
-| `grok-imagine/image-to-video`      | Video          | Image-to-video generation                             |
-| `nano-banana-pro`                  | Image          | Advanced image generation                             |
-| `bytedance/seedance-1.5-pro`       | Video          | Seedance video generation                             |
-| `nano-banana-2`                    | Image          | Image generation with Google Search support           |
-| `gpt-image/1.5-image-to-image`     | Image          | GPT image-to-image editing                            |
-| `seedream/5-lite-image-to-image`   | Image          | Seedream image-to-image editing                       |
-| `elevenlabs/text-to-dialogue-v3`   | Audio          | Multi-voice dialogue generation                       |
-| `elevenlabs/sound-effect-v2`       | Audio          | Sound effect generation                               |
-| `elevenlabs/speech-to-text`        | Transcription  | Speech-to-text transcription                          |
-| `sora-watermark-remover`           | Video          | Remove watermarks from video                          |
+| Model                            | Type          | Description                                           |
+| -------------------------------- | ------------- | ----------------------------------------------------- |
+| `kling-3.0/video`                | Video         | High-quality video generation with multi-shot support |
+| `grok-imagine/text-to-image`     | Image         | Text-to-image generation                              |
+| `grok-imagine/image-to-image`    | Image         | Image-to-image generation                             |
+| `grok-imagine/text-to-video`     | Video         | Text-to-video generation                              |
+| `grok-imagine/image-to-video`    | Video         | Image-to-video generation                             |
+| `nano-banana-pro`                | Image         | Advanced image generation                             |
+| `bytedance/seedance-1.5-pro`     | Video         | Seedance video generation                             |
+| `nano-banana-2`                  | Image         | Image generation with Google Search support           |
+| `gpt-image/1.5-image-to-image`   | Image         | GPT image-to-image editing                            |
+| `seedream/5-lite-image-to-image` | Image         | Seedream image-to-image editing                       |
+| `elevenlabs/text-to-dialogue-v3` | Audio         | Multi-voice dialogue generation                       |
+| `elevenlabs/sound-effect-v2`     | Audio         | Sound effect generation                               |
+| `elevenlabs/speech-to-text`      | Transcription | Speech-to-text transcription                          |
+| `sora-watermark-remover`         | Video         | Remove watermarks from video                          |
 
 ## Usage
 

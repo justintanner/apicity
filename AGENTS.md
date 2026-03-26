@@ -137,6 +137,7 @@ packages/provider/<name>/
 ## CI/CD
 
 GitHub Actions (`ci.yml`) runs three jobs on push/PR to main:
+
 1. **build** — install, build, verify artifacts
 2. **test** — lint, unit tests, integration tests (replay mode)
 3. **harness-report** (PRs only) — generates a recording diff report in the job summary
@@ -147,12 +148,12 @@ All checks must pass before merging. The harness report shows new/modified HAR r
 
 Hooks auto-inject `bd prime` at session start and before compaction.
 
-| Command | Description |
-|---------|-------------|
-| `bd ready` | Find unblocked work |
-| `bd create "Title"` | Create a new task |
-| `bd close <id>` | Complete a task |
-| `bd sync` | Sync issues with git |
+| Command             | Description          |
+| ------------------- | -------------------- |
+| `bd ready`          | Find unblocked work  |
+| `bd create "Title"` | Create a new task    |
+| `bd close <id>`     | Complete a task      |
+| `bd sync`           | Sync issues with git |
 
 ## Development Workflow
 
@@ -192,12 +193,14 @@ Do NOT skip gates. Do NOT commit recordings — the user reviews and commits the
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
+
 ## Beads Issue Tracker
 
 This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
@@ -238,6 +241,7 @@ bd close <id>         # Complete work
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push

@@ -45,70 +45,70 @@ Method:       kie.api.v1.common.downloadUrl()
 
 #### OpenAI — `https://api.openai.com/v1`
 
-| URL | Method Signature |
-|-----|------------------|
-| `POST /chat/completions` | `openai.v1.chat.completions()` |
+| URL                          | Method Signature                   |
+| ---------------------------- | ---------------------------------- |
+| `POST /chat/completions`     | `openai.v1.chat.completions()`     |
 | `POST /audio/transcriptions` | `openai.v1.audio.transcriptions()` |
 
 #### xAI — `https://api.x.ai/v1`
 
-| URL | Method Signature |
-|-----|------------------|
-| `POST /chat/completions` | `xai.v1.chat.completions()` |
-| `POST /images/generations` | `xai.v1.images.generations()` |
-| `POST /images/edits` | `xai.v1.images.edits()` |
-| `GET /videos/{requestId}` | `xai.v1.videos(requestId)` |
-| `POST /videos/generations` | `xai.v1.videos.generations()` |
-| `POST /videos/extensions` | `xai.v1.videos.extensions()` |
-| `POST /files` | `xai.v1.files.upload()` |
-| `GET /files` | `xai.v1.files.list()` |
-| `GET /files/{fileId}` | `xai.v1.files.get(fileId)` |
-| `DELETE /files/{fileId}` | `xai.v1.files.delete(fileId)` |
-| `GET /models` | `xai.v1.models()` |
-| `GET /models/{modelId}` | `xai.v1.models(modelId)` |
-| `GET /language-models` | `xai.v1.languageModels()` |
-| `GET /language-models/{modelId}` | `xai.v1.languageModels(modelId)` |
-| `GET /image-generation-models` | `xai.v1.imageGenerationModels()` |
+| URL                                      | Method Signature                        |
+| ---------------------------------------- | --------------------------------------- |
+| `POST /chat/completions`                 | `xai.v1.chat.completions()`             |
+| `POST /images/generations`               | `xai.v1.images.generations()`           |
+| `POST /images/edits`                     | `xai.v1.images.edits()`                 |
+| `GET /videos/{requestId}`                | `xai.v1.videos(requestId)`              |
+| `POST /videos/generations`               | `xai.v1.videos.generations()`           |
+| `POST /videos/extensions`                | `xai.v1.videos.extensions()`            |
+| `POST /files`                            | `xai.v1.files.upload()`                 |
+| `GET /files`                             | `xai.v1.files.list()`                   |
+| `GET /files/{fileId}`                    | `xai.v1.files.get(fileId)`              |
+| `DELETE /files/{fileId}`                 | `xai.v1.files.delete(fileId)`           |
+| `GET /models`                            | `xai.v1.models()`                       |
+| `GET /models/{modelId}`                  | `xai.v1.models(modelId)`                |
+| `GET /language-models`                   | `xai.v1.languageModels()`               |
+| `GET /language-models/{modelId}`         | `xai.v1.languageModels(modelId)`        |
+| `GET /image-generation-models`           | `xai.v1.imageGenerationModels()`        |
 | `GET /image-generation-models/{modelId}` | `xai.v1.imageGenerationModels(modelId)` |
-| `GET /video-generation-models` | `xai.v1.videoGenerationModels()` |
+| `GET /video-generation-models`           | `xai.v1.videoGenerationModels()`        |
 | `GET /video-generation-models/{modelId}` | `xai.v1.videoGenerationModels(modelId)` |
 
 #### Fal — `https://api.fal.ai/v1`
 
-| URL | Method Signature |
-|-----|------------------|
-| `GET /models` | `fal.v1.models()` |
-| `GET /models/pricing` | `fal.v1.models.pricing()` |
-| `POST /models/pricing/estimate` | `fal.v1.models.pricing.estimate()` |
-| `GET /models/usage` | `fal.v1.models.usage()` |
-| `GET /models/analytics` | `fal.v1.models.analytics()` |
-| `GET /models/requests/by-endpoint` | `fal.v1.models.requests.byEndpoint()` |
-| `DELETE /models/requests/{id}/payloads` | `fal.v1.models.requests.payloads()` |
+| URL                                     | Method Signature                      |
+| --------------------------------------- | ------------------------------------- |
+| `GET /models`                           | `fal.v1.models()`                     |
+| `GET /models/pricing`                   | `fal.v1.models.pricing()`             |
+| `POST /models/pricing/estimate`         | `fal.v1.models.pricing.estimate()`    |
+| `GET /models/usage`                     | `fal.v1.models.usage()`               |
+| `GET /models/analytics`                 | `fal.v1.models.analytics()`           |
+| `GET /models/requests/by-endpoint`      | `fal.v1.models.requests.byEndpoint()` |
+| `DELETE /models/requests/{id}/payloads` | `fal.v1.models.requests.payloads()`   |
 
 #### KimiCoding — `https://api.kimi.com/coding/`
 
-| URL | Method Signature |
-|-----|------------------|
-| `POST v1/messages` | `kimicoding.coding.v1.messages()` |
+| URL                         | Method Signature                         |
+| --------------------------- | ---------------------------------------- |
+| `POST v1/messages`          | `kimicoding.coding.v1.messages()`        |
 | `POST v1/messages` (stream) | `kimicoding.coding.v1.messages.stream()` |
 
 #### KIE — `https://api.kie.ai`
 
-| URL | Method Signature |
-|-----|------------------|
-| `POST /api/v1/jobs/createTask` | `kie.api.v1.jobs.createTask()` |
+| URL                                   | Method Signature                     |
+| ------------------------------------- | ------------------------------------ |
+| `POST /api/v1/jobs/createTask`        | `kie.api.v1.jobs.createTask()`       |
 | `GET /api/v1/jobs/recordInfo?taskId=` | `kie.api.v1.jobs.recordInfo(taskId)` |
-| `POST /api/v1/common/download-url` | `kie.api.v1.common.downloadUrl()` |
-| `GET /api/v1/chat/credit` | `kie.api.v1.chat.credit()` |
-| `POST /api/file-stream-upload` | `kie.api.fileStreamUpload()` |
+| `POST /api/v1/common/download-url`    | `kie.api.v1.common.downloadUrl()`    |
+| `GET /api/v1/chat/credit`             | `kie.api.v1.chat.credit()`           |
+| `POST /api/file-stream-upload`        | `kie.api.fileStreamUpload()`         |
 
 #### KIE Sub-providers
 
-| URL | Method Signature |
-|-----|------------------|
-| `POST /api/v1/veo/generate` | `kie.veo.api.v1.veo.generate()` |
-| `POST /api/v1/veo/extend` | `kie.veo.api.v1.veo.extend()` |
-| `POST /api/v1/generate` | `kie.suno.api.v1.generate()` |
+| URL                                 | Method Signature                       |
+| ----------------------------------- | -------------------------------------- |
+| `POST /api/v1/veo/generate`         | `kie.veo.api.v1.veo.generate()`        |
+| `POST /api/v1/veo/extend`           | `kie.veo.api.v1.veo.extend()`          |
+| `POST /api/v1/generate`             | `kie.suno.api.v1.generate()`           |
 | `POST /gpt-5-2/v1/chat/completions` | `kie.chat.gpt52.v1.chat.completions()` |
 
 ## Quick Start
@@ -120,9 +120,14 @@ npm install @nakedapi/kimicoding
 ```
 
 ```typescript
-import { kimicoding as createKimicoding, type ChatRequest } from "@nakedapi/kimicoding";
+import {
+  kimicoding as createKimicoding,
+  type ChatRequest,
+} from "@nakedapi/kimicoding";
 
-const kimicoding = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! });
+const kimicoding = createKimicoding({
+  apiKey: process.env.KIMI_CODING_API_KEY!,
+});
 
 for await (const chunk of kimicoding.coding.v1.messages.stream({
   model: "k2p5",
@@ -223,13 +228,13 @@ const usage = await fal.v1.models.usage();
 
 ## Providers
 
-| Package | Methods | Models |
-|---------|---------|--------|
-| [@nakedapi/fal](packages/provider/fal) | `fal.v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests` | Model registry/marketplace |
-| [@nakedapi/kie](packages/provider/kie) | `kie.api.v1.jobs.createTask()`, `.recordInfo()`, `kie.api.fileStreamUpload()`, sub-providers (chat, veo, suno) | Kling 3.0, Grok Imagine, Nano Banana, GPT Image, Seedance, ElevenLabs |
-| [@nakedapi/kimicoding](packages/provider/kimicoding) | `kimicoding.coding.v1.messages()`, `.stream()` | `k2p5` (32K max tokens) |
-| [@nakedapi/openai](packages/provider/openai) | `openai.v1.chat.completions()`, `openai.v1.audio.transcriptions()` | `gpt-5.4-2026-03-05`, `gpt-4o-mini-transcribe` |
-| [@nakedapi/xai](packages/provider/xai) | `xai.v1.chat.completions()`, `.search()`, `xai.v1.images.generations()`, `.edits()`, `xai.v1.videos.generations()`, `.edits()` | `grok-4-fast`, `grok-imagine-image`, `grok-imagine-video` |
+| Package                                              | Methods                                                                                                                        | Models                                                                |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| [@nakedapi/fal](packages/provider/fal)               | `fal.v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests`                                                       | Model registry/marketplace                                            |
+| [@nakedapi/kie](packages/provider/kie)               | `kie.api.v1.jobs.createTask()`, `.recordInfo()`, `kie.api.fileStreamUpload()`, sub-providers (chat, veo, suno)                 | Kling 3.0, Grok Imagine, Nano Banana, GPT Image, Seedance, ElevenLabs |
+| [@nakedapi/kimicoding](packages/provider/kimicoding) | `kimicoding.coding.v1.messages()`, `.stream()`                                                                                 | `k2p5` (32K max tokens)                                               |
+| [@nakedapi/openai](packages/provider/openai)         | `openai.v1.chat.completions()`, `openai.v1.audio.transcriptions()`                                                             | `gpt-5.4-2026-03-05`, `gpt-4o-mini-transcribe`                        |
+| [@nakedapi/xai](packages/provider/xai)               | `xai.v1.chat.completions()`, `.search()`, `xai.v1.images.generations()`, `.edits()`, `xai.v1.videos.generations()`, `.edits()` | `grok-4-fast`, `grok-imagine-image`, `grok-imagine-video`             |
 
 ## Middleware
 
@@ -245,9 +250,9 @@ import { openai as createOpenai, withRetry } from "@nakedapi/openai";
 const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
 
 const chat = withRetry(openai.v1.chat.completions, {
-  retries: 3,   // max retry attempts (default: 2)
-  baseMs: 500,  // initial delay in ms (default: 300)
-  factor: 2,    // exponential multiplier (default: 2)
+  retries: 3, // max retry attempts (default: 2)
+  baseMs: 500, // initial delay in ms (default: 300)
+  factor: 2, // exponential multiplier (default: 2)
   jitter: true, // randomize delay ±20% (default: true)
 });
 
@@ -302,7 +307,9 @@ import {
   withStreamFallback,
 } from "@nakedapi/kimicoding";
 
-const kimicoding = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! });
+const kimicoding = createKimicoding({
+  apiKey: process.env.KIMI_CODING_API_KEY!,
+});
 
 // Retry the full stream on transient failure
 const stream = withStreamRetry(kimicoding.coding.v1.messages.stream, {
@@ -323,7 +330,11 @@ for await (const chunk of stream({
 Since wrappers return plain functions with the same signature, they compose naturally:
 
 ```typescript
-import { kimicoding as createKimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
+import {
+  kimicoding as createKimicoding,
+  withRetry,
+  withFallback,
+} from "@nakedapi/kimicoding";
 
 const kimi1 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! });
 const kimi2 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! });
@@ -475,13 +486,13 @@ pnpm run lint  # Lint
 
 Most methods are pure pass-through — your request params are sent as-is and the API response is returned as-is. The following methods shape data on the **input** side before sending. No method shapes data on the output side.
 
-| Transformation | Provider | Method | What happens |
-|---|---|---|---|
-| FormData construction | OpenAI | `v1.audio.transcriptions()` | Builds FormData from params; converts `temperature` to string |
-| FormData construction | xAI | `v1.files.upload()` | Builds FormData from `file` Blob + `filename` |
-| FormData construction | KIE | `api.fileStreamUpload()` | Infers MIME type from filename, generates timestamped upload path, wraps in FormData |
-| Query string | Fal | `v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests.byEndpoint()` | Converts param objects to URL query strings |
-| Header promotion | Fal | `v1.models.requests.payloads()` | Moves `idempotency_key` from params to `Idempotency-Key` header |
+| Transformation        | Provider | Method                                                                            | What happens                                                                         |
+| --------------------- | -------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| FormData construction | OpenAI   | `v1.audio.transcriptions()`                                                       | Builds FormData from params; converts `temperature` to string                        |
+| FormData construction | xAI      | `v1.files.upload()`                                                               | Builds FormData from `file` Blob + `filename`                                        |
+| FormData construction | KIE      | `api.fileStreamUpload()`                                                          | Infers MIME type from filename, generates timestamped upload path, wraps in FormData |
+| Query string          | Fal      | `v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests.byEndpoint()` | Converts param objects to URL query strings                                          |
+| Header promotion      | Fal      | `v1.models.requests.payloads()`                                                   | Moves `idempotency_key` from params to `Idempotency-Key` header                      |
 
 ## License
 

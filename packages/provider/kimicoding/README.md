@@ -17,7 +17,10 @@ pnpm add @nakedapi/kimicoding
 ## Quick Start
 
 ```typescript
-import { kimicoding as createKimicoding, type ChatRequest } from "@nakedapi/kimicoding";
+import {
+  kimicoding as createKimicoding,
+  type ChatRequest,
+} from "@nakedapi/kimicoding";
 
 const kimicoding = createKimicoding({
   apiKey: process.env.KIMI_CODING_API_KEY!,
@@ -77,7 +80,11 @@ console.log(response.usage); // token counts
 ### Promises (no async/await)
 
 ```javascript
-import { kimicoding as createKimicoding, textBlock, imageBase64 } from "@nakedapi/kimicoding";
+import {
+  kimicoding as createKimicoding,
+  textBlock,
+  imageBase64,
+} from "@nakedapi/kimicoding";
 
 const kimicoding = createKimicoding({
   apiKey: process.env.KIMI_CODING_API_KEY,
@@ -119,7 +126,11 @@ kimicoding.coding.v1
 ## Middleware Usage
 
 ```typescript
-import { kimicoding as createKimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
+import {
+  kimicoding as createKimicoding,
+  withRetry,
+  withFallback,
+} from "@nakedapi/kimicoding";
 
 const kimicoding = createKimicoding({
   apiKey: process.env.KIMI_CODING_API_KEY!,

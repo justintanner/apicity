@@ -19,7 +19,13 @@ pnpm run test:run               # Run unit tests once
 pnpm run test                   # Run unit tests in watch mode
 pnpm run test:integration       # Run integration tests (Polly.js replay)
 pnpm run test:integration:record  # Re-record integration test fixtures (needs API keys)
-pnpm run harness                # Recording review UI at localhost:3475
+pnpm run harness                # HAR viewer at localhost:3475 (all recordings)
+
+# Standalone HAR viewer
+npx tsx tests/harness-serve.ts path/to/file.har       # View specific HAR file(s)
+npx tsx tests/harness-serve.ts tests/recordings/       # View a directory of recordings
+npx tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained HTML
+npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 
 # Run a single test file
 pnpm run test:run tests/unit/providers/kimicoding.test.ts
@@ -82,7 +88,7 @@ Integration tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `t
 
 ### CI
 
-GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, unit tests, integration replay), harness-report (PR-only recording diff in job summary). Runs on push/PR to main.
+GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, unit tests, integration replay), harness-report (PR-only, generates self-contained HTML viewer uploaded as artifact). Runs on push/PR to main.
 
 ## Code Conventions
 
@@ -143,6 +149,7 @@ If tests fail, fix and re-run until all pass. Do not proceed with failing tests.
 ### Automated Gates
 
 Steps 3-5 are enforced by beads git hooks — no need to run manually:
+
 - **Pre-commit**: Auto-formats staged code, then runs lint. Blocks commit on failure.
 - **Pre-push**: Runs unit tests. Blocks push on failure.
 - **CI**: GitHub Actions remains the final safety net.
@@ -177,7 +184,7 @@ Three jobs run on the PR:
 
 - **build** — compile + verify artifacts
 - **test** — lint + unit tests + integration replay
-- **harness-report** — renders changed HAR recordings in job summary for review
+- **harness-report** — generates self-contained HTML viewer of changed HAR recordings (uploaded as artifact)
 
 ### 9. Human reviews PR + harness report in GitHub
 

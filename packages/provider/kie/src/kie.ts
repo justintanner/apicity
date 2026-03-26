@@ -16,6 +16,7 @@ import {
   createTaskSchema,
   downloadUrlSchema,
   fileStreamUploadSchema,
+  modelInputSchemas,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { createVeoProvider } from "./veo";
@@ -281,6 +282,7 @@ export function kie(opts: KieOptions): KieProvider {
     veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
     suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
     chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
+    modelInputSchemas,
     api: {
       v1: {
         jobs: {

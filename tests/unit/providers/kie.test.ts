@@ -335,4 +335,67 @@ describe("kie provider", () => {
       expect(result.errors.join(" ")).toContain("url");
     });
   });
+
+  describe("modelInputSchemas", () => {
+    const provider = kie({
+      apiKey: "test-key",
+      fetch: vi
+        .fn()
+        .mockResolvedValue(
+          new Response('{"code":200,"msg":"ok","data":{}}', { status: 200 })
+        ),
+    });
+
+    it("should have all 18 models", () => {
+      const models = Object.keys(provider.modelInputSchemas);
+      expect(models).toHaveLength(18);
+    });
+
+    it("every entry should have a type and non-empty fields", () => {
+      for (const [model, schema] of Object.entries(
+        provider.modelInputSchemas
+      )) {
+        expect(schema.type, `${model} missing type`).toBeTruthy();
+        expect(
+          Object.keys(schema.fields).length,
+          `${model} has no fields`
+        ).toBeGreaterThan(0);
+      }
+    });
+
+    it("nano-banana-pro should be image with prompt required", () => {
+      const schema = provider.modelInputSchemas["nano-banana-pro"];
+      expect(schema.type).toBe("image");
+      expect(schema.fields.prompt.required).toBe(true);
+      expect(schema.fields.resolution?.enum).toContain("4K");
+    });
+
+    it("kling-3.0/video should be video with sound, duration, mode required", () => {
+      const schema = provider.modelInputSchemas["kling-3.0/video"];
+      expect(schema.type).toBe("video");
+      expect(schema.fields.sound.required).toBe(true);
+      expect(schema.fields.duration.required).toBe(true);
+      expect(schema.fields.mode.required).toBe(true);
+      expect(schema.fields.mode.enum).toContain("pro");
+    });
+
+    it("elevenlabs/speech-to-text should be transcription", () => {
+      const schema = provider.modelInputSchemas["elevenlabs/speech-to-text"];
+      expect(schema.type).toBe("transcription");
+      expect(schema.fields.audio_url.required).toBe(true);
+    });
+
+    it("elevenlabs/text-to-dialogue-v3 should be audio with dialogue required", () => {
+      const schema =
+        provider.modelInputSchemas["elevenlabs/text-to-dialogue-v3"];
+      expect(schema.type).toBe("audio");
+      expect(schema.fields.dialogue.required).toBe(true);
+    });
+
+    it("sora-watermark-remover should be video with video_url required", () => {
+      const schema = provider.modelInputSchemas["sora-watermark-remover"];
+      expect(schema.type).toBe("video");
+      expect(schema.fields.video_url.required).toBe(true);
+    });
+  });
 });

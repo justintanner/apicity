@@ -449,6 +449,11 @@ export interface ValidationResult {
   errors: string[];
 }
 
+export interface ModelInputSchema {
+  type: MediaType;
+  fields: Record<string, PayloadFieldSchema>;
+}
+
 // Namespace types
 interface KieCreateTaskMethod {
   (req: MediaGenerationRequest): Promise<TaskResponse>;
@@ -495,6 +500,7 @@ interface KieApiNamespace {
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
   api: KieApiNamespace;
+  modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;
   chat: import("./chat").KieChatProvider;

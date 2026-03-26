@@ -58,6 +58,7 @@ export type {
   PayloadFieldSchema,
   PayloadSchema,
   ValidationResult,
+  ModelInputSchema,
 } from "./types";
 
 // Export sub-provider types

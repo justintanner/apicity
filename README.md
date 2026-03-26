@@ -416,6 +416,32 @@ The validator performs the following checks recursively:
 
 GET-only endpoints (e.g. `xai.v1.models()`, `fal.v1.models()`) do not carry `.payloadSchema` or `.validatePayload` since they have no request body.
 
+### Model Input Schemas (KIE)
+
+KIE's `createTask` endpoint accepts 18 different model types, each with a unique `input` shape. The `modelInputSchemas` property provides the input field schema for every model — no network call, just static data:
+
+```typescript
+const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
+
+// Discover what fields nano-banana-pro accepts
+const schema = kie.modelInputSchemas["nano-banana-pro"];
+// => {
+//   type: "image",
+//   fields: {
+//     prompt: { type: "string", required: true },
+//     aspect_ratio: { type: "string", enum: ["1:1", "2:3", "3:2", ...] },
+//     resolution: { type: "string", enum: ["1K", "2K", "4K"] },
+//     output_format: { type: "string", enum: ["png", "jpg"] },
+//     image_input: { type: "array", items: { type: "string" } },
+//   }
+// }
+
+// List all available models and their media types
+for (const [model, { type }] of Object.entries(kie.modelInputSchemas)) {
+  console.log(`${model} → ${type}`);
+}
+```
+
 ### Types
 
 Each package exports `PayloadSchema`, `PayloadFieldSchema`, and `ValidationResult`:

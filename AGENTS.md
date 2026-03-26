@@ -154,16 +154,22 @@ Hooks auto-inject `bd prime` at session start and before compaction.
 | `bd close <id>` | Complete a task |
 | `bd sync` | Sync issues with git |
 
-## PR Workflow
+## Development Workflow
 
-1. Create beads issue: `bd create "Add <provider> <endpoint>"`
-2. Work on feature branch
-3. Run quality gates: `pnpm run build && pnpm run lint && pnpm run test:run`
-4. Record integration tests if adding new endpoints
-5. Push and open PR: `gh pr create`
-6. CI runs build + test + harness report (shows changed recordings in job summary)
-7. Human reviews PR + harness report in GitHub
-8. Merge to main, then `bd close <id> && bd sync`
+Follow the step-by-step workflow in `CLAUDE.md` § "Development Workflow" when picking up beads issues. The sequence is:
+
+1. **Claim** — `bd ready` → `bd update <id> --status in_progress` → feature branch
+2. **Implement** — code the feature following the provider pattern
+3. **Format** — `pnpm run format`
+4. **Lint (gate)** — `pnpm run lint` — must pass before proceeding
+5. **Unit tests (gate)** — `pnpm run test:run` — must pass before proceeding
+6. **Integration tests** — record fixtures, verify replay, STOP for human review
+7. **PR** — push branch, `gh pr create`, reference beads issue ID
+8. **CI** — build + test + harness report run automatically
+9. **Human review** — user reviews code + harness report in GitHub
+10. **After merge** — `bd close <id> && bd sync`
+
+Do NOT skip gates. Do NOT commit recordings — the user reviews and commits them.
 
 ## Landing the Plane (Session Completion)
 

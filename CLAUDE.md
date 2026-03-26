@@ -101,3 +101,68 @@ This project uses [beads](https://github.com/steveyegge/beads) (`bd`) for task t
 Hooks auto-inject `bd prime` at session start and before compaction.
 
 Quick reference: `bd ready` (find work), `bd create "Title"` (new task), `bd close <id>` (complete), `bd sync` (sync with git).
+
+## Development Workflow
+
+When picking up a beads issue, follow these steps in order. Do NOT skip steps. Each gate must pass before proceeding.
+
+### 1. Claim work
+```bash
+bd ready                                    # find unblocked issues
+bd update <id> --status in_progress         # claim it
+git checkout -b <id>/<short-description>    # e.g. nakedapi-5/xai-search
+```
+
+### 2. Implement
+Code the feature/fix following the provider pattern. Reference the issue description for API docs and expected shape.
+
+### 3. Format
+```bash
+pnpm run format
+```
+
+### 4. Lint — GATE
+```bash
+pnpm run lint
+```
+If lint fails, fix all errors and re-run until clean. Do not proceed with lint errors.
+
+### 5. Unit tests — GATE
+```bash
+pnpm run test:run
+```
+If tests fail, fix and re-run until all pass. Do not proceed with failing tests.
+
+### 6. Integration tests (if adding/changing endpoints)
+Write the test file in `tests/integration/`, then:
+```bash
+# Record fixtures (needs API keys in env)
+POLLY_MODE=record pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
+# Verify replay works
+pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
+```
+**STOP here.** Tell the user recordings are ready for review. Do NOT stage or commit files under `tests/recordings/` — the user reviews them either locally (`pnpm run harness`) or in the GitHub PR harness report.
+
+### 7. Push + open PR
+```bash
+git add <source code + test files only, NOT recordings>
+git commit -m "feat: <description>"
+git push -u origin HEAD
+gh pr create --title "<title>" --body "Resolves <id>"
+```
+The user will stage and commit approved recordings separately.
+
+### 8. CI validates (automatic)
+Three jobs run on the PR:
+- **build** — compile + verify artifacts
+- **test** — lint + unit tests + integration replay
+- **harness-report** — renders changed HAR recordings in job summary for review
+
+### 9. Human reviews PR + harness report in GitHub
+
+### 10. After merge
+```bash
+git checkout main && git pull
+bd close <id>
+bd sync
+```

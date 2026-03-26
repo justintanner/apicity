@@ -108,10 +108,13 @@ export interface XaiGeneratedImage {
   url?: string;
   b64_json?: string;
   revised_prompt?: string;
+  respect_moderation?: boolean;
 }
 
 // Image response
 export interface XaiImageResponse {
+  created?: number;
+  model?: string;
   data: XaiGeneratedImage[];
 }
 

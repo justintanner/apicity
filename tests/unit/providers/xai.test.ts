@@ -86,9 +86,12 @@ describe("xai provider", () => {
     url?: string;
     b64_json?: string;
     revised_prompt?: string;
+    respect_moderation?: boolean;
   }
 
   interface XaiImageResponse {
+    created?: number;
+    model?: string;
     data: XaiGeneratedImage[];
   }
 
@@ -383,6 +386,30 @@ describe("xai provider", () => {
         ],
         aspect_ratio: "1:1",
       });
+    });
+
+    it("should include response metadata (model, created, respect_moderation)", async () => {
+      const provider = createMockProvider();
+      (
+        provider.v1.images.generations as ReturnType<typeof vi.fn>
+      ).mockResolvedValue({
+        created: 1700000000,
+        model: "grok-imagine-image",
+        data: [
+          {
+            url: "https://api.x.ai/images/789.jpg",
+            revised_prompt: "A serene garden",
+            respect_moderation: true,
+          },
+        ],
+      });
+      const result = await provider.v1.images.generations({
+        prompt: "A serene garden",
+        model: "grok-imagine-image",
+      });
+      expect(result.created).toBe(1700000000);
+      expect(result.model).toBe("grok-imagine-image");
+      expect(result.data[0].respect_moderation).toBe(true);
     });
 
     it("should support AbortSignal", async () => {

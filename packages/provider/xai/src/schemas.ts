@@ -229,6 +229,184 @@ export const batchAddRequestsSchema: PayloadSchema = {
   },
 };
 
+export const collectionCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/collections",
+  contentType: "application/json",
+  fields: {
+    collection_name: {
+      type: "string",
+      required: true,
+      description: "Name of the collection",
+    },
+    collection_description: {
+      type: "string",
+      description: "Description of the collection",
+    },
+    team_id: { type: "string", description: "Team ID" },
+    index_configuration: {
+      type: "object",
+      description: "Index configuration",
+      properties: {
+        model_name: { type: "string", description: "Embedding model name" },
+      },
+    },
+    chunk_configuration: {
+      type: "object",
+      description: "Chunk configuration for document processing",
+    },
+    metric_space: {
+      type: "string",
+      enum: [
+        "HNSW_METRIC_UNKNOWN",
+        "HNSW_METRIC_COSINE",
+        "HNSW_METRIC_EUCLIDEAN",
+        "HNSW_METRIC_INNER_PRODUCT",
+      ],
+      description: "Distance metric for vector search",
+    },
+    field_definitions: {
+      type: "array",
+      description: "Custom field definitions for documents",
+      items: {
+        type: "object",
+        properties: {
+          key: { type: "string", required: true },
+          required: { type: "boolean" },
+          unique: { type: "boolean" },
+          inject_into_chunk: { type: "boolean" },
+          description: { type: "string" },
+        },
+      },
+    },
+  },
+};
+
+export const collectionUpdateSchema: PayloadSchema = {
+  method: "PUT",
+  path: "/collections/{collection_id}",
+  contentType: "application/json",
+  fields: {
+    team_id: { type: "string", description: "Team ID" },
+    collection_name: { type: "string", description: "New collection name" },
+    collection_description: {
+      type: "string",
+      description: "New collection description",
+    },
+    chunk_configuration: {
+      type: "object",
+      description: "Updated chunk configuration",
+    },
+    field_definition_updates: {
+      type: "array",
+      description: "Field definition changes",
+      items: {
+        type: "object",
+        properties: {
+          field_definition: {
+            type: "object",
+            required: true,
+            properties: {
+              key: { type: "string", required: true },
+              required: { type: "boolean" },
+              unique: { type: "boolean" },
+              inject_into_chunk: { type: "boolean" },
+              description: { type: "string" },
+            },
+          },
+          operation: {
+            type: "string",
+            required: true,
+            enum: ["FIELD_DEFINITION_ADD", "FIELD_DEFINITION_DELETE"],
+          },
+        },
+      },
+    },
+  },
+};
+
+export const documentAddSchema: PayloadSchema = {
+  method: "POST",
+  path: "/collections/{collection_id}/documents/{file_id}",
+  contentType: "application/json",
+  fields: {
+    team_id: { type: "string", description: "Team ID" },
+    fields: {
+      type: "object",
+      description: "Metadata fields matching collection field definitions",
+    },
+  },
+};
+
+export const documentSearchSchema: PayloadSchema = {
+  method: "POST",
+  path: "/documents/search",
+  contentType: "application/json",
+  fields: {
+    query: {
+      type: "string",
+      required: true,
+      description: "Search query text",
+    },
+    source: {
+      type: "object",
+      required: true,
+      description: "Source collections to search",
+      properties: {
+        collection_ids: {
+          type: "array",
+          required: true,
+          description: "Collection IDs to search within",
+          items: { type: "string" },
+        },
+        rag_pipeline: {
+          type: "string",
+          enum: ["chroma_db", "es"],
+          description: "RAG pipeline backend",
+        },
+      },
+    },
+    filter: { type: "string", description: "AIP-160 filter expression" },
+    instructions: {
+      type: "string",
+      description: "Custom search instructions",
+    },
+    limit: { type: "number", description: "Max number of results" },
+    ranking_metric: {
+      type: "string",
+      enum: [
+        "RANKING_METRIC_UNKNOWN",
+        "RANKING_METRIC_L2_DISTANCE",
+        "RANKING_METRIC_COSINE_SIMILARITY",
+      ],
+      description: "Ranking metric for results",
+    },
+    group_by: {
+      type: "object",
+      description: "Grouping configuration",
+      properties: {
+        keys: {
+          type: "array",
+          required: true,
+          items: { type: "string" },
+        },
+        aggregate: { type: "object" },
+      },
+    },
+    retrieval_mode: {
+      type: "object",
+      description: "Retrieval mode configuration",
+      properties: {
+        type: {
+          type: "string",
+          required: true,
+          enum: ["hybrid", "keyword", "semantic"],
+        },
+      },
+    },
+  },
+};
+
 export const videoExtensionsSchema: PayloadSchema = {
   method: "POST",
   path: "/videos/extensions",

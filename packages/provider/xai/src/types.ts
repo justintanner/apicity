@@ -2,6 +2,8 @@
 export interface XaiOptions {
   apiKey: string;
   baseURL?: string;
+  managementApiKey?: string;
+  managementBaseURL?: string;
   timeout?: number;
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
@@ -349,6 +351,203 @@ export interface XaiBatchResultListParams {
   pagination_token?: string;
 }
 
+// Chunk configuration for collections
+export interface XaiChunkConfiguration {
+  chars_configuration?: {
+    max_chunk_size_chars: number;
+    chunk_overlap_chars: number;
+  };
+  tokens_configuration?: {
+    max_chunk_size_tokens: number;
+    chunk_overlap_tokens: number;
+    encoding_name?: string;
+  };
+  markdown_tokens_configuration?: {
+    max_chunk_size_tokens: number;
+    chunk_overlap_tokens: number;
+    encoding_name?: string;
+  };
+  markdown_chars_configuration?: {
+    max_chunk_size_chars: number;
+    chunk_overlap_chars: number;
+  };
+  code_tokens_configuration?: {
+    max_chunk_size_tokens: number;
+    chunk_overlap_tokens: number;
+    encoding_name?: string;
+  };
+  code_chars_configuration?: {
+    max_chunk_size_chars: number;
+    chunk_overlap_chars: number;
+  };
+  table_configuration?: {
+    max_chunk_size_tokens: number;
+    encoding_name?: string;
+  };
+  bytes_configuration?: {
+    max_chunk_size_bytes: number;
+    chunk_overlap_bytes: number;
+  };
+  strip_whitespace?: boolean;
+  inject_name_into_chunks?: boolean;
+}
+
+// Field definition for collection schema
+export interface XaiFieldDefinition {
+  key: string;
+  required?: boolean;
+  unique?: boolean;
+  inject_into_chunk?: boolean;
+  description?: string;
+}
+
+// POST /v1/collections request
+export interface XaiCollectionCreateRequest {
+  collection_name: string;
+  collection_description?: string;
+  team_id?: string;
+  index_configuration?: { model_name: string };
+  chunk_configuration?: XaiChunkConfiguration;
+  metric_space?:
+    | "HNSW_METRIC_UNKNOWN"
+    | "HNSW_METRIC_COSINE"
+    | "HNSW_METRIC_EUCLIDEAN"
+    | "HNSW_METRIC_INNER_PRODUCT";
+  field_definitions?: XaiFieldDefinition[];
+}
+
+// Collection object (returned from create, get, list, update)
+export interface XaiCollection {
+  collection_id: string;
+  collection_name: string;
+  created_at: string;
+  index_configuration?: { model_name: string };
+  chunk_configuration?: XaiChunkConfiguration;
+  documents_count?: number;
+  field_definitions?: XaiFieldDefinition[];
+  collection_description?: string;
+}
+
+// GET /v1/collections query params
+export interface XaiCollectionListParams {
+  team_id?: string;
+  limit?: number;
+  order?: "ORDERING_ASCENDING" | "ORDERING_DESCENDING";
+  sort_by?: "COLLECTIONS_SORT_BY_NAME" | "COLLECTIONS_SORT_BY_AGE";
+  pagination_token?: string;
+  filter?: string;
+}
+
+// GET /v1/collections response
+export interface XaiCollectionListResponse {
+  collections: XaiCollection[];
+  pagination_token?: string;
+}
+
+// PUT /v1/collections/{collection_id} request
+export interface XaiCollectionUpdateRequest {
+  team_id?: string;
+  collection_name?: string;
+  collection_description?: string;
+  chunk_configuration?: XaiChunkConfiguration;
+  field_definition_updates?: {
+    field_definition: XaiFieldDefinition;
+    operation: "FIELD_DEFINITION_ADD" | "FIELD_DEFINITION_DELETE";
+  }[];
+}
+
+// Document file metadata
+export interface XaiDocumentFileMetadata {
+  file_id: string;
+  name: string;
+  size_bytes: string;
+  content_type: string;
+  created_at: string;
+  expires_at?: string | null;
+  hash?: string;
+  upload_status?: string;
+  upload_error_message?: string;
+  processing_status?: string;
+  file_path?: string;
+}
+
+// Document in a collection
+export interface XaiDocument {
+  file_metadata: XaiDocumentFileMetadata;
+  fields?: Record<string, string>;
+  status:
+    | "DOCUMENT_STATUS_UNKNOWN"
+    | "DOCUMENT_STATUS_PROCESSING"
+    | "DOCUMENT_STATUS_PROCESSED"
+    | "DOCUMENT_STATUS_FAILED";
+  error_message?: string;
+  last_indexed_at?: string;
+}
+
+// GET /v1/collections/{id}/documents query params
+export interface XaiDocumentListParams {
+  team_id?: string;
+  limit?: number;
+  order?: "ORDERING_ASCENDING" | "ORDERING_DESCENDING";
+  sort_by?:
+    | "DOCUMENTS_SORT_BY_NAME"
+    | "DOCUMENTS_SORT_BY_SIZE"
+    | "DOCUMENTS_SORT_BY_AGE";
+  pagination_token?: string;
+  filter?: string;
+}
+
+// GET /v1/collections/{id}/documents response
+export interface XaiDocumentListResponse {
+  documents: XaiDocument[];
+  pagination_token?: string;
+}
+
+// POST /v1/collections/{id}/documents/{file_id} request
+export interface XaiDocumentAddRequest {
+  team_id?: string;
+  fields?: Record<string, string>;
+}
+
+// POST /v1/documents/search request
+export interface XaiDocumentSearchRequest {
+  query: string;
+  source: {
+    collection_ids: string[];
+    rag_pipeline?: "chroma_db" | "es";
+  };
+  filter?: string | null;
+  instructions?: string | null;
+  limit?: number | null;
+  ranking_metric?:
+    | "RANKING_METRIC_UNKNOWN"
+    | "RANKING_METRIC_L2_DISTANCE"
+    | "RANKING_METRIC_COSINE_SIMILARITY";
+  group_by?: {
+    keys: string[];
+    aggregate?: Record<string, unknown>;
+  };
+  retrieval_mode?: {
+    type: "hybrid" | "keyword" | "semantic";
+  };
+}
+
+// Search result match
+export interface XaiDocumentSearchMatch {
+  file_id: string;
+  chunk_id: string;
+  chunk_content: string;
+  score: number;
+  collection_ids: string[];
+  fields?: Record<string, string>;
+  page_number?: number;
+}
+
+// POST /v1/documents/search response
+export interface XaiDocumentSearchResponse {
+  matches: XaiDocumentSearchMatch[];
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -360,7 +559,7 @@ export interface PayloadFieldSchema {
 }
 
 export interface PayloadSchema {
-  method: "POST" | "DELETE";
+  method: "POST" | "PUT" | "DELETE";
   path: string;
   contentType: "application/json" | "multipart/form-data";
   fields: Record<string, PayloadFieldSchema>;
@@ -510,12 +709,98 @@ interface XaiBatchesNamespace {
   ): Promise<XaiBatchResultListResponse>;
 }
 
+interface XaiCollectionCreateMethod {
+  (
+    req: XaiCollectionCreateRequest,
+    signal?: AbortSignal
+  ): Promise<XaiCollection>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface XaiCollectionUpdateMethod {
+  (
+    collectionId: string,
+    req: XaiCollectionUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<XaiCollection>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface XaiDocumentAddMethod {
+  (
+    collectionId: string,
+    fileId: string,
+    req?: XaiDocumentAddRequest,
+    signal?: AbortSignal
+  ): Promise<void>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface XaiCollectionDocumentsNamespace {
+  (
+    collectionId: string,
+    params?: XaiDocumentListParams,
+    signal?: AbortSignal
+  ): Promise<XaiDocumentListResponse>;
+  add: XaiDocumentAddMethod;
+  get(
+    collectionId: string,
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<XaiDocument>;
+  delete(
+    collectionId: string,
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<void>;
+  regenerate(
+    collectionId: string,
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<void>;
+  batchGet(
+    collectionId: string,
+    fileIds: string[],
+    signal?: AbortSignal
+  ): Promise<{ documents: XaiDocument[] }>;
+}
+
+interface XaiCollectionsNamespace {
+  (
+    params?: XaiCollectionListParams,
+    signal?: AbortSignal
+  ): Promise<XaiCollectionListResponse>;
+  create: XaiCollectionCreateMethod;
+  get(collectionId: string, signal?: AbortSignal): Promise<XaiCollection>;
+  update: XaiCollectionUpdateMethod;
+  delete(collectionId: string, signal?: AbortSignal): Promise<void>;
+  documents: XaiCollectionDocumentsNamespace;
+}
+
+interface XaiDocumentSearchMethod {
+  (
+    req: XaiDocumentSearchRequest,
+    signal?: AbortSignal
+  ): Promise<XaiDocumentSearchResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface XaiDocumentsNamespace {
+  search: XaiDocumentSearchMethod;
+}
+
 interface XaiV1Namespace {
   chat: XaiChatNamespace;
   images: XaiImagesNamespace;
   videos: XaiVideosNamespace;
   files: XaiFilesNamespace;
   batches: XaiBatchesNamespace;
+  collections: XaiCollectionsNamespace;
+  documents: XaiDocumentsNamespace;
   models: XaiModelsNamespace;
   languageModels: XaiLanguageModelsNamespace;
   imageGenerationModels: XaiImageGenerationModelsNamespace;

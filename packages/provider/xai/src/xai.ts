@@ -29,6 +29,17 @@ import {
   XaiBatchRequestListResponse,
   XaiBatchResultListParams,
   XaiBatchResultListResponse,
+  XaiCollectionCreateRequest,
+  XaiCollection,
+  XaiCollectionListParams,
+  XaiCollectionListResponse,
+  XaiCollectionUpdateRequest,
+  XaiDocumentAddRequest,
+  XaiDocumentListParams,
+  XaiDocumentListResponse,
+  XaiDocument,
+  XaiDocumentSearchRequest,
+  XaiDocumentSearchResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -42,11 +53,18 @@ import {
   videoExtensionsSchema,
   batchCreateSchema,
   batchAddRequestsSchema,
+  collectionCreateSchema,
+  collectionUpdateSchema,
+  documentAddSchema,
+  documentSearchSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
 export function xai(opts: XaiOptions): XaiProvider {
   const baseURL = opts.baseURL ?? "https://api.x.ai/v1";
+  const managementBaseURL =
+    opts.managementBaseURL ?? "https://management-api.x.ai/v1";
+  const managementApiKey = opts.managementApiKey ?? opts.apiKey;
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
@@ -459,6 +477,242 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
+  async function makeManagementRequest<T>(
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${managementApiKey}`,
+      };
+      const init: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
+
+      if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
+      }
+
+      const res = await doFetch(`${managementBaseURL}${path}`, init);
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `XAI API error: ${res.status}`;
+        let errBody: unknown = null;
+        try {
+          errBody = await res.json();
+          if (
+            typeof errBody === "object" &&
+            errBody !== null &&
+            "error" in errBody
+          ) {
+            const err = (errBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `XAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new XaiError(message, res.status, errBody);
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof XaiError) throw error;
+      throw new XaiError(`XAI request failed: ${error}`, 500);
+    }
+  }
+
+  const collectionDocuments = Object.assign(
+    async function listDocuments(
+      collectionId: string,
+      params?: XaiDocumentListParams,
+      signal?: AbortSignal
+    ): Promise<XaiDocumentListResponse> {
+      const query = buildQuery(params ?? {});
+      return await makeManagementRequest(
+        "GET",
+        `/collections/${collectionId}/documents${query}`,
+        undefined,
+        signal
+      );
+    },
+    {
+      add: Object.assign(
+        async function addDocument(
+          collectionId: string,
+          fileId: string,
+          req?: XaiDocumentAddRequest,
+          signal?: AbortSignal
+        ): Promise<void> {
+          await makeManagementRequest(
+            "POST",
+            `/collections/${collectionId}/documents/${fileId}`,
+            req ?? {},
+            signal
+          );
+        },
+        {
+          payloadSchema: documentAddSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, documentAddSchema);
+          },
+        }
+      ),
+
+      async get(
+        collectionId: string,
+        fileId: string,
+        signal?: AbortSignal
+      ): Promise<XaiDocument> {
+        return await makeManagementRequest(
+          "GET",
+          `/collections/${collectionId}/documents/${fileId}`,
+          undefined,
+          signal
+        );
+      },
+
+      async delete(
+        collectionId: string,
+        fileId: string,
+        signal?: AbortSignal
+      ): Promise<void> {
+        await makeManagementRequest(
+          "DELETE",
+          `/collections/${collectionId}/documents/${fileId}`,
+          undefined,
+          signal
+        );
+      },
+
+      async regenerate(
+        collectionId: string,
+        fileId: string,
+        signal?: AbortSignal
+      ): Promise<void> {
+        await makeManagementRequest(
+          "PATCH",
+          `/collections/${collectionId}/documents/${fileId}`,
+          undefined,
+          signal
+        );
+      },
+
+      async batchGet(
+        collectionId: string,
+        fileIds: string[],
+        signal?: AbortSignal
+      ): Promise<{ documents: XaiDocument[] }> {
+        const params = fileIds
+          .map((id) => `file_ids=${encodeURIComponent(id)}`)
+          .join("&");
+        const query = params ? `?${params}` : "";
+        return await makeManagementRequest(
+          "GET",
+          `/collections/${collectionId}/documents:batchGet${query}`,
+          undefined,
+          signal
+        );
+      },
+    }
+  );
+
+  const collections = Object.assign(
+    async function listCollections(
+      params?: XaiCollectionListParams,
+      signal?: AbortSignal
+    ): Promise<XaiCollectionListResponse> {
+      const query = buildQuery(params ?? {});
+      return await makeManagementRequest(
+        "GET",
+        `/collections${query}`,
+        undefined,
+        signal
+      );
+    },
+    {
+      create: Object.assign(
+        async function createCollection(
+          req: XaiCollectionCreateRequest,
+          signal?: AbortSignal
+        ): Promise<XaiCollection> {
+          return await makeManagementRequest(
+            "POST",
+            "/collections",
+            req,
+            signal
+          );
+        },
+        {
+          payloadSchema: collectionCreateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, collectionCreateSchema);
+          },
+        }
+      ),
+
+      async get(
+        collectionId: string,
+        signal?: AbortSignal
+      ): Promise<XaiCollection> {
+        return await makeManagementRequest(
+          "GET",
+          `/collections/${collectionId}`,
+          undefined,
+          signal
+        );
+      },
+
+      update: Object.assign(
+        async function updateCollection(
+          collectionId: string,
+          req: XaiCollectionUpdateRequest,
+          signal?: AbortSignal
+        ): Promise<XaiCollection> {
+          return await makeManagementRequest(
+            "PUT",
+            `/collections/${collectionId}`,
+            req,
+            signal
+          );
+        },
+        {
+          payloadSchema: collectionUpdateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, collectionUpdateSchema);
+          },
+        }
+      ),
+
+      async delete(collectionId: string, signal?: AbortSignal): Promise<void> {
+        await makeManagementRequest(
+          "DELETE",
+          `/collections/${collectionId}`,
+          undefined,
+          signal
+        );
+      },
+
+      documents: collectionDocuments,
+    }
+  );
+
   return {
     v1: {
       chat: {
@@ -521,6 +775,23 @@ export function xai(opts: XaiOptions): XaiProvider {
       videos,
       files,
       batches: batches as XaiProvider["v1"]["batches"],
+      collections: collections as XaiProvider["v1"]["collections"],
+      documents: {
+        search: Object.assign(
+          async function search(
+            req: XaiDocumentSearchRequest,
+            signal?: AbortSignal
+          ): Promise<XaiDocumentSearchResponse> {
+            return await makeRequest("POST", "/documents/search", req, signal);
+          },
+          {
+            payloadSchema: documentSearchSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, documentSearchSchema);
+            },
+          }
+        ),
+      },
       models: models as XaiProvider["v1"]["models"],
       languageModels: languageModels as XaiProvider["v1"]["languageModels"],
       imageGenerationModels:

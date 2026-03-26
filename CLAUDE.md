@@ -54,7 +54,7 @@ packages/provider/<name>/
 ```
 
 **openai** — OpenAI chat completions and audio transcription (`provider.v1.chat.completions()`, `provider.v1.audio.transcriptions()`)
-**xai** — xAI chat, search, images, and video (`provider.v1.chat.completions()`, `.search()`, `provider.v1.images.generations()`, `provider.v1.videos.generations()`)
+**xai** — xAI chat, images, video, collections, and search (`provider.v1.chat.completions()`, `provider.v1.images.generations()`, `provider.v1.videos.generations()`, `provider.v1.collections.*`, `provider.v1.documents.search()`)
 **fal** — Fal platform model management (`provider.v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests`)
 **kimicoding** — Anthropic Messages API format (`provider.coding.v1.messages()`, `.stream()`), model `k2p5`, supports vision
 **kie** — Media generation (video/image/audio), `provider.api.v1.jobs.createTask()`, sub-providers (veo, suno, chat)
@@ -82,9 +82,8 @@ Integration tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `t
    ```bash
    pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
-4. Stop and tell the user recordings are ready for review.
 
-**CRITICAL: Do NOT `git add`, stage, approve, or commit any files under `tests/recordings/`.** The user reviews recordings either in the harness UI (`pnpm run harness` → localhost:3475) for local development, or in the GitHub PR harness report for PR-based review. This is a human review gate — Claude must never bypass it.
+Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility.
 
 ### CI
 
@@ -133,22 +132,18 @@ POLLY_MODE=record pnpm vitest run --config tests/vitest.integration.ts tests/int
 pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
 ```
 
-**STOP here.** Tell the user recordings are ready for review. Do NOT `git add`, stage, or commit any files under `tests/recordings/` — this is a human review gate.
-
-### 4. User reviews + commits recordings
-
-The user reviews recordings locally (`pnpm run harness` at localhost:3475) and commits them on the feature branch when satisfied.
-
-### 5. Push + open PR
+### 4. Push + open PR
 
 ```bash
-git add <source code + test files only, NOT recordings>
+git add .
 git commit -m "feat: <description>"
 git push -u origin HEAD
 gh pr create --title "<title>" --body "Resolves <id>"
 ```
 
-### 6. CI validates + posts harness report (automatic)
+Recordings are committed alongside source code. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility.
+
+### 5. CI validates + posts harness report (automatic)
 
 Three jobs run on the PR:
 
@@ -156,7 +151,7 @@ Three jobs run on the PR:
 - **test** — lint + unit tests + integration replay
 - **harness-report** — posts a Markdown summary of changed recordings as a PR comment + uploads interactive HTML viewer as artifact
 
-### 7. After merge
+### 6. After merge
 
 ```bash
 git checkout main && git pull

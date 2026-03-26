@@ -801,5 +801,502 @@ describe("xai provider", () => {
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });
+
+    it("v1.collections.create.payloadSchema has correct method and path", () => {
+      expect(provider.v1.collections.create.payloadSchema.method).toBe("POST");
+      expect(provider.v1.collections.create.payloadSchema.path).toBe(
+        "/collections"
+      );
+    });
+
+    it("v1.collections.create.validatePayload accepts valid payload", () => {
+      const result = provider.v1.collections.create.validatePayload({
+        collection_name: "My Collection",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.collections.create.validatePayload rejects missing collection_name", () => {
+      const result = provider.v1.collections.create.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it("v1.collections.update.payloadSchema has correct method and path", () => {
+      expect(provider.v1.collections.update.payloadSchema.method).toBe("PUT");
+      expect(provider.v1.collections.update.payloadSchema.path).toBe(
+        "/collections/{collection_id}"
+      );
+    });
+
+    it("v1.collections.documents.add.payloadSchema has correct method and path", () => {
+      expect(provider.v1.collections.documents.add.payloadSchema.method).toBe(
+        "POST"
+      );
+      expect(provider.v1.collections.documents.add.payloadSchema.path).toBe(
+        "/collections/{collection_id}/documents/{file_id}"
+      );
+    });
+
+    it("v1.documents.search.payloadSchema has correct method and path", () => {
+      expect(provider.v1.documents.search.payloadSchema.method).toBe("POST");
+      expect(provider.v1.documents.search.payloadSchema.path).toBe(
+        "/documents/search"
+      );
+    });
+
+    it("v1.documents.search.validatePayload accepts valid payload", () => {
+      const result = provider.v1.documents.search.validatePayload({
+        query: "test query",
+        source: { collection_ids: ["col_123"] },
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.documents.search.validatePayload rejects missing query", () => {
+      const result = provider.v1.documents.search.validatePayload({
+        source: { collection_ids: ["col_123"] },
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it("v1.documents.search.validatePayload rejects missing source", () => {
+      const result = provider.v1.documents.search.validatePayload({
+        query: "test",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("collections", () => {
+    it("should create a collection", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            collection_id: "col_123",
+            collection_name: "Test Collection",
+            created_at: "1700000000",
+            documents_count: 0,
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections.create({
+        collection_name: "Test Collection",
+      });
+      expect(result.collection_id).toBe("col_123");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections",
+        expect.objectContaining({ method: "POST" })
+      );
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect((init.headers as Record<string, string>).Authorization).toBe(
+        "Bearer mgmt-key"
+      );
+    });
+
+    it("should list collections", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            collections: [
+              {
+                collection_id: "col_1",
+                collection_name: "Collection 1",
+                created_at: "1700000000",
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections();
+      expect(result.collections).toHaveLength(1);
+      expect(result.collections[0].collection_id).toBe("col_1");
+    });
+
+    it("should list collections with query params", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ collections: [] }), { status: 200 })
+        );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections({ limit: 10 });
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections?limit=10",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should get a collection", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            collection_id: "col_123",
+            collection_name: "My Collection",
+            created_at: "1700000000",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections.get("col_123");
+      expect(result.collection_id).toBe("col_123");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should update a collection", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            collection_id: "col_123",
+            collection_name: "Updated Name",
+            created_at: "1700000000",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections.update("col_123", {
+        collection_name: "Updated Name",
+      });
+      expect(result.collection_name).toBe("Updated Name");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123",
+        expect.objectContaining({ method: "PUT" })
+      );
+    });
+
+    it("should delete a collection", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections.delete("col_123");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123",
+        expect.objectContaining({ method: "DELETE" })
+      );
+    });
+
+    it("should fall back to apiKey when managementApiKey not provided", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ collections: [] }), { status: 200 })
+        );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.collections();
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect((init.headers as Record<string, string>).Authorization).toBe(
+        "Bearer test-key"
+      );
+    });
+
+    it("should use custom managementBaseURL", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ collections: [] }), { status: 200 })
+        );
+      const provider = xai({
+        apiKey: "test-key",
+        managementBaseURL: "https://custom-mgmt.x.ai/v1",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections();
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://custom-mgmt.x.ai/v1/collections",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+  });
+
+  describe("collection documents", () => {
+    it("should add a document to a collection", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections.documents.add("col_123", "file_456");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123/documents/file_456",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("should add a document with metadata fields", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections.documents.add("col_123", "file_456", {
+        fields: { category: "research" },
+      });
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      const body = JSON.parse(init.body as string);
+      expect(body.fields).toEqual({ category: "research" });
+    });
+
+    it("should list documents in a collection", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            documents: [
+              {
+                file_metadata: {
+                  file_id: "file_1",
+                  name: "doc.pdf",
+                  size_bytes: "1024",
+                  content_type: "application/pdf",
+                  created_at: "1700000000",
+                },
+                status: "DOCUMENT_STATUS_PROCESSED",
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections.documents("col_123");
+      expect(result.documents).toHaveLength(1);
+      expect(result.documents[0].file_metadata.file_id).toBe("file_1");
+    });
+
+    it("should get a specific document", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            file_metadata: {
+              file_id: "file_1",
+              name: "doc.pdf",
+              size_bytes: "1024",
+              content_type: "application/pdf",
+              created_at: "1700000000",
+            },
+            status: "DOCUMENT_STATUS_PROCESSED",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections.documents.get(
+        "col_123",
+        "file_1"
+      );
+      expect(result.status).toBe("DOCUMENT_STATUS_PROCESSED");
+    });
+
+    it("should delete a document", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections.documents.delete("col_123", "file_1");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123/documents/file_1",
+        expect.objectContaining({ method: "DELETE" })
+      );
+    });
+
+    it("should regenerate document indices", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.collections.documents.regenerate("col_123", "file_1");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123/documents/file_1",
+        expect.objectContaining({ method: "PATCH" })
+      );
+    });
+
+    it("should batch get documents", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            documents: [
+              {
+                file_metadata: {
+                  file_id: "file_1",
+                  name: "a.pdf",
+                  size_bytes: "512",
+                  content_type: "application/pdf",
+                  created_at: "1700000000",
+                },
+                status: "DOCUMENT_STATUS_PROCESSED",
+              },
+              {
+                file_metadata: {
+                  file_id: "file_2",
+                  name: "b.pdf",
+                  size_bytes: "1024",
+                  content_type: "application/pdf",
+                  created_at: "1700000000",
+                },
+                status: "DOCUMENT_STATUS_PROCESSED",
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      const result = await provider.v1.collections.documents.batchGet(
+        "col_123",
+        ["file_1", "file_2"]
+      );
+      expect(result.documents).toHaveLength(2);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://management-api.x.ai/v1/collections/col_123/documents:batchGet?file_ids=file_1&file_ids=file_2",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+  });
+
+  describe("document search", () => {
+    it("should search documents", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            matches: [
+              {
+                file_id: "file_1",
+                chunk_id: "chunk_1",
+                chunk_content: "The quick brown fox",
+                score: 0.95,
+                collection_ids: ["col_123"],
+                page_number: 1,
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.documents.search({
+        query: "brown fox",
+        source: { collection_ids: ["col_123"] },
+      });
+      expect(result.matches).toHaveLength(1);
+      expect(result.matches[0].chunk_content).toBe("The quick brown fox");
+      expect(result.matches[0].score).toBe(0.95);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/documents/search",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("should search with all options", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ matches: [] }), { status: 200 })
+        );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.documents.search({
+        query: "test",
+        source: { collection_ids: ["col_1"], rag_pipeline: "es" },
+        filter: 'fields.category = "research"',
+        instructions: "Focus on recent results",
+        limit: 5,
+        ranking_metric: "RANKING_METRIC_COSINE_SIMILARITY",
+        retrieval_mode: { type: "hybrid" },
+      });
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      const body = JSON.parse(init.body as string);
+      expect(body.query).toBe("test");
+      expect(body.source.rag_pipeline).toBe("es");
+      expect(body.limit).toBe(5);
+      expect(body.retrieval_mode.type).toBe("hybrid");
+    });
+
+    it("uses standard API key (not management key) for search", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ matches: [] }), { status: 200 })
+        );
+      const provider = xai({
+        apiKey: "standard-key",
+        managementApiKey: "mgmt-key",
+        fetch: mockFetch,
+      });
+      await provider.v1.documents.search({
+        query: "test",
+        source: { collection_ids: ["col_1"] },
+      });
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect((init.headers as Record<string, string>).Authorization).toBe(
+        "Bearer standard-key"
+      );
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/documents/search",
+        expect.anything()
+      );
+    });
   });
 });

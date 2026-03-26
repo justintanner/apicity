@@ -1,6 +1,6 @@
 // Tests for the kie provider
 import { describe, it, expect, vi } from "vitest";
-import { kie } from "../../../packages/provider/kie/src";
+import { kie, KieError } from "../../../packages/provider/kie/src";
 
 describe("kie provider", () => {
   interface KieApiEnvelope<T = Record<string, unknown>> {
@@ -396,6 +396,302 @@ describe("kie provider", () => {
       const schema = provider.modelInputSchemas["sora-watermark-remover"];
       expect(schema.type).toBe("video");
       expect(schema.fields.video_url.required).toBe(true);
+    });
+  });
+
+  describe("claudeHaiku sub-provider", () => {
+    function mockFetchOk(body: Record<string, unknown>): typeof fetch {
+      return vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify(body), { status: 200 })
+        ) as unknown as typeof fetch;
+    }
+
+    it("should call claudeHaiku.v1.messages and return response", async () => {
+      const responseBody = {
+        id: "msg_abc123",
+        type: "message",
+        role: "assistant",
+        model: "claude-haiku-4-5",
+        content: [{ type: "text", text: "Hello!" }],
+        stop_reason: "end_turn",
+        usage: { input_tokens: 10, output_tokens: 5 },
+        credits_consumed: 1,
+      };
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetchOk(responseBody),
+      });
+
+      const result = await provider.claudeHaiku.v1.messages({
+        model: "claude-haiku-4-5",
+        messages: [{ role: "user", content: "Hello" }],
+      });
+
+      expect(result.id).toBe("msg_abc123");
+      expect(result.model).toBe("claude-haiku-4-5");
+      expect(result.content?.[0]).toEqual({ type: "text", text: "Hello!" });
+      expect(result.stop_reason).toBe("end_turn");
+      expect(result.usage?.input_tokens).toBe(10);
+      expect(result.credits_consumed).toBe(1);
+    });
+
+    it("should send correct URL, headers, and body", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response('{"id":"msg_1"}', { status: 200 }));
+      const provider = kie({
+        apiKey: "sk-test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      await provider.claudeHaiku.v1.messages({
+        model: "claude-haiku-4-5",
+        messages: [{ role: "user", content: "Hi" }],
+      });
+
+      expect(mockFetch).toHaveBeenCalledOnce();
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.kie.ai/claude-haiku-4-5/v1/messages");
+      expect(init.method).toBe("POST");
+      expect(init.headers).toEqual(
+        expect.objectContaining({
+          Authorization: "Bearer sk-test-key",
+          "Content-Type": "application/json",
+        })
+      );
+      const body = JSON.parse(init.body as string);
+      expect(body.model).toBe("claude-haiku-4-5");
+      expect(body.messages).toEqual([{ role: "user", content: "Hi" }]);
+    });
+
+    it("should support tool use in request and response", async () => {
+      const responseBody = {
+        id: "msg_tool",
+        type: "message",
+        role: "assistant",
+        model: "claude-haiku-4-5",
+        content: [
+          {
+            type: "tool_use",
+            id: "toolu_1",
+            name: "get_weather",
+            input: { location: "London" },
+          },
+        ],
+        stop_reason: "tool_use",
+        usage: { input_tokens: 20, output_tokens: 15 },
+      };
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetchOk(responseBody),
+      });
+
+      const result = await provider.claudeHaiku.v1.messages({
+        model: "claude-haiku-4-5",
+        messages: [{ role: "user", content: "What's the weather?" }],
+        tools: [
+          {
+            name: "get_weather",
+            description: "Get current weather",
+            input_schema: {
+              type: "object",
+              properties: { location: { type: "string" } },
+              required: ["location"],
+            },
+          },
+        ],
+      });
+
+      expect(result.stop_reason).toBe("tool_use");
+      const block = result.content?.[0];
+      expect(block?.type).toBe("tool_use");
+      if (block?.type === "tool_use") {
+        expect(block.name).toBe("get_weather");
+        expect(block.input).toEqual({ location: "London" });
+      }
+    });
+
+    describe("error handling", () => {
+      it("should throw KieError on HTTP error with error body", async () => {
+        const provider = kie({
+          apiKey: "test-key",
+          fetch: vi.fn().mockImplementation(() =>
+            Promise.resolve(
+              new Response(
+                JSON.stringify({
+                  error: {
+                    message: "Rate limit exceeded",
+                    type: "rate_limit_error",
+                  },
+                }),
+                { status: 429 }
+              )
+            )
+          ) as unknown as typeof fetch,
+        });
+
+        try {
+          await provider.claudeHaiku.v1.messages({
+            model: "claude-haiku-4-5",
+            messages: [{ role: "user", content: "Hi" }],
+          });
+          expect.unreachable("should have thrown");
+        } catch (e) {
+          expect(e).toBeInstanceOf(KieError);
+          const err = e as InstanceType<typeof KieError>;
+          expect(err.status).toBe(429);
+          expect(err.message).toContain("Rate limit exceeded");
+        }
+      });
+
+      it("should throw KieError on HTTP error without parseable body", async () => {
+        const provider = kie({
+          apiKey: "test-key",
+          fetch: vi
+            .fn()
+            .mockResolvedValue(
+              new Response("Internal Server Error", { status: 500 })
+            ) as unknown as typeof fetch,
+        });
+
+        await expect(
+          provider.claudeHaiku.v1.messages({
+            model: "claude-haiku-4-5",
+            messages: [{ role: "user", content: "Hi" }],
+          })
+        ).rejects.toThrow(KieError);
+      });
+
+      it("should throw KieError on malformed JSON response", async () => {
+        const provider = kie({
+          apiKey: "test-key",
+          fetch: vi
+            .fn()
+            .mockResolvedValue(
+              new Response("not json at all", { status: 200 })
+            ) as unknown as typeof fetch,
+        });
+
+        await expect(
+          provider.claudeHaiku.v1.messages({
+            model: "claude-haiku-4-5",
+            messages: [{ role: "user", content: "Hi" }],
+          })
+        ).rejects.toThrow(KieError);
+      });
+
+      it("should throw KieError on fetch failure", async () => {
+        const provider = kie({
+          apiKey: "test-key",
+          fetch: vi
+            .fn()
+            .mockRejectedValue(
+              new TypeError("fetch failed")
+            ) as unknown as typeof fetch,
+        });
+
+        await expect(
+          provider.claudeHaiku.v1.messages({
+            model: "claude-haiku-4-5",
+            messages: [{ role: "user", content: "Hi" }],
+          })
+        ).rejects.toThrow(KieError);
+      });
+    });
+
+    describe("payloadSchema", () => {
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: vi
+          .fn()
+          .mockResolvedValue(
+            new Response('{"id":"msg_1"}', { status: 200 })
+          ) as unknown as typeof fetch,
+      });
+
+      it("should have method POST and correct path", () => {
+        const schema = provider.claudeHaiku.v1.messages.payloadSchema;
+        expect(schema.method).toBe("POST");
+        expect(schema.path).toBe("/claude-haiku-4-5/v1/messages");
+      });
+
+      it("should have required model and messages fields", () => {
+        const fields = provider.claudeHaiku.v1.messages.payloadSchema.fields;
+        expect(fields.model.required).toBe(true);
+        expect(fields.model.enum).toEqual(["claude-haiku-4-5"]);
+        expect(fields.messages.required).toBe(true);
+        expect(fields.messages.type).toBe("array");
+      });
+
+      it("should have optional tools and stream fields", () => {
+        const fields = provider.claudeHaiku.v1.messages.payloadSchema.fields;
+        expect(fields.tools.required).toBeUndefined();
+        expect(fields.tools.type).toBe("array");
+        expect(fields.stream.type).toBe("boolean");
+      });
+    });
+
+    describe("validatePayload", () => {
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: vi
+          .fn()
+          .mockResolvedValue(
+            new Response('{"id":"msg_1"}', { status: 200 })
+          ) as unknown as typeof fetch,
+      });
+
+      it("should accept valid claude-haiku request", () => {
+        const result = provider.claudeHaiku.v1.messages.validatePayload({
+          model: "claude-haiku-4-5",
+          messages: [{ role: "user", content: "Hello" }],
+        });
+        expect(result.valid).toBe(true);
+        expect(result.errors).toHaveLength(0);
+      });
+
+      it("should reject empty object", () => {
+        const result = provider.claudeHaiku.v1.messages.validatePayload({});
+        expect(result.valid).toBe(false);
+        expect(result.errors.length).toBeGreaterThan(0);
+        expect(result.errors.join(" ")).toContain("model");
+        expect(result.errors.join(" ")).toContain("messages");
+      });
+
+      it("should reject request missing messages", () => {
+        const result = provider.claudeHaiku.v1.messages.validatePayload({
+          model: "claude-haiku-4-5",
+        });
+        expect(result.valid).toBe(false);
+        expect(result.errors.join(" ")).toContain("messages");
+      });
+
+      it("should reject request missing model", () => {
+        const result = provider.claudeHaiku.v1.messages.validatePayload({
+          messages: [{ role: "user", content: "Hi" }],
+        });
+        expect(result.valid).toBe(false);
+        expect(result.errors.join(" ")).toContain("model");
+      });
+
+      it("should accept request with tools", () => {
+        const result = provider.claudeHaiku.v1.messages.validatePayload({
+          model: "claude-haiku-4-5",
+          messages: [{ role: "user", content: "Use a tool" }],
+          tools: [
+            {
+              name: "calc",
+              description: "Calculator",
+              input_schema: { type: "object" },
+            },
+          ],
+        });
+        expect(result.valid).toBe(true);
+        expect(result.errors).toHaveLength(0);
+      });
     });
   });
 });

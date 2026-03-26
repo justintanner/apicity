@@ -151,6 +151,15 @@ export interface XaiVideoGenerateRequest {
   reference_images?: XaiVideoReference[];
 }
 
+// Video edit request — matches API body for /v1/videos/edits
+export interface XaiVideoEditRequest {
+  prompt: string;
+  model?: string;
+  video: XaiVideoReference;
+  output?: { upload_url: string };
+  user?: string;
+}
+
 // Video extension request — matches API body for /v1/videos/extensions
 export interface XaiVideoExtendRequest {
   prompt: string;
@@ -402,6 +411,15 @@ interface XaiVideoGenerationsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface XaiVideoEditsMethod {
+  (
+    req: XaiVideoEditRequest,
+    signal?: AbortSignal
+  ): Promise<XaiVideoAsyncResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface XaiVideoExtensionsMethod {
   (
     req: XaiVideoExtendRequest,
@@ -414,6 +432,7 @@ interface XaiVideoExtensionsMethod {
 interface XaiVideosNamespace {
   (requestId: string, signal?: AbortSignal): Promise<XaiVideoResult>;
   generations: XaiVideoGenerationsMethod;
+  edits: XaiVideoEditsMethod;
   extensions: XaiVideoExtensionsMethod;
 }
 

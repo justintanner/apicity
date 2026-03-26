@@ -6,6 +6,7 @@ import {
   XaiImageEditRequest,
   XaiImageResponse,
   XaiVideoGenerateRequest,
+  XaiVideoEditRequest,
   XaiVideoExtendRequest,
   XaiVideoAsyncResponse,
   XaiVideoResult,
@@ -37,6 +38,7 @@ import {
   imageGenerationsSchema,
   imageEditsSchema,
   videoGenerationsSchema,
+  videoEditsSchema,
   videoExtensionsSchema,
   batchCreateSchema,
   batchAddRequestsSchema,
@@ -129,6 +131,21 @@ export function xai(opts: XaiOptions): XaiProvider {
           payloadSchema: videoGenerationsSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, videoGenerationsSchema);
+          },
+        }
+      ),
+
+      edits: Object.assign(
+        async function edits(
+          req: XaiVideoEditRequest,
+          signal?: AbortSignal
+        ): Promise<XaiVideoAsyncResponse> {
+          return await makeRequest("POST", "/videos/edits", req, signal);
+        },
+        {
+          payloadSchema: videoEditsSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, videoEditsSchema);
           },
         }
       ),

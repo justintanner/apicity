@@ -156,6 +156,32 @@ export const videoGenerationsSchema: PayloadSchema = {
   },
 };
 
+export const videoEditsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/videos/edits",
+  contentType: "application/json",
+  fields: {
+    prompt: {
+      type: "string",
+      required: true,
+      description: "Text prompt for video editing",
+    },
+    model: { type: "string", description: "Model ID" },
+    video: {
+      type: "object",
+      required: true,
+      description: "Source video to edit",
+      properties: { url: { type: "string", required: true } },
+    },
+    output: {
+      type: "object",
+      description: "Upload destination",
+      properties: { upload_url: { type: "string", required: true } },
+    },
+    user: { type: "string", description: "End-user identifier" },
+  },
+};
+
 export const batchCreateSchema: PayloadSchema = {
   method: "POST",
   path: "/batches",

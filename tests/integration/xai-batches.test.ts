@@ -29,9 +29,7 @@ describe("xai batches integration", () => {
 
       const list = await provider.v1.batches();
       expect(list.batches.length).toBeGreaterThan(0);
-      const found = list.batches.find(
-        (b) => b.batch_id === created.batch_id
-      );
+      const found = list.batches.find((b) => b.batch_id === created.batch_id);
       expect(found).toBeTruthy();
     });
   });

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { xai } from "@nakedapi/xai";
 
@@ -9,138 +9,117 @@ const cat1Base64 = readFileSync(
 ).toString("base64");
 const cat1DataUri = `data:image/jpeg;base64,${cat1Base64}`;
 
+function createProvider() {
+  return xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
+}
+
 describe("xai image generation integration", () => {
   let ctx: PollyContext;
 
-  describe("generateImage", () => {
-    beforeEach(() => {
-      ctx = setupPolly("xai/image-generate");
+  afterEach(async () => {
+    await teardownPolly(ctx);
+  });
+
+  it("should generate an image from a prompt", async () => {
+    ctx = setupPolly("xai/image-generate-basic");
+    const provider = createProvider();
+    const result = await provider.v1.images.generations({
+      prompt: "A simple red apple on a white background",
+      model: "grok-imagine-image",
+      n: 1,
     });
 
-    afterEach(async () => {
-      await teardownPolly(ctx);
+    expect(result.data).toBeInstanceOf(Array);
+    expect(result.data.length).toBeGreaterThan(0);
+    expect(result.data[0].url || result.data[0].b64_json).toBeTruthy();
+  });
+
+  it("should generate multiple images", async () => {
+    ctx = setupPolly("xai/image-generate-multiple");
+    const provider = createProvider();
+    const result = await provider.v1.images.generations({
+      prompt: "A simple blue circle",
+      model: "grok-imagine-image",
+      n: 2,
     });
 
-    it("should generate an image from a prompt", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.images.generations({
-        prompt: "A simple red apple on a white background",
-        model: "grok-imagine-image",
-        n: 1,
-      });
-
-      expect(result.data).toBeInstanceOf(Array);
-      expect(result.data.length).toBeGreaterThan(0);
-      expect(result.data[0].url || result.data[0].b64_json).toBeTruthy();
-    });
-
-    it("should generate multiple images", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.images.generations({
-        prompt: "A simple blue circle",
-        model: "grok-imagine-image",
-        n: 2,
-      });
-
-      expect(result.data).toHaveLength(2);
-      result.data.forEach((img) => {
-        expect(img.url || img.b64_json).toBeTruthy();
-      });
-    });
-
-    it("should support aspect_ratio parameter", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.images.generations({
-        prompt: "A mountain landscape",
-        model: "grok-imagine-image",
-        aspect_ratio: "16:9",
-      });
-
-      expect(result.data).toBeInstanceOf(Array);
-      expect(result.data.length).toBeGreaterThan(0);
-    });
-
-    it("should support resolution parameter", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.images.generations({
-        prompt: "A simple geometric pattern",
-        model: "grok-imagine-image",
-        resolution: "1k",
-      });
-
-      expect(result.data).toBeInstanceOf(Array);
-      expect(result.data.length).toBeGreaterThan(0);
-    });
-
-    it("should support b64_json response format", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
-      const result = await provider.v1.images.generations({
-        prompt: "A green leaf",
-        model: "grok-imagine-image",
-        response_format: "b64_json",
-        n: 1,
-      });
-
-      expect(result.data).toBeInstanceOf(Array);
-      expect(result.data[0].b64_json).toBeTruthy();
+    expect(result.data).toHaveLength(2);
+    result.data.forEach((img) => {
+      expect(img.url || img.b64_json).toBeTruthy();
     });
   });
 
-  describe("editImage", () => {
-    beforeEach(() => {
-      ctx = setupPolly("xai/image-edit");
+  it("should support aspect_ratio parameter", async () => {
+    ctx = setupPolly("xai/image-generate-aspect-ratio");
+    const provider = createProvider();
+    const result = await provider.v1.images.generations({
+      prompt: "A mountain landscape",
+      model: "grok-imagine-image",
+      aspect_ratio: "16:9",
     });
 
-    afterEach(async () => {
-      await teardownPolly(ctx);
+    expect(result.data).toBeInstanceOf(Array);
+    expect(result.data.length).toBeGreaterThan(0);
+  });
+
+  it("should support resolution parameter", async () => {
+    ctx = setupPolly("xai/image-generate-resolution");
+    const provider = createProvider();
+    const result = await provider.v1.images.generations({
+      prompt: "A simple geometric pattern",
+      model: "grok-imagine-image",
+      resolution: "1k",
     });
 
-    it("should edit an image with a single image reference", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
+    expect(result.data).toBeInstanceOf(Array);
+    expect(result.data.length).toBeGreaterThan(0);
+  });
 
-      const result = await provider.v1.images.edits({
-        prompt: "Render this as a pencil sketch with detailed shading",
-        model: "grok-imagine-image",
-        image: {
-          url: cat1DataUri,
-          type: "image_url",
-        },
-      });
-
-      expect(result.data).toBeInstanceOf(Array);
-      expect(result.data.length).toBeGreaterThan(0);
-      expect(result.data[0].url || result.data[0].b64_json).toBeTruthy();
+  it("should support b64_json response format", async () => {
+    ctx = setupPolly("xai/image-generate-b64");
+    const provider = createProvider();
+    const result = await provider.v1.images.generations({
+      prompt: "A green leaf",
+      model: "grok-imagine-image",
+      response_format: "b64_json",
+      n: 1,
     });
 
-    it("should support aspect_ratio for image editing", async () => {
-      const provider = xai({
-        apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-      });
+    expect(result.data).toBeInstanceOf(Array);
+    expect(result.data[0].b64_json).toBeTruthy();
+  });
 
-      const result = await provider.v1.images.edits({
-        prompt: "Transform the cat into a watercolor painting with soft edges",
-        model: "grok-imagine-image",
-        image: {
-          url: cat1DataUri,
-          type: "image_url",
-        },
-        aspect_ratio: "1:1",
-      });
-
-      expect(result.data).toBeInstanceOf(Array);
-      expect(result.data.length).toBeGreaterThan(0);
+  it("should edit an image with a single image reference", async () => {
+    ctx = setupPolly("xai/image-edit-single");
+    const provider = createProvider();
+    const result = await provider.v1.images.edits({
+      prompt: "Render this as a pencil sketch with detailed shading",
+      model: "grok-imagine-image",
+      image: {
+        url: cat1DataUri,
+        type: "image_url",
+      },
     });
+
+    expect(result.data).toBeInstanceOf(Array);
+    expect(result.data.length).toBeGreaterThan(0);
+    expect(result.data[0].url || result.data[0].b64_json).toBeTruthy();
+  });
+
+  it("should support aspect_ratio for image editing", async () => {
+    ctx = setupPolly("xai/image-edit-aspect-ratio");
+    const provider = createProvider();
+    const result = await provider.v1.images.edits({
+      prompt: "Transform the cat into a watercolor painting with soft edges",
+      model: "grok-imagine-image",
+      image: {
+        url: cat1DataUri,
+        type: "image_url",
+      },
+      aspect_ratio: "1:1",
+    });
+
+    expect(result.data).toBeInstanceOf(Array);
+    expect(result.data.length).toBeGreaterThan(0);
   });
 });

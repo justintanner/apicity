@@ -12,6 +12,7 @@ export type { RetryOptions, FallbackOptions } from "./middleware";
 export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";
 export { createChatProvider } from "./chat";
+export { createClaudeProvider } from "./claude";
 
 // Export SSE utility
 export { sseToIterable } from "./sse";
@@ -81,3 +82,17 @@ export type {
   KieChatResponse,
   KieChatProvider,
 } from "./chat";
+
+export type {
+  KieClaudeToolInputSchema,
+  KieClaudeTool,
+  KieClaudeContentPart,
+  KieClaudeMessage,
+  KieClaudeRequest,
+  KieClaudeUsage,
+  KieClaudeToolUseContent,
+  KieClaudeTextContent,
+  KieClaudeContentBlock,
+  KieClaudeResponse,
+  KieClaudeProvider,
+} from "./claude";

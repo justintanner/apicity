@@ -32,5 +32,13 @@ export type {
   XaiVideoResult,
   XaiFileObject,
   XaiFileListResponse,
+  XaiModel,
+  XaiModelListResponse,
+  XaiLanguageModel,
+  XaiLanguageModelListResponse,
+  XaiImageGenerationModel,
+  XaiImageGenerationModelListResponse,
+  XaiVideoGenerationModel,
+  XaiVideoGenerationModelListResponse,
   XaiProvider,
 } from "./types";

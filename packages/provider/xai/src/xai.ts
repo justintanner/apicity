@@ -11,6 +11,14 @@ import {
   XaiVideoResult,
   XaiFileObject,
   XaiFileListResponse,
+  XaiModel,
+  XaiModelListResponse,
+  XaiLanguageModel,
+  XaiLanguageModelListResponse,
+  XaiImageGenerationModel,
+  XaiImageGenerationModelListResponse,
+  XaiVideoGenerationModel,
+  XaiVideoGenerationModelListResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -208,6 +216,86 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
   };
 
+  async function models(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiModelListResponse | XaiModel> {
+    if (typeof modelIdOrSignal === "string") {
+      return makeRequest<XaiModel>(
+        "GET",
+        `/models/${modelIdOrSignal}`,
+        undefined,
+        signal
+      );
+    }
+    return makeRequest<XaiModelListResponse>(
+      "GET",
+      "/models",
+      undefined,
+      modelIdOrSignal
+    );
+  }
+
+  async function languageModels(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiLanguageModelListResponse | XaiLanguageModel> {
+    if (typeof modelIdOrSignal === "string") {
+      return makeRequest<XaiLanguageModel>(
+        "GET",
+        `/language-models/${modelIdOrSignal}`,
+        undefined,
+        signal
+      );
+    }
+    return makeRequest<XaiLanguageModelListResponse>(
+      "GET",
+      "/language-models",
+      undefined,
+      modelIdOrSignal
+    );
+  }
+
+  async function imageGenerationModels(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiImageGenerationModelListResponse | XaiImageGenerationModel> {
+    if (typeof modelIdOrSignal === "string") {
+      return makeRequest<XaiImageGenerationModel>(
+        "GET",
+        `/image-generation-models/${modelIdOrSignal}`,
+        undefined,
+        signal
+      );
+    }
+    return makeRequest<XaiImageGenerationModelListResponse>(
+      "GET",
+      "/image-generation-models",
+      undefined,
+      modelIdOrSignal
+    );
+  }
+
+  async function videoGenerationModels(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiVideoGenerationModelListResponse | XaiVideoGenerationModel> {
+    if (typeof modelIdOrSignal === "string") {
+      return makeRequest<XaiVideoGenerationModel>(
+        "GET",
+        `/video-generation-models/${modelIdOrSignal}`,
+        undefined,
+        signal
+      );
+    }
+    return makeRequest<XaiVideoGenerationModelListResponse>(
+      "GET",
+      "/video-generation-models",
+      undefined,
+      modelIdOrSignal
+    );
+  }
+
   return {
     v1: {
       chat: {
@@ -240,6 +328,12 @@ export function xai(opts: XaiOptions): XaiProvider {
       },
       videos,
       files,
+      models: models as XaiProvider["v1"]["models"],
+      languageModels: languageModels as XaiProvider["v1"]["languageModels"],
+      imageGenerationModels:
+        imageGenerationModels as XaiProvider["v1"]["imageGenerationModels"],
+      videoGenerationModels:
+        videoGenerationModels as XaiProvider["v1"]["videoGenerationModels"],
     },
   };
 }

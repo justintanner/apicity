@@ -180,6 +180,80 @@ export interface XaiVideoResult {
   model?: string;
 }
 
+// Model info (GET /v1/models)
+export interface XaiModel {
+  id: string;
+  created: number;
+  object: string;
+  owned_by: string;
+}
+
+export interface XaiModelListResponse {
+  data: XaiModel[];
+  object: string;
+}
+
+// Language model (GET /v1/language-models)
+export interface XaiLanguageModel {
+  id: string;
+  fingerprint: string;
+  created: number;
+  object: string;
+  owned_by: string;
+  version: string;
+  input_modalities: string[];
+  output_modalities: string[];
+  prompt_text_token_price: number;
+  cached_prompt_text_token_price?: number;
+  prompt_image_token_price?: number;
+  completion_text_token_price: number;
+  search_price?: number;
+  aliases: string[];
+}
+
+export interface XaiLanguageModelListResponse {
+  models: XaiLanguageModel[];
+}
+
+// Image generation model (GET /v1/image-generation-models)
+export interface XaiImageGenerationModel {
+  id: string;
+  fingerprint: string;
+  created: number;
+  object: string;
+  owned_by: string;
+  version: string;
+  max_prompt_length: number;
+  prompt_text_token_price?: number;
+  prompt_image_token_price?: number;
+  generated_image_token_price?: number;
+  image_price?: number;
+  input_modalities?: string[];
+  output_modalities?: string[];
+  aliases: string[];
+}
+
+export interface XaiImageGenerationModelListResponse {
+  models: XaiImageGenerationModel[];
+}
+
+// Video generation model (GET /v1/video-generation-models)
+export interface XaiVideoGenerationModel {
+  id: string;
+  fingerprint: string;
+  created: number;
+  object: string;
+  owned_by: string;
+  version: string;
+  input_modalities: string[];
+  output_modalities: string[];
+  aliases: string[];
+}
+
+export interface XaiVideoGenerationModelListResponse {
+  models: XaiVideoGenerationModel[];
+}
+
 // Namespace types
 interface XaiChatCompletionsMethod {
   (req: XaiChatRequest, signal?: AbortSignal): Promise<XaiChatResponse>;
@@ -227,11 +301,35 @@ interface XaiFilesNamespace {
   ): Promise<{ id: string; deleted: boolean }>;
 }
 
+interface XaiModelsNamespace {
+  (signal?: AbortSignal): Promise<XaiModelListResponse>;
+  (modelId: string, signal?: AbortSignal): Promise<XaiModel>;
+}
+
+interface XaiLanguageModelsNamespace {
+  (signal?: AbortSignal): Promise<XaiLanguageModelListResponse>;
+  (modelId: string, signal?: AbortSignal): Promise<XaiLanguageModel>;
+}
+
+interface XaiImageGenerationModelsNamespace {
+  (signal?: AbortSignal): Promise<XaiImageGenerationModelListResponse>;
+  (modelId: string, signal?: AbortSignal): Promise<XaiImageGenerationModel>;
+}
+
+interface XaiVideoGenerationModelsNamespace {
+  (signal?: AbortSignal): Promise<XaiVideoGenerationModelListResponse>;
+  (modelId: string, signal?: AbortSignal): Promise<XaiVideoGenerationModel>;
+}
+
 interface XaiV1Namespace {
   chat: XaiChatNamespace;
   images: XaiImagesNamespace;
   videos: XaiVideosNamespace;
   files: XaiFilesNamespace;
+  models: XaiModelsNamespace;
+  languageModels: XaiLanguageModelsNamespace;
+  imageGenerationModels: XaiImageGenerationModelsNamespace;
+  videoGenerationModels: XaiVideoGenerationModelsNamespace;
 }
 
 // Provider interface

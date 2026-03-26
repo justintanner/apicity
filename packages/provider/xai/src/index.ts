@@ -25,6 +25,7 @@ export type {
   XaiGeneratedImage,
   XaiImageResponse,
   XaiVideoGenerateRequest,
+  XaiVideoEditRequest,
   XaiVideoExtendRequest,
   XaiVideoReference,
   XaiVideoAsyncResponse,

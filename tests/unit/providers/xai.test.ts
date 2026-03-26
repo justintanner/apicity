@@ -691,6 +691,11 @@ describe("xai provider", () => {
       );
     });
 
+    it("v1.videos.edits.payloadSchema has correct method and path", () => {
+      expect(provider.v1.videos.edits.payloadSchema.method).toBe("POST");
+      expect(provider.v1.videos.edits.payloadSchema.path).toBe("/videos/edits");
+    });
+
     it("v1.videos.extensions.payloadSchema has correct method and path", () => {
       expect(provider.v1.videos.extensions.payloadSchema.method).toBe("POST");
       expect(provider.v1.videos.extensions.payloadSchema.path).toBe(
@@ -722,6 +727,21 @@ describe("xai provider", () => {
 
     it("v1.images.generations.validatePayload rejects missing prompt", () => {
       const result = provider.v1.images.generations.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors.length).toBeGreaterThan(0);
+    });
+
+    it("v1.videos.edits.validatePayload accepts valid payload", () => {
+      const result = provider.v1.videos.edits.validatePayload({
+        prompt: "Give the woman a silver necklace",
+        video: { url: "https://example.com/video.mp4" },
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.videos.edits.validatePayload rejects missing prompt and video", () => {
+      const result = provider.v1.videos.edits.validatePayload({});
       expect(result.valid).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
     });

@@ -28,16 +28,17 @@
   #test-selector-dropdown { position: absolute; top: 100%; left: 0; margin-top: 4px; background: #181825; border: 1px solid #45475a; border-radius: 8px; min-width: 340px; max-width: 520px; max-height: 70vh; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4); z-index: 200; }
   #test-selector-dropdown.hidden { display: none; }
   .dd-section { padding: 6px 12px; font-size: 11px; color: #6c7086; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
-  .dd-item { padding: 6px 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; }
+  .dd-item { padding: 6px 12px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; flex-wrap: wrap; }
+  .dd-endpoint { font-size: 11px; color: #6c7086; width: 100%; padding-left: 14px; margin-top: -2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .dd-item:hover { background: #313244; }
   .dd-item.active { background: #313244; border-left-color: #89b4fa; }
   .dd-pipe-label { padding: 6px 12px 6px 20px; font-size: 12px; color: #cba6f7; cursor: pointer; display: flex; align-items: center; gap: 6px; }
   .dd-pipe-label:hover { background: #313244; }
-  .dd-pipe-step { padding: 6px 12px 6px 36px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; }
+  .dd-pipe-step { padding: 6px 12px 6px 36px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; flex-wrap: wrap; }
   .dd-pipe-step:hover { background: #313244; }
   .dd-pipe-step.active { background: #313244; border-left-color: #cba6f7; }
   .dd-pipe-hidden { display: none; }
-  .dd-wf-item { padding: 6px 12px 6px 28px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; }
+  .dd-wf-item { padding: 6px 12px 6px 28px; cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 8px; border-left: 3px solid transparent; flex-wrap: wrap; }
   .dd-wf-item:hover { background: #313244; }
   .dd-wf-item.active { background: #313244; border-left-color: #cba6f7; }
   .dd-wf-item.locked { opacity: 0.5; cursor: default; }
@@ -280,6 +281,15 @@ function displayName(recName) {
   var provider = parts[0].replace(/_\d+$/, "");
   var test = parts.length > 1 ? parts[1].replace(/_\d+$/, "") : parts[0];
   return { provider: provider, test: test };
+}
+
+function recEndpoint(rec) {
+  var entry = rec.entries && rec.entries[0];
+  if (!entry) return "";
+  try {
+    var u = new URL(entry.request.url);
+    return entry.request.method + " " + u.host + u.pathname;
+  } catch(e) { return entry.request.method + " " + entry.request.url; }
 }
 
 function entryLabel(entry) {
@@ -1094,7 +1104,8 @@ function getSelectionLabel() {
   }
   if (selected !== null && recordings[selected]) {
     var dn = displayName(recordings[selected].name);
-    return dn.provider + " / " + dn.test;
+    var ep = recEndpoint(recordings[selected]);
+    return dn.provider + ": " + dn.test + (ep ? " \u2014 " + ep : "");
   }
   return "Select a recording...";
 }
@@ -1121,61 +1132,59 @@ function populateDropdown() {
           var isActive = selectedWorkflow === wf.id && selectedWfStep === s;
           var hiddenClass = isCollapsed ? " dd-pipe-hidden" : "";
           var lockedClass = step.status === "locked" ? " locked" : "";
+          var wfEp = step.request ? step.request.method + ' ' + step.request.url : '';
           html += '<div class="dd-wf-item' + (isActive ? " active" : "") + hiddenClass + lockedClass + '" data-wf="' + wf.id + '" data-step="' + s + '">';
           html += '<span style="color:#6c7086;font-size:11px;min-width:16px">' + (s + 1) + '.</span>';
           html += '<span class="dot ' + step.status + '"></span>';
-          html += escapeHtml(step.name) + '</div>';
+          html += escapeHtml(step.name);
+          if (wfEp) html += '<div class="dd-endpoint">' + escapeHtml(wfEp) + '</div>';
+          html += '</div>';
         }
       }
     }
   }
 
-  // Recordings
-  var groups = {};
-  var groupOrder = [];
+  // Recordings — flat list with title + endpoint URL
   for (var i = 0; i < recordings.length; i++) {
+    if (isE2EStep(recordings[i].name)) continue;
     var dn = displayName(recordings[i].name);
-    if (!groups[dn.provider]) { groups[dn.provider] = { regular: [], pipelines: {} }; groupOrder.push(dn.provider); }
-    var parsed = parseE2EStep(recordings[i].name);
-    if (parsed) {
-      var pipeKey = parsed.pipeline;
-      if (!groups[dn.provider].pipelines[pipeKey]) groups[dn.provider].pipelines[pipeKey] = [];
-      groups[dn.provider].pipelines[pipeKey].push({ idx: i, stepNum: parsed.stepNum, stepName: parsed.stepName, rec: recordings[i] });
-    } else {
-      groups[dn.provider].regular.push({ idx: i, test: dn.test, rec: recordings[i] });
-    }
+    var isActive = selected === i;
+    var badge = recordings[i].gitStatus === "clean" ? "" : '<span class="review-badge needs-review">review</span>';
+    var ep = recEndpoint(recordings[i]);
+    html += '<div class="dd-item' + (isActive ? " active" : "") + '" data-idx="' + i + '">';
+    html += '<span class="dot ' + recordings[i].gitStatus + '"></span>' + escapeHtml(dn.provider + ": " + dn.test) + badge;
+    if (ep) html += '<div class="dd-endpoint">' + escapeHtml(ep) + '</div>';
+    html += '</div>';
   }
 
-  for (var g = 0; g < groupOrder.length; g++) {
-    var provider = groupOrder[g];
-    var group = groups[provider];
-    html += '<div class="dd-section">' + escapeHtml(provider) + '</div>';
-
-    for (var j = 0; j < group.regular.length; j++) {
-      var item = group.regular[j];
-      var isActive = selected === item.idx;
-      var badge = item.rec.gitStatus === "clean" ? "" : '<span class="review-badge needs-review">review</span>';
-      html += '<div class="dd-item' + (isActive ? " active" : "") + '" data-idx="' + item.idx + '">';
-      html += '<span class="dot ' + item.rec.gitStatus + '"></span>' + escapeHtml(item.test) + badge + '</div>';
-    }
-
-    var pipeKeys = Object.keys(group.pipelines);
-    for (var p = 0; p < pipeKeys.length; p++) {
-      var pk = pipeKeys[p];
-      var steps = group.pipelines[pk].sort(function(a, b) { return a.stepNum - b.stepNum; });
-      var isColl = collapsedPipelines[provider + "/" + pk];
-      var arrCls = isColl ? " collapsed" : "";
-      html += '<div class="dd-pipe-label" data-pipe="' + provider + '/' + pk + '"><span class="dd-arrow' + arrCls + '">\u25BE</span> e2e-' + escapeHtml(pk) + '</div>';
-      for (var si = 0; si < steps.length; si++) {
-        var st = steps[si];
-        var stActive = selected === st.idx;
-        var stBadge = st.rec.gitStatus === "clean" ? "" : '<span class="review-badge needs-review">review</span>';
-        var hidCls = isColl ? " dd-pipe-hidden" : "";
-        html += '<div class="dd-pipe-step' + (stActive ? " active" : "") + hidCls + '" data-idx="' + st.idx + '">';
-        html += '<span style="color:#6c7086;font-size:11px;min-width:16px">' + st.stepNum + '.</span>';
-        html += '<span class="dot ' + st.rec.gitStatus + '"></span>';
-        html += escapeHtml(st.stepName) + stBadge + '</div>';
-      }
+  // E2E pipelines — grouped under collapsible headers
+  var pipes = {};
+  var pipeOrder = [];
+  for (var ei = 0; ei < recordings.length; ei++) {
+    var parsed = parseE2EStep(recordings[ei].name);
+    if (!parsed) continue;
+    var pKey = parsed.provider + "/" + parsed.pipeline;
+    if (!pipes[pKey]) { pipes[pKey] = []; pipeOrder.push(pKey); }
+    pipes[pKey].push({ idx: ei, stepNum: parsed.stepNum, stepName: parsed.stepName, rec: recordings[ei] });
+  }
+  for (var pi = 0; pi < pipeOrder.length; pi++) {
+    var pk = pipeOrder[pi];
+    var steps = pipes[pk].sort(function(a, b) { return a.stepNum - b.stepNum; });
+    var isColl = collapsedPipelines[pk];
+    var arrCls = isColl ? " collapsed" : "";
+    html += '<div class="dd-pipe-label" data-pipe="' + pk + '"><span class="dd-arrow' + arrCls + '">&#x25BE;</span> e2e-' + escapeHtml(pk.split("/")[1]) + '</div>';
+    for (var si = 0; si < steps.length; si++) {
+      var st = steps[si];
+      var stActive = selected === st.idx;
+      var stBadge = st.rec.gitStatus === "clean" ? "" : '<span class="review-badge needs-review">review</span>';
+      var hidCls = isColl ? " dd-pipe-hidden" : "";
+      var stEp = recEndpoint(st.rec);
+      html += '<div class="dd-pipe-step' + (stActive ? " active" : "") + hidCls + '" data-idx="' + st.idx + '">';
+      html += '<span style="color:#6c7086;font-size:11px;min-width:16px">' + st.stepNum + '.</span>';
+      html += '<span class="dot ' + st.rec.gitStatus + '"></span>';
+      html += escapeHtml(st.stepName) + stBadge;
+      if (stEp) html += '<div class="dd-endpoint">' + escapeHtml(stEp) + '</div>';
+      html += '</div>';
     }
   }
 

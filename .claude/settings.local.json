@@ -1,21 +1,58 @@
 {
+  "hooks": {
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "command": "bd prime",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "command": "bd prime",
+            "type": "command"
+          }
+        ],
+        "matcher": ""
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebSearch",
       "Bash(cat:*)",
-      "Bash(git log:*)", "Bash(git show:*)", "Bash(git diff:*)",
-      "Bash(git status:*)", "Bash(git add:*)", "Bash(git commit:*)",
-      "Bash(git push:*)", "Bash(git reset:*)", "Bash(git pull:*)",
-      "Bash(git merge-base:*)", "Bash(git branch:*)", "Bash(gh:*)",
-      "Bash(pnpm run build:*)", "Bash(pnpm run lint:*)",
-      "Bash(pnpm run format:*)", "Bash(pnpm run test:*)",
-      "Bash(pnpm run clean:*)", "Bash(pnpm install:*)",
-      "Bash(npx prettier:*)", "Bash(npx vitest:*)",
-      "Bash(find:*)"
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git diff:*)",
+      "Bash(git status:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git reset:*)",
+      "Bash(git pull:*)",
+      "Bash(git merge-base:*)",
+      "Bash(git branch:*)",
+      "Bash(gh:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run format:*)",
+      "Bash(pnpm run test:*)",
+      "Bash(pnpm run clean:*)",
+      "Bash(pnpm install:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npx vitest:*)",
+      "Bash(find:*)",
+      "Bash(bd:*)"
     ],
-    "deny": [],
-    "ask": []
+    "ask": [],
+    "deny": []
   }
 }

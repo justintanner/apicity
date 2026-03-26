@@ -95,6 +95,9 @@ GitHub Actions (`ci.yml`): install → build → verify artifacts → lint → t
 - Prefer `interface` over `type` for object shapes
 - `Record<string, unknown>` for API request/response bodies
 
-## Hooks
+## Task Tracking
 
-PostToolUse hook auto-formats `.ts`/`.tsx` files with Prettier after every Edit/Write (skips `.claude/` files).
+This project uses [beads](https://github.com/steveyegge/beads) (`bd`) for task tracking.
+Hooks auto-inject `bd prime` at session start and before compaction.
+
+Quick reference: `bd ready` (find work), `bd create "Title"` (new task), `bd close <id>` (complete), `bd sync` (sync with git).

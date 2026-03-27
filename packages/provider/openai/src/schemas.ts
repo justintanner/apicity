@@ -179,7 +179,7 @@ export const imageGenerationsSchema: PayloadSchema = {
     },
     model: {
       type: "string",
-      description: "Model ID (e.g. gpt-image-1, dall-e-3, dall-e-2)",
+      description: "Model ID (e.g. gpt-image-1, dall-e-3)",
     },
     n: {
       type: "number",

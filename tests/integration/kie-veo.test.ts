@@ -34,18 +34,22 @@ describe("kie veo integration", () => {
     let finalState: string | undefined;
     let resultJson: string | undefined;
 
-    // Poll recordInfo every few seconds until success, fail, or timeout
+    // Poll recordInfo every few seconds until success, fail, or timeout.
+    // The API may return null data initially while the task is being queued.
     while (Date.now() < deadline) {
       const info = await provider.api.v1.jobs.recordInfo(taskId);
-      expect(info.data?.taskId).toBe(taskId);
-      finalState = info.data?.state;
 
-      if (finalState === "success") {
-        resultJson = info.data?.resultJson;
-        break;
-      }
-      if (finalState === "fail") {
-        break;
+      if (info.data && info.data.taskId) {
+        expect(info.data.taskId).toBe(taskId);
+        finalState = info.data.state;
+
+        if (finalState === "success") {
+          resultJson = info.data.resultJson;
+          break;
+        }
+        if (finalState === "fail") {
+          break;
+        }
       }
 
       if (pollIntervalMs > 0) {

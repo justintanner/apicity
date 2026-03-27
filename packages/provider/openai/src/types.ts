@@ -109,6 +109,34 @@ export interface OpenAiChatResponse {
   error?: { message?: string; type?: string };
 }
 
+// Embeddings request
+export interface OpenAiEmbeddingRequest {
+  input: string | string[] | number[] | number[][];
+  model: string;
+  encoding_format?: "float" | "base64";
+  dimensions?: number;
+  user?: string;
+}
+
+// Embeddings response
+export interface OpenAiEmbeddingData {
+  object: "embedding";
+  index: number;
+  embedding: number[];
+}
+
+export interface OpenAiEmbeddingUsage {
+  prompt_tokens: number;
+  total_tokens: number;
+}
+
+export interface OpenAiEmbeddingResponse {
+  object: "list";
+  data: OpenAiEmbeddingData[];
+  model: string;
+  usage: OpenAiEmbeddingUsage;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";

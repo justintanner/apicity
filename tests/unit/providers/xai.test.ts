@@ -1299,4 +1299,617 @@ describe("xai provider", () => {
       );
     });
   });
+
+  describe("files", () => {
+    it("should upload a file", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "file-abc123",
+            object: "file",
+            bytes: 1024,
+            created_at: 1700000000,
+            filename: "data.jsonl",
+            purpose: "batch",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const blob = new Blob(["test data"], { type: "application/jsonl" });
+      const result = await provider.v1.files.upload(blob, "data.jsonl", "batch");
+      expect(result.id).toBe("file-abc123");
+      expect(result.filename).toBe("data.jsonl");
+      expect(result.purpose).toBe("batch");
+      expect(result.bytes).toBe(1024);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/files",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("should upload a file without purpose", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "file-xyz",
+            object: "file",
+            bytes: 512,
+            created_at: 1700000000,
+            filename: "notes.txt",
+            purpose: "",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const blob = new Blob(["hello"]);
+      const result = await provider.v1.files.upload(blob, "notes.txt");
+      expect(result.id).toBe("file-xyz");
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      const body = init.body as FormData;
+      expect(body.get("purpose")).toBeNull();
+    });
+
+    it("should list files", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            data: [
+              {
+                id: "file-1",
+                object: "file",
+                bytes: 100,
+                created_at: 1700000000,
+                filename: "a.jsonl",
+                purpose: "batch",
+              },
+              {
+                id: "file-2",
+                object: "file",
+                bytes: 200,
+                created_at: 1700000001,
+                filename: "b.jsonl",
+                purpose: "batch",
+              },
+            ],
+            object: "list",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.files.list();
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].id).toBe("file-1");
+      expect(result.data[1].id).toBe("file-2");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/files",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should get a file by ID", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "file-abc123",
+            object: "file",
+            bytes: 1024,
+            created_at: 1700000000,
+            filename: "data.jsonl",
+            purpose: "batch",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.files.get("file-abc123");
+      expect(result.id).toBe("file-abc123");
+      expect(result.filename).toBe("data.jsonl");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/files/file-abc123",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should delete a file", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ id: "file-abc123", deleted: true }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.files.delete("file-abc123");
+      expect(result.id).toBe("file-abc123");
+      expect(result.deleted).toBe(true);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/files/file-abc123",
+        expect.objectContaining({ method: "DELETE" })
+      );
+    });
+
+    it("should throw XaiError on upload failure", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ error: { message: "File too large" } }),
+          { status: 413 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const blob = new Blob(["x".repeat(1000)]);
+      await expect(
+        provider.v1.files.upload(blob, "big.bin")
+      ).rejects.toThrow("XAI API error");
+    });
+
+    it("should throw XaiError on delete failure", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({}), { status: 404 })
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      await expect(
+        provider.v1.files.delete("nonexistent")
+      ).rejects.toThrow("XAI API error");
+    });
+  });
+
+  describe("videos", () => {
+    it("should get video result by request ID", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            status: "done",
+            progress: 100,
+            request_id: "req-123",
+            video: {
+              url: "https://api.x.ai/videos/output.mp4",
+              duration: 5,
+              respect_moderation: true,
+            },
+            model: "grok-2-image",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videos("req-123");
+      expect(result.status).toBe("done");
+      expect(result.progress).toBe(100);
+      expect(result.video?.url).toBe("https://api.x.ai/videos/output.mp4");
+      expect(result.video?.duration).toBe(5);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/videos/req-123",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should return pending status for in-progress video", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            status: "pending",
+            progress: 42,
+            request_id: "req-456",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videos("req-456");
+      expect(result.status).toBe("pending");
+      expect(result.progress).toBe(42);
+      expect(result.video).toBeUndefined();
+    });
+
+    it("should generate a video", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ request_id: "req-789" }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videos.generations({
+        prompt: "A cat playing piano",
+        model: "grok-2-image",
+        duration: 5,
+        aspect_ratio: "16:9",
+      });
+      expect(result.request_id).toBe("req-789");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/videos/generations",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("should edit a video", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ request_id: "req-edit-1" }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videos.edits({
+        prompt: "Add subtitles",
+        video: { url: "https://example.com/video.mp4" },
+      });
+      expect(result.request_id).toBe("req-edit-1");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/videos/edits",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+
+    it("should extend a video", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ request_id: "req-ext-1" }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videos.extensions({
+        prompt: "Continue the scene",
+        video: { url: "https://example.com/video.mp4" },
+        duration: 5,
+      });
+      expect(result.request_id).toBe("req-ext-1");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/videos/extensions",
+        expect.objectContaining({ method: "POST" })
+      );
+    });
+  });
+
+  describe("models", () => {
+    it("should list all models", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            data: [
+              { id: "grok-4-fast", created: 1700000000, object: "model", owned_by: "xai" },
+              { id: "grok-3", created: 1700000001, object: "model", owned_by: "xai" },
+            ],
+            object: "list",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.models();
+      expect(result.data).toHaveLength(2);
+      expect(result.data[0].id).toBe("grok-4-fast");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/models",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should get a single model by ID", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "grok-4-fast",
+            created: 1700000000,
+            object: "model",
+            owned_by: "xai",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.models("grok-4-fast");
+      expect(result.id).toBe("grok-4-fast");
+      expect(result.owned_by).toBe("xai");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/models/grok-4-fast",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should list language models", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            models: [
+              {
+                id: "grok-4-fast",
+                fingerprint: "fp_abc",
+                created: 1700000000,
+                object: "language_model",
+                owned_by: "xai",
+                version: "1.0",
+                input_modalities: ["text"],
+                output_modalities: ["text"],
+                prompt_text_token_price: 0.001,
+                completion_text_token_price: 0.002,
+                aliases: ["grok-latest"],
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.languageModels();
+      expect(result.models).toHaveLength(1);
+      expect(result.models[0].id).toBe("grok-4-fast");
+      expect(result.models[0].aliases).toContain("grok-latest");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/language-models",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should get a single language model by ID", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "grok-4-fast",
+            fingerprint: "fp_abc",
+            created: 1700000000,
+            object: "language_model",
+            owned_by: "xai",
+            version: "1.0",
+            input_modalities: ["text"],
+            output_modalities: ["text"],
+            prompt_text_token_price: 0.001,
+            completion_text_token_price: 0.002,
+            aliases: [],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.languageModels("grok-4-fast");
+      expect(result.id).toBe("grok-4-fast");
+      expect(result.version).toBe("1.0");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/language-models/grok-4-fast",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should list image generation models", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            models: [
+              {
+                id: "grok-2-image",
+                fingerprint: "fp_img",
+                created: 1700000000,
+                object: "image_generation_model",
+                owned_by: "xai",
+                version: "2.0",
+                max_prompt_length: 4096,
+                aliases: [],
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.imageGenerationModels();
+      expect(result.models).toHaveLength(1);
+      expect(result.models[0].id).toBe("grok-2-image");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/image-generation-models",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should get a single image generation model by ID", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "grok-2-image",
+            fingerprint: "fp_img",
+            created: 1700000000,
+            object: "image_generation_model",
+            owned_by: "xai",
+            version: "2.0",
+            max_prompt_length: 4096,
+            aliases: [],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.imageGenerationModels("grok-2-image");
+      expect(result.id).toBe("grok-2-image");
+      expect(result.max_prompt_length).toBe(4096);
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/image-generation-models/grok-2-image",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should list video generation models", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            models: [
+              {
+                id: "grok-2-video",
+                fingerprint: "fp_vid",
+                created: 1700000000,
+                object: "video_generation_model",
+                owned_by: "xai",
+                version: "1.0",
+                input_modalities: ["text", "image"],
+                output_modalities: ["video"],
+                aliases: [],
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videoGenerationModels();
+      expect(result.models).toHaveLength(1);
+      expect(result.models[0].id).toBe("grok-2-video");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/video-generation-models",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+
+    it("should get a single video generation model by ID", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "grok-2-video",
+            fingerprint: "fp_vid",
+            created: 1700000000,
+            object: "video_generation_model",
+            owned_by: "xai",
+            version: "1.0",
+            input_modalities: ["text", "image"],
+            output_modalities: ["video"],
+            aliases: [],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.videoGenerationModels("grok-2-video");
+      expect(result.id).toBe("grok-2-video");
+      expect(result.input_modalities).toContain("text");
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.x.ai/v1/video-generation-models/grok-2-video",
+        expect.objectContaining({ method: "GET" })
+      );
+    });
+  });
+
+  describe("error handling", () => {
+    it("should throw XaiError with parsed error message on 4xx", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ error: { message: "Invalid API key" } }),
+          { status: 401 }
+        )
+      );
+      const provider = xai({ apiKey: "bad-key", fetch: mockFetch });
+      try {
+        await provider.v1.chat.completions({
+          messages: [{ role: "user", content: "hi" }],
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect((err as Error).message).toContain("401");
+        expect((err as Error).message).toContain("Invalid API key");
+        expect((err as { status: number }).status).toBe(401);
+      }
+    });
+
+    it("should throw XaiError with status on 5xx", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ error: { message: "Internal server error" } }),
+          { status: 500 }
+        )
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      try {
+        await provider.v1.chat.completions({
+          messages: [{ role: "user", content: "hi" }],
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect((err as { status: number }).status).toBe(500);
+      }
+    });
+
+    it("should throw XaiError on network failure", async () => {
+      const mockFetch = vi.fn().mockRejectedValue(new TypeError("fetch failed"));
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      try {
+        await provider.v1.chat.completions({
+          messages: [{ role: "user", content: "hi" }],
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(Error);
+        expect((err as Error).message).toContain("XAI request failed");
+        expect((err as { status: number }).status).toBe(500);
+      }
+    });
+
+    it("should throw XaiError when error body is not parseable", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response("Not JSON", { status: 400, statusText: "Bad Request" })
+      );
+      const provider = xai({ apiKey: "test-key", fetch: mockFetch });
+      try {
+        await provider.v1.chat.completions({
+          messages: [{ role: "user", content: "hi" }],
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect((err as { status: number }).status).toBe(400);
+      }
+    });
+
+    it("should throw XaiError on management API failure", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ error: { message: "Forbidden" } }),
+          { status: 403 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        managementApiKey: "bad-mgmt-key",
+        fetch: mockFetch,
+      });
+      try {
+        await provider.v1.collections();
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect((err as { status: number }).status).toBe(403);
+        expect((err as Error).message).toContain("Forbidden");
+      }
+    });
+
+    it("should use custom baseURL", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "chat-1",
+            object: "chat.completion",
+            created: 1700000000,
+            model: "grok-4-fast",
+            choices: [
+              {
+                index: 0,
+                message: { role: "assistant", content: "hi" },
+                finish_reason: "stop",
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = xai({
+        apiKey: "test-key",
+        baseURL: "https://custom.x.ai/v1",
+        fetch: mockFetch,
+      });
+      await provider.v1.chat.completions({
+        messages: [{ role: "user", content: "hi" }],
+      });
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://custom.x.ai/v1/chat/completions",
+        expect.anything()
+      );
+    });
+  });
 });

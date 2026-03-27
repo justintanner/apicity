@@ -9,18 +9,45 @@ describe("kie veo integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should submit a veo generate request", async () => {
+  it("should generate a video and poll until complete", async () => {
     ctx = setupPolly("kie/veo-generate");
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
-    const result = await provider.veo.api.v1.veo.generate({
+
+    const task = await provider.veo.api.v1.veo.generate({
       prompt: "A cat walking across a sunlit garden path",
       model: "veo3",
       aspectRatio: "16:9",
     });
-    expect(result.code).toBe(200);
-    expect(result.data?.taskId).toBeTruthy();
-    expect(typeof result.data?.taskId).toBe("string");
-  });
+    expect(task.code).toBe(200);
+    expect(task.data?.taskId).toBeTruthy();
+
+    const taskId = task.data!.taskId!;
+    const deadline = Date.now() + 5 * 60 * 1000;
+    let finalState: string | undefined;
+    let resultJson: string | undefined;
+
+    while (Date.now() < deadline) {
+      const info = await provider.api.v1.jobs.recordInfo(taskId);
+      expect(info.data?.taskId).toBe(taskId);
+      finalState = info.data?.state;
+
+      if (finalState === "success") {
+        resultJson = info.data?.resultJson;
+        break;
+      }
+      if (finalState === "fail") {
+        break;
+      }
+    }
+
+    expect(finalState).toBe("success");
+    expect(resultJson).toBeTruthy();
+
+    const result = JSON.parse(resultJson!);
+    expect(result.works).toBeInstanceOf(Array);
+    expect(result.works.length).toBeGreaterThan(0);
+    expect(result.works[0].resource).toBeTruthy();
+  }, 300_000);
 });

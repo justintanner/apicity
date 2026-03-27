@@ -311,7 +311,9 @@ describe("kie claude provider", () => {
     it("should throw KieError on HTTP error with error body", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(
-          JSON.stringify({ error: { message: "Invalid key", type: "auth_error" } }),
+          JSON.stringify({
+            error: { message: "Invalid key", type: "auth_error" },
+          }),
           { status: 401 }
         )
       );
@@ -337,9 +339,9 @@ describe("kie claude provider", () => {
     });
 
     it("should throw KieError on non-parseable error body", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("Not JSON", { status: 500 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response("Not JSON", { status: 500 }));
       const provider = createClaudeProvider(
         "https://api.kie.ai",
         "test-key",
@@ -360,7 +362,9 @@ describe("kie claude provider", () => {
     });
 
     it("should throw KieError on network failure", async () => {
-      const mockFetch = vi.fn().mockRejectedValue(new TypeError("fetch failed"));
+      const mockFetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError("fetch failed"));
       const provider = createClaudeProvider(
         "https://api.kie.ai",
         "test-key",
@@ -381,9 +385,9 @@ describe("kie claude provider", () => {
     });
 
     it("should throw KieError on malformed JSON response", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("{{invalid json", { status: 200 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response("{{invalid json", { status: 200 }));
       const provider = createClaudeProvider(
         "https://api.kie.ai",
         "test-key",
@@ -399,7 +403,9 @@ describe("kie claude provider", () => {
         expect.fail("should have thrown");
       } catch (err) {
         expect(err).toBeInstanceOf(KieError);
-        expect((err as KieError).message).toContain("Failed to parse Claude response");
+        expect((err as KieError).message).toContain(
+          "Failed to parse Claude response"
+        );
       }
     });
   });

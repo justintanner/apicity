@@ -1317,7 +1317,11 @@ describe("xai provider", () => {
       );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       const blob = new Blob(["test data"], { type: "application/jsonl" });
-      const result = await provider.v1.files.upload(blob, "data.jsonl", "batch");
+      const result = await provider.v1.files.upload(
+        blob,
+        "data.jsonl",
+        "batch"
+      );
       expect(result.id).toBe("file-abc123");
       expect(result.filename).toBe("data.jsonl");
       expect(result.purpose).toBe("batch");
@@ -1415,10 +1419,9 @@ describe("xai provider", () => {
 
     it("should delete a file", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ id: "file-abc123", deleted: true }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ id: "file-abc123", deleted: true }), {
+          status: 200,
+        })
       );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       const result = await provider.v1.files.delete("file-abc123");
@@ -1431,27 +1434,29 @@ describe("xai provider", () => {
     });
 
     it("should throw XaiError on upload failure", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ error: { message: "File too large" } }),
-          { status: 413 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ error: { message: "File too large" } }),
+            { status: 413 }
+          )
+        );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       const blob = new Blob(["x".repeat(1000)]);
-      await expect(
-        provider.v1.files.upload(blob, "big.bin")
-      ).rejects.toThrow("XAI API error");
+      await expect(provider.v1.files.upload(blob, "big.bin")).rejects.toThrow(
+        "XAI API error"
+      );
     });
 
     it("should throw XaiError on delete failure", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({}), { status: 404 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 404 }));
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
-      await expect(
-        provider.v1.files.delete("nonexistent")
-      ).rejects.toThrow("XAI API error");
+      await expect(provider.v1.files.delete("nonexistent")).rejects.toThrow(
+        "XAI API error"
+      );
     });
   });
 
@@ -1505,10 +1510,9 @@ describe("xai provider", () => {
 
     it("should generate a video", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ request_id: "req-789" }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ request_id: "req-789" }), {
+          status: 200,
+        })
       );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       const result = await provider.v1.videos.generations({
@@ -1526,10 +1530,9 @@ describe("xai provider", () => {
 
     it("should edit a video", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ request_id: "req-edit-1" }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ request_id: "req-edit-1" }), {
+          status: 200,
+        })
       );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       const result = await provider.v1.videos.edits({
@@ -1545,10 +1548,9 @@ describe("xai provider", () => {
 
     it("should extend a video", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ request_id: "req-ext-1" }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ request_id: "req-ext-1" }), {
+          status: 200,
+        })
       );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       const result = await provider.v1.videos.extensions({
@@ -1570,8 +1572,18 @@ describe("xai provider", () => {
         new Response(
           JSON.stringify({
             data: [
-              { id: "grok-4-fast", created: 1700000000, object: "model", owned_by: "xai" },
-              { id: "grok-3", created: 1700000001, object: "model", owned_by: "xai" },
+              {
+                id: "grok-4-fast",
+                created: 1700000000,
+                object: "model",
+                owned_by: "xai",
+              },
+              {
+                id: "grok-3",
+                created: 1700000001,
+                object: "model",
+                owned_by: "xai",
+              },
             ],
             object: "list",
           }),
@@ -1790,12 +1802,14 @@ describe("xai provider", () => {
 
   describe("error handling", () => {
     it("should throw XaiError with parsed error message on 4xx", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ error: { message: "Invalid API key" } }),
-          { status: 401 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ error: { message: "Invalid API key" } }),
+            { status: 401 }
+          )
+        );
       const provider = xai({ apiKey: "bad-key", fetch: mockFetch });
       try {
         await provider.v1.chat.completions({
@@ -1811,12 +1825,14 @@ describe("xai provider", () => {
     });
 
     it("should throw XaiError with status on 5xx", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ error: { message: "Internal server error" } }),
-          { status: 500 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ error: { message: "Internal server error" } }),
+            { status: 500 }
+          )
+        );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       try {
         await provider.v1.chat.completions({
@@ -1829,7 +1845,9 @@ describe("xai provider", () => {
     });
 
     it("should throw XaiError on network failure", async () => {
-      const mockFetch = vi.fn().mockRejectedValue(new TypeError("fetch failed"));
+      const mockFetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError("fetch failed"));
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       try {
         await provider.v1.chat.completions({
@@ -1844,9 +1862,11 @@ describe("xai provider", () => {
     });
 
     it("should throw XaiError when error body is not parseable", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("Not JSON", { status: 400, statusText: "Bad Request" })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response("Not JSON", { status: 400, statusText: "Bad Request" })
+        );
       const provider = xai({ apiKey: "test-key", fetch: mockFetch });
       try {
         await provider.v1.chat.completions({
@@ -1860,10 +1880,9 @@ describe("xai provider", () => {
 
     it("should throw XaiError on management API failure", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ error: { message: "Forbidden" } }),
-          { status: 403 }
-        )
+        new Response(JSON.stringify({ error: { message: "Forbidden" } }), {
+          status: 403,
+        })
       );
       const provider = xai({
         apiKey: "test-key",

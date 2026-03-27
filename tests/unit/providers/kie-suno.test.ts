@@ -93,10 +93,9 @@ describe("kie suno provider", () => {
   describe("real factory", () => {
     it("should send request to correct URL with correct body", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ code: 200, data: { taskId: "s1" } }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ code: 200, data: { taskId: "s1" } }), {
+          status: 200,
+        })
       );
       const provider = createSunoProvider(
         "https://api.kie.ai",
@@ -129,7 +128,11 @@ describe("kie suno provider", () => {
     it("should return response with taskId", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(
-          JSON.stringify({ code: 200, msg: "success", data: { taskId: "s2" } }),
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: { taskId: "s2" },
+          }),
           { status: 200 }
         )
       );
@@ -155,10 +158,9 @@ describe("kie suno provider", () => {
   describe("error handling (real factory)", () => {
     it("should throw KieError on HTTP error", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ msg: "Insufficient credits" }),
-          { status: 402 }
-        )
+        new Response(JSON.stringify({ msg: "Insufficient credits" }), {
+          status: 402,
+        })
       );
       const provider = createSunoProvider(
         "https://api.kie.ai",

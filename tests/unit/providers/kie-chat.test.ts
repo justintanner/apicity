@@ -275,12 +275,14 @@ describe("kie chat provider", () => {
 
   describe("error handling (real factory)", () => {
     it("should throw KieError on HTTP error with msg body", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ msg: "Rate limit exceeded", code: 429 }),
-          { status: 429 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ msg: "Rate limit exceeded", code: 429 }),
+            { status: 429 }
+          )
+        );
       const provider = createChatProvider(
         "https://api.kie.ai",
         "test-key",
@@ -301,7 +303,9 @@ describe("kie chat provider", () => {
     });
 
     it("should throw KieError on network failure", async () => {
-      const mockFetch = vi.fn().mockRejectedValue(new TypeError("fetch failed"));
+      const mockFetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError("fetch failed"));
       const provider = createChatProvider(
         "https://api.kie.ai",
         "test-key",
@@ -321,9 +325,9 @@ describe("kie chat provider", () => {
     });
 
     it("should throw KieError on malformed JSON response", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("not valid json", { status: 200 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response("not valid json", { status: 200 }));
       const provider = createChatProvider(
         "https://api.kie.ai",
         "test-key",
@@ -357,9 +361,9 @@ describe("kie chat provider", () => {
       expect(provider.gpt52.v1.chat.completions.payloadSchema.method).toBe(
         "POST"
       );
-      expect(
-        provider.gpt52.v1.chat.completions.payloadSchema.path
-      ).toContain("chat/completions");
+      expect(provider.gpt52.v1.chat.completions.payloadSchema.path).toContain(
+        "chat/completions"
+      );
     });
 
     it("should have required messages field", () => {

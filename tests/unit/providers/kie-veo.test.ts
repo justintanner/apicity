@@ -136,10 +136,9 @@ describe("kie veo provider", () => {
 
     it("should send extend request to correct URL", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ code: 200, data: { taskId: "t2" } }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ code: 200, data: { taskId: "t2" } }), {
+          status: 200,
+        })
       );
       const provider = createVeoProvider(
         "https://api.kie.ai",
@@ -184,12 +183,11 @@ describe("kie veo provider", () => {
 
   describe("error handling (real factory)", () => {
     it("should throw KieError on HTTP error", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ msg: "Unauthorized" }),
-          { status: 401 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ msg: "Unauthorized" }), { status: 401 })
+        );
       const provider = createVeoProvider(
         "https://api.kie.ai",
         "bad-key",

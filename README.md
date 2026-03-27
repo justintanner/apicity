@@ -28,20 +28,25 @@ Standalone-first TypeScript AI provider packages. Each is self-contained with ze
 ## Quick Start
 
 ```bash
-npm install @nakedapi/openai  # or any provider above
+npm install @nakedapi/xai
 ```
 
 ```typescript
-import { openai as createOpenai } from "@nakedapi/openai";
+import { xai as createXai } from "@nakedapi/xai";
 
-const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
+const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
 
-const response = await openai.v1.chat.completions({
-  messages: [{ role: "user", content: "Hello!" }],
+// Generate an image with Grok
+const image = await xai.v1.images.generations({
+  prompt: "A mass of thousands of rubber ducks spilling out of a warehouse",
+  model: "grok-2-image",
+  n: 1,
 });
+
+console.log(image.data[0].url);
 ```
 
-Each provider follows the same pattern: a factory function that takes `{ apiKey }` and returns an object whose method paths mirror the upstream API URL paths. See [Endpoint Naming](#endpoint-naming) below.
+Every provider works the same way: a factory function that takes `{ apiKey }` and returns an object whose method paths mirror the upstream API URL paths. See [Endpoint Naming](#endpoint-naming) below.
 
 > **More examples:** [OpenAI](packages/provider/openai/README.md#usage-examples) | [xAI](packages/provider/xai/README.md#usage-examples) | [Fal](packages/provider/fal/README.md#usage-examples) | [KimiCoding](packages/provider/kimicoding/README.md#quick-start) | [KIE](packages/provider/kie/README.md#usage)
 

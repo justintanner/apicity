@@ -61,7 +61,18 @@ describe("fal integration", () => {
     expect(result.currency).toBeTruthy();
   });
 
-  // usage() requires an ADMIN API key — skipped for non-admin keys
+  it("should get usage for an endpoint", async () => {
+    ctx = setupPolly("fal/usage");
+    const provider = fal({
+      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+    });
+    const result = await provider.v1.models.usage({
+      endpoint_id: "fal-ai/flux/dev",
+      limit: 5,
+    });
+    expect(result).toBeDefined();
+    expect(result.has_more).toBeDefined();
+  });
 
   it("should get analytics for an endpoint", async () => {
     ctx = setupPolly("fal/analytics");

@@ -338,7 +338,6 @@ export const responsesSchema: PayloadSchema = {
       properties: {
         format: {
           type: "object",
-          required: true,
           properties: {
             type: {
               type: "string",
@@ -346,6 +345,12 @@ export const responsesSchema: PayloadSchema = {
               enum: ["text", "json_object", "json_schema"],
             },
           },
+        },
+        verbosity: {
+          type: "string",
+          description:
+            "Constrains output verbosity (low=concise, high=verbose)",
+          enum: ["low", "medium", "high"],
         },
       },
     },
@@ -356,11 +361,11 @@ export const responsesSchema: PayloadSchema = {
     },
     reasoning: {
       type: "object",
-      description: "Reasoning configuration for o-series models",
+      description: "Reasoning configuration for o-series and reasoning models",
       properties: {
         effort: {
           type: "string",
-          enum: ["low", "medium", "high"],
+          enum: ["none", "minimal", "low", "medium", "high", "xhigh"],
         },
         summary: {
           type: "string",
@@ -380,6 +385,77 @@ export const responsesSchema: PayloadSchema = {
     parallel_tool_calls: {
       type: "boolean",
       description: "Whether to enable parallel tool calls",
+    },
+    conversation: {
+      type: "string",
+      description:
+        "Conversation ID or object associating this response with a conversation",
+    },
+    background: {
+      type: "boolean",
+      description: "Whether to run the model response in the background",
+    },
+    service_tier: {
+      type: "string",
+      description: "Processing tier for the request",
+      enum: ["auto", "default", "flex", "scale", "priority"],
+    },
+    prompt: {
+      type: "object",
+      description: "Reference to a prompt template with variable substitution",
+      properties: {
+        id: {
+          type: "string",
+          required: true,
+          description: "Unique identifier of the prompt template",
+        },
+        version: {
+          type: "string",
+          description: "Version of the prompt template",
+        },
+        variables: {
+          type: "object",
+          description: "Map of variable substitutions",
+        },
+      },
+    },
+    safety_identifier: {
+      type: "string",
+      description:
+        "Stable identifier for detecting policy-violating users (max 64 chars)",
+    },
+    prompt_cache_key: {
+      type: "string",
+      description: "Stable identifier for caching similar requests",
+    },
+    prompt_cache_retention: {
+      type: "string",
+      description: "Retention policy for prompt cache",
+      enum: ["in-memory", "24h"],
+    },
+    max_tool_calls: {
+      type: "number",
+      description:
+        "Maximum number of total calls to built-in tools in a response",
+    },
+    context_management: {
+      type: "array",
+      description: "Context management configuration",
+      items: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            required: true,
+            description: "Context management type",
+            enum: ["compaction"],
+          },
+          compact_threshold: {
+            type: "number",
+            description: "Token threshold at which compaction is triggered",
+          },
+        },
+      },
     },
   },
 };

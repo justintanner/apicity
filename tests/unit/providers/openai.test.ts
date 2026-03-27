@@ -585,9 +585,38 @@ describe("openai provider", () => {
         truncation: "auto",
         user: "user-123",
         parallel_tool_calls: true,
+        conversation: "conv-123",
+        background: false,
+        service_tier: "auto",
+        safety_identifier: "hashed-user-id",
+        prompt_cache_key: "cache-key-123",
+        prompt_cache_retention: "24h",
+        max_tool_calls: 10,
       });
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.responses.validatePayload rejects invalid service_tier enum", () => {
+      const result = realProvider.v1.responses.validatePayload({
+        model: "gpt-4o",
+        input: "Hello",
+        service_tier: "invalid",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("service_tier must be one of");
+    });
+
+    it("v1.responses.validatePayload rejects invalid prompt_cache_retention enum", () => {
+      const result = realProvider.v1.responses.validatePayload({
+        model: "gpt-4o",
+        input: "Hello",
+        prompt_cache_retention: "forever",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain(
+        "prompt_cache_retention must be one of"
+      );
     });
   });
 

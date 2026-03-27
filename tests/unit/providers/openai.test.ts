@@ -917,9 +917,7 @@ describe("openai provider", () => {
 
       const [url] = mockFetch.mock.calls[0];
       expect(url).toContain("include%5B%5D=file_search_call.results");
-      expect(url).toContain(
-        "include%5B%5D=message.input_image.image_url"
-      );
+      expect(url).toContain("include%5B%5D=message.input_image.image_url");
     });
 
     it("should pass stream query param", async () => {

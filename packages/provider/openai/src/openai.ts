@@ -4,6 +4,8 @@ import {
   OpenAiChatResponse,
   OpenAiTranscribeRequest,
   OpenAiTranscribeResponse,
+  OpenAiTranslateRequest,
+  OpenAiTranslateResponse,
   OpenAiEmbeddingRequest,
   OpenAiEmbeddingResponse,
   OpenAiImageEditRequest,
@@ -17,6 +19,7 @@ import {
   embeddingsSchema,
   imageEditsSchema,
   audioTranscriptionsSchema,
+  audioTranslationsSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -199,6 +202,34 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             payloadSchema: audioTranscriptionsSchema,
             validatePayload(data: unknown): ValidationResult {
               return validatePayload(data, audioTranscriptionsSchema);
+            },
+          }
+        ),
+        translations: Object.assign(
+          async function translations(
+            req: OpenAiTranslateRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiTranslateResponse> {
+            const form = new FormData();
+            form.append("file", req.file);
+            form.append("model", req.model);
+            if (req.response_format !== undefined)
+              form.append("response_format", req.response_format);
+            if (req.prompt !== undefined) form.append("prompt", req.prompt);
+            if (req.temperature !== undefined)
+              form.append("temperature", String(req.temperature));
+
+            const data = await makeRequest<OpenAiTranslateResponse>(
+              "/audio/translations",
+              { headers: {}, body: form },
+              signal
+            );
+            return data;
+          },
+          {
+            payloadSchema: audioTranslationsSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, audioTranslationsSchema);
             },
           }
         ),

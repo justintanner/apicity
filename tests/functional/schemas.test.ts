@@ -39,7 +39,6 @@ import {
   sunoGenerateSchema,
   chatCompletionsSchema as kieChatSchema,
   claudeMessagesSchema,
-  claudeHaikuMessagesSchema,
   modelInputSchemas,
 } from "../../packages/provider/kie/src/schemas";
 
@@ -78,7 +77,6 @@ describe("schema structure", () => {
     { name: "kie/sunoGenerate", schema: sunoGenerateSchema },
     { name: "kie/chat", schema: kieChatSchema },
     { name: "kie/claudeMessages", schema: claudeMessagesSchema },
-    { name: "kie/claudeHaikuMessages", schema: claudeHaikuMessagesSchema },
   ];
 
   for (const { name, schema } of allSchemas) {
@@ -234,17 +232,6 @@ describe("schema + validatePayload integration", () => {
         messages: [{ role: "user", content: "Hello" }],
       },
       claudeMessagesSchema
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it("kie claudeHaiku: accepts valid request", () => {
-    const result = validatePayload(
-      {
-        model: "claude-haiku-4-5",
-        messages: [{ role: "user", content: "Hello" }],
-      },
-      claudeHaikuMessagesSchema
     );
     expect(result.valid).toBe(true);
   });

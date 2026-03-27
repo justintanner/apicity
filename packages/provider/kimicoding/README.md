@@ -38,6 +38,15 @@ for await (const chunk of kimicoding.coding.v1.messages.stream(request)) {
 }
 ```
 
+## Endpoints
+
+Base URL: `https://api.kimi.com/coding/`
+
+| URL                          | Method Signature                         |
+| ---------------------------- | ---------------------------------------- |
+| `POST /v1/messages`          | `kimicoding.coding.v1.messages()`        |
+| `POST /v1/messages` (stream) | `kimicoding.coding.v1.messages.stream()` |
+
 ## What's Included
 
 - **Core Types**: `ChatRequest`, `ChatMessage`, `Provider`, etc.

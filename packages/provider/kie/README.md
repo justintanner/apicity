@@ -162,6 +162,37 @@ const { taskId } = await kie.api.v1.jobs.createTask({
 });
 ```
 
+## Endpoints
+
+Base URL: `https://api.kie.ai`
+
+### Core
+
+| URL                                   | Method Signature                     |
+| ------------------------------------- | ------------------------------------ |
+| `POST /api/v1/jobs/createTask`        | `kie.api.v1.jobs.createTask()`       |
+| `GET /api/v1/jobs/recordInfo?taskId=` | `kie.api.v1.jobs.recordInfo(taskId)` |
+| `POST /api/v1/common/download-url`    | `kie.api.v1.common.downloadUrl()`    |
+| `GET /api/v1/chat/credit`             | `kie.api.v1.chat.credit()`           |
+| `POST /api/file-stream-upload`        | `kie.api.fileStreamUpload()`         |
+
+### Sub-providers
+
+| URL                                 | Method Signature                       |
+| ----------------------------------- | -------------------------------------- |
+| `POST /api/v1/veo/generate`         | `kie.veo.api.v1.veo.generate()`        |
+| `POST /api/v1/veo/extend`           | `kie.veo.api.v1.veo.extend()`          |
+| `POST /api/v1/generate`             | `kie.suno.api.v1.generate()`           |
+| `POST /gpt-5-2/v1/chat/completions` | `kie.chat.gpt52.v1.chat.completions()` |
+| `POST /claude/v1/messages`          | `kie.claude.v1.messages()`             |
+| `POST /claude/v1/messages`          | `kie.claudeHaiku.v1.messages()`        |
+
+## Data Shaping
+
+| Method                  | What happens                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `api.fileStreamUpload()` | Infers MIME type from filename, generates timestamped upload path, wraps in FormData |
+
 ## API Reference
 
 ### `kie(options)`

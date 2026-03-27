@@ -1067,7 +1067,11 @@ describe("openai provider", () => {
         new Response(
           JSON.stringify({
             created: 1700000000,
-            data: [{ url: "https://oaidalleapiprodscus.blob.core.windows.net/img.png" }],
+            data: [
+              {
+                url: "https://oaidalleapiprodscus.blob.core.windows.net/img.png",
+              },
+            ],
           }),
           { status: 200 }
         )
@@ -1122,7 +1126,10 @@ describe("openai provider", () => {
     it("should support multiple images as array", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(
-          JSON.stringify({ created: 1700000000, data: [{ url: "https://example.com/out.png" }] }),
+          JSON.stringify({
+            created: 1700000000,
+            data: [{ url: "https://example.com/out.png" }],
+          }),
           { status: 200 }
         )
       );
@@ -1142,10 +1149,9 @@ describe("openai provider", () => {
   describe("audio.transcriptions endpoint", () => {
     it("should send FormData with file and model", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ text: "Hello, how are you?" }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ text: "Hello, how are you?" }), {
+          status: 200,
+        })
       );
       const provider = openai({ apiKey: "test-key", fetch: mockFetch });
       const audioBlob = new Blob(["fake-audio"], { type: "audio/mp3" });
@@ -1163,9 +1169,11 @@ describe("openai provider", () => {
     });
 
     it("should pass optional params (language, prompt, temperature)", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ text: "Bonjour" }), { status: 200 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ text: "Bonjour" }), { status: 200 })
+        );
       const provider = openai({ apiKey: "test-key", fetch: mockFetch });
       const audioBlob = new Blob(["audio"], { type: "audio/wav" });
       await provider.v1.audio.transcriptions({
@@ -1188,10 +1196,9 @@ describe("openai provider", () => {
   describe("audio.translations endpoint", () => {
     it("should send FormData with file and model", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ text: "Hello in English" }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ text: "Hello in English" }), {
+          status: 200,
+        })
       );
       const provider = openai({ apiKey: "test-key", fetch: mockFetch });
       const audioBlob = new Blob(["audio"], { type: "audio/mp3" });
@@ -1209,9 +1216,11 @@ describe("openai provider", () => {
     });
 
     it("should pass optional prompt and temperature", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({ text: "translated" }), { status: 200 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ text: "translated" }), { status: 200 })
+        );
       const provider = openai({ apiKey: "test-key", fetch: mockFetch });
       const audioBlob = new Blob(["audio"], { type: "audio/wav" });
       await provider.v1.audio.translations({
@@ -1229,12 +1238,14 @@ describe("openai provider", () => {
 
   describe("error handling", () => {
     it("should throw OpenAiError on 4xx with parsed error", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ error: { message: "Invalid API key" } }),
-          { status: 401 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ error: { message: "Invalid API key" } }),
+            { status: 401 }
+          )
+        );
       const provider = openai({ apiKey: "bad-key", fetch: mockFetch });
 
       try {

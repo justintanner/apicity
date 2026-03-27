@@ -26,7 +26,7 @@ describe("kimicoding sseToIterable", () => {
   it("should parse basic SSE events with event and data fields", async () => {
     const res = makeResponse([
       'event: content_block_delta\ndata: {"type":"delta","text":"Hello"}\n\n',
-      'event: message_stop\ndata: {}\n\n',
+      "event: message_stop\ndata: {}\n\n",
     ]);
 
     const events = [];
@@ -55,7 +55,7 @@ describe("kimicoding sseToIterable", () => {
 
   it("should handle multiple events in a single chunk", async () => {
     const res = makeResponse([
-      'event: a\ndata: first\n\nevent: b\ndata: second\n\n',
+      "event: a\ndata: first\n\nevent: b\ndata: second\n\n",
     ]);
 
     const events = [];
@@ -71,10 +71,7 @@ describe("kimicoding sseToIterable", () => {
   });
 
   it("should handle events split across chunks", async () => {
-    const res = makeResponse([
-      "event: delta\nda",
-      'ta: {"part":"split"}\n\n',
-    ]);
+    const res = makeResponse(["event: delta\nda", 'ta: {"part":"split"}\n\n']);
 
     const events = [];
     for await (const ev of kimiSseToIterable(res)) {
@@ -121,9 +118,7 @@ describe("kimicoding sseToIterable", () => {
   });
 
   it("should handle CRLF line endings", async () => {
-    const res = makeResponse([
-      "event: test\r\ndata: crlf\r\n\r\n",
-    ]);
+    const res = makeResponse(["event: test\r\ndata: crlf\r\n\r\n"]);
 
     const events = [];
     for await (const ev of kimiSseToIterable(res)) {
@@ -203,9 +198,7 @@ describe("kie sseToIterable", () => {
   });
 
   it("should handle multiple data lines in one event", async () => {
-    const res = makeResponse([
-      "data: line1\ndata: line2\n\n",
-    ]);
+    const res = makeResponse(["data: line1\ndata: line2\n\n"]);
 
     const items = [];
     for await (const data of kieSseToIterable(res)) {

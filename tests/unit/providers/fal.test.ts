@@ -494,12 +494,14 @@ describe("fal provider", () => {
 
   describe("real factory", () => {
     it("should list models with correct URL and auth header", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ models: [], next_cursor: null, has_more: false }),
-          { status: 200 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ models: [], next_cursor: null, has_more: false }),
+            { status: 200 }
+          )
+        );
       const provider = fal({ apiKey: "test-key-123", fetch: mockFetch });
       const result = await provider.v1.models();
 
@@ -514,12 +516,14 @@ describe("fal provider", () => {
     });
 
     it("should pass query params for models search", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ models: [], next_cursor: null, has_more: false }),
-          { status: 200 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ models: [], next_cursor: null, has_more: false }),
+            { status: 200 }
+          )
+        );
       const provider = fal({ apiKey: "test-key", fetch: mockFetch });
       await provider.v1.models({ q: "flux", limit: 5 });
 
@@ -627,12 +631,14 @@ describe("fal provider", () => {
     });
 
     it("should fetch requests by endpoint", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ next_cursor: null, has_more: false, items: [] }),
-          { status: 200 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ next_cursor: null, has_more: false, items: [] }),
+            { status: 200 }
+          )
+        );
       const provider = fal({ apiKey: "test-key", fetch: mockFetch });
       await provider.v1.models.requests.byEndpoint({
         endpoint_id: "fal-ai/flux/dev",
@@ -645,10 +651,9 @@ describe("fal provider", () => {
 
     it("should DELETE payloads with correct URL and idempotency header", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ cdn_delete_results: [] }),
-          { status: 200 }
-        )
+        new Response(JSON.stringify({ cdn_delete_results: [] }), {
+          status: 200,
+        })
       );
       const provider = fal({ apiKey: "test-key", fetch: mockFetch });
       await provider.v1.models.requests.payloads({
@@ -661,18 +666,20 @@ describe("fal provider", () => {
         "https://api.fal.ai/v1/models/requests/req-123/payloads"
       );
       expect(init.method).toBe("DELETE");
-      expect(
-        (init.headers as Record<string, string>)["Idempotency-Key"]
-      ).toBe("idem-abc");
+      expect((init.headers as Record<string, string>)["Idempotency-Key"]).toBe(
+        "idem-abc"
+      );
     });
 
     it("should use custom baseURL", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ models: [], next_cursor: null, has_more: false }),
-          { status: 200 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ models: [], next_cursor: null, has_more: false }),
+            { status: 200 }
+          )
+        );
       const provider = fal({
         apiKey: "test-key",
         baseURL: "https://custom.fal.ai/v1",
@@ -714,9 +721,11 @@ describe("fal provider", () => {
     });
 
     it("should throw FalError with generic message on non-structured error", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("Internal Server Error", { status: 500 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response("Internal Server Error", { status: 500 })
+        );
       const provider = fal({ apiKey: "test-key", fetch: mockFetch });
 
       try {

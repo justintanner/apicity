@@ -707,7 +707,11 @@ describe("kie provider", () => {
     it("should send createTask to correct URL with JSON body", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(
-          JSON.stringify({ code: 200, msg: "success", data: { taskId: "t1" } }),
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: { taskId: "t1" },
+          }),
           { status: 200 }
         )
       );
@@ -725,9 +729,9 @@ describe("kie provider", () => {
       const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
       expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
       expect(init.method).toBe("POST");
-      expect(
-        (init.headers as Record<string, string>).Authorization
-      ).toBe("Bearer sk-test");
+      expect((init.headers as Record<string, string>).Authorization).toBe(
+        "Bearer sk-test"
+      );
       const body = JSON.parse(init.body as string);
       expect(body.model).toBe("nano-banana-pro");
       expect(body.input.prompt).toBe("A sunset");
@@ -781,12 +785,14 @@ describe("kie provider", () => {
     });
 
     it("should send credit GET to correct URL", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ code: 200, msg: "success", data: 42 }),
-          { status: 200 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(
+            JSON.stringify({ code: 200, msg: "success", data: 42 }),
+            { status: 200 }
+          )
+        );
       const provider = kie({
         apiKey: "test-key",
         fetch: mockFetch as unknown as typeof fetch,
@@ -826,9 +832,7 @@ describe("kie provider", () => {
         "https://cdn.kie.ai/uploads/test.png"
       );
       const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-      expect(url).toBe(
-        "https://kieai.redpandaai.co/api/file-stream-upload"
-      );
+      expect(url).toBe("https://kieai.redpandaai.co/api/file-stream-upload");
       expect(init.method).toBe("POST");
       expect(init.body).toBeInstanceOf(FormData);
     });
@@ -850,7 +854,9 @@ describe("kie provider", () => {
       } catch (err) {
         expect(err).toBeInstanceOf(KieError);
         expect((err as KieError).status).toBe(400);
-        expect((err as KieError).message).toContain("Cannot determine MIME type");
+        expect((err as KieError).message).toContain(
+          "Cannot determine MIME type"
+        );
       }
     });
 
@@ -884,12 +890,11 @@ describe("kie provider", () => {
 
   describe("core error handling (real factory)", () => {
     it("should throw KieError on createTask HTTP error", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ msg: "Unauthorized" }),
-          { status: 401 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ msg: "Unauthorized" }), { status: 401 })
+        );
       const provider = kie({
         apiKey: "bad-key",
         fetch: mockFetch as unknown as typeof fetch,
@@ -908,12 +913,11 @@ describe("kie provider", () => {
     });
 
     it("should throw KieError on recordInfo HTTP error", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ msg: "Not found" }),
-          { status: 404 }
-        )
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ msg: "Not found" }), { status: 404 })
+        );
       const provider = kie({
         apiKey: "test-key",
         fetch: mockFetch as unknown as typeof fetch,
@@ -929,9 +933,9 @@ describe("kie provider", () => {
     });
 
     it("should throw KieError on credit HTTP error", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response(JSON.stringify({}), { status: 500 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 500 }));
       const provider = kie({
         apiKey: "test-key",
         fetch: mockFetch as unknown as typeof fetch,
@@ -969,10 +973,9 @@ describe("kie provider", () => {
 
     it("should throw KieError on upload HTTP error", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
-        new Response(
-          JSON.stringify({ msg: "File too large" }),
-          { status: 413 }
-        )
+        new Response(JSON.stringify({ msg: "File too large" }), {
+          status: 413,
+        })
       );
       const provider = kie({
         apiKey: "test-key",

@@ -277,7 +277,7 @@ describe("kimicoding provider", () => {
       const ssePayload = [
         'event: content_block_delta\ndata: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"Hello"}}\n\n',
         'event: content_block_delta\ndata: {"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":" world"}}\n\n',
-        'event: message_stop\ndata: {}\n\n',
+        "event: message_stop\ndata: {}\n\n",
       ].join("");
 
       const encoder = new TextEncoder();
@@ -345,9 +345,9 @@ describe("kimicoding provider", () => {
     });
 
     it("should throw KimiCodingError on non-parseable error body", async () => {
-      const mockFetch = vi.fn().mockResolvedValue(
-        new Response("Server Error", { status: 500 })
-      );
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response("Server Error", { status: 500 }));
       const provider = kimicoding({
         apiKey: "test-key",
         fetch: mockFetch,
@@ -387,7 +387,8 @@ describe("kimicoding provider", () => {
           messages: [{ role: "user", content: "hi" }],
         });
         // Must iterate to trigger the error
-        for await (const _chunk of stream) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for await (const _ of stream) {
           // should not reach here
         }
         expect.fail("should have thrown");

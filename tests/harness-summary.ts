@@ -16,8 +16,22 @@ import {
 
 const MAX_PROMPT_LEN = 300;
 const MAX_TEXT_LEN = 500;
+const MAX_JSON_LEN = 500;
 const MAX_COMMENT_LEN = 60_000;
 const ASSETS_DIR = "tests/harness-assets";
+
+const VISIBLE_REQUEST_HEADERS = new Set([
+  "content-type",
+  "authorization",
+  "accept",
+]);
+
+const BINARY_MIME_PREFIXES = [
+  "audio/",
+  "image/",
+  "video/",
+  "application/octet",
+];
 
 interface MediaItem {
   type: "image" | "video" | "audio";
@@ -375,6 +389,104 @@ function extractOutput(
 }
 
 // ---------------------------------------------------------------------------
+// HTTP detail helpers
+// ---------------------------------------------------------------------------
+
+function extractUrlPath(fullUrl: string): string {
+  try {
+    return new URL(fullUrl).pathname;
+  } catch {
+    return fullUrl;
+  }
+}
+
+function findHeader(
+  headers: Array<{ name: string; value: string }>,
+  name: string
+): string | undefined {
+  const lower = name.toLowerCase();
+  const match = headers.find((h) => h.name.toLowerCase() === lower);
+  return match?.value;
+}
+
+function isBinaryContentType(contentType: string): boolean {
+  const lower = contentType.toLowerCase();
+  return BINARY_MIME_PREFIXES.some((prefix) => lower.startsWith(prefix));
+}
+
+function isMultipartRequest(entry: HarEntry): boolean {
+  const ct = findHeader(entry.request.headers, "content-type") ?? "";
+  return ct.toLowerCase().startsWith("multipart/form-data");
+}
+
+function renderRequestSection(entry: HarEntry): string[] {
+  const lines: string[] = [];
+  const method = entry.request.method;
+  const urlPath = extractUrlPath(entry.request.url);
+
+  // HTTP method + path + filtered headers
+  const httpLines: string[] = [`${method} ${urlPath}`];
+  for (const header of entry.request.headers) {
+    if (VISIBLE_REQUEST_HEADERS.has(header.name.toLowerCase())) {
+      httpLines.push(`${header.name.toLowerCase()}: ${header.value}`);
+    }
+  }
+
+  lines.push("#### Request", "", "```http", ...httpLines, "```");
+
+  // Request body
+  if (isMultipartRequest(entry)) {
+    lines.push("```", "(multipart/form-data)", "```");
+  } else if (entry.request.postData?.text) {
+    let bodyText: string;
+    try {
+      const parsed = JSON.parse(entry.request.postData.text);
+      bodyText = JSON.stringify(parsed, null, 2);
+    } catch {
+      bodyText = entry.request.postData.text;
+    }
+    lines.push("```json", truncate(bodyText, MAX_JSON_LEN), "```");
+  }
+
+  lines.push("");
+  return lines;
+}
+
+function renderResponseSection(entry: HarEntry): string[] {
+  const lines: string[] = [];
+  const status = entry.response.status;
+  const statusText = entry.response.statusText;
+  const contentType = findHeader(entry.response.headers, "content-type") ?? "";
+
+  // HTTP status + content-type header
+  const httpLines: string[] = [`HTTP ${status} ${statusText}`];
+  if (contentType) {
+    httpLines.push(`content-type: ${contentType}`);
+  }
+
+  lines.push("#### Response", "", "```http", ...httpLines, "```");
+
+  // Response body
+  const rawBody = entry.response.content?.text;
+  if (isBinaryContentType(contentType)) {
+    const size = rawBody ? Buffer.byteLength(rawBody, "utf-8") : 0;
+    lines.push("```", `(binary: ${contentType}, ${size} bytes)`, "```");
+  } else if (rawBody) {
+    let bodyText: string;
+    try {
+      const parsed = JSON.parse(rawBody);
+      bodyText = JSON.stringify(parsed, null, 2);
+    } catch {
+      bodyText = rawBody;
+    }
+    lines.push("```json", truncate(bodyText, MAX_JSON_LEN), "```");
+  }
+
+  lines.push("");
+  return lines;
+}
+
+// ---------------------------------------------------------------------------
 // Card rendering
 // ---------------------------------------------------------------------------
 
@@ -391,6 +503,23 @@ function renderCard(recording: ChangedRecording): string {
   const prompt = extractPrompt(recording.entries);
   if (prompt) {
     lines.push(`> **Prompt**: ${prompt}`, "");
+  }
+
+  // HTTP request/response details (first entry is the primary request)
+  const primaryEntry = recording.entries[0];
+  if (primaryEntry) {
+    lines.push(...renderRequestSection(primaryEntry));
+
+    // Find the last meaningful response entry for the response section
+    let responseEntry: HarEntry = primaryEntry;
+    for (let i = recording.entries.length - 1; i >= 0; i--) {
+      const resBody = parseResponseBody(recording.entries[i]);
+      if (resBody && !isPollingResponse(resBody)) {
+        responseEntry = recording.entries[i];
+        break;
+      }
+    }
+    lines.push(...renderResponseSection(responseEntry));
   }
 
   // Input media

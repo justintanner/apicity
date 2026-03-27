@@ -21,7 +21,7 @@ describe("openai image edits integration", () => {
     });
 
     const imageBuffer = readFileSync(
-      resolve(__dirname, "../../public/cat1.jpg")
+      resolve(__dirname, "../fixtures/cat1.jpg")
     );
     const image = new Blob([imageBuffer], { type: "image/jpeg" });
 

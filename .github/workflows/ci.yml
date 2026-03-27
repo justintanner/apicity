@@ -120,7 +120,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout ${{ github.head_ref }}
-          git add -f tests/harness-assets/
+          git add -f tests/fixtures/harness-generated/
           git commit -m "ci: add harness media assets [skip ci]" || true
           git push
 

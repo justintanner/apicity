@@ -18,7 +18,7 @@ const MAX_PROMPT_LEN = 300;
 const MAX_TEXT_LEN = 500;
 const MAX_JSON_LEN = 500;
 const MAX_COMMENT_LEN = 60_000;
-const ASSETS_DIR = "tests/harness-assets";
+const ASSETS_DIR = "tests/fixtures/harness-generated";
 
 const VISIBLE_REQUEST_HEADERS = new Set([
   "content-type",
@@ -143,10 +143,10 @@ function extractPrompt(entries: HarEntry[]): string {
 
 /** Map recording name patterns to known repo source files. */
 const SOURCE_FILE_MAP: Array<[RegExp, string | null]> = [
-  [/^xai\/image-edit/, "public/cat1.jpg"],
-  [/^xai\/video-cat-image/, "public/cat1.jpg"],
-  [/^xai\/video-image-to-video/, "public/cat1.jpg"],
-  [/^xai\/video-reference-images/, "public/cat1.jpg"],
+  [/^xai\/image-edit/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/video-cat-image/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/video-image-to-video/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/video-reference-images/, "tests/fixtures/cat1.jpg"],
   [/^openai\/vision/, "tests/fixtures/red.png"],
   [/^kimicoding\/.*image-base64/, null], // 1px test pixel, skip
   [/^kie\/e2e-motion-control/, null], // uses external URLs

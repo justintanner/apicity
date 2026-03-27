@@ -7,7 +7,6 @@ harness-report.html
 
 # Cached media from harness workflows
 harness_media/
-tests/harness-assets/
 
 # Logs
 logs

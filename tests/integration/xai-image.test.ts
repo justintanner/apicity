@@ -5,7 +5,7 @@ import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { xai } from "@nakedapi/xai";
 
 const cat1Base64 = readFileSync(
-  resolve(__dirname, "../../public/cat1.jpg")
+  resolve(__dirname, "../fixtures/cat1.jpg")
 ).toString("base64");
 const cat1DataUri = `data:image/jpeg;base64,${cat1Base64}`;
 

@@ -258,6 +258,132 @@ export const audioTranscriptionsSchema: PayloadSchema = {
   },
 };
 
+export const responsesSchema: PayloadSchema = {
+  method: "POST",
+  path: "/responses",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID (e.g. gpt-4o, o3-mini)",
+    },
+    input: {
+      type: "string",
+      required: true,
+      description:
+        "Text string or array of input items (messages, function outputs)",
+    },
+    instructions: {
+      type: "string",
+      description: "System/developer instructions for the model",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature 0-2",
+    },
+    max_output_tokens: {
+      type: "number",
+      description: "Maximum number of output tokens",
+    },
+    top_p: {
+      type: "number",
+      description: "Nucleus sampling parameter 0-1",
+    },
+    tools: {
+      type: "array",
+      description:
+        "Tools available to the model (function, web_search_preview, file_search, code_interpreter)",
+      items: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            required: true,
+            enum: [
+              "function",
+              "web_search_preview",
+              "web_search_preview_2025_03_11",
+              "file_search",
+              "code_interpreter",
+            ],
+          },
+        },
+      },
+    },
+    tool_choice: {
+      type: "string",
+      description:
+        "Tool choice strategy: auto, none, required, or specific tool",
+    },
+    previous_response_id: {
+      type: "string",
+      description: "ID of a previous response for multi-turn conversations",
+    },
+    store: {
+      type: "boolean",
+      description: "Whether to store the response for later retrieval",
+    },
+    metadata: {
+      type: "object",
+      description: "Key-value metadata pairs",
+    },
+    stream: {
+      type: "boolean",
+      description: "Whether to stream the response",
+    },
+    text: {
+      type: "object",
+      description: "Text generation configuration for structured output",
+      properties: {
+        format: {
+          type: "object",
+          required: true,
+          properties: {
+            type: {
+              type: "string",
+              required: true,
+              enum: ["text", "json_object", "json_schema"],
+            },
+          },
+        },
+      },
+    },
+    truncation: {
+      type: "string",
+      description: "Truncation strategy for context window",
+      enum: ["auto", "disabled"],
+    },
+    reasoning: {
+      type: "object",
+      description: "Reasoning configuration for o-series models",
+      properties: {
+        effort: {
+          type: "string",
+          enum: ["low", "medium", "high"],
+        },
+        summary: {
+          type: "string",
+          enum: ["auto", "concise", "detailed"],
+        },
+      },
+    },
+    user: {
+      type: "string",
+      description: "End-user identifier for abuse monitoring",
+    },
+    include: {
+      type: "array",
+      description: "Additional data to include in the response",
+      items: { type: "string" },
+    },
+    parallel_tool_calls: {
+      type: "boolean",
+      description: "Whether to enable parallel tool calls",
+    },
+  },
+};
+
 export const audioTranslationsSchema: PayloadSchema = {
   method: "POST",
   path: "/audio/translations",

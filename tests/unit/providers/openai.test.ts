@@ -529,5 +529,248 @@ describe("openai provider", () => {
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
+
+    it("v1.responses.payloadSchema exists with correct method and path", () => {
+      const schema = realProvider.v1.responses.payloadSchema;
+      expect(schema).toBeDefined();
+      expect(schema.method).toBe("POST");
+      expect(schema.path).toBe("/responses");
+      expect(schema.contentType).toBe("application/json");
+    });
+
+    it("v1.responses.validatePayload accepts valid payload with string input", () => {
+      const result = realProvider.v1.responses.validatePayload({
+        model: "gpt-4o",
+        input: "Hello, how are you?",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.responses.validatePayload rejects missing required fields", () => {
+      const result = realProvider.v1.responses.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("model is required");
+      expect(result.errors).toContain("input is required");
+    });
+
+    it("v1.responses.validatePayload rejects missing model", () => {
+      const result = realProvider.v1.responses.validatePayload({
+        input: "Hello",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("model is required");
+    });
+
+    it("v1.responses.validatePayload rejects invalid truncation enum", () => {
+      const result = realProvider.v1.responses.validatePayload({
+        model: "gpt-4o",
+        input: "Hello",
+        truncation: "invalid",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("truncation must be one of");
+    });
+
+    it("v1.responses.validatePayload accepts all optional fields", () => {
+      const result = realProvider.v1.responses.validatePayload({
+        model: "gpt-4o",
+        input: "Summarize this document",
+        instructions: "Be concise",
+        temperature: 0.7,
+        max_output_tokens: 1000,
+        top_p: 0.9,
+        store: true,
+        stream: false,
+        truncation: "auto",
+        user: "user-123",
+        parallel_tool_calls: true,
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+  });
+
+  describe("responses endpoint", () => {
+    it("should create a response with string input", async () => {
+      const mockResponse = {
+        id: "resp_test123",
+        object: "response",
+        created_at: 1700000000,
+        status: "completed",
+        model: "gpt-4o",
+        output: [
+          {
+            type: "message",
+            id: "msg_test",
+            role: "assistant",
+            content: [
+              {
+                type: "output_text",
+                text: "Hello! How can I help you today?",
+              },
+            ],
+            status: "completed",
+          },
+        ],
+        usage: {
+          input_tokens: 10,
+          output_tokens: 8,
+          total_tokens: 18,
+        },
+      };
+
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(mockResponse), { status: 200 })
+      );
+
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.responses({
+        model: "gpt-4o",
+        input: "Hello!",
+      });
+
+      expect(result.id).toBe("resp_test123");
+      expect(result.object).toBe("response");
+      expect(result.status).toBe("completed");
+      expect(result.output).toHaveLength(1);
+      expect(result.output[0].type).toBe("message");
+      expect(result.usage?.total_tokens).toBe(18);
+    });
+
+    it("should create a response with array input", async () => {
+      const mockResponse = {
+        id: "resp_test456",
+        object: "response",
+        created_at: 1700000000,
+        status: "completed",
+        model: "gpt-4o",
+        output: [
+          {
+            type: "message",
+            id: "msg_test2",
+            role: "assistant",
+            content: [
+              {
+                type: "output_text",
+                text: "The weather is sunny.",
+              },
+            ],
+            status: "completed",
+          },
+        ],
+      };
+
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify(mockResponse), { status: 200 })
+      );
+
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.responses({
+        model: "gpt-4o",
+        input: [
+          {
+            role: "user",
+            content: "What is the weather?",
+          },
+        ],
+      });
+
+      expect(result.id).toBe("resp_test456");
+      expect(result.output[0].type).toBe("message");
+    });
+
+    it("should send correct request body to API", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ id: "resp_test", object: "response", created_at: 0, status: "completed", model: "gpt-4o", output: [] }), { status: 200 })
+      );
+
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.responses({
+        model: "gpt-4o",
+        input: "Hello",
+        instructions: "Be helpful",
+        temperature: 0.5,
+        max_output_tokens: 500,
+      });
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toContain("/responses");
+      const body = JSON.parse(init.body as string);
+      expect(body.model).toBe("gpt-4o");
+      expect(body.input).toBe("Hello");
+      expect(body.instructions).toBe("Be helpful");
+      expect(body.temperature).toBe(0.5);
+      expect(body.max_output_tokens).toBe(500);
+    });
+
+    it("should support function tools in request", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({
+          id: "resp_tool",
+          object: "response",
+          created_at: 0,
+          status: "completed",
+          model: "gpt-4o",
+          output: [
+            {
+              type: "function_call",
+              id: "fc_1",
+              call_id: "call_abc",
+              name: "get_weather",
+              arguments: '{"location":"SF"}',
+              status: "completed",
+            },
+          ],
+        }), { status: 200 })
+      );
+
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.responses({
+        model: "gpt-4o",
+        input: "What's the weather in SF?",
+        tools: [
+          {
+            type: "function",
+            name: "get_weather",
+            description: "Get weather for a location",
+            parameters: {
+              type: "object",
+              properties: { location: { type: "string" } },
+            },
+          },
+        ],
+      });
+
+      expect(result.output[0].type).toBe("function_call");
+      const fnCall = result.output[0] as { type: "function_call"; name: string; arguments: string };
+      expect(fnCall.name).toBe("get_weather");
+      expect(fnCall.arguments).toBe('{"location":"SF"}');
+    });
+
+    it("should support previous_response_id for multi-turn", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({
+          id: "resp_turn2",
+          object: "response",
+          created_at: 0,
+          status: "completed",
+          model: "gpt-4o",
+          output: [],
+          previous_response_id: "resp_turn1",
+        }), { status: 200 })
+      );
+
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.responses({
+        model: "gpt-4o",
+        input: "Tell me more",
+        previous_response_id: "resp_turn1",
+      });
+
+      const [, init] = mockFetch.mock.calls[0];
+      const body = JSON.parse(init.body as string);
+      expect(body.previous_response_id).toBe("resp_turn1");
+    });
   });
 });

@@ -305,5 +305,51 @@ describe("openai provider", () => {
       expect(result.errors).toContain("file is required");
       expect(result.errors).toContain("model is required");
     });
+
+    it("v1.embeddings.payloadSchema exists with correct method and path", () => {
+      const schema = realProvider.v1.embeddings.payloadSchema;
+      expect(schema).toBeDefined();
+      expect(schema.method).toBe("POST");
+      expect(schema.path).toBe("/embeddings");
+      expect(schema.contentType).toBe("application/json");
+    });
+
+    it("v1.embeddings.validatePayload accepts valid payload", () => {
+      const result = realProvider.v1.embeddings.validatePayload({
+        input: "Hello world",
+        model: "text-embedding-3-small",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.embeddings.validatePayload rejects missing required fields", () => {
+      const result = realProvider.v1.embeddings.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("input is required");
+      expect(result.errors).toContain("model is required");
+    });
+
+    it("v1.embeddings.validatePayload rejects invalid encoding_format", () => {
+      const result = realProvider.v1.embeddings.validatePayload({
+        input: "Hello",
+        model: "text-embedding-3-small",
+        encoding_format: "invalid",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("encoding_format must be one of");
+    });
+
+    it("v1.embeddings.validatePayload accepts optional fields", () => {
+      const result = realProvider.v1.embeddings.validatePayload({
+        input: "Hello",
+        model: "text-embedding-3-small",
+        encoding_format: "float",
+        dimensions: 256,
+        user: "user-123",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
   });
 });

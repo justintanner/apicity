@@ -63,6 +63,37 @@ export const chatCompletionsSchema: PayloadSchema = {
   },
 };
 
+export const embeddingsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/embeddings",
+  contentType: "application/json",
+  fields: {
+    input: {
+      type: "string",
+      required: true,
+      description: "Input text to embed (string, string[], number[], or number[][])",
+    },
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID (e.g. text-embedding-3-small)",
+    },
+    encoding_format: {
+      type: "string",
+      description: "Encoding format for embeddings",
+      enum: ["float", "base64"],
+    },
+    dimensions: {
+      type: "number",
+      description: "Number of dimensions for the output embeddings",
+    },
+    user: {
+      type: "string",
+      description: "Unique identifier for the end-user",
+    },
+  },
+};
+
 export const audioTranscriptionsSchema: PayloadSchema = {
   method: "POST",
   path: "/audio/transcriptions",

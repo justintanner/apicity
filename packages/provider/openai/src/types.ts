@@ -170,6 +170,19 @@ interface OpenAiChatNamespace {
   completions: OpenAiChatCompletionsMethod;
 }
 
+interface OpenAiEmbeddingsMethod {
+  (
+    req: OpenAiEmbeddingRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiEmbeddingResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface OpenAiEmbeddingsNamespace {
+  embeddings: OpenAiEmbeddingsMethod;
+}
+
 interface OpenAiAudioTranscriptionsMethod {
   (
     req: OpenAiTranscribeRequest,
@@ -186,6 +199,7 @@ interface OpenAiAudioNamespace {
 interface OpenAiV1Namespace {
   chat: OpenAiChatNamespace;
   audio: OpenAiAudioNamespace;
+  embeddings: OpenAiEmbeddingsMethod;
 }
 
 // Provider interface

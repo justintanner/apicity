@@ -4,11 +4,17 @@ import {
   OpenAiChatResponse,
   OpenAiTranscribeRequest,
   OpenAiTranscribeResponse,
+  OpenAiEmbeddingRequest,
+  OpenAiEmbeddingResponse,
   OpenAiProvider,
   OpenAiError,
 } from "./types";
 import type { ValidationResult } from "./types";
-import { chatCompletionsSchema, audioTranscriptionsSchema } from "./schemas";
+import {
+  chatCompletionsSchema,
+  embeddingsSchema,
+  audioTranscriptionsSchema,
+} from "./schemas";
 import { validatePayload } from "./validate";
 
 export function openai(opts: OpenAiOptions): OpenAiProvider {
@@ -98,6 +104,24 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           }
         ),
       },
+      embeddings: Object.assign(
+        async function embeddings(
+          req: OpenAiEmbeddingRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiEmbeddingResponse> {
+          return await makeRequest<OpenAiEmbeddingResponse>(
+            "/embeddings",
+            jsonRequest(req),
+            signal
+          );
+        },
+        {
+          payloadSchema: embeddingsSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, embeddingsSchema);
+          },
+        }
+      ),
       audio: {
         transcriptions: Object.assign(
           async function transcriptions(

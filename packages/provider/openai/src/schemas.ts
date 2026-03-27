@@ -184,3 +184,23 @@ export const audioTranscriptionsSchema: PayloadSchema = {
     temperature: { type: "number", description: "Sampling temperature 0-1" },
   },
 };
+
+export const audioTranslationsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/audio/translations",
+  contentType: "multipart/form-data",
+  fields: {
+    file: { type: "object", required: true, description: "Audio file (Blob)" },
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID (e.g. whisper-1)",
+    },
+    response_format: { type: "string", description: "Output format" },
+    prompt: {
+      type: "string",
+      description: "Optional prompt to guide model (in English)",
+    },
+    temperature: { type: "number", description: "Sampling temperature 0-1" },
+  },
+};

@@ -63,6 +63,10 @@ describe("openai provider", () => {
     text: string;
   }
 
+  interface OpenAiTranslateResponse {
+    text: string;
+  }
+
   interface OpenAiProvider {
     v1: {
       chat: {
@@ -76,6 +80,10 @@ describe("openai provider", () => {
           req: { file: Blob; model: string; language?: string },
           signal?: AbortSignal
         ): Promise<OpenAiTranscribeResponse>;
+        translations(
+          req: { file: Blob; model: string; prompt?: string },
+          signal?: AbortSignal
+        ): Promise<OpenAiTranslateResponse>;
       };
     };
   }
@@ -109,6 +117,9 @@ describe("openai provider", () => {
         audio: {
           transcriptions: vi.fn().mockResolvedValue({
             text: "Hello world, this is a test transcription.",
+          }),
+          translations: vi.fn().mockResolvedValue({
+            text: "Hello world, this is a test translation.",
           }),
         },
       },
@@ -257,6 +268,31 @@ describe("openai provider", () => {
     });
   });
 
+  it("should translate audio", async () => {
+    const provider = createMockProvider();
+    const file = new Blob(["fake-audio"], { type: "audio/mp3" });
+    const result = await provider.v1.audio.translations({
+      file,
+      model: "whisper-1",
+    });
+    expect(result.text).toBe("Hello world, this is a test translation.");
+  });
+
+  it("should pass model and prompt to translate", async () => {
+    const provider = createMockProvider();
+    const file = new Blob(["fake-audio"], { type: "audio/mp3" });
+    await provider.v1.audio.translations({
+      file,
+      model: "whisper-1",
+      prompt: "Translate the following audio",
+    });
+    expect(provider.v1.audio.translations).toHaveBeenCalledWith({
+      file,
+      model: "whisper-1",
+      prompt: "Translate the following audio",
+    });
+  });
+
   describe("payloadSchema", () => {
     const realProvider = openai({
       apiKey: "test-key",
@@ -367,6 +403,20 @@ describe("openai provider", () => {
       });
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.audio.translations.payloadSchema exists with correct method and path", () => {
+      const schema = realProvider.v1.audio.translations.payloadSchema;
+      expect(schema).toBeDefined();
+      expect(schema.method).toBe("POST");
+      expect(schema.path).toBe("/audio/translations");
+    });
+
+    it("v1.audio.translations.validatePayload rejects missing required fields", () => {
+      const result = realProvider.v1.audio.translations.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("file is required");
+      expect(result.errors).toContain("model is required");
     });
 
     it("v1.embeddings.payloadSchema exists with correct method and path", () => {

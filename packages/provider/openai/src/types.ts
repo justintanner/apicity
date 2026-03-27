@@ -40,6 +40,20 @@ export interface OpenAiTranscribeResponse {
   text: string;
 }
 
+// Translation request
+export interface OpenAiTranslateRequest {
+  file: Blob;
+  model: string;
+  response_format?: string;
+  prompt?: string;
+  temperature?: number;
+}
+
+// Translation response
+export interface OpenAiTranslateResponse {
+  text: string;
+}
+
 // Tool function definition
 export interface OpenAiToolFunction {
   name: string;
@@ -242,8 +256,18 @@ interface OpenAiAudioTranscriptionsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface OpenAiAudioTranslationsMethod {
+  (
+    req: OpenAiTranslateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiTranslateResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface OpenAiAudioNamespace {
   transcriptions: OpenAiAudioTranscriptionsMethod;
+  translations: OpenAiAudioTranslationsMethod;
 }
 
 interface OpenAiImagesEditsMethod {

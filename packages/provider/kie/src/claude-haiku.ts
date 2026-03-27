@@ -126,18 +126,15 @@ export function createClaudeHaikuProvider(
             }
 
             try {
-              const res = await doFetch(
-                `${baseURL}/claude-haiku-4-5/v1/messages`,
-                {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(req),
-                  signal: controller.signal,
-                }
-              );
+              const res = await doFetch(`${baseURL}/claude/v1/messages`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${apiKey}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(req),
+                signal: controller.signal,
+              });
 
               clearTimeout(timeoutId);
 

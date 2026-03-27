@@ -245,7 +245,7 @@ export const claudeMessagesSchema: PayloadSchema = {
 
 export const claudeHaikuMessagesSchema: PayloadSchema = {
   method: "POST",
-  path: "/claude-haiku-4-5/v1/messages",
+  path: "/claude/v1/messages",
   contentType: "application/json",
   fields: {
     model: {

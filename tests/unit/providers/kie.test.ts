@@ -454,7 +454,7 @@ describe("kie provider", () => {
 
       expect(mockFetch).toHaveBeenCalledOnce();
       const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
-      expect(url).toBe("https://api.kie.ai/claude-haiku-4-5/v1/messages");
+      expect(url).toBe("https://api.kie.ai/claude/v1/messages");
       expect(init.method).toBe("POST");
       expect(init.headers).toEqual(
         expect.objectContaining({
@@ -615,7 +615,7 @@ describe("kie provider", () => {
       it("should have method POST and correct path", () => {
         const schema = provider.claudeHaiku.v1.messages.payloadSchema;
         expect(schema.method).toBe("POST");
-        expect(schema.path).toBe("/claude-haiku-4-5/v1/messages");
+        expect(schema.path).toBe("/claude/v1/messages");
       });
 
       it("should have required model and messages fields", () => {

@@ -70,11 +70,8 @@ jobs:
       - name: Lint
         run: pnpm run lint
 
-      - name: Unit tests
-        run: pnpm run test:run
-
       - name: Integration tests (replay)
-        run: pnpm run test:integration
+        run: pnpm run test:run
 
   harness-report:
     if: github.event_name == 'pull_request'

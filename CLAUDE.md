@@ -15,10 +15,9 @@ pnpm run build:kimicoding       # Build single package (also: build:kie, build:x
 pnpm run lint                   # Lint (runs build first via prelint)
 pnpm run lint:fix               # Auto-fix lint issues
 pnpm run format                 # Format with Prettier
-pnpm run test:run               # Run unit tests once
-pnpm run test                   # Run unit tests in watch mode
-pnpm run test:integration       # Run integration tests (Polly.js replay)
-pnpm run test:integration:record  # Re-record integration test fixtures (needs API keys)
+pnpm run test:run               # Run all tests once (Polly.js replay)
+pnpm run test                   # Run tests in watch mode
+pnpm run test:integration:record  # Re-record test fixtures (needs API keys)
 pnpm run harness                # HAR viewer at localhost:3475 (all recordings)
 
 # Standalone HAR viewer
@@ -28,7 +27,7 @@ npx tsx tests/harness-serve.ts --html out.html <paths> # Generate self-contained
 npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (git add)
 
 # Run a single test file
-pnpm run test:run tests/unit/providers/kimicoding.test.ts
+pnpm run test:run tests/integration/openai-chat.test.ts
 ```
 
 ## Architecture
@@ -61,14 +60,12 @@ packages/provider/<name>/
 
 ### Testing
 
-Two Vitest configs with separate test suites:
+All tests use Polly.js HTTP record/replay (no mocks):
 
-- **Unit tests** (`tests/vitest.config.ts`): `tests/unit/**/*.test.ts` — uses `tests/setup.ts` for mock data, excludes `tests/integration/`
-- **Integration tests** (`tests/vitest.integration.ts`): `tests/integration/**/*.test.ts` — uses Polly.js (`tests/harness.ts`) for HTTP record/replay, 30s timeout
+- **Config**: `tests/vitest.integration.ts` — includes `tests/integration/**/*.test.ts`, 30s timeout
+- **Setup**: `tests/integration-setup.ts` — aliases `@nakedapi/*` to source directories so tests run against source (not dist)
 
-Both configs alias `@nakedapi/*` to source directories so tests run against source (not dist).
-
-Integration tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting.
+Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting.
 
 **Integration test recording workflow — NEVER skip this when adding/modifying integration tests:**
 
@@ -101,7 +98,7 @@ API keys are stored in 1Password and referenced via `op://` URIs in `.env.tpl` (
 
 ### CI
 
-GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, unit tests, integration replay), harness-report (PR-only, posts Markdown summary of changed recordings as a PR comment + uploads interactive HTML viewer as artifact). Runs on push/PR to main.
+GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, integration tests via Polly.js replay), harness-report (PR-only, posts Markdown summary of changed recordings as a PR comment + uploads interactive HTML viewer as artifact). Runs on push/PR to main.
 
 ## Code Conventions
 
@@ -133,15 +130,13 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
    Object.assign on the endpoint function.
 4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`.
    Use Object.assign for callable namespaces.
-5. **Unit tests** — Add to `tests/unit/providers/<provider>.test.ts`.
-   Cover success path, error handling, payload validation.
-6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
+5. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
    using setupPolly/teardownPolly. Record fixtures, verify replay.
-7. **Commit and PR** — One endpoint per PR.
+6. **Commit and PR** — One endpoint per PR.
 
 ## Development Workflow
 
-When picking up a beads issue, follow these steps in order. Format, lint, and unit test gates are enforced automatically by git hooks (pre-commit: format + lint, pre-push: unit tests).
+When picking up a beads issue, follow these steps in order. Format and lint gates are enforced automatically by git hooks (pre-commit: format + lint).
 
 ### 1. Claim work
 
@@ -153,7 +148,7 @@ git checkout -b <id>/<short-description>    # e.g. nakedapi-5/xai-search
 
 ### 2. Implement
 
-Code the feature/fix following the provider pattern. Add types, factory method, unit tests, and integration test. One endpoint per PR.
+Code the feature/fix following the provider pattern. Add types, factory method, and integration test. One endpoint per PR.
 
 ### 3. Record integration test fixtures
 
@@ -180,7 +175,7 @@ Recordings are committed alongside source code. The CI harness-report job posts 
 Three jobs run on the PR:
 
 - **build** — compile + verify artifacts
-- **test** — lint + unit tests + integration replay
+- **test** — lint + integration tests (Polly.js replay)
 - **harness-report** — posts a visual summary with embedded prompts, input media, and output results as a PR comment + uploads interactive HTML viewer as artifact
 
 ### 6. After merge

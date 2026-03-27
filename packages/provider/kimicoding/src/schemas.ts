@@ -32,7 +32,11 @@ export const messagesSchema: PayloadSchema = {
       description: "Maximum tokens to generate",
     },
     system: { type: "string", description: "System prompt" },
-    temperature: { type: "number", description: "Sampling temperature 0-1" },
+    temperature: {
+      type: "number",
+      description:
+        "Sampling temperature (k2p5: fixed 0.6 non-thinking / 1.0 thinking, user value ignored)",
+    },
     top_p: { type: "number", description: "Nucleus sampling threshold" },
     stop_sequences: {
       type: "array",

@@ -71,8 +71,7 @@ const kimicoding = createKimicoding({ apiKey: "your-api-key" });
 const request = {
   model: "k2p5",
   messages: [{ role: "user", content: "Hello!" }],
-  temperature: 0.7,
-  maxTokens: 8192,
+  max_tokens: 8192,
 };
 
 for await (const chunk of kimicoding.coding.v1.messages.stream(request)) {
@@ -187,6 +186,8 @@ KIMI_CODING_API_KEY=your-api-key
 ## Supported Models
 
 - `k2p5` (262,144 context window, 32,768 max output tokens)
+  - Temperature is fixed by the API: 0.6 (non-thinking) / 1.0 (thinking mode). User-supplied values are accepted but ignored.
+  - Replaces discontinued `kimi-latest` (removed Jan 28, 2026)
 
 ## API Format
 

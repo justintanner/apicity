@@ -685,21 +685,19 @@ describe("openai provider", () => {
     });
 
     it("should send correct request body to API", async () => {
-      const mockFetch = vi
-        .fn()
-        .mockResolvedValue(
-          new Response(
-            JSON.stringify({
-              id: "resp_test",
-              object: "response",
-              created_at: 0,
-              status: "completed",
-              model: "gpt-4o",
-              output: [],
-            }),
-            { status: 200 }
-          )
-        );
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "resp_test",
+            object: "response",
+            created_at: 0,
+            status: "completed",
+            model: "gpt-4o",
+            output: [],
+          }),
+          { status: 200 }
+        )
+      );
 
       const provider = openai({ apiKey: "test-key", fetch: mockFetch });
       await provider.v1.responses({

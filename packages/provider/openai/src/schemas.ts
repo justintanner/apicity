@@ -95,6 +95,78 @@ export const embeddingsSchema: PayloadSchema = {
   },
 };
 
+export const imageEditsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/images/edits",
+  contentType: "multipart/form-data",
+  fields: {
+    image: {
+      type: "object",
+      required: true,
+      description: "Source image(s) to edit (Blob or Blob[])",
+    },
+    prompt: {
+      type: "string",
+      required: true,
+      description: "Text description of the desired edit",
+    },
+    mask: {
+      type: "object",
+      description: "Mask image indicating edit regions (Blob)",
+    },
+    model: {
+      type: "string",
+      description: "Model ID (e.g. gpt-image-1)",
+    },
+    n: { type: "number", description: "Number of images to generate (1-10)" },
+    size: {
+      type: "string",
+      description: "Output dimensions",
+      enum: [
+        "256x256",
+        "512x512",
+        "1024x1024",
+        "1536x1024",
+        "1024x1536",
+        "auto",
+      ],
+    },
+    quality: {
+      type: "string",
+      description: "Image quality (GPT models only)",
+      enum: ["standard", "low", "medium", "high", "auto"],
+    },
+    output_format: {
+      type: "string",
+      description: "Output image format (GPT models only)",
+      enum: ["png", "jpeg", "webp"],
+    },
+    response_format: {
+      type: "string",
+      description: "Response format (DALL-E 2 only)",
+      enum: ["url", "b64_json"],
+    },
+    background: {
+      type: "string",
+      description: "Background transparency (GPT models only)",
+      enum: ["transparent", "opaque", "auto"],
+    },
+    input_fidelity: {
+      type: "string",
+      description: "Input style fidelity (GPT models only)",
+      enum: ["high", "low"],
+    },
+    output_compression: {
+      type: "number",
+      description: "Compression level 0-100 (GPT models only)",
+    },
+    user: {
+      type: "string",
+      description: "End-user identifier for abuse monitoring",
+    },
+  },
+};
+
 export const audioTranscriptionsSchema: PayloadSchema = {
   method: "POST",
   path: "/audio/transcriptions",

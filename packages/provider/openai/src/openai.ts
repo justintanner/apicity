@@ -6,6 +6,8 @@ import {
   OpenAiTranscribeResponse,
   OpenAiEmbeddingRequest,
   OpenAiEmbeddingResponse,
+  OpenAiImageEditRequest,
+  OpenAiImageEditResponse,
   OpenAiProvider,
   OpenAiError,
 } from "./types";
@@ -13,6 +15,7 @@ import type { ValidationResult } from "./types";
 import {
   chatCompletionsSchema,
   embeddingsSchema,
+  imageEditsSchema,
   audioTranscriptionsSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
@@ -122,6 +125,52 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           },
         }
       ),
+      images: {
+        edits: Object.assign(
+          async function edits(
+            req: OpenAiImageEditRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiImageEditResponse> {
+            const form = new FormData();
+            if (Array.isArray(req.image)) {
+              for (const img of req.image) {
+                form.append("image", img);
+              }
+            } else {
+              form.append("image", req.image);
+            }
+            form.append("prompt", req.prompt);
+            if (req.mask !== undefined) form.append("mask", req.mask);
+            if (req.model !== undefined) form.append("model", req.model);
+            if (req.n !== undefined) form.append("n", String(req.n));
+            if (req.size !== undefined) form.append("size", req.size);
+            if (req.quality !== undefined) form.append("quality", req.quality);
+            if (req.output_format !== undefined)
+              form.append("output_format", req.output_format);
+            if (req.response_format !== undefined)
+              form.append("response_format", req.response_format);
+            if (req.background !== undefined)
+              form.append("background", req.background);
+            if (req.input_fidelity !== undefined)
+              form.append("input_fidelity", req.input_fidelity);
+            if (req.output_compression !== undefined)
+              form.append("output_compression", String(req.output_compression));
+            if (req.user !== undefined) form.append("user", req.user);
+
+            return await makeRequest<OpenAiImageEditResponse>(
+              "/images/edits",
+              { headers: {}, body: form },
+              signal
+            );
+          },
+          {
+            payloadSchema: imageEditsSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, imageEditsSchema);
+            },
+          }
+        ),
+      },
       audio: {
         transcriptions: Object.assign(
           async function transcriptions(

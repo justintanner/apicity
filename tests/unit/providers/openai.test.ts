@@ -306,6 +306,69 @@ describe("openai provider", () => {
       expect(result.errors).toContain("model is required");
     });
 
+    it("v1.images.edits.payloadSchema exists with correct method and path", () => {
+      const schema = realProvider.v1.images.edits.payloadSchema;
+      expect(schema).toBeDefined();
+      expect(schema.method).toBe("POST");
+      expect(schema.path).toBe("/images/edits");
+      expect(schema.contentType).toBe("multipart/form-data");
+    });
+
+    it("v1.images.edits.validatePayload accepts valid payload", () => {
+      const result = realProvider.v1.images.edits.validatePayload({
+        image: new Blob(["fake-image"], { type: "image/png" }),
+        prompt: "Add a hat to the cat",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.images.edits.validatePayload rejects missing required fields", () => {
+      const result = realProvider.v1.images.edits.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("image is required");
+      expect(result.errors).toContain("prompt is required");
+    });
+
+    it("v1.images.edits.validatePayload rejects invalid size enum", () => {
+      const result = realProvider.v1.images.edits.validatePayload({
+        image: new Blob(["fake"], { type: "image/png" }),
+        prompt: "Edit this",
+        size: "999x999",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("size must be one of");
+    });
+
+    it("v1.images.edits.validatePayload rejects invalid quality enum", () => {
+      const result = realProvider.v1.images.edits.validatePayload({
+        image: new Blob(["fake"], { type: "image/png" }),
+        prompt: "Edit this",
+        quality: "ultra",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("quality must be one of");
+    });
+
+    it("v1.images.edits.validatePayload accepts all optional fields", () => {
+      const result = realProvider.v1.images.edits.validatePayload({
+        image: new Blob(["fake"], { type: "image/png" }),
+        prompt: "Edit this",
+        mask: new Blob(["mask"], { type: "image/png" }),
+        model: "gpt-image-1",
+        n: 2,
+        size: "1024x1024",
+        quality: "high",
+        output_format: "png",
+        background: "transparent",
+        input_fidelity: "high",
+        output_compression: 80,
+        user: "user-123",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
     it("v1.embeddings.payloadSchema exists with correct method and path", () => {
       const schema = realProvider.v1.embeddings.payloadSchema;
       expect(schema).toBeDefined();

@@ -137,6 +137,60 @@ export interface OpenAiEmbeddingResponse {
   usage: OpenAiEmbeddingUsage;
 }
 
+// Image edit request
+export interface OpenAiImageEditRequest {
+  image: Blob | Blob[];
+  prompt: string;
+  mask?: Blob;
+  model?: string;
+  n?: number;
+  size?:
+    | "256x256"
+    | "512x512"
+    | "1024x1024"
+    | "1536x1024"
+    | "1024x1536"
+    | "auto";
+  quality?: "standard" | "low" | "medium" | "high" | "auto";
+  output_format?: "png" | "jpeg" | "webp";
+  response_format?: "url" | "b64_json";
+  background?: "transparent" | "opaque" | "auto";
+  input_fidelity?: "high" | "low";
+  output_compression?: number;
+  user?: string;
+}
+
+// Image edit response
+export interface OpenAiImageData {
+  b64_json?: string | null;
+  revised_prompt?: string | null;
+  url?: string | null;
+}
+
+export interface OpenAiImageEditUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  input_tokens_details?: {
+    image_tokens: number;
+    text_tokens: number;
+  };
+  output_tokens_details?: {
+    image_tokens: number;
+    text_tokens: number;
+  };
+}
+
+export interface OpenAiImageEditResponse {
+  created: number;
+  data?: OpenAiImageData[];
+  background?: "transparent" | "opaque" | null;
+  output_format?: "png" | "webp" | "jpeg" | null;
+  quality?: "low" | "medium" | "high" | null;
+  size?: string | null;
+  usage?: OpenAiImageEditUsage | null;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -192,10 +246,24 @@ interface OpenAiAudioNamespace {
   transcriptions: OpenAiAudioTranscriptionsMethod;
 }
 
+interface OpenAiImagesEditsMethod {
+  (
+    req: OpenAiImageEditRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiImageEditResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface OpenAiImagesNamespace {
+  edits: OpenAiImagesEditsMethod;
+}
+
 interface OpenAiV1Namespace {
   chat: OpenAiChatNamespace;
   audio: OpenAiAudioNamespace;
   embeddings: OpenAiEmbeddingsMethod;
+  images: OpenAiImagesNamespace;
 }
 
 // Provider interface

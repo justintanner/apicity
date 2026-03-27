@@ -118,10 +118,23 @@ Hooks auto-inject `bd prime` at session start and before compaction.
 
 Quick reference: `bd ready` (find work), `bd create "Title"` (new task), `bd close <id>` (complete).
 
-For new endpoints, use the workflow formula:
-```bash
-bd mol pour add-endpoint --var provider=kie --var endpoint=claude.v1.messages
-```
+### Adding a New Endpoint
+
+When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
+
+1. **Research** — Fetch the upstream API docs for the endpoint. Study an existing
+   endpoint in the same provider for patterns (types, schema, factory wiring, tests).
+2. **Types** — Add request/response interfaces to `types.ts` (PascalCase).
+   Update the provider interface. Export from `index.ts`.
+3. **Schema** — Add PayloadSchema to `schemas.ts`. Add validatePayload via
+   Object.assign on the endpoint function.
+4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`.
+   Use Object.assign for callable namespaces.
+5. **Unit tests** — Add to `tests/unit/providers/<provider>.test.ts`.
+   Cover success path, error handling, payload validation.
+6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
+   using setupPolly/teardownPolly. Record fixtures, verify replay.
+7. **Commit and PR** — One endpoint per PR.
 
 ## Development Workflow
 

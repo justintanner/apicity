@@ -4,7 +4,7 @@
 [![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
-xAI (Grok) provider — chat completions, image/video generation and editing, file management, batches, collections, document search, and model listing. Completely standalone with zero external dependencies.
+xAI (Grok) provider — responses API, chat completions, image/video generation and editing, file management, batches, collections, document search, and model listing. Completely standalone with zero external dependencies.
 
 ## Installation
 
@@ -30,6 +30,14 @@ const response = await xai.v1.chat.completions({
 ## Endpoints
 
 Base URL: `https://api.x.ai/v1`
+
+### Responses
+
+| URL                       | Method Signature                |
+| ------------------------- | ------------------------------- |
+| `POST /responses`         | `xai.v1.responses()`            |
+| `GET /responses/{id}`     | `xai.v1.responses.get(id)`      |
+| `DELETE /responses/{id}`  | `xai.v1.responses.delete(id)`   |
 
 ### Chat
 
@@ -105,6 +113,30 @@ Base URL: `https://api.x.ai/v1`
 | `POST /documents/search`                      | `xai.v1.documents.search()`                           |
 
 ## Usage Examples
+
+### Responses API
+
+```typescript
+// Create a response
+const response = await xai.v1.responses({
+  model: "grok-4-fast",
+  input: "What is the capital of France?",
+});
+
+// With web search
+const searched = await xai.v1.responses({
+  model: "grok-4-fast",
+  input: "Latest TypeScript news",
+  tools: [{ type: "web_search" }],
+  search_parameters: { mode: "auto" },
+});
+
+// Retrieve a stored response
+const saved = await xai.v1.responses.get(response.id);
+
+// Delete a stored response
+await xai.v1.responses.delete(response.id);
+```
 
 ### Image Generation
 

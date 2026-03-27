@@ -407,6 +407,117 @@ export const documentSearchSchema: PayloadSchema = {
   },
 };
 
+export const responsesSchema: PayloadSchema = {
+  method: "POST",
+  path: "/responses",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID (e.g. grok-4-fast)",
+    },
+    input: {
+      type: "string",
+      required: true,
+      description: "Input text or array of input items",
+    },
+    instructions: {
+      type: "string",
+      description: "System instructions",
+    },
+    previous_response_id: {
+      type: "string",
+      description: "ID of previous response for multi-turn",
+    },
+    max_output_tokens: {
+      type: "number",
+      description: "Maximum output tokens (includes reasoning tokens)",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature (0-2)",
+    },
+    top_p: {
+      type: "number",
+      description: "Nucleus sampling threshold",
+    },
+    tools: {
+      type: "array",
+      description: "Tools available to the model (max 128)",
+      items: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            required: true,
+            enum: [
+              "function",
+              "web_search",
+              "web_search_preview",
+              "file_search",
+            ],
+          },
+        },
+      },
+    },
+    tool_choice: {
+      type: "string",
+      description: "Tool choice strategy",
+    },
+    store: {
+      type: "boolean",
+      description: "Whether to persist the response (30 days)",
+    },
+    stream: {
+      type: "boolean",
+      description: "Enable SSE streaming",
+    },
+    search_parameters: {
+      type: "object",
+      description: "Live web/X search configuration",
+      properties: {
+        mode: {
+          type: "string",
+          enum: ["off", "on", "auto"],
+          description: "Search mode",
+        },
+        max_search_results: {
+          type: "number",
+          description: "Maximum search results",
+        },
+        return_citations: {
+          type: "boolean",
+          description: "Include citations in response",
+        },
+      },
+    },
+    text: {
+      type: "object",
+      description: "Output text format configuration",
+    },
+    reasoning: {
+      type: "object",
+      description: "Reasoning configuration",
+      properties: {
+        effort: {
+          type: "string",
+          enum: ["low", "medium", "high"],
+        },
+      },
+    },
+    prompt_cache_key: {
+      type: "string",
+      description: "Routing key for conversation caching",
+    },
+    parallel_tool_calls: {
+      type: "boolean",
+      description: "Allow parallel tool calls",
+    },
+    user: { type: "string", description: "End user identifier" },
+  },
+};
+
 export const videoExtensionsSchema: PayloadSchema = {
   method: "POST",
   path: "/videos/extensions",

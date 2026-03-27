@@ -548,6 +548,232 @@ export interface XaiDocumentSearchResponse {
   matches: XaiDocumentSearchMatch[];
 }
 
+// Responses API types (POST /v1/responses, GET /v1/responses/{id})
+
+export interface XaiResponseInputMessage {
+  role: "user" | "assistant" | "system" | "developer";
+  content: string | XaiResponseInputContent[];
+}
+
+export interface XaiResponseInputTextContent {
+  type: "input_text";
+  text: string;
+}
+
+export interface XaiResponseInputImageContent {
+  type: "input_image";
+  image_url?: string;
+  file_id?: string;
+  detail?: "auto" | "low" | "high";
+}
+
+export type XaiResponseInputContent =
+  | XaiResponseInputTextContent
+  | XaiResponseInputImageContent;
+
+export interface XaiResponseFunctionCallOutput {
+  type: "function_call_output";
+  call_id: string;
+  output: string;
+}
+
+export interface XaiResponseItemReference {
+  type: "item_reference";
+  id: string;
+}
+
+export type XaiResponseInputItem =
+  | XaiResponseInputMessage
+  | XaiResponseFunctionCallOutput
+  | XaiResponseItemReference;
+
+export interface XaiResponseFunctionTool {
+  type: "function";
+  name: string;
+  description?: string;
+  parameters?: Record<string, unknown>;
+  strict?: boolean;
+}
+
+export interface XaiResponseWebSearchTool {
+  type: "web_search" | "web_search_preview";
+  filters?: {
+    allowed_domains?: string[];
+    excluded_domains?: string[];
+  };
+  search_context_size?: "low" | "medium" | "high";
+  user_location?: {
+    type: "approximate";
+    city?: string;
+    state?: string;
+    country?: string;
+    timezone?: string;
+  };
+}
+
+export interface XaiResponseFileSearchTool {
+  type: "file_search";
+  vector_store_ids: string[];
+  max_num_results?: number;
+}
+
+export type XaiResponseTool =
+  | XaiResponseFunctionTool
+  | XaiResponseWebSearchTool
+  | XaiResponseFileSearchTool;
+
+export interface XaiResponseTextFormat {
+  format:
+    | { type: "text" }
+    | { type: "json_object" }
+    | {
+        type: "json_schema";
+        name: string;
+        schema: Record<string, unknown>;
+        description?: string;
+        strict?: boolean;
+      };
+}
+
+export interface XaiResponseReasoning {
+  effort?: "low" | "medium" | "high";
+  summary?: "auto" | "concise" | "detailed";
+}
+
+export interface XaiResponseSearchParameters {
+  mode?: "off" | "on" | "auto";
+  max_search_results?: number;
+  return_citations?: boolean;
+  sources?: string[];
+  from_date?: string;
+  to_date?: string;
+}
+
+export interface XaiResponseRequest {
+  model: string;
+  input: string | XaiResponseInputItem[];
+  instructions?: string;
+  previous_response_id?: string;
+  max_output_tokens?: number;
+  temperature?: number;
+  top_p?: number;
+  tools?: XaiResponseTool[];
+  tool_choice?:
+    | "auto"
+    | "none"
+    | "required"
+    | { type: "function"; name: string };
+  store?: boolean;
+  stream?: boolean;
+  metadata?: Record<string, string>;
+  text?: XaiResponseTextFormat;
+  reasoning?: XaiResponseReasoning;
+  search_parameters?: XaiResponseSearchParameters;
+  prompt_cache_key?: string;
+  parallel_tool_calls?: boolean;
+  include?: string[];
+  user?: string;
+}
+
+// Response output types
+export interface XaiResponseAnnotation {
+  type: "url_citation" | "file_citation" | "file_path";
+  start_index: number;
+  end_index: number;
+  url?: string;
+  title?: string;
+  file_id?: string;
+  filename?: string;
+}
+
+export interface XaiResponseOutputText {
+  type: "output_text";
+  text: string;
+  annotations: XaiResponseAnnotation[];
+}
+
+export interface XaiResponseRefusal {
+  type: "refusal";
+  refusal: string;
+}
+
+export type XaiResponseOutputContent =
+  | XaiResponseOutputText
+  | XaiResponseRefusal;
+
+export interface XaiResponseOutputMessage {
+  type: "message";
+  id: string;
+  role: "assistant";
+  status: "completed" | "in_progress" | "incomplete";
+  content: XaiResponseOutputContent[];
+}
+
+export interface XaiResponseFunctionCallItem {
+  type: "function_call";
+  id: string;
+  call_id: string;
+  name: string;
+  arguments: string;
+  status: "completed" | "in_progress" | "incomplete";
+}
+
+export interface XaiResponseWebSearchCallItem {
+  type: "web_search_call";
+  id: string;
+  status: "completed";
+}
+
+export interface XaiResponseFileSearchCallItem {
+  type: "file_search_call";
+  id: string;
+  status: "completed";
+  results?: { file_id: string; text: string; score: number }[];
+}
+
+export type XaiResponseOutputItem =
+  | XaiResponseOutputMessage
+  | XaiResponseFunctionCallItem
+  | XaiResponseWebSearchCallItem
+  | XaiResponseFileSearchCallItem;
+
+export interface XaiResponseUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  input_tokens_details?: { cached_tokens: number };
+  output_tokens_details?: { reasoning_tokens: number };
+}
+
+export interface XaiResponseResponse {
+  id: string;
+  object: "response";
+  created_at: number;
+  completed_at: number | null;
+  status: "completed" | "in_progress" | "incomplete";
+  model: string;
+  output: XaiResponseOutputItem[];
+  instructions: string | null;
+  previous_response_id: string | null;
+  temperature: number | null;
+  top_p: number | null;
+  max_output_tokens: number | null;
+  store: boolean;
+  tools: XaiResponseTool[];
+  reasoning: XaiResponseReasoning | null;
+  text: XaiResponseTextFormat;
+  usage: XaiResponseUsage;
+  error: { code: string; message: string } | null;
+  incomplete_details: { reason: string } | null;
+  metadata: Record<string, string>;
+}
+
+export interface XaiResponseDeleteResponse {
+  id: string;
+  object: "response";
+  deleted: boolean;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -793,11 +1019,20 @@ interface XaiDocumentsNamespace {
   search: XaiDocumentSearchMethod;
 }
 
+interface XaiResponsesMethod {
+  (req: XaiResponseRequest, signal?: AbortSignal): Promise<XaiResponseResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+  get(id: string, signal?: AbortSignal): Promise<XaiResponseResponse>;
+  delete(id: string, signal?: AbortSignal): Promise<XaiResponseDeleteResponse>;
+}
+
 interface XaiV1Namespace {
   chat: XaiChatNamespace;
   images: XaiImagesNamespace;
   videos: XaiVideosNamespace;
   files: XaiFilesNamespace;
+  responses: XaiResponsesMethod;
   batches: XaiBatchesNamespace;
   collections: XaiCollectionsNamespace;
   documents: XaiDocumentsNamespace;

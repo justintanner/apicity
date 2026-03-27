@@ -1,6 +1,6 @@
 // Tests for the fal provider
 import { describe, it, expect, vi } from "vitest";
-import { fal } from "../../../packages/provider/fal/src";
+import { fal, FalError } from "../../../packages/provider/fal/src";
 
 describe("fal provider", () => {
   interface FalModel {
@@ -489,6 +489,259 @@ describe("fal provider", () => {
       expect(result.errors.length).toBeGreaterThan(0);
       expect(result.errors.join(" ")).toContain("estimate_type");
       expect(result.errors.join(" ")).toContain("endpoints");
+    });
+  });
+
+  describe("real factory", () => {
+    it("should list models with correct URL and auth header", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ models: [], next_cursor: null, has_more: false }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key-123", fetch: mockFetch });
+      const result = await provider.v1.models();
+
+      expect(result.models).toEqual([]);
+      expect(mockFetch).toHaveBeenCalledOnce();
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.fal.ai/v1/models");
+      expect(init.method).toBe("GET");
+      expect((init.headers as Record<string, string>).Authorization).toBe(
+        "Key test-key-123"
+      );
+    });
+
+    it("should pass query params for models search", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ models: [], next_cursor: null, has_more: false }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.models({ q: "flux", limit: 5 });
+
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("q=flux");
+      expect(url).toContain("limit=5");
+    });
+
+    it("should fetch pricing with endpoint_id query param", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            prices: [
+              {
+                endpoint_id: "fal-ai/flux/dev",
+                unit_price: 0.025,
+                unit: "image",
+                currency: "USD",
+              },
+            ],
+            next_cursor: null,
+            has_more: false,
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.models.pricing({
+        endpoint_id: "fal-ai/flux/dev",
+      });
+
+      expect(result.prices).toHaveLength(1);
+      expect(result.prices[0].unit_price).toBe(0.025);
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("/models/pricing");
+      expect(url).toContain("endpoint_id=fal-ai");
+    });
+
+    it("should POST pricing estimate with JSON body", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            estimate_type: "unit_price",
+            total_cost: 1.25,
+            currency: "USD",
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.models.pricing.estimate({
+        estimate_type: "unit_price",
+        endpoints: { "fal-ai/flux/dev": { unit_quantity: 50 } },
+      });
+
+      expect(result.total_cost).toBe(1.25);
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.fal.ai/v1/models/pricing/estimate");
+      expect(init.method).toBe("POST");
+      const body = JSON.parse(init.body as string);
+      expect(body.estimate_type).toBe("unit_price");
+    });
+
+    it("should fetch usage data", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            next_cursor: null,
+            has_more: false,
+            time_series: [],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.models.usage({
+        endpoint_id: "fal-ai/flux/dev",
+        start: "2025-01-01",
+      });
+
+      expect(result.has_more).toBe(false);
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("/models/usage");
+      expect(url).toContain("endpoint_id=fal-ai");
+    });
+
+    it("should fetch analytics data", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            next_cursor: null,
+            has_more: false,
+            time_series: [],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.models.analytics({
+        endpoint_id: "fal-ai/flux/dev",
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("/models/analytics");
+    });
+
+    it("should fetch requests by endpoint", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ next_cursor: null, has_more: false, items: [] }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.models.requests.byEndpoint({
+        endpoint_id: "fal-ai/flux/dev",
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("/models/requests/by-endpoint");
+      expect(url).toContain("endpoint_id=fal-ai");
+    });
+
+    it("should DELETE payloads with correct URL and idempotency header", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ cdn_delete_results: [] }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+      await provider.v1.models.requests.payloads({
+        request_id: "req-123",
+        idempotency_key: "idem-abc",
+      });
+
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe(
+        "https://api.fal.ai/v1/models/requests/req-123/payloads"
+      );
+      expect(init.method).toBe("DELETE");
+      expect(
+        (init.headers as Record<string, string>)["Idempotency-Key"]
+      ).toBe("idem-abc");
+    });
+
+    it("should use custom baseURL", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ models: [], next_cursor: null, has_more: false }),
+          { status: 200 }
+        )
+      );
+      const provider = fal({
+        apiKey: "test-key",
+        baseURL: "https://custom.fal.ai/v1",
+        fetch: mockFetch,
+      });
+      await provider.v1.models();
+
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://custom.fal.ai/v1/models");
+    });
+  });
+
+  describe("error handling (real factory)", () => {
+    it("should throw FalError with parsed error on API error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: {
+              type: "authentication_error",
+              message: "Invalid API key",
+              request_id: "req-xyz",
+            },
+          }),
+          { status: 401 }
+        )
+      );
+      const provider = fal({ apiKey: "bad-key", fetch: mockFetch });
+
+      try {
+        await provider.v1.models();
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(FalError);
+        expect((err as FalError).status).toBe(401);
+        expect((err as FalError).message).toContain("Invalid API key");
+        expect((err as FalError).type).toBe("authentication_error");
+        expect((err as FalError).request_id).toBe("req-xyz");
+      }
+    });
+
+    it("should throw FalError with generic message on non-structured error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response("Internal Server Error", { status: 500 })
+      );
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+
+      try {
+        await provider.v1.models();
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(FalError);
+        expect((err as FalError).status).toBe(500);
+        expect((err as FalError).type).toBe("server_error");
+      }
+    });
+
+    it("should throw FalError on network failure", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError("fetch failed"));
+      const provider = fal({ apiKey: "test-key", fetch: mockFetch });
+
+      try {
+        await provider.v1.models();
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(FalError);
+        expect((err as FalError).message).toContain("Fal request failed");
+      }
     });
   });
 });

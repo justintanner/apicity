@@ -1,6 +1,6 @@
 // Tests for the openai provider
 import { describe, it, expect, vi } from "vitest";
-import { openai } from "../../../packages/provider/openai/src";
+import { openai, OpenAiError } from "../../../packages/provider/openai/src";
 
 describe("openai provider", () => {
   interface OpenAiMessage {
@@ -1001,6 +1001,304 @@ describe("openai provider", () => {
       expect(result.id).toBe("resp_noopts");
       const [url] = mockFetch.mock.calls[0];
       expect(url).not.toContain("?");
+    });
+  });
+
+  describe("embeddings endpoint", () => {
+    it("should send correct URL and JSON body", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            object: "list",
+            data: [
+              { object: "embedding", index: 0, embedding: [0.1, 0.2, 0.3] },
+            ],
+            model: "text-embedding-3-small",
+            usage: { prompt_tokens: 5, total_tokens: 5 },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.embeddings({
+        model: "text-embedding-3-small",
+        input: "Hello world",
+      });
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].embedding).toEqual([0.1, 0.2, 0.3]);
+      expect(result.model).toBe("text-embedding-3-small");
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.openai.com/v1/embeddings");
+      expect(init.method).toBe("POST");
+      const body = JSON.parse(init.body as string);
+      expect(body.model).toBe("text-embedding-3-small");
+      expect(body.input).toBe("Hello world");
+    });
+
+    it("should support array input", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            object: "list",
+            data: [
+              { object: "embedding", index: 0, embedding: [0.1] },
+              { object: "embedding", index: 1, embedding: [0.2] },
+            ],
+            model: "text-embedding-3-small",
+            usage: { prompt_tokens: 10, total_tokens: 10 },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.embeddings({
+        model: "text-embedding-3-small",
+        input: ["Hello", "World"],
+      });
+
+      expect(result.data).toHaveLength(2);
+    });
+  });
+
+  describe("images.generations endpoint", () => {
+    it("should send correct URL and JSON body", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            created: 1700000000,
+            data: [{ url: "https://oaidalleapiprodscus.blob.core.windows.net/img.png" }],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const result = await provider.v1.images.generations({
+        prompt: "A white cat",
+        model: "gpt-image-1",
+        n: 1,
+        size: "1024x1024",
+      });
+
+      expect(result.data).toHaveLength(1);
+      expect(result.data[0].url).toContain("blob.core.windows.net");
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.openai.com/v1/images/generations");
+      expect(init.method).toBe("POST");
+      const body = JSON.parse(init.body as string);
+      expect(body.prompt).toBe("A white cat");
+    });
+  });
+
+  describe("images.edits endpoint", () => {
+    it("should send FormData with image and prompt", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            created: 1700000000,
+            data: [{ url: "https://example.com/edited.png" }],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const imageBlob = new Blob(["fake-image"], { type: "image/png" });
+      const result = await provider.v1.images.edits({
+        image: imageBlob,
+        prompt: "Add a hat",
+        model: "gpt-image-1",
+      });
+
+      expect(result.data).toHaveLength(1);
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.openai.com/v1/images/edits");
+      expect(init.method).toBe("POST");
+      expect(init.body).toBeInstanceOf(FormData);
+      const form = init.body as FormData;
+      expect(form.get("prompt")).toBe("Add a hat");
+      expect(form.get("model")).toBe("gpt-image-1");
+    });
+
+    it("should support multiple images as array", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ created: 1700000000, data: [{ url: "https://example.com/out.png" }] }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const img1 = new Blob(["img1"], { type: "image/png" });
+      const img2 = new Blob(["img2"], { type: "image/png" });
+      await provider.v1.images.edits({
+        image: [img1, img2],
+        prompt: "Merge these",
+      });
+
+      const form = mockFetch.mock.calls[0][1].body as FormData;
+      expect(form.getAll("image")).toHaveLength(2);
+    });
+  });
+
+  describe("audio.transcriptions endpoint", () => {
+    it("should send FormData with file and model", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ text: "Hello, how are you?" }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const audioBlob = new Blob(["fake-audio"], { type: "audio/mp3" });
+      const result = await provider.v1.audio.transcriptions({
+        file: audioBlob,
+        model: "gpt-4o-transcribe",
+      });
+
+      expect(result.text).toBe("Hello, how are you?");
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.openai.com/v1/audio/transcriptions");
+      expect(init.method).toBe("POST");
+      const form = init.body as FormData;
+      expect(form.get("model")).toBe("gpt-4o-transcribe");
+    });
+
+    it("should pass optional params (language, prompt, temperature)", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ text: "Bonjour" }), { status: 200 })
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const audioBlob = new Blob(["audio"], { type: "audio/wav" });
+      await provider.v1.audio.transcriptions({
+        file: audioBlob,
+        model: "gpt-4o-transcribe",
+        language: "fr",
+        prompt: "French audio",
+        temperature: 0.2,
+        response_format: "json",
+      });
+
+      const form = mockFetch.mock.calls[0][1].body as FormData;
+      expect(form.get("language")).toBe("fr");
+      expect(form.get("prompt")).toBe("French audio");
+      expect(form.get("temperature")).toBe("0.2");
+      expect(form.get("response_format")).toBe("json");
+    });
+  });
+
+  describe("audio.translations endpoint", () => {
+    it("should send FormData with file and model", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ text: "Hello in English" }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const audioBlob = new Blob(["audio"], { type: "audio/mp3" });
+      const result = await provider.v1.audio.translations({
+        file: audioBlob,
+        model: "whisper-1",
+      });
+
+      expect(result.text).toBe("Hello in English");
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.openai.com/v1/audio/translations");
+      expect(init.method).toBe("POST");
+      const form = init.body as FormData;
+      expect(form.get("model")).toBe("whisper-1");
+    });
+
+    it("should pass optional prompt and temperature", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ text: "translated" }), { status: 200 })
+      );
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+      const audioBlob = new Blob(["audio"], { type: "audio/wav" });
+      await provider.v1.audio.translations({
+        file: audioBlob,
+        model: "whisper-1",
+        prompt: "context hint",
+        temperature: 0.5,
+      });
+
+      const form = mockFetch.mock.calls[0][1].body as FormData;
+      expect(form.get("prompt")).toBe("context hint");
+      expect(form.get("temperature")).toBe("0.5");
+    });
+  });
+
+  describe("error handling", () => {
+    it("should throw OpenAiError on 4xx with parsed error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ error: { message: "Invalid API key" } }),
+          { status: 401 }
+        )
+      );
+      const provider = openai({ apiKey: "bad-key", fetch: mockFetch });
+
+      try {
+        await provider.v1.chat.completions({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: "hi" }],
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(OpenAiError);
+        expect((err as OpenAiError).status).toBe(401);
+        expect((err as OpenAiError).message).toContain("Invalid API key");
+      }
+    });
+
+    it("should throw OpenAiError on network failure", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError("fetch failed"));
+      const provider = openai({ apiKey: "test-key", fetch: mockFetch });
+
+      try {
+        await provider.v1.embeddings({
+          model: "text-embedding-3-small",
+          input: "test",
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(OpenAiError);
+        expect((err as OpenAiError).message).toContain("OpenAI request failed");
+      }
+    });
+
+    it("should use custom baseURL", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "chat-1",
+            object: "chat.completion",
+            created: 1700000000,
+            model: "gpt-4o",
+            choices: [
+              {
+                index: 0,
+                message: { role: "assistant", content: "hi" },
+                finish_reason: "stop",
+              },
+            ],
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = openai({
+        apiKey: "test-key",
+        baseURL: "https://custom.openai.com/v1",
+        fetch: mockFetch,
+      });
+      await provider.v1.chat.completions({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: "hi" }],
+      });
+
+      const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://custom.openai.com/v1/chat/completions");
     });
   });
 });

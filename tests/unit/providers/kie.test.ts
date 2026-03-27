@@ -694,4 +694,301 @@ describe("kie provider", () => {
       });
     });
   });
+
+  describe("core endpoints (real factory)", () => {
+    function mockFetchOk(body: Record<string, unknown>): typeof fetch {
+      return vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify(body), { status: 200 })
+        ) as unknown as typeof fetch;
+    }
+
+    it("should send createTask to correct URL with JSON body", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ code: 200, msg: "success", data: { taskId: "t1" } }),
+          { status: 200 }
+        )
+      );
+      const provider = kie({
+        apiKey: "sk-test",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      const result = await provider.api.v1.jobs.createTask({
+        model: "nano-banana-pro",
+        input: { prompt: "A sunset" },
+      });
+
+      expect(result.data?.taskId).toBe("t1");
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(
+        (init.headers as Record<string, string>).Authorization
+      ).toBe("Bearer sk-test");
+      const body = JSON.parse(init.body as string);
+      expect(body.model).toBe("nano-banana-pro");
+      expect(body.input.prompt).toBe("A sunset");
+    });
+
+    it("should send recordInfo GET with taskId query param", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "t1",
+              model: "nano-banana-pro",
+              state: "success",
+              progress: 100,
+            },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      const result = await provider.api.v1.jobs.recordInfo("t1");
+
+      expect(result.data?.taskId).toBe("t1");
+      expect(result.data?.state).toBe("success");
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toContain("/api/v1/jobs/recordInfo?taskId=t1");
+      expect(init.method).toBe("GET");
+    });
+
+    it("should send downloadUrl POST with correct body", async () => {
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetchOk({
+          code: 200,
+          msg: "success",
+          data: "https://cdn.kie.ai/tmp/file.mp4",
+        }),
+      });
+
+      const result = await provider.api.v1.common.downloadUrl({
+        url: "uploads/file.mp4",
+      });
+
+      expect(result.data).toBe("https://cdn.kie.ai/tmp/file.mp4");
+    });
+
+    it("should send credit GET to correct URL", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ code: 200, msg: "success", data: 42 }),
+          { status: 200 }
+        )
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      const result = await provider.api.v1.chat.credit();
+
+      expect(result.data).toBe(42);
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe("https://api.kie.ai/api/v1/chat/credit");
+      expect(init.method).toBe("GET");
+    });
+
+    it("should send fileStreamUpload FormData to upload URL", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            success: true,
+            code: 200,
+            data: { downloadUrl: "https://cdn.kie.ai/uploads/test.png" },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      const blob = new Blob(["fake-image"], { type: "image/png" });
+      const result = await provider.api.fileStreamUpload({
+        file: blob,
+        filename: "test.png",
+      });
+
+      expect(result.data?.downloadUrl).toBe(
+        "https://cdn.kie.ai/uploads/test.png"
+      );
+      const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      expect(url).toBe(
+        "https://kieai.redpandaai.co/api/file-stream-upload"
+      );
+      expect(init.method).toBe("POST");
+      expect(init.body).toBeInstanceOf(FormData);
+    });
+
+    it("should throw KieError when MIME type cannot be inferred", async () => {
+      const mockFetch = vi.fn();
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      const blob = new Blob(["data"]);
+      try {
+        await provider.api.fileStreamUpload({
+          file: blob,
+          filename: "noext",
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(KieError);
+        expect((err as KieError).status).toBe(400);
+        expect((err as KieError).message).toContain("Cannot determine MIME type");
+      }
+    });
+
+    it("should use explicit mimeType over inferred", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            success: true,
+            code: 200,
+            data: { downloadUrl: "https://cdn.kie.ai/up/f.bin" },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      const blob = new Blob(["data"]);
+      await provider.api.fileStreamUpload({
+        file: blob,
+        filename: "data.bin",
+        mimeType: "application/octet-stream",
+      });
+
+      // Should not throw — explicit mimeType provided
+      expect(mockFetch).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("core error handling (real factory)", () => {
+    it("should throw KieError on createTask HTTP error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ msg: "Unauthorized" }),
+          { status: 401 }
+        )
+      );
+      const provider = kie({
+        apiKey: "bad-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      try {
+        await provider.api.v1.jobs.createTask({
+          model: "nano-banana-pro",
+          input: { prompt: "test" },
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(KieError);
+        expect((err as KieError).status).toBe(401);
+      }
+    });
+
+    it("should throw KieError on recordInfo HTTP error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ msg: "Not found" }),
+          { status: 404 }
+        )
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      try {
+        await provider.api.v1.jobs.recordInfo("nonexistent");
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(KieError);
+        expect((err as KieError).status).toBe(404);
+      }
+    });
+
+    it("should throw KieError on credit HTTP error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({}), { status: 500 })
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      try {
+        await provider.api.v1.chat.credit();
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(KieError);
+        expect((err as KieError).status).toBe(500);
+      }
+    });
+
+    it("should throw KieError on network failure for createTask", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockRejectedValue(new TypeError("fetch failed"));
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      try {
+        await provider.api.v1.jobs.createTask({
+          model: "nano-banana-pro",
+          input: { prompt: "test" },
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(KieError);
+        expect((err as KieError).message).toContain("Failed to create task");
+      }
+    });
+
+    it("should throw KieError on upload HTTP error", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({ msg: "File too large" }),
+          { status: 413 }
+        )
+      );
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch as unknown as typeof fetch,
+      });
+
+      try {
+        await provider.api.fileStreamUpload({
+          file: new Blob(["data"]),
+          filename: "file.png",
+        });
+        expect.fail("should have thrown");
+      } catch (err) {
+        expect(err).toBeInstanceOf(KieError);
+        expect((err as KieError).status).toBe(413);
+      }
+    });
+  });
 });

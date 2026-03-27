@@ -1,0 +1,5 @@
+OPENAI_API_KEY=op://NakedAPI/OPENAI_API_KEY/api-key
+KIE_API_KEY=op://NakedAPI/KIE_API_KEY/api-key
+XAI_API_KEY=op://NakedAPI/XAI_API_KEY/api-key
+KIMI_CODING_API_KEY=op://NakedAPI/KIMI_CODING_API_KEY/api-key
+FAL_API_KEY=op://NakedAPI/FAL_API_KEY/api-key

@@ -464,5 +464,70 @@ describe("openai provider", () => {
       expect(result.valid).toBe(true);
       expect(result.errors).toHaveLength(0);
     });
+
+    it("v1.images.generations.payloadSchema exists with correct method and path", () => {
+      const schema = realProvider.v1.images.generations.payloadSchema;
+      expect(schema).toBeDefined();
+      expect(schema.method).toBe("POST");
+      expect(schema.path).toBe("/images/generations");
+      expect(schema.contentType).toBe("application/json");
+    });
+
+    it("v1.images.generations.validatePayload accepts valid payload", () => {
+      const result = realProvider.v1.images.generations.validatePayload({
+        prompt: "A cute cat sitting on a rainbow",
+        model: "gpt-image-1",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it("v1.images.generations.validatePayload rejects missing required prompt", () => {
+      const result = realProvider.v1.images.generations.validatePayload({});
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("prompt is required");
+    });
+
+    it("v1.images.generations.validatePayload rejects invalid size", () => {
+      const result = realProvider.v1.images.generations.validatePayload({
+        prompt: "A cat",
+        size: "999x999",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("size must be one of");
+    });
+
+    it("v1.images.generations.validatePayload rejects invalid quality", () => {
+      const result = realProvider.v1.images.generations.validatePayload({
+        prompt: "A cat",
+        quality: "ultra",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("quality must be one of");
+    });
+
+    it("v1.images.generations.validatePayload rejects invalid response_format", () => {
+      const result = realProvider.v1.images.generations.validatePayload({
+        prompt: "A cat",
+        response_format: "svg",
+      });
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain("response_format must be one of");
+    });
+
+    it("v1.images.generations.validatePayload accepts all optional fields", () => {
+      const result = realProvider.v1.images.generations.validatePayload({
+        prompt: "A sunset over mountains",
+        model: "dall-e-3",
+        n: 1,
+        size: "1024x1024",
+        quality: "hd",
+        response_format: "url",
+        style: "vivid",
+        user: "user-123",
+      });
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
   });
 });

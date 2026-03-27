@@ -167,6 +167,79 @@ export const imageEditsSchema: PayloadSchema = {
   },
 };
 
+export const imageGenerationsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/images/generations",
+  contentType: "application/json",
+  fields: {
+    prompt: {
+      type: "string",
+      required: true,
+      description: "Text description of the desired image(s)",
+    },
+    model: {
+      type: "string",
+      description: "Model ID (e.g. gpt-image-1, dall-e-3, dall-e-2)",
+    },
+    n: {
+      type: "number",
+      description: "Number of images to generate (1-10)",
+    },
+    size: {
+      type: "string",
+      description: "Image dimensions",
+      enum: [
+        "auto",
+        "1024x1024",
+        "1536x1024",
+        "1024x1536",
+        "256x256",
+        "512x512",
+        "1792x1024",
+        "1024x1792",
+      ],
+    },
+    quality: {
+      type: "string",
+      description: "Image quality level",
+      enum: ["auto", "low", "medium", "high", "standard", "hd"],
+    },
+    response_format: {
+      type: "string",
+      description: "Response format (dall-e models only)",
+      enum: ["url", "b64_json"],
+    },
+    style: {
+      type: "string",
+      description: "Image style (dall-e-3 only)",
+      enum: ["vivid", "natural"],
+    },
+    background: {
+      type: "string",
+      description: "Background type (GPT image models only)",
+      enum: ["transparent", "opaque", "auto"],
+    },
+    moderation: {
+      type: "string",
+      description: "Moderation level (GPT image models only)",
+      enum: ["low", "auto"],
+    },
+    output_format: {
+      type: "string",
+      description: "Output image format (GPT image models only)",
+      enum: ["png", "jpeg", "webp"],
+    },
+    output_compression: {
+      type: "number",
+      description: "Compression level 0-100 (GPT image models only)",
+    },
+    user: {
+      type: "string",
+      description: "End-user identifier for abuse monitoring",
+    },
+  },
+};
+
 export const audioTranscriptionsSchema: PayloadSchema = {
   method: "POST",
   path: "/audio/transcriptions",

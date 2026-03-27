@@ -205,6 +205,45 @@ export interface OpenAiImageEditResponse {
   usage?: OpenAiImageEditUsage | null;
 }
 
+// Image generation request
+export interface OpenAiImageGenerationRequest {
+  prompt: string;
+  model?: string;
+  n?: number;
+  size?: string;
+  quality?: string;
+  response_format?: "url" | "b64_json";
+  style?: "vivid" | "natural";
+  background?: "transparent" | "opaque" | "auto";
+  moderation?: "low" | "auto";
+  output_format?: "png" | "jpeg" | "webp";
+  output_compression?: number;
+  user?: string;
+}
+
+// Image generation response
+export interface OpenAiGeneratedImage {
+  b64_json?: string;
+  url?: string;
+  revised_prompt?: string;
+}
+
+export interface OpenAiImageGenerationUsage {
+  input_tokens: number;
+  input_tokens_details: {
+    image_tokens: number;
+    text_tokens: number;
+  };
+  output_tokens: number;
+  total_tokens: number;
+}
+
+export interface OpenAiImageGenerationResponse {
+  created: number;
+  data: OpenAiGeneratedImage[];
+  usage?: OpenAiImageGenerationUsage;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -279,8 +318,18 @@ interface OpenAiImagesEditsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface OpenAiImageGenerationsMethod {
+  (
+    req: OpenAiImageGenerationRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiImageGenerationResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface OpenAiImagesNamespace {
   edits: OpenAiImagesEditsMethod;
+  generations: OpenAiImageGenerationsMethod;
 }
 
 interface OpenAiV1Namespace {

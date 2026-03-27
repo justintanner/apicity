@@ -10,6 +10,8 @@ import {
   OpenAiEmbeddingResponse,
   OpenAiImageEditRequest,
   OpenAiImageEditResponse,
+  OpenAiImageGenerationRequest,
+  OpenAiImageGenerationResponse,
   OpenAiProvider,
   OpenAiError,
 } from "./types";
@@ -18,6 +20,7 @@ import {
   chatCompletionsSchema,
   embeddingsSchema,
   imageEditsSchema,
+  imageGenerationsSchema,
   audioTranscriptionsSchema,
   audioTranslationsSchema,
 } from "./schemas";
@@ -170,6 +173,24 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             payloadSchema: imageEditsSchema,
             validatePayload(data: unknown): ValidationResult {
               return validatePayload(data, imageEditsSchema);
+            },
+          }
+        ),
+        generations: Object.assign(
+          async function generations(
+            req: OpenAiImageGenerationRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiImageGenerationResponse> {
+            return await makeRequest<OpenAiImageGenerationResponse>(
+              "/images/generations",
+              jsonRequest(req),
+              signal
+            );
+          },
+          {
+            payloadSchema: imageGenerationsSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, imageGenerationsSchema);
             },
           }
         ),

@@ -464,6 +464,13 @@ export interface OpenAiResponseUsage {
   };
 }
 
+// Responses API delete response
+export interface OpenAiResponseDeleteResponse {
+  id: string;
+  object: "response.deleted";
+  deleted: true;
+}
+
 // Responses API response
 export interface OpenAiResponseResponse {
   id: string;
@@ -590,6 +597,11 @@ interface OpenAiResponsesGetMethod {
   ): Promise<OpenAiResponseResponse>;
 }
 
+interface OpenAiResponsesDeleteMethod {
+  (id: string, signal?: AbortSignal): Promise<OpenAiResponseDeleteResponse>;
+  payloadSchema: PayloadSchema;
+}
+
 interface OpenAiResponsesMethod {
   (
     req: OpenAiResponseRequest,
@@ -598,6 +610,7 @@ interface OpenAiResponsesMethod {
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
   get: OpenAiResponsesGetMethod;
+  del: OpenAiResponsesDeleteMethod;
 }
 
 interface OpenAiV1Namespace {

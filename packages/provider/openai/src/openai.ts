@@ -14,6 +14,7 @@ import {
   OpenAiImageGenerationResponse,
   OpenAiResponseRequest,
   OpenAiResponseResponse,
+  OpenAiResponseDeleteResponse,
   OpenAiResponseGetOptions,
   OpenAiProvider,
   OpenAiError,
@@ -27,6 +28,7 @@ import {
   audioTranscriptionsSchema,
   audioTranslationsSchema,
   responsesSchema,
+  responsesDeleteSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -126,6 +128,53 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
     try {
       const res = await doFetch(url, {
         method: "GET",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `OpenAI API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (typeof body === "object" && body !== null && "error" in body) {
+            const err = (body as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `OpenAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new OpenAiError(message, res.status, body);
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof OpenAiError) throw error;
+      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
+    }
+  }
+
+  async function makeDeleteRequest<T>(
+    path: string,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${opts.apiKey}`,
         },
@@ -293,6 +342,20 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
               signal
             );
           },
+          del: Object.assign(
+            async function del(
+              id: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiResponseDeleteResponse> {
+              return await makeDeleteRequest<OpenAiResponseDeleteResponse>(
+                `/responses/${encodeURIComponent(id)}`,
+                signal
+              );
+            },
+            {
+              payloadSchema: responsesDeleteSchema,
+            }
+          ),
         }
       ),
       audio: {

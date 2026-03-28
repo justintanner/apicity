@@ -915,75 +915,64 @@ export interface XaiRealtimeServerEventBase {
   event_id: string;
 }
 
-export interface XaiRealtimeConversationCreated
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeConversationCreated extends XaiRealtimeServerEventBase {
   type: "conversation.created";
   conversation: { id: string; object: string };
 }
 
-export interface XaiRealtimeSessionUpdated
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeSessionUpdated extends XaiRealtimeServerEventBase {
   type: "session.updated";
   session: XaiRealtimeSession;
 }
 
-export interface XaiRealtimeSpeechStarted
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeSpeechStarted extends XaiRealtimeServerEventBase {
   type: "input_audio_buffer.speech_started";
   item_id: string;
   audio_start_ms?: number;
 }
 
-export interface XaiRealtimeSpeechStopped
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeSpeechStopped extends XaiRealtimeServerEventBase {
   type: "input_audio_buffer.speech_stopped";
   item_id: string;
   audio_end_ms?: number;
 }
 
-export interface XaiRealtimeAudioBufferCommitted
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeAudioBufferCommitted extends XaiRealtimeServerEventBase {
   type: "input_audio_buffer.committed";
   previous_item_id: string;
   item_id: string;
 }
 
-export interface XaiRealtimeConversationItemAdded
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeConversationItemAdded extends XaiRealtimeServerEventBase {
   type: "conversation.item.added";
   previous_item_id: string;
   item: Record<string, unknown>;
 }
 
-export interface XaiRealtimeTranscriptionCompleted
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeTranscriptionCompleted extends XaiRealtimeServerEventBase {
   type: "conversation.item.input_audio_transcription.completed";
   item_id: string;
   transcript: string;
 }
 
-export interface XaiRealtimeResponseCreated
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeResponseCreated extends XaiRealtimeServerEventBase {
   type: "response.created";
   response: { id: string; object: string; status: string };
 }
 
-export interface XaiRealtimeResponseDone
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeResponseDone extends XaiRealtimeServerEventBase {
   type: "response.done";
   response: { id: string; object: string; status: string };
 }
 
-export interface XaiRealtimeOutputItemAdded
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeOutputItemAdded extends XaiRealtimeServerEventBase {
   type: "response.output_item.added";
   response_id: string;
   output_index: number;
   item: Record<string, unknown>;
 }
 
-export interface XaiRealtimeOutputItemDone
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeOutputItemDone extends XaiRealtimeServerEventBase {
   type: "response.output_item.done";
   response_id: string;
   output_index: number;
@@ -1005,16 +994,14 @@ export interface XaiRealtimeAudioDone extends XaiRealtimeServerEventBase {
   item_id: string;
 }
 
-export interface XaiRealtimeAudioTranscriptDelta
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeAudioTranscriptDelta extends XaiRealtimeServerEventBase {
   type: "response.output_audio_transcript.delta";
   response_id: string;
   item_id: string;
   delta: string;
 }
 
-export interface XaiRealtimeAudioTranscriptDone
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeAudioTranscriptDone extends XaiRealtimeServerEventBase {
   type: "response.output_audio_transcript.done";
   response_id: string;
   item_id: string;
@@ -1033,8 +1020,7 @@ export interface XaiRealtimeTextDone extends XaiRealtimeServerEventBase {
   item_id: string;
 }
 
-export interface XaiRealtimeFunctionCallDelta
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeFunctionCallDelta extends XaiRealtimeServerEventBase {
   type: "response.function_call_arguments.delta";
   response_id: string;
   item_id: string;
@@ -1042,8 +1028,7 @@ export interface XaiRealtimeFunctionCallDelta
   delta: string;
 }
 
-export interface XaiRealtimeFunctionCallDone
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeFunctionCallDone extends XaiRealtimeServerEventBase {
   type: "response.function_call_arguments.done";
   response_id: string;
   item_id: string;
@@ -1052,8 +1037,7 @@ export interface XaiRealtimeFunctionCallDone
   arguments: string;
 }
 
-export interface XaiRealtimeContentPartAdded
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeContentPartAdded extends XaiRealtimeServerEventBase {
   type: "response.content_part.added";
   response_id: string;
   item_id: string;
@@ -1061,8 +1045,7 @@ export interface XaiRealtimeContentPartAdded
   part: Record<string, unknown>;
 }
 
-export interface XaiRealtimeContentPartDone
-  extends XaiRealtimeServerEventBase {
+export interface XaiRealtimeContentPartDone extends XaiRealtimeServerEventBase {
   type: "response.content_part.done";
   response_id: string;
   item_id: string;

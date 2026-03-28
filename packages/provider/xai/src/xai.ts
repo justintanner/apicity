@@ -757,7 +757,9 @@ export function xai(opts: XaiOptions): XaiProvider {
         "openai-beta.realtime-v1",
       ]);
 
-      let resolveNext: ((value: IteratorResult<XaiRealtimeServerEvent>) => void) | null = null;
+      let resolveNext:
+        | ((value: IteratorResult<XaiRealtimeServerEvent>) => void)
+        | null = null;
       const eventQueue: XaiRealtimeServerEvent[] = [];
       let closed = false;
 

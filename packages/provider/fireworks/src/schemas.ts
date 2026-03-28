@@ -540,6 +540,181 @@ export const getResultSchema: PayloadSchema = {
   },
 };
 
+export const modelsListSchema: PayloadSchema = {
+  method: "GET",
+  path: "/v1/accounts/{account_id}/models",
+  contentType: "application/json",
+  fields: {
+    pageSize: {
+      type: "number",
+      description: "Maximum number of models to return (max 200)",
+    },
+    pageToken: {
+      type: "string",
+      description: "Pagination token from a previous list response",
+    },
+    filter: {
+      type: "string",
+      description: "Google AIP-160 filter expression",
+    },
+    orderBy: {
+      type: "string",
+      description: "Comma-separated fields for ordering",
+    },
+    readMask: {
+      type: "string",
+      description: 'Fields to return ("*" returns all)',
+    },
+  },
+};
+
+export const modelsCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/models",
+  contentType: "application/json",
+  fields: {
+    modelId: {
+      type: "string",
+      required: true,
+      description: "ID for the new model",
+    },
+    model: {
+      type: "object",
+      required: true,
+      description: "Model properties",
+    },
+    cluster: {
+      type: "string",
+      description: "BYOC cluster resource name",
+    },
+  },
+};
+
+export const modelsGetSchema: PayloadSchema = {
+  method: "GET",
+  path: "/v1/accounts/{account_id}/models/{model_id}",
+  contentType: "application/json",
+  fields: {
+    readMask: {
+      type: "string",
+      description: 'Fields to return ("*" returns all)',
+    },
+  },
+};
+
+export const modelsUpdateSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{account_id}/models/{model_id}",
+  contentType: "application/json",
+  fields: {
+    displayName: {
+      type: "string",
+      description: "Display name (max 64 chars)",
+    },
+    description: {
+      type: "string",
+      description: "Model description (max 1000 chars)",
+    },
+    kind: {
+      type: "string",
+      description: "Model kind",
+    },
+    public: {
+      type: "boolean",
+      description: "Whether the model is publicly accessible",
+    },
+    contextLength: {
+      type: "number",
+      description: "Context length in tokens",
+    },
+    supportsImageInput: {
+      type: "boolean",
+      description: "Whether the model supports image input",
+    },
+    supportsTools: {
+      type: "boolean",
+      description: "Whether the model supports tool use",
+    },
+  },
+};
+
+export const modelsDeleteSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/v1/accounts/{account_id}/models/{model_id}",
+  contentType: "application/json",
+  fields: {},
+};
+
+export const modelsPrepareSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/models/{model_id}:prepare",
+  contentType: "application/json",
+  fields: {
+    precision: {
+      type: "string",
+      required: true,
+      description: "Target deployment precision",
+    },
+    readMask: {
+      type: "string",
+      description: "Fields to return",
+    },
+  },
+};
+
+export const modelsGetUploadEndpointSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/models/{model_id}:getUploadEndpoint",
+  contentType: "application/json",
+  fields: {
+    filenameToSize: {
+      type: "object",
+      required: true,
+      description: "Mapping of filename to size in bytes",
+    },
+    enableResumableUpload: {
+      type: "boolean",
+      description: "Enable resumable upload",
+    },
+    readMask: {
+      type: "string",
+      description: "Fields to return",
+    },
+  },
+};
+
+export const modelsGetDownloadEndpointSchema: PayloadSchema = {
+  method: "GET",
+  path: "/v1/accounts/{account_id}/models/{model_id}:getDownloadEndpoint",
+  contentType: "application/json",
+  fields: {
+    readMask: {
+      type: "string",
+      description: "Fields to return",
+    },
+  },
+};
+
+export const modelsValidateUploadSchema: PayloadSchema = {
+  method: "GET",
+  path: "/v1/accounts/{account_id}/models/{model_id}:validateUpload",
+  contentType: "application/json",
+  fields: {
+    skipHfConfigValidation: {
+      type: "boolean",
+      description: "Skip HuggingFace config validation",
+    },
+    trustRemoteCode: {
+      type: "boolean",
+      description: "Trust remote code",
+    },
+    configOnly: {
+      type: "boolean",
+      description: "Skip tokenizer and parameter name validation",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

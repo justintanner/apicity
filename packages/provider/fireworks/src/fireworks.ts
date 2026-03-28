@@ -21,6 +21,19 @@ import {
   FireworksTranscriptionResponse,
   FireworksTranslationRequest,
   FireworksTranslationResponse,
+  FireworksListModelsRequest,
+  FireworksListModelsResponse,
+  FireworksCreateModelRequest,
+  FireworksModel,
+  FireworksGetModelRequest,
+  FireworksUpdateModelRequest,
+  FireworksPrepareModelRequest,
+  FireworksGetUploadEndpointRequest,
+  FireworksGetUploadEndpointResponse,
+  FireworksGetDownloadEndpointRequest,
+  FireworksGetDownloadEndpointResponse,
+  FireworksValidateUploadRequest,
+  FireworksValidateUploadResponse,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -36,12 +49,22 @@ import {
   getResultSchema,
   audioTranscriptionsSchema,
   audioTranslationsSchema,
+  modelsListSchema,
+  modelsCreateSchema,
+  modelsGetSchema,
+  modelsUpdateSchema,
+  modelsDeleteSchema,
+  modelsPrepareSchema,
+  modelsGetUploadEndpointSchema,
+  modelsGetDownloadEndpointSchema,
+  modelsValidateUploadSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
 
 export function fireworks(opts: FireworksOptions): FireworksProvider {
   const baseURL = opts.baseURL ?? "https://api.fireworks.ai/inference/v1";
+  const modelsBaseURL = "https://api.fireworks.ai";
   const audioBaseURL =
     opts.audioBaseURL ?? "https://audio-prod.api.fireworks.ai/v1";
   const doFetch = opts.fetch ?? fetch;
@@ -300,6 +323,80 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         body: form,
         signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Fireworks API error: ${res.status}`;
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+          if (
+            typeof resBody === "object" &&
+            resBody !== null &&
+            "error" in resBody
+          ) {
+            const err = (resBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `Fireworks API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new FireworksError(message, res.status, resBody);
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof FireworksError) throw error;
+      throw new FireworksError(`Fireworks request failed: ${error}`, 500);
+    }
+  }
+
+  async function makeModelsRequest<T>(
+    method: "GET" | "POST" | "PATCH" | "DELETE",
+    path: string,
+    body?: unknown,
+    query?: Record<string, string | number | boolean | undefined>,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    try {
+      let url = `${modelsBaseURL}${path}`;
+      if (query) {
+        const params = new URLSearchParams();
+        for (const [k, v] of Object.entries(query)) {
+          if (v !== undefined) params.append(k, String(v));
+        }
+        const qs = params.toString();
+        if (qs) url += `?${qs}`;
+      }
+
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${opts.apiKey}`,
+      };
+      if (method !== "GET" && method !== "DELETE") {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const init: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
+      if (body !== undefined && method !== "GET" && method !== "DELETE") {
+        init.body = JSON.stringify(body);
+      }
+
+      const res = await doFetch(url, init);
 
       clearTimeout(timeoutId);
 
@@ -596,6 +693,205 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             },
           }
         ),
+      },
+      accounts: {
+        models: {
+          list: Object.assign(
+            async function list(
+              accountId: string,
+              req?: FireworksListModelsRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksListModelsResponse> {
+              return await makeModelsRequest<FireworksListModelsResponse>(
+                "GET",
+                `/v1/accounts/${accountId}/models`,
+                undefined,
+                req as Record<string, string | number | boolean | undefined>,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsListSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsListSchema);
+              },
+            }
+          ),
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateModelRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksModel> {
+              return await makeModelsRequest<FireworksModel>(
+                "POST",
+                `/v1/accounts/${accountId}/models`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsCreateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsCreateSchema);
+              },
+            }
+          ),
+          get: Object.assign(
+            async function get(
+              accountId: string,
+              modelId: string,
+              req?: FireworksGetModelRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksModel> {
+              return await makeModelsRequest<FireworksModel>(
+                "GET",
+                `/v1/accounts/${accountId}/models/${modelId}`,
+                undefined,
+                req as Record<string, string | number | boolean | undefined>,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsGetSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsGetSchema);
+              },
+            }
+          ),
+          update: Object.assign(
+            async function update(
+              accountId: string,
+              modelId: string,
+              req: FireworksUpdateModelRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksModel> {
+              return await makeModelsRequest<FireworksModel>(
+                "PATCH",
+                `/v1/accounts/${accountId}/models/${modelId}`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsUpdateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsUpdateSchema);
+              },
+            }
+          ),
+          delete: Object.assign(
+            async function deleteFn(
+              accountId: string,
+              modelId: string,
+              signal?: AbortSignal
+            ): Promise<Record<string, never>> {
+              return await makeModelsRequest<Record<string, never>>(
+                "DELETE",
+                `/v1/accounts/${accountId}/models/${modelId}`,
+                undefined,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsDeleteSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsDeleteSchema);
+              },
+            }
+          ),
+          prepare: Object.assign(
+            async function prepare(
+              accountId: string,
+              modelId: string,
+              req: FireworksPrepareModelRequest,
+              signal?: AbortSignal
+            ): Promise<Record<string, never>> {
+              return await makeModelsRequest<Record<string, never>>(
+                "POST",
+                `/v1/accounts/${accountId}/models/${modelId}:prepare`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsPrepareSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsPrepareSchema);
+              },
+            }
+          ),
+          getUploadEndpoint: Object.assign(
+            async function getUploadEndpoint(
+              accountId: string,
+              modelId: string,
+              req: FireworksGetUploadEndpointRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksGetUploadEndpointResponse> {
+              return await makeModelsRequest<FireworksGetUploadEndpointResponse>(
+                "POST",
+                `/v1/accounts/${accountId}/models/${modelId}:getUploadEndpoint`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsGetUploadEndpointSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsGetUploadEndpointSchema);
+              },
+            }
+          ),
+          getDownloadEndpoint: Object.assign(
+            async function getDownloadEndpoint(
+              accountId: string,
+              modelId: string,
+              req?: FireworksGetDownloadEndpointRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksGetDownloadEndpointResponse> {
+              return await makeModelsRequest<FireworksGetDownloadEndpointResponse>(
+                "GET",
+                `/v1/accounts/${accountId}/models/${modelId}:getDownloadEndpoint`,
+                undefined,
+                req as Record<string, string | number | boolean | undefined>,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsGetDownloadEndpointSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsGetDownloadEndpointSchema);
+              },
+            }
+          ),
+          validateUpload: Object.assign(
+            async function validateUploadFn(
+              accountId: string,
+              modelId: string,
+              req?: FireworksValidateUploadRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksValidateUploadResponse> {
+              return await makeModelsRequest<FireworksValidateUploadResponse>(
+                "GET",
+                `/v1/accounts/${accountId}/models/${modelId}:validateUpload`,
+                undefined,
+                req as Record<string, string | number | boolean | undefined>,
+                signal
+              );
+            },
+            {
+              payloadSchema: modelsValidateUploadSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, modelsValidateUploadSchema);
+              },
+            }
+          ),
+        },
       },
     },
   };

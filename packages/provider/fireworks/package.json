@@ -1,0 +1,38 @@
+{
+  "name": "@nakedapi/fireworks",
+  "version": "0.1.0",
+  "description": "Fireworks AI provider for chat completions, completions, and embeddings.",
+  "license": "MIT",
+  "repository": "github:justintanner/nakedapi",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "fireworks",
+    "fireworks-ai",
+    "chat",
+    "embeddings",
+    "nakedapi"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  }
+}

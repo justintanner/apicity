@@ -25,6 +25,10 @@ export default defineConfig({
         "../packages/provider/openai/src"
       ),
       "@nakedapi/fal": path.resolve(__dirname, "../packages/provider/fal/src"),
+      "@nakedapi/fireworks": path.resolve(
+        __dirname,
+        "../packages/provider/fireworks/src"
+      ),
     },
   },
 });

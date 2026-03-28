@@ -73,11 +73,9 @@ Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness
 2. Record fixtures for **only** the new/changed file:
 
    ```bash
-   # With 1Password (recommended — secrets never touch disk):
+   # Load API keys from .env (copy .env.template to .env and fill in values):
+   source .env
    pnpm run test:integration:record -- tests/integration/<file>.test.ts
-
-   # With plain env vars (manual):
-   POLLY_MODE=record OPENAI_API_KEY=sk-... pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
 
    This sends real API requests and writes HAR files to `tests/recordings/`.
@@ -89,12 +87,9 @@ Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness
 
 Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility.
 
-**Secrets management (1Password):**
+**Secrets management:**
 
-API keys are stored in 1Password and referenced via `op://` URIs in `.env.tpl` (committed to repo). The `test:integration:record` script uses `op run` to resolve these at runtime.
-
-- **Local dev:** `op` authenticates via the 1Password desktop app (biometric).
-- **Gastown agents / CI:** Set `OP_SERVICE_ACCOUNT_TOKEN` in the environment. Create a service account with read-only access to the NakedAPI vault. `op run` auto-detects the token — no interactive auth needed.
+API keys are stored in `.env` (gitignored). Copy `.env.template` to `.env` and fill in your keys. The `test:integration:record` script expects keys to be exported in the environment (e.g., via `source .env`).
 
 ### CI
 

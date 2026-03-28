@@ -938,6 +938,177 @@ export const sftCreateSchema: PayloadSchema = {
   },
 };
 
+export const createDeploymentSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/deployments",
+  contentType: "application/json",
+  fields: {
+    baseModel: {
+      type: "string",
+      required: true,
+      description:
+        "Model name (e.g. accounts/fireworks/models/llama-v3p1-70b-instruct)",
+    },
+    displayName: {
+      type: "string",
+      description: "Human-readable name, max 64 chars",
+    },
+    description: {
+      type: "string",
+      description: "Deployment description",
+    },
+    minReplicaCount: {
+      type: "number",
+      description: "Minimum replicas (default: 0)",
+    },
+    maxReplicaCount: {
+      type: "number",
+      description: "Maximum replicas",
+    },
+    acceleratorCount: {
+      type: "number",
+      description: "Accelerators per replica",
+    },
+    acceleratorType: {
+      type: "string",
+      description: "GPU/accelerator type",
+      enum: [
+        "ACCELERATOR_TYPE_UNSPECIFIED",
+        "NVIDIA_A100_80GB",
+        "NVIDIA_H100_80GB",
+        "AMD_MI300X_192GB",
+        "NVIDIA_A10G_24GB",
+        "NVIDIA_A100_40GB",
+        "NVIDIA_L4_24GB",
+        "NVIDIA_H200_141GB",
+        "NVIDIA_B200_180GB",
+        "AMD_MI325X_256GB",
+        "AMD_MI350X_288GB",
+      ],
+    },
+    precision: {
+      type: "string",
+      description: "Serving precision",
+      enum: [
+        "PRECISION_UNSPECIFIED",
+        "FP16",
+        "FP8",
+        "FP8_MM",
+        "BF16",
+        "NF4",
+        "FP4",
+      ],
+    },
+    enableAddons: {
+      type: "boolean",
+      description: "Enable PEFT addons",
+    },
+    draftTokenCount: {
+      type: "number",
+      description: "Speculative decoding tokens per step",
+    },
+    draftModel: {
+      type: "string",
+      description: "Draft model for speculative decoding",
+    },
+    maxContextLength: {
+      type: "number",
+      description: "Context window (0 = model default)",
+    },
+    deploymentShape: {
+      type: "string",
+      description: "Deployment shape name",
+    },
+  },
+};
+
+export const updateDeploymentSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{account_id}/deployments/{deployment_id}",
+  contentType: "application/json",
+  fields: {
+    baseModel: {
+      type: "string",
+      description: "Model name",
+    },
+    displayName: {
+      type: "string",
+      description: "Human-readable name, max 64 chars",
+    },
+    description: {
+      type: "string",
+      description: "Deployment description",
+    },
+    minReplicaCount: {
+      type: "number",
+      description: "Minimum replicas",
+    },
+    maxReplicaCount: {
+      type: "number",
+      description: "Maximum replicas",
+    },
+    acceleratorCount: {
+      type: "number",
+      description: "Accelerators per replica",
+    },
+    acceleratorType: {
+      type: "string",
+      description: "GPU/accelerator type",
+      enum: [
+        "ACCELERATOR_TYPE_UNSPECIFIED",
+        "NVIDIA_A100_80GB",
+        "NVIDIA_H100_80GB",
+        "AMD_MI300X_192GB",
+        "NVIDIA_A10G_24GB",
+        "NVIDIA_A100_40GB",
+        "NVIDIA_L4_24GB",
+        "NVIDIA_H200_141GB",
+        "NVIDIA_B200_180GB",
+        "AMD_MI325X_256GB",
+        "AMD_MI350X_288GB",
+      ],
+    },
+    precision: {
+      type: "string",
+      description: "Serving precision",
+      enum: [
+        "PRECISION_UNSPECIFIED",
+        "FP16",
+        "FP8",
+        "FP8_MM",
+        "BF16",
+        "NF4",
+        "FP4",
+      ],
+    },
+    enableAddons: {
+      type: "boolean",
+      description: "Enable PEFT addons",
+    },
+    maxContextLength: {
+      type: "number",
+      description: "Context window (0 = model default)",
+    },
+    deploymentShape: {
+      type: "string",
+      description: "Deployment shape name",
+    },
+  },
+};
+
+export const scaleDeploymentSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{account_id}/deployments/{deployment_id}:scale",
+  contentType: "application/json",
+  fields: {
+    replicaCount: {
+      type: "number",
+      required: true,
+      description: "Desired number of replicas",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

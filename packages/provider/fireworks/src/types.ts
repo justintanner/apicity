@@ -1357,9 +1357,272 @@ export interface FireworksModelsNamespace {
   validateUpload: FireworksModelsValidateUploadMethod;
 }
 
+export type FireworksDeploymentState =
+  | "STATE_UNSPECIFIED"
+  | "CREATING"
+  | "READY"
+  | "DELETING"
+  | "FAILED"
+  | "UPDATING"
+  | "DELETED";
+
+export type FireworksAcceleratorType =
+  | "ACCELERATOR_TYPE_UNSPECIFIED"
+  | "NVIDIA_A100_80GB"
+  | "NVIDIA_H100_80GB"
+  | "AMD_MI300X_192GB"
+  | "NVIDIA_A10G_24GB"
+  | "NVIDIA_A100_40GB"
+  | "NVIDIA_L4_24GB"
+  | "NVIDIA_H200_141GB"
+  | "NVIDIA_B200_180GB"
+  | "AMD_MI325X_256GB"
+  | "AMD_MI350X_288GB";
+
+export interface FireworksAutoscalingPolicy {
+  scaleUpWindow?: string;
+  scaleDownWindow?: string;
+  scaleToZeroWindow?: string;
+  loadTargets?: Record<string, number>;
+}
+
+export interface FireworksReplicaStats {
+  pendingSchedulingReplicaCount?: number;
+  downloadingModelReplicaCount?: number;
+  initializingReplicaCount?: number;
+  readyReplicaCount?: number;
+}
+
+export interface FireworksDeployment {
+  name?: string;
+  displayName?: string;
+  description?: string;
+  createTime?: string;
+  updateTime?: string;
+  deleteTime?: string;
+  purgeTime?: string;
+  expireTime?: string;
+  state?: FireworksDeploymentState;
+  status?: { code?: string; message?: string };
+  baseModel: string;
+  minReplicaCount?: number;
+  maxReplicaCount?: number;
+  maxWithRevocableReplicaCount?: number;
+  desiredReplicaCount?: number;
+  replicaCount?: number;
+  autoscalingPolicy?: FireworksAutoscalingPolicy;
+  acceleratorCount?: number;
+  acceleratorType?: FireworksAcceleratorType;
+  precision?: FireworksDeploymentPrecision;
+  cluster?: string;
+  enableAddons?: boolean;
+  draftTokenCount?: number;
+  draftModel?: string;
+  ngramSpeculationLength?: number;
+  enableSessionAffinity?: boolean;
+  maxContextLength?: number;
+  deploymentShape?: string;
+  activeModelVersion?: string;
+  targetModelVersion?: string;
+  replicaStats?: FireworksReplicaStats;
+  pricingPlanId?: string;
+}
+
+export interface FireworksCreateDeploymentRequest {
+  baseModel: string;
+  displayName?: string;
+  description?: string;
+  minReplicaCount?: number;
+  maxReplicaCount?: number;
+  maxWithRevocableReplicaCount?: number;
+  autoscalingPolicy?: FireworksAutoscalingPolicy;
+  acceleratorCount?: number;
+  acceleratorType?: FireworksAcceleratorType;
+  precision?: FireworksDeploymentPrecision;
+  enableAddons?: boolean;
+  draftTokenCount?: number;
+  draftModel?: string;
+  ngramSpeculationLength?: number;
+  enableSessionAffinity?: boolean;
+  maxContextLength?: number;
+  deploymentShape?: string;
+}
+
+export interface FireworksCreateDeploymentOptions {
+  deploymentId?: string;
+  disableAutoDeploy?: boolean;
+  disableSpeculativeDecoding?: boolean;
+  validateOnly?: boolean;
+  skipShapeValidation?: boolean;
+}
+
+export interface FireworksListDeploymentsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  showDeleted?: boolean;
+  readMask?: string;
+}
+
+export interface FireworksListDeploymentsResponse {
+  deployments: FireworksDeployment[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksUpdateDeploymentRequest {
+  baseModel?: string;
+  displayName?: string;
+  description?: string;
+  minReplicaCount?: number;
+  maxReplicaCount?: number;
+  maxWithRevocableReplicaCount?: number;
+  autoscalingPolicy?: FireworksAutoscalingPolicy;
+  acceleratorCount?: number;
+  acceleratorType?: FireworksAcceleratorType;
+  precision?: FireworksDeploymentPrecision;
+  enableAddons?: boolean;
+  maxContextLength?: number;
+  deploymentShape?: string;
+}
+
+export interface FireworksScaleDeploymentRequest {
+  replicaCount: number;
+}
+
+export interface FireworksDeleteDeploymentOptions {
+  hard?: boolean;
+  ignoreChecks?: boolean;
+}
+
+export interface FireworksDeploymentShape {
+  name?: string;
+  displayName?: string;
+  description?: string;
+  createTime?: string;
+  updateTime?: string;
+  baseModel?: string;
+  modelType?: string;
+  parameterCount?: string;
+  acceleratorCount?: number;
+  acceleratorType?: FireworksAcceleratorType;
+  precision?: FireworksDeploymentPrecision;
+  enableAddons?: boolean;
+  maxContextLength?: number;
+  presetType?: string;
+}
+
+export interface FireworksDeploymentShapeVersion {
+  name?: string;
+  createTime?: string;
+  snapshot?: FireworksDeploymentShape;
+  validated?: boolean;
+  public?: boolean;
+  latestValidated?: boolean;
+}
+
+export interface FireworksListDeploymentShapeVersionsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListDeploymentShapeVersionsResponse {
+  deploymentShapeVersions: FireworksDeploymentShapeVersion[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+interface FireworksCreateDeploymentMethod {
+  (
+    accountId: string,
+    req: FireworksCreateDeploymentRequest,
+    options?: FireworksCreateDeploymentOptions,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksUpdateDeploymentMethod {
+  (
+    accountId: string,
+    deploymentId: string,
+    req: FireworksUpdateDeploymentRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksScaleDeploymentMethod {
+  (
+    accountId: string,
+    deploymentId: string,
+    req: FireworksScaleDeploymentRequest,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDeploymentsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDeploymentsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDeploymentsResponse>;
+  create: FireworksCreateDeploymentMethod;
+  get(
+    accountId: string,
+    deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+  update: FireworksUpdateDeploymentMethod;
+  delete(
+    accountId: string,
+    deploymentId: string,
+    options?: FireworksDeleteDeploymentOptions,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  scale: FireworksScaleDeploymentMethod;
+  undelete(
+    accountId: string,
+    deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+}
+
+interface FireworksDeploymentShapesNamespace {
+  get(
+    accountId: string,
+    shapeId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeploymentShape>;
+  versions: {
+    list(
+      accountId: string,
+      shapeId: string,
+      params?: FireworksListDeploymentShapeVersionsRequest,
+      signal?: AbortSignal
+    ): Promise<FireworksListDeploymentShapeVersionsResponse>;
+    get(
+      accountId: string,
+      shapeId: string,
+      versionId: string,
+      signal?: AbortSignal
+    ): Promise<FireworksDeploymentShapeVersion>;
+  };
+}
+
 interface FireworksAccountsNamespace {
   models: FireworksModelsNamespace;
   supervisedFineTuningJobs: FireworksSFTNamespace;
+  deployments: FireworksDeploymentsNamespace;
+  deploymentShapes: FireworksDeploymentShapesNamespace;
 }
 
 // Error class

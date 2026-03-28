@@ -47,6 +47,18 @@ import {
   FireworksSFTDeleteRequest,
   FireworksSFTResumeRequest,
   FireworksSFTJob,
+  FireworksCreateDeploymentRequest,
+  FireworksCreateDeploymentOptions,
+  FireworksListDeploymentsRequest,
+  FireworksListDeploymentsResponse,
+  FireworksDeployment,
+  FireworksUpdateDeploymentRequest,
+  FireworksScaleDeploymentRequest,
+  FireworksDeleteDeploymentOptions,
+  FireworksDeploymentShape,
+  FireworksDeploymentShapeVersion,
+  FireworksListDeploymentShapeVersionsRequest,
+  FireworksListDeploymentShapeVersionsResponse,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -73,6 +85,9 @@ import {
   modelsValidateUploadSchema,
   batchInferenceJobCreateSchema,
   sftCreateSchema,
+  createDeploymentSchema,
+  updateDeploymentSchema,
+  scaleDeploymentSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
@@ -1147,6 +1162,175 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               undefined,
               signal
             );
+          },
+        },
+        deployments: {
+          async list(
+            accountId: string,
+            params?: FireworksListDeploymentsRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListDeploymentsResponse> {
+            return await makeModelsRequest<FireworksListDeploymentsResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/deployments`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateDeploymentRequest,
+              options?: FireworksCreateDeploymentOptions,
+              signal?: AbortSignal
+            ): Promise<FireworksDeployment> {
+              return await makeModelsRequest<FireworksDeployment>(
+                "POST",
+                `/v1/accounts/${accountId}/deployments`,
+                req,
+                options as Record<
+                  string,
+                  string | number | boolean | undefined
+                >,
+                signal
+              );
+            },
+            {
+              payloadSchema: createDeploymentSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createDeploymentSchema);
+              },
+            }
+          ),
+          async get(
+            accountId: string,
+            deploymentId: string,
+            signal?: AbortSignal
+          ): Promise<FireworksDeployment> {
+            return await makeModelsRequest<FireworksDeployment>(
+              "GET",
+              `/v1/accounts/${accountId}/deployments/${deploymentId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          update: Object.assign(
+            async function update(
+              accountId: string,
+              deploymentId: string,
+              req: FireworksUpdateDeploymentRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksDeployment> {
+              return await makeModelsRequest<FireworksDeployment>(
+                "PATCH",
+                `/v1/accounts/${accountId}/deployments/${deploymentId}`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: updateDeploymentSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, updateDeploymentSchema);
+              },
+            }
+          ),
+          async delete(
+            accountId: string,
+            deploymentId: string,
+            options?: FireworksDeleteDeploymentOptions,
+            signal?: AbortSignal
+          ): Promise<Record<string, unknown>> {
+            return await makeModelsRequest<Record<string, unknown>>(
+              "DELETE",
+              `/v1/accounts/${accountId}/deployments/${deploymentId}`,
+              undefined,
+              options as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          scale: Object.assign(
+            async function scale(
+              accountId: string,
+              deploymentId: string,
+              req: FireworksScaleDeploymentRequest,
+              signal?: AbortSignal
+            ): Promise<Record<string, unknown>> {
+              return await makeModelsRequest<Record<string, unknown>>(
+                "PATCH",
+                `/v1/accounts/${accountId}/deployments/${deploymentId}:scale`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: scaleDeploymentSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, scaleDeploymentSchema);
+              },
+            }
+          ),
+          async undelete(
+            accountId: string,
+            deploymentId: string,
+            signal?: AbortSignal
+          ): Promise<FireworksDeployment> {
+            return await makeModelsRequest<FireworksDeployment>(
+              "POST",
+              `/v1/accounts/${accountId}/deployments/${deploymentId}:undelete`,
+              {},
+              undefined,
+              signal
+            );
+          },
+        },
+        deploymentShapes: {
+          async get(
+            accountId: string,
+            shapeId: string,
+            signal?: AbortSignal
+          ): Promise<FireworksDeploymentShape> {
+            return await makeModelsRequest<FireworksDeploymentShape>(
+              "GET",
+              `/v1/accounts/${accountId}/deploymentShapes/${shapeId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          versions: {
+            async list(
+              accountId: string,
+              shapeId: string,
+              params?: FireworksListDeploymentShapeVersionsRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksListDeploymentShapeVersionsResponse> {
+              return await makeModelsRequest<FireworksListDeploymentShapeVersionsResponse>(
+                "GET",
+                `/v1/accounts/${accountId}/deploymentShapes/${shapeId}/versions`,
+                undefined,
+                params as Record<string, string | number | boolean | undefined>,
+                signal
+              );
+            },
+            async get(
+              accountId: string,
+              shapeId: string,
+              versionId: string,
+              signal?: AbortSignal
+            ): Promise<FireworksDeploymentShapeVersion> {
+              return await makeModelsRequest<FireworksDeploymentShapeVersion>(
+                "GET",
+                `/v1/accounts/${accountId}/deploymentShapes/${shapeId}/versions/${versionId}`,
+                undefined,
+                undefined,
+                signal
+              );
+            },
           },
         },
       },

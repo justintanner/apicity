@@ -2772,6 +2772,10 @@ interface FireworksCreateSecretMethod {
     req: FireworksCreateSecretRequest,
     signal?: AbortSignal
   ): Promise<FireworksSecret>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 // Evaluators namespace types
 interface FireworksCreateEvaluatorMethod {
   (
@@ -2865,6 +2869,8 @@ interface FireworksUpdateSecretMethod {
   ): Promise<FireworksSecret>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksEvaluationJobsNamespace {
   create: FireworksCreateEvaluationJobMethod;
   list(

@@ -1737,9 +1737,23 @@ export interface FireworksDeploymentShape {
   acceleratorCount?: number;
   acceleratorType?: FireworksAcceleratorType;
   precision?: FireworksDeploymentPrecision;
+  disableDeploymentSizeValidation?: boolean;
   enableAddons?: boolean;
+  draftTokenCount?: number;
+  draftModel?: string;
+  ngramSpeculationLength?: number;
+  enableSessionAffinity?: boolean;
+  numLoraDeviceCached?: number;
   maxContextLength?: number;
   presetType?: string;
+}
+
+export interface FireworksGetDeploymentShapeRequest {
+  readMask?: string;
+}
+
+export interface FireworksGetDeploymentShapeVersionRequest {
+  readMask?: string;
 }
 
 export interface FireworksDeploymentShapeVersion {
@@ -1829,6 +1843,7 @@ interface FireworksDeploymentShapesNamespace {
   get(
     accountId: string,
     shapeId: string,
+    params?: FireworksGetDeploymentShapeRequest,
     signal?: AbortSignal
   ): Promise<FireworksDeploymentShape>;
   versions: {
@@ -1842,6 +1857,7 @@ interface FireworksDeploymentShapesNamespace {
       accountId: string,
       shapeId: string,
       versionId: string,
+      params?: FireworksGetDeploymentShapeVersionRequest,
       signal?: AbortSignal
     ): Promise<FireworksDeploymentShapeVersion>;
   };

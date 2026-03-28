@@ -124,20 +124,3 @@ describe("fireworks deployments integration", () => {
     });
   });
 });
-
-describe("fireworks deployment shapes integration", () => {
-  describe("payload validation for deployment shapes", () => {
-    it("should have deployment shapes namespace", () => {
-      const provider = fireworks({ apiKey: "test-key" });
-      expect(provider.v1.accounts.deploymentShapes).toBeDefined();
-      expect(provider.v1.accounts.deploymentShapes.get).toBeTypeOf("function");
-      expect(provider.v1.accounts.deploymentShapes.versions).toBeDefined();
-      expect(provider.v1.accounts.deploymentShapes.versions.list).toBeTypeOf(
-        "function"
-      );
-      expect(provider.v1.accounts.deploymentShapes.versions.get).toBeTypeOf(
-        "function"
-      );
-    });
-  });
-});

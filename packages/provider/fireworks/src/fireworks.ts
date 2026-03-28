@@ -57,6 +57,8 @@ import {
   FireworksDeleteDeploymentOptions,
   FireworksDeploymentShape,
   FireworksDeploymentShapeVersion,
+  FireworksGetDeploymentShapeRequest,
+  FireworksGetDeploymentShapeVersionRequest,
   FireworksListDeploymentShapeVersionsRequest,
   FireworksListDeploymentShapeVersionsResponse,
   FireworksAudioBatchTranscriptionRequest,
@@ -1491,13 +1493,14 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           async get(
             accountId: string,
             shapeId: string,
+            params?: FireworksGetDeploymentShapeRequest,
             signal?: AbortSignal
           ): Promise<FireworksDeploymentShape> {
             return await makeModelsRequest<FireworksDeploymentShape>(
               "GET",
               `/v1/accounts/${accountId}/deploymentShapes/${shapeId}`,
               undefined,
-              undefined,
+              params as Record<string, string | number | boolean | undefined>,
               signal
             );
           },
@@ -1520,13 +1523,14 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               accountId: string,
               shapeId: string,
               versionId: string,
+              params?: FireworksGetDeploymentShapeVersionRequest,
               signal?: AbortSignal
             ): Promise<FireworksDeploymentShapeVersion> {
               return await makeModelsRequest<FireworksDeploymentShapeVersion>(
                 "GET",
                 `/v1/accounts/${accountId}/deploymentShapes/${shapeId}/versions/${versionId}`,
                 undefined,
-                undefined,
+                params as Record<string, string | number | boolean | undefined>,
                 signal
               );
             },

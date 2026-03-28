@@ -147,6 +147,8 @@ export type {
   FireworksDeleteDeploymentOptions,
   FireworksDeploymentShape,
   FireworksDeploymentShapeVersion,
+  FireworksGetDeploymentShapeRequest,
+  FireworksGetDeploymentShapeVersionRequest,
   FireworksListDeploymentShapeVersionsRequest,
   FireworksListDeploymentShapeVersionsResponse,
   FireworksProvider,

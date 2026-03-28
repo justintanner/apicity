@@ -1477,6 +1477,34 @@ export const createApiKeySchema: PayloadSchema = {
   },
 };
 
+// Dataset schemas
+
+export const datasetsCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/datasets",
+  contentType: "application/json",
+  fields: {
+    dataset: {
+      type: "object",
+      required: true,
+      description: "Dataset configuration object",
+    },
+    datasetId: {
+      type: "string",
+      required: true,
+      description: "Identifier for the dataset",
+    },
+    sourceDatasetId: {
+      type: "string",
+      description: "Create by filtering an existing dataset",
+    },
+    filter: {
+      type: "string",
+      description: "SQL-like WHERE clause for source dataset filtering",
+    },
+  },
+};
+
 export const deleteApiKeySchema: PayloadSchema = {
   method: "POST",
   path: "/v1/accounts/{accountId}/users/{userId}/apiKeys:delete",
@@ -1527,6 +1555,76 @@ export const updateSecretSchema: PayloadSchema = {
       description: "New secret value (INPUT_ONLY)",
     },
   },
+};
+
+export const datasetsUpdateSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{account_id}/datasets/{dataset_id}",
+  contentType: "application/json",
+  fields: {
+    displayName: {
+      type: "string",
+      description: "User-friendly display name",
+    },
+    exampleCount: {
+      type: "number",
+      description: "Number of examples in the dataset",
+    },
+    externalUrl: {
+      type: "string",
+      description: "External dataset URI (e.g. gs://bucket/path.jsonl)",
+    },
+    format: {
+      type: "string",
+      description: "Dataset format",
+      enum: ["FORMAT_UNSPECIFIED", "CHAT", "COMPLETION", "RL"],
+    },
+    sourceJobName: {
+      type: "string",
+      description: "Resource name of originating job",
+    },
+  },
+};
+
+export const datasetsGetUploadEndpointSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/datasets/{dataset_id}:getUploadEndpoint",
+  contentType: "application/json",
+  fields: {
+    filenameToSize: {
+      type: "object",
+      required: true,
+      description: "Mapping of filename to size in bytes",
+    },
+    readMask: {
+      type: "string",
+      description: "Fields to return",
+    },
+  },
+};
+
+export const datasetsGetDownloadEndpointSchema: PayloadSchema = {
+  method: "GET",
+  path: "/v1/accounts/{account_id}/datasets/{dataset_id}:getDownloadEndpoint",
+  contentType: "application/json",
+  fields: {
+    readMask: {
+      type: "string",
+      description: "Fields to return",
+    },
+    downloadLineage: {
+      type: "boolean",
+      description:
+        "Download entire lineage chain with dataset ID prefixed filenames",
+    },
+  },
+};
+
+export const datasetsValidateUploadSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/datasets/{dataset_id}:validateUpload",
+  contentType: "application/json",
+  fields: {},
 };
 
 export const embeddingsSchema: PayloadSchema = {

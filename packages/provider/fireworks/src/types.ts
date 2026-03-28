@@ -2016,6 +2016,196 @@ interface FireworksDeploymentShapesNamespace {
   };
 }
 
+// Dataset types
+
+export type FireworksDatasetState = "STATE_UNSPECIFIED" | "UPLOADING" | "READY";
+
+export type FireworksDatasetFormat =
+  | "FORMAT_UNSPECIFIED"
+  | "CHAT"
+  | "COMPLETION"
+  | "RL";
+
+export interface FireworksDatasetStatus {
+  code?: FireworksStatusCode;
+  message?: string;
+}
+
+export interface FireworksDatasetTransformed {
+  sourceDatasetId?: string;
+  filter?: string;
+  originalFormat?: FireworksDatasetFormat;
+}
+
+export interface FireworksDatasetSplitted {
+  sourceDatasetId?: string;
+}
+
+export interface FireworksDatasetEvaluationResult {
+  evaluationJobId?: string;
+}
+
+export interface FireworksDataset {
+  name?: string;
+  displayName?: string;
+  createTime?: string;
+  updateTime?: string;
+  state?: FireworksDatasetState;
+  status?: FireworksDatasetStatus;
+  exampleCount?: number;
+  userUploaded?: Record<string, unknown>;
+  evaluationResult?: FireworksDatasetEvaluationResult;
+  transformed?: FireworksDatasetTransformed;
+  splitted?: FireworksDatasetSplitted;
+  evalProtocol?: Record<string, unknown>;
+  externalUrl?: string;
+  format?: FireworksDatasetFormat;
+  createdBy?: string;
+  sourceJobName?: string;
+  estimatedTokenCount?: number;
+  averageTurnCount?: number;
+}
+
+export interface FireworksCreateDatasetRequest {
+  dataset: Partial<FireworksDataset>;
+  datasetId: string;
+  sourceDatasetId?: string;
+  filter?: string;
+}
+
+export interface FireworksListDatasetsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListDatasetsResponse {
+  datasets: FireworksDataset[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksGetDatasetRequest {
+  readMask?: string;
+}
+
+export interface FireworksUpdateDatasetRequest {
+  displayName?: string;
+  exampleCount?: number;
+  userUploaded?: Record<string, unknown>;
+  evaluationResult?: FireworksDatasetEvaluationResult;
+  transformed?: FireworksDatasetTransformed;
+  splitted?: FireworksDatasetSplitted;
+  evalProtocol?: Record<string, unknown>;
+  externalUrl?: string;
+  format?: FireworksDatasetFormat;
+  sourceJobName?: string;
+}
+
+export interface FireworksDatasetGetUploadEndpointRequest {
+  filenameToSize: Record<string, number>;
+  readMask?: string;
+}
+
+export interface FireworksDatasetGetUploadEndpointResponse {
+  filenameToSignedUrls?: Record<string, string>;
+}
+
+export interface FireworksDatasetGetDownloadEndpointRequest {
+  readMask?: string;
+  downloadLineage?: boolean;
+}
+
+export interface FireworksDatasetGetDownloadEndpointResponse {
+  filenameToSignedUrls?: Record<string, string>;
+}
+
+export interface FireworksDatasetValidateUploadRequest {
+  [key: string]: unknown;
+}
+
+// Dataset namespace types
+
+interface FireworksDatasetCreateMethod {
+  (
+    accountId: string,
+    req: FireworksCreateDatasetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDataset>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDatasetUpdateMethod {
+  (
+    accountId: string,
+    datasetId: string,
+    req: FireworksUpdateDatasetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDataset>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDatasetGetUploadEndpointMethod {
+  (
+    accountId: string,
+    datasetId: string,
+    req: FireworksDatasetGetUploadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDatasetGetUploadEndpointResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDatasetGetDownloadEndpointMethod {
+  (
+    accountId: string,
+    datasetId: string,
+    req?: FireworksDatasetGetDownloadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDatasetGetDownloadEndpointResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDatasetValidateUploadMethod {
+  (
+    accountId: string,
+    datasetId: string,
+    req?: FireworksDatasetValidateUploadRequest,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDatasetsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDatasetsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDatasetsResponse>;
+  create: FireworksDatasetCreateMethod;
+  get(
+    accountId: string,
+    datasetId: string,
+    req?: FireworksGetDatasetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDataset>;
+  update: FireworksDatasetUpdateMethod;
+  delete(
+    accountId: string,
+    datasetId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getUploadEndpoint: FireworksDatasetGetUploadEndpointMethod;
+  getDownloadEndpoint: FireworksDatasetGetDownloadEndpointMethod;
+  validateUpload: FireworksDatasetValidateUploadMethod;
+}
+
 // Deployed Models namespace types
 interface FireworksCreateDeployedModelMethod {
   (
@@ -2400,6 +2590,7 @@ interface FireworksUpdateSecretMethod {
 
 interface FireworksAccountsNamespace {
   models: FireworksModelsNamespace;
+  datasets: FireworksDatasetsNamespace;
   supervisedFineTuningJobs: FireworksSFTNamespace;
   deployments: FireworksDeploymentsNamespace;
   deployedModels: FireworksDeployedModelsNamespace;

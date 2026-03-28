@@ -47,6 +47,17 @@ import {
   FireworksSFTDeleteRequest,
   FireworksSFTResumeRequest,
   FireworksSFTJob,
+  FireworksCreateDatasetRequest,
+  FireworksDataset,
+  FireworksListDatasetsRequest,
+  FireworksListDatasetsResponse,
+  FireworksGetDatasetRequest,
+  FireworksUpdateDatasetRequest,
+  FireworksDatasetGetUploadEndpointRequest,
+  FireworksDatasetGetUploadEndpointResponse,
+  FireworksDatasetGetDownloadEndpointRequest,
+  FireworksDatasetGetDownloadEndpointResponse,
+  FireworksDatasetValidateUploadRequest,
   FireworksCreateDeploymentRequest,
   FireworksCreateDeploymentOptions,
   FireworksListDeploymentsRequest,
@@ -143,6 +154,11 @@ import {
   deleteApiKeySchema,
   createSecretSchema,
   updateSecretSchema,
+  datasetsCreateSchema,
+  datasetsUpdateSchema,
+  datasetsGetUploadEndpointSchema,
+  datasetsGetDownloadEndpointSchema,
+  datasetsValidateUploadSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
@@ -1672,6 +1688,157 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               payloadSchema: modelsValidateUploadSchema,
               validatePayload(data: unknown): ValidationResult {
                 return validatePayload(data, modelsValidateUploadSchema);
+              },
+            }
+          ),
+        },
+        datasets: {
+          async list(
+            accountId: string,
+            params?: FireworksListDatasetsRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListDatasetsResponse> {
+            return await makeModelsRequest<FireworksListDatasetsResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/datasets`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateDatasetRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksDataset> {
+              return await makeModelsRequest<FireworksDataset>(
+                "POST",
+                `/v1/accounts/${accountId}/datasets`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: datasetsCreateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, datasetsCreateSchema);
+              },
+            }
+          ),
+          async get(
+            accountId: string,
+            datasetId: string,
+            req?: FireworksGetDatasetRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksDataset> {
+            return await makeModelsRequest<FireworksDataset>(
+              "GET",
+              `/v1/accounts/${accountId}/datasets/${datasetId}`,
+              undefined,
+              req as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          update: Object.assign(
+            async function update(
+              accountId: string,
+              datasetId: string,
+              req: FireworksUpdateDatasetRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksDataset> {
+              return await makeModelsRequest<FireworksDataset>(
+                "PATCH",
+                `/v1/accounts/${accountId}/datasets/${datasetId}`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: datasetsUpdateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, datasetsUpdateSchema);
+              },
+            }
+          ),
+          async delete(
+            accountId: string,
+            datasetId: string,
+            signal?: AbortSignal
+          ): Promise<Record<string, unknown>> {
+            return await makeModelsRequest<Record<string, unknown>>(
+              "DELETE",
+              `/v1/accounts/${accountId}/datasets/${datasetId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          getUploadEndpoint: Object.assign(
+            async function getUploadEndpoint(
+              accountId: string,
+              datasetId: string,
+              req: FireworksDatasetGetUploadEndpointRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksDatasetGetUploadEndpointResponse> {
+              return await makeModelsRequest<FireworksDatasetGetUploadEndpointResponse>(
+                "POST",
+                `/v1/accounts/${accountId}/datasets/${datasetId}:getUploadEndpoint`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: datasetsGetUploadEndpointSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, datasetsGetUploadEndpointSchema);
+              },
+            }
+          ),
+          getDownloadEndpoint: Object.assign(
+            async function getDownloadEndpoint(
+              accountId: string,
+              datasetId: string,
+              req?: FireworksDatasetGetDownloadEndpointRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksDatasetGetDownloadEndpointResponse> {
+              return await makeModelsRequest<FireworksDatasetGetDownloadEndpointResponse>(
+                "GET",
+                `/v1/accounts/${accountId}/datasets/${datasetId}:getDownloadEndpoint`,
+                undefined,
+                req as Record<string, string | number | boolean | undefined>,
+                signal
+              );
+            },
+            {
+              payloadSchema: datasetsGetDownloadEndpointSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, datasetsGetDownloadEndpointSchema);
+              },
+            }
+          ),
+          validateUpload: Object.assign(
+            async function validateUpload(
+              accountId: string,
+              datasetId: string,
+              req?: FireworksDatasetValidateUploadRequest,
+              signal?: AbortSignal
+            ): Promise<Record<string, unknown>> {
+              return await makeModelsRequest<Record<string, unknown>>(
+                "POST",
+                `/v1/accounts/${accountId}/datasets/${datasetId}:validateUpload`,
+                req ?? {},
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: datasetsValidateUploadSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, datasetsValidateUploadSchema);
               },
             }
           ),

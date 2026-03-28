@@ -851,6 +851,81 @@ export interface OpenAiModerationResponse {
   id: string;
   model: string;
   results: OpenAiModerationResult[];
+// --- Batches API types ---
+
+// Batch request counts
+export interface OpenAiBatchRequestCounts {
+  total: number;
+  completed: number;
+  failed: number;
+}
+
+// Batch errors
+export interface OpenAiBatchError {
+  code: string;
+  message: string;
+  param?: string | null;
+  line?: number | null;
+}
+
+export interface OpenAiBatchErrors {
+  object: "list";
+  data: OpenAiBatchError[];
+}
+
+// Batch create request
+export interface OpenAiBatchCreateRequest {
+  input_file_id: string;
+  endpoint: string;
+  completion_window: string;
+  metadata?: Record<string, string> | null;
+}
+
+// Batch list query params
+export interface OpenAiBatchListParams {
+  after?: string;
+  limit?: number;
+}
+
+// Batch object
+export interface OpenAiBatch {
+  id: string;
+  object: "batch";
+  endpoint: string;
+  errors?: OpenAiBatchErrors | null;
+  input_file_id: string;
+  completion_window: string;
+  status:
+    | "validating"
+    | "failed"
+    | "in_progress"
+    | "finalizing"
+    | "completed"
+    | "expired"
+    | "cancelling"
+    | "cancelled";
+  output_file_id?: string | null;
+  error_file_id?: string | null;
+  created_at: number;
+  in_progress_at?: number | null;
+  expires_at?: number | null;
+  finalizing_at?: number | null;
+  completed_at?: number | null;
+  failed_at?: number | null;
+  expired_at?: number | null;
+  cancelling_at?: number | null;
+  cancelled_at?: number | null;
+  request_counts?: OpenAiBatchRequestCounts;
+  metadata?: Record<string, string> | null;
+}
+
+// Batch list response
+export interface OpenAiBatchListResponse {
+  object: "list";
+  data: OpenAiBatch[];
+  has_more: boolean;
+  first_id?: string;
+  last_id?: string;
 }
 
 // Files API types
@@ -1063,6 +1138,31 @@ interface OpenAiFilesNamespace {
   content: OpenAiFilesContentMethod;
 }
 
+interface OpenAiBatchesCreateMethod {
+  (req: OpenAiBatchCreateRequest, signal?: AbortSignal): Promise<OpenAiBatch>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+  list: OpenAiBatchesListMethod;
+  retrieve: OpenAiBatchesRetrieveMethod;
+  cancel: OpenAiBatchesCancelMethod;
+}
+
+interface OpenAiBatchesListMethod {
+  (
+    params?: OpenAiBatchListParams,
+    signal?: AbortSignal
+  ): Promise<OpenAiBatchListResponse>;
+}
+
+interface OpenAiBatchesRetrieveMethod {
+  (batchId: string, signal?: AbortSignal): Promise<OpenAiBatch>;
+}
+
+interface OpenAiBatchesCancelMethod {
+  (batchId: string, signal?: AbortSignal): Promise<OpenAiBatch>;
+  payloadSchema: PayloadSchema;
+}
+
 interface OpenAiModelsListMethod {
   (signal?: AbortSignal): Promise<OpenAiModelListResponse>;
 }
@@ -1194,6 +1294,7 @@ interface OpenAiV1Namespace {
   moderations: OpenAiModerationsMethod;
   responses: OpenAiResponsesMethod;
   fine_tuning: OpenAiFineTuningNamespace;
+  batches: OpenAiBatchesCreateMethod;
 }
 
 // Provider interface

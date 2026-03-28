@@ -549,6 +549,50 @@ export const moderationsSchema: PayloadSchema = {
       type: "string",
       description:
         "Moderation model ID (e.g. omni-moderation-latest, text-moderation-latest)",
+export const batchesCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/batches",
+  contentType: "application/json",
+  fields: {
+    input_file_id: {
+      type: "string",
+      required: true,
+      description: "The ID of an uploaded JSONL file containing batch requests",
+    },
+    endpoint: {
+      type: "string",
+      required: true,
+      description: "The API endpoint for all requests in the batch",
+      enum: [
+        "/v1/chat/completions",
+        "/v1/embeddings",
+        "/v1/completions",
+        "/v1/responses",
+      ],
+    },
+    completion_window: {
+      type: "string",
+      required: true,
+      description: "Time frame within which the batch should be processed",
+      enum: ["24h"],
+    },
+    metadata: {
+      type: "object",
+      description:
+        "Key-value pairs for storing additional information (max 16 pairs)",
+    },
+  },
+};
+
+export const batchesCancelSchema: PayloadSchema = {
+  method: "POST",
+  path: "/batches/{batch_id}/cancel",
+  contentType: "application/json",
+  fields: {
+    batch_id: {
+      type: "string",
+      required: true,
+      description: "The ID of the batch to cancel",
     },
   },
 };

@@ -21,6 +21,10 @@ import {
   OpenAiModelListResponse,
   OpenAiModel,
   OpenAiModelDeleteResponse,
+  OpenAiBatchCreateRequest,
+  OpenAiBatch,
+  OpenAiBatchListParams,
+  OpenAiBatchListResponse,
   OpenAiResponseRequest,
   OpenAiResponseResponse,
   OpenAiResponseDeleteResponse,
@@ -54,6 +58,8 @@ import {
   modelsDeleteSchema,
   moderationsSchema,
   audioSpeechSchema,
+  batchesCreateSchema,
+  batchesCancelSchema,
   audioTranscriptionsSchema,
   audioTranslationsSchema,
   responsesSchema,
@@ -607,6 +613,13 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         ): Promise<OpenAiModerationResponse> {
           return await makeRequest<OpenAiModerationResponse>(
             "/moderations",
+      batches: Object.assign(
+        async function batches(
+          req: OpenAiBatchCreateRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiBatch> {
+          return await makeRequest<OpenAiBatch>(
+            "/batches",
             jsonRequest(req),
             signal
           );
@@ -616,6 +629,51 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, moderationsSchema);
           },
+          payloadSchema: batchesCreateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, batchesCreateSchema);
+          },
+          list: async function list(
+            params?: OpenAiBatchListParams,
+            signal?: AbortSignal
+          ): Promise<OpenAiBatchListResponse> {
+            return await makeGetRequest<OpenAiBatchListResponse>(
+              "/batches",
+              {
+                after: params?.after,
+                limit:
+                  params?.limit !== undefined
+                    ? String(params.limit)
+                    : undefined,
+              },
+              signal
+            );
+          },
+          retrieve: async function retrieve(
+            batchId: string,
+            signal?: AbortSignal
+          ): Promise<OpenAiBatch> {
+            return await makeGetRequest<OpenAiBatch>(
+              `/batches/${encodeURIComponent(batchId)}`,
+              undefined,
+              signal
+            );
+          },
+          cancel: Object.assign(
+            async function cancel(
+              batchId: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiBatch> {
+              return await makeRequest<OpenAiBatch>(
+                `/batches/${encodeURIComponent(batchId)}/cancel`,
+                jsonRequest({}),
+                signal
+              );
+            },
+            {
+              payloadSchema: batchesCancelSchema,
+            }
+          ),
         }
       ),
       responses: Object.assign(

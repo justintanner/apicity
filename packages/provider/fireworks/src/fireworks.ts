@@ -78,6 +78,9 @@ import {
   FireworksDeployedModel,
   FireworksUpdateDeployedModelRequest,
   FireworksGetDeployedModelRequest,
+  FireworksStreamingTranscriptionOptions,
+  FireworksStreamingTranscriptionMessage,
+  FireworksStreamingTranscriptionSession,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -109,6 +112,7 @@ import {
   scaleDeploymentSchema,
   audioBatchTranscriptionsSchema,
   audioBatchTranslationsSchema,
+  audioStreamingTranscriptionsSchema,
   dpoJobCreateSchema,
   createDeployedModelSchema,
   updateDeployedModelSchema,
@@ -121,7 +125,11 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
   const modelsBaseURL = "https://api.fireworks.ai";
   const audioBaseURL =
     opts.audioBaseURL ?? "https://audio-prod.api.fireworks.ai/v1";
+  const audioStreamingBaseURL =
+    opts.audioStreamingBaseURL ??
+    "wss://audio-streaming.api.fireworks.ai";
   const doFetch = opts.fetch ?? fetch;
+  const WS = opts.WebSocket ?? globalThis.WebSocket;
   const timeout = opts.timeout ?? 30000;
 
   async function makeRequest<T>(
@@ -842,6 +850,189 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
+            streaming: Object.assign(
+              function streaming(
+                streamOpts?: FireworksStreamingTranscriptionOptions
+              ): FireworksStreamingTranscriptionSession {
+                const wsBase =
+                  streamOpts?.baseURL ?? audioStreamingBaseURL;
+                const params = new URLSearchParams();
+                params.set("Authorization", opts.apiKey);
+                if (streamOpts?.language)
+                  params.set("language", streamOpts.language);
+                if (streamOpts?.prompt)
+                  params.set("prompt", streamOpts.prompt);
+                if (streamOpts?.temperature !== undefined)
+                  params.set(
+                    "temperature",
+                    String(streamOpts.temperature)
+                  );
+                if (streamOpts?.response_format)
+                  params.set(
+                    "response_format",
+                    streamOpts.response_format
+                  );
+                if (streamOpts?.timestamp_granularities)
+                  params.set(
+                    "timestamp_granularities",
+                    streamOpts.timestamp_granularities.join(",")
+                  );
+
+                const qs = params.toString();
+                const url = `${wsBase}/v1/audio/transcriptions/streaming?${qs}`;
+
+                const ws = new WS(url);
+
+                type Queued =
+                  | {
+                      type: "message";
+                      value: FireworksStreamingTranscriptionMessage;
+                    }
+                  | { type: "error"; error: Error }
+                  | { type: "close" };
+
+                const queue: Queued[] = [];
+                let resolve:
+                  | ((
+                      v: IteratorResult<FireworksStreamingTranscriptionMessage>
+                    ) => void)
+                  | null = null;
+                let done = false;
+
+                function enqueue(item: Queued): void {
+                  if (resolve) {
+                    const r = resolve;
+                    resolve = null;
+                    if (item.type === "message") {
+                      r({ value: item.value, done: false });
+                    } else if (item.type === "error") {
+                      r({ value: undefined as never, done: true });
+                    } else {
+                      r({ value: undefined as never, done: true });
+                    }
+                  } else {
+                    queue.push(item);
+                  }
+                }
+
+                ws.addEventListener("message", (event) => {
+                  try {
+                    const data =
+                      typeof event.data === "string"
+                        ? event.data
+                        : String(event.data);
+                    const msg = JSON.parse(
+                      data
+                    ) as FireworksStreamingTranscriptionMessage;
+                    enqueue({ type: "message", value: msg });
+                  } catch {
+                    // ignore unparseable messages
+                  }
+                });
+
+                ws.addEventListener("error", () => {
+                  done = true;
+                  enqueue({
+                    type: "error",
+                    error: new FireworksError(
+                      "WebSocket connection error",
+                      500
+                    ),
+                  });
+                });
+
+                ws.addEventListener("close", () => {
+                  done = true;
+                  enqueue({ type: "close" });
+                });
+
+                const session: FireworksStreamingTranscriptionSession =
+                  {
+                    send(
+                      audio: ArrayBuffer | Uint8Array
+                    ): void {
+                      ws.send(audio);
+                    },
+
+                    clearState(resetId?: string): void {
+                      const id =
+                        resetId ?? crypto.randomUUID();
+                      ws.send(
+                        JSON.stringify({
+                          event_id: crypto.randomUUID(),
+                          object: "stt.state.clear",
+                          reset_id: id,
+                        })
+                      );
+                    },
+
+                    trace(traceId: string): void {
+                      ws.send(
+                        JSON.stringify({
+                          event_id: crypto.randomUUID(),
+                          object: "stt.input.trace",
+                          trace_id: traceId,
+                        })
+                      );
+                    },
+
+                    close(): void {
+                      ws.send(
+                        JSON.stringify({
+                          checkpoint_id: "final",
+                        })
+                      );
+                    },
+
+                    [Symbol.asyncIterator](): AsyncIterator<FireworksStreamingTranscriptionMessage> {
+                      return {
+                        next(): Promise<
+                          IteratorResult<FireworksStreamingTranscriptionMessage>
+                        > {
+                          const item = queue.shift();
+                          if (item) {
+                            if (item.type === "message") {
+                              return Promise.resolve({
+                                value: item.value,
+                                done: false,
+                              });
+                            }
+                            return Promise.resolve({
+                              value:
+                                undefined as never,
+                              done: true,
+                            });
+                          }
+                          if (done) {
+                            return Promise.resolve({
+                              value:
+                                undefined as never,
+                              done: true,
+                            });
+                          }
+                          return new Promise((r) => {
+                            resolve = r;
+                          });
+                        },
+                      };
+                    },
+                  };
+
+                return session;
+              },
+              {
+                payloadSchema:
+                  audioStreamingTranscriptionsSchema,
+                validatePayload(
+                  data: unknown
+                ): ValidationResult {
+                  return validatePayload(
+                    data,
+                    audioStreamingTranscriptionsSchema
+                  );
+                },
+              }
+            ),
             payloadSchema: audioTranscriptionsSchema,
             validatePayload(data: unknown): ValidationResult {
               return validatePayload(data, audioTranscriptionsSchema);

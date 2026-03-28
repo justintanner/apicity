@@ -439,6 +439,39 @@ export const audioTranslationsSchema: PayloadSchema = {
   },
 };
 
+export const audioStreamingTranscriptionsSchema: PayloadSchema = {
+  method: "GET",
+  path: "/v1/audio/transcriptions/streaming",
+  contentType: "application/json",
+  fields: {
+    language: {
+      type: "string",
+      description: "Language code (e.g. en, fr, ja)",
+    },
+    prompt: {
+      type: "string",
+      description: "Context hint for transcription",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature for token decoding",
+    },
+    response_format: {
+      type: "string",
+      description: "Response format (only verbose_json for streaming)",
+      enum: ["verbose_json"],
+    },
+    timestamp_granularities: {
+      type: "array",
+      description: "Timestamp granularity (word, segment)",
+      items: {
+        type: "string",
+        enum: ["word", "segment"],
+      },
+    },
+  },
+};
+
 export const textToImageSchema: PayloadSchema = {
   method: "POST",
   path: "/workflows/accounts/fireworks/models/{model}/text_to_image",

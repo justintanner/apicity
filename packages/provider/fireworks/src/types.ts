@@ -3,8 +3,10 @@ export interface FireworksOptions {
   apiKey: string;
   baseURL?: string;
   audioBaseURL?: string;
+  audioStreamingBaseURL?: string;
   timeout?: number;
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+  WebSocket?: new (url: string | URL, protocols?: string | string[]) => WebSocket;
 }
 
 // Chat message
@@ -464,6 +466,86 @@ export interface FireworksTranslationRequest {
 // Audio translation response
 export interface FireworksTranslationResponse {
   text: string;
+}
+
+// Audio streaming transcription (WebSocket)
+
+export interface FireworksStreamingTranscriptionOptions {
+  language?: string;
+  prompt?: string;
+  temperature?: number;
+  response_format?: "verbose_json";
+  timestamp_granularities?: string[];
+  baseURL?: string;
+}
+
+export interface FireworksStreamingTranscriptionWord {
+  word: string;
+  language: string;
+  probability: number;
+  hallucination_score: number;
+  start?: number;
+  end?: number;
+  is_final: boolean;
+}
+
+export interface FireworksStreamingTranscriptionSegment {
+  id: number;
+  text: string;
+  language: string;
+  words?: FireworksStreamingTranscriptionWord[] | null;
+  start?: number;
+  end?: number;
+}
+
+export interface FireworksStreamingTranscriptionResult {
+  task: "transcribe" | "translate";
+  language: string;
+  text: string;
+  words?: FireworksStreamingTranscriptionWord[] | null;
+  segments?: FireworksStreamingTranscriptionSegment[] | null;
+}
+
+export interface FireworksStreamingStateClearEvent {
+  event_id: string;
+  object: "stt.state.clear";
+  reset_id: string;
+}
+
+export interface FireworksStreamingStateClearedEvent {
+  event_id: string;
+  object: "stt.state.cleared";
+  reset_id: string;
+}
+
+export interface FireworksStreamingInputTraceEvent {
+  event_id: string;
+  object: "stt.input.trace";
+  trace_id: string;
+}
+
+export interface FireworksStreamingOutputTraceEvent {
+  event_id: string;
+  object: "stt.output.trace";
+  trace_id: string;
+}
+
+export interface FireworksStreamingCheckpointEvent {
+  checkpoint_id: string;
+}
+
+export type FireworksStreamingTranscriptionMessage =
+  | FireworksStreamingTranscriptionResult
+  | FireworksStreamingStateClearedEvent
+  | FireworksStreamingOutputTraceEvent
+  | FireworksStreamingCheckpointEvent;
+
+export interface FireworksStreamingTranscriptionSession {
+  send(audio: ArrayBuffer | Uint8Array): void;
+  clearState(resetId?: string): void;
+  trace(traceId: string): void;
+  close(): void;
+  [Symbol.asyncIterator](): AsyncIterator<FireworksStreamingTranscriptionMessage>;
 }
 
 // Supervised Fine-Tuning (SFT) types
@@ -1002,11 +1084,20 @@ interface FireworksMessagesMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface FireworksStreamingTranscriptionsMethod {
+  (
+    opts?: FireworksStreamingTranscriptionOptions
+  ): FireworksStreamingTranscriptionSession;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksTranscriptionsMethod {
   (
     req: FireworksTranscriptionRequest,
     signal?: AbortSignal
   ): Promise<FireworksTranscriptionResponse>;
+  streaming: FireworksStreamingTranscriptionsMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }

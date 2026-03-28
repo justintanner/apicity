@@ -1109,6 +1109,135 @@ export const scaleDeploymentSchema: PayloadSchema = {
   },
 };
 
+export const audioBatchTranscriptionsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/audio/transcriptions",
+  contentType: "multipart/form-data",
+  fields: {
+    file: {
+      type: "string",
+      required: true,
+      description: "Audio file to transcribe (Blob or URL string)",
+    },
+    endpoint_id: {
+      type: "string",
+      required: true,
+      description: "Batch endpoint identifier",
+    },
+    model: {
+      type: "string",
+      description: "Whisper model ID (e.g. whisper-v3, whisper-v3-turbo)",
+    },
+    vad_model: {
+      type: "string",
+      description: "Voice activity detection model",
+      enum: ["silero", "whisperx-pyannet"],
+    },
+    alignment_model: {
+      type: "string",
+      description: "Forced alignment model",
+      enum: ["mms_fa", "tdnn_ffn"],
+    },
+    language: {
+      type: "string",
+      description: "ISO-639-1 language code",
+    },
+    prompt: {
+      type: "string",
+      description: "Optional text prompt to guide transcription",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature (0-1)",
+    },
+    response_format: {
+      type: "string",
+      description: "Output format",
+      enum: ["json", "text", "srt", "verbose_json", "vtt"],
+    },
+    timestamp_granularities: {
+      type: "string",
+      description: "Timestamp detail level (segment, word)",
+    },
+    diarize: {
+      type: "string",
+      description: "Enable speaker diarization",
+      enum: ["true", "false"],
+    },
+    min_speakers: {
+      type: "number",
+      description: "Minimum number of speakers for diarization",
+    },
+    max_speakers: {
+      type: "number",
+      description: "Maximum number of speakers for diarization",
+    },
+    preprocessing: {
+      type: "string",
+      description: "Audio preprocessing mode",
+      enum: ["none", "dynamic", "soft_dynamic", "bass_dynamic"],
+    },
+  },
+};
+
+export const audioBatchTranslationsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/audio/translations",
+  contentType: "multipart/form-data",
+  fields: {
+    file: {
+      type: "string",
+      required: true,
+      description: "Audio file to translate (Blob or URL string)",
+    },
+    endpoint_id: {
+      type: "string",
+      required: true,
+      description: "Batch endpoint identifier",
+    },
+    model: {
+      type: "string",
+      description: "Whisper model ID (e.g. whisper-v3, whisper-v3-turbo)",
+    },
+    vad_model: {
+      type: "string",
+      description: "Voice activity detection model",
+      enum: ["silero", "whisperx-pyannet"],
+    },
+    alignment_model: {
+      type: "string",
+      description: "Forced alignment model",
+      enum: ["mms_fa", "tdnn_ffn"],
+    },
+    language: {
+      type: "string",
+      description: "ISO-639-1 source language code",
+    },
+    prompt: {
+      type: "string",
+      description: "Optional text prompt to guide translation",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature (0-1)",
+    },
+    response_format: {
+      type: "string",
+      description: "Output format",
+      enum: ["json", "text", "srt", "verbose_json", "vtt"],
+    },
+    timestamp_granularities: {
+      type: "string",
+      description: "Timestamp detail level (segment, word)",
+    },
+    preprocessing: {
+      type: "string",
+      description: "Audio preprocessing mode",
+      enum: ["none", "dynamic", "soft_dynamic", "bass_dynamic"],
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

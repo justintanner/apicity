@@ -267,6 +267,12 @@ function extractInputMedia(
         items.push({ type: "video", url });
       }
     }
+    const imageUrls = input.image_urls as string[] | undefined;
+    if (Array.isArray(imageUrls)) {
+      for (const url of imageUrls) {
+        items.push({ type: "image", url });
+      }
+    }
   }
 
   const refImages = body.reference_images as
@@ -494,7 +500,7 @@ function extractOutputMedia(
       }
     }
 
-    // KIE completed task: state=success with works array
+    // KIE completed task: state=success with works array or resultJson
     if (
       resBody.data &&
       typeof resBody.data === "object" &&
@@ -502,6 +508,50 @@ function extractOutputMedia(
     ) {
       const taskData = resBody.data as Record<string, unknown>;
       if (taskData.state === "success") {
+        // Parse resultJson (nested JSON string with output URLs)
+        if (typeof taskData.resultJson === "string" && taskData.resultJson) {
+          try {
+            const result = JSON.parse(taskData.resultJson) as Record<
+              string,
+              unknown
+            >;
+            // Format 1: {"resultUrls":["...url..."]}
+            const resultUrls = result.resultUrls as string[] | undefined;
+            if (Array.isArray(resultUrls) && resultUrls.length > 0) {
+              const url = resultUrls[0];
+              if (url.includes(".mp4") || url.includes("video")) {
+                lines.push(`**Output**: [Watch video](${url})`, "");
+              } else {
+                lines.push("**Output**:", "", `![output](${url})`, "");
+              }
+              return lines;
+            }
+            // Format 2: {"works":[{"resource":"...","cover":"..."}]}
+            const works = result.works as
+              | Array<Record<string, unknown>>
+              | undefined;
+            if (Array.isArray(works) && works.length > 0) {
+              const work = works[0];
+              if (typeof work.resource === "string") {
+                const url = work.resource as string;
+                if (
+                  url.includes(".mp4") ||
+                  url.includes("video") ||
+                  (work.type as string)?.includes("video")
+                ) {
+                  lines.push(`**Output**: [Watch video](${url})`, "");
+                } else {
+                  lines.push("**Output**:", "", `![output](${url})`, "");
+                }
+                return lines;
+              }
+            }
+          } catch {
+            // resultJson not valid JSON, fall through
+          }
+        }
+
+        // Fallback: works array directly on data (older format)
         const works = taskData.works as
           | Array<Record<string, unknown>>
           | undefined;

@@ -685,6 +685,39 @@
             );
           }
         );
+        // KIE resultJson: nested JSON string containing output URLs
+        html = html.replace(
+          /(<span class="json-key">"resultJson"<\/span>:\s*<span class="json-str">")((?:\\.|[^"])*)"<\/span>/g,
+          function (match, prefix, escapedJson) {
+            try {
+              var jsonStr = JSON.parse('"' + escapedJson + '"');
+              var parsed = JSON.parse(jsonStr);
+              var urls = [];
+              if (Array.isArray(parsed.resultUrls)) {
+                urls = parsed.resultUrls;
+              } else if (Array.isArray(parsed.works)) {
+                for (var w = 0; w < parsed.works.length; w++) {
+                  if (parsed.works[w].resource) urls.push(parsed.works[w].resource);
+                  if (parsed.works[w].cover) urls.push(parsed.works[w].cover);
+                }
+              }
+              var previews = "";
+              for (var u = 0; u < urls.length; u++) {
+                var url = urls[u];
+                if (/\.mp4|\.webm|\.mov|video/i.test(url)) {
+                  previews += '<video class="video-preview" controls src="' + url + '"></video>';
+                } else if (/\.mp3|\.wav|\.flac|\.aac|audio/i.test(url)) {
+                  previews += '<audio class="audio-preview" controls src="' + url + '"></audio>';
+                } else {
+                  previews += '<img class="b64-img-preview" src="' + url + '" onerror="this.style.display=&apos;none&apos;">';
+                }
+              }
+              return prefix + escapedJson + '"</span>' + previews;
+            } catch (e) {
+              return match;
+            }
+          }
+        );
         return html;
       }
 

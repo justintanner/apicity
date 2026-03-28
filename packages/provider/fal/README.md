@@ -81,19 +81,19 @@ await fal.v1.models.requests.payloads({
 
 These endpoints transform input before sending (all others are pure pass-through):
 
-| Method                                                                       | What happens                                           |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests.byEndpoint()` | Converts param objects to URL query strings             |
-| `v1.models.requests.payloads()`                                              | Moves `idempotency_key` from params to `Idempotency-Key` header |
+| Method                                                                            | What happens                                                    |
+| --------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `v1.models()`, `.pricing()`, `.usage()`, `.analytics()`, `.requests.byEndpoint()` | Converts param objects to URL query strings                     |
+| `v1.models.requests.payloads()`                                                   | Moves `idempotency_key` from params to `Idempotency-Key` header |
 
 ## Configuration
 
 ```typescript
 const fal = createFal({
-  apiKey: "your-api-key",       // required
-  baseURL: "https://...",       // optional, custom base URL
-  timeout: 30000,               // optional, ms (default: 30000)
-  fetch: customFetch,           // optional, custom fetch implementation
+  apiKey: "your-api-key", // required
+  baseURL: "https://...", // optional, custom base URL
+  timeout: 30000, // optional, ms (default: 30000)
+  fetch: customFetch, // optional, custom fetch implementation
 });
 ```
 

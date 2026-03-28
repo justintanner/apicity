@@ -33,8 +33,8 @@ const response = await fireworks.v1.chat.completions({
 
 Base URL: `https://api.fireworks.ai/inference/v1`
 
-| URL                      | Method Signature                 |
-| ------------------------ | -------------------------------- |
+| URL                      | Method Signature                  |
+| ------------------------ | --------------------------------- |
 | `POST /chat/completions` | `fireworks.v1.chat.completions()` |
 | `POST /completions`      | `fireworks.v1.completions()`      |
 | `POST /embeddings`       | `fireworks.v1.embeddings()`       |
@@ -149,10 +149,10 @@ for await (const chunk of stream) {
 
 ```typescript
 const fireworks = createFireworks({
-  apiKey: "your-api-key",       // required
-  baseURL: "https://...",       // optional, custom base URL
-  timeout: 30000,               // optional, ms (default: 30000)
-  fetch: customFetch,           // optional, custom fetch implementation
+  apiKey: "your-api-key", // required
+  baseURL: "https://...", // optional, custom base URL
+  timeout: 30000, // optional, ms (default: 30000)
+  fetch: customFetch, // optional, custom fetch implementation
 });
 ```
 

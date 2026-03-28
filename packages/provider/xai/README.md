@@ -33,63 +33,63 @@ Base URL: `https://api.x.ai/v1`
 
 ### Responses
 
-| URL                       | Method Signature                |
-| ------------------------- | ------------------------------- |
-| `POST /responses`         | `xai.v1.responses(req)`         |
-| `GET /responses/{id}`     | `xai.v1.responses(id)`          |
+| URL                   | Method Signature        |
+| --------------------- | ----------------------- |
+| `POST /responses`     | `xai.v1.responses(req)` |
+| `GET /responses/{id}` | `xai.v1.responses(id)`  |
 
 ### Chat
 
-| URL                      | Method Signature              |
-| ------------------------ | ----------------------------- |
-| `POST /chat/completions` | `xai.v1.chat.completions()`   |
+| URL                      | Method Signature            |
+| ------------------------ | --------------------------- |
+| `POST /chat/completions` | `xai.v1.chat.completions()` |
 
 ### Images
 
-| URL                        | Method Signature                |
-| -------------------------- | ------------------------------- |
-| `POST /images/generations` | `xai.v1.images.generations()`   |
-| `POST /images/edits`       | `xai.v1.images.edits()`         |
+| URL                        | Method Signature              |
+| -------------------------- | ----------------------------- |
+| `POST /images/generations` | `xai.v1.images.generations()` |
+| `POST /images/edits`       | `xai.v1.images.edits()`       |
 
 ### Videos
 
-| URL                        | Method Signature                |
-| -------------------------- | ------------------------------- |
-| `GET /videos/{requestId}`  | `xai.v1.videos(requestId)`      |
-| `POST /videos/generations` | `xai.v1.videos.generations()`   |
-| `POST /videos/edits`       | `xai.v1.videos.edits()`         |
-| `POST /videos/extensions`  | `xai.v1.videos.extensions()`    |
+| URL                        | Method Signature              |
+| -------------------------- | ----------------------------- |
+| `GET /videos/{requestId}`  | `xai.v1.videos(requestId)`    |
+| `POST /videos/generations` | `xai.v1.videos.generations()` |
+| `POST /videos/edits`       | `xai.v1.videos.edits()`       |
+| `POST /videos/extensions`  | `xai.v1.videos.extensions()`  |
 
 ### Files
 
-| URL                    | Method Signature              |
-| ---------------------- | ----------------------------- |
-| `POST /files`          | `xai.v1.files.upload()`       |
-| `GET /files`           | `xai.v1.files.list()`         |
-| `GET /files/{fileId}`  | `xai.v1.files.get(fileId)`    |
+| URL                      | Method Signature              |
+| ------------------------ | ----------------------------- |
+| `POST /files`            | `xai.v1.files.upload()`       |
+| `GET /files`             | `xai.v1.files.list()`         |
+| `GET /files/{fileId}`    | `xai.v1.files.get(fileId)`    |
 | `DELETE /files/{fileId}` | `xai.v1.files.delete(fileId)` |
 
 ### Models
 
-| URL                                      | Method Signature                          |
-| ---------------------------------------- | ----------------------------------------- |
-| `GET /models`                            | `xai.v1.models()`                         |
-| `GET /models/{modelId}`                  | `xai.v1.models(modelId)`                  |
-| `GET /language-models`                   | `xai.v1.languageModels()`                 |
-| `GET /language-models/{modelId}`         | `xai.v1.languageModels(modelId)`          |
-| `GET /image-generation-models`           | `xai.v1.imageGenerationModels()`          |
-| `GET /image-generation-models/{modelId}` | `xai.v1.imageGenerationModels(modelId)`   |
-| `GET /video-generation-models`           | `xai.v1.videoGenerationModels()`          |
-| `GET /video-generation-models/{modelId}` | `xai.v1.videoGenerationModels(modelId)`   |
+| URL                                      | Method Signature                        |
+| ---------------------------------------- | --------------------------------------- |
+| `GET /models`                            | `xai.v1.models()`                       |
+| `GET /models/{modelId}`                  | `xai.v1.models(modelId)`                |
+| `GET /language-models`                   | `xai.v1.languageModels()`               |
+| `GET /language-models/{modelId}`         | `xai.v1.languageModels(modelId)`        |
+| `GET /image-generation-models`           | `xai.v1.imageGenerationModels()`        |
+| `GET /image-generation-models/{modelId}` | `xai.v1.imageGenerationModels(modelId)` |
+| `GET /video-generation-models`           | `xai.v1.videoGenerationModels()`        |
+| `GET /video-generation-models/{modelId}` | `xai.v1.videoGenerationModels(modelId)` |
 
 ### Batches
 
-| URL                          | Method Signature                       |
-| ---------------------------- | -------------------------------------- |
-| `GET /batches`               | `xai.v1.batches()`                     |
-| `POST /batches`              | `xai.v1.batches.create()`              |
-| `GET /batches/{id}`          | `xai.v1.batches.get(id)`               |
-| `POST /batches/{id}:cancel`  | `xai.v1.batches.cancel(id)`            |
+| URL                           | Method Signature                       |
+| ----------------------------- | -------------------------------------- |
+| `GET /batches`                | `xai.v1.batches()`                     |
+| `POST /batches`               | `xai.v1.batches.create()`              |
+| `GET /batches/{id}`           | `xai.v1.batches.get(id)`               |
+| `POST /batches/{id}:cancel`   | `xai.v1.batches.cancel(id)`            |
 | `GET /batches/{id}/requests`  | `xai.v1.batches.requests(id)`          |
 | `POST /batches/{id}/requests` | `xai.v1.batches.requests.add(id, req)` |
 | `GET /batches/{id}/results`   | `xai.v1.batches.results(id)`           |
@@ -174,19 +174,19 @@ const uploaded = await xai.v1.files.upload(file, "data.jsonl", "batch");
 
 These endpoints transform input before sending (all others are pure pass-through):
 
-| Method                                                                    | What happens                                        |
-| ------------------------------------------------------------------------- | --------------------------------------------------- |
-| `v1.files.upload()`                                                       | Builds FormData from `file` Blob + `filename`       |
+| Method                                                                          | What happens                                           |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `v1.files.upload()`                                                             | Builds FormData from `file` Blob + `filename`          |
 | `v1.batches()`, `.requests()`, `.results()`, `v1.collections()`, `.documents()` | Converts pagination/filter params to URL query strings |
 
 ## Configuration
 
 ```typescript
 const xai = createXai({
-  apiKey: "your-api-key",       // required
-  baseURL: "https://...",       // optional, custom base URL
-  timeout: 30000,               // optional, ms (default: 30000)
-  fetch: customFetch,           // optional, custom fetch implementation
+  apiKey: "your-api-key", // required
+  baseURL: "https://...", // optional, custom base URL
+  timeout: 30000, // optional, ms (default: 30000)
+  fetch: customFetch, // optional, custom fetch implementation
 });
 ```
 

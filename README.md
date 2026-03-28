@@ -21,13 +21,13 @@ Standalone-first TypeScript AI provider packages. Each is self-contained with ze
 
 ## Providers
 
-| Package | Version | Description | Docs |
-| ------- | ------- | ----------- | ---- |
-| [@nakedapi/openai](packages/provider/openai) | [![npm](https://img.shields.io/npm/v/@nakedapi/openai?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/openai) | Chat, embeddings, images, responses, audio | [README](packages/provider/openai/README.md#endpoints) |
-| [@nakedapi/xai](packages/provider/xai) | [![npm](https://img.shields.io/npm/v/@nakedapi/xai?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/xai) | Grok chat, images, video, files, batches, collections, search | [README](packages/provider/xai/README.md#endpoints) |
-| [@nakedapi/fal](packages/provider/fal) | [![npm](https://img.shields.io/npm/v/@nakedapi/fal?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/fal) | Model registry, pricing, usage, analytics | [README](packages/provider/fal/README.md#endpoints) |
-| [@nakedapi/kimicoding](packages/provider/kimicoding) | [![npm](https://img.shields.io/npm/v/@nakedapi/kimicoding?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/kimicoding) | Anthropic Messages API format, streaming | [README](packages/provider/kimicoding/README.md#endpoints) |
-| [@nakedapi/kie](packages/provider/kie) | [![npm](https://img.shields.io/npm/v/@nakedapi/kie?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/kie) | Media generation (video/image/audio), sub-providers | [README](packages/provider/kie/README.md#endpoints) |
+| Package                                              | Version                                                                                                                             | Description                                                   | Docs                                                       |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------- |
+| [@nakedapi/openai](packages/provider/openai)         | [![npm](https://img.shields.io/npm/v/@nakedapi/openai?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/openai)         | Chat, embeddings, images, responses, audio                    | [README](packages/provider/openai/README.md#endpoints)     |
+| [@nakedapi/xai](packages/provider/xai)               | [![npm](https://img.shields.io/npm/v/@nakedapi/xai?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/xai)               | Grok chat, images, video, files, batches, collections, search | [README](packages/provider/xai/README.md#endpoints)        |
+| [@nakedapi/fal](packages/provider/fal)               | [![npm](https://img.shields.io/npm/v/@nakedapi/fal?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/fal)               | Model registry, pricing, usage, analytics                     | [README](packages/provider/fal/README.md#endpoints)        |
+| [@nakedapi/kimicoding](packages/provider/kimicoding) | [![npm](https://img.shields.io/npm/v/@nakedapi/kimicoding?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/kimicoding) | Anthropic Messages API format, streaming                      | [README](packages/provider/kimicoding/README.md#endpoints) |
+| [@nakedapi/kie](packages/provider/kie)               | [![npm](https://img.shields.io/npm/v/@nakedapi/kie?color=cb0000&label=)](https://www.npmjs.com/package/@nakedapi/kie)               | Media generation (video/image/audio), sub-providers           | [README](packages/provider/kie/README.md#endpoints)        |
 
 ## Quick Start
 
@@ -80,10 +80,10 @@ import { openai as createOpenai, withRetry } from "@nakedapi/openai";
 const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
 
 const chat = withRetry(openai.v1.chat.completions, {
-  retries: 3,     // max retry attempts (default: 2)
-  baseMs: 500,    // initial delay in ms (default: 300)
-  factor: 2,      // exponential multiplier (default: 2)
-  jitter: true,   // randomize delay ±20% (default: true)
+  retries: 3, // max retry attempts (default: 2)
+  baseMs: 500, // initial delay in ms (default: 300)
+  factor: 2, // exponential multiplier (default: 2)
+  jitter: true, // randomize delay ±20% (default: true)
 });
 ```
 
@@ -108,7 +108,11 @@ const chat = withFallback([
 Wrappers return plain functions with the same signature, so they compose naturally:
 
 ```typescript
-import { kimicoding as createKimicoding, withRetry, withFallback } from "@nakedapi/kimicoding";
+import {
+  kimicoding as createKimicoding,
+  withRetry,
+  withFallback,
+} from "@nakedapi/kimicoding";
 
 const kimi1 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! });
 const kimi2 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! });

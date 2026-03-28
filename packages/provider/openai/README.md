@@ -119,26 +119,30 @@ console.log(result.text);
 
 These endpoints transform input before sending (all others are pure pass-through):
 
-| Method                                             | What happens                                          |
-| -------------------------------------------------- | ----------------------------------------------------- |
+| Method                                                 | What happens                                                  |
+| ------------------------------------------------------ | ------------------------------------------------------------- |
 | `v1.audio.transcriptions()`, `v1.audio.translations()` | Builds FormData from params; converts `temperature` to string |
-| `v1.images.edits()`                                | Builds FormData from params; supports multiple image blobs    |
+| `v1.images.edits()`                                    | Builds FormData from params; supports multiple image blobs    |
 
 ## Configuration
 
 ```typescript
 const openai = createOpenai({
-  apiKey: "your-api-key",       // required
-  baseURL: "https://...",       // optional, custom base URL
-  timeout: 30000,               // optional, ms (default: 30000)
-  fetch: customFetch,           // optional, custom fetch implementation
+  apiKey: "your-api-key", // required
+  baseURL: "https://...", // optional, custom base URL
+  timeout: 30000, // optional, ms (default: 30000)
+  fetch: customFetch, // optional, custom fetch implementation
 });
 ```
 
 ## Middleware
 
 ```typescript
-import { openai as createOpenai, withRetry, withFallback } from "@nakedapi/openai";
+import {
+  openai as createOpenai,
+  withRetry,
+  withFallback,
+} from "@nakedapi/openai";
 
 const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
 

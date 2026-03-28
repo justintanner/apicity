@@ -193,8 +193,8 @@ Base URL: `https://api.kie.ai`
 
 ## Data Shaping
 
-| Method                  | What happens                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------- |
+| Method                   | What happens                                                                         |
+| ------------------------ | ------------------------------------------------------------------------------------ |
 | `api.fileStreamUpload()` | Infers MIME type from filename, generates timestamped upload path, wraps in FormData |
 
 ## API Reference

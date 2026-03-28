@@ -697,7 +697,8 @@
                 urls = parsed.resultUrls;
               } else if (Array.isArray(parsed.works)) {
                 for (var w = 0; w < parsed.works.length; w++) {
-                  if (parsed.works[w].resource) urls.push(parsed.works[w].resource);
+                  if (parsed.works[w].resource)
+                    urls.push(parsed.works[w].resource);
                   if (parsed.works[w].cover) urls.push(parsed.works[w].cover);
                 }
               }
@@ -705,11 +706,20 @@
               for (var u = 0; u < urls.length; u++) {
                 var url = urls[u];
                 if (/\.mp4|\.webm|\.mov|video/i.test(url)) {
-                  previews += '<video class="video-preview" controls src="' + url + '"></video>';
+                  previews +=
+                    '<video class="video-preview" controls src="' +
+                    url +
+                    '"></video>';
                 } else if (/\.mp3|\.wav|\.flac|\.aac|audio/i.test(url)) {
-                  previews += '<audio class="audio-preview" controls src="' + url + '"></audio>';
+                  previews +=
+                    '<audio class="audio-preview" controls src="' +
+                    url +
+                    '"></audio>';
                 } else {
-                  previews += '<img class="b64-img-preview" src="' + url + '" onerror="this.style.display=&apos;none&apos;">';
+                  previews +=
+                    '<img class="b64-img-preview" src="' +
+                    url +
+                    '" onerror="this.style.display=&apos;none&apos;">';
                 }
               }
               return prefix + escapedJson + '"</span>' + previews;

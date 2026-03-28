@@ -9,6 +9,8 @@ import {
   DownloadUrlResponse,
   UploadMediaRequest,
   UploadMediaResponse,
+  FileUrlUploadRequest,
+  FileBase64UploadRequest,
   KieTaskInfo,
 } from "./types";
 import type { ValidationResult } from "./types";
@@ -16,6 +18,8 @@ import {
   createTaskSchema,
   downloadUrlSchema,
   fileStreamUploadSchema,
+  fileUrlUploadSchema,
+  fileBase64UploadSchema,
   modelInputSchemas,
 } from "./schemas";
 import { validatePayload } from "./validate";
@@ -207,6 +211,110 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  async function fileUrlUpload(
+    req: FileUrlUploadRequest
+  ): Promise<UploadMediaResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const uploadPath =
+        req.uploadPath ??
+        `uploads/${Date.now()}_${req.url.split("/").pop() ?? "file"}`;
+
+      const res = await doFetch(`${uploadBaseURL}/api/file-url-upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: req.url, uploadPath }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Kie upload error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
+          ) {
+            message = `Kie upload error ${res.status}: ${(body as { msg: string }).msg}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KieError(message, res.status, body);
+      }
+
+      return (await res.json()) as UploadMediaResponse;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof KieError) throw error;
+      throw new KieError(`Failed to upload from URL: ${error}`, 500);
+    }
+  }
+
+  async function fileBase64Upload(
+    req: FileBase64UploadRequest
+  ): Promise<UploadMediaResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const mimeType = req.mimeType ?? inferMimeType(req.filename);
+      const uploadPath = `uploads/${Date.now()}_${req.filename}`;
+
+      const res = await doFetch(`${uploadBaseURL}/api/file-base64-upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          base64: req.base64,
+          filename: req.filename,
+          uploadPath,
+          ...(mimeType ? { mimeType } : {}),
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Kie upload error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
+          ) {
+            message = `Kie upload error ${res.status}: ${(body as { msg: string }).msg}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KieError(message, res.status, body);
+      }
+
+      return (await res.json()) as UploadMediaResponse;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof KieError) throw error;
+      throw new KieError(`Failed to upload base64 file: ${error}`, 500);
+    }
+  }
+
   async function downloadUrl(
     req: DownloadUrlRequest
   ): Promise<DownloadUrlResponse> {
@@ -310,6 +418,18 @@ export function kie(opts: KieOptions): KieProvider {
         payloadSchema: fileStreamUploadSchema,
         validatePayload(data: unknown): ValidationResult {
           return validatePayload(data, fileStreamUploadSchema);
+        },
+      }),
+      "file-url-upload": Object.assign(fileUrlUpload, {
+        payloadSchema: fileUrlUploadSchema,
+        validatePayload(data: unknown): ValidationResult {
+          return validatePayload(data, fileUrlUploadSchema);
+        },
+      }),
+      "file-base64-upload": Object.assign(fileBase64Upload, {
+        payloadSchema: fileBase64UploadSchema,
+        validatePayload(data: unknown): ValidationResult {
+          return validatePayload(data, fileBase64UploadSchema);
         },
       }),
     },

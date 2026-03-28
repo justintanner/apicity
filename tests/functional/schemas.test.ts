@@ -34,6 +34,8 @@ import {
   createTaskSchema,
   downloadUrlSchema,
   fileStreamUploadSchema,
+  fileUrlUploadSchema,
+  fileBase64UploadSchema,
   veoGenerateSchema,
   veoExtendSchema,
   sunoGenerateSchema,
@@ -72,6 +74,8 @@ describe("schema structure", () => {
     { name: "kie/createTask", schema: createTaskSchema },
     { name: "kie/downloadUrl", schema: downloadUrlSchema },
     { name: "kie/fileStreamUpload", schema: fileStreamUploadSchema },
+    { name: "kie/fileUrlUpload", schema: fileUrlUploadSchema },
+    { name: "kie/fileBase64Upload", schema: fileBase64UploadSchema },
     { name: "kie/veoGenerate", schema: veoGenerateSchema },
     { name: "kie/veoExtend", schema: veoExtendSchema },
     { name: "kie/sunoGenerate", schema: sunoGenerateSchema },
@@ -223,6 +227,35 @@ describe("schema + validatePayload integration", () => {
       sunoGenerateSchema
     );
     expect(result.valid).toBe(true);
+  });
+
+  it("kie fileUrlUpload: accepts valid request", () => {
+    const result = validatePayload(
+      { url: "https://example.com/image.png" },
+      fileUrlUploadSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("kie fileUrlUpload: rejects missing url", () => {
+    const result = validatePayload({}, fileUrlUploadSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("url is required");
+  });
+
+  it("kie fileBase64Upload: accepts valid request", () => {
+    const result = validatePayload(
+      { base64: "aGVsbG8=", filename: "test.png" },
+      fileBase64UploadSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("kie fileBase64Upload: rejects missing required fields", () => {
+    const result = validatePayload({}, fileBase64UploadSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("base64 is required");
+    expect(result.errors).toContain("filename is required");
   });
 
   it("kie claude: accepts valid request", () => {

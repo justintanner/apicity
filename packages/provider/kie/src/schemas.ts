@@ -51,6 +51,42 @@ export const fileStreamUploadSchema: PayloadSchema = {
   },
 };
 
+export const fileUrlUploadSchema: PayloadSchema = {
+  method: "POST",
+  path: "/api/file-url-upload",
+  contentType: "application/json",
+  fields: {
+    url: {
+      type: "string",
+      required: true,
+      description: "Remote URL of the file to upload",
+    },
+    uploadPath: {
+      type: "string",
+      description: "Destination path (auto-generated if omitted)",
+    },
+  },
+};
+
+export const fileBase64UploadSchema: PayloadSchema = {
+  method: "POST",
+  path: "/api/file-base64-upload",
+  contentType: "application/json",
+  fields: {
+    base64: {
+      type: "string",
+      required: true,
+      description: "Base64-encoded file data",
+    },
+    filename: {
+      type: "string",
+      required: true,
+      description: "Filename with extension",
+    },
+    mimeType: { type: "string", description: "MIME type override" },
+  },
+};
+
 export const veoGenerateSchema: PayloadSchema = {
   method: "POST",
   path: "/api/v1/veo/generate",

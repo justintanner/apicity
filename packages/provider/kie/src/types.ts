@@ -352,14 +352,27 @@ export interface KieApiEnvelope<T = Record<string, unknown>> {
 // Task creation response (raw envelope)
 export type TaskResponse = KieApiEnvelope<{ taskId: string }>;
 
-// Upload media request
+// Upload media request (file-stream-upload, multipart)
 export interface UploadMediaRequest {
   file: Blob;
   filename: string;
   mimeType?: string;
 }
 
-// Upload media response (raw envelope)
+// Upload file from URL request (file-url-upload)
+export interface FileUrlUploadRequest {
+  url: string;
+  uploadPath?: string;
+}
+
+// Upload file as base64 request (file-base64-upload)
+export interface FileBase64UploadRequest {
+  base64: string;
+  filename: string;
+  mimeType?: string;
+}
+
+// Upload media response (raw envelope, shared by all upload endpoints)
 export interface UploadMediaResponse {
   success: boolean;
   code: number;
@@ -492,9 +505,23 @@ interface KieFileStreamUploadMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface KieFileUrlUploadMethod {
+  (req: FileUrlUploadRequest): Promise<UploadMediaResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface KieFileBase64UploadMethod {
+  (req: FileBase64UploadRequest): Promise<UploadMediaResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface KieApiNamespace {
   v1: KieV1Namespace;
   "file-stream-upload": KieFileStreamUploadMethod;
+  "file-url-upload": KieFileUrlUploadMethod;
+  "file-base64-upload": KieFileBase64UploadMethod;
 }
 
 // Provider interface (sub-provider types imported in index.ts)

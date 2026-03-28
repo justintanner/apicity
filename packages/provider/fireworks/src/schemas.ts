@@ -1471,6 +1471,109 @@ export const createApiKeySchema: PayloadSchema = {
         expireTime: {
           type: "string",
           description: "Optional expiration timestamp (RFC3339)",
+// Evaluators schemas
+export const createEvaluatorSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/evaluatorsV2",
+  contentType: "application/json",
+  fields: {
+    evaluatorId: {
+      type: "string",
+      description: "Client-chosen evaluator ID",
+    },
+    evaluator: {
+      type: "object",
+      required: true,
+      description: "Evaluator configuration",
+      properties: {
+        displayName: {
+          type: "string",
+          description: "Human-readable display name",
+        },
+        description: {
+          type: "string",
+          description: "Evaluator description",
+        },
+        requirements: {
+          type: "string",
+          description: "Contents for requirements.txt",
+        },
+        entryPoint: {
+          type: "string",
+          description:
+            "Entry point (format: module::function or path::function)",
+        },
+        commitHash: {
+          type: "string",
+          description: "Git commit hash",
+        },
+        defaultDataset: {
+          type: "string",
+          description: "Default dataset resource name",
+        },
+        criteria: {
+          type: "array",
+          description: "Evaluation criteria",
+          items: {
+            type: "object",
+            properties: {
+              type: {
+                type: "string",
+                description: "Criterion type",
+                enum: ["TYPE_UNSPECIFIED", "CODE_SNIPPETS"],
+              },
+              name: {
+                type: "string",
+                description: "Criterion name",
+              },
+              description: {
+                type: "string",
+                description: "Criterion description",
+              },
+              codeSnippets: {
+                type: "object",
+                description: "Code snippets configuration",
+                properties: {
+                  language: {
+                    type: "string",
+                    description: "Programming language",
+                  },
+                  fileContents: {
+                    type: "object",
+                    description: "Map of filename to code content",
+                  },
+                  entryFile: {
+                    type: "string",
+                    description: "Entry file name",
+                  },
+                  entryFunc: {
+                    type: "string",
+                    description: "Entry function name",
+                  },
+                },
+              },
+            },
+          },
+        },
+        source: {
+          type: "object",
+          description: "Evaluator source configuration",
+          properties: {
+            type: {
+              type: "string",
+              description: "Source type",
+              enum: [
+                "TYPE_UNSPECIFIED",
+                "TYPE_UPLOAD",
+                "TYPE_GITHUB",
+                "TYPE_TEMPORARY",
+              ],
+            },
+            githubRepositoryName: {
+              type: "string",
+              description: "GitHub repository (format: owner/repository)",
+            },
+          },
         },
       },
     },
@@ -1553,6 +1656,158 @@ export const updateSecretSchema: PayloadSchema = {
     value: {
       type: "string",
       description: "New secret value (INPUT_ONLY)",
+export const updateEvaluatorSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{account_id}/evaluators/{evaluator_id}",
+  contentType: "application/json",
+  fields: {
+    displayName: {
+      type: "string",
+      description: "Human-readable display name",
+    },
+    description: {
+      type: "string",
+      description: "Evaluator description",
+    },
+    requirements: {
+      type: "string",
+      description: "Contents for requirements.txt",
+    },
+    entryPoint: {
+      type: "string",
+      description: "Entry point (format: module::function or path::function)",
+    },
+    commitHash: {
+      type: "string",
+      description: "Git commit hash",
+    },
+    defaultDataset: {
+      type: "string",
+      description: "Default dataset resource name",
+    },
+    criteria: {
+      type: "array",
+      description: "Evaluation criteria",
+      items: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            description: "Criterion type",
+            enum: ["TYPE_UNSPECIFIED", "CODE_SNIPPETS"],
+          },
+          name: {
+            type: "string",
+            description: "Criterion name",
+          },
+          description: {
+            type: "string",
+            description: "Criterion description",
+          },
+        },
+      },
+    },
+    source: {
+      type: "object",
+      description: "Evaluator source configuration",
+      properties: {
+        type: {
+          type: "string",
+          description: "Source type",
+          enum: [
+            "TYPE_UNSPECIFIED",
+            "TYPE_UPLOAD",
+            "TYPE_GITHUB",
+            "TYPE_TEMPORARY",
+          ],
+        },
+        githubRepositoryName: {
+          type: "string",
+          description: "GitHub repository (format: owner/repository)",
+        },
+      },
+    },
+  },
+};
+
+export const getUploadEndpointEvaluatorSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/evaluators/{evaluator_id}:getUploadEndpoint",
+  contentType: "application/json",
+  fields: {
+    filenameToSize: {
+      type: "object",
+      required: true,
+      description: "Map of filename to file size",
+    },
+    readMask: {
+      type: "string",
+      description: "Field mask for response",
+    },
+  },
+};
+
+// Evaluation Jobs schemas
+export const createEvaluationJobSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/evaluationJobs",
+  contentType: "application/json",
+  fields: {
+    evaluationJobId: {
+      type: "string",
+      description: "Client-chosen evaluation job ID",
+    },
+    leaderboardIds: {
+      type: "array",
+      description: "Leaderboard IDs to attach the job to",
+      items: { type: "string" },
+    },
+    evaluationJob: {
+      type: "object",
+      required: true,
+      description: "Evaluation job configuration",
+      properties: {
+        displayName: {
+          type: "string",
+          description: "Human-readable display name",
+        },
+        evaluator: {
+          type: "string",
+          required: true,
+          description:
+            "Evaluator resource name (e.g. accounts/{account_id}/evaluators/{evaluator_id})",
+        },
+        inputDataset: {
+          type: "string",
+          required: true,
+          description:
+            "Input dataset resource name (e.g. accounts/{account_id}/datasets/{dataset_id})",
+        },
+        outputDataset: {
+          type: "string",
+          required: true,
+          description:
+            "Output dataset resource name (e.g. accounts/{account_id}/datasets/{dataset_id})",
+        },
+        outputStats: {
+          type: "string",
+          description: "Aggregated stats output",
+        },
+        awsS3Config: {
+          type: "object",
+          description: "AWS S3 configuration",
+          properties: {
+            credentialsSecret: {
+              type: "string",
+              description: "Secret resource name with AWS credentials",
+            },
+            iamRoleArn: {
+              type: "string",
+              description: "AWS IAM role ARN",
+            },
+          },
+        },
+      },
     },
   },
 };

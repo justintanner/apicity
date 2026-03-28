@@ -113,6 +113,25 @@ import {
   FireworksCreateSecretRequest,
   FireworksSecret,
   FireworksUpdateSecretRequest,
+  FireworksCreateEvaluatorRequest,
+  FireworksEvaluator,
+  FireworksListEvaluatorsRequest,
+  FireworksListEvaluatorsResponse,
+  FireworksGetEvaluatorRequest,
+  FireworksUpdateEvaluatorRequest,
+  FireworksUpdateEvaluatorOptions,
+  FireworksGetUploadEndpointEvaluatorRequest,
+  FireworksGetUploadEndpointEvaluatorResponse,
+  FireworksGetBuildLogEndpointRequest,
+  FireworksGetBuildLogEndpointResponse,
+  FireworksGetSourceCodeSignedUrlRequest,
+  FireworksGetSourceCodeSignedUrlResponse,
+  FireworksCreateEvaluationJobRequest,
+  FireworksEvaluationJob,
+  FireworksListEvaluationJobsRequest,
+  FireworksListEvaluationJobsResponse,
+  FireworksGetEvaluationJobRequest,
+  FireworksGetExecutionLogEndpointResponse,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -159,6 +178,10 @@ import {
   datasetsGetUploadEndpointSchema,
   datasetsGetDownloadEndpointSchema,
   datasetsValidateUploadSchema,
+  createEvaluatorSchema,
+  updateEvaluatorSchema,
+  getUploadEndpointEvaluatorSchema,
+  createEvaluationJobSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
@@ -2330,6 +2353,234 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             return await makeModelsRequest<FireworksMetricsFileEndpointResponse>(
               "GET",
               `/v1/accounts/${accountId}/dpoJobs/${jobId}:getMetricsFileEndpoint`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+        },
+        evaluators: {
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateEvaluatorRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksEvaluator> {
+              return await makeModelsRequest<FireworksEvaluator>(
+                "POST",
+                `/v1/accounts/${accountId}/evaluatorsV2`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: createEvaluatorSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createEvaluatorSchema);
+              },
+            }
+          ),
+          async list(
+            accountId: string,
+            params?: FireworksListEvaluatorsRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListEvaluatorsResponse> {
+            return await makeModelsRequest<FireworksListEvaluatorsResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluators`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          async get(
+            accountId: string,
+            evaluatorId: string,
+            params?: FireworksGetEvaluatorRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksEvaluator> {
+            return await makeModelsRequest<FireworksEvaluator>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluators/${evaluatorId}`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          update: Object.assign(
+            async function update(
+              accountId: string,
+              evaluatorId: string,
+              req: FireworksUpdateEvaluatorRequest,
+              options?: FireworksUpdateEvaluatorOptions,
+              signal?: AbortSignal
+            ): Promise<FireworksEvaluator> {
+              return await makeModelsRequest<FireworksEvaluator>(
+                "PATCH",
+                `/v1/accounts/${accountId}/evaluators/${evaluatorId}`,
+                req,
+                options as Record<
+                  string,
+                  string | number | boolean | undefined
+                >,
+                signal
+              );
+            },
+            {
+              payloadSchema: updateEvaluatorSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, updateEvaluatorSchema);
+              },
+            }
+          ),
+          async delete(
+            accountId: string,
+            evaluatorId: string,
+            signal?: AbortSignal
+          ): Promise<Record<string, unknown>> {
+            return await makeModelsRequest<Record<string, unknown>>(
+              "DELETE",
+              `/v1/accounts/${accountId}/evaluators/${evaluatorId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          getUploadEndpoint: Object.assign(
+            async function getUploadEndpoint(
+              accountId: string,
+              evaluatorId: string,
+              req: FireworksGetUploadEndpointEvaluatorRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksGetUploadEndpointEvaluatorResponse> {
+              return await makeModelsRequest<FireworksGetUploadEndpointEvaluatorResponse>(
+                "POST",
+                `/v1/accounts/${accountId}/evaluators/${evaluatorId}:getUploadEndpoint`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: getUploadEndpointEvaluatorSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, getUploadEndpointEvaluatorSchema);
+              },
+            }
+          ),
+          async validateUpload(
+            accountId: string,
+            evaluatorId: string,
+            signal?: AbortSignal
+          ): Promise<Record<string, unknown>> {
+            return await makeModelsRequest<Record<string, unknown>>(
+              "POST",
+              `/v1/accounts/${accountId}/evaluators/${evaluatorId}:validateUpload`,
+              {},
+              undefined,
+              signal
+            );
+          },
+          async getBuildLogEndpoint(
+            accountId: string,
+            evaluatorId: string,
+            params?: FireworksGetBuildLogEndpointRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksGetBuildLogEndpointResponse> {
+            return await makeModelsRequest<FireworksGetBuildLogEndpointResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluators/${evaluatorId}:getBuildLogEndpoint`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          async getSourceCodeSignedUrl(
+            accountId: string,
+            evaluatorId: string,
+            params?: FireworksGetSourceCodeSignedUrlRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksGetSourceCodeSignedUrlResponse> {
+            return await makeModelsRequest<FireworksGetSourceCodeSignedUrlResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluators/${evaluatorId}:getSourceCodeSignedUrl`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+        },
+        evaluationJobs: {
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateEvaluationJobRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksEvaluationJob> {
+              return await makeModelsRequest<FireworksEvaluationJob>(
+                "POST",
+                `/v1/accounts/${accountId}/evaluationJobs`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: createEvaluationJobSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createEvaluationJobSchema);
+              },
+            }
+          ),
+          async list(
+            accountId: string,
+            params?: FireworksListEvaluationJobsRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListEvaluationJobsResponse> {
+            return await makeModelsRequest<FireworksListEvaluationJobsResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluationJobs`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          async get(
+            accountId: string,
+            evaluationJobId: string,
+            params?: FireworksGetEvaluationJobRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksEvaluationJob> {
+            return await makeModelsRequest<FireworksEvaluationJob>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluationJobs/${evaluationJobId}`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          async delete(
+            accountId: string,
+            evaluationJobId: string,
+            signal?: AbortSignal
+          ): Promise<Record<string, unknown>> {
+            return await makeModelsRequest<Record<string, unknown>>(
+              "DELETE",
+              `/v1/accounts/${accountId}/evaluationJobs/${evaluationJobId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          async getExecutionLogEndpoint(
+            accountId: string,
+            evaluationJobId: string,
+            signal?: AbortSignal
+          ): Promise<FireworksGetExecutionLogEndpointResponse> {
+            return await makeModelsRequest<FireworksGetExecutionLogEndpointResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/evaluationJobs/${evaluationJobId}:getExecutionLogEndpoint`,
               undefined,
               undefined,
               signal

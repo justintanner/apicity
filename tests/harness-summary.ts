@@ -1,6 +1,7 @@
 /**
  * Generates a visual Markdown summary of changed HAR recordings for PR comments.
- * Extracts prompts, input media, and output media/text from each recording.
+ * Shows the full story of every API interaction: credits checks first, then
+ * every request/response in order, with polling steps rendered inline.
  * Used in CI via: npx tsx tests/harness-summary.ts
  * Writes harness-summary.md and sets GitHub Actions outputs.
  */
@@ -15,8 +16,7 @@ import {
 } from "./har-data.js";
 
 const MAX_PROMPT_LEN = 300;
-const MAX_TEXT_LEN = 500;
-const MAX_JSON_LEN = 500;
+const MAX_JSON_LEN = 2000;
 const MAX_COMMENT_LEN = 60_000;
 const ASSETS_DIR = "tests/fixtures/harness-generated";
 
@@ -33,18 +33,19 @@ const BINARY_MIME_PREFIXES = [
   "application/octet",
 ];
 
+// URL patterns that indicate a credits/billing/usage check
+const CREDITS_URL_PATTERNS = [
+  /\/credit/i,
+  /\/billing/i,
+  /\/usage/i,
+  /\/analytics/i,
+  /\/balance/i,
+];
+
 interface MediaItem {
   type: "image" | "video" | "audio";
   url: string;
   label?: string;
-}
-
-interface OutputResult {
-  type: "image" | "video" | "text" | "async" | "metadata";
-  url?: string;
-  text?: string;
-  duration?: number;
-  b64AssetPath?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -97,301 +98,6 @@ function inferMimeFromB64(b64: string): string {
   return "image/jpeg";
 }
 
-// ---------------------------------------------------------------------------
-// Prompt extraction
-// ---------------------------------------------------------------------------
-
-function extractPrompt(entries: HarEntry[]): string {
-  const body = parseBody(entries[0]);
-  if (!body) return "";
-
-  // Direct prompt field (image/video generation)
-  if (typeof body.prompt === "string") {
-    return truncate(body.prompt, MAX_PROMPT_LEN);
-  }
-
-  // KIE input.prompt
-  const input = body.input as Record<string, unknown> | undefined;
-  if (input && typeof input.prompt === "string") {
-    return truncate(input.prompt, MAX_PROMPT_LEN);
-  }
-
-  // Messages array (chat, vision)
-  const messages = body.messages as Array<Record<string, unknown>> | undefined;
-  if (messages && messages.length > 0) {
-    const last = messages[messages.length - 1];
-    if (typeof last.content === "string") {
-      return truncate(last.content, MAX_PROMPT_LEN);
-    }
-    // Array content (vision: [{type:"text",text:"..."}, {type:"image_url",...}])
-    if (Array.isArray(last.content)) {
-      const textParts = (last.content as Array<Record<string, unknown>>)
-        .filter((p) => p.type === "text" && typeof p.text === "string")
-        .map((p) => p.text as string);
-      if (textParts.length > 0) {
-        return truncate(textParts.join(" "), MAX_PROMPT_LEN);
-      }
-    }
-  }
-
-  return "";
-}
-
-// ---------------------------------------------------------------------------
-// Input media extraction
-// ---------------------------------------------------------------------------
-
-/** Map recording name patterns to known repo source files. */
-const SOURCE_FILE_MAP: Array<[RegExp, string | null]> = [
-  [/^xai\/image-edit/, "tests/fixtures/cat1.jpg"],
-  [/^xai\/video-cat-image/, "tests/fixtures/cat1.jpg"],
-  [/^xai\/video-image-to-video/, "tests/fixtures/cat1.jpg"],
-  [/^xai\/video-reference-images/, "tests/fixtures/cat1.jpg"],
-  [/^openai\/vision/, "tests/fixtures/red.png"],
-  [/^kimicoding\/.*image-base64/, null], // 1px test pixel, skip
-  [/^kie\/e2e-motion-control/, null], // uses external URLs
-  [/^kie\/kling-motion-control/, null], // uses external URLs
-];
-
-function inferSourceFile(recordingName: string): string | null {
-  for (const [pattern, file] of SOURCE_FILE_MAP) {
-    if (pattern.test(recordingName)) return file ?? null;
-  }
-  return null;
-}
-
-function extractInputMedia(
-  entries: HarEntry[],
-  recordingName: string
-): MediaItem[] {
-  const items: MediaItem[] = [];
-  const body = parseBody(entries[0]);
-  if (!body) return items;
-
-  // Check for known repo source file first
-  const sourceFile = inferSourceFile(recordingName);
-  if (sourceFile) {
-    items.push({
-      type: "image",
-      url: buildRepoUrl(sourceFile),
-      label: sourceFile,
-    });
-    return items;
-  }
-
-  // xAI image edit: body.image.url
-  const image = body.image as Record<string, unknown> | undefined;
-  if (image && typeof image.url === "string") {
-    const url = image.url as string;
-    if (url.startsWith("http")) {
-      items.push({ type: "image", url });
-    }
-  }
-
-  // xAI video edit: body.video.url
-  const video = body.video as Record<string, unknown> | undefined;
-  if (video && typeof video.url === "string") {
-    items.push({ type: "video", url: video.url as string });
-  }
-
-  // KIE motion control: body.input.input_urls / video_urls
-  const input = body.input as Record<string, unknown> | undefined;
-  if (input) {
-    const inputUrls = input.input_urls as string[] | undefined;
-    if (Array.isArray(inputUrls)) {
-      for (const url of inputUrls) {
-        items.push({ type: "image", url });
-      }
-    }
-    const videoUrls = input.video_urls as string[] | undefined;
-    if (Array.isArray(videoUrls)) {
-      for (const url of videoUrls) {
-        items.push({ type: "video", url });
-      }
-    }
-  }
-
-  // xAI video reference images: body.reference_images[].url
-  const refImages = body.reference_images as
-    | Array<Record<string, unknown>>
-    | undefined;
-  if (Array.isArray(refImages)) {
-    for (const ref of refImages) {
-      if (typeof ref.url === "string") {
-        const url = ref.url as string;
-        if (url.startsWith("http")) {
-          items.push({ type: "image", url });
-        }
-      }
-    }
-  }
-
-  return items;
-}
-
-// ---------------------------------------------------------------------------
-// Output extraction
-// ---------------------------------------------------------------------------
-
-function isPollingResponse(body: Record<string, unknown>): boolean {
-  return (
-    typeof body.status === "string" &&
-    (body.status === "pending" || body.status === "queuing") &&
-    !body.video
-  );
-}
-
-function saveBase64Asset(
-  b64: string,
-  recordingName: string
-): string | undefined {
-  const mime = inferMimeFromB64(b64);
-  const ext = mimeToExt(mime);
-  const safeName = recordingName.replace(/[^a-z0-9-]/gi, "-");
-  const assetPath = path.join(ASSETS_DIR, `${safeName}.${ext}`);
-
-  fs.mkdirSync(ASSETS_DIR, { recursive: true });
-  fs.writeFileSync(assetPath, Buffer.from(b64, "base64"));
-  return assetPath;
-}
-
-function reassembleSSE(text: string): string {
-  const parts: string[] = [];
-  for (const line of text.split("\n")) {
-    if (!line.startsWith("data:")) continue;
-    try {
-      const data = JSON.parse(line.slice(5)) as Record<string, unknown>;
-      if (data.type === "content_block_delta") {
-        const delta = data.delta as Record<string, unknown> | undefined;
-        if (delta && typeof delta.text === "string") {
-          parts.push(delta.text as string);
-        }
-      }
-    } catch {
-      // skip
-    }
-  }
-  return parts.join("");
-}
-
-function extractOutput(
-  entries: HarEntry[],
-  recordingName: string
-): OutputResult {
-  // Walk from the end to find the last meaningful response
-  for (let i = entries.length - 1; i >= 0; i--) {
-    const resBody = parseResponseBody(entries[i]);
-    if (!resBody) continue;
-    if (isPollingResponse(resBody)) continue;
-
-    // Image URL: data[].url
-    const data = resBody.data as
-      | Array<Record<string, unknown>>
-      | Record<string, unknown>
-      | undefined;
-    if (Array.isArray(data) && data.length > 0) {
-      const first = data[0];
-      if (typeof first.url === "string") {
-        return { type: "image", url: first.url as string };
-      }
-      // Base64 image: data[].b64_json
-      if (typeof first.b64_json === "string") {
-        const assetPath = saveBase64Asset(
-          first.b64_json as string,
-          recordingName
-        );
-        if (assetPath) {
-          return { type: "image", b64AssetPath: assetPath };
-        }
-      }
-    }
-
-    // Completed video poll: status=done with video.url
-    if (resBody.status === "done") {
-      const video = resBody.video as Record<string, unknown> | undefined;
-      if (video && typeof video.url === "string" && video.url) {
-        return {
-          type: "video",
-          url: video.url as string,
-          duration:
-            typeof video.duration === "number"
-              ? (video.duration as number)
-              : undefined,
-        };
-      }
-    }
-
-    // Failed video poll: status=failed
-    if (resBody.status === "failed") {
-      const error = resBody.error as Record<string, unknown> | undefined;
-      const msg = error?.message ?? "generation failed";
-      return { type: "text", text: `Failed: ${msg}` };
-    }
-
-    // Chat completion: choices[].message.content
-    const choices = resBody.choices as
-      | Array<Record<string, unknown>>
-      | undefined;
-    if (Array.isArray(choices) && choices.length > 0) {
-      const msg = choices[0].message as Record<string, unknown> | undefined;
-      if (msg && typeof msg.content === "string") {
-        return { type: "text", text: msg.content as string };
-      }
-    }
-
-    // Anthropic format: content[].text
-    const content = resBody.content as
-      | Array<Record<string, unknown>>
-      | undefined;
-    if (Array.isArray(content) && content.length > 0) {
-      const textParts = content
-        .filter((c) => c.type === "text" && typeof c.text === "string")
-        .map((c) => c.text as string);
-      if (textParts.length > 0) {
-        return { type: "text", text: textParts.join("") };
-      }
-    }
-
-    // Transcription: { text: "..." }
-    if (typeof resBody.text === "string" && resBody.text) {
-      return { type: "text", text: resBody.text as string };
-    }
-
-    // Async task: { data: { taskId: "..." } }
-    if (
-      data &&
-      !Array.isArray(data) &&
-      typeof (data as Record<string, unknown>).taskId === "string"
-    ) {
-      return { type: "async" };
-    }
-
-    // Video generation: { request_id: "..." } (async, no result yet)
-    if (typeof resBody.request_id === "string") {
-      // Keep looking — a later entry might have the completed poll
-      continue;
-    }
-
-    // Metadata / other JSON
-    return { type: "metadata" };
-  }
-
-  // SSE streaming response
-  for (const entry of entries) {
-    if (entry.response.content?.text?.startsWith("event:")) {
-      const text = reassembleSSE(entry.response.content.text!);
-      if (text) return { type: "text", text };
-    }
-  }
-
-  // All entries were request_id or pending polls — treat as async
-  return { type: "async" };
-}
-
-// ---------------------------------------------------------------------------
-// HTTP detail helpers
-// ---------------------------------------------------------------------------
-
 function extractUrlPath(fullUrl: string): string {
   try {
     return new URL(fullUrl).pathname;
@@ -419,12 +125,232 @@ function isMultipartRequest(entry: HarEntry): boolean {
   return ct.toLowerCase().startsWith("multipart/form-data");
 }
 
-function renderRequestSection(entry: HarEntry): string[] {
+function isCreditEntry(entry: HarEntry): boolean {
+  const urlPath = extractUrlPath(entry.request.url);
+  return CREDITS_URL_PATTERNS.some((pattern) => pattern.test(urlPath));
+}
+
+function isPollingEntry(entry: HarEntry): boolean {
+  const resBody = parseResponseBody(entry);
+  if (!resBody) return false;
+  // xAI polling: status pending/queuing with no final asset
+  if (
+    typeof resBody.status === "string" &&
+    (resBody.status === "pending" || resBody.status === "queuing") &&
+    !resBody.video
+  ) {
+    return true;
+  }
+  // KIE polling: recordInfo responses with state field
+  if (
+    typeof resBody.code === "number" &&
+    resBody.data &&
+    typeof (resBody.data as Record<string, unknown>).state === "string"
+  ) {
+    const state = (resBody.data as Record<string, unknown>).state as string;
+    if (state === "waiting" || state === "queuing" || state === "generating") {
+      return true;
+    }
+  }
+  // KIE 422 polling (recordInfo null)
+  if (resBody.code === 422 && resBody.msg === "recordInfo is null") {
+    return true;
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// Prompt extraction
+// ---------------------------------------------------------------------------
+
+function extractPrompt(entries: HarEntry[]): string {
+  // Find the first non-credit entry for the prompt
+  const entry = entries.find((e) => !isCreditEntry(e));
+  if (!entry) return "";
+  const body = parseBody(entry);
+  if (!body) return "";
+
+  if (typeof body.prompt === "string") {
+    return truncate(body.prompt, MAX_PROMPT_LEN);
+  }
+
+  const input = body.input as Record<string, unknown> | undefined;
+  if (input && typeof input.prompt === "string") {
+    return truncate(input.prompt, MAX_PROMPT_LEN);
+  }
+
+  const messages = body.messages as Array<Record<string, unknown>> | undefined;
+  if (messages && messages.length > 0) {
+    const last = messages[messages.length - 1];
+    if (typeof last.content === "string") {
+      return truncate(last.content, MAX_PROMPT_LEN);
+    }
+    if (Array.isArray(last.content)) {
+      const textParts = (last.content as Array<Record<string, unknown>>)
+        .filter((p) => p.type === "text" && typeof p.text === "string")
+        .map((p) => p.text as string);
+      if (textParts.length > 0) {
+        return truncate(textParts.join(" "), MAX_PROMPT_LEN);
+      }
+    }
+  }
+
+  return "";
+}
+
+// ---------------------------------------------------------------------------
+// Input media extraction
+// ---------------------------------------------------------------------------
+
+const SOURCE_FILE_MAP: Array<[RegExp, string | null]> = [
+  [/^xai\/image-edit/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/video-cat-image/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/video-image-to-video/, "tests/fixtures/cat1.jpg"],
+  [/^xai\/video-reference-images/, "tests/fixtures/cat1.jpg"],
+  [/^openai\/vision/, "tests/fixtures/red.png"],
+  [/^kimicoding\/.*image-base64/, null],
+  [/^kie\/e2e-motion-control/, null],
+  [/^kie\/kling-motion-control/, null],
+];
+
+function inferSourceFile(recordingName: string): string | null {
+  for (const [pattern, file] of SOURCE_FILE_MAP) {
+    if (pattern.test(recordingName)) return file ?? null;
+  }
+  return null;
+}
+
+function extractInputMedia(
+  entries: HarEntry[],
+  recordingName: string
+): MediaItem[] {
+  const items: MediaItem[] = [];
+  const entry = entries.find((e) => !isCreditEntry(e));
+  if (!entry) return items;
+  const body = parseBody(entry);
+  if (!body) return items;
+
+  const sourceFile = inferSourceFile(recordingName);
+  if (sourceFile) {
+    items.push({
+      type: "image",
+      url: buildRepoUrl(sourceFile),
+      label: sourceFile,
+    });
+    return items;
+  }
+
+  const image = body.image as Record<string, unknown> | undefined;
+  if (image && typeof image.url === "string") {
+    const url = image.url as string;
+    if (url.startsWith("http")) {
+      items.push({ type: "image", url });
+    }
+  }
+
+  const video = body.video as Record<string, unknown> | undefined;
+  if (video && typeof video.url === "string") {
+    items.push({ type: "video", url: video.url as string });
+  }
+
+  const input = body.input as Record<string, unknown> | undefined;
+  if (input) {
+    const inputUrls = input.input_urls as string[] | undefined;
+    if (Array.isArray(inputUrls)) {
+      for (const url of inputUrls) {
+        items.push({ type: "image", url });
+      }
+    }
+    const videoUrls = input.video_urls as string[] | undefined;
+    if (Array.isArray(videoUrls)) {
+      for (const url of videoUrls) {
+        items.push({ type: "video", url });
+      }
+    }
+  }
+
+  const refImages = body.reference_images as
+    | Array<Record<string, unknown>>
+    | undefined;
+  if (Array.isArray(refImages)) {
+    for (const ref of refImages) {
+      if (typeof ref.url === "string") {
+        const url = ref.url as string;
+        if (url.startsWith("http")) {
+          items.push({ type: "image", url });
+        }
+      }
+    }
+  }
+
+  return items;
+}
+
+// ---------------------------------------------------------------------------
+// Base64 asset saving
+// ---------------------------------------------------------------------------
+
+function saveBase64Asset(
+  b64: string,
+  recordingName: string
+): string | undefined {
+  const mime = inferMimeFromB64(b64);
+  const ext = mimeToExt(mime);
+  const safeName = recordingName.replace(/[^a-z0-9-]/gi, "-");
+  const assetPath = path.join(ASSETS_DIR, `${safeName}.${ext}`);
+
+  fs.mkdirSync(ASSETS_DIR, { recursive: true });
+  fs.writeFileSync(assetPath, Buffer.from(b64, "base64"));
+  return assetPath;
+}
+
+// ---------------------------------------------------------------------------
+// SSE reassembly
+// ---------------------------------------------------------------------------
+
+function reassembleSSE(text: string): string {
+  const parts: string[] = [];
+  for (const line of text.split("\n")) {
+    if (!line.startsWith("data:")) continue;
+    try {
+      const data = JSON.parse(line.slice(5)) as Record<string, unknown>;
+      if (data.type === "content_block_delta") {
+        const delta = data.delta as Record<string, unknown> | undefined;
+        if (delta && typeof delta.text === "string") {
+          parts.push(delta.text as string);
+        }
+      }
+    } catch {
+      // skip
+    }
+  }
+  return parts.join("");
+}
+
+// ---------------------------------------------------------------------------
+// Entry rendering — full req+res for every entry
+// ---------------------------------------------------------------------------
+
+function renderEntryLabel(
+  entry: HarEntry,
+  index: number,
+  total: number
+): string {
+  const method = entry.request.method;
+  const urlPath = extractUrlPath(entry.request.url);
+
+  if (isCreditEntry(entry)) return `Credits Check — ${method} ${urlPath}`;
+  if (isPollingEntry(entry)) return `Poll ${method} ${urlPath}`;
+
+  if (total === 1) return `${method} ${urlPath}`;
+  return `Step ${index + 1} — ${method} ${urlPath}`;
+}
+
+function renderEntryRequest(entry: HarEntry): string[] {
   const lines: string[] = [];
   const method = entry.request.method;
   const urlPath = extractUrlPath(entry.request.url);
 
-  // HTTP method + path + filtered headers
   const httpLines: string[] = [`${method} ${urlPath}`];
   for (const header of entry.request.headers) {
     if (VISIBLE_REQUEST_HEADERS.has(header.name.toLowerCase())) {
@@ -432,9 +358,8 @@ function renderRequestSection(entry: HarEntry): string[] {
     }
   }
 
-  lines.push("#### Request", "", "```http", ...httpLines, "```");
+  lines.push("```http", ...httpLines, "```");
 
-  // Request body
   if (isMultipartRequest(entry)) {
     lines.push("```", "(multipart/form-data)", "```");
   } else if (entry.request.postData?.text) {
@@ -448,78 +373,274 @@ function renderRequestSection(entry: HarEntry): string[] {
     lines.push("```json", truncate(bodyText, MAX_JSON_LEN), "```");
   }
 
-  lines.push("");
   return lines;
 }
 
-function renderResponseSection(entry: HarEntry): string[] {
+function renderEntryResponse(entry: HarEntry): string[] {
   const lines: string[] = [];
   const status = entry.response.status;
   const statusText = entry.response.statusText;
   const contentType = findHeader(entry.response.headers, "content-type") ?? "";
 
-  // HTTP status + content-type header
   const httpLines: string[] = [`HTTP ${status} ${statusText}`];
   if (contentType) {
     httpLines.push(`content-type: ${contentType}`);
   }
 
-  lines.push("#### Response", "", "```http", ...httpLines, "```");
+  lines.push("```http", ...httpLines, "```");
 
-  // Response body
   const rawBody = entry.response.content?.text;
   if (isBinaryContentType(contentType)) {
     const size = rawBody ? Buffer.byteLength(rawBody, "utf-8") : 0;
     lines.push("```", `(binary: ${contentType}, ${size} bytes)`, "```");
   } else if (rawBody) {
-    let bodyText: string;
-    try {
-      const parsed = JSON.parse(rawBody);
-      bodyText = JSON.stringify(parsed, null, 2);
-    } catch {
-      bodyText = rawBody;
+    // SSE streaming — reassemble and show
+    if (rawBody.startsWith("event:")) {
+      const assembled = reassembleSSE(rawBody);
+      if (assembled) {
+        lines.push("```", truncate(assembled, MAX_JSON_LEN), "```");
+      } else {
+        lines.push("```", truncate(rawBody, MAX_JSON_LEN), "```");
+      }
+    } else {
+      let bodyText: string;
+      try {
+        const parsed = JSON.parse(rawBody);
+        bodyText = JSON.stringify(parsed, null, 2);
+      } catch {
+        bodyText = rawBody;
+      }
+      lines.push("```json", truncate(bodyText, MAX_JSON_LEN), "```");
     }
-    lines.push("```json", truncate(bodyText, MAX_JSON_LEN), "```");
   }
 
+  return lines;
+}
+
+function renderFullEntry(
+  entry: HarEntry,
+  index: number,
+  total: number
+): string[] {
+  const lines: string[] = [];
+  const label = renderEntryLabel(entry, index, total);
+  const statusEmoji = entry.response.status >= 400 ? "!" : "";
+  const pollEmoji = isPollingEntry(entry) ? " (polling)" : "";
+
+  lines.push(
+    `<details${index === 0 ? " open" : ""}>`,
+    `<summary><strong>${label}</strong> → ${statusEmoji}${entry.response.status} ${entry.response.statusText}${pollEmoji}</summary>`,
+    ""
+  );
+
+  lines.push("**Request**", "");
+  lines.push(...renderEntryRequest(entry));
   lines.push("");
+  lines.push("**Response**", "");
+  lines.push(...renderEntryResponse(entry));
+  lines.push("");
+  lines.push("</details>", "");
+
   return lines;
 }
 
 // ---------------------------------------------------------------------------
-// Card rendering
+// Output media extraction (from the final resolved entry)
+// ---------------------------------------------------------------------------
+
+function extractOutputMedia(
+  entries: HarEntry[],
+  recordingName: string
+): string[] {
+  const lines: string[] = [];
+
+  for (let i = entries.length - 1; i >= 0; i--) {
+    const resBody = parseResponseBody(entries[i]);
+    if (!resBody) continue;
+    if (isPollingEntry(entries[i])) continue;
+
+    // Image URL: data[].url
+    const data = resBody.data as
+      | Array<Record<string, unknown>>
+      | Record<string, unknown>
+      | undefined;
+    if (Array.isArray(data) && data.length > 0) {
+      const first = data[0];
+      if (typeof first.url === "string") {
+        lines.push("**Output**:", "", `![output](${first.url})`, "");
+        return lines;
+      }
+      if (typeof first.b64_json === "string") {
+        const assetPath = saveBase64Asset(
+          first.b64_json as string,
+          recordingName
+        );
+        if (assetPath) {
+          const repoUrl = buildRepoUrl(assetPath);
+          lines.push("**Output**:", "", `![output](${repoUrl})`, "");
+          return lines;
+        }
+      }
+    }
+
+    // Completed video: status=done with video.url
+    if (resBody.status === "done") {
+      const video = resBody.video as Record<string, unknown> | undefined;
+      if (video && typeof video.url === "string" && video.url) {
+        const dur =
+          typeof video.duration === "number" ? ` (${video.duration}s)` : "";
+        lines.push(`**Output**: [Watch video](${video.url})${dur}`, "");
+        return lines;
+      }
+    }
+
+    // KIE completed task: state=success with works array
+    if (
+      resBody.data &&
+      typeof resBody.data === "object" &&
+      !Array.isArray(resBody.data)
+    ) {
+      const taskData = resBody.data as Record<string, unknown>;
+      if (taskData.state === "success") {
+        const works = taskData.works as
+          | Array<Record<string, unknown>>
+          | undefined;
+        if (Array.isArray(works) && works.length > 0) {
+          const work = works[0];
+          if (typeof work.resource === "string") {
+            const url = work.resource as string;
+            if (
+              url.includes(".mp4") ||
+              url.includes("video") ||
+              (work.type as string)?.includes("video")
+            ) {
+              lines.push(`**Output**: [Watch video](${url})`, "");
+            } else {
+              lines.push("**Output**:", "", `![output](${url})`, "");
+            }
+            return lines;
+          }
+        }
+      }
+    }
+
+    // Failed: status=failed
+    if (resBody.status === "failed") {
+      const error = resBody.error as Record<string, unknown> | undefined;
+      const msg = error?.message ?? "generation failed";
+      lines.push(`**Output**: Failed — ${msg}`, "");
+      return lines;
+    }
+
+    // Chat completion: choices[].message.content
+    const choices = resBody.choices as
+      | Array<Record<string, unknown>>
+      | undefined;
+    if (Array.isArray(choices) && choices.length > 0) {
+      const msg = choices[0].message as Record<string, unknown> | undefined;
+      if (msg && typeof msg.content === "string") {
+        lines.push(
+          "**Response**:",
+          "",
+          `> ${truncate(msg.content as string, 500)}`,
+          ""
+        );
+        return lines;
+      }
+    }
+
+    // Anthropic format: content[].text
+    const content = resBody.content as
+      | Array<Record<string, unknown>>
+      | undefined;
+    if (Array.isArray(content) && content.length > 0) {
+      const textParts = content
+        .filter((c) => c.type === "text" && typeof c.text === "string")
+        .map((c) => c.text as string);
+      if (textParts.length > 0) {
+        lines.push(
+          "**Response**:",
+          "",
+          `> ${truncate(textParts.join(""), 500)}`,
+          ""
+        );
+        return lines;
+      }
+    }
+
+    // Transcription: { text: "..." }
+    if (typeof resBody.text === "string" && resBody.text) {
+      lines.push(
+        "**Response**:",
+        "",
+        `> ${truncate(resBody.text as string, 500)}`,
+        ""
+      );
+      return lines;
+    }
+
+    // Async task with no final result
+    if (
+      data &&
+      !Array.isArray(data) &&
+      typeof (data as Record<string, unknown>).taskId === "string"
+    ) {
+      lines.push("*Task submitted (async — no final result in recording)*", "");
+      return lines;
+    }
+
+    // Video generation request_id with no poll result — keep looking
+    if (typeof resBody.request_id === "string") {
+      continue;
+    }
+
+    // Metadata / other
+    lines.push("*API metadata response*", "");
+    return lines;
+  }
+
+  // SSE streaming response
+  for (const entry of entries) {
+    if (entry.response.content?.text?.startsWith("event:")) {
+      const text = reassembleSSE(entry.response.content.text!);
+      if (text) {
+        lines.push("**Response**:", "", `> ${truncate(text, 500)}`, "");
+        return lines;
+      }
+    }
+  }
+
+  lines.push("*Async task — no final result captured in recording*", "");
+  return lines;
+}
+
+// ---------------------------------------------------------------------------
+// Card rendering — credits first, then full req+res for every entry
 // ---------------------------------------------------------------------------
 
 function renderCard(recording: ChangedRecording): string {
   const name = recording.recordingName;
   const badge = recording.changeType === "new" ? " (new)" : " (modified)";
-  // recordingName already includes provider prefix (e.g. "xai/chat-hello")
   const heading = name.startsWith(`${recording.provider}/`)
     ? name
     : `${recording.provider}/${name}`;
   const lines: string[] = [`### ${heading}${badge}`, ""];
 
-  // Prompt
+  // Separate entries into credits and operations
+  const creditEntries: HarEntry[] = [];
+  const opEntries: HarEntry[] = [];
+  for (const entry of recording.entries) {
+    if (isCreditEntry(entry)) {
+      creditEntries.push(entry);
+    } else {
+      opEntries.push(entry);
+    }
+  }
+
+  // Prompt (from non-credit entries)
   const prompt = extractPrompt(recording.entries);
   if (prompt) {
     lines.push(`> **Prompt**: ${prompt}`, "");
-  }
-
-  // HTTP request/response details (first entry is the primary request)
-  const primaryEntry = recording.entries[0];
-  if (primaryEntry) {
-    lines.push(...renderRequestSection(primaryEntry));
-
-    // Find the last meaningful response entry for the response section
-    let responseEntry: HarEntry = primaryEntry;
-    for (let i = recording.entries.length - 1; i >= 0; i--) {
-      const resBody = parseResponseBody(recording.entries[i]);
-      if (resBody && !isPollingResponse(resBody)) {
-        responseEntry = recording.entries[i];
-        break;
-      }
-    }
-    lines.push(...renderResponseSection(responseEntry));
   }
 
   // Input media
@@ -538,37 +659,24 @@ function renderCard(recording: ChangedRecording): string {
     }
   }
 
-  // Output
-  const output = extractOutput(recording.entries, name);
-  switch (output.type) {
-    case "image":
-      if (output.b64AssetPath) {
-        const repoUrl = buildRepoUrl(output.b64AssetPath);
-        lines.push("**Output**:", "", `![output](${repoUrl})`, "");
-      } else if (output.url) {
-        lines.push("**Output**:", "", `![output](${output.url})`, "");
-      }
-      break;
-    case "video": {
-      const dur = output.duration ? ` (${output.duration}s)` : "";
-      lines.push(`**Output**: [Watch video](${output.url})${dur}`, "");
-      break;
+  // --- Credits first ---
+  if (creditEntries.length > 0) {
+    lines.push("---", "", "#### Credits / Usage", "");
+    for (let i = 0; i < creditEntries.length; i++) {
+      lines.push(...renderFullEntry(creditEntries[i], i, creditEntries.length));
     }
-    case "text":
-      lines.push(
-        "**Response**:",
-        "",
-        `> ${truncate(output.text ?? "", MAX_TEXT_LEN)}`,
-        ""
-      );
-      break;
-    case "async":
-      lines.push("*Task submitted (async, no final result in recording)*", "");
-      break;
-    case "metadata":
-      lines.push("*API metadata response*", "");
-      break;
   }
+
+  // --- Full API interaction log ---
+  lines.push("---", "", "#### API Interactions", "");
+
+  const totalOps = opEntries.length;
+  for (let i = 0; i < totalOps; i++) {
+    lines.push(...renderFullEntry(opEntries[i], i, totalOps));
+  }
+
+  // --- Output summary ---
+  lines.push(...extractOutputMedia(recording.entries, name));
 
   return lines.join("\n");
 }
@@ -594,11 +702,13 @@ function generateSummary(recordings: ChangedRecording[]): string {
     );
   }
 
+  const totalEntries = recordings.reduce((sum, r) => sum + r.entries.length, 0);
+
   const lines: string[] = [
     "<!-- harness-report -->",
     "## Harness Report",
     "",
-    `${parts.join(", ")} for ${providerList}`,
+    `${parts.join(", ")} for ${providerList} (${totalEntries} total API calls)`,
     "",
   ];
 

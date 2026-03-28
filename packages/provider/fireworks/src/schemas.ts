@@ -1471,6 +1471,12 @@ export const createApiKeySchema: PayloadSchema = {
         expireTime: {
           type: "string",
           description: "Optional expiration timestamp (RFC3339)",
+        },
+      },
+    },
+  },
+};
+
 // Evaluators schemas
 export const createEvaluatorSchema: PayloadSchema = {
   method: "POST",
@@ -1656,6 +1662,10 @@ export const updateSecretSchema: PayloadSchema = {
     value: {
       type: "string",
       description: "New secret value (INPUT_ONLY)",
+    },
+  },
+};
+
 export const updateEvaluatorSchema: PayloadSchema = {
   method: "PATCH",
   path: "/v1/accounts/{account_id}/evaluators/{evaluator_id}",

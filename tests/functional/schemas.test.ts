@@ -25,6 +25,8 @@ import {
   collectionUpdateSchema,
   documentAddSchema,
   documentSearchSchema,
+  responsesSchema as xaiResponsesSchema,
+  responsesDeleteSchema as xaiResponsesDeleteSchema,
 } from "../../packages/provider/xai/src/schemas";
 import {
   pricingEstimateSchema,
@@ -67,6 +69,8 @@ describe("schema structure", () => {
     { name: "xai/collectionUpdate", schema: collectionUpdateSchema },
     { name: "xai/documentAdd", schema: documentAddSchema },
     { name: "xai/documentSearch", schema: documentSearchSchema },
+    { name: "xai/responses", schema: xaiResponsesSchema },
+    { name: "xai/responsesDelete", schema: xaiResponsesDeleteSchema },
     { name: "fal/pricingEstimate", schema: pricingEstimateSchema },
     { name: "fal/deletePayloads", schema: deletePayloadsSchema },
     { name: "kie/createTask", schema: createTaskSchema },

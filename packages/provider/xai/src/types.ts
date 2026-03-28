@@ -1019,6 +1019,11 @@ interface XaiDocumentsNamespace {
   search: XaiDocumentSearchMethod;
 }
 
+interface XaiResponsesDeleteMethod {
+  (id: string, signal?: AbortSignal): Promise<XaiResponseDeleteResponse>;
+  payloadSchema: PayloadSchema;
+}
+
 interface XaiResponsesMethod {
   (
     reqOrId: XaiResponseRequest | string,
@@ -1026,6 +1031,7 @@ interface XaiResponsesMethod {
   ): Promise<XaiResponseResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  del: XaiResponsesDeleteMethod;
 }
 
 interface XaiV1Namespace {

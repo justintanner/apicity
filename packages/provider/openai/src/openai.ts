@@ -12,6 +12,9 @@ import {
   OpenAiImageEditResponse,
   OpenAiImageGenerationRequest,
   OpenAiImageGenerationResponse,
+  OpenAiModelListResponse,
+  OpenAiModel,
+  OpenAiModelDeleteResponse,
   OpenAiResponseRequest,
   OpenAiResponseResponse,
   OpenAiResponseDeleteResponse,
@@ -25,6 +28,7 @@ import {
   embeddingsSchema,
   imageEditsSchema,
   imageGenerationsSchema,
+  modelsDeleteSchema,
   audioTranscriptionsSchema,
   audioTranslationsSchema,
   responsesSchema,
@@ -309,6 +313,41 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             validatePayload(data: unknown): ValidationResult {
               return validatePayload(data, imageGenerationsSchema);
             },
+          }
+        ),
+      },
+      models: {
+        list: async function list(
+          signal?: AbortSignal
+        ): Promise<OpenAiModelListResponse> {
+          return await makeGetRequest<OpenAiModelListResponse>(
+            "/models",
+            undefined,
+            signal
+          );
+        },
+        retrieve: async function retrieve(
+          model: string,
+          signal?: AbortSignal
+        ): Promise<OpenAiModel> {
+          return await makeGetRequest<OpenAiModel>(
+            `/models/${encodeURIComponent(model)}`,
+            undefined,
+            signal
+          );
+        },
+        del: Object.assign(
+          async function del(
+            model: string,
+            signal?: AbortSignal
+          ): Promise<OpenAiModelDeleteResponse> {
+            return await makeDeleteRequest<OpenAiModelDeleteResponse>(
+              `/models/${encodeURIComponent(model)}`,
+              signal
+            );
+          },
+          {
+            payloadSchema: modelsDeleteSchema,
           }
         ),
       },

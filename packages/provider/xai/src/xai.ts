@@ -44,6 +44,12 @@ import {
   XaiResponseRequest,
   XaiResponseResponse,
   XaiResponseDeleteResponse,
+  XaiRealtimeClientSecretRequest,
+  XaiRealtimeClientSecretResponse,
+  XaiRealtimeConnectOptions,
+  XaiRealtimeConnection,
+  XaiRealtimeClientEvent,
+  XaiRealtimeServerEvent,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -63,6 +69,7 @@ import {
   collectionUpdateSchema,
   documentAddSchema,
   documentSearchSchema,
+  realtimeClientSecretsSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -719,6 +726,108 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
+  const realtime = {
+    clientSecrets: Object.assign(
+      async function clientSecrets(
+        req: XaiRealtimeClientSecretRequest,
+        signal?: AbortSignal
+      ): Promise<XaiRealtimeClientSecretResponse> {
+        return await makeRequest(
+          "POST",
+          "/realtime/client_secrets",
+          req,
+          signal
+        );
+      },
+      {
+        payloadSchema: realtimeClientSecretsSchema,
+        validatePayload(data: unknown): ValidationResult {
+          return validatePayload(data, realtimeClientSecretsSchema);
+        },
+      }
+    ),
+
+    connect(connectOpts?: XaiRealtimeConnectOptions): XaiRealtimeConnection {
+      const wsBaseURL = baseURL.replace(/^http/, "ws");
+      const token = connectOpts?.token ?? opts.apiKey;
+
+      const ws = new WebSocket(`${wsBaseURL}/realtime`, [
+        "realtime",
+        `openai-insecure-api-key.${token}`,
+        "openai-beta.realtime-v1",
+      ]);
+
+      let resolveNext: ((value: IteratorResult<XaiRealtimeServerEvent>) => void) | null = null;
+      const eventQueue: XaiRealtimeServerEvent[] = [];
+      let closed = false;
+
+      ws.onmessage = (ev: MessageEvent) => {
+        const event = JSON.parse(
+          typeof ev.data === "string" ? ev.data : String(ev.data)
+        ) as XaiRealtimeServerEvent;
+        if (resolveNext) {
+          const resolve = resolveNext;
+          resolveNext = null;
+          resolve({ value: event, done: false });
+        } else {
+          eventQueue.push(event);
+        }
+      };
+
+      ws.onclose = () => {
+        closed = true;
+        if (resolveNext) {
+          const resolve = resolveNext;
+          resolveNext = null;
+          resolve({ value: undefined as never, done: true });
+        }
+      };
+
+      ws.onerror = () => {
+        closed = true;
+        if (resolveNext) {
+          const resolve = resolveNext;
+          resolveNext = null;
+          resolve({ value: undefined as never, done: true });
+        }
+      };
+
+      return {
+        send(event: XaiRealtimeClientEvent): void {
+          ws.send(JSON.stringify(event));
+        },
+        close(): void {
+          closed = true;
+          ws.close();
+        },
+        [Symbol.asyncIterator](): AsyncIterableIterator<XaiRealtimeServerEvent> {
+          return {
+            next(): Promise<IteratorResult<XaiRealtimeServerEvent>> {
+              if (eventQueue.length > 0) {
+                return Promise.resolve({
+                  value: eventQueue.shift()!,
+                  done: false,
+                });
+              }
+              if (closed) {
+                return Promise.resolve({
+                  value: undefined as never,
+                  done: true,
+                });
+              }
+              return new Promise((resolve) => {
+                resolveNext = resolve;
+              });
+            },
+            [Symbol.asyncIterator]() {
+              return this;
+            },
+          };
+        },
+      };
+    },
+  };
+
   return {
     v1: {
       chat: {
@@ -904,6 +1013,7 @@ export function xai(opts: XaiOptions): XaiProvider {
         imageGenerationModels as XaiProvider["v1"]["image-generation-models"],
       "video-generation-models":
         videoGenerationModels as XaiProvider["v1"]["video-generation-models"],
+      realtime,
     },
   };
 }

@@ -532,6 +532,25 @@ export const responsesDeleteSchema: PayloadSchema = {
       type: "string",
       required: true,
       description: "The ID of the response to delete",
+export const realtimeClientSecretsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/realtime/client_secrets",
+  contentType: "application/json",
+  fields: {
+    expires_after: {
+      type: "object",
+      description: "Expiration configuration for the ephemeral token",
+      properties: {
+        seconds: {
+          type: "number",
+          required: true,
+          description: "Seconds until expiration (1-3600, default 600)",
+        },
+      },
+    },
+    session: {
+      type: "object",
+      description: "Optional initial session configuration to bind",
     },
   },
 };

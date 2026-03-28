@@ -783,6 +783,334 @@ export interface XaiResponseDeleteResponse {
   deleted: boolean;
 }
 
+// Realtime API types
+
+// POST /v1/realtime/client_secrets request
+export interface XaiRealtimeClientSecretRequest {
+  expires_after?: { seconds: number };
+  session?: Record<string, unknown> | null;
+}
+
+// POST /v1/realtime/client_secrets response
+export interface XaiRealtimeClientSecretResponse {
+  value: string;
+  expires_at: number;
+}
+
+// Realtime session configuration (used in session.update)
+export interface XaiRealtimeTurnDetection {
+  type: "server_vad" | null;
+  threshold?: number;
+  silence_duration_ms?: number;
+  prefix_padding_ms?: number;
+}
+
+export interface XaiRealtimeAudioFormat {
+  type?: "audio/pcm" | "audio/pcmu" | "audio/pcma";
+  rate?: 8000 | 16000 | 22050 | 24000 | 32000 | 44100 | 48000;
+}
+
+export interface XaiRealtimeAudioConfig {
+  input?: { format?: XaiRealtimeAudioFormat };
+  output?: { format?: XaiRealtimeAudioFormat };
+}
+
+export interface XaiRealtimeFunctionTool {
+  type: "function";
+  name: string;
+  description: string;
+  parameters: Record<string, unknown>;
+}
+
+export interface XaiRealtimeWebSearchTool {
+  type: "web_search";
+}
+
+export interface XaiRealtimeXSearchTool {
+  type: "x_search";
+  allowed_x_handles?: string[];
+}
+
+export interface XaiRealtimeFileSearchTool {
+  type: "file_search";
+  vector_store_ids: string[];
+  max_num_results?: number;
+}
+
+export interface XaiRealtimeMcpTool {
+  type: "mcp";
+  server_url: string;
+  server_label: string;
+  server_description?: string;
+  allowed_tools?: string[];
+  authorization?: string;
+  headers?: Record<string, string>;
+}
+
+export type XaiRealtimeTool =
+  | XaiRealtimeFunctionTool
+  | XaiRealtimeWebSearchTool
+  | XaiRealtimeXSearchTool
+  | XaiRealtimeFileSearchTool
+  | XaiRealtimeMcpTool;
+
+export interface XaiRealtimeSession {
+  instructions?: string;
+  voice?: string;
+  turn_detection?: XaiRealtimeTurnDetection;
+  audio?: XaiRealtimeAudioConfig;
+  tools?: XaiRealtimeTool[];
+}
+
+// Client-to-server events
+export interface XaiRealtimeSessionUpdate {
+  type: "session.update";
+  session: XaiRealtimeSession;
+}
+
+export interface XaiRealtimeInputAudioBufferAppend {
+  type: "input_audio_buffer.append";
+  audio: string;
+}
+
+export interface XaiRealtimeInputAudioBufferCommit {
+  type: "input_audio_buffer.commit";
+}
+
+export interface XaiRealtimeConversationItemCreate {
+  type: "conversation.item.create";
+  previous_item_id?: string;
+  item:
+    | {
+        type: "message";
+        role: "user" | "assistant";
+        content: { type: "input_text"; text: string }[];
+      }
+    | {
+        type: "function_call_output";
+        call_id: string;
+        output: string;
+      };
+}
+
+export interface XaiRealtimeResponseCreate {
+  type: "response.create";
+  response?: { modalities?: ("text" | "audio")[] };
+}
+
+export interface XaiRealtimeResponseCancel {
+  type: "response.cancel";
+}
+
+export type XaiRealtimeClientEvent =
+  | XaiRealtimeSessionUpdate
+  | XaiRealtimeInputAudioBufferAppend
+  | XaiRealtimeInputAudioBufferCommit
+  | XaiRealtimeConversationItemCreate
+  | XaiRealtimeResponseCreate
+  | XaiRealtimeResponseCancel;
+
+// Server-to-client events
+export interface XaiRealtimeServerEventBase {
+  event_id: string;
+}
+
+export interface XaiRealtimeConversationCreated
+  extends XaiRealtimeServerEventBase {
+  type: "conversation.created";
+  conversation: { id: string; object: string };
+}
+
+export interface XaiRealtimeSessionUpdated
+  extends XaiRealtimeServerEventBase {
+  type: "session.updated";
+  session: XaiRealtimeSession;
+}
+
+export interface XaiRealtimeSpeechStarted
+  extends XaiRealtimeServerEventBase {
+  type: "input_audio_buffer.speech_started";
+  item_id: string;
+  audio_start_ms?: number;
+}
+
+export interface XaiRealtimeSpeechStopped
+  extends XaiRealtimeServerEventBase {
+  type: "input_audio_buffer.speech_stopped";
+  item_id: string;
+  audio_end_ms?: number;
+}
+
+export interface XaiRealtimeAudioBufferCommitted
+  extends XaiRealtimeServerEventBase {
+  type: "input_audio_buffer.committed";
+  previous_item_id: string;
+  item_id: string;
+}
+
+export interface XaiRealtimeConversationItemAdded
+  extends XaiRealtimeServerEventBase {
+  type: "conversation.item.added";
+  previous_item_id: string;
+  item: Record<string, unknown>;
+}
+
+export interface XaiRealtimeTranscriptionCompleted
+  extends XaiRealtimeServerEventBase {
+  type: "conversation.item.input_audio_transcription.completed";
+  item_id: string;
+  transcript: string;
+}
+
+export interface XaiRealtimeResponseCreated
+  extends XaiRealtimeServerEventBase {
+  type: "response.created";
+  response: { id: string; object: string; status: string };
+}
+
+export interface XaiRealtimeResponseDone
+  extends XaiRealtimeServerEventBase {
+  type: "response.done";
+  response: { id: string; object: string; status: string };
+}
+
+export interface XaiRealtimeOutputItemAdded
+  extends XaiRealtimeServerEventBase {
+  type: "response.output_item.added";
+  response_id: string;
+  output_index: number;
+  item: Record<string, unknown>;
+}
+
+export interface XaiRealtimeOutputItemDone
+  extends XaiRealtimeServerEventBase {
+  type: "response.output_item.done";
+  response_id: string;
+  output_index: number;
+  item: Record<string, unknown>;
+}
+
+export interface XaiRealtimeAudioDelta extends XaiRealtimeServerEventBase {
+  type: "response.output_audio.delta";
+  response_id: string;
+  item_id: string;
+  output_index: number;
+  content_index: number;
+  delta: string;
+}
+
+export interface XaiRealtimeAudioDone extends XaiRealtimeServerEventBase {
+  type: "response.output_audio.done";
+  response_id: string;
+  item_id: string;
+}
+
+export interface XaiRealtimeAudioTranscriptDelta
+  extends XaiRealtimeServerEventBase {
+  type: "response.output_audio_transcript.delta";
+  response_id: string;
+  item_id: string;
+  delta: string;
+}
+
+export interface XaiRealtimeAudioTranscriptDone
+  extends XaiRealtimeServerEventBase {
+  type: "response.output_audio_transcript.done";
+  response_id: string;
+  item_id: string;
+}
+
+export interface XaiRealtimeTextDelta extends XaiRealtimeServerEventBase {
+  type: "response.text.delta";
+  response_id: string;
+  item_id: string;
+  delta: string;
+}
+
+export interface XaiRealtimeTextDone extends XaiRealtimeServerEventBase {
+  type: "response.text.done";
+  response_id: string;
+  item_id: string;
+}
+
+export interface XaiRealtimeFunctionCallDelta
+  extends XaiRealtimeServerEventBase {
+  type: "response.function_call_arguments.delta";
+  response_id: string;
+  item_id: string;
+  call_id: string;
+  delta: string;
+}
+
+export interface XaiRealtimeFunctionCallDone
+  extends XaiRealtimeServerEventBase {
+  type: "response.function_call_arguments.done";
+  response_id: string;
+  item_id: string;
+  call_id: string;
+  name: string;
+  arguments: string;
+}
+
+export interface XaiRealtimeContentPartAdded
+  extends XaiRealtimeServerEventBase {
+  type: "response.content_part.added";
+  response_id: string;
+  item_id: string;
+  content_index: number;
+  part: Record<string, unknown>;
+}
+
+export interface XaiRealtimeContentPartDone
+  extends XaiRealtimeServerEventBase {
+  type: "response.content_part.done";
+  response_id: string;
+  item_id: string;
+  content_index: number;
+  part: Record<string, unknown>;
+}
+
+export interface XaiRealtimeError extends XaiRealtimeServerEventBase {
+  type: "error";
+  error?: { type?: string; code?: string; message?: string };
+}
+
+export type XaiRealtimeServerEvent =
+  | XaiRealtimeConversationCreated
+  | XaiRealtimeSessionUpdated
+  | XaiRealtimeSpeechStarted
+  | XaiRealtimeSpeechStopped
+  | XaiRealtimeAudioBufferCommitted
+  | XaiRealtimeConversationItemAdded
+  | XaiRealtimeTranscriptionCompleted
+  | XaiRealtimeResponseCreated
+  | XaiRealtimeResponseDone
+  | XaiRealtimeOutputItemAdded
+  | XaiRealtimeOutputItemDone
+  | XaiRealtimeAudioDelta
+  | XaiRealtimeAudioDone
+  | XaiRealtimeAudioTranscriptDelta
+  | XaiRealtimeAudioTranscriptDone
+  | XaiRealtimeTextDelta
+  | XaiRealtimeTextDone
+  | XaiRealtimeFunctionCallDelta
+  | XaiRealtimeFunctionCallDone
+  | XaiRealtimeContentPartAdded
+  | XaiRealtimeContentPartDone
+  | XaiRealtimeError;
+
+// Realtime WebSocket connection options
+export interface XaiRealtimeConnectOptions {
+  token?: string;
+}
+
+// Realtime WebSocket connection wrapper
+export interface XaiRealtimeConnection {
+  send(event: XaiRealtimeClientEvent): void;
+  close(): void;
+  [Symbol.asyncIterator](): AsyncIterableIterator<XaiRealtimeServerEvent>;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -1047,6 +1375,20 @@ interface XaiResponsesMethod {
   del: XaiResponsesDeleteMethod;
 }
 
+interface XaiRealtimeClientSecretsMethod {
+  (
+    req: XaiRealtimeClientSecretRequest,
+    signal?: AbortSignal
+  ): Promise<XaiRealtimeClientSecretResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface XaiRealtimeNamespace {
+  clientSecrets: XaiRealtimeClientSecretsMethod;
+  connect(opts?: XaiRealtimeConnectOptions): XaiRealtimeConnection;
+}
+
 interface XaiV1Namespace {
   chat: XaiChatNamespace;
   images: XaiImagesNamespace;
@@ -1060,6 +1402,7 @@ interface XaiV1Namespace {
   "language-models": XaiLanguageModelsNamespace;
   "image-generation-models": XaiImageGenerationModelsNamespace;
   "video-generation-models": XaiVideoGenerationModelsNamespace;
+  realtime: XaiRealtimeNamespace;
 }
 
 // Provider interface

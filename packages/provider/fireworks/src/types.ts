@@ -700,6 +700,60 @@ export interface FireworksBatchJobListResponse {
   totalSize?: number;
 }
 
+// Audio batch processing types
+
+export interface FireworksAudioBatchTranscriptionRequest {
+  file: Blob | string;
+  endpoint_id: string;
+  model?: string;
+  vad_model?: "silero" | "whisperx-pyannet";
+  alignment_model?: "mms_fa" | "tdnn_ffn";
+  language?: string;
+  prompt?: string;
+  temperature?: number | number[];
+  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
+  timestamp_granularities?: string | string[];
+  diarize?: "true" | "false";
+  min_speakers?: number;
+  max_speakers?: number;
+  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
+}
+
+export interface FireworksAudioBatchTranslationRequest {
+  file: Blob | string;
+  endpoint_id: string;
+  model?: string;
+  vad_model?: "silero" | "whisperx-pyannet";
+  alignment_model?: "mms_fa" | "tdnn_ffn";
+  language?: string;
+  prompt?: string;
+  temperature?: number | number[];
+  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
+  timestamp_granularities?: string | string[];
+  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
+}
+
+export interface FireworksAudioBatchSubmitResponse {
+  batch_id: string;
+}
+
+export type FireworksAudioBatchJobStatus =
+  | "PENDING"
+  | "RUNNING"
+  | "COMPLETED"
+  | "FAILED"
+  | "CANCELLED";
+
+export interface FireworksAudioBatchJob {
+  batch_id?: string;
+  status?: FireworksAudioBatchJobStatus;
+  created_at?: string;
+  updated_at?: string;
+  progress?: number;
+  results?: Record<string, unknown>[];
+  error?: string;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -823,6 +877,35 @@ interface FireworksTranslationsMethod {
 interface FireworksAudioNamespace {
   transcriptions: FireworksTranscriptionsMethod;
   translations: FireworksTranslationsMethod;
+  batch: FireworksAudioBatchNamespace;
+}
+
+interface FireworksAudioBatchTranscriptionsMethod {
+  (
+    req: FireworksAudioBatchTranscriptionRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAudioBatchSubmitResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksAudioBatchTranslationsMethod {
+  (
+    req: FireworksAudioBatchTranslationRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAudioBatchSubmitResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksAudioBatchNamespace {
+  transcriptions: FireworksAudioBatchTranscriptionsMethod;
+  translations: FireworksAudioBatchTranslationsMethod;
+  get(
+    accountId: string,
+    batchId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksAudioBatchJob>;
 }
 
 interface FireworksBatchJobCreateMethod {

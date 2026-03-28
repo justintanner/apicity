@@ -985,6 +985,205 @@ export interface FireworksMetricsFileEndpointResponse {
   signedUrl?: string;
 }
 
+// Evaluator types
+
+export type FireworksEvaluatorState =
+  | "STATE_UNSPECIFIED"
+  | "ACTIVE"
+  | "BUILDING"
+  | "BUILD_FAILED";
+
+export type FireworksEvaluatorSourceType =
+  | "TYPE_UNSPECIFIED"
+  | "TYPE_UPLOAD"
+  | "TYPE_GITHUB"
+  | "TYPE_TEMPORARY";
+
+export type FireworksCriterionType = "TYPE_UNSPECIFIED" | "CODE_SNIPPETS";
+
+export interface FireworksCodeSnippets {
+  language?: string;
+  fileContents?: Record<string, string>;
+  entryFile?: string;
+  entryFunc?: string;
+}
+
+export interface FireworksCriterion {
+  type?: FireworksCriterionType;
+  name?: string;
+  description?: string;
+  codeSnippets?: FireworksCodeSnippets;
+}
+
+export interface FireworksEvaluatorSource {
+  type?: FireworksEvaluatorSourceType;
+  githubRepositoryName?: string;
+}
+
+export interface FireworksEvaluator {
+  name?: string;
+  displayName?: string;
+  description?: string;
+  createTime?: string;
+  createdBy?: string;
+  updateTime?: string;
+  state?: FireworksEvaluatorState;
+  status?: { code?: FireworksStatusCode; message?: string };
+  criteria?: FireworksCriterion[];
+  requirements?: string;
+  entryPoint?: string;
+  commitHash?: string;
+  source?: FireworksEvaluatorSource;
+  defaultDataset?: string;
+}
+
+export interface FireworksCreateEvaluatorRequest {
+  evaluatorId?: string;
+  evaluator: {
+    displayName?: string;
+    description?: string;
+    requirements?: string;
+    entryPoint?: string;
+    commitHash?: string;
+    defaultDataset?: string;
+    criteria?: FireworksCriterion[];
+    source?: FireworksEvaluatorSource;
+  };
+}
+
+export interface FireworksUpdateEvaluatorRequest {
+  displayName?: string;
+  description?: string;
+  requirements?: string;
+  entryPoint?: string;
+  commitHash?: string;
+  defaultDataset?: string;
+  criteria?: FireworksCriterion[];
+  source?: FireworksEvaluatorSource;
+}
+
+export interface FireworksUpdateEvaluatorOptions {
+  prepareCodeUpload?: boolean;
+}
+
+export interface FireworksListEvaluatorsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListEvaluatorsResponse {
+  evaluators?: FireworksEvaluator[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksGetEvaluatorRequest {
+  readMask?: string;
+}
+
+export interface FireworksGetUploadEndpointEvaluatorRequest {
+  filenameToSize: Record<string, string>;
+  readMask?: string;
+}
+
+export interface FireworksGetUploadEndpointEvaluatorResponse {
+  filenameToSignedUrls?: Record<string, string>;
+}
+
+export interface FireworksGetBuildLogEndpointRequest {
+  readMask?: string;
+}
+
+export interface FireworksGetBuildLogEndpointResponse {
+  buildLogSignedUri?: string;
+}
+
+export interface FireworksGetSourceCodeSignedUrlRequest {
+  readMask?: string;
+}
+
+export interface FireworksGetSourceCodeSignedUrlResponse {
+  filenameToSignedUrls?: Record<string, string>;
+}
+
+// Evaluation Job types
+
+export type FireworksEvaluationJobState =
+  | "JOB_STATE_UNSPECIFIED"
+  | "JOB_STATE_CREATING"
+  | "JOB_STATE_RUNNING"
+  | "JOB_STATE_COMPLETED"
+  | "JOB_STATE_FAILED"
+  | "JOB_STATE_CANCELLED"
+  | "JOB_STATE_DELETING"
+  | "JOB_STATE_WRITING_RESULTS"
+  | "JOB_STATE_VALIDATING"
+  | "JOB_STATE_DELETING_CLEANING_UP"
+  | "JOB_STATE_PENDING"
+  | "JOB_STATE_EXPIRED"
+  | "JOB_STATE_RE_QUEUEING"
+  | "JOB_STATE_CREATING_INPUT_DATASET"
+  | "JOB_STATE_IDLE"
+  | "JOB_STATE_CANCELLING"
+  | "JOB_STATE_EARLY_STOPPED"
+  | "JOB_STATE_PAUSED";
+
+export interface FireworksEvaluationJob {
+  name?: string;
+  displayName?: string;
+  createTime?: string;
+  createdBy?: string;
+  updateTime?: string;
+  state?: FireworksEvaluationJobState;
+  status?: { code?: FireworksStatusCode; message?: string };
+  evaluator?: string;
+  inputDataset?: string;
+  outputDataset?: string;
+  outputStats?: string;
+  metrics?: Record<string, number>;
+  awsS3Config?: FireworksAwsS3Config;
+}
+
+export interface FireworksCreateEvaluationJobRequest {
+  evaluationJobId?: string;
+  leaderboardIds?: string[];
+  evaluationJob: {
+    displayName?: string;
+    evaluator: string;
+    inputDataset: string;
+    outputDataset: string;
+    outputStats?: string;
+    awsS3Config?: FireworksAwsS3Config;
+  };
+}
+
+export interface FireworksListEvaluationJobsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListEvaluationJobsResponse {
+  evaluationJobs?: FireworksEvaluationJob[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksGetEvaluationJobRequest {
+  readMask?: string;
+}
+
+export interface FireworksGetExecutionLogEndpointResponse {
+  executionLogSignedUri?: string;
+  contentType?: string;
+  expireTime?: string;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -2573,6 +2772,86 @@ interface FireworksCreateSecretMethod {
     req: FireworksCreateSecretRequest,
     signal?: AbortSignal
   ): Promise<FireworksSecret>;
+// Evaluators namespace types
+interface FireworksCreateEvaluatorMethod {
+  (
+    accountId: string,
+    req: FireworksCreateEvaluatorRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluator>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksUpdateEvaluatorMethod {
+  (
+    accountId: string,
+    evaluatorId: string,
+    req: FireworksUpdateEvaluatorRequest,
+    options?: FireworksUpdateEvaluatorOptions,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluator>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksGetUploadEndpointEvaluatorMethod {
+  (
+    accountId: string,
+    evaluatorId: string,
+    req: FireworksGetUploadEndpointEvaluatorRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetUploadEndpointEvaluatorResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksEvaluatorsNamespace {
+  create: FireworksCreateEvaluatorMethod;
+  list(
+    accountId: string,
+    params?: FireworksListEvaluatorsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListEvaluatorsResponse>;
+  get(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetEvaluatorRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluator>;
+  update: FireworksUpdateEvaluatorMethod;
+  delete(
+    accountId: string,
+    evaluatorId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getUploadEndpoint: FireworksGetUploadEndpointEvaluatorMethod;
+  validateUpload(
+    accountId: string,
+    evaluatorId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getBuildLogEndpoint(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetBuildLogEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetBuildLogEndpointResponse>;
+  getSourceCodeSignedUrl(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetSourceCodeSignedUrlRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetSourceCodeSignedUrlResponse>;
+}
+
+// Evaluation Jobs namespace types
+interface FireworksCreateEvaluationJobMethod {
+  (
+    accountId: string,
+    req: FireworksCreateEvaluationJobRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluationJob>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
@@ -2586,6 +2865,29 @@ interface FireworksUpdateSecretMethod {
   ): Promise<FireworksSecret>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+interface FireworksEvaluationJobsNamespace {
+  create: FireworksCreateEvaluationJobMethod;
+  list(
+    accountId: string,
+    params?: FireworksListEvaluationJobsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListEvaluationJobsResponse>;
+  get(
+    accountId: string,
+    evaluationJobId: string,
+    params?: FireworksGetEvaluationJobRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluationJob>;
+  delete(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getExecutionLogEndpoint(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksGetExecutionLogEndpointResponse>;
 }
 
 interface FireworksAccountsNamespace {
@@ -2608,6 +2910,8 @@ interface FireworksAccountsNamespace {
   users: FireworksUsersNamespace;
   apiKeys: FireworksApiKeysNamespace;
   secrets: FireworksSecretsNamespace;
+  evaluators: FireworksEvaluatorsNamespace;
+  evaluationJobs: FireworksEvaluationJobsNamespace;
 }
 
 // Error class

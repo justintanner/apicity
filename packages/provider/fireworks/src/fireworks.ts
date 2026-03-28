@@ -34,6 +34,10 @@ import {
   FireworksGetDownloadEndpointResponse,
   FireworksValidateUploadRequest,
   FireworksValidateUploadResponse,
+  FireworksBatchJobCreateRequest,
+  FireworksBatchJob,
+  FireworksBatchJobListRequest,
+  FireworksBatchJobListResponse,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -58,6 +62,7 @@ import {
   modelsGetUploadEndpointSchema,
   modelsGetDownloadEndpointSchema,
   modelsValidateUploadSchema,
+  batchInferenceJobCreateSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
@@ -891,6 +896,68 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               },
             }
           ),
+        },
+        batchInferenceJobs: {
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksBatchJobCreateRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksBatchJob> {
+              return await makeModelsRequest<FireworksBatchJob>(
+                "POST",
+                `/v1/accounts/${accountId}/batchInferenceJobs`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: batchInferenceJobCreateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, batchInferenceJobCreateSchema);
+              },
+            }
+          ),
+          async get(
+            accountId: string,
+            jobId: string,
+            signal?: AbortSignal
+          ): Promise<FireworksBatchJob> {
+            return await makeModelsRequest<FireworksBatchJob>(
+              "GET",
+              `/v1/accounts/${accountId}/batchInferenceJobs/${jobId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          async list(
+            accountId: string,
+            req?: FireworksBatchJobListRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksBatchJobListResponse> {
+            return await makeModelsRequest<FireworksBatchJobListResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/batchInferenceJobs`,
+              undefined,
+              req as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          async delete(
+            accountId: string,
+            jobId: string,
+            signal?: AbortSignal
+          ): Promise<Record<string, never>> {
+            return await makeModelsRequest<Record<string, never>>(
+              "DELETE",
+              `/v1/accounts/${accountId}/batchInferenceJobs/${jobId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
         },
       },
     },

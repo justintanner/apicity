@@ -426,6 +426,90 @@ export interface FireworksTranslationResponse {
   text: string;
 }
 
+// Batch inference job types
+
+export interface FireworksBatchInferenceParameters {
+  maxTokens?: number;
+  temperature?: number;
+  topP?: number;
+  n?: number;
+  topK?: number;
+  extraBody?: string;
+}
+
+export interface FireworksBatchJobProgress {
+  percent?: number;
+  epoch?: number;
+  totalInputRequests?: number;
+  totalProcessedRequests?: number;
+  successfullyProcessedRequests?: number;
+  failedRequests?: number;
+  outputRows?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  cachedInputTokenCount?: number;
+}
+
+export type FireworksBatchJobState =
+  | "JOB_STATE_UNSPECIFIED"
+  | "JOB_STATE_CREATING"
+  | "JOB_STATE_CREATING_INPUT_DATASET"
+  | "JOB_STATE_VALIDATING"
+  | "JOB_STATE_PENDING"
+  | "JOB_STATE_RUNNING"
+  | "JOB_STATE_WRITING_RESULTS"
+  | "JOB_STATE_COMPLETED"
+  | "JOB_STATE_FAILED"
+  | "JOB_STATE_CANCELLED"
+  | "JOB_STATE_CANCELLING"
+  | "JOB_STATE_EXPIRED"
+  | "JOB_STATE_DELETING"
+  | "JOB_STATE_DELETING_CLEANING_UP"
+  | "JOB_STATE_RE_QUEUEING"
+  | "JOB_STATE_IDLE"
+  | "JOB_STATE_EARLY_STOPPED"
+  | "JOB_STATE_PAUSED";
+
+export interface FireworksBatchJobCreateRequest {
+  model: string;
+  inputDatasetId: string;
+  displayName?: string;
+  outputDatasetId?: string;
+  inferenceParameters?: FireworksBatchInferenceParameters;
+  precision?: string;
+  continuedFromJobName?: string;
+}
+
+export interface FireworksBatchJob {
+  name?: string;
+  displayName?: string;
+  model?: string;
+  inputDatasetId?: string;
+  outputDatasetId?: string;
+  inferenceParameters?: FireworksBatchInferenceParameters;
+  precision?: string;
+  continuedFromJobName?: string;
+  createTime?: string;
+  createdBy?: string;
+  state?: FireworksBatchJobState;
+  status?: { code?: string; message?: string };
+  updateTime?: string;
+  jobProgress?: FireworksBatchJobProgress;
+}
+
+export interface FireworksBatchJobListRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+}
+
+export interface FireworksBatchJobListResponse {
+  batchInferenceJobs?: FireworksBatchJob[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -529,6 +613,39 @@ interface FireworksTranslationsMethod {
 interface FireworksAudioNamespace {
   transcriptions: FireworksTranscriptionsMethod;
   translations: FireworksTranslationsMethod;
+}
+
+interface FireworksBatchJobCreateMethod {
+  (
+    accountId: string,
+    req: FireworksBatchJobCreateRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksBatchJob>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksBatchInferenceJobsNamespace {
+  create: FireworksBatchJobCreateMethod;
+  get(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksBatchJob>;
+  list(
+    accountId: string,
+    opts?: FireworksBatchJobListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksBatchJobListResponse>;
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksAccountsNamespace {
+  batchInferenceJobs: FireworksBatchInferenceJobsNamespace;
 }
 
 interface FireworksV1Namespace {

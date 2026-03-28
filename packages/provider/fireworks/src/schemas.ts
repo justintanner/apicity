@@ -715,6 +715,66 @@ export const modelsValidateUploadSchema: PayloadSchema = {
   },
 };
 
+export const batchInferenceJobCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/batchInferenceJobs",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description:
+        "Model resource name (e.g. accounts/fireworks/models/llama-v3p1-8b-instruct)",
+    },
+    inputDatasetId: {
+      type: "string",
+      required: true,
+      description:
+        "Input dataset resource name (e.g. accounts/{account_id}/datasets/{dataset_id})",
+    },
+    displayName: {
+      type: "string",
+      description: "Human-readable display name for the job",
+    },
+    outputDatasetId: {
+      type: "string",
+      description: "Output dataset resource name",
+    },
+    inferenceParameters: {
+      type: "object",
+      description: "Inference parameters for the batch job",
+      properties: {
+        maxTokens: {
+          type: "number",
+          description: "Maximum tokens to generate per response",
+        },
+        temperature: {
+          type: "number",
+          description: "Sampling temperature (0-2)",
+        },
+        topP: { type: "number", description: "Top-p sampling (0-1)" },
+        n: {
+          type: "number",
+          description: "Number of response candidates per input",
+        },
+        topK: { type: "number", description: "Top-k token selection limit" },
+        extraBody: {
+          type: "string",
+          description: "Additional parameters as JSON string",
+        },
+      },
+    },
+    precision: {
+      type: "string",
+      description: "Model precision (e.g. FP16, FP8)",
+    },
+    continuedFromJobName: {
+      type: "string",
+      description: "Resource name of a previous job to continue from",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

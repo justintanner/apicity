@@ -1,0 +1,61 @@
+import { describe, it, expect } from "vitest";
+import { fireworks } from "@nakedapi/fireworks";
+
+describe("fireworks batch inference jobs", () => {
+  describe("payload validation", () => {
+    it("should validate create payload with required fields", () => {
+      const provider = fireworks({ apiKey: "test" });
+      const valid =
+        provider.v1.accounts.batchInferenceJobs.create.validatePayload({
+          model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+          inputDatasetId: "accounts/test/datasets/my-dataset",
+        });
+      expect(valid.valid).toBe(true);
+      expect(valid.errors).toHaveLength(0);
+    });
+
+    it("should reject create payload missing required fields", () => {
+      const provider = fireworks({ apiKey: "test" });
+      const invalid =
+        provider.v1.accounts.batchInferenceJobs.create.validatePayload({});
+      expect(invalid.valid).toBe(false);
+      expect(invalid.errors).toContain("model is required");
+      expect(invalid.errors).toContain("inputDatasetId is required");
+    });
+
+    it("should validate create payload with optional fields", () => {
+      const provider = fireworks({ apiKey: "test" });
+      const valid =
+        provider.v1.accounts.batchInferenceJobs.create.validatePayload({
+          model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+          inputDatasetId: "accounts/test/datasets/input",
+          displayName: "My Batch Job",
+          inferenceParameters: { maxTokens: 100, temperature: 0.7 },
+        });
+      expect(valid.valid).toBe(true);
+      expect(valid.errors).toHaveLength(0);
+    });
+
+    it("should expose payload schema", () => {
+      const provider = fireworks({ apiKey: "test" });
+      const schema =
+        provider.v1.accounts.batchInferenceJobs.create.payloadSchema;
+      expect(schema.method).toBe("POST");
+      expect(schema.path).toBe("/v1/accounts/{account_id}/batchInferenceJobs");
+      expect(schema.contentType).toBe("application/json");
+      expect(schema.fields.model.required).toBe(true);
+      expect(schema.fields.inputDatasetId.required).toBe(true);
+    });
+  });
+
+  describe("namespace structure", () => {
+    it("should expose create, get, list, and delete methods", () => {
+      const provider = fireworks({ apiKey: "test" });
+      const batch = provider.v1.accounts.batchInferenceJobs;
+      expect(typeof batch.create).toBe("function");
+      expect(typeof batch.get).toBe("function");
+      expect(typeof batch.list).toBe("function");
+      expect(typeof batch.delete).toBe("function");
+    });
+  });
+});

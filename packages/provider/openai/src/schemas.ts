@@ -473,6 +473,19 @@ export const responsesDeleteSchema: PayloadSchema = {
   },
 };
 
+export const modelsDeleteSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/models/{model}",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description: "The ID of the model to delete (must be a fine-tuned model)",
+    },
+  },
+};
+
 export const audioTranslationsSchema: PayloadSchema = {
   method: "POST",
   path: "/audio/translations",

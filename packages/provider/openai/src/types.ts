@@ -501,6 +501,25 @@ export interface OpenAiResponseResponse {
   parallel_tool_calls?: boolean;
 }
 
+// Models API types
+export interface OpenAiModel {
+  id: string;
+  object: "model";
+  created: number;
+  owned_by: string;
+}
+
+export interface OpenAiModelListResponse {
+  object: "list";
+  data: OpenAiModel[];
+}
+
+export interface OpenAiModelDeleteResponse {
+  id: string;
+  object: "model";
+  deleted: boolean;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -613,11 +632,31 @@ interface OpenAiResponsesMethod {
   del: OpenAiResponsesDeleteMethod;
 }
 
+interface OpenAiModelsListMethod {
+  (signal?: AbortSignal): Promise<OpenAiModelListResponse>;
+}
+
+interface OpenAiModelsRetrieveMethod {
+  (model: string, signal?: AbortSignal): Promise<OpenAiModel>;
+}
+
+interface OpenAiModelsDeleteMethod {
+  (model: string, signal?: AbortSignal): Promise<OpenAiModelDeleteResponse>;
+  payloadSchema: PayloadSchema;
+}
+
+interface OpenAiModelsNamespace {
+  list: OpenAiModelsListMethod;
+  retrieve: OpenAiModelsRetrieveMethod;
+  del: OpenAiModelsDeleteMethod;
+}
+
 interface OpenAiV1Namespace {
   chat: OpenAiChatNamespace;
   audio: OpenAiAudioNamespace;
   embeddings: OpenAiEmbeddingsMethod;
   images: OpenAiImagesNamespace;
+  models: OpenAiModelsNamespace;
   responses: OpenAiResponsesMethod;
 }
 

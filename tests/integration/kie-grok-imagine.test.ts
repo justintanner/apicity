@@ -38,7 +38,7 @@ describe("kie grok-imagine full lifecycle", () => {
 
     const taskId = task.data!.taskId!;
     const deadline = Date.now() + 5 * 60 * 1000;
-    const pollIntervalMs = ctx.mode === "record" ? 10_000 : 0;
+    const pollIntervalMs = ctx.mode === "record" ? 30_000 : 0;
     let finalState: string | undefined;
     let resultJson: string | undefined;
 
@@ -101,7 +101,7 @@ describe("kie grok-imagine full lifecycle", () => {
 
     const taskId = task.data!.taskId!;
     const deadline = Date.now() + 5 * 60 * 1000;
-    const pollIntervalMs = ctx.mode === "record" ? 10_000 : 0;
+    const pollIntervalMs = ctx.mode === "record" ? 30_000 : 0;
     let finalState: string | undefined;
     let resultJson: string | undefined;
 

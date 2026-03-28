@@ -620,6 +620,61 @@ export interface OpenAiModerationResponse {
   id: string;
   model: string;
   results: OpenAiModerationResult[];
+// Files API types
+export interface OpenAiFile {
+  id: string;
+  object: "file";
+  bytes: number;
+  created_at: number;
+  expires_at?: number;
+  filename: string;
+  purpose:
+    | "assistants"
+    | "assistants_output"
+    | "batch"
+    | "batch_output"
+    | "fine-tune"
+    | "fine-tune-results"
+    | "vision"
+    | "user_data";
+  status: "uploaded" | "processed" | "error";
+  status_details?: string;
+}
+
+export interface OpenAiFileListRequest {
+  purpose?: string;
+  limit?: number;
+  order?: "asc" | "desc";
+  after?: string;
+}
+
+export interface OpenAiFileListResponse {
+  object: "list";
+  data: OpenAiFile[];
+  first_id: string;
+  last_id: string;
+  has_more: boolean;
+}
+
+export interface OpenAiFileUploadRequest {
+  file: Blob;
+  purpose:
+    | "assistants"
+    | "batch"
+    | "fine-tune"
+    | "vision"
+    | "user_data"
+    | "evals";
+  expires_after?: {
+    anchor: "created_at";
+    seconds: number;
+  };
+}
+
+export interface OpenAiFileDeleteResponse {
+  id: string;
+  object: "file";
+  deleted: boolean;
 }
 
 // Payload schema types
@@ -741,6 +796,40 @@ interface OpenAiResponsesMethod {
   del: OpenAiResponsesDeleteMethod;
 }
 
+interface OpenAiFilesListMethod {
+  (
+    opts?: OpenAiFileListRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiFileListResponse>;
+}
+
+interface OpenAiFilesUploadMethod {
+  (req: OpenAiFileUploadRequest, signal?: AbortSignal): Promise<OpenAiFile>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface OpenAiFilesRetrieveMethod {
+  (fileId: string, signal?: AbortSignal): Promise<OpenAiFile>;
+}
+
+interface OpenAiFilesDeleteMethod {
+  (fileId: string, signal?: AbortSignal): Promise<OpenAiFileDeleteResponse>;
+  payloadSchema: PayloadSchema;
+}
+
+interface OpenAiFilesContentMethod {
+  (fileId: string, signal?: AbortSignal): Promise<string>;
+}
+
+interface OpenAiFilesNamespace {
+  list: OpenAiFilesListMethod;
+  upload: OpenAiFilesUploadMethod;
+  retrieve: OpenAiFilesRetrieveMethod;
+  del: OpenAiFilesDeleteMethod;
+  content: OpenAiFilesContentMethod;
+}
+
 interface OpenAiModelsListMethod {
   (signal?: AbortSignal): Promise<OpenAiModelListResponse>;
 }
@@ -773,6 +862,7 @@ interface OpenAiV1Namespace {
   chat: OpenAiChatNamespace;
   audio: OpenAiAudioNamespace;
   embeddings: OpenAiEmbeddingsMethod;
+  files: OpenAiFilesNamespace;
   images: OpenAiImagesNamespace;
   models: OpenAiModelsNamespace;
   moderations: OpenAiModerationsMethod;

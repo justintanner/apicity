@@ -13,6 +13,11 @@ import {
   OpenAiImageEditResponse,
   OpenAiImageGenerationRequest,
   OpenAiImageGenerationResponse,
+  OpenAiFileListRequest,
+  OpenAiFileListResponse,
+  OpenAiFile,
+  OpenAiFileUploadRequest,
+  OpenAiFileDeleteResponse,
   OpenAiModelListResponse,
   OpenAiModel,
   OpenAiModelDeleteResponse,
@@ -29,6 +34,8 @@ import type { ValidationResult } from "./types";
 import {
   chatCompletionsSchema,
   embeddingsSchema,
+  filesUploadSchema,
+  filesDeleteSchema,
   imageEditsSchema,
   imageGenerationsSchema,
   modelsDeleteSchema,
@@ -267,6 +274,55 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
     }
   }
 
+  async function makeGetTextRequest(
+    path: string,
+    signal?: AbortSignal
+  ): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    const url = `${baseURL}${path}`;
+
+    try {
+      const res = await doFetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `OpenAI API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (typeof body === "object" && body !== null && "error" in body) {
+            const err = (body as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `OpenAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new OpenAiError(message, res.status, body);
+      }
+
+      return await res.text();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof OpenAiError) throw error;
+      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
+    }
+  }
+
   return {
     v1: {
       chat: {
@@ -307,6 +363,82 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           },
         }
       ),
+      files: {
+        list: async function list(
+          listOpts?: OpenAiFileListRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiFileListResponse> {
+          const query: Record<string, string | undefined> = {};
+          if (listOpts?.purpose !== undefined) query.purpose = listOpts.purpose;
+          if (listOpts?.limit !== undefined)
+            query.limit = String(listOpts.limit);
+          if (listOpts?.order !== undefined) query.order = listOpts.order;
+          if (listOpts?.after !== undefined) query.after = listOpts.after;
+          return await makeGetRequest<OpenAiFileListResponse>(
+            "/files",
+            query,
+            signal
+          );
+        },
+        upload: Object.assign(
+          async function upload(
+            req: OpenAiFileUploadRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiFile> {
+            const form = new FormData();
+            form.append("file", req.file);
+            form.append("purpose", req.purpose);
+            if (req.expires_after !== undefined) {
+              form.append("expires_after", JSON.stringify(req.expires_after));
+            }
+
+            return await makeRequest<OpenAiFile>(
+              "/files",
+              { headers: {}, body: form },
+              signal
+            );
+          },
+          {
+            payloadSchema: filesUploadSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, filesUploadSchema);
+            },
+          }
+        ),
+        retrieve: async function retrieve(
+          fileId: string,
+          signal?: AbortSignal
+        ): Promise<OpenAiFile> {
+          return await makeGetRequest<OpenAiFile>(
+            `/files/${encodeURIComponent(fileId)}`,
+            undefined,
+            signal
+          );
+        },
+        del: Object.assign(
+          async function del(
+            fileId: string,
+            signal?: AbortSignal
+          ): Promise<OpenAiFileDeleteResponse> {
+            return await makeDeleteRequest<OpenAiFileDeleteResponse>(
+              `/files/${encodeURIComponent(fileId)}`,
+              signal
+            );
+          },
+          {
+            payloadSchema: filesDeleteSchema,
+          }
+        ),
+        content: async function content(
+          fileId: string,
+          signal?: AbortSignal
+        ): Promise<string> {
+          return await makeGetTextRequest(
+            `/files/${encodeURIComponent(fileId)}/content`,
+            signal
+          );
+        },
+      },
       images: {
         edits: Object.assign(
           async function edits(

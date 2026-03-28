@@ -549,6 +549,57 @@ export const moderationsSchema: PayloadSchema = {
       type: "string",
       description:
         "Moderation model ID (e.g. omni-moderation-latest, text-moderation-latest)",
+export const filesUploadSchema: PayloadSchema = {
+  method: "POST",
+  path: "/files",
+  contentType: "multipart/form-data",
+  fields: {
+    file: {
+      type: "object",
+      required: true,
+      description: "The file object to upload (Blob)",
+    },
+    purpose: {
+      type: "string",
+      required: true,
+      description: "Intended purpose of the uploaded file",
+      enum: [
+        "assistants",
+        "batch",
+        "fine-tune",
+        "vision",
+        "user_data",
+        "evals",
+      ],
+    },
+    expires_after: {
+      type: "object",
+      description: "Expiration policy for the file",
+      properties: {
+        anchor: {
+          type: "string",
+          required: true,
+          enum: ["created_at"],
+        },
+        seconds: {
+          type: "number",
+          required: true,
+          description: "Seconds after anchor time before expiry (3600-2592000)",
+        },
+      },
+    },
+  },
+};
+
+export const filesDeleteSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/files/{file_id}",
+  contentType: "application/json",
+  fields: {
+    file_id: {
+      type: "string",
+      required: true,
+      description: "The ID of the file to delete",
     },
   },
 };

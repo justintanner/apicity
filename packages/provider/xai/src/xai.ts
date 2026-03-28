@@ -42,6 +42,7 @@ import {
   XaiDocumentSearchResponse,
   XaiResponseRequest,
   XaiResponseResponse,
+  XaiResponseDeleteResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -49,6 +50,7 @@ import type { ValidationResult } from "./types";
 import {
   chatCompletionsSchema,
   responsesSchema,
+  responsesDeleteSchema,
   imageGenerationsSchema,
   imageEditsSchema,
   videoGenerationsSchema,
@@ -72,7 +74,7 @@ export function xai(opts: XaiOptions): XaiProvider {
   const timeout = opts.timeout ?? 30000;
 
   async function makeRequest<T>(
-    method: "GET" | "POST",
+    method: "GET" | "POST" | "DELETE",
     path: string,
     body?: unknown,
     signal?: AbortSignal
@@ -800,6 +802,22 @@ export function xai(opts: XaiOptions): XaiProvider {
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, responsesSchema);
           },
+          del: Object.assign(
+            async function del(
+              id: string,
+              signal?: AbortSignal
+            ): Promise<XaiResponseDeleteResponse> {
+              return await makeRequest<XaiResponseDeleteResponse>(
+                "DELETE",
+                `/responses/${encodeURIComponent(id)}`,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: responsesDeleteSchema,
+            }
+          ),
         }
       ),
       videos,

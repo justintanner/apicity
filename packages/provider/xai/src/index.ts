@@ -87,6 +87,7 @@ export type {
   XaiResponseWebSearchCallItem,
   XaiResponseFileSearchCallItem,
   XaiResponseUsage,
+  XaiResponseDeleteResponse,
   XaiModel,
   XaiModelListResponse,
   XaiLanguageModel,

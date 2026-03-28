@@ -518,6 +518,19 @@ export const responsesSchema: PayloadSchema = {
   },
 };
 
+export const responsesDeleteSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/responses/{id}",
+  contentType: "application/json",
+  fields: {
+    id: {
+      type: "string",
+      required: true,
+      description: "The ID of the response to delete",
+    },
+  },
+};
+
 export const videoExtensionsSchema: PayloadSchema = {
   method: "POST",
   path: "/videos/extensions",

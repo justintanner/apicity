@@ -8,10 +8,12 @@ import {
   KimiCodingModelListResponse,
   AnthropicMessage,
   AnthropicStreamEvent,
+  EmbeddingRequest,
+  EmbeddingResponse,
 } from "./types";
 import type { ValidationResult } from "./types";
 import { sseToIterable } from "./sse";
-import { messagesSchema } from "./schemas";
+import { messagesSchema, embeddingsSchema } from "./schemas";
 import { validatePayload } from "./validate";
 
 interface AnthropicErrorBody {
@@ -197,6 +199,46 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  async function embeddingsImpl(
+    req: EmbeddingRequest,
+    signal?: AbortSignal
+  ): Promise<EmbeddingResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(`${baseURL}v1/embeddings`, {
+        method: "POST",
+        headers: buildHeaders(),
+        body: JSON.stringify(req),
+        signal: signal || controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `KimiCoding error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            isAnthropicErrorBody(body) &&
+            typeof body.error?.message === "string"
+          ) {
+            message = `KimiCoding error ${res.status}: ${body.error.message}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KimiCodingError(message, res.status, body);
+      }
+
+      return (await res.json()) as EmbeddingResponse;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
   const messages = Object.assign(chatImpl, {
     stream: Object.assign(streamImpl, {
       payloadSchema: messagesSchema,
@@ -207,6 +249,13 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     payloadSchema: messagesSchema,
     validatePayload(data: unknown): ValidationResult {
       return validatePayload(data, messagesSchema);
+    },
+  });
+
+  const embeddings = Object.assign(embeddingsImpl, {
+    payloadSchema: embeddingsSchema,
+    validatePayload(data: unknown): ValidationResult {
+      return validatePayload(data, embeddingsSchema);
     },
   });
 
@@ -224,6 +273,7 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
             );
           },
         },
+        embeddings,
       },
     },
   };

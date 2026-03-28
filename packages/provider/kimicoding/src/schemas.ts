@@ -1,5 +1,37 @@
 import type { PayloadSchema } from "./types";
 
+export const embeddingsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/embeddings",
+  contentType: "application/json",
+  fields: {
+    input: {
+      type: "string",
+      required: true,
+      description:
+        "Input text to embed (string, string[], number[], or number[][])",
+    },
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID",
+    },
+    encoding_format: {
+      type: "string",
+      description: "Encoding format for embeddings",
+      enum: ["float", "base64"],
+    },
+    dimensions: {
+      type: "number",
+      description: "Number of dimensions for the output embeddings",
+    },
+    user: {
+      type: "string",
+      description: "Unique identifier for the end-user",
+    },
+  },
+};
+
 export const messagesSchema: PayloadSchema = {
   method: "POST",
   path: "/v1/messages",

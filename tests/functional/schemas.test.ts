@@ -2,7 +2,10 @@
 import { describe, it, expect } from "vitest";
 
 // Import all schemas from each provider
-import { messagesSchema } from "../../packages/provider/kimicoding/src/schemas";
+import {
+  messagesSchema,
+  embeddingsSchema as kimiEmbeddingsSchema,
+} from "../../packages/provider/kimicoding/src/schemas";
 import {
   chatCompletionsSchema as openaiChatSchema,
   embeddingsSchema,
@@ -52,6 +55,7 @@ import { validatePayload } from "../../packages/provider/kimicoding/src/validate
 describe("schema structure", () => {
   const allSchemas = [
     { name: "kimicoding/messages", schema: messagesSchema },
+    { name: "kimicoding/embeddings", schema: kimiEmbeddingsSchema },
     { name: "openai/chat", schema: openaiChatSchema },
     { name: "openai/embeddings", schema: embeddingsSchema },
     { name: "openai/imageEdits", schema: openaiImageEditsSchema },
@@ -128,6 +132,21 @@ describe("schema + validatePayload integration", () => {
     expect(result.errors).toContain("model is required");
     expect(result.errors).toContain("messages is required");
     expect(result.errors).toContain("max_tokens is required");
+  });
+
+  it("kimicoding embeddings: accepts valid request", () => {
+    const result = validatePayload(
+      { model: "k2p5", input: "hello" },
+      kimiEmbeddingsSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("kimicoding embeddings: rejects missing required fields", () => {
+    const result = validatePayload({}, kimiEmbeddingsSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("input is required");
+    expect(result.errors).toContain("model is required");
   });
 
   it("openai chat: accepts valid request", () => {

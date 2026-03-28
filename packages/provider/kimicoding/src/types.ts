@@ -102,6 +102,32 @@ export interface KimiCodingModelListResponse {
   first_id: string;
   last_id: string;
   has_more: boolean;
+// Embeddings request (OpenAI-compatible)
+export interface EmbeddingRequest {
+  input: string | string[] | number[] | number[][];
+  model: string;
+  encoding_format?: "float" | "base64";
+  dimensions?: number;
+  user?: string;
+}
+
+// Embeddings response (OpenAI-compatible)
+export interface EmbeddingData {
+  object: "embedding";
+  index: number;
+  embedding: number[];
+}
+
+export interface EmbeddingUsage {
+  prompt_tokens: number;
+  total_tokens: number;
+}
+
+export interface EmbeddingResponse {
+  object: "list";
+  data: EmbeddingData[];
+  model: string;
+  usage: EmbeddingUsage;
 }
 
 // Payload schema types
@@ -146,11 +172,19 @@ interface KimiCodingModelsListMethod {
 
 interface KimiCodingModelsNamespace {
   list: KimiCodingModelsListMethod;
+interface KimiCodingEmbeddingsMethod {
+  (
+    req: EmbeddingRequest,
+    signal?: AbortSignal
+  ): Promise<EmbeddingResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
 }
 
 interface KimiCodingV1Namespace {
   messages: KimiCodingMessagesNamespace;
   models: KimiCodingModelsNamespace;
+  embeddings: KimiCodingEmbeddingsMethod;
 }
 
 interface KimiCodingCodingNamespace {

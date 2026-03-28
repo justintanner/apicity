@@ -2,6 +2,7 @@
 export interface FireworksOptions {
   apiKey: string;
   baseURL?: string;
+  audioBaseURL?: string;
   timeout?: number;
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
@@ -354,6 +355,77 @@ export interface FireworksRerankResponse {
   usage: FireworksRerankUsage;
 }
 
+// Audio transcription request
+export interface FireworksTranscriptionRequest {
+  file: Blob | string;
+  model?: string;
+  vad_model?: "silero" | "whisperx-pyannet";
+  alignment_model?: "mms_fa" | "tdnn_ffn";
+  language?: string;
+  prompt?: string;
+  temperature?: number | number[];
+  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
+  timestamp_granularities?: string | string[];
+  diarize?: "true" | "false";
+  min_speakers?: number;
+  max_speakers?: number;
+  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
+}
+
+// Audio transcription response (json format)
+export interface FireworksTranscriptionResponse {
+  text: string;
+}
+
+// Audio transcription verbose response
+export interface FireworksTranscriptionWord {
+  word: string;
+  language: string;
+  probability: number;
+  hallucination_score: number;
+  start: number;
+  end: number;
+  speaker_id?: string;
+}
+
+export interface FireworksTranscriptionSegment {
+  id: number;
+  text: string;
+  language: string;
+  start: number;
+  end: number;
+  speaker_id?: string;
+  words?: FireworksTranscriptionWord[] | null;
+}
+
+export interface FireworksTranscriptionVerboseResponse {
+  task: string;
+  language: string;
+  duration: number;
+  text: string;
+  words?: FireworksTranscriptionWord[] | null;
+  segments?: FireworksTranscriptionSegment[] | null;
+}
+
+// Audio translation request
+export interface FireworksTranslationRequest {
+  file: Blob | string;
+  model?: string;
+  vad_model?: "silero" | "whisperx-pyannet";
+  alignment_model?: "mms_fa" | "tdnn_ffn";
+  language?: string;
+  prompt?: string;
+  temperature?: number | number[];
+  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
+  timestamp_granularities?: string | string[];
+  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
+}
+
+// Audio translation response
+export interface FireworksTranslationResponse {
+  text: string;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -436,6 +508,29 @@ interface FireworksMessagesMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface FireworksTranscriptionsMethod {
+  (
+    req: FireworksTranscriptionRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksTranscriptionResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksTranslationsMethod {
+  (
+    req: FireworksTranslationRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksTranslationResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksAudioNamespace {
+  transcriptions: FireworksTranscriptionsMethod;
+  translations: FireworksTranslationsMethod;
+}
+
 interface FireworksV1Namespace {
   chat: FireworksChatNamespace;
   completions: FireworksCompletionsMethod;
@@ -443,6 +538,7 @@ interface FireworksV1Namespace {
   rerank: FireworksRerankMethod;
   messages: FireworksMessagesMethod;
   workflows: FireworksWorkflowsNamespace;
+  audio: FireworksAudioNamespace;
 }
 
 // Provider interface

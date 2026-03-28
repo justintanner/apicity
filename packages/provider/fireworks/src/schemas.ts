@@ -324,6 +324,121 @@ export const messagesSchema: PayloadSchema = {
   },
 };
 
+export const audioTranscriptionsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/audio/transcriptions",
+  contentType: "multipart/form-data",
+  fields: {
+    file: {
+      type: "object",
+      required: true,
+      description: "Audio file (Blob) or public URL string",
+    },
+    model: {
+      type: "string",
+      description: "ASR model (whisper-v3 or whisper-v3-turbo)",
+      enum: ["whisper-v3", "whisper-v3-turbo"],
+    },
+    vad_model: {
+      type: "string",
+      description: "Voice activity detection model",
+      enum: ["silero", "whisperx-pyannet"],
+    },
+    alignment_model: {
+      type: "string",
+      description: "Alignment model for timestamps",
+      enum: ["mms_fa", "tdnn_ffn"],
+    },
+    language: { type: "string", description: "Target language code" },
+    prompt: {
+      type: "string",
+      description: "Custom prompt for style or vocabulary",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature 0-1",
+    },
+    response_format: {
+      type: "string",
+      description: "Output format",
+      enum: ["json", "text", "srt", "verbose_json", "vtt"],
+    },
+    timestamp_granularities: {
+      type: "string",
+      description: "Timestamp detail level (word, segment, or both)",
+    },
+    diarize: {
+      type: "string",
+      description: "Enable speaker diarization",
+      enum: ["true", "false"],
+    },
+    min_speakers: {
+      type: "number",
+      description: "Minimum speaker count for diarization",
+    },
+    max_speakers: {
+      type: "number",
+      description: "Maximum speaker count for diarization",
+    },
+    preprocessing: {
+      type: "string",
+      description: "Audio preprocessing mode",
+      enum: ["none", "dynamic", "soft_dynamic", "bass_dynamic"],
+    },
+  },
+};
+
+export const audioTranslationsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/audio/translations",
+  contentType: "multipart/form-data",
+  fields: {
+    file: {
+      type: "object",
+      required: true,
+      description: "Audio file (Blob) or public URL string",
+    },
+    model: {
+      type: "string",
+      description: "ASR model (whisper-v3 or whisper-v3-turbo)",
+      enum: ["whisper-v3", "whisper-v3-turbo"],
+    },
+    vad_model: {
+      type: "string",
+      description: "Voice activity detection model",
+      enum: ["silero", "whisperx-pyannet"],
+    },
+    alignment_model: {
+      type: "string",
+      description: "Alignment model for timestamps",
+      enum: ["mms_fa", "tdnn_ffn"],
+    },
+    language: { type: "string", description: "Source language code" },
+    prompt: {
+      type: "string",
+      description: "Custom prompt for style or vocabulary",
+    },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature 0-1",
+    },
+    response_format: {
+      type: "string",
+      description: "Output format",
+      enum: ["json", "text", "srt", "verbose_json", "vtt"],
+    },
+    timestamp_granularities: {
+      type: "string",
+      description: "Timestamp detail level (word, segment, or both)",
+    },
+    preprocessing: {
+      type: "string",
+      description: "Audio preprocessing mode",
+      enum: ["none", "dynamic", "soft_dynamic", "bass_dynamic"],
+    },
+  },
+};
+
 export const textToImageSchema: PayloadSchema = {
   method: "POST",
   path: "/workflows/accounts/fireworks/models/{model}/text_to_image",

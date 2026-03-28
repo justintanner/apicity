@@ -426,6 +426,156 @@ export interface FireworksTranslationResponse {
   text: string;
 }
 
+// Supervised Fine-Tuning (SFT) types
+
+export interface FireworksSFTAwsS3Config {
+  credentialsSecret?: string;
+  iamRoleArn?: string;
+}
+
+export interface FireworksSFTAzureBlobStorageConfig {
+  credentialsSecret?: string;
+  managedIdentityClientId?: string;
+  tenantId?: string;
+}
+
+export interface FireworksSFTWandbConfig {
+  enabled?: boolean;
+  apiKey?: string;
+  project?: string;
+  entity?: string;
+  runId?: string;
+  url?: string;
+}
+
+export interface FireworksSFTCreateRequest {
+  accountId: string;
+  dataset: string;
+  displayName?: string;
+  baseModel?: string;
+  warmStartFrom?: string;
+  outputModel?: string;
+  jinjaTemplate?: string;
+  epochs?: number;
+  learningRate?: number;
+  maxContextLength?: number;
+  loraRank?: number;
+  earlyStop?: boolean;
+  evaluationDataset?: string;
+  isTurbo?: boolean;
+  evalAutoCarveout?: boolean;
+  region?: string;
+  nodes?: number;
+  batchSize?: number;
+  batchSizeSamples?: number;
+  gradientAccumulationSteps?: number;
+  learningRateWarmupSteps?: number;
+  mtpEnabled?: boolean;
+  mtpNumDraftTokens?: number;
+  mtpFreezeBaseModel?: boolean;
+  optimizerWeightDecay?: number;
+  usePurpose?: string;
+  awsS3Config?: FireworksSFTAwsS3Config;
+  azureBlobStorageConfig?: FireworksSFTAzureBlobStorageConfig;
+  wandbConfig?: FireworksSFTWandbConfig;
+  supervisedFineTuningJobId?: string;
+}
+
+export interface FireworksSFTJobProgress {
+  percent?: number;
+  epoch?: number;
+  totalInputRequests?: number;
+  totalProcessedRequests?: number;
+  successfullyProcessedRequests?: number;
+  failedRequests?: number;
+  outputRows?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  cachedInputTokenCount?: number;
+}
+
+export interface FireworksSFTEstimatedCost {
+  currencyCode?: string;
+  units?: string;
+  nanos?: number;
+}
+
+export interface FireworksSFTStatus {
+  code?: string;
+  message?: string;
+}
+
+export interface FireworksSFTJob {
+  name?: string;
+  createTime?: string;
+  completedTime?: string;
+  updateTime?: string;
+  state?: string;
+  status?: FireworksSFTStatus;
+  dataset?: string;
+  displayName?: string;
+  baseModel?: string;
+  warmStartFrom?: string;
+  outputModel?: string;
+  jinjaTemplate?: string;
+  epochs?: number;
+  learningRate?: number;
+  maxContextLength?: number;
+  loraRank?: number;
+  earlyStop?: boolean;
+  evaluationDataset?: string;
+  isTurbo?: boolean;
+  evalAutoCarveout?: boolean;
+  region?: string;
+  nodes?: number;
+  batchSize?: number;
+  batchSizeSamples?: number;
+  gradientAccumulationSteps?: number;
+  learningRateWarmupSteps?: number;
+  mtpEnabled?: boolean;
+  mtpNumDraftTokens?: number;
+  mtpFreezeBaseModel?: boolean;
+  optimizerWeightDecay?: number;
+  usePurpose?: string;
+  awsS3Config?: FireworksSFTAwsS3Config;
+  azureBlobStorageConfig?: FireworksSFTAzureBlobStorageConfig;
+  wandbConfig?: FireworksSFTWandbConfig;
+  createdBy?: string;
+  jobProgress?: FireworksSFTJobProgress;
+  estimatedCost?: FireworksSFTEstimatedCost;
+  metricsFileSignedUrl?: string;
+  trainerLogsSignedUrl?: string;
+}
+
+export interface FireworksSFTListRequest {
+  accountId: string;
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+}
+
+export interface FireworksSFTListResponse {
+  supervisedFineTuningJobs: FireworksSFTJob[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksSFTGetRequest {
+  accountId: string;
+  jobId: string;
+}
+
+export interface FireworksSFTDeleteRequest {
+  accountId: string;
+  jobId: string;
+}
+
+export interface FireworksSFTResumeRequest {
+  accountId: string;
+  jobId: string;
+}
+
 // Batch inference job types
 
 export interface FireworksBatchInferenceParameters {
@@ -644,8 +794,51 @@ interface FireworksBatchInferenceJobsNamespace {
   ): Promise<Record<string, never>>;
 }
 
+interface FireworksSFTCreateMethod {
+  (
+    req: FireworksSFTCreateRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTJob>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksSFTListMethod {
+  (
+    req: FireworksSFTListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTListResponse>;
+}
+
+interface FireworksSFTGetMethod {
+  (req: FireworksSFTGetRequest, signal?: AbortSignal): Promise<FireworksSFTJob>;
+}
+
+interface FireworksSFTDeleteMethod {
+  (
+    req: FireworksSFTDeleteRequest,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksSFTResumeMethod {
+  (
+    req: FireworksSFTResumeRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTJob>;
+}
+
+interface FireworksSFTNamespace {
+  create: FireworksSFTCreateMethod;
+  list: FireworksSFTListMethod;
+  get: FireworksSFTGetMethod;
+  delete: FireworksSFTDeleteMethod;
+  resume: FireworksSFTResumeMethod;
+}
+
 interface FireworksAccountsNamespace {
   batchInferenceJobs: FireworksBatchInferenceJobsNamespace;
+  supervisedFineTuningJobs: FireworksSFTNamespace;
 }
 
 interface FireworksV1Namespace {
@@ -1106,6 +1299,7 @@ export interface FireworksModelsNamespace {
 
 interface FireworksAccountsNamespace {
   models: FireworksModelsNamespace;
+  supervisedFineTuningJobs: FireworksSFTNamespace;
 }
 
 // Error class

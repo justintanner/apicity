@@ -38,6 +38,13 @@ import {
   FireworksBatchJob,
   FireworksBatchJobListRequest,
   FireworksBatchJobListResponse,
+  FireworksSFTCreateRequest,
+  FireworksSFTListRequest,
+  FireworksSFTListResponse,
+  FireworksSFTGetRequest,
+  FireworksSFTDeleteRequest,
+  FireworksSFTResumeRequest,
+  FireworksSFTJob,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -63,6 +70,7 @@ import {
   modelsGetDownloadEndpointSchema,
   modelsValidateUploadSchema,
   batchInferenceJobCreateSchema,
+  sftCreateSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
@@ -954,6 +962,88 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               "DELETE",
               `/v1/accounts/${accountId}/batchInferenceJobs/${jobId}`,
               undefined,
+              undefined,
+              signal
+            );
+          },
+        },
+        supervisedFineTuningJobs: {
+          create: Object.assign(
+            async function create(
+              req: FireworksSFTCreateRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksSFTJob> {
+              const { accountId, supervisedFineTuningJobId, ...body } = req;
+              const query: Record<string, string> = {};
+              if (supervisedFineTuningJobId) {
+                query.supervisedFineTuningJobId = supervisedFineTuningJobId;
+              }
+              return await makeModelsRequest<FireworksSFTJob>(
+                "POST",
+                `/v1/accounts/${accountId}/supervisedFineTuningJobs`,
+                body,
+                Object.keys(query).length > 0 ? query : undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: sftCreateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, sftCreateSchema);
+              },
+            }
+          ),
+          async list(
+            req: FireworksSFTListRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksSFTListResponse> {
+            const { accountId, ...params } = req;
+            const query: Record<string, string | number | boolean | undefined> =
+              {};
+            if (params.pageSize !== undefined) query.pageSize = params.pageSize;
+            if (params.pageToken) query.pageToken = params.pageToken;
+            if (params.filter) query.filter = params.filter;
+            if (params.orderBy) query.orderBy = params.orderBy;
+            return await makeModelsRequest<FireworksSFTListResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/supervisedFineTuningJobs`,
+              undefined,
+              Object.keys(query).length > 0 ? query : undefined,
+              signal
+            );
+          },
+          async get(
+            req: FireworksSFTGetRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksSFTJob> {
+            return await makeModelsRequest<FireworksSFTJob>(
+              "GET",
+              `/v1/accounts/${req.accountId}/supervisedFineTuningJobs/${req.jobId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          async delete(
+            req: FireworksSFTDeleteRequest,
+            signal?: AbortSignal
+          ): Promise<Record<string, never>> {
+            return await makeModelsRequest<Record<string, never>>(
+              "DELETE",
+              `/v1/accounts/${req.accountId}/supervisedFineTuningJobs/${req.jobId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+          async resume(
+            req: FireworksSFTResumeRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksSFTJob> {
+            return await makeModelsRequest<FireworksSFTJob>(
+              "POST",
+              `/v1/accounts/${req.accountId}/supervisedFineTuningJobs/${req.jobId}:resume`,
+              {},
               undefined,
               signal
             );

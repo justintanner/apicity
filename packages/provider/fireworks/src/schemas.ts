@@ -775,6 +775,169 @@ export const batchInferenceJobCreateSchema: PayloadSchema = {
   },
 };
 
+export const sftCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{account_id}/supervisedFineTuningJobs",
+  contentType: "application/json",
+  fields: {
+    accountId: {
+      type: "string",
+      required: true,
+      description: "Fireworks account ID",
+    },
+    dataset: {
+      type: "string",
+      required: true,
+      description: "Training dataset name",
+    },
+    displayName: {
+      type: "string",
+      description: "Display name for the job",
+    },
+    baseModel: {
+      type: "string",
+      description:
+        "Base model to fine-tune (mutually exclusive with warmStartFrom)",
+    },
+    warmStartFrom: {
+      type: "string",
+      description:
+        "PEFT addon model to fine-tune from (mutually exclusive with baseModel)",
+    },
+    outputModel: {
+      type: "string",
+      description: "Model ID for the output; defaults to job ID",
+    },
+    jinjaTemplate: {
+      type: "string",
+      description: "Jinja template for conversation formatting",
+    },
+    epochs: {
+      type: "number",
+      description: "Number of training epochs",
+    },
+    learningRate: {
+      type: "number",
+      description: "Training learning rate",
+    },
+    maxContextLength: {
+      type: "number",
+      description: "Maximum context length",
+    },
+    loraRank: {
+      type: "number",
+      description: "LoRA layer rank",
+    },
+    earlyStop: {
+      type: "boolean",
+      description: "Stop early if validation loss does not improve",
+    },
+    evaluationDataset: {
+      type: "string",
+      description: "Separate evaluation dataset",
+    },
+    isTurbo: {
+      type: "boolean",
+      description: "Enable turbo mode",
+    },
+    evalAutoCarveout: {
+      type: "boolean",
+      description: "Auto-carve dataset for evaluation",
+    },
+    region: {
+      type: "string",
+      description: "Execution region",
+    },
+    nodes: {
+      type: "number",
+      description: "Number of compute nodes",
+    },
+    batchSize: {
+      type: "number",
+      description: "Batch size for sequence packing",
+    },
+    batchSizeSamples: {
+      type: "number",
+      description: "Number of samples per gradient batch",
+    },
+    gradientAccumulationSteps: {
+      type: "number",
+      description: "Gradient accumulation steps",
+    },
+    learningRateWarmupSteps: {
+      type: "number",
+      description: "Learning rate warm-up steps",
+    },
+    mtpEnabled: {
+      type: "boolean",
+      description: "Enable Model-Token-Prediction mode",
+    },
+    mtpNumDraftTokens: {
+      type: "number",
+      description: "Number of draft tokens in MTP mode",
+    },
+    mtpFreezeBaseModel: {
+      type: "boolean",
+      description: "Freeze base model during MTP training",
+    },
+    optimizerWeightDecay: {
+      type: "number",
+      description: "Weight decay (L2 regularization)",
+    },
+    usePurpose: {
+      type: "string",
+      description: 'Dedicated resources; only supported value is "pilot"',
+    },
+    awsS3Config: {
+      type: "object",
+      description: "AWS S3 access configuration",
+      properties: {
+        credentialsSecret: {
+          type: "string",
+          description: "Reference to Secret resource with AWS credentials",
+        },
+        iamRoleArn: {
+          type: "string",
+          description: "IAM role ARN for S3 via GCP OIDC",
+        },
+      },
+    },
+    azureBlobStorageConfig: {
+      type: "object",
+      description: "Azure Blob Storage configuration",
+      properties: {
+        credentialsSecret: {
+          type: "string",
+          description: "Reference to Secret resource with Azure credentials",
+        },
+        managedIdentityClientId: {
+          type: "string",
+          description: "Managed Identity Client ID",
+        },
+        tenantId: {
+          type: "string",
+          description: "Azure tenant ID (UUID)",
+        },
+      },
+    },
+    wandbConfig: {
+      type: "object",
+      description: "Weights & Biases logging configuration",
+      properties: {
+        enabled: { type: "boolean", description: "Enable wandb logging" },
+        apiKey: { type: "string", description: "Wandb API key" },
+        project: { type: "string", description: "Wandb project name" },
+        entity: { type: "string", description: "Wandb entity name" },
+        runId: { type: "string", description: "Wandb run identifier" },
+      },
+    },
+    supervisedFineTuningJobId: {
+      type: "string",
+      description: "Client-specified job ID; system generates UUID if omitted",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

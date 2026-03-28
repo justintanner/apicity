@@ -2101,6 +2101,305 @@ interface FireworksDpoJobsNamespace {
   ): Promise<FireworksMetricsFileEndpointResponse>;
 }
 
+// Account types
+
+export type FireworksAccountType =
+  | "ACCOUNT_TYPE_UNSPECIFIED"
+  | "ENTERPRISE";
+
+export type FireworksAccountState =
+  | "STATE_UNSPECIFIED"
+  | "CREATING"
+  | "READY"
+  | "UPDATING"
+  | "DELETING";
+
+export type FireworksAccountSuspendState =
+  | "UNSUSPENDED"
+  | "FAILED_PAYMENTS"
+  | "CREDIT_DEPLETED"
+  | "MONTHLY_SPEND_LIMIT_EXCEEDED"
+  | "BLOCKED_BY_ABUSE_RULE";
+
+export interface FireworksAccount {
+  name: string;
+  displayName?: string;
+  createTime?: string;
+  email?: string;
+  accountType?: FireworksAccountType;
+  state?: FireworksAccountState;
+  status?: { code: string; message: string };
+  suspendState?: FireworksAccountSuspendState;
+  updateTime?: string;
+}
+
+export interface FireworksListAccountsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListAccountsResponse {
+  accounts: FireworksAccount[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksGetAccountRequest {
+  readMask?: string;
+}
+
+// User types
+
+export type FireworksUserRole =
+  | "admin"
+  | "user"
+  | "contributor"
+  | "inference-user";
+
+export type FireworksUserState =
+  | "STATE_UNSPECIFIED"
+  | "CREATING"
+  | "READY"
+  | "UPDATING"
+  | "DELETING";
+
+export interface FireworksUser {
+  name: string;
+  displayName?: string;
+  email?: string;
+  role?: FireworksUserRole;
+  serviceAccount?: boolean;
+  createTime?: string;
+  updateTime?: string;
+  state?: FireworksUserState;
+  status?: { code: string; message: string };
+}
+
+export interface FireworksListUsersRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListUsersResponse {
+  users: FireworksUser[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksCreateUserRequest {
+  displayName?: string;
+  email?: string;
+  role: FireworksUserRole;
+  serviceAccount?: boolean;
+}
+
+export interface FireworksCreateUserOptions {
+  userId?: string;
+}
+
+export interface FireworksGetUserRequest {
+  readMask?: string;
+}
+
+export interface FireworksUpdateUserRequest {
+  role: FireworksUserRole;
+  displayName?: string;
+  email?: string;
+  serviceAccount?: boolean;
+}
+
+// API Key types
+
+export interface FireworksApiKey {
+  keyId: string;
+  displayName?: string;
+  key?: string;
+  createTime?: string;
+  secure?: boolean;
+  email?: string;
+  prefix?: string;
+  expireTime?: string;
+}
+
+export interface FireworksListApiKeysRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListApiKeysResponse {
+  apiKeys: FireworksApiKey[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksCreateApiKeyRequest {
+  apiKey: {
+    displayName?: string;
+    expireTime?: string;
+  };
+}
+
+export interface FireworksDeleteApiKeyRequest {
+  keyId: string;
+}
+
+// Secret types
+
+export interface FireworksSecret {
+  name: string;
+  keyName: string;
+  value?: string;
+}
+
+export interface FireworksListSecretsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListSecretsResponse {
+  secrets: FireworksSecret[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksCreateSecretRequest {
+  name?: string;
+  keyName: string;
+  value: string;
+}
+
+export interface FireworksUpdateSecretRequest {
+  keyName: string;
+  value?: string;
+}
+
+// Account management namespace types
+
+interface FireworksUsersNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListUsersRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListUsersResponse>;
+  create: FireworksCreateUserMethod;
+  get(
+    accountId: string,
+    userId: string,
+    params?: FireworksGetUserRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
+  update: FireworksUpdateUserMethod;
+}
+
+interface FireworksCreateUserMethod {
+  (
+    accountId: string,
+    req: FireworksCreateUserRequest,
+    options?: FireworksCreateUserOptions,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksUpdateUserMethod {
+  (
+    accountId: string,
+    userId: string,
+    req: FireworksUpdateUserRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksApiKeysNamespace {
+  list(
+    accountId: string,
+    userId: string,
+    params?: FireworksListApiKeysRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListApiKeysResponse>;
+  create: FireworksCreateApiKeyMethod;
+  delete: FireworksDeleteApiKeyMethod;
+}
+
+interface FireworksCreateApiKeyMethod {
+  (
+    accountId: string,
+    userId: string,
+    req: FireworksCreateApiKeyRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksApiKey>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksDeleteApiKeyMethod {
+  (
+    accountId: string,
+    userId: string,
+    req: FireworksDeleteApiKeyRequest,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksSecretsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListSecretsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListSecretsResponse>;
+  create: FireworksCreateSecretMethod;
+  get(
+    accountId: string,
+    secretId: string,
+    params?: { readMask?: string },
+    signal?: AbortSignal
+  ): Promise<FireworksSecret>;
+  update: FireworksUpdateSecretMethod;
+  delete(
+    accountId: string,
+    secretId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksCreateSecretMethod {
+  (
+    accountId: string,
+    req: FireworksCreateSecretRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSecret>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksUpdateSecretMethod {
+  (
+    accountId: string,
+    secretId: string,
+    req: FireworksUpdateSecretRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSecret>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksAccountsNamespace {
   models: FireworksModelsNamespace;
   supervisedFineTuningJobs: FireworksSFTNamespace;
@@ -2108,6 +2407,18 @@ interface FireworksAccountsNamespace {
   deployedModels: FireworksDeployedModelsNamespace;
   deploymentShapes: FireworksDeploymentShapesNamespace;
   dpoJobs: FireworksDpoJobsNamespace;
+  list(
+    params?: FireworksListAccountsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListAccountsResponse>;
+  get(
+    accountId: string,
+    params?: FireworksGetAccountRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAccount>;
+  users: FireworksUsersNamespace;
+  apiKeys: FireworksApiKeysNamespace;
+  secrets: FireworksSecretsNamespace;
 }
 
 // Error class

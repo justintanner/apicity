@@ -81,6 +81,27 @@ import {
   FireworksStreamingTranscriptionOptions,
   FireworksStreamingTranscriptionMessage,
   FireworksStreamingTranscriptionSession,
+  FireworksListAccountsRequest,
+  FireworksListAccountsResponse,
+  FireworksGetAccountRequest,
+  FireworksAccount,
+  FireworksListUsersRequest,
+  FireworksListUsersResponse,
+  FireworksCreateUserRequest,
+  FireworksCreateUserOptions,
+  FireworksUser,
+  FireworksGetUserRequest,
+  FireworksUpdateUserRequest,
+  FireworksListApiKeysRequest,
+  FireworksListApiKeysResponse,
+  FireworksCreateApiKeyRequest,
+  FireworksApiKey,
+  FireworksDeleteApiKeyRequest,
+  FireworksListSecretsRequest,
+  FireworksListSecretsResponse,
+  FireworksCreateSecretRequest,
+  FireworksSecret,
+  FireworksUpdateSecretRequest,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -116,6 +137,12 @@ import {
   dpoJobCreateSchema,
   createDeployedModelSchema,
   updateDeployedModelSchema,
+  createUserSchema,
+  updateUserSchema,
+  createApiKeySchema,
+  deleteApiKeySchema,
+  createSecretSchema,
+  updateSecretSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
@@ -1206,6 +1233,252 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       accounts: {
+        async list(
+          params?: FireworksListAccountsRequest,
+          signal?: AbortSignal
+        ): Promise<FireworksListAccountsResponse> {
+          return await makeModelsRequest<FireworksListAccountsResponse>(
+            "GET",
+            "/v1/accounts",
+            undefined,
+            params as Record<string, string | number | boolean | undefined>,
+            signal
+          );
+        },
+        async get(
+          accountId: string,
+          params?: FireworksGetAccountRequest,
+          signal?: AbortSignal
+        ): Promise<FireworksAccount> {
+          return await makeModelsRequest<FireworksAccount>(
+            "GET",
+            `/v1/accounts/${accountId}`,
+            undefined,
+            params as Record<string, string | number | boolean | undefined>,
+            signal
+          );
+        },
+        users: {
+          async list(
+            accountId: string,
+            params?: FireworksListUsersRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListUsersResponse> {
+            return await makeModelsRequest<FireworksListUsersResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/users`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateUserRequest,
+              options?: FireworksCreateUserOptions,
+              signal?: AbortSignal
+            ): Promise<FireworksUser> {
+              return await makeModelsRequest<FireworksUser>(
+                "POST",
+                `/v1/accounts/${accountId}/users`,
+                req,
+                options as Record<
+                  string,
+                  string | number | boolean | undefined
+                >,
+                signal
+              );
+            },
+            {
+              payloadSchema: createUserSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createUserSchema);
+              },
+            }
+          ),
+          async get(
+            accountId: string,
+            userId: string,
+            params?: FireworksGetUserRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksUser> {
+            return await makeModelsRequest<FireworksUser>(
+              "GET",
+              `/v1/accounts/${accountId}/users/${userId}`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          update: Object.assign(
+            async function update(
+              accountId: string,
+              userId: string,
+              req: FireworksUpdateUserRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksUser> {
+              return await makeModelsRequest<FireworksUser>(
+                "PATCH",
+                `/v1/accounts/${accountId}/users/${userId}`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: updateUserSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, updateUserSchema);
+              },
+            }
+          ),
+        },
+        apiKeys: {
+          async list(
+            accountId: string,
+            userId: string,
+            params?: FireworksListApiKeysRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListApiKeysResponse> {
+            return await makeModelsRequest<FireworksListApiKeysResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/users/${userId}/apiKeys`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              userId: string,
+              req: FireworksCreateApiKeyRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksApiKey> {
+              return await makeModelsRequest<FireworksApiKey>(
+                "POST",
+                `/v1/accounts/${accountId}/users/${userId}/apiKeys`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: createApiKeySchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createApiKeySchema);
+              },
+            }
+          ),
+          delete: Object.assign(
+            async function deleteFn(
+              accountId: string,
+              userId: string,
+              req: FireworksDeleteApiKeyRequest,
+              signal?: AbortSignal
+            ): Promise<Record<string, never>> {
+              return await makeModelsRequest<Record<string, never>>(
+                "POST",
+                `/v1/accounts/${accountId}/users/${userId}/apiKeys:delete`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: deleteApiKeySchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, deleteApiKeySchema);
+              },
+            }
+          ),
+        },
+        secrets: {
+          async list(
+            accountId: string,
+            params?: FireworksListSecretsRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksListSecretsResponse> {
+            return await makeModelsRequest<FireworksListSecretsResponse>(
+              "GET",
+              `/v1/accounts/${accountId}/secrets`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          create: Object.assign(
+            async function create(
+              accountId: string,
+              req: FireworksCreateSecretRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksSecret> {
+              return await makeModelsRequest<FireworksSecret>(
+                "POST",
+                `/v1/accounts/${accountId}/secrets`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: createSecretSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createSecretSchema);
+              },
+            }
+          ),
+          async get(
+            accountId: string,
+            secretId: string,
+            params?: { readMask?: string },
+            signal?: AbortSignal
+          ): Promise<FireworksSecret> {
+            return await makeModelsRequest<FireworksSecret>(
+              "GET",
+              `/v1/accounts/${accountId}/secrets/${secretId}`,
+              undefined,
+              params as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
+          update: Object.assign(
+            async function update(
+              accountId: string,
+              secretId: string,
+              req: FireworksUpdateSecretRequest,
+              signal?: AbortSignal
+            ): Promise<FireworksSecret> {
+              return await makeModelsRequest<FireworksSecret>(
+                "PATCH",
+                `/v1/accounts/${accountId}/secrets/${secretId}`,
+                req,
+                undefined,
+                signal
+              );
+            },
+            {
+              payloadSchema: updateSecretSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, updateSecretSchema);
+              },
+            }
+          ),
+          async delete(
+            accountId: string,
+            secretId: string,
+            signal?: AbortSignal
+          ): Promise<Record<string, never>> {
+            return await makeModelsRequest<Record<string, never>>(
+              "DELETE",
+              `/v1/accounts/${accountId}/secrets/${secretId}`,
+              undefined,
+              undefined,
+              signal
+            );
+          },
+        },
         models: {
           list: Object.assign(
             async function list(

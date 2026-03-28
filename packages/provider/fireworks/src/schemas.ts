@@ -1400,6 +1400,135 @@ export const dpoJobCreateSchema: PayloadSchema = {
   },
 };
 
+// Account management schemas
+
+export const createUserSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{accountId}/users",
+  contentType: "application/json",
+  fields: {
+    role: {
+      type: "string",
+      required: true,
+      description: "User role",
+      enum: ["admin", "user", "contributor", "inference-user"],
+    },
+    displayName: {
+      type: "string",
+      description: "Display name, max 64 chars",
+    },
+    email: {
+      type: "string",
+      description: "User email address",
+    },
+    serviceAccount: {
+      type: "boolean",
+      description: "Whether this is a service account (admin-only)",
+    },
+  },
+};
+
+export const updateUserSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{accountId}/users/{userId}",
+  contentType: "application/json",
+  fields: {
+    role: {
+      type: "string",
+      required: true,
+      description: "User role",
+      enum: ["admin", "user", "contributor", "inference-user"],
+    },
+    displayName: {
+      type: "string",
+      description: "Display name, max 64 chars",
+    },
+    email: {
+      type: "string",
+      description: "User email address",
+    },
+    serviceAccount: {
+      type: "boolean",
+      description: "Whether this is a service account (admin-only)",
+    },
+  },
+};
+
+export const createApiKeySchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{accountId}/users/{userId}/apiKeys",
+  contentType: "application/json",
+  fields: {
+    apiKey: {
+      type: "object",
+      required: true,
+      description: "API key properties",
+      properties: {
+        displayName: {
+          type: "string",
+          description: "Display name, defaults to 'default'",
+        },
+        expireTime: {
+          type: "string",
+          description: "Optional expiration timestamp (RFC3339)",
+        },
+      },
+    },
+  },
+};
+
+export const deleteApiKeySchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{accountId}/users/{userId}/apiKeys:delete",
+  contentType: "application/json",
+  fields: {
+    keyId: {
+      type: "string",
+      required: true,
+      description: "The key ID of the API key to delete",
+    },
+  },
+};
+
+export const createSecretSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/accounts/{accountId}/secrets",
+  contentType: "application/json",
+  fields: {
+    keyName: {
+      type: "string",
+      required: true,
+      description: "Name of the key (e.g. WOLFRAM_ALPHA_API_KEY)",
+    },
+    value: {
+      type: "string",
+      required: true,
+      description: "Secret value (INPUT_ONLY, never returned in GET/LIST)",
+    },
+    name: {
+      type: "string",
+      description: "Resource name (accounts/{accountId}/secrets/{id})",
+    },
+  },
+};
+
+export const updateSecretSchema: PayloadSchema = {
+  method: "PATCH",
+  path: "/v1/accounts/{accountId}/secrets/{secretId}",
+  contentType: "application/json",
+  fields: {
+    keyName: {
+      type: "string",
+      required: true,
+      description: "Key name",
+    },
+    value: {
+      type: "string",
+      description: "New secret value (INPUT_ONLY)",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

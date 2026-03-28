@@ -42,7 +42,6 @@ import {
   XaiDocumentSearchResponse,
   XaiResponseRequest,
   XaiResponseResponse,
-  XaiResponseDeleteResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -119,44 +118,6 @@ export function xai(opts: XaiOptions): XaiProvider {
           // ignore parse errors
         }
         throw new XaiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
-  }
-
-  async function makeDeleteRequest<T>(
-    path: string,
-    signal?: AbortSignal
-  ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${opts.apiKey}` },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let errBody: unknown = null;
-        try {
-          errBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(`XAI API error: ${res.status}`, res.status, errBody);
       }
 
       return (await res.json()) as T;
@@ -816,13 +777,21 @@ export function xai(opts: XaiOptions): XaiProvider {
       },
       responses: Object.assign(
         async function responses(
-          req: XaiResponseRequest,
+          reqOrId: XaiResponseRequest | string,
           signal?: AbortSignal
         ): Promise<XaiResponseResponse> {
+          if (typeof reqOrId === "string") {
+            return await makeRequest<XaiResponseResponse>(
+              "GET",
+              `/responses/${encodeURIComponent(reqOrId)}`,
+              undefined,
+              signal
+            );
+          }
           return await makeRequest<XaiResponseResponse>(
             "POST",
             "/responses",
-            req,
+            reqOrId,
             signal
           );
         },
@@ -830,26 +799,6 @@ export function xai(opts: XaiOptions): XaiProvider {
           payloadSchema: responsesSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, responsesSchema);
-          },
-          async get(
-            id: string,
-            signal?: AbortSignal
-          ): Promise<XaiResponseResponse> {
-            return await makeRequest<XaiResponseResponse>(
-              "GET",
-              `/responses/${encodeURIComponent(id)}`,
-              undefined,
-              signal
-            );
-          },
-          async delete(
-            id: string,
-            signal?: AbortSignal
-          ): Promise<XaiResponseDeleteResponse> {
-            return await makeDeleteRequest<XaiResponseDeleteResponse>(
-              `/responses/${encodeURIComponent(id)}`,
-              signal
-            );
           },
         }
       ),

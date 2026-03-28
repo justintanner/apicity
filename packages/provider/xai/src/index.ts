@@ -63,7 +63,6 @@ export type {
   XaiDocumentSearchResponse,
   XaiResponseRequest,
   XaiResponseResponse,
-  XaiResponseDeleteResponse,
   XaiResponseInputItem,
   XaiResponseInputMessage,
   XaiResponseInputContent,

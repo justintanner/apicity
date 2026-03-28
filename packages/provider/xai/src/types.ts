@@ -1020,11 +1020,12 @@ interface XaiDocumentsNamespace {
 }
 
 interface XaiResponsesMethod {
-  (req: XaiResponseRequest, signal?: AbortSignal): Promise<XaiResponseResponse>;
+  (
+    reqOrId: XaiResponseRequest | string,
+    signal?: AbortSignal
+  ): Promise<XaiResponseResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
-  get(id: string, signal?: AbortSignal): Promise<XaiResponseResponse>;
-  delete(id: string, signal?: AbortSignal): Promise<XaiResponseDeleteResponse>;
 }
 
 interface XaiV1Namespace {

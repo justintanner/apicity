@@ -35,9 +35,8 @@ Base URL: `https://api.x.ai/v1`
 
 | URL                       | Method Signature                |
 | ------------------------- | ------------------------------- |
-| `POST /responses`         | `xai.v1.responses()`            |
-| `GET /responses/{id}`     | `xai.v1.responses.get(id)`      |
-| `DELETE /responses/{id}`  | `xai.v1.responses.delete(id)`   |
+| `POST /responses`         | `xai.v1.responses(req)`         |
+| `GET /responses/{id}`     | `xai.v1.responses(id)`          |
 
 ### Chat
 
@@ -132,10 +131,7 @@ const searched = await xai.v1.responses({
 });
 
 // Retrieve a stored response
-const saved = await xai.v1.responses.get(response.id);
-
-// Delete a stored response
-await xai.v1.responses.delete(response.id);
+const saved = await xai.v1.responses(response.id);
 ```
 
 ### Image Generation

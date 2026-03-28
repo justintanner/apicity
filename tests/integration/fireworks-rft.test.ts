@@ -102,11 +102,12 @@ describe("fireworks rlor trainer jobs", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid =
-        provider.v1.accounts.rlorTrainerJobs.create.validatePayload({
+      const valid = provider.v1.accounts.rlorTrainerJobs.create.validatePayload(
+        {
           dataset: "accounts/test/datasets/my-rlor-dataset",
           evaluator: "accounts/test/evaluators/my-evaluator",
-        });
+        }
+      );
       expect(valid.valid).toBe(true);
       expect(valid.errors).toHaveLength(0);
     });
@@ -122,8 +123,8 @@ describe("fireworks rlor trainer jobs", () => {
 
     it("should validate create payload with training config and reward weights", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid =
-        provider.v1.accounts.rlorTrainerJobs.create.validatePayload({
+      const valid = provider.v1.accounts.rlorTrainerJobs.create.validatePayload(
+        {
           dataset: "accounts/test/datasets/my-rlor-dataset",
           evaluator: "accounts/test/evaluators/my-evaluator",
           displayName: "My RLOR Trainer",
@@ -139,19 +140,17 @@ describe("fireworks rlor trainer jobs", () => {
             { name: "accuracy", weight: 1.0 },
             { name: "format", weight: 0.5 },
           ],
-        });
+        }
+      );
       expect(valid.valid).toBe(true);
       expect(valid.errors).toHaveLength(0);
     });
 
     it("should expose payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema =
-        provider.v1.accounts.rlorTrainerJobs.create.payloadSchema;
+      const schema = provider.v1.accounts.rlorTrainerJobs.create.payloadSchema;
       expect(schema.method).toBe("POST");
-      expect(schema.path).toBe(
-        "/v1/accounts/{account_id}/rlorTrainerJobs"
-      );
+      expect(schema.path).toBe("/v1/accounts/{account_id}/rlorTrainerJobs");
       expect(schema.contentType).toBe("application/json");
       expect(schema.fields.dataset.required).toBe(true);
       expect(schema.fields.evaluator.required).toBe(true);

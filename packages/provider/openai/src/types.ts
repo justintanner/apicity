@@ -520,6 +520,89 @@ export interface OpenAiModelDeleteResponse {
   deleted: boolean;
 }
 
+// Moderation input types
+export interface OpenAiModerationTextInput {
+  type: "text";
+  text: string;
+}
+
+export interface OpenAiModerationImageUrlInput {
+  type: "image_url";
+  image_url: { url: string };
+}
+
+export type OpenAiModerationMultiModalInput =
+  | OpenAiModerationTextInput
+  | OpenAiModerationImageUrlInput;
+
+// Moderation request
+export interface OpenAiModerationRequest {
+  input: string | string[] | OpenAiModerationMultiModalInput[];
+  model?: string;
+}
+
+// Moderation response
+export interface OpenAiModerationCategories {
+  harassment: boolean;
+  "harassment/threatening": boolean;
+  hate: boolean;
+  "hate/threatening": boolean;
+  illicit: boolean | null;
+  "illicit/violent": boolean | null;
+  "self-harm": boolean;
+  "self-harm/instructions": boolean;
+  "self-harm/intent": boolean;
+  sexual: boolean;
+  "sexual/minors": boolean;
+  violence: boolean;
+  "violence/graphic": boolean;
+}
+
+export interface OpenAiModerationCategoryScores {
+  harassment: number;
+  "harassment/threatening": number;
+  hate: number;
+  "hate/threatening": number;
+  illicit: number;
+  "illicit/violent": number;
+  "self-harm": number;
+  "self-harm/instructions": number;
+  "self-harm/intent": number;
+  sexual: number;
+  "sexual/minors": number;
+  violence: number;
+  "violence/graphic": number;
+}
+
+export interface OpenAiModerationCategoryAppliedInputTypes {
+  harassment: ("text" | "image")[];
+  "harassment/threatening": ("text" | "image")[];
+  hate: ("text" | "image")[];
+  "hate/threatening": ("text" | "image")[];
+  illicit: ("text" | "image")[];
+  "illicit/violent": ("text" | "image")[];
+  "self-harm": ("text" | "image")[];
+  "self-harm/instructions": ("text" | "image")[];
+  "self-harm/intent": ("text" | "image")[];
+  sexual: ("text" | "image")[];
+  "sexual/minors": ("text" | "image")[];
+  violence: ("text" | "image")[];
+  "violence/graphic": ("text" | "image")[];
+}
+
+export interface OpenAiModerationResult {
+  flagged: boolean;
+  categories: OpenAiModerationCategories;
+  category_scores: OpenAiModerationCategoryScores;
+  category_applied_input_types: OpenAiModerationCategoryAppliedInputTypes;
+}
+
+export interface OpenAiModerationResponse {
+  id: string;
+  model: string;
+  results: OpenAiModerationResult[];
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -651,12 +734,22 @@ interface OpenAiModelsNamespace {
   del: OpenAiModelsDeleteMethod;
 }
 
+interface OpenAiModerationsMethod {
+  (
+    req: OpenAiModerationRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiModerationResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface OpenAiV1Namespace {
   chat: OpenAiChatNamespace;
   audio: OpenAiAudioNamespace;
   embeddings: OpenAiEmbeddingsMethod;
   images: OpenAiImagesNamespace;
   models: OpenAiModelsNamespace;
+  moderations: OpenAiModerationsMethod;
   responses: OpenAiResponsesMethod;
 }
 

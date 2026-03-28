@@ -486,6 +486,25 @@ export const modelsDeleteSchema: PayloadSchema = {
   },
 };
 
+export const moderationsSchema: PayloadSchema = {
+  method: "POST",
+  path: "/moderations",
+  contentType: "application/json",
+  fields: {
+    input: {
+      type: "string",
+      required: true,
+      description:
+        "Input text or array of text/image objects to classify for moderation",
+    },
+    model: {
+      type: "string",
+      description:
+        "Moderation model ID (e.g. omni-moderation-latest, text-moderation-latest)",
+    },
+  },
+};
+
 export const audioTranslationsSchema: PayloadSchema = {
   method: "POST",
   path: "/audio/translations",

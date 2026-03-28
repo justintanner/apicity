@@ -19,6 +19,8 @@ import {
   OpenAiResponseResponse,
   OpenAiResponseDeleteResponse,
   OpenAiResponseGetOptions,
+  OpenAiModerationRequest,
+  OpenAiModerationResponse,
   OpenAiProvider,
   OpenAiError,
 } from "./types";
@@ -29,6 +31,7 @@ import {
   imageEditsSchema,
   imageGenerationsSchema,
   modelsDeleteSchema,
+  moderationsSchema,
   audioTranscriptionsSchema,
   audioTranslationsSchema,
   responsesSchema,
@@ -351,6 +354,24 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           }
         ),
       },
+      moderations: Object.assign(
+        async function moderations(
+          req: OpenAiModerationRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiModerationResponse> {
+          return await makeRequest<OpenAiModerationResponse>(
+            "/moderations",
+            jsonRequest(req),
+            signal
+          );
+        },
+        {
+          payloadSchema: moderationsSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, moderationsSchema);
+          },
+        }
+      ),
       responses: Object.assign(
         async function responses(
           req: OpenAiResponseRequest,

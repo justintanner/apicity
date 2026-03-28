@@ -437,7 +437,7 @@ export interface PayloadFieldSchema {
 }
 
 export interface PayloadSchema {
-  method: "POST" | "DELETE";
+  method: "GET" | "POST" | "PATCH" | "DELETE";
   path: string;
   contentType: "application/json" | "multipart/form-data";
   fields: Record<string, PayloadFieldSchema>;
@@ -539,6 +539,7 @@ interface FireworksV1Namespace {
   messages: FireworksMessagesMethod;
   workflows: FireworksWorkflowsNamespace;
   audio: FireworksAudioNamespace;
+  accounts: FireworksAccountsNamespace;
 }
 
 // Provider interface
@@ -647,6 +648,352 @@ interface FireworksWorkflowsNamespace {
   textToImage: FireworksTextToImageMethod;
   kontext: FireworksKontextMethod;
   getResult: FireworksGetResultMethod;
+}
+
+// Models CRUD types
+
+export type FireworksModelKind =
+  | "KIND_UNSPECIFIED"
+  | "HF_BASE_MODEL"
+  | "HF_PEFT_ADDON"
+  | "HF_TEFT_ADDON"
+  | "FLUMINA_BASE_MODEL"
+  | "FLUMINA_ADDON"
+  | "DRAFT_ADDON"
+  | "FIRE_AGENT"
+  | "LIVE_MERGE"
+  | "CUSTOM_MODEL"
+  | "EMBEDDING_MODEL"
+  | "SNAPSHOT_MODEL";
+
+export type FireworksModelState =
+  | "STATE_UNSPECIFIED"
+  | "UPLOADING"
+  | "READY";
+
+export type FireworksDeploymentPrecision =
+  | "PRECISION_UNSPECIFIED"
+  | "FP16"
+  | "FP8"
+  | "FP8_MM"
+  | "FP8_AR"
+  | "FP8_MM_KV_ATTN"
+  | "FP8_KV"
+  | "FP8_MM_V2"
+  | "FP8_V2"
+  | "FP8_MM_KV_ATTN_V2"
+  | "NF4"
+  | "FP4"
+  | "BF16"
+  | "FP4_BLOCKSCALED_MM"
+  | "FP4_MX_MOE";
+
+export type FireworksStatusCode =
+  | "OK"
+  | "CANCELLED"
+  | "UNKNOWN"
+  | "INVALID_ARGUMENT"
+  | "DEADLINE_EXCEEDED"
+  | "NOT_FOUND"
+  | "ALREADY_EXISTS"
+  | "PERMISSION_DENIED"
+  | "UNAUTHENTICATED"
+  | "RESOURCE_EXHAUSTED"
+  | "FAILED_PRECONDITION"
+  | "ABORTED"
+  | "OUT_OF_RANGE"
+  | "UNIMPLEMENTED"
+  | "INTERNAL"
+  | "UNAVAILABLE"
+  | "DATA_LOSS";
+
+export type FireworksCheckpointFormat =
+  | "NATIVE"
+  | "HUGGINGFACE"
+  | "UNINITIALIZED";
+
+export type FireworksDeployedModelState =
+  | "UNDEPLOYING"
+  | "DEPLOYING"
+  | "DEPLOYED"
+  | "UPDATING";
+
+export type FireworksSnapshotType =
+  | "FULL_SNAPSHOT"
+  | "INCREMENTAL_SNAPSHOT";
+
+export interface FireworksBaseModelDetails {
+  worldSize?: number;
+  checkpointFormat?: FireworksCheckpointFormat;
+  parameterCount?: string;
+  moe?: boolean;
+  tunable?: boolean;
+  modelType?: string;
+  supportsFireattention?: boolean;
+  defaultPrecision?: FireworksDeploymentPrecision;
+  supportsMtp?: boolean;
+}
+
+export interface FireworksPEFTDetails {
+  baseModel: string;
+  r: number;
+  targetModules: string[];
+  baseModelType?: string;
+  mergeAddonModelName?: string;
+}
+
+export interface FireworksTEFTDetails {
+  [key: string]: unknown;
+}
+
+export interface FireworksConversationConfig {
+  style: string;
+  system?: string;
+  template?: string;
+}
+
+export interface FireworksModelStatus {
+  code: FireworksStatusCode;
+  message: string;
+}
+
+export interface FireworksDeployedModelRef {
+  name: string;
+  deployment: string;
+  state: FireworksDeployedModelState;
+  default: boolean;
+  public: boolean;
+}
+
+export interface FireworksModel {
+  name?: string;
+  displayName?: string;
+  description?: string;
+  kind?: FireworksModelKind;
+  createTime?: string;
+  updateTime?: string;
+  state?: FireworksModelState;
+  status?: FireworksModelStatus;
+  githubUrl?: string;
+  huggingFaceUrl?: string;
+  baseModelDetails?: FireworksBaseModelDetails;
+  peftDetails?: FireworksPEFTDetails;
+  teftDetails?: FireworksTEFTDetails;
+  public?: boolean;
+  conversationConfig?: FireworksConversationConfig;
+  contextLength?: number;
+  supportsImageInput?: boolean;
+  supportsTools?: boolean;
+  defaultDraftModel?: string;
+  defaultDraftTokenCount?: number;
+  supportsLora?: boolean;
+  useHfApplyChatTemplate?: boolean;
+  trainingContextLength?: number;
+  snapshotType?: FireworksSnapshotType;
+  importedFrom?: string;
+  fineTuningJob?: string;
+  deployedModelRefs?: FireworksDeployedModelRef[];
+  cluster?: string;
+  calibrated?: boolean;
+  tunable?: boolean;
+  defaultSamplingParams?: Record<string, number>;
+  rlTunable?: boolean;
+  supportedPrecisions?: FireworksDeploymentPrecision[];
+  supportedPrecisionsWithCalibration?: FireworksDeploymentPrecision[];
+  supportsServerless?: boolean;
+}
+
+export interface FireworksListModelsRequest {
+  pageSize?: number;
+  pageToken?: string;
+  filter?: string;
+  orderBy?: string;
+  readMask?: string;
+}
+
+export interface FireworksListModelsResponse {
+  models: FireworksModel[];
+  nextPageToken?: string;
+  totalSize?: number;
+}
+
+export interface FireworksCreateModelRequest {
+  modelId: string;
+  model: FireworksModel;
+  cluster?: string;
+}
+
+export interface FireworksGetModelRequest {
+  readMask?: string;
+}
+
+export interface FireworksUpdateModelRequest {
+  displayName?: string;
+  description?: string;
+  kind?: FireworksModelKind;
+  githubUrl?: string;
+  huggingFaceUrl?: string;
+  baseModelDetails?: FireworksBaseModelDetails;
+  peftDetails?: FireworksPEFTDetails;
+  teftDetails?: FireworksTEFTDetails;
+  public?: boolean;
+  conversationConfig?: FireworksConversationConfig;
+  contextLength?: number;
+  supportsImageInput?: boolean;
+  supportsTools?: boolean;
+  defaultDraftModel?: string;
+  defaultDraftTokenCount?: number;
+  supportsLora?: boolean;
+  useHfApplyChatTemplate?: boolean;
+  trainingContextLength?: number;
+  snapshotType?: FireworksSnapshotType;
+}
+
+export interface FireworksPrepareModelRequest {
+  precision: FireworksDeploymentPrecision;
+  readMask?: string;
+}
+
+export interface FireworksGetUploadEndpointRequest {
+  filenameToSize: Record<string, number>;
+  enableResumableUpload?: boolean;
+  readMask?: string;
+}
+
+export interface FireworksGetUploadEndpointResponse {
+  filenameToSignedUrls?: Record<string, string>;
+  filenameToUnsignedUris?: Record<string, string>;
+}
+
+export interface FireworksGetDownloadEndpointRequest {
+  readMask?: string;
+}
+
+export interface FireworksGetDownloadEndpointResponse {
+  filenameToSignedUrls?: Record<string, string>;
+}
+
+export interface FireworksValidateUploadRequest {
+  skipHfConfigValidation?: boolean;
+  trustRemoteCode?: boolean;
+  configOnly?: boolean;
+}
+
+export interface FireworksValidateUploadResponse {
+  warnings?: string[];
+}
+
+// Models namespace types
+interface FireworksModelsListMethod {
+  (
+    accountId: string,
+    req?: FireworksListModelsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListModelsResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsCreateMethod {
+  (
+    accountId: string,
+    req: FireworksCreateModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksModel>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsGetMethod {
+  (
+    accountId: string,
+    modelId: string,
+    req?: FireworksGetModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksModel>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsUpdateMethod {
+  (
+    accountId: string,
+    modelId: string,
+    req: FireworksUpdateModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksModel>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsDeleteMethod {
+  (
+    accountId: string,
+    modelId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsPrepareMethod {
+  (
+    accountId: string,
+    modelId: string,
+    req: FireworksPrepareModelRequest,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsGetUploadEndpointMethod {
+  (
+    accountId: string,
+    modelId: string,
+    req: FireworksGetUploadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetUploadEndpointResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsGetDownloadEndpointMethod {
+  (
+    accountId: string,
+    modelId: string,
+    req?: FireworksGetDownloadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetDownloadEndpointResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksModelsValidateUploadMethod {
+  (
+    accountId: string,
+    modelId: string,
+    req?: FireworksValidateUploadRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksValidateUploadResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+export interface FireworksModelsNamespace {
+  list: FireworksModelsListMethod;
+  create: FireworksModelsCreateMethod;
+  get: FireworksModelsGetMethod;
+  update: FireworksModelsUpdateMethod;
+  delete: FireworksModelsDeleteMethod;
+  prepare: FireworksModelsPrepareMethod;
+  getUploadEndpoint: FireworksModelsGetUploadEndpointMethod;
+  getDownloadEndpoint: FireworksModelsGetDownloadEndpointMethod;
+  validateUpload: FireworksModelsValidateUploadMethod;
+}
+
+interface FireworksAccountsNamespace {
+  models: FireworksModelsNamespace;
 }
 
 // Error class

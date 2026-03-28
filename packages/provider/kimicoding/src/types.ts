@@ -173,10 +173,7 @@ interface KimiCodingModelsListMethod {
 interface KimiCodingModelsNamespace {
   list: KimiCodingModelsListMethod;
 interface KimiCodingEmbeddingsMethod {
-  (
-    req: EmbeddingRequest,
-    signal?: AbortSignal
-  ): Promise<EmbeddingResponse>;
+  (req: EmbeddingRequest, signal?: AbortSignal): Promise<EmbeddingResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }

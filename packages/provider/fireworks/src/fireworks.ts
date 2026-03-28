@@ -2,8 +2,10 @@ import {
   FireworksOptions,
   FireworksChatRequest,
   FireworksChatResponse,
+  FireworksChatStreamChunk,
   FireworksCompletionRequest,
   FireworksCompletionResponse,
+  FireworksCompletionStreamChunk,
   FireworksEmbeddingRequest,
   FireworksEmbeddingResponse,
   FireworksRerankRequest,
@@ -134,6 +136,68 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
       clearTimeout(timeoutId);
       if (error instanceof FireworksError) throw error;
       throw new FireworksError(`Fireworks request failed: ${error}`, 500);
+    }
+  }
+
+  async function* makeStreamRequest<T>(
+    path: string,
+    body: unknown,
+    signal?: AbortSignal
+  ): AsyncIterable<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Fireworks API error: ${res.status}`;
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+          if (
+            typeof resBody === "object" &&
+            resBody !== null &&
+            "error" in resBody
+          ) {
+            const err = (resBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `Fireworks API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new FireworksError(message, res.status, resBody);
+      }
+
+      for await (const { data } of sseToIterable(res)) {
+        if (data === "[DONE]") {
+          break;
+        }
+
+        try {
+          yield JSON.parse(data) as T;
+        } catch {
+          // ignore non-JSON lines
+        }
+      }
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -457,6 +521,24 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
+            stream: Object.assign(
+              function chatCompletionsStream(
+                req: FireworksChatRequest,
+                signal?: AbortSignal
+              ): AsyncIterable<FireworksChatStreamChunk> {
+                return makeStreamRequest<FireworksChatStreamChunk>(
+                  "/chat/completions",
+                  { ...req, stream: true },
+                  signal
+                );
+              },
+              {
+                payloadSchema: chatCompletionsSchema,
+                validatePayload(data: unknown): ValidationResult {
+                  return validatePayload(data, chatCompletionsSchema);
+                },
+              }
+            ),
             payloadSchema: chatCompletionsSchema,
             validatePayload(data: unknown): ValidationResult {
               return validatePayload(data, chatCompletionsSchema);
@@ -476,6 +558,24 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
+          stream: Object.assign(
+            function completionsStream(
+              req: FireworksCompletionRequest,
+              signal?: AbortSignal
+            ): AsyncIterable<FireworksCompletionStreamChunk> {
+              return makeStreamRequest<FireworksCompletionStreamChunk>(
+                "/completions",
+                { ...req, stream: true },
+                signal
+              );
+            },
+            {
+              payloadSchema: completionsSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, completionsSchema);
+              },
+            }
+          ),
           payloadSchema: completionsSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, completionsSchema);

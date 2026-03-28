@@ -97,6 +97,29 @@ export interface FireworksChatResponse {
   usage?: FireworksUsage;
 }
 
+// Chat completion streaming chunk (OpenAI SSE format)
+export interface FireworksChatStreamDelta {
+  role?: string;
+  content?: string | null;
+  tool_calls?: FireworksToolCall[];
+  reasoning_content?: string;
+}
+
+export interface FireworksChatStreamChoice {
+  index: number;
+  delta: FireworksChatStreamDelta;
+  finish_reason: string | null;
+}
+
+export interface FireworksChatStreamChunk {
+  id: string;
+  object: "chat.completion.chunk";
+  created: number;
+  model: string;
+  choices: FireworksChatStreamChoice[];
+  usage?: FireworksUsage;
+}
+
 // Completions request
 export interface FireworksCompletionRequest {
   model: string;
@@ -140,6 +163,23 @@ export interface FireworksCompletionResponse {
   created: number;
   model: string;
   choices: FireworksCompletionChoice[];
+  usage?: FireworksUsage;
+}
+
+// Completion streaming chunk (OpenAI SSE format)
+export interface FireworksCompletionStreamChoice {
+  index: number;
+  text: string;
+  finish_reason: string | null;
+  logprobs?: Record<string, unknown> | null;
+}
+
+export interface FireworksCompletionStreamChunk {
+  id: string;
+  object: string;
+  created: number;
+  model: string;
+  choices: FireworksCompletionStreamChoice[];
   usage?: FireworksUsage;
 }
 
@@ -683,11 +723,21 @@ export interface ValidationResult {
 }
 
 // Namespace types
+interface FireworksChatCompletionsStreamMethod {
+  (
+    req: FireworksChatRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<FireworksChatStreamChunk>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksChatCompletionsMethod {
   (
     req: FireworksChatRequest,
     signal?: AbortSignal
   ): Promise<FireworksChatResponse>;
+  stream: FireworksChatCompletionsStreamMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
@@ -696,11 +746,21 @@ interface FireworksChatNamespace {
   completions: FireworksChatCompletionsMethod;
 }
 
+interface FireworksCompletionsStreamMethod {
+  (
+    req: FireworksCompletionRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<FireworksCompletionStreamChunk>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksCompletionsMethod {
   (
     req: FireworksCompletionRequest,
     signal?: AbortSignal
   ): Promise<FireworksCompletionResponse>;
+  stream: FireworksCompletionsStreamMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }

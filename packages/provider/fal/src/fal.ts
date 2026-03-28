@@ -35,6 +35,10 @@ import {
   FalFilesDownloadParams,
   FalFilesUploadUrlParams,
   FalFilesUploadLocalParams,
+  FalWorkflowListParams,
+  FalWorkflowListResponse,
+  FalWorkflowGetParams,
+  FalWorkflowGetResponse,
 } from "./types";
 import type { ValidationResult } from "./types";
 import {
@@ -770,12 +774,39 @@ export function fal(opts: FalOptions): FalProvider {
       ),
     },
   };
+  const workflows = Object.assign(
+    async function workflows(
+      params?: FalWorkflowListParams,
+      signal?: AbortSignal
+    ): Promise<FalWorkflowListResponse> {
+      return makeRequest<FalWorkflowListResponse>(
+        "GET",
+        "/workflows",
+        params as unknown as Record<string, unknown>,
+        signal
+      );
+    },
+    {
+      async get(
+        params: FalWorkflowGetParams,
+        signal?: AbortSignal
+      ): Promise<FalWorkflowGetResponse> {
+        return makeRequest<FalWorkflowGetResponse>(
+          "GET",
+          `/workflows/${encodeURIComponent(params.username)}/${encodeURIComponent(params.workflow_name)}`,
+          undefined,
+          signal
+        );
+      },
+    }
+  );
 
   return {
     v1: {
       models,
       queue,
       serverless,
+      workflows,
     },
   };
 }

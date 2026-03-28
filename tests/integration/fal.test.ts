@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fal } from "@nakedapi/fal";
+import { fal, FalError } from "@nakedapi/fal";
 
 describe("fal integration", () => {
   let ctx: PollyContext;
@@ -98,5 +98,47 @@ describe("fal integration", () => {
     expect(result).toBeDefined();
     expect(result.has_more).toBeDefined();
     expect(Array.isArray(result.items)).toBe(true);
+  });
+
+  it("should list workflows", async () => {
+    ctx = setupPolly("fal/workflows-list");
+    const provider = fal({
+      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+    });
+    const result = await provider.v1.workflows({ limit: 3 });
+    expect(result.workflows).toBeDefined();
+    expect(Array.isArray(result.workflows)).toBe(true);
+    expect(result.has_more).toBeDefined();
+  });
+
+  it("should list workflows with search", async () => {
+    ctx = setupPolly("fal/workflows-list-search");
+    const provider = fal({
+      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+    });
+    const result = await provider.v1.workflows({
+      search: "flux",
+      limit: 3,
+    });
+    expect(result.workflows).toBeDefined();
+    expect(Array.isArray(result.workflows)).toBe(true);
+  });
+
+  it("should throw not_found for unknown workflow", async () => {
+    ctx = setupPolly("fal/workflows-get");
+    const provider = fal({
+      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
+    });
+    try {
+      await provider.v1.workflows.get({
+        username: "fal",
+        workflow_name: "flux-pro-v1.1-ultra-and-relight",
+      });
+      expect.unreachable("should have thrown");
+    } catch (err) {
+      expect(err).toBeInstanceOf(FalError);
+      expect((err as FalError).status).toBe(404);
+      expect((err as FalError).type).toBe("not_found");
+    }
   });
 });

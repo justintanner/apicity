@@ -297,6 +297,55 @@ export interface FalDeletePayloadsResponse {
   cdn_delete_results: FalCdnDeleteResult[];
 }
 
+// ==================== Workflows ====================
+
+// Workflow list parameters
+export interface FalWorkflowListParams extends FalPaginatedParams {
+  search?: string;
+  used_endpoint_ids?: string | string[];
+}
+
+// Workflow list item
+export interface FalWorkflowListItem {
+  name: string;
+  title: string;
+  user_nickname: string;
+  created_at: string;
+  thumbnail_url?: string;
+  description?: string;
+  tags: string[];
+  endpoint_ids: string[];
+}
+
+// Workflow list response
+export interface FalWorkflowListResponse {
+  workflows: FalWorkflowListItem[];
+  next_cursor: string | null;
+  has_more: boolean;
+  total?: number;
+}
+
+// Workflow get parameters
+export interface FalWorkflowGetParams {
+  username: string;
+  workflow_name: string;
+}
+
+// Workflow detail
+export interface FalWorkflowDetail {
+  name: string;
+  title: string;
+  user_nickname: string;
+  created_at: string;
+  is_public: boolean;
+  contents: Record<string, unknown>;
+}
+
+// Workflow get response
+export interface FalWorkflowGetResponse {
+  workflow: FalWorkflowDetail;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -638,10 +687,22 @@ interface FalServerlessNamespace {
   files: FalServerlessFilesNamespace;
 }
 
+interface FalWorkflowsNamespace {
+  (
+    params?: FalWorkflowListParams,
+    signal?: AbortSignal
+  ): Promise<FalWorkflowListResponse>;
+  get(
+    params: FalWorkflowGetParams,
+    signal?: AbortSignal
+  ): Promise<FalWorkflowGetResponse>;
+}
+
 interface FalV1Namespace {
   models: FalModelsNamespace;
   queue: FalQueueNamespace;
   serverless: FalServerlessNamespace;
+  workflows: FalWorkflowsNamespace;
 }
 
 // Provider interface

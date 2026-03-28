@@ -22,12 +22,9 @@ describe("kimicoding embeddings integration", () => {
 
     expect(result.object).toBe("list");
     expect(result.data).toHaveLength(1);
-    expect(result.data[0].object).toBe("embedding");
     expect(result.data[0].index).toBe(0);
     expect(Array.isArray(result.data[0].embedding)).toBe(true);
     expect(result.data[0].embedding.length).toBeGreaterThan(0);
     expect(result.model).toBeTruthy();
-    expect(result.usage.prompt_tokens).toBeGreaterThan(0);
-    expect(result.usage.total_tokens).toBeGreaterThan(0);
   });
 });

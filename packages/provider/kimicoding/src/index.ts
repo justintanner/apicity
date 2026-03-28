@@ -22,7 +22,6 @@ export type {
   EmbeddingRequest,
   EmbeddingResponse,
   EmbeddingData,
-  EmbeddingUsage,
   Provider,
   KimiCodingOptions,
   KimiCodingProvider,

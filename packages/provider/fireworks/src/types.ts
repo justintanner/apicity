@@ -171,6 +171,35 @@ export interface FireworksEmbeddingResponse {
   usage: FireworksEmbeddingUsage;
 }
 
+// Rerank request
+export interface FireworksRerankRequest {
+  model: string;
+  query: string;
+  documents: string[];
+  top_n?: number;
+  return_documents?: boolean;
+}
+
+// Rerank response
+export interface FireworksRerankResult {
+  index: number;
+  relevance_score: number;
+  document?: string;
+}
+
+export interface FireworksRerankUsage {
+  prompt_tokens: number;
+  total_tokens: number;
+  completion_tokens: number;
+}
+
+export interface FireworksRerankResponse {
+  object: "list";
+  model: string;
+  data: FireworksRerankResult[];
+  usage: FireworksRerankUsage;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -225,10 +254,20 @@ interface FireworksEmbeddingsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface FireworksRerankMethod {
+  (
+    req: FireworksRerankRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRerankResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksV1Namespace {
   chat: FireworksChatNamespace;
   completions: FireworksCompletionsMethod;
   embeddings: FireworksEmbeddingsMethod;
+  rerank: FireworksRerankMethod;
 }
 
 // Provider interface

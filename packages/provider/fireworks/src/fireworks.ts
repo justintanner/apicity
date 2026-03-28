@@ -6,6 +6,8 @@ import {
   FireworksCompletionResponse,
   FireworksEmbeddingRequest,
   FireworksEmbeddingResponse,
+  FireworksRerankRequest,
+  FireworksRerankResponse,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -14,6 +16,7 @@ import {
   chatCompletionsSchema,
   completionsSchema,
   embeddingsSchema,
+  rerankSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -131,6 +134,24 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           payloadSchema: embeddingsSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, embeddingsSchema);
+          },
+        }
+      ),
+      rerank: Object.assign(
+        async function rerank(
+          req: FireworksRerankRequest,
+          signal?: AbortSignal
+        ): Promise<FireworksRerankResponse> {
+          return await makeRequest<FireworksRerankResponse>(
+            "/rerank",
+            req,
+            signal
+          );
+        },
+        {
+          payloadSchema: rerankSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, rerankSchema);
           },
         }
       ),

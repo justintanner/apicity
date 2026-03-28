@@ -198,6 +198,38 @@ export const completionsSchema: PayloadSchema = {
   },
 };
 
+export const rerankSchema: PayloadSchema = {
+  method: "POST",
+  path: "/rerank",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description: "Reranker model ID (e.g. fireworks/qwen3-reranker-8b)",
+    },
+    query: {
+      type: "string",
+      required: true,
+      description: "The search query to rerank documents against",
+    },
+    documents: {
+      type: "array",
+      required: true,
+      description: "List of document strings to be ranked",
+      items: { type: "string" },
+    },
+    top_n: {
+      type: "number",
+      description: "Number of top results to return",
+    },
+    return_documents: {
+      type: "boolean",
+      description: "Whether to include document text in the response",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

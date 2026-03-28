@@ -9,7 +9,9 @@ describe("fal queue validation", () => {
     });
     expect(provider.v1.queue.submit.payloadSchema).toBeDefined();
     expect(provider.v1.queue.submit.payloadSchema.method).toBe("POST");
-    expect(provider.v1.queue.submit.payloadSchema.fields.endpoint_id).toBeDefined();
+    expect(
+      provider.v1.queue.submit.payloadSchema.fields.endpoint_id
+    ).toBeDefined();
     expect(
       provider.v1.queue.submit.payloadSchema.fields.endpoint_id.required
     ).toBe(true);

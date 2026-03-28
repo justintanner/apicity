@@ -8,6 +8,9 @@ import {
   FireworksEmbeddingResponse,
   FireworksRerankRequest,
   FireworksRerankResponse,
+  AnthropicMessagesRequest,
+  AnthropicMessagesResponse,
+  AnthropicStreamEvent,
   FireworksProvider,
   FireworksError,
 } from "./types";
@@ -17,8 +20,10 @@ import {
   completionsSchema,
   embeddingsSchema,
   rerankSchema,
+  messagesSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
+import { sseToIterable } from "./sse";
 
 export function fireworks(opts: FireworksOptions): FireworksProvider {
   const baseURL = opts.baseURL ?? "https://api.fireworks.ai/inference/v1";
@@ -76,6 +81,111 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
       clearTimeout(timeoutId);
       if (error instanceof FireworksError) throw error;
       throw new FireworksError(`Fireworks request failed: ${error}`, 500);
+    }
+  }
+
+  async function* messagesStreamImpl(
+    req: AnthropicMessagesRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<AnthropicStreamEvent> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(`${baseURL}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req),
+        signal: signal || controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Fireworks API error: ${res.status}`;
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+          if (
+            typeof resBody === "object" &&
+            resBody !== null &&
+            "error" in resBody
+          ) {
+            const err = (resBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `Fireworks API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new FireworksError(message, res.status, resBody);
+      }
+
+      for await (const { event, data } of sseToIterable(res)) {
+        if (event === "message_stop") {
+          break;
+        }
+
+        try {
+          const parsed: AnthropicStreamEvent = JSON.parse(data);
+          yield parsed;
+        } catch {
+          // ignore non-JSON lines
+        }
+      }
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  async function messagesImpl(
+    req: AnthropicMessagesRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicMessagesResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(`${baseURL}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req),
+        signal: signal || controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Fireworks API error: ${res.status}`;
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+          if (
+            typeof resBody === "object" &&
+            resBody !== null &&
+            "error" in resBody
+          ) {
+            const err = (resBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `Fireworks API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new FireworksError(message, res.status, resBody);
+      }
+
+      return (await res.json()) as AnthropicMessagesResponse;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -155,6 +265,18 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           },
         }
       ),
+      messages: Object.assign(messagesImpl, {
+        stream: Object.assign(messagesStreamImpl, {
+          payloadSchema: messagesSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, messagesSchema);
+          },
+        }),
+        payloadSchema: messagesSchema,
+        validatePayload(data: unknown): ValidationResult {
+          return validatePayload(data, messagesSchema);
+        },
+      }),
     },
   };
 }

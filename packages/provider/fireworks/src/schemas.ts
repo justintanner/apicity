@@ -230,6 +230,100 @@ export const rerankSchema: PayloadSchema = {
   },
 };
 
+export const messagesSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/messages",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description:
+        "Model ID (e.g. accounts/fireworks/models/llama-v3p1-70b-instruct)",
+    },
+    messages: {
+      type: "array",
+      required: true,
+      description: "Array of messages (Anthropic Messages format)",
+      items: {
+        type: "object",
+        properties: {
+          role: {
+            type: "string",
+            required: true,
+            enum: ["user", "assistant"],
+          },
+          content: { type: "string", required: true },
+        },
+      },
+    },
+    max_tokens: {
+      type: "number",
+      description: "Maximum tokens to generate",
+    },
+    system: { type: "string", description: "System prompt" },
+    temperature: {
+      type: "number",
+      description: "Sampling temperature 0-1",
+    },
+    top_p: { type: "number", description: "Nucleus sampling threshold" },
+    top_k: { type: "number", description: "Top-K sampling" },
+    stop_sequences: {
+      type: "array",
+      description: "Custom stop sequences",
+      items: { type: "string" },
+    },
+    stream: { type: "boolean", description: "Enable SSE streaming" },
+    metadata: {
+      type: "object",
+      description: "Request metadata",
+      properties: {
+        user_id: { type: "string" },
+      },
+    },
+    thinking: {
+      type: "object",
+      description: "Extended thinking configuration",
+      properties: {
+        type: {
+          type: "string",
+          required: true,
+          enum: ["enabled", "disabled"],
+        },
+        budget_tokens: { type: "number" },
+      },
+    },
+    tools: {
+      type: "array",
+      description: "Tool definitions",
+      items: {
+        type: "object",
+        properties: {
+          name: { type: "string", required: true },
+          description: { type: "string" },
+          input_schema: { type: "object", required: true },
+        },
+      },
+    },
+    tool_choice: {
+      type: "object",
+      description: "Tool choice strategy",
+      properties: {
+        type: {
+          type: "string",
+          required: true,
+          enum: ["auto", "any", "none", "tool"],
+        },
+        name: { type: "string" },
+      },
+    },
+    raw_output: {
+      type: "boolean",
+      description: "Return raw model output details (Fireworks extension)",
+    },
+  },
+};
+
 export const embeddingsSchema: PayloadSchema = {
   method: "POST",
   path: "/embeddings",

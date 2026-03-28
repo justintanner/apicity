@@ -142,6 +142,160 @@ export interface FireworksCompletionResponse {
   usage?: FireworksUsage;
 }
 
+// Anthropic Messages types (for /v1/messages endpoint)
+
+export type AnthropicRole = "user" | "assistant";
+
+export interface AnthropicBase64ImageSource {
+  type: "base64";
+  media_type: "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+  data: string;
+}
+
+export interface AnthropicUrlImageSource {
+  type: "url";
+  url: string;
+}
+
+export type AnthropicImageSource =
+  | AnthropicBase64ImageSource
+  | AnthropicUrlImageSource;
+
+export interface AnthropicTextBlock {
+  type: "text";
+  text: string;
+}
+
+export interface AnthropicImageBlock {
+  type: "image";
+  source: AnthropicImageSource;
+}
+
+export interface AnthropicThinkingBlock {
+  type: "thinking";
+  thinking: string;
+  signature: string;
+}
+
+export interface AnthropicRedactedThinkingBlock {
+  type: "redacted_thinking";
+  data: string;
+}
+
+export interface AnthropicToolUseBlock {
+  type: "tool_use";
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+}
+
+export interface AnthropicToolResultBlock {
+  type: "tool_result";
+  tool_use_id: string;
+  content?: string | AnthropicInputContentBlock[];
+  is_error?: boolean;
+}
+
+export type AnthropicInputContentBlock =
+  | AnthropicTextBlock
+  | AnthropicImageBlock
+  | AnthropicThinkingBlock
+  | AnthropicRedactedThinkingBlock
+  | AnthropicToolUseBlock
+  | AnthropicToolResultBlock;
+
+export type AnthropicMessageContent = string | AnthropicInputContentBlock[];
+
+export interface AnthropicInputMessage {
+  role: AnthropicRole;
+  content: AnthropicMessageContent;
+}
+
+export interface AnthropicToolDefinition {
+  name: string;
+  description?: string;
+  input_schema: Record<string, unknown>;
+  strict?: boolean;
+}
+
+export interface AnthropicThinkingConfig {
+  type: "enabled" | "disabled";
+  budget_tokens?: number;
+}
+
+export interface AnthropicMessagesRequest {
+  model: string;
+  messages: AnthropicInputMessage[];
+  max_tokens?: number;
+  system?: string | { type: "text"; text: string }[];
+  temperature?: number;
+  top_p?: number;
+  top_k?: number;
+  stop_sequences?: string[];
+  stream?: boolean;
+  metadata?: { user_id?: string };
+  thinking?: AnthropicThinkingConfig;
+  tools?: AnthropicToolDefinition[];
+  tool_choice?:
+    | { type: "auto"; disable_parallel_tool_use?: boolean }
+    | { type: "any"; disable_parallel_tool_use?: boolean }
+    | { type: "none" }
+    | {
+        type: "tool";
+        name: string;
+        disable_parallel_tool_use?: boolean;
+      };
+  raw_output?: boolean;
+}
+
+export type AnthropicResponseContentBlock =
+  | AnthropicTextBlock
+  | AnthropicThinkingBlock
+  | AnthropicRedactedThinkingBlock
+  | AnthropicToolUseBlock;
+
+export type AnthropicStopReason =
+  | "end_turn"
+  | "max_tokens"
+  | "stop_sequence"
+  | "tool_use"
+  | "pause_turn"
+  | "refusal";
+
+export interface AnthropicMessagesResponse {
+  id: string;
+  type: "message";
+  role: "assistant";
+  content: AnthropicResponseContentBlock[];
+  model: string;
+  stop_reason: AnthropicStopReason | null;
+  stop_sequence: string | null;
+  usage?: {
+    input_tokens: number;
+    output_tokens: number;
+  };
+}
+
+export interface AnthropicStreamEvent {
+  type: string;
+  index?: number;
+  delta?: {
+    type?: string;
+    text?: string;
+    thinking?: string;
+    signature?: string;
+    partial_json?: string;
+    stop_reason?: AnthropicStopReason;
+    stop_sequence?: string | null;
+  };
+  content_block?: AnthropicResponseContentBlock;
+  message?: AnthropicMessagesResponse;
+  usage?: {
+    input_tokens?: number;
+    output_tokens?: number;
+  };
+}
+
 // Embeddings request
 export interface FireworksEmbeddingRequest {
   model: string;
@@ -263,11 +417,31 @@ interface FireworksRerankMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface FireworksMessagesStreamMethod {
+  (
+    req: AnthropicMessagesRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<AnthropicStreamEvent>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksMessagesMethod {
+  (
+    req: AnthropicMessagesRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicMessagesResponse>;
+  stream: FireworksMessagesStreamMethod;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksV1Namespace {
   chat: FireworksChatNamespace;
   completions: FireworksCompletionsMethod;
   embeddings: FireworksEmbeddingsMethod;
   rerank: FireworksRerankMethod;
+  messages: FireworksMessagesMethod;
 }
 
 // Provider interface

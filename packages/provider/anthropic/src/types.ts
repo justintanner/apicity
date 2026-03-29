@@ -482,12 +482,7 @@ export interface AnthropicUser {
 export type AnthropicUserListResponse = AnthropicListResponse<AnthropicUser>;
 
 export interface AnthropicUserUpdateRequest {
-  role:
-    | "user"
-    | "developer"
-    | "billing"
-    | "claude_code_user"
-    | "managed";
+  role: "user" | "developer" | "billing" | "claude_code_user" | "managed";
 }
 
 export interface AnthropicUserDeleteResponse {
@@ -512,12 +507,7 @@ export type AnthropicInviteListResponse =
 
 export interface AnthropicInviteCreateRequest {
   email: string;
-  role:
-    | "user"
-    | "developer"
-    | "billing"
-    | "claude_code_user"
-    | "managed";
+  role: "user" | "developer" | "billing" | "claude_code_user" | "managed";
 }
 
 export interface AnthropicInviteDeleteResponse {
@@ -581,10 +571,7 @@ export type AnthropicWorkspaceMemberListResponse =
 
 export interface AnthropicWorkspaceMemberAddRequest {
   user_id: string;
-  workspace_role:
-    | "workspace_user"
-    | "workspace_developer"
-    | "workspace_admin";
+  workspace_role: "workspace_user" | "workspace_developer" | "workspace_admin";
 }
 
 export interface AnthropicWorkspaceMemberUpdateRequest {
@@ -688,18 +675,9 @@ export interface AnthropicBatchesMethod {
     params?: AnthropicListParams,
     signal?: AbortSignal
   ) => Promise<AnthropicBatchListResponse>;
-  retrieve: (
-    batchId: string,
-    signal?: AbortSignal
-  ) => Promise<AnthropicBatch>;
-  cancel: (
-    batchId: string,
-    signal?: AbortSignal
-  ) => Promise<AnthropicBatch>;
-  results: (
-    batchId: string,
-    signal?: AbortSignal
-  ) => Promise<string>;
+  retrieve: (batchId: string, signal?: AbortSignal) => Promise<AnthropicBatch>;
+  cancel: (batchId: string, signal?: AbortSignal) => Promise<AnthropicBatch>;
+  results: (batchId: string, signal?: AbortSignal) => Promise<string>;
   del: (
     batchId: string,
     signal?: AbortSignal
@@ -720,14 +698,8 @@ export interface AnthropicFilesNamespace {
     params?: AnthropicListParams,
     signal?: AbortSignal
   ) => Promise<AnthropicFileListResponse>;
-  retrieve: (
-    fileId: string,
-    signal?: AbortSignal
-  ) => Promise<AnthropicFile>;
-  content: (
-    fileId: string,
-    signal?: AbortSignal
-  ) => Promise<ArrayBuffer>;
+  retrieve: (fileId: string, signal?: AbortSignal) => Promise<AnthropicFile>;
+  content: (fileId: string, signal?: AbortSignal) => Promise<ArrayBuffer>;
   del: (
     fileId: string,
     signal?: AbortSignal

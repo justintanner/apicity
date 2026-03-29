@@ -164,13 +164,7 @@ export const inviteCreateSchema: PayloadSchema = {
       type: "string",
       required: true,
       description: "Role for the invited user",
-      enum: [
-        "user",
-        "developer",
-        "billing",
-        "claude_code_user",
-        "managed",
-      ],
+      enum: ["user", "developer", "billing", "claude_code_user", "managed"],
     },
   },
 };
@@ -206,11 +200,7 @@ export const workspaceMemberAddSchema: PayloadSchema = {
       type: "string",
       required: true,
       description: "Role in workspace",
-      enum: [
-        "workspace_user",
-        "workspace_developer",
-        "workspace_admin",
-      ],
+      enum: ["workspace_user", "workspace_developer", "workspace_admin"],
     },
   },
 };

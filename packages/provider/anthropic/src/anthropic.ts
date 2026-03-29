@@ -148,7 +148,10 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
         headers: commonHeaders(opts.apiKey, {
           "Content-Type": "application/json",
         }),
-        body: JSON.stringify({ ...body as Record<string, unknown>, stream: true }),
+        body: JSON.stringify({
+          ...(body as Record<string, unknown>),
+          stream: true,
+        }),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -472,11 +475,7 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
           ): Promise<AnthropicFile> {
             const form = new FormData();
             form.append("file", file);
-            return await makeFormRequest<AnthropicFile>(
-              "/files",
-              form,
-              signal
-            );
+            return await makeFormRequest<AnthropicFile>("/files", form, signal);
           },
           {
             payloadSchema: filesUploadSchema,
@@ -790,8 +789,7 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
               ...listQuery(params),
             };
             if (params?.status) query.status = params.status;
-            if (params?.workspace_id)
-              query.workspace_id = params.workspace_id;
+            if (params?.workspace_id) query.workspace_id = params.workspace_id;
             if (params?.created_by_user_id)
               query.created_by_user_id = params.created_by_user_id;
             return await makeGetRequest<AnthropicApiKeyListResponse>(

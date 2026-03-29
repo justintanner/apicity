@@ -62,7 +62,6 @@ import {
   filesUploadLocalSchema,
   computeInstanceCreateSchema,
   apiKeyCreateSchema,
-  apiKeyDeleteSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 

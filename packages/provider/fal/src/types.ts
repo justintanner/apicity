@@ -767,10 +767,7 @@ interface FalServerlessFilesNamespace {
 }
 
 interface FalAppsFlushQueueMethod {
-  (
-    params: FalAppsFlushQueueParams,
-    signal?: AbortSignal
-  ): Promise<void>;
+  (params: FalAppsFlushQueueParams, signal?: AbortSignal): Promise<void>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }

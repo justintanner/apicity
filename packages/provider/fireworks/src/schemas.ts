@@ -1864,6 +1864,10 @@ export const datasetsGetUploadEndpointSchema: PayloadSchema = {
     readMask: {
       type: "string",
       description: "Fields to return",
+    },
+  },
+};
+
 export const rftCreateSchema: PayloadSchema = {
   method: "POST",
   path: "/v1/accounts/{account_id}/reinforcementFineTuningJobs",
@@ -2033,6 +2037,10 @@ export const datasetsGetDownloadEndpointSchema: PayloadSchema = {
       type: "boolean",
       description:
         "Download entire lineage chain with dataset ID prefixed filenames",
+    },
+  },
+};
+
 export const rlorTrainerJobCreateSchema: PayloadSchema = {
   method: "POST",
   path: "/v1/accounts/{account_id}/rlorTrainerJobs",
@@ -2211,6 +2219,8 @@ export const datasetsValidateUploadSchema: PayloadSchema = {
   path: "/v1/accounts/{account_id}/datasets/{dataset_id}:validateUpload",
   contentType: "application/json",
   fields: {},
+};
+
 export const rlorTrainerJobExecuteStepSchema: PayloadSchema = {
   method: "POST",
   path: "/v1/accounts/{account_id}/rlorTrainerJobs/{job_id}:executeTrainStep",

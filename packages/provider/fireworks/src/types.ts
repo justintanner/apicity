@@ -1307,6 +1307,8 @@ export interface FireworksRlorTrainerJobGetRequest {
 export interface FireworksRlorTrainerJobExecuteStepRequest {
   dataset: string;
   outputModel: string;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";

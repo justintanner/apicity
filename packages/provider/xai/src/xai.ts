@@ -52,6 +52,15 @@ import {
   XaiRealtimeConnection,
   XaiRealtimeClientEvent,
   XaiRealtimeServerEvent,
+  XaiApiKeyCreateRequest,
+  XaiApiKey,
+  XaiApiKeyListParams,
+  XaiApiKeyListResponse,
+  XaiApiKeyUpdateRequest,
+  XaiApiKeyPropagationResponse,
+  XaiTeamModelsResponse,
+  XaiTeamEndpointsResponse,
+  XaiManagementKeyValidationResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -73,6 +82,8 @@ import {
   documentSearchSchema,
   tokenizeTextSchema,
   realtimeClientSecretsSchema,
+  apiKeyCreateSchema,
+  apiKeyUpdateSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -833,6 +844,154 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
   };
 
+  function buildManagementQuery(params: object): string {
+    const parts: string[] = [];
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) {
+        if (Array.isArray(value)) {
+          for (const item of value) {
+            parts.push(
+              `${encodeURIComponent(key)}=${encodeURIComponent(String(item))}`
+            );
+          }
+        } else {
+          parts.push(
+            `${encodeURIComponent(key)}=${encodeURIComponent(String(value))}`
+          );
+        }
+      }
+    }
+    return parts.length > 0 ? `?${parts.join("&")}` : "";
+  }
+
+  const authApiKeys = Object.assign(
+    async function listApiKeys(
+      teamId: string,
+      params?: XaiApiKeyListParams,
+      signal?: AbortSignal
+    ): Promise<XaiApiKeyListResponse> {
+      const query = buildManagementQuery(params ?? {});
+      return await makeManagementRequest(
+        "GET",
+        `/auth/teams/${encodeURIComponent(teamId)}/api-keys${query}`,
+        undefined,
+        signal
+      );
+    },
+    {
+      create: Object.assign(
+        async function createApiKey(
+          teamId: string,
+          req: XaiApiKeyCreateRequest,
+          signal?: AbortSignal
+        ): Promise<XaiApiKey> {
+          return await makeManagementRequest(
+            "POST",
+            `/auth/teams/${encodeURIComponent(teamId)}/api-keys`,
+            req,
+            signal
+          );
+        },
+        {
+          payloadSchema: apiKeyCreateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, apiKeyCreateSchema);
+          },
+        }
+      ),
+
+      update: Object.assign(
+        async function updateApiKey(
+          apiKeyId: string,
+          req: XaiApiKeyUpdateRequest,
+          signal?: AbortSignal
+        ): Promise<XaiApiKey> {
+          return await makeManagementRequest(
+            "PUT",
+            `/auth/api-keys/${encodeURIComponent(apiKeyId)}`,
+            req,
+            signal
+          );
+        },
+        {
+          payloadSchema: apiKeyUpdateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, apiKeyUpdateSchema);
+          },
+        }
+      ),
+
+      async rotate(apiKeyId: string, signal?: AbortSignal): Promise<XaiApiKey> {
+        return await makeManagementRequest(
+          "POST",
+          `/auth/api-keys/${encodeURIComponent(apiKeyId)}/rotate`,
+          {},
+          signal
+        );
+      },
+
+      async delete(apiKeyId: string, signal?: AbortSignal): Promise<void> {
+        await makeManagementRequest(
+          "DELETE",
+          `/auth/api-keys/${encodeURIComponent(apiKeyId)}`,
+          undefined,
+          signal
+        );
+      },
+
+      async propagation(
+        apiKeyId: string,
+        signal?: AbortSignal
+      ): Promise<XaiApiKeyPropagationResponse> {
+        return await makeManagementRequest(
+          "GET",
+          `/auth/api-keys/${encodeURIComponent(apiKeyId)}/propagation`,
+          undefined,
+          signal
+        );
+      },
+    }
+  );
+
+  const authTeams = {
+    async models(
+      teamId: string,
+      signal?: AbortSignal
+    ): Promise<XaiTeamModelsResponse> {
+      return await makeManagementRequest(
+        "GET",
+        `/auth/teams/${encodeURIComponent(teamId)}/models`,
+        undefined,
+        signal
+      );
+    },
+
+    async endpoints(
+      teamId: string,
+      signal?: AbortSignal
+    ): Promise<XaiTeamEndpointsResponse> {
+      return await makeManagementRequest(
+        "GET",
+        `/auth/teams/${encodeURIComponent(teamId)}/endpoints`,
+        undefined,
+        signal
+      );
+    },
+  };
+
+  const authManagementKeys = {
+    async validation(
+      signal?: AbortSignal
+    ): Promise<XaiManagementKeyValidationResponse> {
+      return await makeManagementRequest(
+        "GET",
+        "/auth/management-keys/validation",
+        undefined,
+        signal
+      );
+    },
+  };
+
   return {
     v1: {
       chat: {
@@ -1038,6 +1197,11 @@ export function xai(opts: XaiOptions): XaiProvider {
         }
       ),
       realtime,
+      auth: {
+        apiKeys: authApiKeys as XaiProvider["v1"]["auth"]["apiKeys"],
+        teams: authTeams,
+        managementKeys: authManagementKeys,
+      },
     },
   };
 }

@@ -578,6 +578,77 @@ export const tokenizeTextSchema: PayloadSchema = {
   },
 };
 
+export const apiKeyCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/auth/teams/{teamId}/api-keys",
+  contentType: "application/json",
+  fields: {
+    name: {
+      type: "string",
+      required: true,
+      description: "Name for the API key",
+    },
+    acls: {
+      type: "array",
+      description: "ACL permission strings (e.g. api-key:endpoint:*)",
+      items: { type: "string" },
+    },
+    qps: {
+      type: "number",
+      description: "Queries per second limit",
+    },
+    qpm: {
+      type: "number",
+      description: "Queries per minute limit",
+    },
+    tpm: {
+      type: "string",
+      description: "Tokens per minute limit",
+    },
+    expireTime: {
+      type: "string",
+      description: "Expiration time (ISO 8601)",
+    },
+  },
+};
+
+export const apiKeyUpdateSchema: PayloadSchema = {
+  method: "PUT",
+  path: "/auth/api-keys/{api_key_id}",
+  contentType: "application/json",
+  fields: {
+    apiKey: {
+      type: "object",
+      required: true,
+      description: "Fields to update on the API key",
+      properties: {
+        name: { type: "string", description: "New name" },
+        qps: { type: "number", description: "Queries per second limit" },
+        qpm: { type: "number", description: "Queries per minute limit" },
+        tpm: { type: "string", description: "Tokens per minute limit" },
+        disabled: {
+          type: "boolean",
+          description: "Whether the key is disabled",
+        },
+        expireTime: {
+          type: "string",
+          description: "Expiration time (ISO 8601)",
+        },
+        aclStrings: {
+          type: "array",
+          description: "ACL permission strings",
+          items: { type: "string" },
+        },
+      },
+    },
+    fieldMask: {
+      type: "string",
+      required: true,
+      description: "Comma-separated field names to update",
+    },
+  },
+};
+
 export const videoExtensionsSchema: PayloadSchema = {
   method: "POST",
   path: "/videos/extensions",

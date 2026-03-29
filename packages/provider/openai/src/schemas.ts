@@ -60,6 +60,42 @@ export const chatCompletionsSchema: PayloadSchema = {
         json_schema: { type: "object" },
       },
     },
+    store: {
+      type: "boolean",
+      description: "Whether to store the completion for later retrieval",
+    },
+    metadata: {
+      type: "object",
+      description:
+        "Key-value pairs for metadata (max 16 pairs, keys max 64 chars, values max 512 chars)",
+    },
+  },
+};
+
+export const storedCompletionsUpdateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/chat/completions/{completion_id}",
+  contentType: "application/json",
+  fields: {
+    metadata: {
+      type: "object",
+      required: true,
+      description:
+        "Key-value pairs for metadata (max 16 pairs, keys max 64 chars, values max 512 chars)",
+    },
+  },
+};
+
+export const storedCompletionsDeleteSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/chat/completions/{completion_id}",
+  contentType: "application/json",
+  fields: {
+    completion_id: {
+      type: "string",
+      required: true,
+      description: "The ID of the chat completion to delete",
+    },
   },
 };
 

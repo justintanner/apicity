@@ -119,6 +119,8 @@ export interface OpenAiChatRequest {
     type: "text" | "json_object" | "json_schema";
     json_schema?: Record<string, unknown>;
   };
+  store?: boolean;
+  metadata?: Record<string, string>;
 }
 
 // Chat response (raw API shape)
@@ -139,7 +141,65 @@ export interface OpenAiChatResponse {
   model: string;
   choices: OpenAiChatChoice[];
   usage?: OpenAiUsage;
+  metadata?: Record<string, string>;
   error?: { message?: string; type?: string };
+}
+
+// --- Stored Chat Completions API types ---
+
+// List stored completions options
+export interface OpenAiStoredCompletionListOptions {
+  after?: string;
+  limit?: number;
+  order?: "asc" | "desc";
+  metadata?: Record<string, string>;
+}
+
+// List stored completions response
+export interface OpenAiStoredCompletionListResponse {
+  object: "list";
+  data: OpenAiChatResponse[];
+  has_more: boolean;
+  first_id: string;
+  last_id: string;
+}
+
+// Delete stored completion response
+export interface OpenAiStoredCompletionDeleteResponse {
+  id: string;
+  object: "chat.completion.deleted";
+  deleted: true;
+}
+
+// Update stored completion request
+export interface OpenAiStoredCompletionUpdateRequest {
+  metadata: Record<string, string>;
+}
+
+// Stored completion message
+export interface OpenAiStoredCompletionMessage {
+  id: string;
+  role: string;
+  content: string | null;
+  refusal?: string | null;
+  function_call?: Record<string, unknown> | null;
+  tool_calls?: OpenAiToolCall[] | null;
+}
+
+// List stored completion messages options
+export interface OpenAiStoredCompletionMessageListOptions {
+  after?: string;
+  limit?: number;
+  order?: "asc" | "desc";
+}
+
+// List stored completion messages response
+export interface OpenAiStoredCompletionMessageListResponse {
+  object: "list";
+  data: OpenAiStoredCompletionMessage[];
+  has_more: boolean;
+  first_id: string;
+  last_id: string;
 }
 
 // Embeddings request
@@ -1009,11 +1069,58 @@ export interface ValidationResult {
   errors: string[];
 }
 
+// Stored completions namespace types
+interface OpenAiStoredCompletionsListMethod {
+  (
+    opts?: OpenAiStoredCompletionListOptions,
+    signal?: AbortSignal
+  ): Promise<OpenAiStoredCompletionListResponse>;
+}
+
+interface OpenAiStoredCompletionsRetrieveMethod {
+  (id: string, signal?: AbortSignal): Promise<OpenAiChatResponse>;
+}
+
+interface OpenAiStoredCompletionsDeleteMethod {
+  (
+    id: string,
+    signal?: AbortSignal
+  ): Promise<OpenAiStoredCompletionDeleteResponse>;
+  payloadSchema: PayloadSchema;
+}
+
+interface OpenAiStoredCompletionsUpdateMethod {
+  (
+    id: string,
+    req: OpenAiStoredCompletionUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiChatResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface OpenAiStoredCompletionMessagesListMethod {
+  (
+    id: string,
+    opts?: OpenAiStoredCompletionMessageListOptions,
+    signal?: AbortSignal
+  ): Promise<OpenAiStoredCompletionMessageListResponse>;
+}
+
+interface OpenAiStoredCompletionMessagesNamespace {
+  list: OpenAiStoredCompletionMessagesListMethod;
+}
+
 // Namespace types
 interface OpenAiChatCompletionsMethod {
   (req: OpenAiChatRequest, signal?: AbortSignal): Promise<OpenAiChatResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  list: OpenAiStoredCompletionsListMethod;
+  retrieve: OpenAiStoredCompletionsRetrieveMethod;
+  del: OpenAiStoredCompletionsDeleteMethod;
+  update: OpenAiStoredCompletionsUpdateMethod;
+  messages: OpenAiStoredCompletionMessagesNamespace;
 }
 
 interface OpenAiChatNamespace {

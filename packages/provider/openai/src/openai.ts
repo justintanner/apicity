@@ -44,6 +44,12 @@ import {
   OpenAiCheckpointPermissionListOptions,
   OpenAiCheckpointPermissionListResponse,
   OpenAiCheckpointPermissionDeleteResponse,
+  OpenAiStoredCompletionListOptions,
+  OpenAiStoredCompletionListResponse,
+  OpenAiStoredCompletionDeleteResponse,
+  OpenAiStoredCompletionUpdateRequest,
+  OpenAiStoredCompletionMessageListOptions,
+  OpenAiStoredCompletionMessageListResponse,
   OpenAiProvider,
   OpenAiError,
 } from "./types";
@@ -66,6 +72,8 @@ import {
   responsesDeleteSchema,
   fineTuningJobsCreateSchema,
   checkpointPermissionsCreateSchema,
+  storedCompletionsUpdateSchema,
+  storedCompletionsDeleteSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -409,6 +417,87 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             payloadSchema: chatCompletionsSchema,
             validatePayload(data: unknown): ValidationResult {
               return validatePayload(data, chatCompletionsSchema);
+            },
+            list: async function list(
+              listOpts?: OpenAiStoredCompletionListOptions,
+              signal?: AbortSignal
+            ): Promise<OpenAiStoredCompletionListResponse> {
+              const query: Record<string, string | undefined> = {};
+              if (listOpts?.after) query.after = listOpts.after;
+              if (listOpts?.limit !== undefined)
+                query.limit = String(listOpts.limit);
+              if (listOpts?.order) query.order = listOpts.order;
+              if (listOpts?.metadata) {
+                for (const [k, v] of Object.entries(listOpts.metadata)) {
+                  query[`metadata[${k}]`] = v;
+                }
+              }
+              return await makeGetRequest<OpenAiStoredCompletionListResponse>(
+                "/chat/completions",
+                query,
+                signal
+              );
+            },
+            retrieve: async function retrieve(
+              id: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiChatResponse> {
+              return await makeGetRequest<OpenAiChatResponse>(
+                `/chat/completions/${encodeURIComponent(id)}`,
+                undefined,
+                signal
+              );
+            },
+            del: Object.assign(
+              async function del(
+                id: string,
+                signal?: AbortSignal
+              ): Promise<OpenAiStoredCompletionDeleteResponse> {
+                return await makeDeleteRequest<OpenAiStoredCompletionDeleteResponse>(
+                  `/chat/completions/${encodeURIComponent(id)}`,
+                  signal
+                );
+              },
+              {
+                payloadSchema: storedCompletionsDeleteSchema,
+              }
+            ),
+            update: Object.assign(
+              async function update(
+                id: string,
+                req: OpenAiStoredCompletionUpdateRequest,
+                signal?: AbortSignal
+              ): Promise<OpenAiChatResponse> {
+                return await makeRequest<OpenAiChatResponse>(
+                  `/chat/completions/${encodeURIComponent(id)}`,
+                  jsonRequest(req),
+                  signal
+                );
+              },
+              {
+                payloadSchema: storedCompletionsUpdateSchema,
+                validatePayload(data: unknown): ValidationResult {
+                  return validatePayload(data, storedCompletionsUpdateSchema);
+                },
+              }
+            ),
+            messages: {
+              list: async function list(
+                id: string,
+                msgOpts?: OpenAiStoredCompletionMessageListOptions,
+                signal?: AbortSignal
+              ): Promise<OpenAiStoredCompletionMessageListResponse> {
+                const query: Record<string, string | undefined> = {};
+                if (msgOpts?.after) query.after = msgOpts.after;
+                if (msgOpts?.limit !== undefined)
+                  query.limit = String(msgOpts.limit);
+                if (msgOpts?.order) query.order = msgOpts.order;
+                return await makeGetRequest<OpenAiStoredCompletionMessageListResponse>(
+                  `/chat/completions/${encodeURIComponent(id)}/messages`,
+                  query,
+                  signal
+                );
+              },
             },
           }
         ),

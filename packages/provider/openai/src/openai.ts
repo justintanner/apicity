@@ -613,6 +613,17 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         ): Promise<OpenAiModerationResponse> {
           return await makeRequest<OpenAiModerationResponse>(
             "/moderations",
+            jsonRequest(req),
+            signal
+          );
+        },
+        {
+          payloadSchema: moderationsSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, moderationsSchema);
+          },
+        }
+      ),
       batches: Object.assign(
         async function batches(
           req: OpenAiBatchCreateRequest,
@@ -625,10 +636,6 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           );
         },
         {
-          payloadSchema: moderationsSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, moderationsSchema);
-          },
           payloadSchema: batchesCreateSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, batchesCreateSchema);

@@ -549,6 +549,10 @@ export const moderationsSchema: PayloadSchema = {
       type: "string",
       description:
         "Moderation model ID (e.g. omni-moderation-latest, text-moderation-latest)",
+    },
+  },
+};
+
 export const batchesCreateSchema: PayloadSchema = {
   method: "POST",
   path: "/batches",

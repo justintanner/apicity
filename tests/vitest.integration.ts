@@ -29,6 +29,10 @@ export default defineConfig({
         __dirname,
         "../packages/provider/fireworks/src"
       ),
+      "@nakedapi/anthropic": path.resolve(
+        __dirname,
+        "../packages/provider/anthropic/src"
+      ),
     },
   },
 });

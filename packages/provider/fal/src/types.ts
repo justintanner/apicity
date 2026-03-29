@@ -621,6 +621,26 @@ export interface FalQueueCancelResponse {
   status: string;
 }
 
+// ==================== Serverless Apps Queue ====================
+
+// Get queue size parameters
+export interface FalAppsQueueParams {
+  owner: string;
+  name: string;
+}
+
+// Get queue size response
+export interface FalAppsQueueResponse {
+  queue_size: number;
+}
+
+// Flush queue parameters
+export interface FalAppsFlushQueueParams {
+  owner: string;
+  name: string;
+  idempotency_key?: string;
+}
+
 // ==================== Provider ====================
 
 // Namespace types
@@ -746,9 +766,32 @@ interface FalServerlessFilesNamespace {
   uploadLocal: FalFilesUploadLocalMethod;
 }
 
+interface FalAppsFlushQueueMethod {
+  (
+    params: FalAppsFlushQueueParams,
+    signal?: AbortSignal
+  ): Promise<void>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FalServerlessAppsQueueNamespace {
+  (
+    params: FalAppsQueueParams,
+    signal?: AbortSignal
+  ): Promise<FalAppsQueueResponse>;
+  flush: FalAppsFlushQueueMethod;
+}
+
+interface FalServerlessAppsNamespace {
+  queue: FalServerlessAppsQueueNamespace;
+}
+
 interface FalServerlessNamespace {
   logs: FalServerlessLogsNamespace;
   files: FalServerlessFilesNamespace;
+  apps: FalServerlessAppsNamespace;
+  metrics(signal?: AbortSignal): Promise<string>;
 }
 
 interface FalWorkflowsNamespace {

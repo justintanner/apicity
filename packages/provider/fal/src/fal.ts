@@ -45,6 +45,9 @@ import {
   FalComputeInstance,
   FalComputeInstanceCreateParams,
   FalComputeInstanceDeleteParams,
+  FalAppsQueueParams,
+  FalAppsQueueResponse,
+  FalAppsFlushQueueParams,
 } from "./types";
 import type { ValidationResult } from "./types";
 import {
@@ -56,6 +59,7 @@ import {
   filesUploadUrlSchema,
   filesUploadLocalSchema,
   computeInstanceCreateSchema,
+  appsFlushQueueSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -783,6 +787,160 @@ export function fal(opts: FalOptions): FalProvider {
           },
         }
       ),
+    },
+
+    apps: {
+      queue: Object.assign(
+        async function queue(
+          params: FalAppsQueueParams,
+          signal?: AbortSignal
+        ): Promise<FalAppsQueueResponse> {
+          return makeRequest<FalAppsQueueResponse>(
+            "GET",
+            `/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`,
+            undefined,
+            signal
+          );
+        },
+        {
+          flush: Object.assign(
+            async function flush(
+              params: FalAppsFlushQueueParams,
+              signal?: AbortSignal
+            ): Promise<void> {
+              const headers: Record<string, string> = {};
+              if (params.idempotency_key) {
+                headers["Idempotency-Key"] = params.idempotency_key;
+              }
+
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+              if (signal) {
+                signal.addEventListener("abort", () => controller.abort());
+              }
+
+              const url = `${baseURL}/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`;
+
+              try {
+                const res = await doFetch(url, {
+                  method: "DELETE",
+                  headers: {
+                    Authorization: `Key ${opts.apiKey}`,
+                    ...headers,
+                  },
+                  signal: controller.signal,
+                });
+                clearTimeout(timeoutId);
+
+                if (!res.ok) {
+                  let errorData: unknown;
+                  try {
+                    errorData = await res.json();
+                  } catch {
+                    errorData = null;
+                  }
+
+                  if (isFalApiErrorResponse(errorData)) {
+                    throw new FalError(
+                      errorData.error.message,
+                      res.status,
+                      errorData.error.type,
+                      errorData.error.request_id,
+                      errorData.error.docs_url,
+                      errorData
+                    );
+                  }
+
+                  throw new FalError(
+                    `Fal API error: ${res.status}`,
+                    res.status,
+                    "server_error",
+                    undefined,
+                    undefined,
+                    errorData
+                  );
+                }
+              } catch (error) {
+                clearTimeout(timeoutId);
+                if (error instanceof FalError) throw error;
+                throw new FalError(
+                  `Fal request failed: ${error}`,
+                  500,
+                  "server_error"
+                );
+              }
+            },
+            {
+              payloadSchema: appsFlushQueueSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, appsFlushQueueSchema);
+              },
+            }
+          ),
+        }
+      ),
+    },
+
+    async metrics(signal?: AbortSignal): Promise<string> {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      if (signal) {
+        signal.addEventListener("abort", () => controller.abort());
+      }
+
+      const url = `${baseURL}/serverless/metrics`;
+
+      try {
+        const res = await doFetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Key ${opts.apiKey}`,
+          },
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          let errorData: unknown;
+          try {
+            errorData = await res.json();
+          } catch {
+            errorData = null;
+          }
+
+          if (isFalApiErrorResponse(errorData)) {
+            throw new FalError(
+              errorData.error.message,
+              res.status,
+              errorData.error.type,
+              errorData.error.request_id,
+              errorData.error.docs_url,
+              errorData
+            );
+          }
+
+          throw new FalError(
+            `Fal API error: ${res.status}`,
+            res.status,
+            "server_error",
+            undefined,
+            undefined,
+            errorData
+          );
+        }
+
+        return await res.text();
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof FalError) throw error;
+        throw new FalError(
+          `Fal request failed: ${error}`,
+          500,
+          "server_error"
+        );
+      }
     },
   };
   const workflows = Object.assign(

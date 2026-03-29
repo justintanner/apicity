@@ -223,6 +223,28 @@ export const computeInstanceCreateSchema: PayloadSchema = {
   },
 };
 
+export const appsFlushQueueSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/serverless/apps/{owner}/{name}/queue",
+  contentType: "application/json",
+  fields: {
+    owner: {
+      type: "string",
+      required: true,
+      description: "Username of the app owner",
+    },
+    name: {
+      type: "string",
+      required: true,
+      description: "Application name",
+    },
+    idempotency_key: {
+      type: "string",
+      description: "Optional idempotency key for safe retries",
+    },
+  },
+};
+
 export const deletePayloadsSchema: PayloadSchema = {
   method: "DELETE",
   path: "/models/requests/{request_id}/payloads",

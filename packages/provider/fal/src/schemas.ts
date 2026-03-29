@@ -218,8 +218,7 @@ export const computeInstanceCreateSchema: PayloadSchema = {
     sector: {
       type: "string",
       enum: ["sector_1", "sector_2", "sector_3"],
-      description:
-        "Sector assignment (only valid with gpu_8x_h100_sxm5)",
+      description: "Sector assignment (only valid with gpu_8x_h100_sxm5)",
     },
   },
 };

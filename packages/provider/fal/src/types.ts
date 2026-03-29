@@ -349,9 +349,7 @@ export interface FalWorkflowGetResponse {
 // ==================== Compute Instances ====================
 
 // Compute instance type
-export type FalComputeInstanceType =
-  | "gpu_8x_h100_sxm5"
-  | "gpu_1x_h100_sxm5";
+export type FalComputeInstanceType = "gpu_8x_h100_sxm5" | "gpu_1x_h100_sxm5";
 
 // Compute region
 export type FalComputeRegion =

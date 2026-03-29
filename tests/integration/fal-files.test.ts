@@ -79,8 +79,7 @@ describe("fal serverless files validation", () => {
 
   it("should validate uploadLocal params - missing required", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result =
-      provider.v1.serverless.files.uploadLocal.validatePayload({});
+    const result = provider.v1.serverless.files.uploadLocal.validatePayload({});
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("target_path is required");
     expect(result.errors).toContain("file is required");

@@ -577,9 +577,7 @@ export function fal(opts: FalOptions): FalProvider {
         ): Promise<FalLogsHistoryResponse> {
           return makePostWithQuery<FalLogsHistoryResponse>(
             "/serverless/logs/history",
-            buildLogsQueryParams(
-              params as unknown as Record<string, unknown>
-            ),
+            buildLogsQueryParams(params as unknown as Record<string, unknown>),
             body,
             signal
           );
@@ -600,9 +598,7 @@ export function fal(opts: FalOptions): FalProvider {
         ): Promise<AsyncIterable<FalLogEntry>> {
           const res = await makeStreamPostWithQuery(
             "/serverless/logs/stream",
-            buildLogsQueryParams(
-              params as unknown as Record<string, unknown>
-            ),
+            buildLogsQueryParams(params as unknown as Record<string, unknown>),
             body,
             signal
           );

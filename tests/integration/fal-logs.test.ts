@@ -42,12 +42,12 @@ describe("fal serverless logs integration", () => {
   it("should expose payloadSchema on history", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     expect(provider.v1.serverless.logs.history.payloadSchema).toBeDefined();
-    expect(
-      provider.v1.serverless.logs.history.payloadSchema.method
-    ).toBe("POST");
-    expect(
-      provider.v1.serverless.logs.history.payloadSchema.path
-    ).toBe("/serverless/logs/history");
+    expect(provider.v1.serverless.logs.history.payloadSchema.method).toBe(
+      "POST"
+    );
+    expect(provider.v1.serverless.logs.history.payloadSchema.path).toBe(
+      "/serverless/logs/history"
+    );
   });
 
   it("should validate history payload", () => {
@@ -68,12 +68,12 @@ describe("fal serverless logs integration", () => {
   it("should expose payloadSchema on stream", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     expect(provider.v1.serverless.logs.stream.payloadSchema).toBeDefined();
-    expect(
-      provider.v1.serverless.logs.stream.payloadSchema.method
-    ).toBe("POST");
-    expect(
-      provider.v1.serverless.logs.stream.payloadSchema.path
-    ).toBe("/serverless/logs/stream");
+    expect(provider.v1.serverless.logs.stream.payloadSchema.method).toBe(
+      "POST"
+    );
+    expect(provider.v1.serverless.logs.stream.payloadSchema.path).toBe(
+      "/serverless/logs/stream"
+    );
   });
 
   it("should validate stream payload", () => {

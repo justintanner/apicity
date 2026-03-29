@@ -1184,7 +1184,6 @@ export interface FireworksGetExecutionLogEndpointResponse {
   expireTime?: string;
 }
 
-
 // Reinforcement Fine-Tuning (RFT) Job types
 
 export interface FireworksRFTInferenceParams {

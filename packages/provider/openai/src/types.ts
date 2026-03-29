@@ -851,6 +851,8 @@ export interface OpenAiModerationResponse {
   id: string;
   model: string;
   results: OpenAiModerationResult[];
+}
+
 // --- Batches API types ---
 
 // Batch request counts

@@ -211,8 +211,7 @@ export interface FalUsageResponse {
 
 // Analytics parameters
 export interface FalAnalyticsParams
-  extends FalPaginatedParams,
-    FalTimeRangeParams {
+  extends FalPaginatedParams, FalTimeRangeParams {
   endpoint_id: string | string[];
   expand?: string[];
 }

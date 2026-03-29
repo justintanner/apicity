@@ -532,6 +532,10 @@ export const responsesDeleteSchema: PayloadSchema = {
       type: "string",
       required: true,
       description: "The ID of the response to delete",
+    },
+  },
+};
+
 export const realtimeClientSecretsSchema: PayloadSchema = {
   method: "POST",
   path: "/realtime/client_secrets",

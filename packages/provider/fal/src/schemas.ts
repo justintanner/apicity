@@ -223,6 +223,32 @@ export const computeInstanceCreateSchema: PayloadSchema = {
   },
 };
 
+export const apiKeyCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/keys",
+  contentType: "application/json",
+  fields: {
+    alias: {
+      type: "string",
+      required: true,
+      description: "Human-readable name for the API key (1-255 chars)",
+    },
+  },
+};
+
+export const apiKeyDeleteSchema: PayloadSchema = {
+  method: "DELETE",
+  path: "/keys/{key_id}",
+  contentType: "application/json",
+  fields: {
+    key_id: {
+      type: "string",
+      required: true,
+      description: "Unique identifier of the API key to delete",
+    },
+  },
+};
+
 export const deletePayloadsSchema: PayloadSchema = {
   method: "DELETE",
   path: "/models/requests/{request_id}/payloads",

@@ -45,6 +45,11 @@ import {
   FalComputeInstance,
   FalComputeInstanceCreateParams,
   FalComputeInstanceDeleteParams,
+  FalApiKeysListParams,
+  FalApiKeysListResponse,
+  FalApiKeyCreateParams,
+  FalApiKeyCreateResponse,
+  FalApiKeyDeleteParams,
 } from "./types";
 import type { ValidationResult } from "./types";
 import {
@@ -56,6 +61,8 @@ import {
   filesUploadUrlSchema,
   filesUploadLocalSchema,
   computeInstanceCreateSchema,
+  apiKeyCreateSchema,
+  apiKeyDeleteSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -812,6 +819,58 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  const keys = Object.assign(
+    async function keys(
+      params?: FalApiKeysListParams,
+      signal?: AbortSignal
+    ): Promise<FalApiKeysListResponse> {
+      return makeRequest<FalApiKeysListResponse>(
+        "GET",
+        "/keys",
+        params as unknown as Record<string, unknown>,
+        signal
+      );
+    },
+    {
+      create: Object.assign(
+        async function create(
+          params: FalApiKeyCreateParams,
+          signal?: AbortSignal
+        ): Promise<FalApiKeyCreateResponse> {
+          return makeRequest<FalApiKeyCreateResponse>(
+            "POST",
+            "/keys",
+            params as unknown as Record<string, unknown>,
+            signal
+          );
+        },
+        {
+          payloadSchema: apiKeyCreateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, apiKeyCreateSchema);
+          },
+        }
+      ),
+
+      async delete(
+        params: FalApiKeyDeleteParams,
+        signal?: AbortSignal
+      ): Promise<void> {
+        const headers: Record<string, string> = {};
+        if (params.idempotency_key) {
+          headers["Idempotency-Key"] = params.idempotency_key;
+        }
+        return makeRequest<void>(
+          "DELETE",
+          `/keys/${encodeURIComponent(params.key_id)}`,
+          undefined,
+          signal,
+          headers
+        );
+      },
+    }
+  );
+
   const computeInstances = Object.assign(
     async function instances(
       params?: FalComputeInstancesListParams,
@@ -882,6 +941,7 @@ export function fal(opts: FalOptions): FalProvider {
       serverless,
       workflows,
       compute,
+      keys,
     },
   };
 }

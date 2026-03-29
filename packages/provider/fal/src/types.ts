@@ -346,6 +346,51 @@ export interface FalWorkflowGetResponse {
   workflow: FalWorkflowDetail;
 }
 
+// ==================== API Keys ====================
+
+// API key scope
+export type FalApiKeyScope = "API";
+
+// API key item (returned by list)
+export interface FalApiKey {
+  key_id: string;
+  alias: string;
+  scope: FalApiKeyScope;
+  created_at: string;
+  creator_nickname?: string;
+  creator_email?: string;
+}
+
+// List API keys parameters
+export interface FalApiKeysListParams extends FalPaginatedParams {
+  expand?: string | string[];
+}
+
+// List API keys response
+export interface FalApiKeysListResponse {
+  keys: FalApiKey[];
+  next_cursor: string | null;
+  has_more: boolean;
+}
+
+// Create API key parameters
+export interface FalApiKeyCreateParams {
+  alias: string;
+}
+
+// Create API key response
+export interface FalApiKeyCreateResponse {
+  key_id: string;
+  key_secret: string;
+  key: string;
+}
+
+// Delete API key parameters
+export interface FalApiKeyDeleteParams {
+  key_id: string;
+  idempotency_key?: string;
+}
+
 // ==================== Compute Instances ====================
 
 // Compute instance type
@@ -792,12 +837,32 @@ interface FalComputeNamespace {
   instances: FalComputeInstancesNamespace;
 }
 
+// API keys namespace types
+interface FalApiKeyCreateMethod {
+  (
+    params: FalApiKeyCreateParams,
+    signal?: AbortSignal
+  ): Promise<FalApiKeyCreateResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FalApiKeysNamespace {
+  (
+    params?: FalApiKeysListParams,
+    signal?: AbortSignal
+  ): Promise<FalApiKeysListResponse>;
+  create: FalApiKeyCreateMethod;
+  delete(params: FalApiKeyDeleteParams, signal?: AbortSignal): Promise<void>;
+}
+
 interface FalV1Namespace {
   models: FalModelsNamespace;
   queue: FalQueueNamespace;
   serverless: FalServerlessNamespace;
   workflows: FalWorkflowsNamespace;
   compute: FalComputeNamespace;
+  keys: FalApiKeysNamespace;
 }
 
 // Provider interface

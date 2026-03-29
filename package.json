@@ -1,7 +1,7 @@
 {
   "name": "nakedapi",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai, @nakedapi/openai, and @nakedapi/fal",
+  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai, @nakedapi/openai, @nakedapi/fal, and @nakedapi/anthropic",
   "private": true,
   "type": "module",
   "engines": {

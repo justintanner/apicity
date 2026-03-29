@@ -62,6 +62,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/provider/kimicoding
 
+  packages/provider/deepseek: {}
+
   packages/provider/fal: {}
 
   packages/provider/fireworks: {}

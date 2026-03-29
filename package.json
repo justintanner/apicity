@@ -14,13 +14,14 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks",
+    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:deepseek",
     "build:openai": "pnpm --filter @nakedapi/openai run build",
     "build:kimicoding": "pnpm --filter @nakedapi/kimicoding run build",
     "build:kie": "pnpm --filter @nakedapi/kie run build",
     "build:xai": "pnpm --filter @nakedapi/xai run build",
     "build:fal": "pnpm --filter @nakedapi/fal run build",
     "build:fireworks": "pnpm --filter @nakedapi/fireworks run build",
+    "build:deepseek": "pnpm --filter @nakedapi/deepseek run build",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "lint": "eslint .",

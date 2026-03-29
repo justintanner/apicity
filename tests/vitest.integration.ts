@@ -29,6 +29,10 @@ export default defineConfig({
         __dirname,
         "../packages/provider/fireworks/src"
       ),
+      "@nakedapi/deepseek": path.resolve(
+        __dirname,
+        "../packages/provider/deepseek/src"
+      ),
     },
   },
 });

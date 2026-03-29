@@ -620,6 +620,8 @@ export interface OpenAiModerationResponse {
   id: string;
   model: string;
   results: OpenAiModerationResult[];
+}
+
 // Files API types
 export interface OpenAiFile {
   id: string;

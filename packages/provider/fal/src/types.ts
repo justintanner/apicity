@@ -211,7 +211,8 @@ export interface FalUsageResponse {
 
 // Analytics parameters
 export interface FalAnalyticsParams
-  extends FalPaginatedParams, FalTimeRangeParams {
+  extends FalPaginatedParams,
+    FalTimeRangeParams {
   endpoint_id: string | string[];
   expand?: string[];
 }
@@ -369,6 +370,44 @@ export interface FalLogsHistoryResponse {
   next_cursor: string | null;
   has_more: boolean;
   items: FalLogEntry[];
+}
+
+// ==================== Serverless Files ====================
+
+// File/directory item in a listing
+export interface FalFileItem {
+  path: string;
+  name: string;
+  created_time: string;
+  updated_time: string;
+  is_file: boolean;
+  size: number;
+  checksum_sha256?: string;
+  checksum_md5?: string;
+}
+
+// List files parameters
+export interface FalFilesListParams {
+  dir?: string;
+}
+
+// Download file parameters
+export interface FalFilesDownloadParams {
+  file: string;
+}
+
+// Upload from URL parameters
+export interface FalFilesUploadUrlParams {
+  file: string;
+  url: string;
+}
+
+// Upload local file parameters
+export interface FalFilesUploadLocalParams {
+  target_path: string;
+  file: Blob;
+  filename?: string;
+  unzip?: boolean;
 }
 
 // ==================== Queue ====================
@@ -569,8 +608,35 @@ interface FalServerlessLogsNamespace {
   stream: FalLogsStreamMethod;
 }
 
+// Serverless files namespace types
+interface FalFilesUploadUrlMethod {
+  (params: FalFilesUploadUrlParams, signal?: AbortSignal): Promise<boolean>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FalFilesUploadLocalMethod {
+  (params: FalFilesUploadLocalParams, signal?: AbortSignal): Promise<boolean>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FalServerlessFilesNamespace {
+  list(
+    params?: FalFilesListParams,
+    signal?: AbortSignal
+  ): Promise<FalFileItem[]>;
+  download(
+    params: FalFilesDownloadParams,
+    signal?: AbortSignal
+  ): Promise<Response>;
+  uploadUrl: FalFilesUploadUrlMethod;
+  uploadLocal: FalFilesUploadLocalMethod;
+}
+
 interface FalServerlessNamespace {
   logs: FalServerlessLogsNamespace;
+  files: FalServerlessFilesNamespace;
 }
 
 interface FalV1Namespace {

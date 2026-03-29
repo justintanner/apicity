@@ -30,6 +30,11 @@ import {
   FalLogsStreamParams,
   FalLabelFilter,
   FalLogEntry,
+  FalFileItem,
+  FalFilesListParams,
+  FalFilesDownloadParams,
+  FalFilesUploadUrlParams,
+  FalFilesUploadLocalParams,
 } from "./types";
 import type { ValidationResult } from "./types";
 import {
@@ -38,6 +43,8 @@ import {
   queueSubmitSchema,
   logsHistorySchema,
   logsStreamSchema,
+  filesUploadUrlSchema,
+  filesUploadLocalSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -340,6 +347,78 @@ export function fal(opts: FalOptions): FalProvider {
     return res;
   }
 
+  async function makeRawRequest(
+    method: "GET" | "POST",
+    path: string,
+    body?: FormData,
+    signal?: AbortSignal,
+    queryParams?: Record<string, unknown>
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    let url = `${baseURL}${path}`;
+    if (queryParams) {
+      url += buildQueryString(queryParams);
+    }
+
+    const requestInit: RequestInit = {
+      method,
+      headers: {
+        Authorization: `Key ${opts.apiKey}`,
+      },
+      signal: controller.signal,
+    };
+
+    if (body) {
+      requestInit.body = body;
+    }
+
+    try {
+      const res = await doFetch(url, requestInit);
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let errorData: unknown;
+        try {
+          errorData = await res.json();
+        } catch {
+          errorData = null;
+        }
+
+        if (isFalApiErrorResponse(errorData)) {
+          throw new FalError(
+            errorData.error.message,
+            res.status,
+            errorData.error.type,
+            errorData.error.request_id,
+            errorData.error.docs_url,
+            errorData
+          );
+        }
+
+        throw new FalError(
+          `Fal API error: ${res.status}`,
+          res.status,
+          "server_error",
+          undefined,
+          undefined,
+          errorData
+        );
+      }
+
+      return res;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof FalError) throw error;
+      throw new FalError(`Fal request failed: ${error}`, 500, "server_error");
+    }
+  }
+
   const pricing = Object.assign(
     async function pricing(
       params: FalPricingParams,
@@ -608,6 +687,84 @@ export function fal(opts: FalOptions): FalProvider {
           payloadSchema: logsStreamSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, logsStreamSchema);
+          },
+        }
+      ),
+    },
+
+    files: {
+      async list(
+        params?: FalFilesListParams,
+        signal?: AbortSignal
+      ): Promise<FalFileItem[]> {
+        const path = params?.dir
+          ? `/serverless/files/list/${params.dir}`
+          : "/serverless/files/list";
+        return makeRequest<FalFileItem[]>("GET", path, undefined, signal);
+      },
+
+      async download(
+        params: FalFilesDownloadParams,
+        signal?: AbortSignal
+      ): Promise<Response> {
+        return makeRawRequest(
+          "GET",
+          `/serverless/files/file/${params.file}`,
+          undefined,
+          signal
+        );
+      },
+
+      uploadUrl: Object.assign(
+        async function uploadUrl(
+          params: FalFilesUploadUrlParams,
+          signal?: AbortSignal
+        ): Promise<boolean> {
+          return makeRequest<boolean>(
+            "POST",
+            `/serverless/files/file/url/${params.file}`,
+            { url: params.url },
+            signal
+          );
+        },
+        {
+          payloadSchema: filesUploadUrlSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, filesUploadUrlSchema);
+          },
+        }
+      ),
+
+      uploadLocal: Object.assign(
+        async function uploadLocal(
+          params: FalFilesUploadLocalParams,
+          signal?: AbortSignal
+        ): Promise<boolean> {
+          const formData = new FormData();
+          formData.append(
+            "file_upload",
+            params.file,
+            params.filename ?? "upload"
+          );
+
+          const queryParams: Record<string, unknown> = {};
+          if (params.unzip) {
+            queryParams.unzip = "true";
+          }
+
+          const res = await makeRawRequest(
+            "POST",
+            `/serverless/files/file/local/${params.target_path}`,
+            formData,
+            signal,
+            Object.keys(queryParams).length > 0 ? queryParams : undefined
+          );
+          return (await res.json()) as boolean;
+        },
+        {
+          payloadSchema: filesUploadLocalSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, filesUploadLocalSchema);
           },
         }
       ),

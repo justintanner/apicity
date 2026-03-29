@@ -155,6 +155,50 @@ export const logsStreamSchema: PayloadSchema = {
   },
 };
 
+export const filesUploadUrlSchema: PayloadSchema = {
+  method: "POST",
+  path: "/serverless/files/file/url/{file}",
+  contentType: "application/json",
+  fields: {
+    file: {
+      type: "string",
+      required: true,
+      description: "Target file path on fal storage",
+    },
+    url: {
+      type: "string",
+      required: true,
+      description: "Publicly accessible URL to download the file from",
+    },
+  },
+};
+
+export const filesUploadLocalSchema: PayloadSchema = {
+  method: "POST",
+  path: "/serverless/files/file/local/{target_path}",
+  contentType: "multipart/form-data",
+  fields: {
+    target_path: {
+      type: "string",
+      required: true,
+      description: "Target file path on fal storage",
+    },
+    file: {
+      type: "object",
+      required: true,
+      description: "Binary file content (Blob)",
+    },
+    filename: {
+      type: "string",
+      description: "Optional filename for the upload",
+    },
+    unzip: {
+      type: "boolean",
+      description: "If true and file is a ZIP, extract after upload",
+    },
+  },
+};
+
 export const deletePayloadsSchema: PayloadSchema = {
   method: "DELETE",
   path: "/models/requests/{request_id}/payloads",

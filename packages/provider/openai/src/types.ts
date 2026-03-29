@@ -555,7 +555,13 @@ export interface OpenAiResponseResponse {
   id: string;
   object: "response";
   created_at: number;
-  status: "completed" | "failed" | "in_progress" | "incomplete";
+  status:
+    | "completed"
+    | "failed"
+    | "in_progress"
+    | "incomplete"
+    | "cancelled"
+    | "queued";
   model: string;
   output: OpenAiResponseOutputItem[];
   usage?: OpenAiResponseUsage;
@@ -578,6 +584,67 @@ export interface OpenAiResponseResponse {
   tools?: OpenAiResponseTool[];
   truncation?: "auto" | "disabled";
   parallel_tool_calls?: boolean;
+}
+
+// Responses API input_items list options
+export interface OpenAiResponseInputItemsOptions {
+  after?: string;
+  limit?: number;
+  order?: "asc" | "desc";
+  include?: string[];
+}
+
+// Responses API input_items list response
+export interface OpenAiResponseInputItemsResponse {
+  object: "list";
+  data: (OpenAiResponseInputItem | OpenAiResponseOutputItem)[];
+  first_id: string;
+  last_id: string;
+  has_more: boolean;
+}
+
+// Responses API compact request
+export interface OpenAiResponseCompactRequest {
+  model: string;
+  input?: string | OpenAiResponseInputItem[] | null;
+  instructions?: string | null;
+  previous_response_id?: string | null;
+  prompt_cache_key?: string | null;
+}
+
+// Responses API compact response
+export interface OpenAiResponseCompactResponse {
+  id: string;
+  object: "response.compaction";
+  created_at: number;
+  output: (OpenAiResponseInputItem | OpenAiResponseOutputItem)[];
+  usage?: OpenAiResponseUsage;
+}
+
+// Responses API input_tokens request
+export interface OpenAiResponseInputTokensRequest {
+  model?: string | null;
+  input?: string | OpenAiResponseInputItem[] | null;
+  instructions?: string | null;
+  conversation?: string | Record<string, unknown> | null;
+  previous_response_id?: string | null;
+  tools?: OpenAiResponseTool[] | null;
+  tool_choice?:
+    | "auto"
+    | "none"
+    | "required"
+    | { type: string; name?: string }
+    | null;
+  parallel_tool_calls?: boolean | null;
+  reasoning?: OpenAiResponseReasoning | null;
+  text?: OpenAiResponseTextFormat | null;
+  truncation?: "auto" | "disabled";
+}
+
+// Responses API input_tokens response
+export interface OpenAiResponseInputTokensResponse {
+  object: "response.input_tokens";
+  input_tokens: number;
 }
 
 // --- Fine-Tuning API types ---
@@ -1202,6 +1269,37 @@ interface OpenAiResponsesDeleteMethod {
   payloadSchema: PayloadSchema;
 }
 
+interface OpenAiResponsesCancelMethod {
+  (id: string, signal?: AbortSignal): Promise<OpenAiResponseResponse>;
+  payloadSchema: PayloadSchema;
+}
+
+interface OpenAiResponsesInputItemsMethod {
+  (
+    id: string,
+    opts?: OpenAiResponseInputItemsOptions,
+    signal?: AbortSignal
+  ): Promise<OpenAiResponseInputItemsResponse>;
+}
+
+interface OpenAiResponsesCompactMethod {
+  (
+    req: OpenAiResponseCompactRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiResponseCompactResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface OpenAiResponsesInputTokensMethod {
+  (
+    req: OpenAiResponseInputTokensRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiResponseInputTokensResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface OpenAiResponsesMethod {
   (
     req: OpenAiResponseRequest,
@@ -1211,6 +1309,10 @@ interface OpenAiResponsesMethod {
   validatePayload(data: unknown): ValidationResult;
   get: OpenAiResponsesGetMethod;
   del: OpenAiResponsesDeleteMethod;
+  cancel: OpenAiResponsesCancelMethod;
+  input_items: OpenAiResponsesInputItemsMethod;
+  compact: OpenAiResponsesCompactMethod;
+  input_tokens: OpenAiResponsesInputTokensMethod;
 }
 
 interface OpenAiFilesListMethod {

@@ -29,6 +29,12 @@ import {
   OpenAiResponseResponse,
   OpenAiResponseDeleteResponse,
   OpenAiResponseGetOptions,
+  OpenAiResponseInputItemsOptions,
+  OpenAiResponseInputItemsResponse,
+  OpenAiResponseCompactRequest,
+  OpenAiResponseCompactResponse,
+  OpenAiResponseInputTokensRequest,
+  OpenAiResponseInputTokensResponse,
   OpenAiModerationRequest,
   OpenAiModerationResponse,
   OpenAiFineTuningJobCreateRequest,
@@ -70,6 +76,9 @@ import {
   audioTranslationsSchema,
   responsesSchema,
   responsesDeleteSchema,
+  responsesCancelSchema,
+  responsesCompactSchema,
+  responsesInputTokensSchema,
   fineTuningJobsCreateSchema,
   checkpointPermissionsCreateSchema,
   storedCompletionsUpdateSchema,
@@ -814,6 +823,74 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             },
             {
               payloadSchema: responsesDeleteSchema,
+            }
+          ),
+          cancel: Object.assign(
+            async function cancel(
+              id: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiResponseResponse> {
+              return await makeEmptyPostRequest<OpenAiResponseResponse>(
+                `/responses/${encodeURIComponent(id)}/cancel`,
+                signal
+              );
+            },
+            {
+              payloadSchema: responsesCancelSchema,
+            }
+          ),
+          input_items: async function input_items(
+            id: string,
+            opts?: OpenAiResponseInputItemsOptions,
+            signal?: AbortSignal
+          ): Promise<OpenAiResponseInputItemsResponse> {
+            return await makeGetRequest<OpenAiResponseInputItemsResponse>(
+              `/responses/${encodeURIComponent(id)}/input_items`,
+              {
+                after: opts?.after,
+                limit: opts?.limit !== undefined
+                  ? String(opts.limit)
+                  : undefined,
+                order: opts?.order,
+                include: opts?.include,
+              },
+              signal
+            );
+          },
+          compact: Object.assign(
+            async function compact(
+              req: OpenAiResponseCompactRequest,
+              signal?: AbortSignal
+            ): Promise<OpenAiResponseCompactResponse> {
+              return await makeRequest<OpenAiResponseCompactResponse>(
+                "/responses/compact",
+                jsonRequest(req),
+                signal
+              );
+            },
+            {
+              payloadSchema: responsesCompactSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, responsesCompactSchema);
+              },
+            }
+          ),
+          input_tokens: Object.assign(
+            async function input_tokens(
+              req: OpenAiResponseInputTokensRequest,
+              signal?: AbortSignal
+            ): Promise<OpenAiResponseInputTokensResponse> {
+              return await makeRequest<OpenAiResponseInputTokensResponse>(
+                "/responses/input_tokens",
+                jsonRequest(req),
+                signal
+              );
+            },
+            {
+              payloadSchema: responsesInputTokensSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, responsesInputTokensSchema);
+              },
             }
           ),
         }

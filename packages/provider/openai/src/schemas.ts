@@ -557,6 +557,142 @@ export const responsesDeleteSchema: PayloadSchema = {
   },
 };
 
+export const responsesCancelSchema: PayloadSchema = {
+  method: "POST",
+  path: "/responses/{id}/cancel",
+  contentType: "application/json",
+  fields: {
+    id: {
+      type: "string",
+      required: true,
+      description: "The ID of the response to cancel",
+    },
+  },
+};
+
+export const responsesCompactSchema: PayloadSchema = {
+  method: "POST",
+  path: "/responses/compact",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID (e.g. gpt-5, o3, gpt-4o)",
+    },
+    input: {
+      type: "string",
+      description:
+        "Text string or array of input items to compact",
+    },
+    instructions: {
+      type: "string",
+      description:
+        "System/developer instructions for compaction context",
+    },
+    previous_response_id: {
+      type: "string",
+      description: "Previous response ID for multi-turn context",
+    },
+    prompt_cache_key: {
+      type: "string",
+      description: "Key for reading from or writing to prompt cache",
+    },
+  },
+};
+
+export const responsesInputTokensSchema: PayloadSchema = {
+  method: "POST",
+  path: "/responses/input_tokens",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      description: "Model ID (e.g. gpt-5, o3)",
+    },
+    input: {
+      type: "string",
+      description: "Text string or array of input items",
+    },
+    instructions: {
+      type: "string",
+      description: "System/developer instructions",
+    },
+    conversation: {
+      type: "string",
+      description: "Conversation ID or object",
+    },
+    previous_response_id: {
+      type: "string",
+      description: "Previous response ID for multi-turn context",
+    },
+    tools: {
+      type: "array",
+      description:
+        "Tools available to the model (affects token count)",
+      items: {
+        type: "object",
+        properties: {
+          type: {
+            type: "string",
+            required: true,
+            enum: [
+              "function",
+              "web_search_preview",
+              "web_search_preview_2025_03_11",
+              "file_search",
+              "code_interpreter",
+            ],
+          },
+        },
+      },
+    },
+    tool_choice: {
+      type: "string",
+      description: "Tool choice strategy: auto, none, required, or specific tool",
+    },
+    parallel_tool_calls: {
+      type: "boolean",
+      description: "Whether to enable parallel tool calls",
+    },
+    reasoning: {
+      type: "object",
+      description: "Reasoning configuration for o-series models",
+      properties: {
+        effort: {
+          type: "string",
+          enum: ["none", "minimal", "low", "medium", "high", "xhigh"],
+        },
+        summary: {
+          type: "string",
+          enum: ["auto", "concise", "detailed"],
+        },
+      },
+    },
+    text: {
+      type: "object",
+      description: "Text generation configuration",
+      properties: {
+        format: {
+          type: "object",
+          properties: {
+            type: {
+              type: "string",
+              required: true,
+              enum: ["text", "json_object", "json_schema"],
+            },
+          },
+        },
+      },
+    },
+    truncation: {
+      type: "string",
+      description: "Truncation strategy for context window",
+      enum: ["auto", "disabled"],
+    },
+  },
+};
+
 export const modelsDeleteSchema: PayloadSchema = {
   method: "DELETE",
   path: "/models/{model}",

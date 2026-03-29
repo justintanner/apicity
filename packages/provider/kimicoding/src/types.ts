@@ -102,6 +102,8 @@ export interface KimiCodingModelListResponse {
   first_id: string;
   last_id: string;
   has_more: boolean;
+}
+
 // Embeddings request (OpenAI-compatible)
 export interface EmbeddingRequest {
   input: string | string[] | number[] | number[][];
@@ -165,6 +167,8 @@ interface KimiCodingModelsListMethod {
 
 interface KimiCodingModelsNamespace {
   list: KimiCodingModelsListMethod;
+}
+
 interface KimiCodingEmbeddingsMethod {
   (req: EmbeddingRequest, signal?: AbortSignal): Promise<EmbeddingResponse>;
   payloadSchema: PayloadSchema;

@@ -55,6 +55,106 @@ export const queueSubmitSchema: PayloadSchema = {
   },
 };
 
+export const logsHistorySchema: PayloadSchema = {
+  method: "POST",
+  path: "/serverless/logs/history",
+  contentType: "application/json",
+  fields: {
+    limit: {
+      type: "number",
+      description: "Number of results per page (1-1000)",
+    },
+    cursor: {
+      type: "string",
+      description: "Pagination cursor from previous response",
+    },
+    start: {
+      type: "string",
+      description: "Start date in ISO8601 (defaults to 24h ago)",
+    },
+    end: {
+      type: "string",
+      description: "End date in ISO8601, exclusive (defaults to now)",
+    },
+    app_id: {
+      type: "array",
+      items: { type: "string" },
+      description: "Filter by app IDs",
+    },
+    revision: {
+      type: "string",
+      description: "Filter by revision",
+    },
+    run_source: {
+      type: "string",
+      enum: ["grpc-run", "grpc-register", "gateway", "cron"],
+      description: "Filter by run source",
+    },
+    search: {
+      type: "string",
+      description: "Free-text search",
+    },
+    level: {
+      type: "string",
+      description: "Minimum log level",
+    },
+    job_id: {
+      type: "string",
+      description: "Filter by job ID",
+    },
+    request_id: {
+      type: "string",
+      description: "Filter by request ID",
+    },
+  },
+};
+
+export const logsStreamSchema: PayloadSchema = {
+  method: "POST",
+  path: "/serverless/logs/stream",
+  contentType: "application/json",
+  fields: {
+    start: {
+      type: "string",
+      description: "Start date in ISO8601 (defaults to 24h ago)",
+    },
+    end: {
+      type: "string",
+      description: "End date in ISO8601, exclusive (defaults to now)",
+    },
+    app_id: {
+      type: "array",
+      items: { type: "string" },
+      description: "Filter by app IDs",
+    },
+    revision: {
+      type: "string",
+      description: "Filter by revision",
+    },
+    run_source: {
+      type: "string",
+      enum: ["grpc-run", "grpc-register", "gateway", "cron"],
+      description: "Filter by run source",
+    },
+    search: {
+      type: "string",
+      description: "Free-text search",
+    },
+    level: {
+      type: "string",
+      description: "Minimum log level",
+    },
+    job_id: {
+      type: "string",
+      description: "Filter by job ID",
+    },
+    request_id: {
+      type: "string",
+      description: "Filter by request ID",
+    },
+  },
+};
+
 export const deletePayloadsSchema: PayloadSchema = {
   method: "DELETE",
   path: "/models/requests/{request_id}/payloads",

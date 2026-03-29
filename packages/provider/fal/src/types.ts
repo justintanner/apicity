@@ -319,6 +319,58 @@ export interface ValidationResult {
   errors: string[];
 }
 
+// ==================== Serverless Logs ====================
+
+// Label filter for log queries
+export interface FalLabelFilter {
+  key: string;
+  value: string | string[];
+  condition_type?: "equals" | "in" | "not_equals" | "not_in";
+}
+
+// Run source for serverless logs
+export type FalRunSource = "grpc-run" | "grpc-register" | "gateway" | "cron";
+
+// Shared filter parameters for both history and stream
+export interface FalLogsFilterParams {
+  start?: string;
+  end?: string;
+  app_id?: string[];
+  revision?: string;
+  run_source?: FalRunSource;
+  traceback?: boolean;
+  search?: string;
+  level?: string;
+  job_id?: string;
+  request_id?: string;
+}
+
+// History-specific parameters (adds pagination)
+export interface FalLogsHistoryParams extends FalLogsFilterParams {
+  limit?: number;
+  cursor?: string;
+}
+
+// Stream parameters (same filters, no pagination)
+export type FalLogsStreamParams = FalLogsFilterParams;
+
+// Log entry returned by both history items and stream events
+export interface FalLogEntry {
+  timestamp: string;
+  level: string;
+  message: string;
+  app: string;
+  revision: string;
+  labels?: Record<string, string>;
+}
+
+// History response
+export interface FalLogsHistoryResponse {
+  next_cursor: string | null;
+  has_more: boolean;
+  items: FalLogEntry[];
+}
+
 // ==================== Queue ====================
 
 // Queue submit options (model-specific input is the body)
@@ -491,9 +543,40 @@ interface FalQueueNamespace {
   ): Promise<FalQueueCancelResponse>;
 }
 
+// Serverless logs namespace types
+interface FalLogsHistoryMethod {
+  (
+    params?: FalLogsHistoryParams,
+    body?: FalLabelFilter[],
+    signal?: AbortSignal
+  ): Promise<FalLogsHistoryResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FalLogsStreamMethod {
+  (
+    params?: FalLogsStreamParams,
+    body?: FalLabelFilter[],
+    signal?: AbortSignal
+  ): Promise<AsyncIterable<FalLogEntry>>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FalServerlessLogsNamespace {
+  history: FalLogsHistoryMethod;
+  stream: FalLogsStreamMethod;
+}
+
+interface FalServerlessNamespace {
+  logs: FalServerlessLogsNamespace;
+}
+
 interface FalV1Namespace {
   models: FalModelsNamespace;
   queue: FalQueueNamespace;
+  serverless: FalServerlessNamespace;
 }
 
 // Provider interface

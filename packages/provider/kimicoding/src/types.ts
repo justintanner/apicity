@@ -125,6 +125,23 @@ export interface EmbeddingResponse {
   model: string;
 }
 
+// Token counting types
+export interface CountTokensRequest {
+  model: string;
+  messages: ChatMessage[];
+  system?: string;
+  tools?: Array<{
+    name: string;
+    description?: string;
+    input_schema: Record<string, unknown>;
+  }>;
+  tool_choice?: { type: string } | { type: "tool"; name: string };
+}
+
+export interface CountTokensResponse {
+  input_tokens: number;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -175,10 +192,17 @@ interface KimiCodingEmbeddingsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface KimiCodingCountTokensMethod {
+  (req: CountTokensRequest, signal?: AbortSignal): Promise<CountTokensResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface KimiCodingV1Namespace {
   messages: KimiCodingMessagesNamespace;
   models: KimiCodingModelsNamespace;
   embeddings: KimiCodingEmbeddingsMethod;
+  countTokens: KimiCodingCountTokensMethod;
 }
 
 interface KimiCodingCodingNamespace {

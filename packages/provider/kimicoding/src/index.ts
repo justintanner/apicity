@@ -22,6 +22,8 @@ export type {
   EmbeddingRequest,
   EmbeddingResponse,
   EmbeddingData,
+  CountTokensRequest,
+  CountTokensResponse,
   Provider,
   KimiCodingOptions,
   KimiCodingProvider,

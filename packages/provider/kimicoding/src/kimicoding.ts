@@ -10,10 +10,12 @@ import {
   AnthropicStreamEvent,
   EmbeddingRequest,
   EmbeddingResponse,
+  CountTokensRequest,
+  CountTokensResponse,
 } from "./types";
 import type { ValidationResult } from "./types";
 import { sseToIterable } from "./sse";
-import { messagesSchema, embeddingsSchema } from "./schemas";
+import { messagesSchema, embeddingsSchema, countTokensSchema } from "./schemas";
 import { validatePayload } from "./validate";
 
 interface AnthropicErrorBody {
@@ -239,6 +241,46 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  async function countTokensImpl(
+    req: CountTokensRequest,
+    signal?: AbortSignal
+  ): Promise<CountTokensResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(`${baseURL}v1/tokens/count`, {
+        method: "POST",
+        headers: buildHeaders(),
+        body: JSON.stringify(req),
+        signal: signal || controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `KimiCoding error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            isAnthropicErrorBody(body) &&
+            typeof body.error?.message === "string"
+          ) {
+            message = `KimiCoding error ${res.status}: ${body.error.message}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KimiCodingError(message, res.status, body);
+      }
+
+      return (await res.json()) as CountTokensResponse;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
+
   const messages = Object.assign(chatImpl, {
     stream: Object.assign(streamImpl, {
       payloadSchema: messagesSchema,
@@ -259,6 +301,13 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     },
   });
 
+  const countTokens = Object.assign(countTokensImpl, {
+    payloadSchema: countTokensSchema,
+    validatePayload(data: unknown): ValidationResult {
+      return validatePayload(data, countTokensSchema);
+    },
+  });
+
   return {
     coding: {
       v1: {
@@ -274,6 +323,7 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
           },
         },
         embeddings,
+        countTokens,
       },
     },
   };

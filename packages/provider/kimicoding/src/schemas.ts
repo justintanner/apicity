@@ -78,3 +78,33 @@ export const messagesSchema: PayloadSchema = {
     stream: { type: "boolean", description: "Enable streaming" },
   },
 };
+
+export const countTokensSchema: PayloadSchema = {
+  method: "POST",
+  path: "/v1/tokens/count",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description: "Model ID (e.g. k2p5)",
+    },
+    messages: {
+      type: "array",
+      required: true,
+      description: "Array of chat messages to count tokens for",
+      items: {
+        type: "object",
+        properties: {
+          role: {
+            type: "string",
+            required: true,
+            enum: ["user", "assistant"],
+          },
+          content: { type: "string", required: true },
+        },
+      },
+    },
+    system: { type: "string", description: "System prompt" },
+  },
+};

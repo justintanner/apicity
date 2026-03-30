@@ -52,6 +52,7 @@ Base URL: `https://api.kimi.com/coding/`
 | `POST /v1/messages` (stream) | `kimicoding.coding.v1.messages.stream()` |
 | `GET /v1/models`             | `kimicoding.coding.v1.models.list()`     |
 | `POST /v1/embeddings`        | `kimicoding.coding.v1.embeddings()`      |
+| `POST /v1/tokens/count`      | `kimicoding.coding.v1.countTokens()`     |
 
 ## What's Included
 
@@ -135,6 +136,19 @@ kimicoding.coding.v1
   .catch(function (err) {
     console.error(err.message);
   });
+```
+
+## Token Counting
+
+Count tokens before sending a request to manage context window limits:
+
+```typescript
+const result = await kimicoding.coding.v1.countTokens({
+  model: "k2p5",
+  messages: [{ role: "user", content: "Hello, how are you?" }],
+});
+
+console.log(`Input tokens: ${result.input_tokens}`);
 ```
 
 ## Middleware Usage

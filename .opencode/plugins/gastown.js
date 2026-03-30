@@ -64,7 +64,7 @@ export const GasTown = async ({ $, directory }) => {
         primePromise = null;
       }
     },
-    "experimental.session.compacting": async ({ sessionID }, output) => {
+    "experimental.session.compacting": async (_session, output) => {
       const roleDisplay = role || "unknown";
       output.context.push(`
 ## Gas Town Multi-Agent System

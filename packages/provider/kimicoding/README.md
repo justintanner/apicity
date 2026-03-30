@@ -50,6 +50,8 @@ Base URL: `https://api.kimi.com/coding/`
 | ---------------------------- | ---------------------------------------- |
 | `POST /v1/messages`          | `kimicoding.coding.v1.messages()`        |
 | `POST /v1/messages` (stream) | `kimicoding.coding.v1.messages.stream()` |
+| `GET /v1/models`             | `kimicoding.coding.v1.models.list()`     |
+| `POST /v1/embeddings`        | `kimicoding.coding.v1.embeddings()`      |
 
 ## What's Included
 
@@ -161,6 +163,27 @@ const fallbackChat = withFallback([
   kimi1.coding.v1.messages,
   kimi2.coding.v1.messages,
 ]);
+```
+
+## Models
+
+List available models:
+
+```typescript
+const models = await kimicoding.coding.v1.models.list();
+console.log(models.data);
+```
+
+## Embeddings
+
+Generate embeddings for text:
+
+```typescript
+const response = await kimicoding.coding.v1.embeddings({
+  model: "k2p5",
+  input: "Hello, world!",
+});
+console.log(response.data[0].embedding);
 ```
 
 ## Configuration Options

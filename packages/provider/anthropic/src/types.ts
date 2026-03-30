@@ -676,6 +676,89 @@ export interface AnthropicApiKeyUpdateRequest {
   status?: "active" | "inactive" | "archived";
 }
 
+// Usage Reports
+
+export interface AnthropicUsageReportItem {
+  date: string;
+  api_calls: number;
+  input_tokens: number;
+  output_tokens: number;
+  model: string;
+  breakdown?: {
+    by_cache_creation?: Record<string, number>;
+    by_cache_read?: Record<string, number>;
+  };
+}
+
+export interface AnthropicUsageReportResponse {
+  data: AnthropicUsageReportItem[];
+  total: {
+    api_calls: number;
+    input_tokens: number;
+    output_tokens: number;
+  };
+}
+
+export interface AnthropicUsageReportParams {
+  start_date?: string;
+  end_date?: string;
+  model?: string;
+  limit?: number;
+}
+
+// Cost Reports
+
+export interface AnthropicCostReportItem {
+  date: string;
+  cost_usd: number;
+  model: string;
+  breakdown?: {
+    by_cache_creation?: Record<string, number>;
+    by_cache_read?: Record<string, number>;
+  };
+}
+
+export interface AnthropicCostReportResponse {
+  data: AnthropicCostReportItem[];
+  total_cost_usd: number;
+}
+
+export interface AnthropicCostReportParams {
+  start_date?: string;
+  end_date?: string;
+  model?: string;
+  limit?: number;
+}
+
+// Claude Code Usage Reports
+
+export interface AnthropicClaudeCodeUsageItem {
+  date: string;
+  api_calls: number;
+  input_tokens: number;
+  output_tokens: number;
+  cost_usd: number;
+  user_id: string;
+  user_email: string;
+}
+
+export interface AnthropicClaudeCodeUsageResponse {
+  data: AnthropicClaudeCodeUsageItem[];
+  total: {
+    api_calls: number;
+    input_tokens: number;
+    output_tokens: number;
+    cost_usd: number;
+  };
+}
+
+export interface AnthropicClaudeCodeUsageParams {
+  start_date?: string;
+  end_date?: string;
+  user_id?: string;
+  limit?: number;
+}
+
 // ---------- Schema types ----------
 
 export interface PayloadFieldSchema {
@@ -946,12 +1029,32 @@ export interface AnthropicSkillsNamespace {
   versions: AnthropicSkillVersionsNamespace;
 }
 
+export interface AnthropicUsageReportNamespace {
+  messages: (
+    params?: AnthropicUsageReportParams,
+    signal?: AbortSignal
+  ) => Promise<AnthropicUsageReportResponse>;
+  claude_code: (
+    params?: AnthropicClaudeCodeUsageParams,
+    signal?: AbortSignal
+  ) => Promise<AnthropicClaudeCodeUsageResponse>;
+}
+
+export interface AnthropicCostReportNamespace {
+  get: (
+    params?: AnthropicCostReportParams,
+    signal?: AbortSignal
+  ) => Promise<AnthropicCostReportResponse>;
+}
+
 export interface AnthropicOrganizationsNamespace {
   me: (signal?: AbortSignal) => Promise<AnthropicOrganization>;
   users: AnthropicUsersNamespace;
   invites: AnthropicInvitesNamespace;
   workspaces: AnthropicWorkspacesNamespace;
   api_keys: AnthropicApiKeysNamespace;
+  usage_report: AnthropicUsageReportNamespace;
+  cost_report: AnthropicCostReportNamespace;
 }
 
 export interface AnthropicV1Namespace {

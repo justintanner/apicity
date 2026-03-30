@@ -45,6 +45,12 @@ import {
   AnthropicApiKeyListResponse,
   AnthropicApiKeyListParams,
   AnthropicApiKeyUpdateRequest,
+  AnthropicUsageReportResponse,
+  AnthropicUsageReportParams,
+  AnthropicCostReportResponse,
+  AnthropicCostReportParams,
+  AnthropicClaudeCodeUsageResponse,
+  AnthropicClaudeCodeUsageParams,
   AnthropicListParams,
   AnthropicStreamEvent,
   AnthropicProvider,
@@ -956,6 +962,60 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
             return await makeJsonRequest<AnthropicApiKey>(
               `/organizations/api_keys/${encodeURIComponent(apiKeyId)}`,
               req,
+              signal,
+              adminKey
+            );
+          },
+        },
+
+        usage_report: {
+          messages: async function messages(
+            params?: AnthropicUsageReportParams,
+            signal?: AbortSignal
+          ): Promise<AnthropicUsageReportResponse> {
+            const query: Record<string, string | undefined> = {};
+            if (params?.start_date) query.start_date = params.start_date;
+            if (params?.end_date) query.end_date = params.end_date;
+            if (params?.model) query.model = params.model;
+            if (params?.limit !== undefined) query.limit = String(params.limit);
+            return await makeGetRequest<AnthropicUsageReportResponse>(
+              "/organizations/usage_report/messages",
+              query,
+              signal,
+              adminKey
+            );
+          },
+          claude_code: async function claude_code(
+            params?: AnthropicClaudeCodeUsageParams,
+            signal?: AbortSignal
+          ): Promise<AnthropicClaudeCodeUsageResponse> {
+            const query: Record<string, string | undefined> = {};
+            if (params?.start_date) query.start_date = params.start_date;
+            if (params?.end_date) query.end_date = params.end_date;
+            if (params?.user_id) query.user_id = params.user_id;
+            if (params?.limit !== undefined) query.limit = String(params.limit);
+            return await makeGetRequest<AnthropicClaudeCodeUsageResponse>(
+              "/organizations/usage_report/claude_code",
+              query,
+              signal,
+              adminKey
+            );
+          },
+        },
+
+        cost_report: {
+          get: async function get(
+            params?: AnthropicCostReportParams,
+            signal?: AbortSignal
+          ): Promise<AnthropicCostReportResponse> {
+            const query: Record<string, string | undefined> = {};
+            if (params?.start_date) query.start_date = params.start_date;
+            if (params?.end_date) query.end_date = params.end_date;
+            if (params?.model) query.model = params.model;
+            if (params?.limit !== undefined) query.limit = String(params.limit);
+            return await makeGetRequest<AnthropicCostReportResponse>(
+              "/organizations/cost_report",
+              query,
               signal,
               adminKey
             );

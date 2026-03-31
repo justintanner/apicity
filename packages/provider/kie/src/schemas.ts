@@ -418,6 +418,11 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Input image URLs (max 5)",
         items: { type: "string" },
       },
+      aspect_ratio: {
+        type: "string",
+        enum: ["2:3", "3:2", "1:1", "16:9", "9:16"],
+        description: "Output aspect ratio",
+      },
     },
   },
 

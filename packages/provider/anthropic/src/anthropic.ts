@@ -455,6 +455,27 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
                   signal
                 );
               },
+              // Verb accessors for POST + GET on /messages/batches
+              post: async function batches(
+                req: AnthropicBatchCreateRequest,
+                signal?: AbortSignal
+              ): Promise<AnthropicBatch> {
+                return await makeJsonRequest<AnthropicBatch>(
+                  "/messages/batches",
+                  req,
+                  signal
+                );
+              },
+              get: async function list(
+                params?: AnthropicListParams,
+                signal?: AbortSignal
+              ): Promise<AnthropicBatchListResponse> {
+                return await makeGetRequest<AnthropicBatchListResponse>(
+                  "/messages/batches",
+                  listQuery(params),
+                  signal
+                );
+              },
             }
           ),
         }
@@ -532,6 +553,30 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
         ): Promise<AnthropicFileDeleteResponse> {
           return await makeDeleteRequest<AnthropicFileDeleteResponse>(
             `/files/${encodeURIComponent(fileId)}`,
+            signal
+          );
+        },
+        // Verb accessors for POST + GET on /files
+        post: Object.assign(
+          async function upload(
+            file: Blob,
+            signal?: AbortSignal
+          ): Promise<AnthropicFile> {
+            const form = new FormData();
+            form.append("file", file);
+            return await makeFormRequest<AnthropicFile>("/files", form, signal);
+          },
+          {
+            payloadSchema: filesUploadSchema,
+          }
+        ),
+        get: async function list(
+          params?: AnthropicListParams,
+          signal?: AbortSignal
+        ): Promise<AnthropicFileListResponse> {
+          return await makeGetRequest<AnthropicFileListResponse>(
+            "/files",
+            listQuery(params),
             signal
           );
         },

@@ -1936,6 +1936,13 @@ interface FireworksModelsUpdateMethod {
   ): Promise<FireworksModel>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  // Verb accessor for POST on /accounts/:id/models/:mid
+  post(
+    accountId: string,
+    modelId: string,
+    req: FireworksUpdateModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksModel>;
 }
 
 interface FireworksModelsDeleteMethod {
@@ -2002,6 +2009,12 @@ export interface FireworksModelsNamespace {
   getUploadEndpoint: FireworksModelsGetUploadEndpointMethod;
   getDownloadEndpoint: FireworksModelsGetDownloadEndpointMethod;
   validateUpload: FireworksModelsValidateUploadMethod;
+  // Verb accessor for POST on /accounts/:id/models
+  post(
+    accountId: string,
+    req: FireworksCreateModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksModel>;
 }
 
 export type FireworksDeploymentState =
@@ -2275,6 +2288,13 @@ interface FireworksUpdateDeploymentMethod {
   ): Promise<FireworksDeployment>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  // Verb accessor for POST on /accounts/:id/deployments/:did
+  post(
+    accountId: string,
+    deploymentId: string,
+    req: FireworksUpdateDeploymentRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
 }
 
 interface FireworksScaleDeploymentMethod {
@@ -2311,6 +2331,13 @@ interface FireworksDeploymentsNamespace {
   undelete(
     accountId: string,
     deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+  // Verb accessor for POST on /accounts/:id/deployments
+  post(
+    accountId: string,
+    req: FireworksCreateDeploymentRequest,
+    options?: FireworksCreateDeploymentOptions,
     signal?: AbortSignal
   ): Promise<FireworksDeployment>;
 }
@@ -2812,6 +2839,13 @@ interface FireworksUsersNamespace {
     signal?: AbortSignal
   ): Promise<FireworksUser>;
   update: FireworksUpdateUserMethod;
+  // Verb accessor for POST on /accounts/:id/users
+  post(
+    accountId: string,
+    req: FireworksCreateUserRequest,
+    options?: FireworksCreateUserOptions,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
 }
 
 interface FireworksCreateUserMethod {
@@ -2834,6 +2868,13 @@ interface FireworksUpdateUserMethod {
   ): Promise<FireworksUser>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  // Verb accessor for POST on /accounts/:id/users/:uid
+  post(
+    accountId: string,
+    userId: string,
+    req: FireworksUpdateUserRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
 }
 
 interface FireworksApiKeysNamespace {

@@ -743,6 +743,15 @@ export interface AnthropicBatchesMethod {
     batchId: string,
     signal?: AbortSignal
   ) => Promise<AnthropicBatchDeleteResponse>;
+  // Verb accessors for POST + GET on /messages/batches
+  post(
+    req: AnthropicBatchCreateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicBatch>;
+  get(
+    params?: AnthropicListParams,
+    signal?: AbortSignal
+  ): Promise<AnthropicBatchListResponse>;
 }
 
 export interface AnthropicModelsNamespace {
@@ -765,6 +774,12 @@ export interface AnthropicFilesNamespace {
     fileId: string,
     signal?: AbortSignal
   ) => Promise<AnthropicFileDeleteResponse>;
+  // Verb accessors for POST + GET on /files
+  post: AnthropicFilesUploadMethod;
+  get: (
+    params?: AnthropicListParams,
+    signal?: AbortSignal
+  ) => Promise<AnthropicFileListResponse>;
 }
 
 export interface AnthropicFilesUploadMethod {

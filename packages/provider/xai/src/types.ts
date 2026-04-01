@@ -1444,21 +1444,41 @@ interface XaiFilesNamespace {
 interface XaiModelsNamespace {
   (signal?: AbortSignal): Promise<XaiModelListResponse>;
   (modelId: string, signal?: AbortSignal): Promise<XaiModel>;
+  // Verb accessor for GET list + GET by ID on /models
+  get(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiModelListResponse | XaiModel>;
 }
 
 interface XaiLanguageModelsNamespace {
   (signal?: AbortSignal): Promise<XaiLanguageModelListResponse>;
   (modelId: string, signal?: AbortSignal): Promise<XaiLanguageModel>;
+  // Verb accessor for GET list + GET by ID on /language-models
+  get(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiLanguageModelListResponse | XaiLanguageModel>;
 }
 
 interface XaiImageGenerationModelsNamespace {
   (signal?: AbortSignal): Promise<XaiImageGenerationModelListResponse>;
   (modelId: string, signal?: AbortSignal): Promise<XaiImageGenerationModel>;
+  // Verb accessor for GET list + GET by ID on /image-generation-models
+  get(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiImageGenerationModelListResponse | XaiImageGenerationModel>;
 }
 
 interface XaiVideoGenerationModelsNamespace {
   (signal?: AbortSignal): Promise<XaiVideoGenerationModelListResponse>;
   (modelId: string, signal?: AbortSignal): Promise<XaiVideoGenerationModel>;
+  // Verb accessor for GET list + GET by ID on /video-generation-models
+  get(
+    modelIdOrSignal?: string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiVideoGenerationModelListResponse | XaiVideoGenerationModel>;
 }
 
 interface XaiBatchCreateMethod {
@@ -1475,6 +1495,17 @@ interface XaiBatchAddRequestsMethod {
   ): Promise<void>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  // Verb accessors for GET + POST on /batches/:id/requests
+  get(
+    batchId: string,
+    params?: XaiBatchRequestListParams,
+    signal?: AbortSignal
+  ): Promise<XaiBatchRequestListResponse>;
+  post(
+    batchId: string,
+    req: XaiBatchAddRequestsBody,
+    signal?: AbortSignal
+  ): Promise<void>;
 }
 
 interface XaiBatchesNamespace {
@@ -1492,12 +1523,25 @@ interface XaiBatchesNamespace {
       signal?: AbortSignal
     ): Promise<XaiBatchRequestListResponse>;
     add: XaiBatchAddRequestsMethod;
+    // Verb accessors for GET + POST on /batches/:id/requests
+    get(
+      batchId: string,
+      params?: XaiBatchRequestListParams,
+      signal?: AbortSignal
+    ): Promise<XaiBatchRequestListResponse>;
+    post(
+      batchId: string,
+      req: XaiBatchAddRequestsBody,
+      signal?: AbortSignal
+    ): Promise<void>;
   };
   results(
     batchId: string,
     params?: XaiBatchResultListParams,
     signal?: AbortSignal
   ): Promise<XaiBatchResultListResponse>;
+  // Verb accessor for POST on /batches
+  post(req: XaiBatchCreateRequest, signal?: AbortSignal): Promise<XaiBatch>;
 }
 
 interface XaiCollectionCreateMethod {
@@ -1597,6 +1641,12 @@ interface XaiResponsesMethod {
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
   del: XaiResponsesDeleteMethod;
+  // Verb accessors for POST + GET on /responses
+  post(
+    req: XaiResponseRequest,
+    signal?: AbortSignal
+  ): Promise<XaiResponseResponse>;
+  get(id: string, signal?: AbortSignal): Promise<XaiResponseResponse>;
 }
 
 interface XaiTokenizeTextMethod {

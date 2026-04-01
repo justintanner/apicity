@@ -1022,6 +1022,18 @@ export function fal(opts: FalOptions): FalProvider {
           signal
         );
       },
+      // Verb accessor for POST on /compute/instances
+      post: async function create(
+        params: FalComputeInstanceCreateParams,
+        signal?: AbortSignal
+      ): Promise<FalComputeInstance> {
+        return makeRequest<FalComputeInstance>(
+          "POST",
+          "/compute/instances",
+          params as unknown as Record<string, unknown>,
+          signal
+        );
+      },
     }
   );
 

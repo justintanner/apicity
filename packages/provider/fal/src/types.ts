@@ -826,6 +826,11 @@ interface FalComputeInstancesNamespace {
     params: FalComputeInstanceDeleteParams,
     signal?: AbortSignal
   ): Promise<void>;
+  // Verb accessor for POST on /compute/instances
+  post(
+    params: FalComputeInstanceCreateParams,
+    signal?: AbortSignal
+  ): Promise<FalComputeInstance>;
 }
 
 interface FalComputeNamespace {

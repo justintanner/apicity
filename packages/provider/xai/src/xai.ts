@@ -334,6 +334,29 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
+  const modelsNamespace = Object.assign(models, {
+    // Verb accessors for GET list + GET by ID on /models
+    get: async function get(
+      modelIdOrSignal?: string | AbortSignal,
+      signal?: AbortSignal
+    ): Promise<XaiModelListResponse | XaiModel> {
+      if (typeof modelIdOrSignal === "string") {
+        return makeRequest<XaiModel>(
+          "GET",
+          `/models/${modelIdOrSignal}`,
+          undefined,
+          signal
+        );
+      }
+      return makeRequest<XaiModelListResponse>(
+        "GET",
+        "/models",
+        undefined,
+        modelIdOrSignal
+      );
+    },
+  });
+
   async function languageModels(
     modelIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -353,6 +376,29 @@ export function xai(opts: XaiOptions): XaiProvider {
       modelIdOrSignal
     );
   }
+
+  const languageModelsNamespace = Object.assign(languageModels, {
+    // Verb accessors for GET list + GET by ID on /language-models
+    get: async function get(
+      modelIdOrSignal?: string | AbortSignal,
+      signal?: AbortSignal
+    ): Promise<XaiLanguageModelListResponse | XaiLanguageModel> {
+      if (typeof modelIdOrSignal === "string") {
+        return makeRequest<XaiLanguageModel>(
+          "GET",
+          `/language-models/${modelIdOrSignal}`,
+          undefined,
+          signal
+        );
+      }
+      return makeRequest<XaiLanguageModelListResponse>(
+        "GET",
+        "/language-models",
+        undefined,
+        modelIdOrSignal
+      );
+    },
+  });
 
   async function imageGenerationModels(
     modelIdOrSignal?: string | AbortSignal,
@@ -374,6 +420,29 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
+  const imageGenerationModelsNamespace = Object.assign(imageGenerationModels, {
+    // Verb accessors for GET list + GET by ID on /image-generation-models
+    get: async function get(
+      modelIdOrSignal?: string | AbortSignal,
+      signal?: AbortSignal
+    ): Promise<XaiImageGenerationModelListResponse | XaiImageGenerationModel> {
+      if (typeof modelIdOrSignal === "string") {
+        return makeRequest<XaiImageGenerationModel>(
+          "GET",
+          `/image-generation-models/${modelIdOrSignal}`,
+          undefined,
+          signal
+        );
+      }
+      return makeRequest<XaiImageGenerationModelListResponse>(
+        "GET",
+        "/image-generation-models",
+        undefined,
+        modelIdOrSignal
+      );
+    },
+  });
+
   async function videoGenerationModels(
     modelIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -393,6 +462,29 @@ export function xai(opts: XaiOptions): XaiProvider {
       modelIdOrSignal
     );
   }
+
+  const videoGenerationModelsNamespace = Object.assign(videoGenerationModels, {
+    // Verb accessors for GET list + GET by ID on /video-generation-models
+    get: async function get(
+      modelIdOrSignal?: string | AbortSignal,
+      signal?: AbortSignal
+    ): Promise<XaiVideoGenerationModelListResponse | XaiVideoGenerationModel> {
+      if (typeof modelIdOrSignal === "string") {
+        return makeRequest<XaiVideoGenerationModel>(
+          "GET",
+          `/video-generation-models/${modelIdOrSignal}`,
+          undefined,
+          signal
+        );
+      }
+      return makeRequest<XaiVideoGenerationModelListResponse>(
+        "GET",
+        "/video-generation-models",
+        undefined,
+        modelIdOrSignal
+      );
+    },
+  });
 
   function buildQuery(params: object): string {
     const parts: string[] = [];
@@ -441,6 +533,27 @@ export function xai(opts: XaiOptions): XaiProvider {
           },
         }
       ),
+      // Verb accessors for GET + POST on /batches/:id/requests
+      get: async function listRequests(
+        batchId: string,
+        params?: XaiBatchRequestListParams,
+        signal?: AbortSignal
+      ): Promise<XaiBatchRequestListResponse> {
+        const query = buildQuery(params ?? {});
+        return await makeRequest(
+          "GET",
+          `/batches/${batchId}/requests${query}`,
+          undefined,
+          signal
+        );
+      },
+      post: async function addRequests(
+        batchId: string,
+        req: XaiBatchAddRequestsBody,
+        signal?: AbortSignal
+      ): Promise<void> {
+        await makeRequest("POST", `/batches/${batchId}/requests`, req, signal);
+      },
     }
   );
 
@@ -500,6 +613,13 @@ export function xai(opts: XaiOptions): XaiProvider {
           undefined,
           signal
         );
+      },
+      // Verb accessor for POST on /batches
+      post: async function createBatch(
+        req: XaiBatchCreateRequest,
+        signal?: AbortSignal
+      ): Promise<XaiBatch> {
+        return await makeRequest("POST", "/batches", req, signal);
       },
     }
   );
@@ -1149,6 +1269,29 @@ export function xai(opts: XaiOptions): XaiProvider {
               payloadSchema: responsesDeleteSchema,
             }
           ),
+          // Verb accessors for POST + GET on /responses
+          post: async function post(
+            req: XaiResponseRequest,
+            signal?: AbortSignal
+          ): Promise<XaiResponseResponse> {
+            return await makeRequest<XaiResponseResponse>(
+              "POST",
+              "/responses",
+              req,
+              signal
+            );
+          },
+          get: async function get(
+            id: string,
+            signal?: AbortSignal
+          ): Promise<XaiResponseResponse> {
+            return await makeRequest<XaiResponseResponse>(
+              "GET",
+              `/responses/${encodeURIComponent(id)}`,
+              undefined,
+              signal
+            );
+          },
         }
       ),
       videos,
@@ -1171,12 +1314,13 @@ export function xai(opts: XaiOptions): XaiProvider {
           }
         ),
       },
-      models: models as XaiProvider["v1"]["models"],
-      languageModels: languageModels as XaiProvider["v1"]["languageModels"],
+      models: modelsNamespace as XaiProvider["v1"]["models"],
+      languageModels:
+        languageModelsNamespace as XaiProvider["v1"]["languageModels"],
       imageGenerationModels:
-        imageGenerationModels as XaiProvider["v1"]["imageGenerationModels"],
+        imageGenerationModelsNamespace as XaiProvider["v1"]["imageGenerationModels"],
       videoGenerationModels:
-        videoGenerationModels as XaiProvider["v1"]["videoGenerationModels"],
+        videoGenerationModelsNamespace as XaiProvider["v1"]["videoGenerationModels"],
       tokenizeText: Object.assign(
         async function tokenizeText(
           req: XaiTokenizeTextRequest,

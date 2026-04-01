@@ -469,6 +469,26 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
               },
               {
                 payloadSchema: storedCompletionsDeleteSchema,
+                // Verb accessors for GET + DELETE on /chat/completions/:id
+                get: async function retrieve(
+                  id: string,
+                  signal?: AbortSignal
+                ): Promise<OpenAiChatResponse> {
+                  return await makeGetRequest<OpenAiChatResponse>(
+                    `/chat/completions/${encodeURIComponent(id)}`,
+                    undefined,
+                    signal
+                  );
+                },
+                delete: async function del(
+                  id: string,
+                  signal?: AbortSignal
+                ): Promise<OpenAiStoredCompletionDeleteResponse> {
+                  return await makeDeleteRequest<OpenAiStoredCompletionDeleteResponse>(
+                    `/chat/completions/${encodeURIComponent(id)}`,
+                    signal
+                  );
+                },
               }
             ),
             update: Object.assign(
@@ -487,6 +507,28 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
                 payloadSchema: storedCompletionsUpdateSchema,
                 validatePayload(data: unknown): ValidationResult {
                   return validatePayload(data, storedCompletionsUpdateSchema);
+                },
+                // Verb accessors for GET + POST on /chat/completions/:id
+                get: async function retrieve(
+                  id: string,
+                  signal?: AbortSignal
+                ): Promise<OpenAiChatResponse> {
+                  return await makeGetRequest<OpenAiChatResponse>(
+                    `/chat/completions/${encodeURIComponent(id)}`,
+                    undefined,
+                    signal
+                  );
+                },
+                post: async function update(
+                  id: string,
+                  req: OpenAiStoredCompletionUpdateRequest,
+                  signal?: AbortSignal
+                ): Promise<OpenAiChatResponse> {
+                  return await makeRequest<OpenAiChatResponse>(
+                    `/chat/completions/${encodeURIComponent(id)}`,
+                    jsonRequest(req),
+                    signal
+                  );
                 },
               }
             ),
@@ -508,6 +550,46 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
                 );
               },
             },
+            // Verb accessors for POST + GET on /chat/completions
+            post: async function completions(
+              req: OpenAiChatRequest,
+              signal?: AbortSignal
+            ): Promise<OpenAiChatResponse> {
+              return await makeRequest<OpenAiChatResponse>(
+                "/chat/completions",
+                jsonRequest(req),
+                signal
+              );
+            },
+            get: async function get(
+              idOrOpts?: string | OpenAiStoredCompletionListOptions,
+              signal?: AbortSignal
+            ): Promise<
+              OpenAiChatResponse | OpenAiStoredCompletionListResponse
+            > {
+              if (typeof idOrOpts === "string") {
+                return await makeGetRequest<OpenAiChatResponse>(
+                  `/chat/completions/${encodeURIComponent(idOrOpts)}`,
+                  undefined,
+                  signal
+                );
+              }
+              const query: Record<string, string | undefined> = {};
+              if (idOrOpts?.after) query.after = idOrOpts.after;
+              if (idOrOpts?.limit !== undefined)
+                query.limit = String(idOrOpts.limit);
+              if (idOrOpts?.order) query.order = idOrOpts.order;
+              if (idOrOpts?.metadata) {
+                for (const [k, v] of Object.entries(idOrOpts.metadata)) {
+                  query[`metadata[${k}]`] = v;
+                }
+              }
+              return await makeGetRequest<OpenAiStoredCompletionListResponse>(
+                "/chat/completions",
+                query,
+                signal
+              );
+            },
           }
         ),
       },
@@ -525,7 +607,7 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         {
           payloadSchema: embeddingsSchema,
           validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, embeddingsSchema);
+            return validatePayload(data, chatCompletionsSchema);
           },
         }
       ),
@@ -593,6 +675,26 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           },
           {
             payloadSchema: filesDeleteSchema,
+            // Verb accessors for GET + DELETE on /files/:id
+            get: async function retrieve(
+              fileId: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiFile> {
+              return await makeGetRequest<OpenAiFile>(
+                `/files/${encodeURIComponent(fileId)}`,
+                undefined,
+                signal
+              );
+            },
+            delete: async function del(
+              fileId: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiFileDeleteResponse> {
+              return await makeDeleteRequest<OpenAiFileDeleteResponse>(
+                `/files/${encodeURIComponent(fileId)}`,
+                signal
+              );
+            },
           }
         ),
         content: async function content(
@@ -604,6 +706,48 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             signal
           );
         },
+        // Verb accessors for POST + GET on /files
+        get: async function list(
+          listOpts?: OpenAiFileListRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiFileListResponse> {
+          const query: Record<string, string | undefined> = {};
+          if (listOpts?.purpose !== undefined) query.purpose = listOpts.purpose;
+          if (listOpts?.limit !== undefined)
+            query.limit = String(listOpts.limit);
+          if (listOpts?.order !== undefined) query.order = listOpts.order;
+          if (listOpts?.after !== undefined) query.after = listOpts.after;
+          return await makeGetRequest<OpenAiFileListResponse>(
+            "/files",
+            query,
+            signal
+          );
+        },
+        post: Object.assign(
+          async function upload(
+            req: OpenAiFileUploadRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiFile> {
+            const form = new FormData();
+            form.append("file", req.file);
+            form.append("purpose", req.purpose);
+            if (req.expires_after !== undefined) {
+              form.append("expires_after", JSON.stringify(req.expires_after));
+            }
+
+            return await makeRequest<OpenAiFile>(
+              "/files",
+              { headers: {}, body: form },
+              signal
+            );
+          },
+          {
+            payloadSchema: filesUploadSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, filesUploadSchema);
+            },
+          }
+        ),
       },
       images: {
         edits: Object.assign(
@@ -701,6 +845,26 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           },
           {
             payloadSchema: modelsDeleteSchema,
+            // Verb accessors for GET + DELETE on /models/:id
+            get: async function retrieve(
+              model: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiModel> {
+              return await makeGetRequest<OpenAiModel>(
+                `/models/${encodeURIComponent(model)}`,
+                undefined,
+                signal
+              );
+            },
+            delete: async function del(
+              model: string,
+              signal?: AbortSignal
+            ): Promise<OpenAiModelDeleteResponse> {
+              return await makeDeleteRequest<OpenAiModelDeleteResponse>(
+                `/models/${encodeURIComponent(model)}`,
+                signal
+              );
+            },
           }
         ),
       },
@@ -779,6 +943,33 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
               payloadSchema: batchesCancelSchema,
             }
           ),
+          // Verb accessors for POST + GET on /batches
+          post: async function batches(
+            req: OpenAiBatchCreateRequest,
+            signal?: AbortSignal
+          ): Promise<OpenAiBatch> {
+            return await makeRequest<OpenAiBatch>(
+              "/batches",
+              jsonRequest(req),
+              signal
+            );
+          },
+          get: async function list(
+            params?: OpenAiBatchListParams,
+            signal?: AbortSignal
+          ): Promise<OpenAiBatchListResponse> {
+            return await makeGetRequest<OpenAiBatchListResponse>(
+              "/batches",
+              {
+                after: params?.after,
+                limit:
+                  params?.limit !== undefined
+                    ? String(params.limit)
+                    : undefined,
+              },
+              signal
+            );
+          },
         }
       ),
       responses: Object.assign(
@@ -823,6 +1014,16 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             },
             {
               payloadSchema: responsesDeleteSchema,
+              // Verb accessor for DELETE on /responses/:id
+              delete: async function del(
+                id: string,
+                signal?: AbortSignal
+              ): Promise<OpenAiResponseDeleteResponse> {
+                return await makeDeleteRequest<OpenAiResponseDeleteResponse>(
+                  `/responses/${encodeURIComponent(id)}`,
+                  signal
+                );
+              },
             }
           ),
           cancel: Object.assign(
@@ -1075,6 +1276,36 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
                 signal
               );
             },
+            // Verb accessors for POST + GET on /fine_tuning/jobs
+            post: async function jobs(
+              req: OpenAiFineTuningJobCreateRequest,
+              signal?: AbortSignal
+            ): Promise<OpenAiFineTuningJob> {
+              return await makeRequest<OpenAiFineTuningJob>(
+                "/fine_tuning/jobs",
+                jsonRequest(req),
+                signal
+              );
+            },
+            get: async function list(
+              listOpts?: OpenAiFineTuningJobListOptions,
+              signal?: AbortSignal
+            ): Promise<OpenAiFineTuningJobListResponse> {
+              const query: Record<string, string | undefined> = {};
+              if (listOpts?.after) query.after = listOpts.after;
+              if (listOpts?.limit !== undefined)
+                query.limit = String(listOpts.limit);
+              if (listOpts?.metadata) {
+                for (const [k, v] of Object.entries(listOpts.metadata)) {
+                  query[`metadata[${k}]`] = v;
+                }
+              }
+              return await makeGetRequest<OpenAiFineTuningJobListResponse>(
+                "/fine_tuning/jobs",
+                query,
+                signal
+              );
+            },
           }
         ),
         checkpoints: {
@@ -1120,6 +1351,36 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
               ): Promise<OpenAiCheckpointPermissionDeleteResponse> {
                 return await makeDeleteRequest<OpenAiCheckpointPermissionDeleteResponse>(
                   `/fine_tuning/checkpoints/${encodeURIComponent(checkpoint)}/permissions/${encodeURIComponent(permissionId)}`,
+                  signal
+                );
+              },
+              // Verb accessors for POST + GET on /fine_tuning/checkpoints/:id/permissions
+              post: async function permissions(
+                checkpoint: string,
+                req: OpenAiCheckpointPermissionCreateRequest,
+                signal?: AbortSignal
+              ): Promise<OpenAiCheckpointPermissionCreateResponse> {
+                return await makeRequest<OpenAiCheckpointPermissionCreateResponse>(
+                  `/fine_tuning/checkpoints/${encodeURIComponent(checkpoint)}/permissions`,
+                  jsonRequest(req),
+                  signal
+                );
+              },
+              get: async function list(
+                checkpoint: string,
+                permOpts?: OpenAiCheckpointPermissionListOptions,
+                signal?: AbortSignal
+              ): Promise<OpenAiCheckpointPermissionListResponse> {
+                const query: Record<string, string | undefined> = {};
+                if (permOpts?.after) query.after = permOpts.after;
+                if (permOpts?.limit !== undefined)
+                  query.limit = String(permOpts.limit);
+                if (permOpts?.order) query.order = permOpts.order;
+                if (permOpts?.project_id)
+                  query.project_id = permOpts.project_id;
+                return await makeGetRequest<OpenAiCheckpointPermissionListResponse>(
+                  `/fine_tuning/checkpoints/${encodeURIComponent(checkpoint)}/permissions`,
+                  query,
                   signal
                 );
               },

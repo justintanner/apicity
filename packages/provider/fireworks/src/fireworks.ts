@@ -1384,8 +1384,38 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               validatePayload(data: unknown): ValidationResult {
                 return validatePayload(data, updateUserSchema);
               },
+              // Verb accessor for POST on /accounts/:id/users/:uid
+              post: async function update(
+                accountId: string,
+                userId: string,
+                req: FireworksUpdateUserRequest,
+                signal?: AbortSignal
+              ): Promise<FireworksUser> {
+                return await makeModelsRequest<FireworksUser>(
+                  "PATCH",
+                  `/v1/accounts/${accountId}/users/${userId}`,
+                  req,
+                  undefined,
+                  signal
+                );
+              },
             }
           ),
+          // Verb accessor for POST on /accounts/:id/users
+          post: async function create(
+            accountId: string,
+            req: FireworksCreateUserRequest,
+            options?: FireworksCreateUserOptions,
+            signal?: AbortSignal
+          ): Promise<FireworksUser> {
+            return await makeModelsRequest<FireworksUser>(
+              "POST",
+              `/v1/accounts/${accountId}/users`,
+              req,
+              options as Record<string, string | number | boolean | undefined>,
+              signal
+            );
+          },
         },
         apiKeys: {
           async list(
@@ -1617,6 +1647,21 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               validatePayload(data: unknown): ValidationResult {
                 return validatePayload(data, modelsUpdateSchema);
               },
+              // Verb accessor for POST on /accounts/:id/models/:mid
+              post: async function update(
+                accountId: string,
+                modelId: string,
+                req: FireworksUpdateModelRequest,
+                signal?: AbortSignal
+              ): Promise<FireworksModel> {
+                return await makeModelsRequest<FireworksModel>(
+                  "PATCH",
+                  `/v1/accounts/${accountId}/models/${modelId}`,
+                  req,
+                  undefined,
+                  signal
+                );
+              },
             }
           ),
           delete: Object.assign(
@@ -1707,7 +1752,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             }
           ),
           validateUpload: Object.assign(
-            async function validateUploadFn(
+            async function validateUpload(
               accountId: string,
               modelId: string,
               req?: FireworksValidateUploadRequest,
@@ -1728,6 +1773,20 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               },
             }
           ),
+          // Verb accessor for POST on /accounts/:id/models
+          post: async function create(
+            accountId: string,
+            req: FireworksCreateModelRequest,
+            signal?: AbortSignal
+          ): Promise<FireworksModel> {
+            return await makeModelsRequest<FireworksModel>(
+              "POST",
+              `/v1/accounts/${accountId}/models`,
+              req,
+              undefined,
+              signal
+            );
+          },
         },
         datasets: {
           async list(
@@ -2096,6 +2155,21 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               validatePayload(data: unknown): ValidationResult {
                 return validatePayload(data, updateDeploymentSchema);
               },
+              // Verb accessor for POST on /accounts/:id/deployments/:did
+              post: async function update(
+                accountId: string,
+                deploymentId: string,
+                req: FireworksUpdateDeploymentRequest,
+                signal?: AbortSignal
+              ): Promise<FireworksDeployment> {
+                return await makeModelsRequest<FireworksDeployment>(
+                  "PATCH",
+                  `/v1/accounts/${accountId}/deployments/${deploymentId}`,
+                  req,
+                  undefined,
+                  signal
+                );
+              },
             }
           ),
           async delete(
@@ -2144,6 +2218,21 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               `/v1/accounts/${accountId}/deployments/${deploymentId}:undelete`,
               {},
               undefined,
+              signal
+            );
+          },
+          // Verb accessor for POST on /accounts/:id/deployments
+          post: async function create(
+            accountId: string,
+            req: FireworksCreateDeploymentRequest,
+            options?: FireworksCreateDeploymentOptions,
+            signal?: AbortSignal
+          ): Promise<FireworksDeployment> {
+            return await makeModelsRequest<FireworksDeployment>(
+              "POST",
+              `/v1/accounts/${accountId}/deployments`,
+              req,
+              options as Record<string, string | number | boolean | undefined>,
               signal
             );
           },

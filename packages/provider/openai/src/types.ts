@@ -1154,6 +1154,12 @@ interface OpenAiStoredCompletionsDeleteMethod {
     signal?: AbortSignal
   ): Promise<OpenAiStoredCompletionDeleteResponse>;
   payloadSchema: PayloadSchema;
+  // Verb accessors for GET + DELETE on /chat/completions/:id
+  get(id: string, signal?: AbortSignal): Promise<OpenAiChatResponse>;
+  delete(
+    id: string,
+    signal?: AbortSignal
+  ): Promise<OpenAiStoredCompletionDeleteResponse>;
 }
 
 interface OpenAiStoredCompletionsUpdateMethod {
@@ -1164,6 +1170,13 @@ interface OpenAiStoredCompletionsUpdateMethod {
   ): Promise<OpenAiChatResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
+  // Verb accessors for GET + POST on /chat/completions/:id
+  get(id: string, signal?: AbortSignal): Promise<OpenAiChatResponse>;
+  post(
+    id: string,
+    req: OpenAiStoredCompletionUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiChatResponse>;
 }
 
 interface OpenAiStoredCompletionMessagesListMethod {
@@ -1188,6 +1201,15 @@ interface OpenAiChatCompletionsMethod {
   del: OpenAiStoredCompletionsDeleteMethod;
   update: OpenAiStoredCompletionsUpdateMethod;
   messages: OpenAiStoredCompletionMessagesNamespace;
+  // Verb accessors for POST + GET on /chat/completions
+  post(
+    req: OpenAiChatRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiChatResponse>;
+  get(
+    idOrOpts?: string | OpenAiStoredCompletionListOptions,
+    signal?: AbortSignal
+  ): Promise<OpenAiChatResponse | OpenAiStoredCompletionListResponse>;
 }
 
 interface OpenAiChatNamespace {
@@ -1267,6 +1289,11 @@ interface OpenAiResponsesGetMethod {
 interface OpenAiResponsesDeleteMethod {
   (id: string, signal?: AbortSignal): Promise<OpenAiResponseDeleteResponse>;
   payloadSchema: PayloadSchema;
+  // Verb accessor for DELETE on /responses/:id
+  delete(
+    id: string,
+    signal?: AbortSignal
+  ): Promise<OpenAiResponseDeleteResponse>;
 }
 
 interface OpenAiResponsesCancelMethod {
@@ -1335,10 +1362,23 @@ interface OpenAiFilesRetrieveMethod {
 interface OpenAiFilesDeleteMethod {
   (fileId: string, signal?: AbortSignal): Promise<OpenAiFileDeleteResponse>;
   payloadSchema: PayloadSchema;
+  // Verb accessors for GET + DELETE on /files/:id
+  get(fileId: string, signal?: AbortSignal): Promise<OpenAiFile>;
+  delete(
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<OpenAiFileDeleteResponse>;
 }
 
 interface OpenAiFilesContentMethod {
   (fileId: string, signal?: AbortSignal): Promise<string>;
+}
+
+interface OpenAiFilesListMethod {
+  (
+    opts?: OpenAiFileListRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiFileListResponse>;
 }
 
 interface OpenAiFilesNamespace {
@@ -1347,6 +1387,9 @@ interface OpenAiFilesNamespace {
   retrieve: OpenAiFilesRetrieveMethod;
   del: OpenAiFilesDeleteMethod;
   content: OpenAiFilesContentMethod;
+  // Verb accessors for POST + GET on /files
+  get: OpenAiFilesListMethod;
+  post: OpenAiFilesUploadMethod;
 }
 
 interface OpenAiBatchesCreateMethod {
@@ -1356,6 +1399,15 @@ interface OpenAiBatchesCreateMethod {
   list: OpenAiBatchesListMethod;
   retrieve: OpenAiBatchesRetrieveMethod;
   cancel: OpenAiBatchesCancelMethod;
+  // Verb accessors for POST + GET on /batches
+  post(
+    req: OpenAiBatchCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiBatch>;
+  get(
+    params?: OpenAiBatchListParams,
+    signal?: AbortSignal
+  ): Promise<OpenAiBatchListResponse>;
 }
 
 interface OpenAiBatchesListMethod {
@@ -1385,6 +1437,12 @@ interface OpenAiModelsRetrieveMethod {
 interface OpenAiModelsDeleteMethod {
   (model: string, signal?: AbortSignal): Promise<OpenAiModelDeleteResponse>;
   payloadSchema: PayloadSchema;
+  // Verb accessors for GET + DELETE on /models/:id
+  get(model: string, signal?: AbortSignal): Promise<OpenAiModel>;
+  delete(
+    model: string,
+    signal?: AbortSignal
+  ): Promise<OpenAiModelDeleteResponse>;
 }
 
 interface OpenAiModelsNamespace {
@@ -1417,6 +1475,15 @@ interface OpenAiFineTuningJobsCreateMethod {
   resume: OpenAiFineTuningJobsResumeMethod;
   events: OpenAiFineTuningJobsEventsMethod;
   checkpoints: OpenAiFineTuningJobsCheckpointsMethod;
+  // Verb accessors for POST + GET on /fine_tuning/jobs
+  post(
+    req: OpenAiFineTuningJobCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiFineTuningJob>;
+  get(
+    opts?: OpenAiFineTuningJobListOptions,
+    signal?: AbortSignal
+  ): Promise<OpenAiFineTuningJobListResponse>;
 }
 
 interface OpenAiFineTuningJobsListMethod {
@@ -1468,6 +1535,17 @@ interface OpenAiCheckpointPermissionsCreateMethod {
   validatePayload(data: unknown): ValidationResult;
   list: OpenAiCheckpointPermissionsListMethod;
   del: OpenAiCheckpointPermissionsDeleteMethod;
+  // Verb accessors for POST + GET on /fine_tuning/checkpoints/:id/permissions
+  post(
+    checkpoint: string,
+    req: OpenAiCheckpointPermissionCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiCheckpointPermissionCreateResponse>;
+  get(
+    checkpoint: string,
+    opts?: OpenAiCheckpointPermissionListOptions,
+    signal?: AbortSignal
+  ): Promise<OpenAiCheckpointPermissionListResponse>;
 }
 
 interface OpenAiCheckpointPermissionsListMethod {

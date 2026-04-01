@@ -14,7 +14,8 @@ describe("kie recordInfo", () => {
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.api.v1.jobs.recordInfo("task-completed-001");
+    const result =
+      await provider.get.api.v1.jobs.recordInfo("task-completed-001");
     expect(result.code).toBe(200);
     expect(result.msg).toBe("success");
     expect(result.data).toBeDefined();

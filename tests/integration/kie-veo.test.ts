@@ -20,7 +20,7 @@ describe("kie veo integration", () => {
     });
 
     // Submit the generation task
-    const task = await provider.veo.api.v1.veo.generate({
+    const task = await provider.veo.post.api.v1.veo.generate({
       prompt: "A cat walking across a sunlit garden path",
       model: "veo3",
       aspectRatio: "16:9",
@@ -37,7 +37,7 @@ describe("kie veo integration", () => {
     // Poll recordInfo every few seconds until success, fail, or timeout.
     // The API may return null data initially while the task is being queued.
     while (Date.now() < deadline) {
-      const info = await provider.api.v1.jobs.recordInfo(taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(taskId);
 
       if (info.data && info.data.taskId) {
         expect(info.data.taskId).toBe(taskId);

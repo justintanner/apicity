@@ -393,45 +393,53 @@ export function kie(opts: KieOptions): KieProvider {
     chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
     ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
     modelInputSchemas,
-    api: {
-      v1: {
-        jobs: {
-          createTask: Object.assign(createTask, {
-            payloadSchema: createTaskSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createTaskSchema);
-            },
-          }),
-          recordInfo,
+    post: {
+      api: {
+        v1: {
+          jobs: {
+            createTask: Object.assign(createTask, {
+              payloadSchema: createTaskSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, createTaskSchema);
+              },
+            }),
+          },
+          common: {
+            downloadUrl: Object.assign(downloadUrl, {
+              payloadSchema: downloadUrlSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, downloadUrlSchema);
+              },
+            }),
+          },
         },
-        common: {
-          downloadUrl: Object.assign(downloadUrl, {
-            payloadSchema: downloadUrlSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, downloadUrlSchema);
-            },
-          }),
-        },
-        chat: { credit },
+        fileStreamUpload: Object.assign(fileStreamUpload, {
+          payloadSchema: fileStreamUploadSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, fileStreamUploadSchema);
+          },
+        }),
+        fileUrlUpload: Object.assign(fileUrlUpload, {
+          payloadSchema: fileUrlUploadSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, fileUrlUploadSchema);
+          },
+        }),
+        fileBase64Upload: Object.assign(fileBase64Upload, {
+          payloadSchema: fileBase64UploadSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, fileBase64UploadSchema);
+          },
+        }),
       },
-      fileStreamUpload: Object.assign(fileStreamUpload, {
-        payloadSchema: fileStreamUploadSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, fileStreamUploadSchema);
+    },
+    get: {
+      api: {
+        v1: {
+          jobs: { recordInfo },
+          chat: { credit },
         },
-      }),
-      fileUrlUpload: Object.assign(fileUrlUpload, {
-        payloadSchema: fileUrlUploadSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, fileUrlUploadSchema);
-        },
-      }),
-      fileBase64Upload: Object.assign(fileBase64Upload, {
-        payloadSchema: fileBase64UploadSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, fileBase64UploadSchema);
-        },
-      }),
+      },
     },
   };
 }

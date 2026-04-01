@@ -19,7 +19,7 @@ describe("kie kling-3.0 motion-control integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.api.v1.jobs.createTask({
+      const task = await provider.post.api.v1.jobs.createTask({
         model: "kling-3.0/motion-control",
         input: {
           input_urls: [
@@ -38,7 +38,7 @@ describe("kie kling-3.0 motion-control integration", () => {
       expect(task.data?.taskId).toBeTruthy();
       expect(typeof task.data?.taskId).toBe("string");
 
-      const info = await provider.api.v1.jobs.recordInfo(task.data?.taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(task.data?.taskId);
 
       expect(info.data?.taskId).toBe(task.data?.taskId);
       expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(

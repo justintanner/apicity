@@ -57,12 +57,12 @@ interface VeoV1Namespace {
   veo: VeoVeoNamespace;
 }
 
-interface VeoApiNamespace {
+interface VeoPostApiNamespace {
   v1: VeoV1Namespace;
 }
 
 export interface VeoProvider {
-  api: VeoApiNamespace;
+  post: { api: VeoPostApiNamespace };
 }
 
 export function createVeoProvider(
@@ -94,21 +94,23 @@ export function createVeoProvider(
   }
 
   return {
-    api: {
-      v1: {
-        veo: {
-          generate: Object.assign(submitGenerate, {
-            payloadSchema: veoGenerateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, veoGenerateSchema);
-            },
-          }),
-          extend: Object.assign(submitExtend, {
-            payloadSchema: veoExtendSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, veoExtendSchema);
-            },
-          }),
+    post: {
+      api: {
+        v1: {
+          veo: {
+            generate: Object.assign(submitGenerate, {
+              payloadSchema: veoGenerateSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, veoGenerateSchema);
+              },
+            }),
+            extend: Object.assign(submitExtend, {
+              payloadSchema: veoExtendSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, veoExtendSchema);
+              },
+            }),
+          },
         },
       },
     },

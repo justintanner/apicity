@@ -18,7 +18,7 @@ describe("kie qwen2/text-to-image integration", () => {
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
-    const task = await provider.api.v1.jobs.createTask({
+    const task = await provider.post.api.v1.jobs.createTask({
       model: "qwen2/text-to-image",
       input: {
         prompt: "A serene mountain landscape at sunrise",
@@ -29,7 +29,7 @@ describe("kie qwen2/text-to-image integration", () => {
     expect(task.data?.taskId).toBeTruthy();
     expect(typeof task.data?.taskId).toBe("string");
 
-    const info = await provider.api.v1.jobs.recordInfo(task.data?.taskId);
+    const info = await provider.get.api.v1.jobs.recordInfo(task.data?.taskId);
 
     expect(info.data?.taskId).toBe(task.data?.taskId);
     expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(

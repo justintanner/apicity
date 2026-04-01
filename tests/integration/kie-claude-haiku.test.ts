@@ -14,7 +14,7 @@ describe("kie claude haiku 4.5", () => {
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.claude.v1.messages({
+    const result = await provider.claude.post.v1.messages({
       model: "claude-haiku-4-5",
       messages: [{ role: "user", content: "Say hello in one sentence." }],
       stream: false,

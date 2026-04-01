@@ -468,36 +468,17 @@ export interface ModelInputSchema {
   fields: Record<string, PayloadFieldSchema>;
 }
 
-// Namespace types
+// Method types with schema validation
 interface KieCreateTaskMethod {
   (req: MediaGenerationRequest): Promise<TaskResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface KieJobsNamespace {
-  createTask: KieCreateTaskMethod;
-  recordInfo(taskId: string): Promise<KieTaskInfo>;
-}
-
 interface KieDownloadUrlMethod {
   (req: DownloadUrlRequest): Promise<DownloadUrlResponse>;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
-}
-
-interface KieCommonNamespace {
-  downloadUrl: KieDownloadUrlMethod;
-}
-
-interface KieCreditNamespace {
-  credit(): Promise<KieCreditsResponse>;
-}
-
-interface KieV1Namespace {
-  jobs: KieJobsNamespace;
-  common: KieCommonNamespace;
-  chat: KieCreditNamespace;
 }
 
 interface KieFileStreamUploadMethod {
@@ -518,16 +499,29 @@ interface KieFileBase64UploadMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface KieApiNamespace {
-  v1: KieV1Namespace;
+// POST namespace
+interface KiePostApiNamespace {
+  v1: {
+    jobs: { createTask: KieCreateTaskMethod };
+    common: { downloadUrl: KieDownloadUrlMethod };
+  };
   fileStreamUpload: KieFileStreamUploadMethod;
   fileUrlUpload: KieFileUrlUploadMethod;
   fileBase64Upload: KieFileBase64UploadMethod;
 }
 
+// GET namespace
+interface KieGetApiNamespace {
+  v1: {
+    jobs: { recordInfo(taskId: string): Promise<KieTaskInfo> };
+    chat: { credit(): Promise<KieCreditsResponse> };
+  };
+}
+
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
-  api: KieApiNamespace;
+  post: { api: KiePostApiNamespace };
+  get: { api: KieGetApiNamespace };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;

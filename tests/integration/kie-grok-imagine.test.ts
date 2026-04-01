@@ -20,12 +20,12 @@ describe("kie grok-imagine full lifecycle", () => {
     });
 
     // Check credits before the call
-    const credits = await provider.api.v1.chat.credit();
+    const credits = await provider.get.api.v1.chat.credit();
     expect(credits.code).toBe(200);
     expect(typeof credits.data).toBe("number");
 
     // Submit text-to-image task
-    const task = await provider.api.v1.jobs.createTask({
+    const task = await provider.post.api.v1.jobs.createTask({
       model: "grok-imagine/text-to-image",
       input: {
         prompt: "A red panda sitting on a mossy log in a bamboo forest",
@@ -44,7 +44,7 @@ describe("kie grok-imagine full lifecycle", () => {
 
     // Poll until success or fail
     while (Date.now() < deadline) {
-      const info = await provider.api.v1.jobs.recordInfo(taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(taskId);
 
       if (info.data && info.data.taskId) {
         expect(info.data.taskId).toBe(taskId);
@@ -81,12 +81,12 @@ describe("kie grok-imagine full lifecycle", () => {
     });
 
     // Check credits before the call
-    const credits = await provider.api.v1.chat.credit();
+    const credits = await provider.get.api.v1.chat.credit();
     expect(credits.code).toBe(200);
     expect(typeof credits.data).toBe("number");
 
     // Submit image-to-image task using a public reference image
-    const task = await provider.api.v1.jobs.createTask({
+    const task = await provider.post.api.v1.jobs.createTask({
       model: "grok-imagine/image-to-image",
       input: {
         prompt: "Transform into a watercolor painting style",
@@ -107,7 +107,7 @@ describe("kie grok-imagine full lifecycle", () => {
 
     // Poll until success or fail
     while (Date.now() < deadline) {
-      const info = await provider.api.v1.jobs.recordInfo(taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(taskId);
 
       if (info.data && info.data.taskId) {
         expect(info.data.taskId).toBe(taskId);

@@ -20,13 +20,13 @@ describe("kie grok-imagine image-to-video harness", () => {
     });
 
     // Step 1: Check account credits before the expensive call
-    const credits = await provider.api.v1.chat.credit();
+    const credits = await provider.get.api.v1.chat.credit();
     expect(credits.code).toBe(200);
     expect(typeof credits.data).toBe("number");
 
     // Step 2: Submit image-to-video task using a hosted image URL
     // (KIE image_urls requires hosted URLs, not data URIs)
-    const task = await provider.api.v1.jobs.createTask({
+    const task = await provider.post.api.v1.jobs.createTask({
       model: "grok-imagine/image-to-video",
       input: {
         prompt: "The cat slowly turns its head and blinks",
@@ -48,7 +48,7 @@ describe("kie grok-imagine image-to-video harness", () => {
 
     // Step 3: Poll recordInfo until success or fail
     while (Date.now() < deadline) {
-      const info = await provider.api.v1.jobs.recordInfo(taskId);
+      const info = await provider.get.api.v1.jobs.recordInfo(taskId);
 
       if (info.data && info.data.taskId) {
         expect(info.data.taskId).toBe(taskId);

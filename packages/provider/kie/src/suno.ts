@@ -33,12 +33,12 @@ interface SunoV1Namespace {
   generate: SunoGenerateMethod;
 }
 
-interface SunoApiNamespace {
+interface SunoPostApiNamespace {
   v1: SunoV1Namespace;
 }
 
 export interface SunoProvider {
-  api: SunoApiNamespace;
+  post: { api: SunoPostApiNamespace };
 }
 
 export function createSunoProvider(
@@ -60,14 +60,16 @@ export function createSunoProvider(
   }
 
   return {
-    api: {
-      v1: {
-        generate: Object.assign(createTask, {
-          payloadSchema: sunoGenerateSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, sunoGenerateSchema);
-          },
-        }),
+    post: {
+      api: {
+        v1: {
+          generate: Object.assign(createTask, {
+            payloadSchema: sunoGenerateSchema,
+            validatePayload(data: unknown): ValidationResult {
+              return validatePayload(data, sunoGenerateSchema);
+            },
+          }),
+        },
       },
     },
   };

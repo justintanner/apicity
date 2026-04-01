@@ -92,9 +92,13 @@ interface KieClaudeV1Namespace {
   messages: KieClaudeMessagesMethod;
 }
 
+interface KieClaudePostNamespace {
+  v1: KieClaudeV1Namespace;
+}
+
 export interface KieClaudeProvider {
   claude: {
-    v1: KieClaudeV1Namespace;
+    post: KieClaudePostNamespace;
   };
 }
 
@@ -110,74 +114,76 @@ export function createClaudeProvider(
 ): KieClaudeProvider {
   return {
     claude: {
-      v1: {
-        messages: Object.assign(
-          async function messages(
-            req: KieClaudeRequest,
-            signal?: AbortSignal
-          ): Promise<KieClaudeResponse> {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeout);
+      post: {
+        v1: {
+          messages: Object.assign(
+            async function messages(
+              req: KieClaudeRequest,
+              signal?: AbortSignal
+            ): Promise<KieClaudeResponse> {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-            if (signal) {
-              signal.addEventListener("abort", () => controller.abort());
-            }
+              if (signal) {
+                signal.addEventListener("abort", () => controller.abort());
+              }
 
-            try {
-              const res = await doFetch(`${baseURL}/claude/v1/messages`, {
-                method: "POST",
-                headers: {
-                  Authorization: `Bearer ${apiKey}`,
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(req),
-                signal: controller.signal,
-              });
+              try {
+                const res = await doFetch(`${baseURL}/claude/v1/messages`, {
+                  method: "POST",
+                  headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify(req),
+                  signal: controller.signal,
+                });
 
-              clearTimeout(timeoutId);
+                clearTimeout(timeoutId);
 
-              if (!res.ok) {
-                let message = `Kie Claude API error: ${res.status}`;
-                let body: unknown = null;
-                let code: string | undefined;
-                try {
-                  body = await res.json();
-                  if (
-                    typeof body === "object" &&
-                    body !== null &&
-                    "error" in body
-                  ) {
-                    const err = (
-                      body as { error: { message?: string; type?: string } }
-                    ).error;
-                    if (typeof err.message === "string") {
-                      message = `Kie Claude API error ${res.status}: ${err.message}`;
+                if (!res.ok) {
+                  let message = `Kie Claude API error: ${res.status}`;
+                  let body: unknown = null;
+                  let code: string | undefined;
+                  try {
+                    body = await res.json();
+                    if (
+                      typeof body === "object" &&
+                      body !== null &&
+                      "error" in body
+                    ) {
+                      const err = (
+                        body as { error: { message?: string; type?: string } }
+                      ).error;
+                      if (typeof err.message === "string") {
+                        message = `Kie Claude API error ${res.status}: ${err.message}`;
+                      }
+                      code = err.type;
                     }
-                    code = err.type;
+                  } catch {
+                    // ignore parse errors
                   }
-                } catch {
-                  // ignore parse errors
+                  throw new KieError(message, res.status, body, code);
                 }
-                throw new KieError(message, res.status, body, code);
-              }
 
-              return (await res.json()) as KieClaudeResponse;
-            } catch (error) {
-              clearTimeout(timeoutId);
-              if (error instanceof KieError) throw error;
-              if (error instanceof SyntaxError) {
-                throw new KieError("Failed to parse Claude response", 500);
+                return (await res.json()) as KieClaudeResponse;
+              } catch (error) {
+                clearTimeout(timeoutId);
+                if (error instanceof KieError) throw error;
+                if (error instanceof SyntaxError) {
+                  throw new KieError("Failed to parse Claude response", 500);
+                }
+                throw new KieError(`Claude request failed: ${error}`, 500);
               }
-              throw new KieError(`Claude request failed: ${error}`, 500);
-            }
-          },
-          {
-            payloadSchema: claudeMessagesSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, claudeMessagesSchema);
             },
-          }
-        ),
+            {
+              payloadSchema: claudeMessagesSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, claudeMessagesSchema);
+              },
+            }
+          ),
+        },
       },
     },
   };

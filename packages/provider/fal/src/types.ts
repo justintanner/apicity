@@ -845,7 +845,219 @@ interface FalV1Namespace {
   compute: FalComputeNamespace;
 }
 
+// ==================== Verb-Prefixed API Surface ====================
+
+// GET v1 namespace
+interface FalGetV1ModelsNamespace {
+  (
+    params?: FalModelSearchParams,
+    signal?: AbortSignal
+  ): Promise<FalModelSearchResponse>;
+  pricing: FalModelsPricingNamespace;
+  usage(
+    params?: FalUsageParams,
+    signal?: AbortSignal
+  ): Promise<FalUsageResponse>;
+  analytics(
+    params: FalAnalyticsParams,
+    signal?: AbortSignal
+  ): Promise<FalAnalyticsResponse>;
+  requests: FalModelsRequestsNamespace;
+}
+
+interface FalGetV1QueueNamespace {
+  status(
+    params: FalQueueStatusParams,
+    signal?: AbortSignal
+  ): Promise<FalQueueStatusResponse>;
+  result(
+    params: FalQueueResultParams,
+    signal?: AbortSignal
+  ): Promise<FalQueueResultResponse>;
+}
+
+interface FalGetV1ServerlessLogsNamespace {
+  history: FalLogsHistoryMethod;
+}
+
+interface FalGetV1ServerlessFilesNamespace {
+  list(
+    params?: FalFilesListParams,
+    signal?: AbortSignal
+  ): Promise<FalFileItem[]>;
+  download(
+    params: FalFilesDownloadParams,
+    signal?: AbortSignal
+  ): Promise<Response>;
+}
+
+interface FalGetV1ServerlessAppsNamespace {
+  queue(
+    params: FalAppsQueueParams,
+    signal?: AbortSignal
+  ): Promise<FalAppsQueueResponse>;
+}
+
+interface FalGetV1ServerlessNamespace {
+  logs: FalGetV1ServerlessLogsNamespace;
+  files: FalGetV1ServerlessFilesNamespace;
+  apps: FalGetV1ServerlessAppsNamespace;
+  metrics(signal?: AbortSignal): Promise<string>;
+}
+
+interface FalGetV1WorkflowsNamespace {
+  (
+    params?: FalWorkflowListParams,
+    signal?: AbortSignal
+  ): Promise<FalWorkflowListResponse>;
+  get(
+    params: FalWorkflowGetParams,
+    signal?: AbortSignal
+  ): Promise<FalWorkflowGetResponse>;
+}
+
+interface FalGetV1ComputeInstancesNamespace {
+  (
+    params?: FalComputeInstancesListParams,
+    signal?: AbortSignal
+  ): Promise<FalComputeInstancesListResponse>;
+  get(
+    params: FalComputeInstanceGetParams,
+    signal?: AbortSignal
+  ): Promise<FalComputeInstance>;
+}
+
+interface FalGetV1ComputeNamespace {
+  instances: FalGetV1ComputeInstancesNamespace;
+}
+
+interface FalGetV1Namespace {
+  models: FalGetV1ModelsNamespace;
+  queue: FalGetV1QueueNamespace;
+  serverless: FalGetV1ServerlessNamespace;
+  workflows: FalGetV1WorkflowsNamespace;
+  compute: FalGetV1ComputeNamespace;
+}
+
+// POST v1 namespace
+interface FalPostV1ModelsPricingNamespace {
+  estimate: FalPricingEstimateMethod;
+}
+
+interface FalPostV1ModelsNamespace {
+  pricing: FalPostV1ModelsPricingNamespace;
+}
+
+interface FalPostV1QueueNamespace {
+  submit: FalQueueSubmitMethod;
+}
+
+interface FalPostV1ServerlessLogsNamespace {
+  history: FalLogsHistoryMethod;
+  stream: FalLogsStreamMethod;
+}
+
+interface FalPostV1ServerlessFilesNamespace {
+  uploadUrl: FalFilesUploadUrlMethod;
+  uploadLocal: FalFilesUploadLocalMethod;
+}
+
+interface FalPostV1ServerlessNamespace {
+  logs: FalPostV1ServerlessLogsNamespace;
+  files: FalPostV1ServerlessFilesNamespace;
+}
+
+interface FalPostV1ComputeInstancesNamespace {
+  (
+    params: FalComputeInstanceCreateParams,
+    signal?: AbortSignal
+  ): Promise<FalComputeInstance>;
+  create: FalComputeInstanceCreateMethod;
+}
+
+interface FalPostV1ComputeNamespace {
+  instances: FalPostV1ComputeInstancesNamespace;
+}
+
+interface FalPostV1Namespace {
+  models: FalPostV1ModelsNamespace;
+  queue: FalPostV1QueueNamespace;
+  serverless: FalPostV1ServerlessNamespace;
+  compute: FalPostV1ComputeNamespace;
+}
+
+// PUT v1 namespace
+interface FalPutV1QueueNamespace {
+  cancel(
+    params: FalQueueCancelParams,
+    signal?: AbortSignal
+  ): Promise<FalQueueCancelResponse>;
+}
+
+interface FalPutV1Namespace {
+  queue: FalPutV1QueueNamespace;
+}
+
+// DELETE v1 namespace
+interface FalDeleteV1ModelsRequestsNamespace {
+  payloads: FalDeletePayloadsMethod;
+}
+
+interface FalDeleteV1ModelsNamespace {
+  requests: FalDeleteV1ModelsRequestsNamespace;
+}
+
+interface FalDeleteV1ServerlessAppsQueueNamespace {
+  flush: FalAppsFlushQueueMethod;
+}
+
+interface FalDeleteV1ServerlessAppsNamespace {
+  queue: FalDeleteV1ServerlessAppsQueueNamespace;
+}
+
+interface FalDeleteV1ServerlessNamespace {
+  apps: FalDeleteV1ServerlessAppsNamespace;
+}
+
+interface FalDeleteV1ComputeInstancesNamespace {
+  terminate(
+    params: FalComputeInstanceDeleteParams,
+    signal?: AbortSignal
+  ): Promise<void>;
+}
+
+interface FalDeleteV1ComputeNamespace {
+  instances: FalDeleteV1ComputeInstancesNamespace;
+}
+
+interface FalDeleteV1Namespace {
+  models: FalDeleteV1ModelsNamespace;
+  serverless: FalDeleteV1ServerlessNamespace;
+  compute: FalDeleteV1ComputeNamespace;
+}
+
+// Verb-prefixed root namespaces
+interface FalGetNamespace {
+  v1: FalGetV1Namespace;
+}
+
+interface FalPostNamespace {
+  v1: FalPostV1Namespace;
+}
+
+interface FalPutNamespace {
+  v1: FalPutV1Namespace;
+}
+
+interface FalDeleteNamespace {
+  v1: FalDeleteV1Namespace;
+}
+
 // Provider interface
 export interface FalProvider {
   v1: FalV1Namespace;
+  get: FalGetNamespace;
+  post: FalPostNamespace;
+  put: FalPutNamespace;
+  delete: FalDeleteNamespace;
 }

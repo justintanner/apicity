@@ -701,6 +701,283 @@ export interface ValidationResult {
 
 // ---------- Provider interface ----------
 
+// POST namespace types
+export interface AnthropicPostMessagesMethod {
+  (
+    req: AnthropicMessageRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicMessageResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+  stream: (
+    req: AnthropicMessageRequest,
+    signal?: AbortSignal
+  ) => Promise<AsyncIterable<AnthropicStreamEvent>>;
+  countTokens: AnthropicPostCountTokensMethod;
+  batches: AnthropicPostBatchesMethod;
+}
+
+export interface AnthropicPostCountTokensMethod {
+  (
+    req: AnthropicCountTokensRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicCountTokensResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+}
+
+export interface AnthropicPostBatchesMethod {
+  (
+    req: AnthropicBatchCreateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicBatch>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+  cancel: (batchId: string, signal?: AbortSignal) => Promise<AnthropicBatch>;
+}
+
+export interface AnthropicPostFilesMethod {
+  (file: Blob, signal?: AbortSignal): Promise<AnthropicFile>;
+  payloadSchema: PayloadSchema;
+}
+
+export interface AnthropicPostSkillsCreateMethod {
+  (
+    displayTitle: string,
+    files: AnthropicSkillFile[],
+    signal?: AbortSignal
+  ): Promise<AnthropicSkill>;
+  payloadSchema: PayloadSchema;
+}
+
+export interface AnthropicPostSkillVersionsCreateMethod {
+  (
+    skillId: string,
+    files: AnthropicSkillFile[],
+    signal?: AbortSignal
+  ): Promise<AnthropicSkillVersion>;
+  payloadSchema: PayloadSchema;
+}
+
+export interface AnthropicPostInvitesCreateMethod {
+  (
+    req: AnthropicInviteCreateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicInvite>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+}
+
+export interface AnthropicPostWorkspacesCreateMethod {
+  (
+    req: AnthropicWorkspaceCreateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicWorkspace>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+}
+
+export interface AnthropicPostWorkspaceMembersAddMethod {
+  (
+    workspaceId: string,
+    req: AnthropicWorkspaceMemberAddRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicWorkspaceMember>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+}
+
+export interface AnthropicPostV1Namespace {
+  messages: AnthropicPostMessagesMethod;
+  files: AnthropicPostFilesMethod;
+  skills: {
+    create: AnthropicPostSkillsCreateMethod;
+    versions: {
+      create: AnthropicPostSkillVersionsCreateMethod;
+    };
+  };
+  organizations: {
+    invites: {
+      create: AnthropicPostInvitesCreateMethod;
+    };
+    workspaces: {
+      create: AnthropicPostWorkspacesCreateMethod;
+      members: {
+        add: AnthropicPostWorkspaceMembersAddMethod;
+      };
+    };
+    apiKeys: {
+      update: (
+        apiKeyId: string,
+        req: AnthropicApiKeyUpdateRequest,
+        signal?: AbortSignal
+      ) => Promise<AnthropicApiKey>;
+    };
+  };
+}
+
+// GET namespace types
+export interface AnthropicGetV1Namespace {
+  messages: {
+    batches: {
+      list: (
+        params?: AnthropicListParams,
+        signal?: AbortSignal
+      ) => Promise<AnthropicBatchListResponse>;
+      retrieve: (
+        batchId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicBatch>;
+      results: (batchId: string, signal?: AbortSignal) => Promise<string>;
+    };
+  };
+  models: {
+    list: (
+      params?: AnthropicListParams,
+      signal?: AbortSignal
+    ) => Promise<AnthropicModelListResponse>;
+    retrieve: (
+      modelId: string,
+      signal?: AbortSignal
+    ) => Promise<AnthropicModel>;
+  };
+  files: {
+    list: (
+      params?: AnthropicListParams,
+      signal?: AbortSignal
+    ) => Promise<AnthropicFileListResponse>;
+    retrieve: (fileId: string, signal?: AbortSignal) => Promise<AnthropicFile>;
+    content: (fileId: string, signal?: AbortSignal) => Promise<ArrayBuffer>;
+  };
+  skills: {
+    list: (
+      params?: AnthropicSkillsListParams,
+      signal?: AbortSignal
+    ) => Promise<AnthropicSkillsListResponse>;
+    retrieve: (
+      skillId: string,
+      signal?: AbortSignal
+    ) => Promise<AnthropicSkill>;
+    versions: {
+      list: (
+        skillId: string,
+        params?: AnthropicSkillVersionsListParams,
+        signal?: AbortSignal
+      ) => Promise<AnthropicSkillVersionsListResponse>;
+    };
+  };
+  organizations: {
+    me: (signal?: AbortSignal) => Promise<AnthropicOrganization>;
+    users: {
+      list: (
+        params?: AnthropicListParams & { email?: string },
+        signal?: AbortSignal
+      ) => Promise<AnthropicUserListResponse>;
+      retrieve: (
+        userId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicUser>;
+    };
+    invites: {
+      list: (
+        params?: AnthropicListParams,
+        signal?: AbortSignal
+      ) => Promise<AnthropicInviteListResponse>;
+      retrieve: (
+        inviteId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicInvite>;
+    };
+    workspaces: {
+      list: (
+        params?: AnthropicWorkspaceListParams,
+        signal?: AbortSignal
+      ) => Promise<AnthropicWorkspaceListResponse>;
+      retrieve: (
+        workspaceId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicWorkspace>;
+      members: {
+        list: (
+          workspaceId: string,
+          params?: AnthropicListParams,
+          signal?: AbortSignal
+        ) => Promise<AnthropicWorkspaceMemberListResponse>;
+        retrieve: (
+          workspaceId: string,
+          userId: string,
+          signal?: AbortSignal
+        ) => Promise<AnthropicWorkspaceMember>;
+      };
+    };
+    apiKeys: {
+      list: (
+        params?: AnthropicApiKeyListParams,
+        signal?: AbortSignal
+      ) => Promise<AnthropicApiKeyListResponse>;
+      retrieve: (
+        apiKeyId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicApiKey>;
+    };
+  };
+}
+
+// DELETE namespace types
+export interface AnthropicDeleteV1Namespace {
+  messages: {
+    batches: {
+      del: (
+        batchId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicBatchDeleteResponse>;
+    };
+  };
+  files: {
+    del: (
+      fileId: string,
+      signal?: AbortSignal
+    ) => Promise<AnthropicFileDeleteResponse>;
+  };
+  skills: {
+    del: (
+      skillId: string,
+      signal?: AbortSignal
+    ) => Promise<AnthropicSkillDeleteResponse>;
+    versions: {
+      del: (
+        skillId: string,
+        version: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicSkillVersionDeleteResponse>;
+    };
+  };
+  organizations: {
+    users: {
+      del: (
+        userId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicUserDeleteResponse>;
+    };
+    invites: {
+      del: (
+        inviteId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicInviteDeleteResponse>;
+    };
+    workspaces: {
+      members: {
+        del: (
+          workspaceId: string,
+          userId: string,
+          signal?: AbortSignal
+        ) => Promise<AnthropicWorkspaceMemberDeleteResponse>;
+      };
+    };
+  };
+}
+
+// Legacy namespace types (backward compatibility)
 export interface AnthropicMessagesMethod {
   (
     req: AnthropicMessageRequest,
@@ -743,15 +1020,6 @@ export interface AnthropicBatchesMethod {
     batchId: string,
     signal?: AbortSignal
   ) => Promise<AnthropicBatchDeleteResponse>;
-  // Verb accessors for POST + GET on /messages/batches
-  post(
-    req: AnthropicBatchCreateRequest,
-    signal?: AbortSignal
-  ): Promise<AnthropicBatch>;
-  get(
-    params?: AnthropicListParams,
-    signal?: AbortSignal
-  ): Promise<AnthropicBatchListResponse>;
 }
 
 export interface AnthropicModelsNamespace {
@@ -774,12 +1042,6 @@ export interface AnthropicFilesNamespace {
     fileId: string,
     signal?: AbortSignal
   ) => Promise<AnthropicFileDeleteResponse>;
-  // Verb accessors for POST + GET on /files
-  post: AnthropicFilesUploadMethod;
-  get: (
-    params?: AnthropicListParams,
-    signal?: AbortSignal
-  ) => Promise<AnthropicFileListResponse>;
 }
 
 export interface AnthropicFilesUploadMethod {
@@ -978,6 +1240,10 @@ export interface AnthropicV1Namespace {
 }
 
 export interface AnthropicProvider {
+  post: { v1: AnthropicPostV1Namespace };
+  get: { v1: AnthropicGetV1Namespace };
+  delete: { v1: AnthropicDeleteV1Namespace };
+  // Legacy namespace (backward compatibility)
   v1: AnthropicV1Namespace;
 }
 

@@ -1561,6 +1561,11 @@ interface FireworksV1Namespace {
 // Provider interface
 export interface FireworksProvider {
   v1: FireworksV1Namespace;
+  post: FireworksPostNamespace;
+  get: FireworksGetNamespace;
+  patch: FireworksPatchNamespace;
+  delete: FireworksDeleteNamespace;
+  ws: FireworksWsNamespace;
 }
 
 // Text-to-image request (synchronous FLUX schnell/dev)
@@ -3184,4 +3189,654 @@ export class FireworksError extends Error {
     this.body = body ?? null;
     this.code = code;
   }
+}
+
+// =============== Verb-Prefixed API Surface Types ===============
+
+// POST v1 namespace types
+interface FireworksPostV1ChatNamespace {
+  completions: FireworksChatCompletionsMethod;
+}
+
+interface FireworksPostV1WorkflowsNamespace {
+  textToImage: FireworksTextToImageMethod;
+  kontext: FireworksKontextMethod;
+  getResult: FireworksGetResultMethod;
+}
+
+interface FireworksPostV1AudioTranscriptionsMethod {
+  (
+    req: FireworksTranscriptionRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksTranscriptionResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksPostV1AudioTranslationsMethod {
+  (
+    req: FireworksTranslationRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksTranslationResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+interface FireworksPostV1AudioBatchNamespace {
+  transcriptions: FireworksAudioBatchTranscriptionsMethod;
+  translations: FireworksAudioBatchTranslationsMethod;
+}
+
+interface FireworksPostV1AudioNamespace {
+  transcriptions: FireworksPostV1AudioTranscriptionsMethod;
+  translations: FireworksPostV1AudioTranslationsMethod;
+  batch: FireworksPostV1AudioBatchNamespace;
+}
+
+interface FireworksPostV1AccountsUsersNamespace {
+  create: FireworksCreateUserMethod;
+  update: FireworksUpdateUserMethod;
+}
+
+interface FireworksPostV1AccountsModelsNamespace {
+  create: FireworksModelsCreateMethod;
+  prepare: FireworksModelsPrepareMethod;
+  getUploadEndpoint: FireworksModelsGetUploadEndpointMethod;
+}
+
+interface FireworksPostV1AccountsDeploymentsNamespace {
+  create: FireworksCreateDeploymentMethod;
+  undelete(
+    accountId: string,
+    deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+}
+
+interface FireworksPostV1AccountsDeployedModelsNamespace {
+  create: FireworksCreateDeployedModelMethod;
+}
+
+interface FireworksPostV1AccountsApiKeysNamespace {
+  create: FireworksCreateApiKeyMethod;
+}
+
+interface FireworksPostV1AccountsSecretsNamespace {
+  create: FireworksCreateSecretMethod;
+}
+
+interface FireworksPostV1AccountsDatasetsNamespace {
+  create: FireworksDatasetCreateMethod;
+  getUploadEndpoint: FireworksDatasetGetUploadEndpointMethod;
+  validateUpload: FireworksDatasetValidateUploadMethod;
+}
+
+interface FireworksPostV1AccountsBatchInferenceJobsNamespace {
+  create: FireworksBatchJobCreateMethod;
+}
+
+interface FireworksPostV1AccountsSupervisedFineTuningJobsNamespace {
+  create: FireworksSFTCreateMethod;
+  resume(
+    req: FireworksSFTResumeRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTJob>;
+}
+
+interface FireworksPostV1AccountsDpoJobsNamespace {
+  create: FireworksDpoJobCreateMethod;
+  resume(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDpoJob>;
+  getMetricsFileEndpoint(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksMetricsFileEndpointResponse>;
+}
+
+interface FireworksPostV1AccountsEvaluatorsNamespace {
+  create: FireworksCreateEvaluatorMethod;
+  getUploadEndpoint: FireworksGetUploadEndpointEvaluatorMethod;
+  validateUpload(
+    accountId: string,
+    evaluatorId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksPostV1AccountsEvaluationJobsNamespace {
+  create: FireworksCreateEvaluationJobMethod;
+  getExecutionLogEndpoint(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksGetExecutionLogEndpointResponse>;
+}
+
+interface FireworksPostV1AccountsRFTNamespace {
+  create: FireworksRFTCreateMethod;
+  resume(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksRFTJob>;
+}
+
+interface FireworksPostV1AccountsRlorTrainerJobsNamespace {
+  create: FireworksRlorTrainerJobCreateMethod;
+  executeTrainStep: FireworksRlorTrainerJobExecuteStepMethod;
+  resume(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksRlorTrainerJob>;
+}
+
+interface FireworksPostV1AccountsNamespace {
+  users: FireworksPostV1AccountsUsersNamespace;
+  models: FireworksPostV1AccountsModelsNamespace;
+  deployments: FireworksPostV1AccountsDeploymentsNamespace;
+  deployedModels: FireworksPostV1AccountsDeployedModelsNamespace;
+  apiKeys: FireworksPostV1AccountsApiKeysNamespace;
+  secrets: FireworksPostV1AccountsSecretsNamespace;
+  datasets: FireworksPostV1AccountsDatasetsNamespace;
+  batchInferenceJobs: FireworksPostV1AccountsBatchInferenceJobsNamespace;
+  supervisedFineTuningJobs: FireworksPostV1AccountsSupervisedFineTuningJobsNamespace;
+  dpoJobs: FireworksPostV1AccountsDpoJobsNamespace;
+  evaluators: FireworksPostV1AccountsEvaluatorsNamespace;
+  evaluationJobs: FireworksPostV1AccountsEvaluationJobsNamespace;
+  reinforcementFineTuningJobs: FireworksPostV1AccountsRFTNamespace;
+  rlorTrainerJobs: FireworksPostV1AccountsRlorTrainerJobsNamespace;
+}
+
+interface FireworksPostV1Namespace {
+  chat: FireworksPostV1ChatNamespace;
+  completions: FireworksCompletionsMethod;
+  embeddings: FireworksEmbeddingsMethod;
+  rerank: FireworksRerankMethod;
+  messages: FireworksMessagesMethod;
+  workflows: FireworksPostV1WorkflowsNamespace;
+  audio: FireworksPostV1AudioNamespace;
+  accounts: FireworksPostV1AccountsNamespace;
+}
+
+interface FireworksPostNamespace {
+  v1: FireworksPostV1Namespace;
+}
+
+// GET v1 namespace types
+interface FireworksGetV1AccountsUsersNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListUsersRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListUsersResponse>;
+  get(
+    accountId: string,
+    userId: string,
+    params?: FireworksGetUserRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
+}
+
+interface FireworksGetV1AccountsApiKeysNamespace {
+  list(
+    accountId: string,
+    userId: string,
+    params?: FireworksListApiKeysRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListApiKeysResponse>;
+}
+
+interface FireworksGetV1AccountsSecretsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListSecretsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListSecretsResponse>;
+  get(
+    accountId: string,
+    secretId: string,
+    params?: { readMask?: string },
+    signal?: AbortSignal
+  ): Promise<FireworksSecret>;
+}
+
+interface FireworksGetV1AccountsModelsNamespace {
+  list(
+    accountId: string,
+    req?: FireworksListModelsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListModelsResponse>;
+  get(
+    accountId: string,
+    modelId: string,
+    req?: FireworksGetModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksModel>;
+  getDownloadEndpoint(
+    accountId: string,
+    modelId: string,
+    req?: FireworksGetDownloadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetDownloadEndpointResponse>;
+  validateUpload(
+    accountId: string,
+    modelId: string,
+    req?: FireworksValidateUploadRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksValidateUploadResponse>;
+}
+
+interface FireworksGetV1AccountsDatasetsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDatasetsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDatasetsResponse>;
+  get(
+    accountId: string,
+    datasetId: string,
+    req?: FireworksGetDatasetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDataset>;
+  getDownloadEndpoint(
+    accountId: string,
+    datasetId: string,
+    req?: FireworksDatasetGetDownloadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDatasetGetDownloadEndpointResponse>;
+}
+
+interface FireworksGetV1AccountsBatchInferenceJobsNamespace {
+  list(
+    accountId: string,
+    req?: FireworksBatchJobListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksBatchJobListResponse>;
+  get(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksBatchJob>;
+}
+
+interface FireworksGetV1AccountsSFTNamespace {
+  list(
+    req: FireworksSFTListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTListResponse>;
+  get(
+    req: FireworksSFTGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTJob>;
+}
+
+interface FireworksGetV1AccountsDeploymentsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDeploymentsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDeploymentsResponse>;
+  get(
+    accountId: string,
+    deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+}
+
+interface FireworksGetV1AccountsDeploymentShapesVersionsNamespace {
+  list(
+    accountId: string,
+    shapeId: string,
+    params?: FireworksListDeploymentShapeVersionsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDeploymentShapeVersionsResponse>;
+  get(
+    accountId: string,
+    shapeId: string,
+    versionId: string,
+    params?: FireworksGetDeploymentShapeVersionRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeploymentShapeVersion>;
+}
+
+interface FireworksGetV1AccountsDeploymentShapesNamespace {
+  get(
+    accountId: string,
+    shapeId: string,
+    params?: FireworksGetDeploymentShapeRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeploymentShape>;
+  versions: FireworksGetV1AccountsDeploymentShapesVersionsNamespace;
+}
+
+interface FireworksGetV1AccountsDeployedModelsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDeployedModelsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDeployedModelsResponse>;
+  get(
+    accountId: string,
+    deployedModelId: string,
+    params?: FireworksGetDeployedModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployedModel>;
+}
+
+interface FireworksGetV1AccountsDpoJobsNamespace {
+  list(
+    accountId: string,
+    req?: FireworksDpoJobListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDpoJobListResponse>;
+  get(
+    accountId: string,
+    jobId: string,
+    req?: FireworksDpoJobGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDpoJob>;
+}
+
+interface FireworksGetV1AccountsEvaluatorsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListEvaluatorsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListEvaluatorsResponse>;
+  get(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetEvaluatorRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluator>;
+  getBuildLogEndpoint(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetBuildLogEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetBuildLogEndpointResponse>;
+  getSourceCodeSignedUrl(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetSourceCodeSignedUrlRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetSourceCodeSignedUrlResponse>;
+}
+
+interface FireworksGetV1AccountsEvaluationJobsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListEvaluationJobsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListEvaluationJobsResponse>;
+  get(
+    accountId: string,
+    evaluationJobId: string,
+    params?: FireworksGetEvaluationJobRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluationJob>;
+}
+
+interface FireworksGetV1AccountsRFTNamespace {
+  list(
+    accountId: string,
+    req?: FireworksRFTListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRFTListResponse>;
+  get(
+    accountId: string,
+    jobId: string,
+    req?: FireworksRFTGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRFTJob>;
+}
+
+interface FireworksGetV1AccountsRlorTrainerJobsNamespace {
+  list(
+    accountId: string,
+    req?: FireworksRlorTrainerJobListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRlorTrainerJobListResponse>;
+  get(
+    accountId: string,
+    jobId: string,
+    req?: FireworksRlorTrainerJobGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRlorTrainerJob>;
+}
+
+interface FireworksGetV1AccountsNamespace {
+  list(
+    params?: FireworksListAccountsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListAccountsResponse>;
+  get(
+    accountId: string,
+    params?: FireworksGetAccountRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAccount>;
+  users: FireworksGetV1AccountsUsersNamespace;
+  apiKeys: FireworksGetV1AccountsApiKeysNamespace;
+  secrets: FireworksGetV1AccountsSecretsNamespace;
+  models: FireworksGetV1AccountsModelsNamespace;
+  datasets: FireworksGetV1AccountsDatasetsNamespace;
+  batchInferenceJobs: FireworksGetV1AccountsBatchInferenceJobsNamespace;
+  supervisedFineTuningJobs: FireworksGetV1AccountsSFTNamespace;
+  deployments: FireworksGetV1AccountsDeploymentsNamespace;
+  deploymentShapes: FireworksGetV1AccountsDeploymentShapesNamespace;
+  deployedModels: FireworksGetV1AccountsDeployedModelsNamespace;
+  dpoJobs: FireworksGetV1AccountsDpoJobsNamespace;
+  evaluators: FireworksGetV1AccountsEvaluatorsNamespace;
+  evaluationJobs: FireworksGetV1AccountsEvaluationJobsNamespace;
+  reinforcementFineTuningJobs: FireworksGetV1AccountsRFTNamespace;
+  rlorTrainerJobs: FireworksGetV1AccountsRlorTrainerJobsNamespace;
+}
+
+interface FireworksGetV1AudioBatchNamespace {
+  get(
+    accountId: string,
+    batchId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksAudioBatchJob>;
+}
+
+interface FireworksGetV1AudioNamespace {
+  batch: FireworksGetV1AudioBatchNamespace;
+}
+
+interface FireworksGetV1Namespace {
+  accounts: FireworksGetV1AccountsNamespace;
+  audio: FireworksGetV1AudioNamespace;
+}
+
+interface FireworksGetNamespace {
+  v1: FireworksGetV1Namespace;
+}
+
+// PATCH v1 namespace types
+interface FireworksPatchV1AccountsUsersNamespace {
+  update: FireworksUpdateUserMethod;
+}
+
+interface FireworksPatchV1AccountsModelsNamespace {
+  update: FireworksModelsUpdateMethod;
+}
+
+interface FireworksPatchV1AccountsDatasetsNamespace {
+  update: FireworksDatasetUpdateMethod;
+}
+
+interface FireworksPatchV1AccountsDeploymentsNamespace {
+  update: FireworksUpdateDeploymentMethod;
+  scale: FireworksScaleDeploymentMethod;
+}
+
+interface FireworksPatchV1AccountsDeployedModelsNamespace {
+  update: FireworksUpdateDeployedModelMethod;
+}
+
+interface FireworksPatchV1AccountsSecretsNamespace {
+  update: FireworksUpdateSecretMethod;
+}
+
+interface FireworksPatchV1AccountsEvaluatorsNamespace {
+  update: FireworksUpdateEvaluatorMethod;
+}
+
+interface FireworksPatchV1AccountsNamespace {
+  users: FireworksPatchV1AccountsUsersNamespace;
+  models: FireworksPatchV1AccountsModelsNamespace;
+  datasets: FireworksPatchV1AccountsDatasetsNamespace;
+  deployments: FireworksPatchV1AccountsDeploymentsNamespace;
+  deployedModels: FireworksPatchV1AccountsDeployedModelsNamespace;
+  secrets: FireworksPatchV1AccountsSecretsNamespace;
+  evaluators: FireworksPatchV1AccountsEvaluatorsNamespace;
+}
+
+interface FireworksPatchV1Namespace {
+  accounts: FireworksPatchV1AccountsNamespace;
+}
+
+interface FireworksPatchNamespace {
+  v1: FireworksPatchV1Namespace;
+}
+
+// DELETE v1 namespace types
+interface FireworksDeleteV1AccountsApiKeysNamespace {
+  delete: FireworksDeleteApiKeyMethod;
+}
+
+interface FireworksDeleteV1AccountsSecretsNamespace {
+  delete(
+    accountId: string,
+    secretId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksDeleteV1AccountsModelsNamespace {
+  delete: FireworksModelsDeleteMethod;
+}
+
+interface FireworksDeleteV1AccountsDatasetsNamespace {
+  delete(
+    accountId: string,
+    datasetId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksDeleteV1AccountsBatchInferenceJobsNamespace {
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksDeleteV1AccountsSFTNamespace {
+  delete: FireworksSFTDeleteMethod;
+}
+
+interface FireworksDeleteV1AccountsDeploymentsNamespace {
+  delete(
+    accountId: string,
+    deploymentId: string,
+    options?: FireworksDeleteDeploymentOptions,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksDeleteV1AccountsDeployedModelsNamespace {
+  delete(
+    accountId: string,
+    deployedModelId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksDeleteV1AccountsDpoJobsNamespace {
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksDeleteV1AccountsEvaluatorsNamespace {
+  delete(
+    accountId: string,
+    evaluatorId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksDeleteV1AccountsEvaluationJobsNamespace {
+  delete(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksDeleteV1AccountsRFTNamespace {
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksDeleteV1AccountsRlorTrainerJobsNamespace {
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksDeleteV1AccountsNamespace {
+  apiKeys: FireworksDeleteV1AccountsApiKeysNamespace;
+  secrets: FireworksDeleteV1AccountsSecretsNamespace;
+  models: FireworksDeleteV1AccountsModelsNamespace;
+  datasets: FireworksDeleteV1AccountsDatasetsNamespace;
+  batchInferenceJobs: FireworksDeleteV1AccountsBatchInferenceJobsNamespace;
+  supervisedFineTuningJobs: FireworksDeleteV1AccountsSFTNamespace;
+  deployments: FireworksDeleteV1AccountsDeploymentsNamespace;
+  deployedModels: FireworksDeleteV1AccountsDeployedModelsNamespace;
+  dpoJobs: FireworksDeleteV1AccountsDpoJobsNamespace;
+  evaluators: FireworksDeleteV1AccountsEvaluatorsNamespace;
+  evaluationJobs: FireworksDeleteV1AccountsEvaluationJobsNamespace;
+  reinforcementFineTuningJobs: FireworksDeleteV1AccountsRFTNamespace;
+  rlorTrainerJobs: FireworksDeleteV1AccountsRlorTrainerJobsNamespace;
+}
+
+interface FireworksDeleteV1Namespace {
+  accounts: FireworksDeleteV1AccountsNamespace;
+}
+
+interface FireworksDeleteNamespace {
+  v1: FireworksDeleteV1Namespace;
+}
+
+// WS (WebSocket) v1 namespace types
+interface FireworksWsV1AudioTranscriptionsNamespace {
+  streaming: FireworksStreamingTranscriptionsMethod;
+}
+
+interface FireworksWsV1AudioNamespace {
+  transcriptions: FireworksWsV1AudioTranscriptionsNamespace;
+}
+
+interface FireworksWsV1Namespace {
+  audio: FireworksWsV1AudioNamespace;
+}
+
+interface FireworksWsNamespace {
+  v1: FireworksWsV1Namespace;
 }

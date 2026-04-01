@@ -19,7 +19,7 @@ describe("kimicoding models integration", () => {
         apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
       });
 
-      const result = await provider.coding.v1.models.list();
+      const result = await provider.get.coding.v1.models();
 
       expect(result.object).toBe("list");
       expect(Array.isArray(result.data)).toBe(true);

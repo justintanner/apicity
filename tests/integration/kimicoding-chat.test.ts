@@ -14,7 +14,7 @@ describe("kimicoding integration", () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.coding.v1.messages({
+    const result = await provider.post.coding.v1.messages({
       model: "k2p5",
       max_tokens: 32768,
       messages: [{ role: "user", content: "hi" }],
@@ -35,7 +35,7 @@ describe("kimicoding integration", () => {
     });
     const deltas: string[] = [];
     let gotStopReason = false;
-    for await (const event of provider.coding.v1.messages.stream({
+    for await (const event of provider.post.coding.v1.messages.stream({
       model: "k2p5",
       max_tokens: 32768,
       messages: [{ role: "user", content: "hi" }],
@@ -57,7 +57,7 @@ describe("kimicoding integration", () => {
     });
     const redPixel =
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
-    const result = await provider.coding.v1.messages({
+    const result = await provider.post.coding.v1.messages({
       model: "k2p5",
       max_tokens: 32768,
       messages: [
@@ -93,7 +93,7 @@ describe("kimicoding integration", () => {
     const redPixel =
       "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==";
     const events: AnthropicStreamEvent[] = [];
-    for await (const event of provider.coding.v1.messages.stream({
+    for await (const event of provider.post.coding.v1.messages.stream({
       model: "k2p5",
       max_tokens: 32768,
       messages: [

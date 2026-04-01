@@ -14,7 +14,7 @@ describe("kimicoding system prompt", () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
-    const result = await provider.coding.v1.messages({
+    const result = await provider.post.coding.v1.messages({
       model: "k2p5",
       max_tokens: 256,
       system:

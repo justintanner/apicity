@@ -178,14 +178,6 @@ interface KimiCodingMessagesNamespace {
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface KimiCodingModelsListMethod {
-  (signal?: AbortSignal): Promise<KimiCodingModelListResponse>;
-}
-
-interface KimiCodingModelsNamespace {
-  list: KimiCodingModelsListMethod;
-}
-
 interface KimiCodingEmbeddingsMethod {
   (req: EmbeddingRequest, signal?: AbortSignal): Promise<EmbeddingResponse>;
   payloadSchema: PayloadSchema;
@@ -198,19 +190,19 @@ interface KimiCodingCountTokensMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface KimiCodingV1Namespace {
+interface KimiCodingGetV1 {
+  models(signal?: AbortSignal): Promise<KimiCodingModelListResponse>;
+}
+
+interface KimiCodingPostV1 {
   messages: KimiCodingMessagesNamespace;
-  models: KimiCodingModelsNamespace;
   embeddings: KimiCodingEmbeddingsMethod;
   countTokens: KimiCodingCountTokensMethod;
 }
 
-interface KimiCodingCodingNamespace {
-  v1: KimiCodingV1Namespace;
-}
-
 export interface Provider {
-  coding: KimiCodingCodingNamespace;
+  post: { coding: { v1: KimiCodingPostV1 } };
+  get: { coding: { v1: KimiCodingGetV1 } };
 }
 
 export interface KimiCodingOptions {

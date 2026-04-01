@@ -35,7 +35,7 @@ const request: ChatRequest = {
   messages: [{ role: "user", content: "Hello!" }],
 };
 
-for await (const chunk of kimicoding.coding.v1.messages.stream(request)) {
+for await (const chunk of kimicoding.post.coding.v1.messages.stream(request)) {
   if (chunk.delta) {
     process.stdout.write(chunk.delta);
   }
@@ -46,13 +46,13 @@ for await (const chunk of kimicoding.coding.v1.messages.stream(request)) {
 
 Base URL: `https://api.kimi.com/coding/`
 
-| URL                          | Method Signature                         |
-| ---------------------------- | ---------------------------------------- |
-| `POST /v1/messages`          | `kimicoding.coding.v1.messages()`        |
-| `POST /v1/messages` (stream) | `kimicoding.coding.v1.messages.stream()` |
-| `GET /v1/models`             | `kimicoding.coding.v1.models.list()`     |
-| `POST /v1/embeddings`        | `kimicoding.coding.v1.embeddings()`      |
-| `POST /v1/tokens/count`      | `kimicoding.coding.v1.countTokens()`     |
+| URL                          | Method Signature                              |
+| ---------------------------- | --------------------------------------------- |
+| `POST /v1/messages`          | `kimicoding.post.coding.v1.messages()`        |
+| `POST /v1/messages` (stream) | `kimicoding.post.coding.v1.messages.stream()` |
+| `GET /v1/models`             | `kimicoding.get.coding.v1.models()`           |
+| `POST /v1/embeddings`        | `kimicoding.post.coding.v1.embeddings()`      |
+| `POST /v1/tokens/count`      | `kimicoding.post.coding.v1.countTokens()`     |
 
 ## What's Included
 
@@ -77,7 +77,7 @@ const request = {
   max_tokens: 8192,
 };
 
-for await (const chunk of kimicoding.coding.v1.messages.stream(request)) {
+for await (const chunk of kimicoding.post.coding.v1.messages.stream(request)) {
   if (chunk.delta) {
     process.stdout.write(chunk.delta);
   }
@@ -87,7 +87,7 @@ for await (const chunk of kimicoding.coding.v1.messages.stream(request)) {
 ### Non-Streaming
 
 ```typescript
-const response = await kimicoding.coding.v1.messages(request);
+const response = await kimicoding.post.coding.v1.messages(request);
 console.log(response.content);
 console.log(response.usage); // token counts
 ```
@@ -106,7 +106,7 @@ const kimicoding = createKimicoding({
   timeout: 60000,
 });
 
-kimicoding.coding.v1
+kimicoding.post.coding.v1
   .messages({
     model: "k2p5",
     messages: [{ role: "user", content: "What is the capital of France?" }],
@@ -116,7 +116,7 @@ kimicoding.coding.v1
     console.log(response.content);
 
     // Chain a vision request
-    return kimicoding.coding.v1.messages({
+    return kimicoding.post.coding.v1.messages({
       model: "k2p5",
       messages: [
         {
@@ -143,7 +143,7 @@ kimicoding.coding.v1
 Count tokens before sending a request to manage context window limits:
 
 ```typescript
-const result = await kimicoding.coding.v1.countTokens({
+const result = await kimicoding.post.coding.v1.countTokens({
   model: "k2p5",
   messages: [{ role: "user", content: "Hello, how are you?" }],
 });
@@ -165,7 +165,7 @@ const kimicoding = createKimicoding({
 });
 
 // Add retry logic
-const resilientChat = withRetry(kimicoding.coding.v1.messages, {
+const resilientChat = withRetry(kimicoding.post.coding.v1.messages, {
   retries: 3,
   baseMs: 500,
 });
@@ -174,8 +174,8 @@ const resilientChat = withRetry(kimicoding.coding.v1.messages, {
 const kimi1 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY! });
 const kimi2 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! });
 const fallbackChat = withFallback([
-  kimi1.coding.v1.messages,
-  kimi2.coding.v1.messages,
+  kimi1.post.coding.v1.messages,
+  kimi2.post.coding.v1.messages,
 ]);
 ```
 
@@ -184,7 +184,7 @@ const fallbackChat = withFallback([
 List available models:
 
 ```typescript
-const models = await kimicoding.coding.v1.models.list();
+const models = await kimicoding.get.coding.v1.models();
 console.log(models.data);
 ```
 
@@ -193,7 +193,7 @@ console.log(models.data);
 Generate embeddings for text:
 
 ```typescript
-const response = await kimicoding.coding.v1.embeddings({
+const response = await kimicoding.post.coding.v1.embeddings({
   model: "k2p5",
   input: "Hello, world!",
 });

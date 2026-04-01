@@ -15,7 +15,7 @@ describe("kimicoding embeddings integration", () => {
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
 
-    const result = await provider.coding.v1.embeddings({
+    const result = await provider.post.coding.v1.embeddings({
       model: "k2p5",
       input: "Hello world",
     });

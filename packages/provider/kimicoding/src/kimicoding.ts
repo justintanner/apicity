@@ -308,23 +308,17 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     },
   });
 
+  async function listModelsFn(
+    signal?: AbortSignal
+  ): Promise<KimiCodingModelListResponse> {
+    return await makeGetRequest<KimiCodingModelListResponse>(
+      "v1/models",
+      signal
+    );
+  }
+
   return {
-    coding: {
-      v1: {
-        messages,
-        models: {
-          list: async function list(
-            signal?: AbortSignal
-          ): Promise<KimiCodingModelListResponse> {
-            return await makeGetRequest<KimiCodingModelListResponse>(
-              "v1/models",
-              signal
-            );
-          },
-        },
-        embeddings,
-        countTokens,
-      },
-    },
+    post: { coding: { v1: { messages, embeddings, countTokens } } },
+    get: { coding: { v1: { models: listModelsFn } } },
   };
 }

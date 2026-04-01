@@ -558,6 +558,57 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  async function postUsersUpdate(
+    userId: string,
+    req: AnthropicUserUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicUser> {
+    return await makeJsonRequest<AnthropicUser>(
+      `/organizations/users/${encodeURIComponent(userId)}`,
+      req,
+      signal,
+      adminKey
+    );
+  }
+
+  async function postWorkspacesUpdate(
+    workspaceId: string,
+    req: AnthropicWorkspaceUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicWorkspace> {
+    return await makeJsonRequest<AnthropicWorkspace>(
+      `/organizations/workspaces/${encodeURIComponent(workspaceId)}`,
+      req,
+      signal,
+      adminKey
+    );
+  }
+
+  async function postWorkspacesArchive(
+    workspaceId: string,
+    signal?: AbortSignal
+  ): Promise<AnthropicWorkspace> {
+    return await makeEmptyPostRequest<AnthropicWorkspace>(
+      `/organizations/workspaces/${encodeURIComponent(workspaceId)}/archive`,
+      signal,
+      adminKey
+    );
+  }
+
+  async function postWorkspaceMembersUpdate(
+    workspaceId: string,
+    userId: string,
+    req: AnthropicWorkspaceMemberUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<AnthropicWorkspaceMember> {
+    return await makeJsonRequest<AnthropicWorkspaceMember>(
+      `/organizations/workspaces/${encodeURIComponent(workspaceId)}/members/${encodeURIComponent(userId)}`,
+      req,
+      signal,
+      adminKey
+    );
+  }
+
   // --- Define GET methods ---
 
   async function getBatchesList(
@@ -939,10 +990,16 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
       invites: {
         create: postInvitesCreate,
       },
+      users: {
+        update: postUsersUpdate,
+      },
       workspaces: {
         create: postWorkspacesCreate,
+        update: postWorkspacesUpdate,
+        archive: postWorkspacesArchive,
         members: {
           add: postWorkspaceMembersAdd,
+          update: postWorkspaceMembersUpdate,
         },
       },
       apiKeys: {
@@ -1113,18 +1170,7 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
       users: {
         list: getUsersList,
         retrieve: getUsersRetrieve,
-        update: async function update(
-          userId: string,
-          req: AnthropicUserUpdateRequest,
-          signal?: AbortSignal
-        ): Promise<AnthropicUser> {
-          return await makeJsonRequest<AnthropicUser>(
-            `/organizations/users/${encodeURIComponent(userId)}`,
-            req,
-            signal,
-            adminKey
-          );
-        },
+        update: postUsersUpdate,
         del: deleteUsersDel,
       },
 
@@ -1139,45 +1185,13 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
         create: postWorkspacesCreate,
         list: getWorkspacesList,
         retrieve: getWorkspacesRetrieve,
-        update: async function update(
-          workspaceId: string,
-          req: AnthropicWorkspaceUpdateRequest,
-          signal?: AbortSignal
-        ): Promise<AnthropicWorkspace> {
-          return await makeJsonRequest<AnthropicWorkspace>(
-            `/organizations/workspaces/${encodeURIComponent(workspaceId)}`,
-            req,
-            signal,
-            adminKey
-          );
-        },
-        archive: async function archive(
-          workspaceId: string,
-          signal?: AbortSignal
-        ): Promise<AnthropicWorkspace> {
-          return await makeEmptyPostRequest<AnthropicWorkspace>(
-            `/organizations/workspaces/${encodeURIComponent(workspaceId)}/archive`,
-            signal,
-            adminKey
-          );
-        },
+        update: postWorkspacesUpdate,
+        archive: postWorkspacesArchive,
         members: {
           add: postWorkspaceMembersAdd,
           list: getWorkspaceMembersList,
           retrieve: getWorkspaceMembersRetrieve,
-          update: async function update(
-            workspaceId: string,
-            userId: string,
-            req: AnthropicWorkspaceMemberUpdateRequest,
-            signal?: AbortSignal
-          ): Promise<AnthropicWorkspaceMember> {
-            return await makeJsonRequest<AnthropicWorkspaceMember>(
-              `/organizations/workspaces/${encodeURIComponent(workspaceId)}/members/${encodeURIComponent(userId)}`,
-              req,
-              signal,
-              adminKey
-            );
-          },
+          update: postWorkspaceMembersUpdate,
           del: deleteWorkspaceMembersDel,
         },
       },

@@ -800,10 +800,32 @@ export interface AnthropicPostV1Namespace {
     invites: {
       create: AnthropicPostInvitesCreateMethod;
     };
+    users: {
+      update: (
+        userId: string,
+        req: AnthropicUserUpdateRequest,
+        signal?: AbortSignal
+      ) => Promise<AnthropicUser>;
+    };
     workspaces: {
       create: AnthropicPostWorkspacesCreateMethod;
+      update: (
+        workspaceId: string,
+        req: AnthropicWorkspaceUpdateRequest,
+        signal?: AbortSignal
+      ) => Promise<AnthropicWorkspace>;
+      archive: (
+        workspaceId: string,
+        signal?: AbortSignal
+      ) => Promise<AnthropicWorkspace>;
       members: {
         add: AnthropicPostWorkspaceMembersAddMethod;
+        update: (
+          workspaceId: string,
+          userId: string,
+          req: AnthropicWorkspaceMemberUpdateRequest,
+          signal?: AbortSignal
+        ) => Promise<AnthropicWorkspaceMember>;
       };
     };
     apiKeys: {

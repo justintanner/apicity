@@ -23,7 +23,7 @@ describe("fireworks streaming integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const chunks: FireworksChatStreamChunk[] = [];
-      for await (const chunk of provider.v1.chat.completions.stream({
+      for await (const chunk of provider.post.stream.v1.chat.completions({
         model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
         messages: [{ role: "user", content: "Say hello in one sentence." }],
         temperature: 0,
@@ -54,7 +54,7 @@ describe("fireworks streaming integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const chunks: FireworksCompletionStreamChunk[] = [];
-      for await (const chunk of provider.v1.completions.stream({
+      for await (const chunk of provider.post.stream.v1.completions({
         model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
         prompt: "Once upon a time",
         temperature: 0,
@@ -75,10 +75,10 @@ describe("fireworks streaming integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      expect(provider.v1.chat.completions.stream.payloadSchema.path).toBe(
+      expect(provider.post.stream.v1.chat.completions.payloadSchema.path).toBe(
         "/chat/completions"
       );
-      expect(provider.v1.completions.stream.payloadSchema.path).toBe(
+      expect(provider.post.stream.v1.completions.payloadSchema.path).toBe(
         "/completions"
       );
     });
@@ -87,13 +87,13 @@ describe("fireworks streaming integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const valid = provider.v1.chat.completions.stream.validatePayload({
+      const valid = provider.post.stream.v1.chat.completions.validatePayload({
         model: "test-model",
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(valid.valid).toBe(true);
 
-      const invalid = provider.v1.chat.completions.stream.validatePayload({
+      const invalid = provider.post.stream.v1.chat.completions.validatePayload({
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(invalid.valid).toBe(false);

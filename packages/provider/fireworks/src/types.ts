@@ -1340,12 +1340,20 @@ interface FireworksChatCompletionsStreamMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+interface FireworksChatCompletionsStreamMethod {
+  (
+    req: FireworksChatRequest,
+    signal?: AbortSignal
+  ): AsyncIterable<FireworksChatStreamChunk>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FireworksChatCompletionsMethod {
   (
     req: FireworksChatRequest,
     signal?: AbortSignal
   ): Promise<FireworksChatResponse>;
-  stream: FireworksChatCompletionsStreamMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
@@ -1368,7 +1376,6 @@ interface FireworksCompletionsMethod {
     req: FireworksCompletionRequest,
     signal?: AbortSignal
   ): Promise<FireworksCompletionResponse>;
-  stream: FireworksCompletionsStreamMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
@@ -1405,7 +1412,6 @@ interface FireworksMessagesMethod {
     req: AnthropicMessagesRequest,
     signal?: AbortSignal
   ): Promise<AnthropicMessagesResponse>;
-  stream: FireworksMessagesStreamMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
@@ -3363,8 +3369,19 @@ interface FireworksPostV1Namespace {
   accounts: FireworksPostV1AccountsNamespace;
 }
 
+interface FireworksPostStreamV1Namespace {
+  chat: {
+    completions: FireworksChatCompletionsStreamMethod;
+  };
+  completions: FireworksCompletionsStreamMethod;
+  messages: FireworksMessagesStreamMethod;
+}
+
 interface FireworksPostNamespace {
   v1: FireworksPostV1Namespace;
+  stream: {
+    v1: FireworksPostStreamV1Namespace;
+  };
 }
 
 // GET v1 namespace types

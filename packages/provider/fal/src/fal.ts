@@ -1482,28 +1482,6 @@ export function fal(opts: FalOptions): FalProvider {
         },
       }
     ),
-
-    stream: Object.assign(
-      async function stream(
-        params?: FalLogsStreamParams,
-        body?: FalLabelFilter[],
-        signal?: AbortSignal
-      ): Promise<AsyncIterable<FalLogEntry>> {
-        const res = await makeStreamPostWithQuery(
-          "/serverless/logs/stream",
-          buildLogsQueryParams(params as unknown as Record<string, unknown>),
-          body,
-          signal
-        );
-        return sseToIterable<FalLogEntry>(res);
-      },
-      {
-        payloadSchema: logsStreamSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, logsStreamSchema);
-        },
-      }
-    ),
   };
 
   const postV1ServerlessFiles = {
@@ -1613,6 +1591,43 @@ export function fal(opts: FalOptions): FalProvider {
     queue: postV1Queue,
     serverless: postV1Serverless,
     compute: postV1Compute,
+  };
+
+  // POST stream v1 namespace
+  const postStreamV1ServerlessLogs = {
+    stream: Object.assign(
+      async function stream(
+        params?: FalLogsStreamParams,
+        body?: FalLabelFilter[],
+        signal?: AbortSignal
+      ): Promise<AsyncIterable<FalLogEntry>> {
+        const res = await makeStreamPostWithQuery(
+          "/serverless/logs/stream",
+          buildLogsQueryParams(params as unknown as Record<string, unknown>),
+          body,
+          signal
+        );
+        return sseToIterable<FalLogEntry>(res);
+      },
+      {
+        payloadSchema: logsStreamSchema,
+        validatePayload(data: unknown): ValidationResult {
+          return validatePayload(data, logsStreamSchema);
+        },
+      }
+    ),
+  };
+
+  const postStreamV1Serverless = {
+    logs: postStreamV1ServerlessLogs,
+  };
+
+  const postStreamV1 = {
+    serverless: postStreamV1Serverless,
+  };
+
+  const postStream = {
+    v1: postStreamV1,
   };
 
   // PUT v1 namespace
@@ -1787,7 +1802,7 @@ export function fal(opts: FalOptions): FalProvider {
     },
     // New verb-prefix API surface
     get: { v1: getV1 },
-    post: { v1: postV1 },
+    post: { v1: postV1, stream: postStream },
     put: { v1: putV1 },
     delete: { v1: deleteV1 },
   };

@@ -45,7 +45,7 @@ describe("fireworks messages integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const events: unknown[] = [];
-      for await (const event of provider.v1.messages.stream({
+      for await (const event of provider.post.stream.v1.messages({
         model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         messages: [{ role: "user", content: "Say hello in one sentence." }],
         max_tokens: 64,

@@ -368,13 +368,6 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
       validatePayload(data: unknown): ValidationResult {
         return validatePayload(data, messagesSchema);
       },
-      stream: async function stream(
-        req: AnthropicMessageRequest,
-        signal?: AbortSignal
-      ): Promise<AsyncIterable<AnthropicStreamEvent>> {
-        const res = await makeStreamRequest("/messages", req, signal);
-        return parseAnthropicStream(res);
-      },
       countTokens: Object.assign(
         async function countTokens(
           req: AnthropicCountTokensRequest,
@@ -434,6 +427,23 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     },
     {
       payloadSchema: filesUploadSchema,
+    }
+  );
+
+  // POST stream namespace methods
+  const postMessagesStream = Object.assign(
+    async function stream(
+      req: AnthropicMessageRequest,
+      signal?: AbortSignal
+    ): Promise<AsyncIterable<AnthropicStreamEvent>> {
+      const res = await makeStreamRequest("/messages", req, signal);
+      return parseAnthropicStream(res);
+    },
+    {
+      payloadSchema: messagesSchema,
+      validatePayload(data: unknown): ValidationResult {
+        return validatePayload(data, messagesSchema);
+      },
     }
   );
 
@@ -1008,6 +1018,10 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     },
   };
 
+  const postStreamV1 = {
+    messages: postMessagesStream,
+  };
+
   const getV1 = {
     messages: {
       batches: {
@@ -1102,7 +1116,7 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
         validatePayload(data: unknown): ValidationResult {
           return validatePayload(data, messagesSchema);
         },
-        stream: postMessages.stream,
+        stream: postMessagesStream,
         countTokens: Object.assign(
           async function countTokens(
             req: AnthropicCountTokensRequest,
@@ -1207,7 +1221,7 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
   // --- Build provider ---
 
   return {
-    post: { v1: postV1 },
+    post: { v1: postV1, stream: { v1: postStreamV1 } },
     get: { v1: getV1 },
     delete: { v1: deleteV1 },
     v1: legacyV1,

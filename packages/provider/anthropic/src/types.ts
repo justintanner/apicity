@@ -702,6 +702,15 @@ export interface ValidationResult {
 // ---------- Provider interface ----------
 
 // POST namespace types
+export interface AnthropicPostMessagesStreamMethod {
+  (
+    req: AnthropicMessageRequest,
+    signal?: AbortSignal
+  ): Promise<AsyncIterable<AnthropicStreamEvent>>;
+  payloadSchema: PayloadSchema;
+  validatePayload: (data: unknown) => ValidationResult;
+}
+
 export interface AnthropicPostMessagesMethod {
   (
     req: AnthropicMessageRequest,
@@ -709,10 +718,6 @@ export interface AnthropicPostMessagesMethod {
   ): Promise<AnthropicMessageResponse>;
   payloadSchema: PayloadSchema;
   validatePayload: (data: unknown) => ValidationResult;
-  stream: (
-    req: AnthropicMessageRequest,
-    signal?: AbortSignal
-  ) => Promise<AsyncIterable<AnthropicStreamEvent>>;
   countTokens: AnthropicPostCountTokensMethod;
   batches: AnthropicPostBatchesMethod;
 }
@@ -785,6 +790,10 @@ export interface AnthropicPostWorkspaceMembersAddMethod {
   ): Promise<AnthropicWorkspaceMember>;
   payloadSchema: PayloadSchema;
   validatePayload: (data: unknown) => ValidationResult;
+}
+
+export interface AnthropicPostStreamV1Namespace {
+  messages: AnthropicPostMessagesStreamMethod;
 }
 
 export interface AnthropicPostV1Namespace {
@@ -1262,7 +1271,10 @@ export interface AnthropicV1Namespace {
 }
 
 export interface AnthropicProvider {
-  post: { v1: AnthropicPostV1Namespace };
+  post: {
+    v1: AnthropicPostV1Namespace;
+    stream: { v1: AnthropicPostStreamV1Namespace };
+  };
   get: { v1: AnthropicGetV1Namespace };
   delete: { v1: AnthropicDeleteV1Namespace };
   // Legacy namespace (backward compatibility)

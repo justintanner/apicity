@@ -17,7 +17,7 @@ describe("anthropic messages streaming", () => {
     const provider = anthropic({
       apiKey: process.env.ANTHROPIC_API_KEY ?? "sk-ant-test-key",
     });
-    const stream = await provider.v1.messages.stream({
+    const stream = await provider.post.stream.v1.messages({
       model: "claude-sonnet-4-5-20250929",
       max_tokens: 256,
       messages: [{ role: "user", content: "Say hello in one sentence." }],

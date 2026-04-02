@@ -954,7 +954,6 @@ interface FalPostV1QueueNamespace {
 
 interface FalPostV1ServerlessLogsNamespace {
   history: FalLogsHistoryMethod;
-  stream: FalLogsStreamMethod;
 }
 
 interface FalPostV1ServerlessFilesNamespace {
@@ -984,6 +983,23 @@ interface FalPostV1Namespace {
   queue: FalPostV1QueueNamespace;
   serverless: FalPostV1ServerlessNamespace;
   compute: FalPostV1ComputeNamespace;
+}
+
+// POST stream v1 namespace
+interface FalPostStreamV1ServerlessLogsNamespace {
+  stream: FalLogsStreamMethod;
+}
+
+interface FalPostStreamV1ServerlessNamespace {
+  logs: FalPostStreamV1ServerlessLogsNamespace;
+}
+
+interface FalPostStreamV1Namespace {
+  serverless: FalPostStreamV1ServerlessNamespace;
+}
+
+interface FalPostStreamNamespace {
+  v1: FalPostStreamV1Namespace;
 }
 
 // PUT v1 namespace
@@ -1043,6 +1059,7 @@ interface FalGetNamespace {
 
 interface FalPostNamespace {
   v1: FalPostV1Namespace;
+  stream: FalPostStreamNamespace;
 }
 
 interface FalPutNamespace {

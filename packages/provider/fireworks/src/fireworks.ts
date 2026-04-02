@@ -708,24 +708,6 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          stream: Object.assign(
-            (
-              req: FireworksChatRequest,
-              signal?: AbortSignal
-            ): AsyncIterable<FireworksChatStreamChunk> => {
-              return makeStreamRequest<FireworksChatStreamChunk>(
-                "/chat/completions",
-                { ...req, stream: true },
-                signal
-              );
-            },
-            {
-              payloadSchema: chatCompletionsSchema,
-              validatePayload(data: unknown): ValidationResult {
-                return validatePayload(data, chatCompletionsSchema);
-              },
-            }
-          ),
           payloadSchema: chatCompletionsSchema,
           validatePayload(data: unknown): ValidationResult {
             return validatePayload(data, chatCompletionsSchema);
@@ -745,24 +727,6 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       {
-        stream: Object.assign(
-          (
-            req: FireworksCompletionRequest,
-            signal?: AbortSignal
-          ): AsyncIterable<FireworksCompletionStreamChunk> => {
-            return makeStreamRequest<FireworksCompletionStreamChunk>(
-              "/completions",
-              { ...req, stream: true },
-              signal
-            );
-          },
-          {
-            payloadSchema: completionsSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, completionsSchema);
-            },
-          }
-        ),
         payloadSchema: completionsSchema,
         validatePayload(data: unknown): ValidationResult {
           return validatePayload(data, completionsSchema);
@@ -806,12 +770,6 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
       }
     ),
     messages: Object.assign(messagesImpl, {
-      stream: Object.assign(messagesStreamImpl, {
-        payloadSchema: messagesSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, messagesSchema);
-        },
-      }),
       payloadSchema: messagesSchema,
       validatePayload(data: unknown): ValidationResult {
         return validatePayload(data, messagesSchema);
@@ -1715,6 +1673,54 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
     },
+  };
+
+  // POST stream namespace - streaming methods
+  const postStreamV1 = {
+    chat: {
+      completions: Object.assign(
+        (
+          req: FireworksChatRequest,
+          signal?: AbortSignal
+        ): AsyncIterable<FireworksChatStreamChunk> => {
+          return makeStreamRequest<FireworksChatStreamChunk>(
+            "/chat/completions",
+            { ...req, stream: true },
+            signal
+          );
+        },
+        {
+          payloadSchema: chatCompletionsSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, chatCompletionsSchema);
+          },
+        }
+      ),
+    },
+    completions: Object.assign(
+      (
+        req: FireworksCompletionRequest,
+        signal?: AbortSignal
+      ): AsyncIterable<FireworksCompletionStreamChunk> => {
+        return makeStreamRequest<FireworksCompletionStreamChunk>(
+          "/completions",
+          { ...req, stream: true },
+          signal
+        );
+      },
+      {
+        payloadSchema: completionsSchema,
+        validatePayload(data: unknown): ValidationResult {
+          return validatePayload(data, completionsSchema);
+        },
+      }
+    ),
+    messages: Object.assign(messagesStreamImpl, {
+      payloadSchema: messagesSchema,
+      validatePayload(data: unknown): ValidationResult {
+        return validatePayload(data, messagesSchema);
+      },
+    }),
   };
 
   // GET namespace - methods that use HTTP GET
@@ -3112,6 +3118,9 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     },
     post: {
       v1: postV1,
+      stream: {
+        v1: postStreamV1,
+      },
     },
     get: {
       v1: getV1,

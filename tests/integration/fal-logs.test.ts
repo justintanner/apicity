@@ -67,25 +67,29 @@ describe("fal serverless logs integration", () => {
 
   it("should expose payloadSchema on stream", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    expect(provider.v1.serverless.logs.stream.payloadSchema).toBeDefined();
-    expect(provider.v1.serverless.logs.stream.payloadSchema.method).toBe(
-      "POST"
-    );
-    expect(provider.v1.serverless.logs.stream.payloadSchema.path).toBe(
-      "/serverless/logs/stream"
-    );
+    expect(
+      provider.post.stream.v1.serverless.logs.stream.payloadSchema
+    ).toBeDefined();
+    expect(
+      provider.post.stream.v1.serverless.logs.stream.payloadSchema.method
+    ).toBe("POST");
+    expect(
+      provider.post.stream.v1.serverless.logs.stream.payloadSchema.path
+    ).toBe("/serverless/logs/stream");
   });
 
   it("should validate stream payload", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const valid = provider.v1.serverless.logs.stream.validatePayload({
-      level: "info",
-    });
+    const valid =
+      provider.post.stream.v1.serverless.logs.stream.validatePayload({
+        level: "info",
+      });
     expect(valid.valid).toBe(true);
 
-    const invalid = provider.v1.serverless.logs.stream.validatePayload({
-      run_source: "bad-value",
-    });
+    const invalid =
+      provider.post.stream.v1.serverless.logs.stream.validatePayload({
+        run_source: "bad-value",
+      });
     expect(invalid.valid).toBe(false);
   });
 });

@@ -1,14 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { xai } from "@nakedapi/xai";
 
 describe("xAI responses CRUD integration", () => {
   let ctx: PollyContext;
   let createdResponseId: string | null = null;
-
-  beforeEach(() => {
-    ctx = setupPolly("xai/responses-crud");
-  });
 
   afterEach(async () => {
     // Cleanup
@@ -27,12 +23,13 @@ describe("xAI responses CRUD integration", () => {
   });
 
   it("should create a response", async () => {
+    ctx = setupPolly("xai/responses-crud-create");
     const provider = xai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
     const result = await provider.post.v1.responses({
-      model: "grok-2",
-      input: [{ role: "user", content: "Hello!" }],
+      model: "grok-4-fast",
+      input: "Hello!",
     });
     expect(result.id).toBeTruthy();
     expect(result.output).toBeDefined();
@@ -40,13 +37,14 @@ describe("xAI responses CRUD integration", () => {
   });
 
   it("should get a response by id", async () => {
+    ctx = setupPolly("xai/responses-crud-get");
     const provider = xai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
     // Create
     const created = await provider.post.v1.responses({
-      model: "grok-2",
-      input: [{ role: "user", content: "Get this response" }],
+      model: "grok-4-fast",
+      input: "Get this response",
     });
     createdResponseId = created.id;
 
@@ -56,13 +54,14 @@ describe("xAI responses CRUD integration", () => {
   });
 
   it("should delete a response", async () => {
+    ctx = setupPolly("xai/responses-crud-delete");
     const provider = xai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
     // Create
     const created = await provider.post.v1.responses({
-      model: "grok-2",
-      input: [{ role: "user", content: "Delete this" }],
+      model: "grok-4-fast",
+      input: "Delete this",
     });
 
     // Delete

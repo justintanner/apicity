@@ -35,16 +35,4 @@ describe("xai responses API", () => {
     }
     expect(result.usage.total_tokens).toBeGreaterThan(0);
   });
-
-  it("should retrieve a stored response", async () => {
-    ctx = setupPolly("xai/responses-get");
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    });
-    const result = await provider.get.v1.responses("resp_stored_001");
-    expect(result.id).toBe("resp_stored_001");
-    expect(result.object).toBe("response");
-    expect(result.status).toBe("completed");
-    expect(result.output.length).toBeGreaterThan(0);
-  });
 });

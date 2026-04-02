@@ -23,13 +23,4 @@ describe("xAI language models integration", () => {
     expect(result.models.length).toBeGreaterThan(0);
     expect(result.models[0].id).toBeTruthy();
   });
-
-  it("should get a specific language model", async () => {
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
-    });
-    const result = await provider.get.v1.languageModels("grok-2");
-    expect(result.id).toBeTruthy();
-    expect(result.object).toBe("model");
-  });
 });

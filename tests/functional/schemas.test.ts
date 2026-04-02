@@ -23,6 +23,11 @@ import {
   responsesCancelSchema,
   responsesCompactSchema,
   fineTuningJobsCreateSchema,
+  checkpointPermissionsCreateSchema,
+  filesDeleteSchema,
+  responsesDeleteSchema,
+  responsesInputTokensSchema,
+  storedCompletionsDeleteSchema,
 } from "../../packages/provider/openai/src/schemas";
 import {
   chatCompletionsSchema as xaiChatSchema,
@@ -47,6 +52,13 @@ import {
 import {
   pricingEstimateSchema,
   deletePayloadsSchema,
+  queueSubmitSchema,
+  logsHistorySchema,
+  logsStreamSchema,
+  filesUploadUrlSchema,
+  filesUploadLocalSchema,
+  computeInstanceCreateSchema,
+  appsFlushQueueSchema,
 } from "../../packages/provider/fal/src/schemas";
 import {
   createTaskSchema,
@@ -98,7 +110,24 @@ describe("schema structure", () => {
     { name: "xai/documentSearch", schema: documentSearchSchema },
     { name: "xai/responses", schema: xaiResponsesSchema },
     { name: "xai/responsesDelete", schema: xaiResponsesDeleteSchema },
-    { name: "fal/pricingEstimate", schema: pricingEstimateSchema },
+    { name: "openai/responsesDelete", schema: responsesDeleteSchema },
+    { name: "openai/responsesInputTokens", schema: responsesInputTokensSchema },
+    { name: "openai/filesDelete", schema: filesDeleteSchema },
+    {
+      name: "openai/storedCompletionsDelete",
+      schema: storedCompletionsDeleteSchema,
+    },
+    {
+      name: "openai/checkpointPermissionsCreate",
+      schema: checkpointPermissionsCreateSchema,
+    },
+    { name: "fal/queueSubmit", schema: queueSubmitSchema },
+    { name: "fal/logsHistory", schema: logsHistorySchema },
+    { name: "fal/logsStream", schema: logsStreamSchema },
+    { name: "fal/filesUploadUrl", schema: filesUploadUrlSchema },
+    { name: "fal/filesUploadLocal", schema: filesUploadLocalSchema },
+    { name: "fal/computeInstanceCreate", schema: computeInstanceCreateSchema },
+    { name: "fal/appsFlushQueue", schema: appsFlushQueueSchema },
     { name: "fal/deletePayloads", schema: deletePayloadsSchema },
     { name: "kie/createTask", schema: createTaskSchema },
     { name: "kie/downloadUrl", schema: downloadUrlSchema },
@@ -586,6 +615,156 @@ describe("schema + validatePayload integration", () => {
   it("anthropic workspaceCreate: rejects missing name", () => {
     const result = validatePayload({}, workspaceCreateSchema);
     expect(result.valid).toBe(false);
+    expect(result.errors).toContain("name is required");
+  });
+
+  // OpenAI missing schema tests
+  it("openai responsesDelete: accepts valid request", () => {
+    const result = validatePayload({ id: "resp-123" }, responsesDeleteSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai responsesDelete: rejects missing id", () => {
+    const result = validatePayload({}, responsesDeleteSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("id is required");
+  });
+
+  it("openai responsesInputTokens: accepts valid request", () => {
+    const result = validatePayload(
+      { model: "gpt-4o" },
+      responsesInputTokensSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai filesDelete: accepts valid request", () => {
+    const result = validatePayload({ file_id: "file-123" }, filesDeleteSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai filesDelete: rejects missing file_id", () => {
+    const result = validatePayload({}, filesDeleteSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("file_id is required");
+  });
+
+  it("openai storedCompletionsDelete: accepts valid request", () => {
+    const result = validatePayload(
+      { completion_id: "comp-123" },
+      storedCompletionsDeleteSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai storedCompletionsDelete: rejects missing completion_id", () => {
+    const result = validatePayload({}, storedCompletionsDeleteSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("completion_id is required");
+  });
+
+  it("openai checkpointPermissionsCreate: accepts valid request", () => {
+    const result = validatePayload(
+      { project_ids: ["proj-1", "proj-2"] },
+      checkpointPermissionsCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai checkpointPermissionsCreate: rejects missing project_ids", () => {
+    const result = validatePayload({}, checkpointPermissionsCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("project_ids is required");
+  });
+
+  // Fal missing schema tests
+  it("fal queueSubmit: accepts valid request", () => {
+    const result = validatePayload(
+      { endpoint_id: "fal-ai/flux/schnell", input: { prompt: "a cat" } },
+      queueSubmitSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal queueSubmit: rejects missing required fields", () => {
+    const result = validatePayload({}, queueSubmitSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("endpoint_id is required");
+    expect(result.errors).toContain("input is required");
+  });
+
+  it("fal logsHistory: accepts valid request", () => {
+    const result = validatePayload({ limit: 100 }, logsHistorySchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal logsHistory: accepts empty request", () => {
+    const result = validatePayload({}, logsHistorySchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal logsStream: accepts valid request", () => {
+    const result = validatePayload({ level: "info" }, logsStreamSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal filesUploadUrl: accepts valid request", () => {
+    const result = validatePayload(
+      { file: "path/to/file.png", url: "https://example.com/image.png" },
+      filesUploadUrlSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal filesUploadUrl: rejects missing required fields", () => {
+    const result = validatePayload({}, filesUploadUrlSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("file is required");
+    expect(result.errors).toContain("url is required");
+  });
+
+  it("fal filesUploadLocal: accepts valid request", () => {
+    const result = validatePayload(
+      { target_path: "uploads/image.png", file: {} },
+      filesUploadLocalSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal filesUploadLocal: rejects missing required fields", () => {
+    const result = validatePayload({}, filesUploadLocalSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("target_path is required");
+    expect(result.errors).toContain("file is required");
+  });
+
+  it("fal computeInstanceCreate: accepts valid request", () => {
+    const result = validatePayload(
+      { instance_type: "gpu_8x_h100_sxm5", ssh_key: "ssh-rsa AAA..." },
+      computeInstanceCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal computeInstanceCreate: rejects missing required fields", () => {
+    const result = validatePayload({}, computeInstanceCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("instance_type is required");
+    expect(result.errors).toContain("ssh_key is required");
+  });
+
+  it("fal appsFlushQueue: accepts valid request", () => {
+    const result = validatePayload(
+      { owner: "username", name: "my-app" },
+      appsFlushQueueSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("fal appsFlushQueue: rejects missing required fields", () => {
+    const result = validatePayload({}, appsFlushQueueSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("owner is required");
     expect(result.errors).toContain("name is required");
   });
 });

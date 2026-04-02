@@ -5,11 +5,20 @@ import { XaiError } from "../../packages/provider/xai/src/types";
 import { FalError } from "../../packages/provider/fal/src/types";
 import { KieError } from "../../packages/provider/kie/src/types";
 import { KimiCodingError } from "../../packages/provider/kimicoding/src/types";
+import { AnthropicError } from "../../packages/provider/anthropic/src/types";
+import { FireworksError } from "../../packages/provider/fireworks/src/types";
 import {
   textBlock,
   imageBase64,
   imageUrl,
 } from "../../packages/provider/kimicoding/src/kimicoding";
+import {
+  textPart,
+  imageUrlPart,
+  imageBase64Part,
+  firstContent,
+} from "../../packages/provider/openai/src/openai";
+import type { OpenAiChatResponse } from "../../packages/provider/openai/src/types";
 
 describe("error classes", () => {
   describe("OpenAiError", () => {
@@ -100,6 +109,64 @@ describe("error classes", () => {
       expect(err).toBeInstanceOf(Error);
     });
   });
+
+  describe("AnthropicError", () => {
+    it("sets all properties including errorType", () => {
+      const err = new AnthropicError(
+        "invalid request",
+        400,
+        { error: { type: "invalid_request_error" } },
+        "invalid_request_error"
+      );
+      expect(err).toBeInstanceOf(Error);
+      expect(err.name).toBe("AnthropicError");
+      expect(err.message).toBe("invalid request");
+      expect(err.status).toBe(400);
+      expect(err.body).toEqual({ error: { type: "invalid_request_error" } });
+      expect(err.errorType).toBe("invalid_request_error");
+    });
+
+    it("defaults body to null when omitted", () => {
+      const err = new AnthropicError("fail", 500);
+      expect(err.body).toBeNull();
+      expect(err.errorType).toBeUndefined();
+    });
+
+    it("handles optional errorType", () => {
+      const err = new AnthropicError("not found", 404, { detail: "missing" });
+      expect(err.body).toEqual({ detail: "missing" });
+      expect(err.errorType).toBeUndefined();
+    });
+  });
+
+  describe("FireworksError", () => {
+    it("sets all properties including code", () => {
+      const err = new FireworksError(
+        "model not found",
+        404,
+        { error: "model_does_not_exist" },
+        "model_not_found"
+      );
+      expect(err).toBeInstanceOf(Error);
+      expect(err.name).toBe("FireworksError");
+      expect(err.message).toBe("model not found");
+      expect(err.status).toBe(404);
+      expect(err.body).toEqual({ error: "model_does_not_exist" });
+      expect(err.code).toBe("model_not_found");
+    });
+
+    it("defaults body to null when omitted", () => {
+      const err = new FireworksError("fail", 500);
+      expect(err.body).toBeNull();
+      expect(err.code).toBeUndefined();
+    });
+
+    it("handles body without code", () => {
+      const err = new FireworksError("bad request", 400, { detail: "invalid" });
+      expect(err.body).toEqual({ detail: "invalid" });
+      expect(err.code).toBeUndefined();
+    });
+  });
 });
 
 describe("kimicoding content helpers", () => {
@@ -140,6 +207,109 @@ describe("kimicoding content helpers", () => {
         type: "image",
         source: { type: "url", url: "https://example.com/img.png" },
       });
+    });
+  });
+});
+
+describe("openai content helpers", () => {
+  describe("textPart", () => {
+    it("returns text content part", () => {
+      expect(textPart("hello")).toEqual({ type: "text", text: "hello" });
+    });
+
+    it("handles empty string", () => {
+      expect(textPart("")).toEqual({ type: "text", text: "" });
+    });
+  });
+
+  describe("imageUrlPart", () => {
+    it("returns image_url content part with url", () => {
+      const part = imageUrlPart("https://example.com/img.png");
+      expect(part).toEqual({
+        type: "image_url",
+        image_url: { url: "https://example.com/img.png" },
+      });
+    });
+
+    it("includes detail when provided", () => {
+      const part = imageUrlPart("https://example.com/img.png", "high");
+      expect(part.image_url.detail).toBe("high");
+    });
+
+    it("omits detail when not provided", () => {
+      const part = imageUrlPart("https://example.com/img.png");
+      expect(part.image_url.detail).toBeUndefined();
+    });
+
+    it("supports all detail levels", () => {
+      const levels = ["auto", "low", "high"] as const;
+      for (const level of levels) {
+        const part = imageUrlPart("https://example.com/img.png", level);
+        expect(part.image_url.detail).toBe(level);
+      }
+    });
+  });
+
+  describe("imageBase64Part", () => {
+    it("returns image_url content part with data URL", () => {
+      const part = imageBase64Part("abc123", "image/png");
+      expect(part).toEqual({
+        type: "image_url",
+        image_url: { url: "data:image/png;base64,abc123" },
+      });
+    });
+
+    it("supports different media types", () => {
+      const mediaTypes = ["image/png", "image/jpeg", "image/gif", "image/webp"];
+      for (const mt of mediaTypes) {
+        const part = imageBase64Part("data", mt);
+        expect(part.image_url.url).toBe(`data:${mt};base64,data`);
+      }
+    });
+
+    it("passes detail through to imageUrlPart", () => {
+      const part = imageBase64Part("abc123", "image/png", "low");
+      expect(part.image_url.detail).toBe("low");
+    });
+  });
+
+  describe("firstContent", () => {
+    it("returns content from first choice", () => {
+      const response = {
+        choices: [
+          {
+            index: 0,
+            message: { role: "assistant", content: "Hello!" },
+            finish_reason: "stop",
+          },
+        ],
+      } as OpenAiChatResponse;
+      expect(firstContent(response)).toBe("Hello!");
+    });
+
+    it("returns empty string when no choices", () => {
+      const response = { choices: [] } as unknown as OpenAiChatResponse;
+      expect(firstContent(response)).toBe("");
+    });
+
+    it("returns empty string when content is null", () => {
+      const response = {
+        choices: [
+          {
+            index: 0,
+            message: { role: "assistant", content: null },
+            finish_reason: "stop",
+          },
+        ],
+      } as OpenAiChatResponse;
+      expect(firstContent(response)).toBe("");
+    });
+
+    it("returns empty string when message is undefined", () => {
+      const response = {
+        choices: [{ index: 0, finish_reason: "stop" }],
+      } as unknown as OpenAiChatResponse;
+      expect(firstContent(response)).toBe("");
     });
   });
 });

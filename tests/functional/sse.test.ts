@@ -2,6 +2,11 @@
 import { describe, it, expect } from "vitest";
 import { sseToIterable as kimiSse } from "../../packages/provider/kimicoding/src/sse";
 import { sseToIterable as kieSse } from "../../packages/provider/kie/src/sse";
+import {
+  sseToIterable as anthropicSse,
+  parseAnthropicStream,
+} from "../../packages/provider/anthropic/src/sse";
+import { sseToIterable as fireworksSse } from "../../packages/provider/fireworks/src/sse";
 
 function makeResponse(chunks: string[]): Response {
   const encoder = new TextEncoder();
@@ -161,5 +166,241 @@ describe("kie sseToIterable", () => {
       items.push(data);
     }
     expect(items).toEqual(["line1", "line2"]);
+  });
+});
+
+describe("anthropic sseToIterable", () => {
+  it("parses event and data fields", async () => {
+    const res = makeResponse([
+      'event: content_block_delta\ndata: {"type":"text_delta","text":"Hello"}\n\n',
+    ]);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].event).toBe("content_block_delta");
+    expect(events[0].data).toBe('{"type":"text_delta","text":"Hello"}');
+  });
+
+  it("defaults event to 'message' when not specified", async () => {
+    const res = makeResponse(["data: hello\n\n"]);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events[0].event).toBe("message");
+  });
+
+  it("handles multiple events in one chunk", async () => {
+    const res = makeResponse([
+      "event: a\ndata: first\n\nevent: b\ndata: second\n\n",
+    ]);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(2);
+    expect(events[0]).toEqual({ event: "a", data: "first" });
+    expect(events[1]).toEqual({ event: "b", data: "second" });
+  });
+
+  it("handles events split across chunks", async () => {
+    const res = makeResponse(["event: delta\nda", 'ta: {"split":true}\n\n']);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].data).toBe('{"split":true}');
+  });
+
+  it("skips events without data", async () => {
+    const res = makeResponse(["event: ping\n\ndata: real\n\n"]);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].data).toBe("real");
+  });
+
+  it("flushes trailing event without final delimiter", async () => {
+    const res = makeResponse(["data: trailing"]);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].data).toBe("trailing");
+  });
+
+  it("returns nothing for null body", async () => {
+    const res = new Response(null);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(0);
+  });
+
+  it("handles CRLF line endings", async () => {
+    const res = makeResponse(["event: test\r\ndata: crlf\r\n\r\n"]);
+    const events = [];
+    for await (const ev of anthropicSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0]).toEqual({ event: "test", data: "crlf" });
+  });
+});
+
+describe("anthropic parseAnthropicStream", () => {
+  it("yields parsed JSON events", async () => {
+    const res = makeResponse([
+      'data: {"type":"message_start","message":{"id":"msg_123"}}\n\n',
+    ]);
+    const events = [];
+    for await (const ev of parseAnthropicStream(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0]).toEqual({
+      type: "message_start",
+      message: { id: "msg_123" },
+    });
+  });
+
+  it("handles multiple events", async () => {
+    const res = makeResponse([
+      'data: {"type":"content_block_start","index":0}\n\ndata: {"type":"content_block_delta","index":0}\n\n',
+    ]);
+    const events = [];
+    for await (const ev of parseAnthropicStream(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(2);
+    expect(events[0].type).toBe("content_block_start");
+    expect(events[1].type).toBe("content_block_delta");
+  });
+
+  it("stops at [DONE] marker", async () => {
+    const res = makeResponse([
+      'data: {"type":"message_start"}\n\ndata: [DONE]\n\ndata: {"type":"should_not_appear"}\n\n',
+    ]);
+    const events = [];
+    for await (const ev of parseAnthropicStream(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].type).toBe("message_start");
+  });
+
+  it("skips malformed JSON events", async () => {
+    const res = makeResponse([
+      'data: {"type":"valid"}\n\ndata: {invalid json}\n\ndata: {"type":"also_valid"}\n\n',
+    ]);
+    const events = [];
+    for await (const ev of parseAnthropicStream(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(2);
+    expect(events[0].type).toBe("valid");
+    expect(events[1].type).toBe("also_valid");
+  });
+
+  it("returns nothing for null body", async () => {
+    const res = new Response(null);
+    const events = [];
+    for await (const ev of parseAnthropicStream(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(0);
+  });
+});
+
+describe("fireworks sseToIterable", () => {
+  it("parses event and data fields", async () => {
+    const res = makeResponse([
+      'event: completion\ndata: {"choices":[{"delta":{"content":"Hi"}}]}\n\n',
+    ]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].event).toBe("completion");
+    expect(events[0].data).toBe('{"choices":[{"delta":{"content":"Hi"}}]}');
+  });
+
+  it("defaults event to 'message' when not specified", async () => {
+    const res = makeResponse(["data: hello\n\n"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events[0].event).toBe("message");
+  });
+
+  it("handles multiple events in one chunk", async () => {
+    const res = makeResponse([
+      "event: a\ndata: first\n\nevent: b\ndata: second\n\n",
+    ]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(2);
+    expect(events[0]).toEqual({ event: "a", data: "first" });
+    expect(events[1]).toEqual({ event: "b", data: "second" });
+  });
+
+  it("handles events split across chunks", async () => {
+    const res = makeResponse(["event: delta\nda", 'ta: {"split":true}\n\n']);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].data).toBe('{"split":true}');
+  });
+
+  it("skips events without data", async () => {
+    const res = makeResponse(["event: ping\n\ndata: real\n\n"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].data).toBe("real");
+  });
+
+  it("flushes trailing event without final delimiter", async () => {
+    const res = makeResponse(["data: trailing"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].data).toBe("trailing");
+  });
+
+  it("returns nothing for null body", async () => {
+    const res = new Response(null);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(0);
+  });
+
+  it("handles CRLF line endings", async () => {
+    const res = makeResponse(["event: test\r\ndata: crlf\r\n\r\n"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0]).toEqual({ event: "test", data: "crlf" });
   });
 });

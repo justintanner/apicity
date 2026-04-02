@@ -14,6 +14,15 @@ import {
   audioTranscriptionsSchema,
   audioTranslationsSchema,
   responsesSchema,
+  filesUploadSchema as openaiFilesUploadSchema,
+  modelsDeleteSchema,
+  batchesCreateSchema as openaiBatchesCreateSchema,
+  batchesCancelSchema,
+  audioSpeechSchema,
+  moderationsSchema,
+  responsesCancelSchema,
+  responsesCompactSchema,
+  fineTuningJobsCreateSchema,
 } from "../../packages/provider/openai/src/schemas";
 import {
   chatCompletionsSchema as xaiChatSchema,
@@ -30,6 +39,10 @@ import {
   documentSearchSchema,
   responsesSchema as xaiResponsesSchema,
   responsesDeleteSchema as xaiResponsesDeleteSchema,
+  tokenizeTextSchema,
+  realtimeClientSecretsSchema,
+  apiKeyCreateSchema,
+  apiKeyUpdateSchema,
 } from "../../packages/provider/xai/src/schemas";
 import {
   pricingEstimateSchema,
@@ -48,6 +61,14 @@ import {
   claudeMessagesSchema,
   modelInputSchemas,
 } from "../../packages/provider/kie/src/schemas";
+import {
+  messagesSchema as anthropicMessagesSchema,
+  countTokensSchema,
+  batchesCreateSchema as anthropicBatchesCreateSchema,
+  filesUploadSchema as anthropicFilesUploadSchema,
+  skillsCreateSchema,
+  workspaceCreateSchema,
+} from "../../packages/provider/anthropic/src/schemas";
 
 // Import validatePayload to test schemas with real validation
 import { validatePayload } from "../../packages/provider/kimicoding/src/validate";
@@ -290,6 +311,282 @@ describe("schema + validatePayload integration", () => {
       claudeMessagesSchema
     );
     expect(result.valid).toBe(true);
+  });
+
+  it("openai filesUpload: accepts valid request", () => {
+    const result = validatePayload(
+      { file: {}, purpose: "assistants" },
+      openaiFilesUploadSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai filesUpload: rejects missing required fields", () => {
+    const result = validatePayload({}, openaiFilesUploadSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("file is required");
+    expect(result.errors).toContain("purpose is required");
+  });
+
+  it("openai modelsDelete: accepts valid request", () => {
+    const result = validatePayload(
+      { model: "ft:gpt-4o-2024-08-06:org:custom" },
+      modelsDeleteSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai modelsDelete: rejects missing model", () => {
+    const result = validatePayload({}, modelsDeleteSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+  });
+
+  it("openai batchesCreate: accepts valid request", () => {
+    const result = validatePayload(
+      {
+        input_file_id: "file-123",
+        endpoint: "/v1/chat/completions",
+        completion_window: "24h",
+      },
+      openaiBatchesCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai batchesCreate: rejects missing required fields", () => {
+    const result = validatePayload({}, openaiBatchesCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("input_file_id is required");
+    expect(result.errors).toContain("endpoint is required");
+    expect(result.errors).toContain("completion_window is required");
+  });
+
+  it("openai batchesCancel: accepts valid request", () => {
+    const result = validatePayload(
+      { batch_id: "batch-123" },
+      batchesCancelSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai batchesCancel: rejects missing batch_id", () => {
+    const result = validatePayload({}, batchesCancelSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("batch_id is required");
+  });
+
+  it("openai audioSpeech: accepts valid request", () => {
+    const result = validatePayload(
+      { model: "tts-1", input: "Hello world", voice: "alloy" },
+      audioSpeechSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai audioSpeech: rejects missing required fields", () => {
+    const result = validatePayload({}, audioSpeechSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+    expect(result.errors).toContain("input is required");
+    expect(result.errors).toContain("voice is required");
+  });
+
+  it("openai moderations: accepts valid request", () => {
+    const result = validatePayload({ input: "Hello world" }, moderationsSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai moderations: rejects missing input", () => {
+    const result = validatePayload({}, moderationsSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("input is required");
+  });
+
+  it("openai responsesCancel: accepts valid request", () => {
+    const result = validatePayload({ id: "resp-123" }, responsesCancelSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai responsesCancel: rejects missing id", () => {
+    const result = validatePayload({}, responsesCancelSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("id is required");
+  });
+
+  it("openai responsesCompact: accepts valid request", () => {
+    const result = validatePayload({ model: "gpt-4o" }, responsesCompactSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai responsesCompact: rejects missing model", () => {
+    const result = validatePayload({}, responsesCompactSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+  });
+
+  it("openai fineTuningJobsCreate: accepts valid request", () => {
+    const result = validatePayload(
+      { model: "gpt-4o", training_file: "file-123" },
+      fineTuningJobsCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("openai fineTuningJobsCreate: rejects missing required fields", () => {
+    const result = validatePayload({}, fineTuningJobsCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+    expect(result.errors).toContain("training_file is required");
+  });
+
+  it("xai tokenizeText: accepts valid request", () => {
+    const result = validatePayload(
+      { model: "grok-3-fast", text: "Hello world" },
+      tokenizeTextSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("xai tokenizeText: rejects missing required fields", () => {
+    const result = validatePayload({}, tokenizeTextSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+    expect(result.errors).toContain("text is required");
+  });
+
+  it("xai realtimeClientSecrets: accepts valid request", () => {
+    const result = validatePayload({}, realtimeClientSecretsSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("xai apiKeyCreate: accepts valid request", () => {
+    const result = validatePayload({ name: "test-key" }, apiKeyCreateSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("xai apiKeyCreate: rejects missing name", () => {
+    const result = validatePayload({}, apiKeyCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("name is required");
+  });
+
+  it("xai apiKeyUpdate: accepts valid request", () => {
+    const result = validatePayload(
+      { apiKey: { name: "renamed-key" }, fieldMask: "name" },
+      apiKeyUpdateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("xai apiKeyUpdate: rejects missing required fields", () => {
+    const result = validatePayload({}, apiKeyUpdateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("apiKey is required");
+    expect(result.errors).toContain("fieldMask is required");
+  });
+
+  it("anthropic messages: accepts valid request", () => {
+    const result = validatePayload(
+      {
+        model: "claude-sonnet-4-20250514",
+        messages: [{ role: "user", content: "Hello" }],
+        max_tokens: 1024,
+      },
+      anthropicMessagesSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("anthropic messages: rejects missing required fields", () => {
+    const result = validatePayload({}, anthropicMessagesSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+    expect(result.errors).toContain("messages is required");
+    expect(result.errors).toContain("max_tokens is required");
+  });
+
+  it("anthropic countTokens: accepts valid request", () => {
+    const result = validatePayload(
+      {
+        model: "claude-sonnet-4-20250514",
+        messages: [{ role: "user", content: "Hello" }],
+      },
+      countTokensSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("anthropic countTokens: rejects missing required fields", () => {
+    const result = validatePayload({}, countTokensSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("model is required");
+    expect(result.errors).toContain("messages is required");
+  });
+
+  it("anthropic batchesCreate: accepts valid request", () => {
+    const result = validatePayload(
+      {
+        requests: [
+          {
+            custom_id: "req-1",
+            params: {
+              model: "claude-sonnet-4-20250514",
+              messages: [{ role: "user", content: "Hello" }],
+              max_tokens: 1024,
+            },
+          },
+        ],
+      },
+      anthropicBatchesCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("anthropic batchesCreate: rejects missing requests", () => {
+    const result = validatePayload({}, anthropicBatchesCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("requests is required");
+  });
+
+  it("anthropic filesUpload: accepts valid request", () => {
+    const result = validatePayload({ file: {} }, anthropicFilesUploadSchema);
+    expect(result.valid).toBe(true);
+  });
+
+  it("anthropic filesUpload: rejects missing file", () => {
+    const result = validatePayload({}, anthropicFilesUploadSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("file is required");
+  });
+
+  it("anthropic skillsCreate: accepts valid request", () => {
+    const result = validatePayload(
+      { display_title: "test-skill", files: [{}] },
+      skillsCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("anthropic skillsCreate: rejects missing required fields", () => {
+    const result = validatePayload({}, skillsCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("display_title is required");
+    expect(result.errors).toContain("files is required");
+  });
+
+  it("anthropic workspaceCreate: accepts valid request", () => {
+    const result = validatePayload(
+      { name: "test-workspace" },
+      workspaceCreateSchema
+    );
+    expect(result.valid).toBe(true);
+  });
+
+  it("anthropic workspaceCreate: rejects missing name", () => {
+    const result = validatePayload({}, workspaceCreateSchema);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toContain("name is required");
   });
 });
 

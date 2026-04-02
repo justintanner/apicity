@@ -171,9 +171,8 @@ interface KimiCodingStreamMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface KimiCodingMessagesNamespace {
+interface KimiCodingMessagesMethod {
   (req: ChatRequest, signal?: AbortSignal): Promise<AnthropicMessage>;
-  stream: KimiCodingStreamMethod;
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 }
@@ -195,13 +194,20 @@ interface KimiCodingGetV1 {
 }
 
 interface KimiCodingPostV1 {
-  messages: KimiCodingMessagesNamespace;
+  messages: KimiCodingMessagesMethod;
   embeddings: KimiCodingEmbeddingsMethod;
   countTokens: KimiCodingCountTokensMethod;
 }
 
+interface KimiCodingPostStreamV1 {
+  messages: KimiCodingStreamMethod;
+}
+
 export interface Provider {
-  post: { coding: { v1: KimiCodingPostV1 } };
+  post: {
+    coding: { v1: KimiCodingPostV1 };
+    stream: { coding: { v1: KimiCodingPostStreamV1 } };
+  };
   get: { coding: { v1: KimiCodingGetV1 } };
 }
 

@@ -282,12 +282,13 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
   }
 
   const messages = Object.assign(chatImpl, {
-    stream: Object.assign(streamImpl, {
-      payloadSchema: messagesSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, messagesSchema);
-      },
-    }),
+    payloadSchema: messagesSchema,
+    validatePayload(data: unknown): ValidationResult {
+      return validatePayload(data, messagesSchema);
+    },
+  });
+
+  const streamMessages = Object.assign(streamImpl, {
     payloadSchema: messagesSchema,
     validatePayload(data: unknown): ValidationResult {
       return validatePayload(data, messagesSchema);
@@ -318,7 +319,10 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
   }
 
   return {
-    post: { coding: { v1: { messages, embeddings, countTokens } } },
+    post: {
+      coding: { v1: { messages, embeddings, countTokens } },
+      stream: { coding: { v1: { messages: streamMessages } } },
+    },
     get: { coding: { v1: { models: listModelsFn } } },
   };
 }

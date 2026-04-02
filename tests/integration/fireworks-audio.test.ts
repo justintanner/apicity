@@ -1,7 +1,11 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyForFileUploads,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fireworks } from "@nakedapi/fireworks";
 
 // Audio fixture: tests/fixtures/dialog.mp3 (48KB, multi-speaker meeting dialog)
@@ -14,7 +18,7 @@ describe("fireworks audio transcriptions", () => {
   });
 
   it("should transcribe speech and detect dialog content", async () => {
-    ctx = setupPolly("fireworks/audio-transcribe-dialog");
+    ctx = setupPollyForFileUploads("fireworks/audio-transcribe-dialog");
 
     const mp3Path = resolve(__dirname, "../fixtures/dialog.mp3");
     const mp3Buffer = readFileSync(mp3Path);
@@ -47,7 +51,7 @@ describe("fireworks audio translations", () => {
   });
 
   it("should translate speech and detect dialog content", async () => {
-    ctx = setupPolly("fireworks/audio-translate-dialog");
+    ctx = setupPollyForFileUploads("fireworks/audio-translate-dialog");
 
     const mp3Path = resolve(__dirname, "../fixtures/dialog.mp3");
     const mp3Buffer = readFileSync(mp3Path);

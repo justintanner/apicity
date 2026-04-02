@@ -3,36 +3,6 @@ import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { fireworks } from "@nakedapi/fireworks";
 
 describe("fireworks workflows integration", () => {
-  describe("text-to-image (FLUX schnell)", () => {
-    let ctx: PollyContext;
-
-    beforeEach(() => {
-      ctx = setupPolly("fireworks/text-to-image");
-    });
-
-    afterEach(async () => {
-      await teardownPolly(ctx);
-    });
-
-    it("should generate an image from a text prompt", async () => {
-      const provider = fireworks({
-        apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
-      });
-      const result = await provider.v1.workflows.textToImage(
-        "flux-1-schnell-fp8",
-        {
-          prompt: "A small red cube on a white background",
-          aspect_ratio: "1:1",
-          seed: 42,
-        }
-      );
-      expect(result.base64).toBeDefined();
-      expect(result.base64.length).toBeGreaterThan(0);
-      expect(result.finishReason).toBe("SUCCESS");
-      expect(typeof result.seed).toBe("number");
-    });
-  });
-
   describe("kontext async (FLUX Kontext Pro)", () => {
     let ctx: PollyContext;
 

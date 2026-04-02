@@ -24,7 +24,7 @@ describe("fireworks streaming integration", () => {
       });
       const chunks: FireworksChatStreamChunk[] = [];
       for await (const chunk of provider.post.stream.v1.chat.completions({
-        model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+        model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         messages: [{ role: "user", content: "Say hello in one sentence." }],
         temperature: 0,
         max_tokens: 64,
@@ -55,7 +55,7 @@ describe("fireworks streaming integration", () => {
       });
       const chunks: FireworksCompletionStreamChunk[] = [];
       for await (const chunk of provider.post.stream.v1.completions({
-        model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+        model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         prompt: "Once upon a time",
         temperature: 0,
         max_tokens: 32,

@@ -42,7 +42,7 @@ describe("fireworks models CRUD integration", () => {
       });
       const result = await provider.v1.accounts.models.get(
         accountId,
-        "llama-v3p1-8b-instruct"
+        "llama-v3p3-70b-instruct"
       );
       expect(result.name).toBeTruthy();
       expect(result.kind).toBeTruthy();

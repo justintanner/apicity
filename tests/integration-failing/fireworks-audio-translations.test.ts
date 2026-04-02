@@ -1,12 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyForFileUploads,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fireworks } from "@nakedapi/fireworks";
 
 describe("fireworks audio translations integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("fireworks/audio-translations");
+    ctx = setupPollyForFileUploads("fireworks/audio-translations");
   });
 
   afterEach(async () => {

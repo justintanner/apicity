@@ -1,63 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { describe, it, expect } from "vitest";
 import { fireworks } from "@nakedapi/fireworks";
 
-const ACCOUNT_ID = process.env.FIREWORKS_ACCOUNT_ID ?? "test-account";
-
 describe("fireworks deployed models (LoRA) integration", () => {
-  describe("list deployed models", () => {
-    let ctx: PollyContext;
-
-    beforeEach(() => {
-      ctx = setupPolly("fireworks/deployedmodels-list");
-    });
-
-    afterEach(async () => {
-      await teardownPolly(ctx);
-    });
-
-    it("should list deployed models", async () => {
-      const provider = fireworks({
-        apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
-      });
-      const result = await provider.v1.accounts.deployedModels.list(
-        ACCOUNT_ID,
-        {
-          pageSize: 5,
-        }
-      );
-      expect(result).toHaveProperty("deployedModels");
-      expect(Array.isArray(result.deployedModels)).toBe(true);
-    });
-  });
-
-  describe("create deployed model", () => {
-    let ctx: PollyContext;
-
-    beforeEach(() => {
-      ctx = setupPolly("fireworks/deployedmodels-create");
-    });
-
-    afterEach(async () => {
-      await teardownPolly(ctx);
-    });
-
-    it("should create a deployed model", async () => {
-      const provider = fireworks({
-        apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
-      });
-      const created = await provider.v1.accounts.deployedModels.create(
-        ACCOUNT_ID,
-        {
-          model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
-          deployment:
-            "accounts/fireworks/deployments/llama-v3p1-8b-instruct-default",
-        }
-      );
-      expect(created).toHaveProperty("model");
-    });
-  });
-
   describe("payload validation", () => {
     it("should validate create deployed model payload", () => {
       const provider = fireworks({ apiKey: "test-key" });

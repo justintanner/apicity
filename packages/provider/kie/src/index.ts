@@ -1,6 +1,11 @@
-// Export main provider function
-export { kie } from "./kie";
-export { createTaskOrThrow, uploadOrThrow } from "./kie";
+// Export main provider function and helpers
+export {
+  kie,
+  submitMediaJob,
+  uploadFile,
+  createTaskOrThrow,
+  uploadOrThrow,
+} from "./kie";
 
 // Export error class
 export { KieError } from "./types";

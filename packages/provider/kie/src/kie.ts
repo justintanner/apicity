@@ -444,7 +444,7 @@ export function kie(opts: KieOptions): KieProvider {
   };
 }
 
-export async function createTaskOrThrow(
+export async function submitMediaJob(
   provider: KieProvider,
   request: MediaGenerationRequest
 ): Promise<string> {
@@ -458,7 +458,7 @@ export async function createTaskOrThrow(
   return result.data.taskId;
 }
 
-export async function uploadOrThrow(
+export async function uploadFile(
   provider: KieProvider,
   file: Blob,
   filename: string
@@ -472,3 +472,7 @@ export async function uploadOrThrow(
   }
   return result.data.downloadUrl;
 }
+
+// Backward compatibility aliases
+export const createTaskOrThrow = submitMediaJob;
+export const uploadOrThrow = uploadFile;

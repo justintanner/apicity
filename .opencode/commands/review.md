@@ -10,12 +10,12 @@ Arguments: $ARGUMENTS
 
 Determine the diff to review based on arguments:
 
-| Argument | Diff command | Use case |
-|----------|-------------|----------|
-| (none) | `git diff` + `git diff --staged` | Review uncommitted + staged changes |
-| `--staged` | `git diff --staged` | Review only staged changes |
-| `--branch` | `git diff origin/<base>...HEAD` | Review branch diff vs base branch |
-| `--pr <url>` | `gh pr diff <url>` | Review a GitHub PR |
+| Argument     | Diff command                     | Use case                            |
+| ------------ | -------------------------------- | ----------------------------------- |
+| (none)       | `git diff` + `git diff --staged` | Review uncommitted + staged changes |
+| `--staged`   | `git diff --staged`              | Review only staged changes          |
+| `--branch`   | `git diff origin/<base>...HEAD`  | Review branch diff vs base branch   |
+| `--pr <url>` | `gh pr diff <url>`               | Review a GitHub PR                  |
 
 ### Step 1: Get the diff
 
@@ -43,23 +43,27 @@ If the diff is empty, report "No changes to review" and stop.
 Review the diff systematically. For each issue found, classify by severity:
 
 **CRITICAL** - Must fix before merge:
+
 - Security vulnerabilities (injection, auth bypass, secrets in code)
 - Data loss risks (missing transactions, unsafe deletes)
 - Correctness bugs (race conditions, nil dereference, logic errors)
 
 **MAJOR** - Should fix before merge:
+
 - Logic errors that may not crash but produce wrong results
 - Missing error handling on external calls
 - API contract violations
 - Missing tests for critical paths
 
 **MINOR** - Nice to fix:
+
 - Style inconsistencies with surrounding code
 - Naming issues (unclear or misleading names)
 - Missing comments on non-obvious logic
 - Minor code smells
 
 For each issue, note:
+
 - File and line number
 - Severity (CRITICAL, MAJOR, MINOR)
 - Description of the issue
@@ -69,13 +73,13 @@ For each issue, note:
 
 Grade is determined by the highest severity issue found:
 
-| Grade | Criteria | Verdict |
-|-------|----------|---------|
-| **A** | No CRITICAL, MAJOR, or MINOR issues | PASS |
-| **B** | MINOR issues only (no CRITICAL or MAJOR) | PASS |
-| **C** | MAJOR issues present (no CRITICAL) | FAIL |
-| **D** | CRITICAL issues present | FAIL |
-| **F** | Unreviewable (empty diff, binary files, generated code only) | SKIP |
+| Grade | Criteria                                                     | Verdict |
+| ----- | ------------------------------------------------------------ | ------- |
+| **A** | No CRITICAL, MAJOR, or MINOR issues                          | PASS    |
+| **B** | MINOR issues only (no CRITICAL or MAJOR)                     | PASS    |
+| **C** | MAJOR issues present (no CRITICAL)                           | FAIL    |
+| **D** | CRITICAL issues present                                      | FAIL    |
+| **F** | Unreviewable (empty diff, binary files, generated code only) | SKIP    |
 
 ### Step 4: Output structured review
 
@@ -103,6 +107,7 @@ Verdict: <PASS|FAIL|SKIP>
 Omit empty severity sections (e.g., if no CRITICAL issues, don't print the CRITICAL section).
 
 If Grade is A, output:
+
 ```
 Grade: A
 

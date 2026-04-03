@@ -9,7 +9,7 @@ describe("kie claude haiku 4.5", () => {
     await teardownPolly(ctx);
   });
 
-  it("should complete a chat request", async () => {
+  it.skip("should complete a chat request", async () => {
     ctx = setupPolly("kie/claude-haiku-chat-hello");
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",

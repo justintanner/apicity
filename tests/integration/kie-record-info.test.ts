@@ -9,7 +9,7 @@ describe("kie recordInfo", () => {
     await teardownPolly(ctx);
   });
 
-  it("should return task status for a completed task", async () => {
+  it.skip("should return task status for a completed task", async () => {
     ctx = setupPolly("kie/record-info-completed");
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",

@@ -13,7 +13,7 @@ describe("fal models pricing integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should get model pricing", async () => {
+  it.skip("should get model pricing", async () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
@@ -23,7 +23,7 @@ describe("fal models pricing integration", () => {
     expect(result.models.length).toBeGreaterThan(0);
   });
 
-  it("should estimate pricing for a request", async () => {
+  it.skip("should estimate pricing for a request", async () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });

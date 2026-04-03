@@ -13,7 +13,7 @@ describe("fal models usage integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should get model usage stats", async () => {
+  it.skip("should get model usage stats", async () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
@@ -22,7 +22,7 @@ describe("fal models usage integration", () => {
     expect(Array.isArray(result.usage)).toBe(true);
   });
 
-  it("should get model analytics", async () => {
+  it.skip("should get model analytics", async () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });

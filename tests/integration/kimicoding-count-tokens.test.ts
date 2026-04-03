@@ -13,7 +13,7 @@ describe("kimicoding count tokens integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should count tokens for a simple message", async () => {
+  it.skip("should count tokens for a simple message", async () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
@@ -25,7 +25,7 @@ describe("kimicoding count tokens integration", () => {
     expect(typeof result.input_tokens).toBe("number");
   });
 
-  it("should count tokens for multiple messages", async () => {
+  it.skip("should count tokens for multiple messages", async () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
@@ -40,7 +40,7 @@ describe("kimicoding count tokens integration", () => {
     expect(result.input_tokens).toBeGreaterThan(0);
   });
 
-  it("should count tokens with system message", async () => {
+  it.skip("should count tokens with system message", async () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });

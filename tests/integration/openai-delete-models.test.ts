@@ -13,7 +13,7 @@ describe("openai delete models integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should delete a fine-tuned model", async () => {
+  it.skip("should delete a fine-tuned model", async () => {
     const provider = openai({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });

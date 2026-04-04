@@ -50,6 +50,7 @@ export type {
   ElevenLabsSttRequest,
   Qwen2TextToImageRequest,
   Qwen2ImageEditRequest,
+  Seedance2FastRequest,
   SoraWatermarkRequest,
   MediaGenerationRequest,
   TaskResponse,

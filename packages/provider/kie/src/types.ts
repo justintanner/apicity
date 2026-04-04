@@ -18,6 +18,7 @@ export type KieMediaModel =
   | "grok-imagine/upscale"
   | "qwen2/text-to-image"
   | "qwen2/image-edit"
+  | "bytedance/seedance-2-fast"
   | "sora-watermark-remover";
 
 // Media generation types
@@ -215,6 +216,32 @@ export interface SeedanceVideoRequest extends MediaRequest {
   };
 }
 
+// Seedance 2.0 Fast video request
+export interface Seedance2FastRequest extends MediaRequest {
+  model: "bytedance/seedance-2-fast";
+  input: {
+    prompt: string;
+    first_frame_url?: string;
+    last_frame_url?: string;
+    reference_image_urls?: string[];
+    reference_video_urls?: string[];
+    reference_audio_urls?: string[];
+    return_last_frame?: boolean;
+    generate_audio?: boolean;
+    resolution?: "480p" | "720p";
+    aspect_ratio?:
+      | "1:1"
+      | "4:3"
+      | "3:4"
+      | "16:9"
+      | "9:16"
+      | "21:9"
+      | "adaptive";
+    duration?: number;
+    web_search?: boolean;
+  };
+}
+
 // Nano Banana 2 image request
 export interface NanoBanana2Request extends MediaRequest {
   model: "nano-banana-2";
@@ -363,6 +390,7 @@ export type MediaGenerationRequest =
   | ElevenLabsSttRequest
   | Qwen2TextToImageRequest
   | Qwen2ImageEditRequest
+  | Seedance2FastRequest
   | SoraWatermarkRequest;
 
 // Standalone parameter union types (avoids verbose indexed-access types in consumers)

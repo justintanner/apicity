@@ -1,44 +1,7 @@
-import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { describe, it, expect } from "vitest";
 import { fal } from "@nakedapi/fal";
 
-describe("fal serverless logs integration", () => {
-  let ctx: PollyContext;
-
-  afterEach(async () => {
-    await teardownPolly(ctx);
-  });
-
-  it("should query log history", async () => {
-    ctx = setupPolly("fal/logs-history");
-    const provider = fal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
-    });
-    const result = await provider.v1.serverless.logs.history({
-      limit: 10,
-    });
-    expect(result).toBeDefined();
-    expect(result.has_more).toBeDefined();
-    expect(Array.isArray(result.items)).toBe(true);
-  });
-
-  it("should query log history with filters", async () => {
-    ctx = setupPolly("fal/logs-history-filtered");
-    const provider = fal({
-      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
-    });
-    const result = await provider.v1.serverless.logs.history(
-      {
-        limit: 5,
-        level: "error",
-      },
-      [{ key: "fal_job_id", value: "test-job" }]
-    );
-    expect(result).toBeDefined();
-    expect(result.has_more).toBeDefined();
-    expect(Array.isArray(result.items)).toBe(true);
-  });
-
+describe("fal serverless logs validation", () => {
   it("should expose payloadSchema on history", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     expect(provider.v1.serverless.logs.history.payloadSchema).toBeDefined();

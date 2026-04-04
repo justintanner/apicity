@@ -85,4 +85,12 @@ describe("fal compute instances", () => {
     expect(result.valid).toBe(false);
     expect(result.errors[0]).toContain("must be one of");
   });
+
+  it("should expose terminate method", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    expect(typeof provider.v1.compute.instances.terminate).toBe("function");
+    expect(typeof provider.delete.v1.compute.instances.terminate).toBe(
+      "function"
+    );
+  });
 });

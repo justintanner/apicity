@@ -1,31 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { describe, it, expect } from "vitest";
 import { kie } from "@nakedapi/kie";
-
-describe("kie file URL upload integration", () => {
-  let ctx: PollyContext;
-
-  beforeEach(() => {
-    ctx = setupPolly("kie/file-url-upload");
-  });
-
-  afterEach(async () => {
-    await teardownPolly(ctx);
-  });
-
-  it.skip("should upload file from URL", async () => {
-    const provider = kie({
-      apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
-    });
-    const result = await provider.post.api.fileUrlUpload({
-      url: "https://example.com/test-image.png",
-      uploadPath: "uploads/test-url-upload.png",
-    });
-    expect(result.data).toBeDefined();
-    expect(result.data?.downloadUrl).toBeTruthy();
-    expect(result.data?.fileName).toBeTruthy();
-  });
-});
 
 describe("kie file URL upload payload validation", () => {
   it("should have payload schema", async () => {

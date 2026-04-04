@@ -1,57 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { describe, it, expect } from "vitest";
 import { kimicoding } from "@nakedapi/kimicoding";
 
 describe("kimicoding count tokens integration", () => {
-  let ctx: PollyContext;
-
-  beforeEach(() => {
-    ctx = setupPolly("kimicoding/count-tokens");
-  });
-
-  afterEach(async () => {
-    await teardownPolly(ctx);
-  });
-
-  it.skip("should count tokens for a simple message", async () => {
-    const provider = kimicoding({
-      apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
-    });
-    const result = await provider.post.coding.v1.countTokens({
-      model: "k2p5",
-      messages: [{ role: "user", content: "Hello, world!" }],
-    });
-    expect(result.input_tokens).toBeGreaterThan(0);
-    expect(typeof result.input_tokens).toBe("number");
-  });
-
-  it.skip("should count tokens for multiple messages", async () => {
-    const provider = kimicoding({
-      apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
-    });
-    const result = await provider.post.coding.v1.countTokens({
-      model: "k2p5",
-      messages: [
-        { role: "user", content: "What is the capital of France?" },
-        { role: "assistant", content: "The capital of France is Paris." },
-        { role: "user", content: "What about Germany?" },
-      ],
-    });
-    expect(result.input_tokens).toBeGreaterThan(0);
-  });
-
-  it.skip("should count tokens with system message", async () => {
-    const provider = kimicoding({
-      apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
-    });
-    const result = await provider.post.coding.v1.countTokens({
-      model: "k2p5",
-      system: "You are a helpful assistant.",
-      messages: [{ role: "user", content: "Hi there!" }],
-    });
-    expect(result.input_tokens).toBeGreaterThan(0);
-  });
-
   it("should have payload schema", async () => {
     const provider = kimicoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",

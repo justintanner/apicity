@@ -50,18 +50,6 @@ describe("anthropic files", () => {
     expect(result.size_bytes).toBeGreaterThan(0);
   });
 
-  it.skip("should download file content", async () => {
-    ctx = setupPolly("anthropic/files-content");
-    const provider = anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY ?? "sk-ant-test-key",
-    });
-    const list = await provider.v1.files.list({ limit: 1 });
-    const fileId = list.data[0].id;
-    const result = await provider.v1.files.content(fileId);
-    expect(result).toBeInstanceOf(ArrayBuffer);
-    expect(result.byteLength).toBeGreaterThan(0);
-  });
-
   it("should delete a file", async () => {
     ctx = setupPolly("anthropic/files-delete");
     const provider = anthropic({

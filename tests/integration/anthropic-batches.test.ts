@@ -100,29 +100,4 @@ describe("anthropic message batches", () => {
     expect(typeof result).toBe("string");
     expect(result.length).toBeGreaterThan(0);
   });
-
-  it.skip("should delete a message batch", async () => {
-    ctx = setupPolly("anthropic/batches-delete");
-    const provider = anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY ?? "sk-ant-test-key",
-    });
-    // Create a batch to delete
-    const batch = await provider.v1.messages.batches({
-      requests: [
-        {
-          custom_id: "delete-req-1",
-          params: {
-            model: "claude-sonnet-4-5-20250929",
-            max_tokens: 128,
-            messages: [{ role: "user", content: "Hi." }],
-          },
-        },
-      ],
-    });
-    // Cancel and wait for it to end before deleting
-    await provider.v1.messages.batches.cancel(batch.id);
-    const result = await provider.v1.messages.batches.del(batch.id);
-    expect(result.id).toBe(batch.id);
-    expect(result.type).toBe("message_batch_deleted");
-  });
 });

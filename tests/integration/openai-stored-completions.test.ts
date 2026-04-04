@@ -1,8 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { openai } from "@nakedapi/openai";
 import type {
-  OpenAiStoredCompletionDeleteResponse,
   OpenAiStoredCompletionListResponse,
   OpenAiStoredCompletionMessageListResponse,
 } from "@nakedapi/openai";
@@ -10,15 +9,12 @@ import type {
 describe("openai stored completions integration", () => {
   let ctx: PollyContext;
 
-  beforeEach(() => {
-    ctx = setupPolly("openai/stored-completions-crud");
-  });
-
   afterEach(async () => {
     await teardownPolly(ctx);
   });
 
-  it.skip("should list stored completions", async () => {
+  it("should list stored completions", async () => {
+    ctx = setupPolly("openai/stored-completions-list");
     const provider = openai({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
@@ -31,7 +27,8 @@ describe("openai stored completions integration", () => {
     expect(typeof result.has_more).toBe("boolean");
   });
 
-  it.skip("should list stored completions with limit", async () => {
+  it("should list stored completions with limit", async () => {
+    ctx = setupPolly("openai/stored-completions-list-limit");
     const provider = openai({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
@@ -43,45 +40,8 @@ describe("openai stored completions integration", () => {
     expect(result.data.length).toBeLessThanOrEqual(1);
   });
 
-  it.skip("should create, retrieve, update, and delete a stored completion", async () => {
-    const provider = openai({
-      apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
-    });
-
-    // Create a stored completion
-    const created = await provider.post.v1.chat.completions({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: "Say hello." }],
-      store: true,
-      metadata: { test_key: "test_value" },
-    });
-    expect(created.id).toBeTruthy();
-    expect(created.object).toBe("chat.completion");
-
-    // Brief delay for stored completion indexing
-    await new Promise((r) => setTimeout(r, 2000));
-
-    // Retrieve it
-    const retrieved = await provider.get.v1.chat.completions(created.id);
-    expect(retrieved.id).toBe(created.id);
-    expect(retrieved.object).toBe("chat.completion");
-
-    // Update metadata
-    const updated = await provider.post.v1.chat.completions(created.id, {
-      metadata: { test_key: "updated_value" },
-    });
-    expect(updated.id).toBe(created.id);
-    expect(updated.metadata?.test_key).toBe("updated_value");
-
-    // Delete it
-    const deleted: OpenAiStoredCompletionDeleteResponse =
-      await provider.delete.v1.chat.completions(created.id);
-    expect(deleted.id).toBe(created.id);
-    expect(deleted.object).toBe("chat.completion.deleted");
-    expect(deleted.deleted).toBe(true);
-  });
-
-  it.skip("should list messages of a stored completion", async () => {
+  it("should list messages of a stored completion", async () => {
+    ctx = setupPolly("openai/stored-completions-messages");
     const provider = openai({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });

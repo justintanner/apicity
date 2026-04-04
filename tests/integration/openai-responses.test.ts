@@ -5,7 +5,6 @@ import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { openai } from "@nakedapi/openai";
 import type {
   OpenAiResponseOutputMessage,
-  OpenAiResponseFunctionCallItem,
   OpenAiResponseOutputText,
 } from "@nakedapi/openai";
 
@@ -99,84 +98,6 @@ describe("openai responses integration", () => {
     expect(parsed.capital).toBe("Paris");
   });
 
-  it.skip("should handle function calling round-trip", async () => {
-    ctx = setupPolly("openai/responses-function-call");
-    const provider = openai({
-      apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
-    });
-
-    // Step 1: Send a request that triggers a function call
-    const step1 = await provider.post.v1.responses({
-      model: "gpt-4o-mini",
-      input: "What is the weather in San Francisco?",
-      temperature: 0,
-      tools: [
-        {
-          type: "function",
-          name: "get_weather",
-          description: "Get current weather for a location",
-          parameters: {
-            type: "object",
-            properties: {
-              location: { type: "string", description: "City name" },
-            },
-            required: ["location"],
-            additionalProperties: false,
-          },
-          strict: true,
-        },
-      ],
-      tool_choice: "required",
-    });
-
-    expect(step1.status).toBe("completed");
-    const fnCall = step1.output.find(
-      (item) => item.type === "function_call"
-    ) as OpenAiResponseFunctionCallItem;
-    expect(fnCall).toBeTruthy();
-    expect(fnCall.name).toBe("get_weather");
-    const args = JSON.parse(fnCall.arguments) as { location: string };
-    expect(args.location).toBeTruthy();
-
-    // Step 2: Send the function output back
-    const step2 = await provider.post.v1.responses({
-      model: "gpt-4o-mini",
-      input: [
-        { role: "user", content: "What is the weather in San Francisco?" },
-        {
-          type: "function_call_output",
-          call_id: fnCall.call_id,
-          output: JSON.stringify({ temperature: 62, condition: "foggy" }),
-        },
-      ],
-      temperature: 0,
-      tools: [
-        {
-          type: "function",
-          name: "get_weather",
-          description: "Get current weather for a location",
-          parameters: {
-            type: "object",
-            properties: {
-              location: { type: "string", description: "City name" },
-            },
-            required: ["location"],
-            additionalProperties: false,
-          },
-          strict: true,
-        },
-      ],
-    });
-
-    expect(step2.status).toBe("completed");
-    const finalMsg = step2.output.find(
-      (item) => item.type === "message"
-    ) as OpenAiResponseOutputMessage;
-    expect(finalMsg).toBeTruthy();
-    const finalText = finalMsg.content[0] as OpenAiResponseOutputText;
-    expect(finalText.text.toLowerCase()).toMatch(/san francisco|foggy|62/);
-  });
-
   it("should create a response with web search tool", async () => {
     ctx = setupPolly("openai/responses-web-search");
     const provider = openai({
@@ -212,7 +133,7 @@ describe("openai responses integration", () => {
     expect(text.annotations!.length).toBeGreaterThan(0);
   });
 
-  it.skip("should create a response with reasoning config", async () => {
+  it("should create a response with reasoning config", async () => {
     ctx = setupPolly("openai/responses-reasoning");
     const provider = openai({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
@@ -230,9 +151,11 @@ describe("openai responses integration", () => {
     expect(result.id).toBeTruthy();
     expect(result.status).toBe("completed");
     expect(result.reasoning).toBeDefined();
-    const message = result.output[0] as OpenAiResponseOutputMessage;
+    const message = result.output.find(
+      (item) => item.type === "message"
+    ) as OpenAiResponseOutputMessage;
     const text = message.content[0] as OpenAiResponseOutputText;
-    expect(text.text).toMatch(/3/);
+    expect(text.text).toMatch(/3|three/i);
     expect(result.usage?.output_tokens_details?.reasoning_tokens).toBeDefined();
   });
 

@@ -48,6 +48,8 @@ export type {
   ElevenLabsDialogueRequest,
   ElevenLabsSfxRequest,
   ElevenLabsSttRequest,
+  Qwen2TextToImageRequest,
+  Qwen2ImageEditRequest,
   SoraWatermarkRequest,
   MediaGenerationRequest,
   TaskResponse,

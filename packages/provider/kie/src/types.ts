@@ -17,6 +17,7 @@ export type KieMediaModel =
   | "grok-imagine/extend"
   | "grok-imagine/upscale"
   | "qwen2/text-to-image"
+  | "qwen2/image-edit"
   | "sora-watermark-remover";
 
 // Media generation types
@@ -100,6 +101,26 @@ export interface Qwen2TextToImageRequest extends MediaRequest {
     prompt: string;
     image_size?: "1:1" | "4:3" | "3:4" | "16:9" | "9:16";
     output_format?: "png" | "jpeg";
+    seed?: number;
+  };
+}
+
+// Qwen2 image edit request
+export interface Qwen2ImageEditRequest extends MediaRequest {
+  model: "qwen2/image-edit";
+  input: {
+    prompt: string;
+    image_url: string[];
+    image_size:
+      | "1:1"
+      | "2:3"
+      | "3:2"
+      | "3:4"
+      | "4:3"
+      | "9:16"
+      | "16:9"
+      | "21:9";
+    output_format: "png" | "jpeg";
     seed?: number;
   };
 }
@@ -341,6 +362,7 @@ export type MediaGenerationRequest =
   | ElevenLabsSfxRequest
   | ElevenLabsSttRequest
   | Qwen2TextToImageRequest
+  | Qwen2ImageEditRequest
   | SoraWatermarkRequest;
 
 // Standalone parameter union types (avoids verbose indexed-access types in consumers)

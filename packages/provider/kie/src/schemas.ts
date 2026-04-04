@@ -939,6 +939,39 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "qwen2/image-edit": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Image editing prompt (max 5000 chars)",
+      },
+      image_url: {
+        type: "array",
+        required: true,
+        description: "Reference image URLs (max 10MB, jpeg/png/webp)",
+        items: { type: "string" },
+      },
+      image_size: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"],
+        description: "Output image aspect ratio",
+      },
+      output_format: {
+        type: "string",
+        required: true,
+        enum: ["png", "jpeg"],
+        description: "Image format (png or jpeg)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (default 0)",
+      },
+    },
+  },
+
   "sora-watermark-remover": {
     type: "video",
     fields: {

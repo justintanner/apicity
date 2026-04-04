@@ -39,6 +39,8 @@ import {
   FalWorkflowListResponse,
   FalWorkflowGetParams,
   FalWorkflowGetResponse,
+  FalWorkflowCreateParams,
+  FalWorkflowCreateResponse,
   FalComputeInstancesListParams,
   FalComputeInstancesListResponse,
   FalComputeInstanceGetParams,
@@ -60,6 +62,7 @@ import {
   filesUploadLocalSchema,
   computeInstanceCreateSchema,
   appsFlushQueueSchema,
+  workflowCreateSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -979,6 +982,26 @@ export function fal(opts: FalOptions): FalProvider {
           signal
         );
       },
+
+      create: Object.assign(
+        async function create(
+          params: FalWorkflowCreateParams,
+          signal?: AbortSignal
+        ): Promise<FalWorkflowCreateResponse> {
+          return makeRequest<FalWorkflowCreateResponse>(
+            "POST",
+            "/workflows",
+            params as unknown as Record<string, unknown>,
+            signal
+          );
+        },
+        {
+          payloadSchema: workflowCreateSchema,
+          validatePayload(data: unknown): ValidationResult {
+            return validatePayload(data, workflowCreateSchema);
+          },
+        }
+      ),
     }
   );
 
@@ -1602,11 +1625,36 @@ export function fal(opts: FalOptions): FalProvider {
     instances: postV1ComputeInstances,
   };
 
+  const postV1WorkflowsCreate = Object.assign(
+    async function create(
+      params: FalWorkflowCreateParams,
+      signal?: AbortSignal
+    ): Promise<FalWorkflowCreateResponse> {
+      return makeRequest<FalWorkflowCreateResponse>(
+        "POST",
+        "/workflows",
+        params as unknown as Record<string, unknown>,
+        signal
+      );
+    },
+    {
+      payloadSchema: workflowCreateSchema,
+      validatePayload(data: unknown): ValidationResult {
+        return validatePayload(data, workflowCreateSchema);
+      },
+    }
+  );
+
+  const postV1Workflows = {
+    create: postV1WorkflowsCreate,
+  };
+
   const postV1 = {
     models: postV1Models,
     queue: postV1Queue,
     serverless: postV1Serverless,
     compute: postV1Compute,
+    workflows: postV1Workflows,
   };
 
   // POST stream v1 namespace

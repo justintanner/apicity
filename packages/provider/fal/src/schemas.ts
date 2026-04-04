@@ -261,3 +261,38 @@ export const deletePayloadsSchema: PayloadSchema = {
     },
   },
 };
+
+export const workflowCreateSchema: PayloadSchema = {
+  method: "POST",
+  path: "/workflows",
+  contentType: "application/json",
+  fields: {
+    name: {
+      type: "string",
+      required: true,
+      description: "Unique workflow name (URL-safe)",
+    },
+    title: {
+      type: "string",
+      description: "Human-readable workflow title",
+    },
+    description: {
+      type: "string",
+      description: "Workflow description",
+    },
+    tags: {
+      type: "array",
+      items: { type: "string" },
+      description: "Tags for categorization",
+    },
+    is_public: {
+      type: "boolean",
+      description: "Whether the workflow is publicly visible",
+    },
+    contents: {
+      type: "object",
+      required: true,
+      description: "Workflow definition contents (nodes and edges)",
+    },
+  },
+};

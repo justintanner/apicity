@@ -346,6 +346,21 @@ export interface FalWorkflowGetResponse {
   workflow: FalWorkflowDetail;
 }
 
+// Workflow create parameters
+export interface FalWorkflowCreateParams {
+  name: string;
+  title?: string;
+  description?: string;
+  tags?: string[];
+  is_public?: boolean;
+  contents: Record<string, unknown>;
+}
+
+// Workflow create response
+export interface FalWorkflowCreateResponse {
+  workflow: FalWorkflowDetail;
+}
+
 // ==================== Compute Instances ====================
 
 // Compute instance type
@@ -791,6 +806,16 @@ interface FalServerlessNamespace {
   metrics(signal?: AbortSignal): Promise<string>;
 }
 
+// Workflow create method type
+interface FalWorkflowCreateMethod {
+  (
+    params: FalWorkflowCreateParams,
+    signal?: AbortSignal
+  ): Promise<FalWorkflowCreateResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 interface FalWorkflowsNamespace {
   (
     params?: FalWorkflowListParams,
@@ -800,6 +825,7 @@ interface FalWorkflowsNamespace {
     params: FalWorkflowGetParams,
     signal?: AbortSignal
   ): Promise<FalWorkflowGetResponse>;
+  create: FalWorkflowCreateMethod;
 }
 
 // Compute instances namespace types
@@ -978,11 +1004,16 @@ interface FalPostV1ComputeNamespace {
   instances: FalPostV1ComputeInstancesNamespace;
 }
 
+interface FalPostV1WorkflowsNamespace {
+  create: FalWorkflowCreateMethod;
+}
+
 interface FalPostV1Namespace {
   models: FalPostV1ModelsNamespace;
   queue: FalPostV1QueueNamespace;
   serverless: FalPostV1ServerlessNamespace;
   compute: FalPostV1ComputeNamespace;
+  workflows: FalPostV1WorkflowsNamespace;
 }
 
 // POST stream v1 namespace

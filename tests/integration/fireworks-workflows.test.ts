@@ -36,9 +36,14 @@ describe("fireworks workflows integration", () => {
         { id: createResult.request_id }
       );
       expect(pollResult.id).toBeTruthy();
-      expect(["Pending", "Ready", "Error"].includes(pollResult.status)).toBe(
-        true
-      );
+      // Fireworks can return "Task not found" when polling immediately after
+      // submit (before the task has propagated to the result store), so we
+      // accept it alongside the normal lifecycle states.
+      expect(
+        ["Pending", "Ready", "Error", "Task not found"].includes(
+          pollResult.status
+        )
+      ).toBe(true);
     });
   });
 

@@ -1,34 +1,92 @@
 // Gas Town OpenCode TUI plugin: renders a sidebar_content panel showing
 // the current agent's identity + hook, town status, and recent mail.
 //
-// Loader requirement: the TUI plugin loader (readV1Plugin in strict mode)
-// reads `mod.default`, so this file MUST default-export an object with a
-// `tui` function. A bare `export const tui = ...` never loads.
+// Loader requirements (both are blocking — fix either alone and it still
+// won't load):
 //
-// Rendering: the slot returns a plain string. OpenCode's Solid-based
-// reconciler handles string/number children via its text-node path, so no
-// @opentui/* imports are needed — which keeps the plugin portable to rigs
-// that only receive the .js file via the hooks template deploy.
+//   1. The TUI plugin loader (readV1Plugin in strict mode) reads
+//      `mod.default`, so this file MUST default-export an object with a
+//      `tui` function. A bare `export const tui = ...` never loads.
 //
-// Reactivity: to make the slot re-run on session activity, we read
-// `api.state.session.messages(sessionID)` inside the slot function. That
-// establishes a tracking dependency in opencode's bundled Solid runtime, so
-// whenever messages change (which happens on every assistant turn), the slot
-// re-invokes and re-reads the closure cache. The cache itself is refreshed
-// out-of-band by event listeners — see `refresh()` below.
+//   2. External TUI plugins are NOT auto-discovered from .opencode/plugins/
+//      like server plugins are. They load from a `plugin` array in
+//      .opencode/tui.json (NOT opencode.json — they're separate configs).
+//      The template deploy writes that file alongside this one.
+//
+// Rendering: slot renderers MUST return opentui element trees, not plain
+// strings. OpenCode's Solid reconciler wraps slot children in a <box>, and a
+// bare string child fails with "Orphan text error: ... must have a <text>
+// as a parent". We build elements via `createElement`/`createTextNode` from
+// "@opentui/solid", which opencode's plugin loader resolves against its own
+// bundled copy — so no @opentui/* dep needs to be installed.
+//
+// Reactivity: to make the slot re-run on session activity, the slot function
+// reads `api.state.session.messages(sessionID).length` and
+// `api.state.session.status(sessionID)` from inside the render callback.
+// Those reads establish tracking dependencies in opencode's bundled Solid
+// runtime, so whenever messages change (on every assistant turn) or the
+// session flips between idle/busy, the slot re-runs and re-reads the closure
+// cache. The cache itself is refreshed out-of-band by `api.event.on`
+// handlers — see `refresh()` below.
 //
 // Logging is opt-in via GT_OPENCODE_DEBUG. stderr writes during TUI streaming
-// corrupt the redraw, so never log at info level. See .opencode/plugins/gastown.js
-// for the same pattern on the server side.
+// corrupt the redraw, so never log at info level. The `tui()` function runs
+// after opencode has already captured stderr for its TUI buffer, so logs from
+// inside `tui()` never reach any `2>file` redirect — they only appear in
+// opencode's own log at ~/.local/share/opencode/log/. See
+// .opencode/plugins/gastown.js for the same pattern on the server side.
 
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { existsSync, writeFileSync } from "node:fs";
+import { dirname, join as pathJoin } from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  createElement,
+  createTextNode,
+  insertNode,
+  setProp,
+} from "@opentui/solid";
 
 const execFileP = promisify(execFile);
 
 const log = process.env.GT_OPENCODE_DEBUG
   ? (...args) => console.error("[gastown-tui]", ...args)
   : () => {};
+
+log("module import");
+
+// Self-register in .opencode/tui.json so the TUI plugin loader picks us up.
+// Server plugins (including this file via auto-discovery) are loaded during
+// opencode startup — the import runs top-level code — which gives us a one-
+// shot window to create tui.json before the next opencode launch. Two-launch
+// bootstrap: first launch creates the file, second launch activates the
+// plugin. That's fine for rigs where the deacon/polecat respawn opencode
+// frequently.
+(() => {
+  try {
+    // __dirname equivalent in ESM
+    const here = dirname(fileURLToPath(import.meta.url)); // .../.opencode/plugins
+    const opencodeDir = dirname(here); // .../.opencode
+    const tuiJsonPath = pathJoin(opencodeDir, "tui.json");
+    if (existsSync(tuiJsonPath)) {
+      log("tui.json already exists at", tuiJsonPath);
+      return;
+    }
+    const content = JSON.stringify(
+      {
+        $schema: "https://opencode.ai/tui.json",
+        plugin: ["./plugins/gastown-tui.js"],
+      },
+      null,
+      2
+    );
+    writeFileSync(tuiJsonPath, content + "\n", { encoding: "utf8" });
+    log("wrote tui.json at", tuiJsonPath);
+  } catch (err) {
+    log("self-register failed:", err?.message || err);
+  }
+})();
 
 const IDENTITY = Object.freeze({
   role: (process.env.GT_ROLE || "").toLowerCase(),
@@ -112,9 +170,37 @@ async function loadMail(cwd) {
   }
 }
 
+function truncate(s, n) {
+  if (!s) return "";
+  return s.length <= n ? s : s.slice(0, n - 1) + "…";
+}
+
+// Build a single <text> line. `props` is an object of setProp key/value pairs.
+function textLine(str, props) {
+  const t = createElement("text");
+  if (props) {
+    for (const k of Object.keys(props)) setProp(t, k, props[k]);
+  }
+  insertNode(t, createTextNode(String(str)));
+  return t;
+}
+
+// Build a <box> containing the given child elements (nulls skipped).
+function vbox(children, props) {
+  const b = createElement("box");
+  setProp(b, "flexDirection", "column");
+  if (props) {
+    for (const k of Object.keys(props)) setProp(b, k, props[k]);
+  }
+  for (const child of children) {
+    if (child != null) insertNode(b, child);
+  }
+  return b;
+}
+
 const SEP = "──────────────────────────";
 
-function formatIdentitySection(hook, status) {
+function identityLines(hook, status) {
   const lines = [identityHeader(), SEP];
 
   if (hook && hook.has_work) {
@@ -150,11 +236,11 @@ function formatIdentitySection(hook, status) {
     lines.push(`dnd: ${dnd}`);
   }
 
-  return lines.join("\n");
+  return lines;
 }
 
-function formatTownSection(status) {
-  if (!status) return `town · (unavailable)\n${SEP}`;
+function townLines(status) {
+  if (!status) return [`town · (unavailable)`, SEP];
   const lines = [`town · ${status.name || "?"}`, SEP];
 
   const svc = (label, s) => (s?.running ? `${label} ✓` : `${label} ✗`);
@@ -181,21 +267,20 @@ function formatTownSection(status) {
     lines.push(`overseer unread: ${status.overseer.unread_mail}`);
   }
 
-  return lines.join("\n");
+  return lines;
 }
 
-function formatMailSection(mail) {
+function mailLines(mail) {
   const lines = ["recent mail", SEP];
   if (!mail) {
     lines.push("  (unavailable)");
-    return lines.join("\n");
+    return lines;
   }
   if (mail.length === 0) {
     lines.push("  (no messages)");
-    return lines.join("\n");
+    return lines;
   }
 
-  // Sort by timestamp desc; take top 5.
   const sorted = mail.slice().sort((a, b) => {
     const ta = Date.parse(a?.timestamp || "") || 0;
     const tb = Date.parse(b?.timestamp || "") || 0;
@@ -214,12 +299,7 @@ function formatMailSection(mail) {
     lines.push(`${time} ${marker} ${from}  ${subj}`);
   }
 
-  return lines.join("\n");
-}
-
-function truncate(s, n) {
-  if (!s) return "";
-  return s.length <= n ? s : s.slice(0, n - 1) + "…";
+  return lines;
 }
 
 export default {
@@ -240,8 +320,6 @@ export default {
           loadHook(cwd),
           loadMail(cwd),
         ]);
-        // Only overwrite a slot if the fetch succeeded; otherwise keep the
-        // previous snapshot so a transient failure doesn't blank the sidebar.
         if (status !== null) cache.status = status;
         if (hook !== null) cache.hook = hook;
         if (mail !== null) cache.mail = mail;
@@ -256,12 +334,8 @@ export default {
       }
     };
 
-    // Initial load — don't await, let the slot render with nulls first.
     refresh();
 
-    // Event subscriptions. We avoid message.part.delta (per-token flood) and
-    // instead piggyback on coarser events that still fire on every meaningful
-    // change.
     const unsubs = [];
     unsubs.push(api.event.on("session.created", () => refresh()));
     unsubs.push(api.event.on("session.compacted", () => refresh()));
@@ -287,12 +361,13 @@ export default {
     });
 
     api.slots.register({
-      order: 50, // render near the top of sidebar_content
+      order: 50,
       slots: {
         sidebar_content(_ctx, data) {
-          // Establish reactive tracking so the slot re-runs when messages or
-          // session status change. The reads are side-effectful — their only
-          // purpose is to register dependencies with opencode's bundled Solid.
+          // Establish reactive tracking — these reads attach the slot to
+          // opencode's bundled Solid so the render callback re-runs when
+          // messages or session status change. The return values are
+          // intentionally discarded.
           try {
             if (data?.session_id) {
               const msgs = api.state.session.messages(data.session_id);
@@ -303,14 +378,19 @@ export default {
             log("tracking read failed:", e?.message || e);
           }
 
-          const parts = [
-            formatIdentitySection(cache.hook, cache.status),
-            "",
-            formatTownSection(cache.status),
-            "",
-            formatMailSection(cache.mail),
-          ];
-          return parts.join("\n");
+          const children = [];
+          for (const line of identityLines(cache.hook, cache.status)) {
+            children.push(textLine(line));
+          }
+          children.push(textLine(""));
+          for (const line of townLines(cache.status)) {
+            children.push(textLine(line));
+          }
+          children.push(textLine(""));
+          for (const line of mailLines(cache.mail)) {
+            children.push(textLine(line));
+          }
+          return vbox(children, { paddingLeft: 1, paddingRight: 1 });
         },
       },
     });

@@ -20,9 +20,8 @@ describe("kie qwen2/image-edit integration", () => {
       model: "qwen2/image-edit",
       input: {
         prompt: "Add sunglasses to the subject",
-        image_url: [
+        image_url:
           "https://static.aiquickdraw.com/tools/example/1773473208660_6EO8TFjh.webp",
-        ],
         image_size: "1:1",
         output_format: "png",
       },
@@ -42,13 +41,12 @@ describe("kie qwen2/image-edit integration", () => {
   it("should validate image-edit payload", () => {
     const provider = kie({ apiKey: "test-key" });
 
+    // image_size and output_format are optional per spec
     const valid = provider.post.api.v1.jobs.createTask.validatePayload({
       model: "qwen2/image-edit",
       input: {
         prompt: "Edit this image",
-        image_url: ["https://example.com/image.jpg"],
-        image_size: "1:1",
-        output_format: "png",
+        image_url: "https://example.com/image.jpg",
       },
     });
     expect(valid.valid).toBe(true);
@@ -70,11 +68,12 @@ describe("kie qwen2/image-edit integration", () => {
     expect(schema.type).toBe("image");
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.image_url.required).toBe(true);
-    expect(schema.fields.image_url.type).toBe("array");
-    expect(schema.fields.image_size.required).toBe(true);
+    expect(schema.fields.image_url.type).toBe("string");
+    expect(schema.fields.image_size.required).toBeUndefined();
     expect(schema.fields.image_size.enum).toContain("1:1");
     expect(schema.fields.image_size.enum).toContain("21:9");
-    expect(schema.fields.output_format.required).toBe(true);
+    expect(schema.fields.output_format.required).toBeUndefined();
+    expect(schema.fields.output_format.enum).toEqual(["png", "jpeg"]);
     expect(schema.fields.seed).toBeDefined();
   });
 });

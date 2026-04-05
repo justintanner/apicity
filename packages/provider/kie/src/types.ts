@@ -111,8 +111,8 @@ export interface Qwen2ImageEditRequest extends MediaRequest {
   model: "qwen2/image-edit";
   input: {
     prompt: string;
-    image_url: string[];
-    image_size:
+    image_url: string;
+    image_size?:
       | "1:1"
       | "2:3"
       | "3:2"
@@ -121,7 +121,7 @@ export interface Qwen2ImageEditRequest extends MediaRequest {
       | "9:16"
       | "16:9"
       | "21:9";
-    output_format: "png" | "jpeg";
+    output_format?: "png" | "jpeg";
     seed?: number;
   };
 }

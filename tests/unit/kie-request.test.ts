@@ -1,9 +1,14 @@
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, describe, it, expect, vi } from "vitest";
 
+import { kie } from "../../packages/provider/kie/src/kie";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
 
 describe("KIE request utilities", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   describe("kieRequest", () => {
     it("should make successful POST request", async () => {
       const mockFetch = vi.fn().mockResolvedValue({
@@ -332,6 +337,184 @@ describe("KIE request utilities", () => {
         expect(error).toBeInstanceOf(KieError);
         expect(error.body).toEqual(errorBody);
       }
+    });
+  });
+
+  describe("top-level KIE provider helpers", () => {
+    it("should build multipart uploads with inferred MIME type and upload path", async () => {
+      vi.spyOn(Date, "now").mockReturnValue(1712345678901);
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: {} }), {
+          status: 200,
+        })
+      );
+
+      const provider = kie({
+        apiKey: "test-key",
+        uploadBaseURL: "https://uploads.kie.ai",
+        fetch: mockFetch,
+      });
+
+      await provider.post.api.fileStreamUpload({
+        file: new Blob(["image-bytes"]),
+        filename: "sample.png",
+      });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://uploads.kie.ai/api/file-stream-upload");
+      expect(init.method).toBe("POST");
+      expect(init.headers).toEqual({
+        Authorization: "Bearer test-key",
+      });
+      expect(init.body).toBeInstanceOf(FormData);
+
+      const formData = init.body as FormData;
+      expect(formData.get("uploadPath")).toBe(
+        "uploads/1712345678901_sample.png"
+      );
+
+      const uploadedFile = formData.get("file");
+      expect(uploadedFile).toBeInstanceOf(File);
+      expect((uploadedFile as File).name).toBe("sample.png");
+      expect((uploadedFile as File).type).toBe("image/png");
+      await expect((uploadedFile as File).text()).resolves.toBe("image-bytes");
+    });
+
+    it("should JSON-encode URL uploads with a generated upload path", async () => {
+      vi.spyOn(Date, "now").mockReturnValue(1712345678902);
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: {} }), {
+          status: 200,
+        })
+      );
+
+      const provider = kie({
+        apiKey: "test-key",
+        uploadBaseURL: "https://uploads.kie.ai",
+        fetch: mockFetch,
+      });
+
+      await provider.post.api.fileUrlUpload({
+        url: "https://cdn.example.com/assets/source-image.png",
+      });
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://uploads.kie.ai/api/file-url-upload");
+      expect(init.method).toBe("POST");
+      expect(init.headers).toEqual({
+        Authorization: "Bearer test-key",
+        "Content-Type": "application/json",
+      });
+      expect(JSON.parse(init.body as string)).toEqual({
+        url: "https://cdn.example.com/assets/source-image.png",
+        uploadPath: "uploads/1712345678902_source-image.png",
+      });
+    });
+
+    it("should preserve explicit upload paths for URL uploads", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: {} }), {
+          status: 200,
+        })
+      );
+
+      const provider = kie({
+        apiKey: "test-key",
+        uploadBaseURL: "https://uploads.kie.ai",
+        fetch: mockFetch,
+      });
+
+      await provider.post.api.fileUrlUpload({
+        url: "https://cdn.example.com/video.mov",
+        uploadPath: "custom/path/video.mov",
+      });
+
+      const [, init] = mockFetch.mock.calls[0];
+      expect(JSON.parse(init.body as string)).toEqual({
+        url: "https://cdn.example.com/video.mov",
+        uploadPath: "custom/path/video.mov",
+      });
+    });
+
+    it("should map base64 uploads to the API payload shape", async () => {
+      vi.spyOn(Date, "now").mockReturnValue(1712345678903);
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: {} }), {
+          status: 200,
+        })
+      );
+
+      const provider = kie({
+        apiKey: "test-key",
+        uploadBaseURL: "https://uploads.kie.ai",
+        fetch: mockFetch,
+      });
+
+      await provider.post.api.fileBase64Upload({
+        base64: "aGVsbG8=",
+        filename: "clip.mp4",
+      });
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://uploads.kie.ai/api/file-base64-upload");
+      expect(init.headers).toEqual({
+        Authorization: "Bearer test-key",
+        "Content-Type": "application/json",
+      });
+      expect(JSON.parse(init.body as string)).toEqual({
+        base64Data: "aGVsbG8=",
+        filename: "clip.mp4",
+        uploadPath: "uploads/1712345678903_clip.mp4",
+        mimeType: "video/mp4",
+      });
+    });
+
+    it("should fetch credit balance from the chat credit endpoint", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: { balance: 12 } }), {
+          status: 200,
+        })
+      );
+
+      const provider = kie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+      });
+
+      const result = await provider.get.api.v1.chat.credit();
+
+      expect(result).toEqual({ code: 200, data: { balance: 12 } });
+      expect(mockFetch).toHaveBeenCalledWith(
+        "https://api.kie.ai/api/v1/chat/credit",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer test-key",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    });
+
+    it("should surface credit lookup failures as KieError", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ msg: "Insufficient credits" }), {
+          status: 402,
+        })
+      );
+
+      const provider = kie({
+        apiKey: "test-key",
+        fetch: mockFetch,
+      });
+
+      await expect(provider.get.api.v1.chat.credit()).rejects.toMatchObject({
+        message: "Failed to get credits: 402",
+        status: 402,
+        body: { msg: "Insufficient credits" },
+      });
     });
   });
 });

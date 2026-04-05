@@ -27,6 +27,25 @@ function makeResponse(chunks: string[]): Response {
   });
 }
 
+function makeErroringResponse(chunks: string[], error: Error): Response {
+  const encoder = new TextEncoder();
+  let index = 0;
+  const stream = new ReadableStream({
+    pull(controller) {
+      if (index < chunks.length) {
+        controller.enqueue(encoder.encode(chunks[index]));
+        index++;
+      } else {
+        controller.error(error);
+      }
+    },
+  });
+  return new Response(stream, {
+    status: 200,
+    headers: { "Content-Type": "text/event-stream" },
+  });
+}
+
 describe("kimicoding sseToIterable", () => {
   it("parses event and data fields", async () => {
     const res = makeResponse([
@@ -111,6 +130,22 @@ describe("kimicoding sseToIterable", () => {
     expect(events).toHaveLength(1);
     expect(events[0]).toEqual({ event: "test", data: "crlf" });
   });
+
+  it("propagates stream errors after yielding earlier events", async () => {
+    const res = makeErroringResponse(
+      ["event: delta\ndata: payload\n\n"],
+      new Error("kimicoding stream interrupted")
+    );
+    const iterator = kimiSse(res)[Symbol.asyncIterator]();
+
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: { event: "delta", data: "payload" },
+    });
+    await expect(iterator.next()).rejects.toThrow(
+      "kimicoding stream interrupted"
+    );
+  });
 });
 
 describe("kie sseToIterable", () => {
@@ -166,6 +201,20 @@ describe("kie sseToIterable", () => {
       items.push(data);
     }
     expect(items).toEqual(["line1", "line2"]);
+  });
+
+  it("propagates stream errors after yielding earlier payloads", async () => {
+    const res = makeErroringResponse(
+      ["data: payload\n\n"],
+      new Error("kie stream interrupted")
+    );
+    const iterator = kieSse(res)[Symbol.asyncIterator]();
+
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: "payload",
+    });
+    await expect(iterator.next()).rejects.toThrow("kie stream interrupted");
   });
 });
 
@@ -253,6 +302,22 @@ describe("anthropic sseToIterable", () => {
     expect(events).toHaveLength(1);
     expect(events[0]).toEqual({ event: "test", data: "crlf" });
   });
+
+  it("propagates stream errors after yielding earlier events", async () => {
+    const res = makeErroringResponse(
+      ["event: delta\ndata: payload\n\n"],
+      new Error("anthropic stream interrupted")
+    );
+    const iterator = anthropicSse(res)[Symbol.asyncIterator]();
+
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: { event: "delta", data: "payload" },
+    });
+    await expect(iterator.next()).rejects.toThrow(
+      "anthropic stream interrupted"
+    );
+  });
 });
 
 describe("anthropic parseAnthropicStream", () => {
@@ -316,6 +381,22 @@ describe("anthropic parseAnthropicStream", () => {
       events.push(ev);
     }
     expect(events).toHaveLength(0);
+  });
+
+  it("propagates stream errors after yielding parsed events", async () => {
+    const res = makeErroringResponse(
+      ['data: {"type":"message_start"}\n\n'],
+      new Error("anthropic parse interrupted")
+    );
+    const iterator = parseAnthropicStream(res)[Symbol.asyncIterator]();
+
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: expect.objectContaining({ type: "message_start" }),
+    });
+    await expect(iterator.next()).rejects.toThrow(
+      "anthropic parse interrupted"
+    );
   });
 });
 
@@ -402,5 +483,21 @@ describe("fireworks sseToIterable", () => {
     }
     expect(events).toHaveLength(1);
     expect(events[0]).toEqual({ event: "test", data: "crlf" });
+  });
+
+  it("propagates stream errors after yielding earlier events", async () => {
+    const res = makeErroringResponse(
+      ["event: delta\ndata: payload\n\n"],
+      new Error("fireworks stream interrupted")
+    );
+    const iterator = fireworksSse(res)[Symbol.asyncIterator]();
+
+    await expect(iterator.next()).resolves.toMatchObject({
+      done: false,
+      value: { event: "delta", data: "payload" },
+    });
+    await expect(iterator.next()).rejects.toThrow(
+      "fireworks stream interrupted"
+    );
   });
 });

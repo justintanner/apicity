@@ -445,17 +445,18 @@ describe("validatePayload edge cases", () => {
       expect(result.valid).toBe(true);
     });
 
-    it("should validate responses schema with array input", () => {
+    it("should reject array input (schema requires string)", () => {
       const result = validatePayload(
         {
           model: "grok-4-fast",
-          input: [{ role: "user", content: "Hello" }],
+          input: [{ role: "user", content: "Hello" }], // Array, but schema expects string
         },
         responsesSchema
       );
 
-      // Input can be string or array, both should pass
-      expect(result.valid).toBe(true);
+      // Schema only accepts string type for input
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain("input must be of type string");
     });
 
     it("should reject responses schema missing model", () => {

@@ -256,10 +256,10 @@ describe("withRetry", () => {
     const fn = vi.fn().mockRejectedValue(error);
     const controller = new AbortController();
 
-    const wrapped = withRetry(fn, { retries: 5, baseMs: 100, jitter: false });
+    const wrapped = withRetry(fn, { retries: 5, baseMs: 10, jitter: false });
 
-    // Abort after a short delay
-    setTimeout(() => controller.abort(), 50);
+    // Abort immediately before calling
+    controller.abort();
 
     await expect(wrapped("request", controller.signal)).rejects.toEqual(error);
     expect(fn).toHaveBeenCalledTimes(1);

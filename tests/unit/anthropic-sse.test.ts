@@ -21,6 +21,14 @@ function createMockResponse(chunks: string[]): Response {
   return new Response(stream);
 }
 
+function chunkString(value: string, size: number): string[] {
+  const chunks: string[] = [];
+  for (let i = 0; i < value.length; i += size) {
+    chunks.push(value.slice(i, i + size));
+  }
+  return chunks;
+}
+
 describe("anthropic sse", () => {
   describe("sseToIterable edge cases", () => {
     it("should handle chunked data across reads", async () => {
@@ -429,6 +437,72 @@ describe("anthropic sse", () => {
       }
       expect(events).toHaveLength(1);
       expect(events[0].type).toBe("pong");
+    });
+
+    it("should preserve tool call event order across arbitrarily chunked streams", async () => {
+      const expectedEvents: AnthropicStreamEvent[] = [
+        {
+          type: "message_start",
+          message: {
+            id: "msg_123",
+            type: "message",
+            role: "assistant",
+            content: [],
+            model: "claude-sonnet-4-5-20250929",
+            stop_reason: null,
+            stop_sequence: null,
+            usage: {
+              input_tokens: 12,
+              output_tokens: 0,
+            },
+          },
+        },
+        {
+          type: "content_block_start",
+          index: 0,
+          content_block: {
+            type: "tool_use",
+            id: "toolu_123",
+            name: "get_weather",
+            input: {},
+          },
+        },
+        {
+          type: "content_block_delta",
+          index: 0,
+          delta: {
+            type: "input_json_delta",
+            partial_json: '{"location":"San',
+          },
+        },
+        {
+          type: "content_block_delta",
+          index: 0,
+          delta: {
+            type: "input_json_delta",
+            partial_json: ' Francisco","unit":"celsius"}',
+          },
+        },
+        {
+          type: "content_block_stop",
+          index: 0,
+        },
+        {
+          type: "message_stop",
+        },
+      ];
+
+      const serialized = expectedEvents
+        .map((event) => `data: ${JSON.stringify(event)}\n\n`)
+        .join("");
+      const response = createMockResponse(chunkString(serialized, 17));
+      const events: AnthropicStreamEvent[] = [];
+
+      for await (const event of parseAnthropicStream(response)) {
+        events.push(event);
+      }
+
+      expect(events).toEqual(expectedEvents);
     });
   });
 });

@@ -1,5 +1,5 @@
 // Export main provider function
-export { fal } from "./fal";
+export { fal, buildQueryString } from "./fal";
 
 // Export error class
 export { FalError } from "./types";

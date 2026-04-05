@@ -83,7 +83,7 @@ function attachAbortHandler(
 }
 
 // Build query string from parameters (no case conversion)
-function buildQueryString(params: Record<string, unknown>): string {
+export function buildQueryString(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
 
   for (const [key, value] of Object.entries(params)) {

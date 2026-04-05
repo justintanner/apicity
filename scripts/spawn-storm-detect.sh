@@ -1,0 +1,1 @@
+/app/gascity/examples/gastown/packs/maintenance/scripts/spawn-storm-detect.sh

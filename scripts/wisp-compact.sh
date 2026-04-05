@@ -1,0 +1,1 @@
+/app/gascity/examples/gastown/packs/maintenance/scripts/wisp-compact.sh

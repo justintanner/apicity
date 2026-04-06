@@ -34,7 +34,7 @@ pnpm run lint:fix               # Auto-fix lint issues
 pnpm run format                 # Format with Prettier
 pnpm run test:run               # Run all tests once (Polly.js replay)
 pnpm run test                   # Run tests in watch mode
-pnpm run test:integration:record  # Re-record test fixtures (needs API keys)
+pnpm run test:integration:record  # Re-record test fixtures (needs 1Password CLI)
 pnpm run harness                # HAR viewer at localhost:3475 (all recordings)
 
 # Standalone HAR viewer
@@ -93,8 +93,7 @@ Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness
 2. Record fixtures for **only** the new/changed file:
 
    ```bash
-   # Load API keys from .env (copy .env.template to .env and fill in values):
-   source .env
+   # Uses 1Password CLI to resolve secrets from .env.tpl:
    pnpm run test:integration:record -- tests/integration/<file>.test.ts
    ```
 
@@ -109,7 +108,9 @@ Recordings are committed alongside source code and included in PRs. The CI harne
 
 **Secrets management:**
 
-API keys are stored in `.env` (gitignored). Copy `.env.template` to `.env` and fill in your keys. The `test:integration:record` script expects keys to be exported in the environment (e.g., via `source .env`).
+API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run --env-file=.env.tpl`). The `.env.tpl` file contains `op://` secret references (e.g., `op://NakedAPI/OPENAI_API_KEY/password`) — no plaintext secrets are stored on disk. The `test:integration:record` script uses `op run` automatically.
+
+Alternatively, copy `.env.template` to `.env` and fill in your keys manually. Use `source .env` before running tests with `POLLY_MODE=record`.
 
 ### CI
 
@@ -153,8 +154,8 @@ Code the feature/fix following the provider pattern. Add types, factory method, 
 ### 2. Record integration test fixtures
 
 ```bash
-# Record fixtures (needs API keys in env)
-POLLY_MODE=record pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
+# Record fixtures (1Password CLI resolves secrets from .env.tpl):
+pnpm run test:integration:record -- tests/integration/<file>.test.ts
 # Verify replay works
 pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
 ```

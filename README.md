@@ -146,8 +146,27 @@ Each package exports `PayloadSchema`, `PayloadFieldSchema`, and `ValidationResul
 
 ```bash
 pnpm run test:run                 # All tests (Polly.js replay)
-pnpm run test:integration:record  # Re-record fixtures (needs API keys)
+pnpm run test:integration:record  # Re-record fixtures (needs 1Password CLI)
 pnpm run harness                  # Recording review UI at localhost:3475
+```
+
+### Secrets Management
+
+API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run`). The `.env.tpl` file contains `op://` secret references — no plaintext secrets are stored on disk.
+
+```bash
+# Record integration tests (1Password resolves secrets automatically):
+pnpm run test:integration:record
+
+# Or manually for a single test file:
+op run --env-file=.env.tpl -- env POLLY_MODE=record pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
+```
+
+Alternatively, copy `.env.template` to `.env`, fill in your keys manually, and run:
+
+```bash
+source .env
+POLLY_MODE=record pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
 ```
 
 ## Development

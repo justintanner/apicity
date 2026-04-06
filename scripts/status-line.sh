@@ -1,1 +1,0 @@
-/app/gascity/examples/gastown/packs/gastown/scripts/status-line.sh

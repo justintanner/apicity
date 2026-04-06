@@ -1,1 +1,0 @@
-/app/gascity/examples/gastown/packs/gastown/scripts/checks/code-review-approved.sh

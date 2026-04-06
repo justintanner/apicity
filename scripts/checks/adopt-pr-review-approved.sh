@@ -1,1 +1,0 @@
-/app/gascity/examples/gastown/packs/gastown/scripts/checks/adopt-pr-review-approved.sh

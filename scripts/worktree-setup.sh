@@ -1,1 +1,0 @@
-/app/gascity/examples/gastown/packs/gastown/scripts/worktree-setup.sh

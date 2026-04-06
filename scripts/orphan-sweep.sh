@@ -1,1 +1,0 @@
-/app/gascity/examples/gastown/packs/maintenance/scripts/orphan-sweep.sh

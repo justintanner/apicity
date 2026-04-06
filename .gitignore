@@ -150,21 +150,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Beads task tracker (local database)
-.beads/beads.db
-.beads/metadata.json
-
-# Beads / Dolt files (added by bd init)
-.dolt/
-*.db
-.beads-credential-key
-
-# Claude Code / Gas Town runtime
-.claude/commands/
-.runtime/
-
-# Gas Town (added by gt)
-.claude/
 .logs/
 __pycache__/
 state.json

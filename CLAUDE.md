@@ -126,13 +126,6 @@ GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifa
 - Prefer `interface` over `type` for object shapes
 - `Record<string, unknown>` for API request/response bodies
 
-## Task Tracking
-
-This project uses [beads](https://github.com/steveyegge/beads) (`bd`) for task tracking.
-Hooks auto-inject `bd prime` at session start and before compaction.
-
-Quick reference: `bd ready` (find work), `bd create "Title"` (new task), `bd close <id>` (complete).
-
 ### Adding a New Endpoint
 
 When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
@@ -151,21 +144,13 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
 
 ## Development Workflow
 
-When picking up a beads issue, follow these steps in order. Format and lint gates are enforced automatically by git hooks (pre-commit: format + lint).
+Format and lint gates are enforced automatically by git hooks (pre-commit: format + lint).
 
-### 1. Claim work
-
-```bash
-bd ready                                    # find unblocked issues
-bd update <id> --claim                      # claim it
-git checkout -b <id>/<short-description>    # e.g. nakedapi-5/xai-search
-```
-
-### 2. Implement
+### 1. Implement
 
 Code the feature/fix following the provider pattern. Add types, factory method, and integration test. One endpoint per PR.
 
-### 3. Record integration test fixtures
+### 2. Record integration test fixtures
 
 ```bash
 # Record fixtures (needs API keys in env)
@@ -174,28 +159,21 @@ POLLY_MODE=record pnpm vitest run --config tests/vitest.integration.ts tests/int
 pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
 ```
 
-### 4. Push + open PR
+### 3. Push + open PR
 
 ```bash
 git add .
 git commit -m "feat: <description>"
 git push -u origin HEAD
-gh pr create --title "<title>" --body "Resolves <id>"
+gh pr create --title "<title>" --body "<description>"
 ```
 
 Recordings are committed alongside source code. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility.
 
-### 5. CI validates + posts harness report (automatic)
+### 4. CI validates + posts harness report (automatic)
 
 Three jobs run on the PR:
 
 - **build** — compile + verify artifacts
 - **test** — lint + integration tests (Polly.js replay)
 - **harness-report** — posts a visual summary with embedded prompts, input media, and output results as a PR comment + uploads interactive HTML viewer as artifact
-
-### 6. After merge
-
-```bash
-git checkout main && git pull
-bd close <id>
-```

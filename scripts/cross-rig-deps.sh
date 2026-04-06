@@ -1,1 +1,0 @@
-/app/gascity/examples/gastown/packs/maintenance/scripts/cross-rig-deps.sh

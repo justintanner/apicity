@@ -1036,6 +1036,62 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "wan/2-7-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Positive prompt (max 5000 chars)",
+      },
+      negative_prompt: {
+        type: "string",
+        description: "Negative prompt (max 500 chars)",
+      },
+      first_frame_url: {
+        type: "string",
+        description: "First frame image URL",
+      },
+      last_frame_url: {
+        type: "string",
+        description: "Last frame image URL",
+      },
+      first_clip_url: {
+        type: "string",
+        description: "First clip video URL for video continuation",
+      },
+      driving_audio_url: {
+        type: "string",
+        description: "Driving audio URL",
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        description: "Video resolution (default 1080p)",
+      },
+      duration: {
+        type: "number",
+        description: "Duration in seconds, 2-15 (default 5)",
+      },
+      prompt_extend: {
+        type: "boolean",
+        description: "Intelligent prompt rewriting (default true)",
+      },
+      watermark: {
+        type: "boolean",
+        description: "AI-generated watermark (default false)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (0-2147483647)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
   "sora-watermark-remover": {
     type: "video",
     fields: {

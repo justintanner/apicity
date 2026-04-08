@@ -150,6 +150,9 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
+# package-lock.json (project uses pnpm)
+package-lock.json
+
 .logs/
 __pycache__/
 state.json

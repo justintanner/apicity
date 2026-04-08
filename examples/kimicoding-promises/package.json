@@ -7,6 +7,6 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "@nakedapi/kimicoding": "workspace:*"
+    "@nakedapi/kimicoding": "0.1.0"
   }
 }

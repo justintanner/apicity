@@ -160,3 +160,9 @@ CLAUDE.local.md
 .dolt/
 *.db
 .beads-credential-key
+
+# Gas Town / Claude Code local harness files
+.gc/
+.claude/
+.runtime/
+test-branch-protection.txt

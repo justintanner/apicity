@@ -79,7 +79,7 @@ packages/provider/<name>/
 **anthropic** — Messages, streaming, batches, files, models, skills, admin/org APIs
 **fireworks** — Chat, completions, embeddings, rerank, messages, workflows, audio, models, deployments, training
 **alibaba** — Chat (Qwen3), streaming, models
-**free** — Free file hosting (tmpfiles.org, uguu.se)
+**free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)
 
 ### Testing
 

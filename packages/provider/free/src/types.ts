@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// @nakedapi/free – free file hosting providers (tmpfiles.org, uguu.se)
+// @nakedapi/free – free file hosting providers
 // ---------------------------------------------------------------------------
 
 // -- Options ----------------------------------------------------------------
@@ -43,6 +43,107 @@ export interface UguuFileEntry {
 export interface UguuUploadResponse {
   success: boolean;
   files: UguuFileEntry[];
+}
+
+// -- Catbox types -----------------------------------------------------------
+
+export interface CatboxUploadRequest {
+  file: Blob;
+  filename?: string;
+}
+
+// -- Litterbox types --------------------------------------------------------
+
+export interface LitterboxUploadRequest {
+  file: Blob;
+  filename?: string;
+  time?: "1h" | "12h" | "24h" | "72h";
+}
+
+// -- Gofile types -----------------------------------------------------------
+
+export interface GofileUploadRequest {
+  file: Blob;
+  filename?: string;
+}
+
+export interface GofileUploadData {
+  id: string;
+  name: string;
+  parentFolder: string;
+  parentFolderCode: string;
+  downloadPage: string;
+  md5: string;
+  mimetype: string;
+  size: number;
+  type: string;
+  servers: string[];
+  createTime: number;
+  modTime: number;
+  guestToken: string;
+}
+
+export interface GofileUploadResponse {
+  status: string;
+  data: GofileUploadData;
+}
+
+// -- Filebin types ----------------------------------------------------------
+
+export interface FilebinUploadRequest {
+  file: Blob;
+  filename?: string;
+  bin?: string;
+}
+
+export interface FilebinBin {
+  id: string;
+  readonly: boolean;
+  bytes: number;
+  bytes_readable: string;
+  files: number;
+  updated_at: string;
+  created_at: string;
+  expired_at: string;
+}
+
+export interface FilebinFile {
+  filename: string;
+  "content-type": string;
+  bytes: number;
+  bytes_readable: string;
+  md5: string;
+  sha256: string;
+  updated_at: string;
+  created_at: string;
+}
+
+export interface FilebinUploadResponse {
+  bin: FilebinBin;
+  file: FilebinFile;
+}
+
+// -- Temp.sh types ----------------------------------------------------------
+
+export interface TempshUploadRequest {
+  file: Blob;
+  filename?: string;
+}
+
+// -- tfLink types -----------------------------------------------------------
+
+export interface TflinkUploadRequest {
+  file: Blob;
+  filename?: string;
+}
+
+export interface TflinkUploadResponse {
+  fileName: string;
+  downloadLink: string;
+  downloadLinkEncoded: string;
+  size: number;
+  type: string;
+  uploadedTo: string;
 }
 
 // -- Error ------------------------------------------------------------------
@@ -99,6 +200,51 @@ export interface UguuUploadMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
+export interface CatboxUploadMethod {
+  (req: CatboxUploadRequest, signal?: AbortSignal): Promise<string>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+export interface LitterboxUploadMethod {
+  (req: LitterboxUploadRequest, signal?: AbortSignal): Promise<string>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+export interface GofileUploadMethod {
+  (
+    req: GofileUploadRequest,
+    signal?: AbortSignal
+  ): Promise<GofileUploadResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+export interface FilebinUploadMethod {
+  (
+    req: FilebinUploadRequest,
+    signal?: AbortSignal
+  ): Promise<FilebinUploadResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+export interface TempshUploadMethod {
+  (req: TempshUploadRequest, signal?: AbortSignal): Promise<string>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
+export interface TflinkUploadMethod {
+  (
+    req: TflinkUploadRequest,
+    signal?: AbortSignal
+  ): Promise<TflinkUploadResponse>;
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+}
+
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface TmpfilesApiV1Namespace {
@@ -117,7 +263,37 @@ export interface UguuNamespace {
   upload: UguuUploadMethod;
 }
 
+export interface CatboxNamespace {
+  upload: CatboxUploadMethod;
+}
+
+export interface LitterboxNamespace {
+  upload: LitterboxUploadMethod;
+}
+
+export interface GofileNamespace {
+  upload: GofileUploadMethod;
+}
+
+export interface FilebinNamespace {
+  upload: FilebinUploadMethod;
+}
+
+export interface TempshNamespace {
+  upload: TempshUploadMethod;
+}
+
+export interface TflinkNamespace {
+  upload: TflinkUploadMethod;
+}
+
 export interface FreeProvider {
   tmpfiles: TmpfilesNamespace;
   uguu: UguuNamespace;
+  catbox: CatboxNamespace;
+  litterbox: LitterboxNamespace;
+  gofile: GofileNamespace;
+  filebin: FilebinNamespace;
+  tempsh: TempshNamespace;
+  tflink: TflinkNamespace;
 }

@@ -577,7 +577,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
         },
         mockSignal
       );
-    } catch (error) {
+    } catch {
       // May throw due to abort
     }
   });

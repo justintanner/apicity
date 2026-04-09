@@ -230,4 +230,4 @@ export class KimiCodingError extends Error {
   }
 }
 
-export interface KimiCodingProvider extends Provider {}
+export type KimiCodingProvider = Provider;

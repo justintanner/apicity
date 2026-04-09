@@ -399,7 +399,7 @@ export interface FalComputeInstance {
 }
 
 // List compute instances parameters
-export interface FalComputeInstancesListParams extends FalPaginatedParams {}
+export type FalComputeInstancesListParams = FalPaginatedParams;
 
 // List compute instances response
 export interface FalComputeInstancesListResponse {

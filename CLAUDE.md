@@ -78,6 +78,7 @@ packages/provider/<name>/
 **kie** — Media generation (video/image/audio), sub-providers (veo, suno, chat, claude)
 **anthropic** — Messages, streaming, batches, files, models, skills, admin/org APIs
 **fireworks** — Chat, completions, embeddings, rerank, messages, workflows, audio, models, deployments, training
+**alibaba** — Chat (Qwen3), streaming, models
 
 ### Testing
 

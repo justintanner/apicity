@@ -1,7 +1,7 @@
 {
   "name": "nakedapi",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai, @nakedapi/openai, @nakedapi/fal, and @nakedapi/anthropic",
+  "description": "Standalone AI provider packages - @nakedapi/kimicoding, @nakedapi/kie, @nakedapi/xai, @nakedapi/openai, @nakedapi/fal, @nakedapi/anthropic, @nakedapi/fireworks, and @nakedapi/alibaba",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,7 +14,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic",
+    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba",
     "build:openai": "pnpm --filter @nakedapi/openai run build && node scripts/doc-gen.mjs openai",
     "build:kimicoding": "pnpm --filter @nakedapi/kimicoding run build && node scripts/doc-gen.mjs kimicoding",
     "build:kie": "pnpm --filter @nakedapi/kie run build && node scripts/doc-gen.mjs kie",
@@ -22,8 +22,9 @@
     "build:fal": "pnpm --filter @nakedapi/fal run build && node scripts/doc-gen.mjs fal",
     "build:fireworks": "pnpm --filter @nakedapi/fireworks run build && node scripts/doc-gen.mjs fireworks",
     "build:anthropic": "pnpm --filter @nakedapi/anthropic run build && node scripts/doc-gen.mjs anthropic",
+    "build:alibaba": "pnpm --filter @nakedapi/alibaba run build && node scripts/doc-gen.mjs alibaba",
     "doc-gen": "node scripts/doc-gen.mjs",
-    "doc-gen:all": "node scripts/doc-gen.mjs fal && node scripts/doc-gen.mjs openai && node scripts/doc-gen.mjs xai && node scripts/doc-gen.mjs kimicoding && node scripts/doc-gen.mjs kie && node scripts/doc-gen.mjs fireworks && node scripts/doc-gen.mjs anthropic",
+    "doc-gen:all": "node scripts/doc-gen.mjs fal && node scripts/doc-gen.mjs openai && node scripts/doc-gen.mjs xai && node scripts/doc-gen.mjs kimicoding && node scripts/doc-gen.mjs kie && node scripts/doc-gen.mjs fireworks && node scripts/doc-gen.mjs anthropic && node scripts/doc-gen.mjs alibaba",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "lint": "eslint .",
@@ -37,7 +38,7 @@
     "test:coverage": "vitest run --config tests/vitest.integration.ts --coverage",
     "harness": "npx tsx tests/harness-serve.ts tests/recordings/",
     "harness:report": "npx tsx tests/harness-report.ts",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"ALIBABA_CLOUD_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
@@ -85,6 +86,9 @@
     "openai",
     "fal",
     "fal-ai",
+    "alibaba",
+    "dashscope",
+    "qwen",
     "typescript"
   ],
   "author": "Justin Tanner",

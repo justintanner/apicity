@@ -41,6 +41,8 @@ jobs:
           test -f packages/provider/kimicoding/dist/src/index.d.ts
           test -f packages/provider/kie/dist/src/index.js
           test -f packages/provider/kie/dist/src/index.d.ts
+          test -f packages/provider/alibaba/dist/src/index.js
+          test -f packages/provider/alibaba/dist/src/index.d.ts
 
   test:
     needs: build

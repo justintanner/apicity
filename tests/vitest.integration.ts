@@ -34,6 +34,10 @@ export default defineConfig({
         __dirname,
         "../packages/provider/anthropic/src"
       ),
+      "@nakedapi/alibaba": path.resolve(
+        __dirname,
+        "../packages/provider/alibaba/src"
+      ),
     },
     coverage: {
       provider: "v8",

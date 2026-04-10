@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { XaiError } from "@nakedapi/xai";
 import { createXaiProvider } from "../xai-provider";
@@ -6,11 +6,11 @@ import { createXaiProvider } from "../xai-provider";
 describe("xAI error handling integration", () => {
   let ctx: PollyContext;
 
-  beforeEach(() => {
+  beforeAll(() => {
     ctx = setupPolly("xai/error-handling");
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await teardownPolly(ctx);
   });
 

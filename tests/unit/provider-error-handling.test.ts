@@ -157,7 +157,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
         apiKey: "fal-test",
         fetch: fetchImpl,
         timeout,
-      }).v1.models();
+      }).ai.v1.models();
     },
     rateLimitBody: {
       error: { type: "rate_limited", message: "Slow down" },

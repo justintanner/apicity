@@ -20,7 +20,7 @@ describe.skip("fal compute instances terminate integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.v1.compute.instances.terminate({
+    const result = await provider.ai.v1.compute.instances.terminate({
       id: process.env.FAL_INSTANCE_ID ?? "test-instance-id",
     });
 
@@ -32,7 +32,7 @@ describe.skip("fal compute instances terminate integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.delete.v1.compute.instances.terminate({
+    const result = await provider.delete.ai.v1.compute.instances.terminate({
       id: process.env.FAL_INSTANCE_ID ?? "test-instance-id",
     });
 

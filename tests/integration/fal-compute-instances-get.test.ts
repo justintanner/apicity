@@ -20,7 +20,7 @@ describe.skip("fal compute instances get integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.v1.compute.instances.get({
+    const result = await provider.ai.v1.compute.instances.get({
       id: process.env.FAL_INSTANCE_ID ?? "test-instance-id",
     });
 
@@ -35,7 +35,7 @@ describe.skip("fal compute instances get integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.get.v1.compute.instances.get({
+    const result = await provider.get.ai.v1.compute.instances.get({
       id: process.env.FAL_INSTANCE_ID ?? "test-instance-id",
     });
 

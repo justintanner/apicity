@@ -231,6 +231,35 @@ fal.workflow.create.validatePayload(data)
 
 </details>
 
+<details>
+<summary><b><code>bytedance.seedance2.0.imagetovideo</code></b> — <code>POST /bytedance/seedance-2.0/image-to-video</code></summary>
+
+**Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `prompt` | string | Yes | Text prompt describing desired motion and action |
+| `image_url` | string | Yes | URL or data URL of the starting frame image (JPEG, PNG, WebP, max 30 MB) |
+| `end_image_url` | string | No | Optional URL of the ending frame image |
+| `resolution` | string | No | Video resolution (default 720p)<br>Enum: `480p`, `720p` |
+| `duration` | string | No | Duration in seconds, 4-15 or auto (default auto)<br>Enum: `auto`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15` |
+| `aspect_ratio` | string | No | Aspect ratio of the generated video (default auto)<br>Enum: `auto`, `21:9`, `16:9`, `4:3`, `1:1`, `3:4`, `9:16` |
+| `generate_audio` | boolean | No | Whether to generate synchronized audio (default true). Cost is identical either way. |
+| `seed` | number | No | Random seed for reproducibility |
+| `end_user_id` | string | No | Unique end-user ID |
+
+**Validation:**
+
+```typescript
+// Access the schema
+fal.bytedance.seedance2p0.image.to.video.payloadSchema
+
+// Validate data
+fal.bytedance.seedance2p0.image.to.video.validatePayload(data)
+```
+
+</details>
+
 ### DELETE Endpoints
 
 <details>

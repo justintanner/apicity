@@ -3,6 +3,7 @@ export interface FalOptions {
   apiKey: string;
   baseURL?: string;
   queueBaseURL?: string;
+  runBaseURL?: string;
   timeout?: number;
   fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
@@ -423,6 +424,58 @@ export interface FalComputeInstanceCreateParams {
 // Delete compute instance parameters
 export interface FalComputeInstanceDeleteParams {
   id: string;
+}
+
+// ==================== fal.run inference models ====================
+
+// Generic file output returned by fal.run inference models
+export interface FalFile {
+  url: string;
+  content_type?: string;
+  file_name?: string;
+  file_size?: number;
+}
+
+// ByteDance Seedance 2.0 image-to-video
+export type FalSeedanceResolution = "480p" | "720p";
+export type FalSeedanceDuration =
+  | "auto"
+  | "4"
+  | "5"
+  | "6"
+  | "7"
+  | "8"
+  | "9"
+  | "10"
+  | "11"
+  | "12"
+  | "13"
+  | "14"
+  | "15";
+export type FalSeedanceAspectRatio =
+  | "auto"
+  | "21:9"
+  | "16:9"
+  | "4:3"
+  | "1:1"
+  | "3:4"
+  | "9:16";
+
+export interface FalSeedance2p0ImageToVideoParams {
+  prompt: string;
+  image_url: string;
+  end_image_url?: string;
+  resolution?: FalSeedanceResolution;
+  duration?: FalSeedanceDuration;
+  aspect_ratio?: FalSeedanceAspectRatio;
+  generate_audio?: boolean;
+  seed?: number;
+  end_user_id?: string;
+}
+
+export interface FalSeedance2p0ImageToVideoResponse {
+  video: FalFile;
+  seed: number;
 }
 
 // Payload schema types
@@ -871,6 +924,33 @@ interface FalV1Namespace {
   compute: FalComputeNamespace;
 }
 
+// api.fal.ai wrapper — everything under /v1
+interface FalAiNamespace {
+  v1: FalV1Namespace;
+}
+
+// ==================== fal.run run-namespace ====================
+
+type FalSeedance2p0ImageToVideoFn = ((
+  params: FalSeedance2p0ImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p0ImageToVideoResponse>) & {
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+};
+
+export interface FalRunBytedanceSeedance2p0Namespace {
+  imageToVideo: FalSeedance2p0ImageToVideoFn;
+}
+
+export interface FalRunBytedanceNamespace {
+  seedance2p0: FalRunBytedanceSeedance2p0Namespace;
+}
+
+export interface FalRunNamespace {
+  bytedance: FalRunBytedanceNamespace;
+}
+
 // ==================== Verb-Prefixed API Surface ====================
 
 // GET v1 namespace
@@ -1085,25 +1165,27 @@ interface FalDeleteV1Namespace {
 
 // Verb-prefixed root namespaces
 interface FalGetNamespace {
-  v1: FalGetV1Namespace;
+  ai: { v1: FalGetV1Namespace };
 }
 
 interface FalPostNamespace {
-  v1: FalPostV1Namespace;
+  ai: { v1: FalPostV1Namespace };
+  run: FalRunNamespace;
   stream: FalPostStreamNamespace;
 }
 
 interface FalPutNamespace {
-  v1: FalPutV1Namespace;
+  ai: { v1: FalPutV1Namespace };
 }
 
 interface FalDeleteNamespace {
-  v1: FalDeleteV1Namespace;
+  ai: { v1: FalDeleteV1Namespace };
 }
 
 // Provider interface
 export interface FalProvider {
-  v1: FalV1Namespace;
+  ai: FalAiNamespace;
+  run: FalRunNamespace;
   get: FalGetNamespace;
   post: FalPostNamespace;
   put: FalPutNamespace;

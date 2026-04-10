@@ -80,7 +80,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
         baseURL: opts.baseURL,
         fetch: opts.fetch,
         timeout: opts.timeout,
-      }).v1.models(),
+      }).ai.v1.models(),
     successBody: { models: [], next_cursor: null, has_more: false },
   },
   {

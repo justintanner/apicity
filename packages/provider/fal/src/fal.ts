@@ -50,6 +50,9 @@ import {
   FalAppsQueueParams,
   FalAppsQueueResponse,
   FalAppsFlushQueueParams,
+  FalSeedance2p0ImageToVideoParams,
+  FalSeedance2p0ImageToVideoResponse,
+  FalRunNamespace,
 } from "./types";
 import type { ValidationResult } from "./types";
 import {
@@ -63,6 +66,7 @@ import {
   computeInstanceCreateSchema,
   appsFlushQueueSchema,
   workflowCreateSchema,
+  bytedanceSeedance2p0ImageToVideoSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -575,6 +579,37 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   const queueBaseURL = opts.queueBaseURL ?? "https://queue.fal.run";
+  const runBaseURL = opts.runBaseURL ?? "https://fal.run";
+
+  const bytedanceSeedance2p0ImageToVideo = Object.assign(
+    async function imageToVideo(
+      params: FalSeedance2p0ImageToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalSeedance2p0ImageToVideoResponse> {
+      return makeRequest<FalSeedance2p0ImageToVideoResponse>(
+        "POST",
+        "/bytedance/seedance-2.0/image-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      payloadSchema: bytedanceSeedance2p0ImageToVideoSchema,
+      validatePayload(data: unknown): ValidationResult {
+        return validatePayload(data, bytedanceSeedance2p0ImageToVideoSchema);
+      },
+    }
+  );
+
+  const run: FalRunNamespace = {
+    bytedance: {
+      seedance2p0: {
+        imageToVideo: bytedanceSeedance2p0ImageToVideo,
+      },
+    },
+  };
 
   const queue = {
     submit: Object.assign(
@@ -1855,19 +1890,23 @@ export function fal(opts: FalOptions): FalProvider {
     compute: deleteV1Compute,
   };
 
+  const aiV1 = {
+    models,
+    queue,
+    serverless,
+    workflows,
+    compute,
+  };
+
   return {
-    // Backward compatibility - old structure
-    v1: {
-      models,
-      queue,
-      serverless,
-      workflows,
-      compute,
-    },
-    // New verb-prefix API surface
-    get: { v1: getV1 },
-    post: { v1: postV1, stream: postStream },
-    put: { v1: putV1 },
-    delete: { v1: deleteV1 },
+    // api.fal.ai/v1/* — management API
+    ai: { v1: aiV1 },
+    // fal.run/* — synchronous inference
+    run,
+    // Verb-prefixed API surface
+    get: { ai: { v1: getV1 } },
+    post: { ai: { v1: postV1 }, run, stream: postStream },
+    put: { ai: { v1: putV1 } },
+    delete: { ai: { v1: deleteV1 } },
   };
 }

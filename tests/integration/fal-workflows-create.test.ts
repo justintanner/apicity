@@ -20,7 +20,7 @@ describe("fal workflows create integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.v1.workflows.create({
+    const result = await provider.ai.v1.workflows.create({
       name: "test-workflow-" + Date.now(),
       title: "Test Workflow",
       description: "A test workflow created via API",
@@ -42,7 +42,7 @@ describe("fal workflows create integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.post.v1.workflows.create({
+    const result = await provider.post.ai.v1.workflows.create({
       name: "test-workflow-post-" + Date.now(),
       title: "Test Workflow via POST",
       contents: {
@@ -60,7 +60,7 @@ describe("fal workflows create integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const validation = provider.v1.workflows.create.validatePayload({
+    const validation = provider.ai.v1.workflows.create.validatePayload({
       name: "test-workflow",
       title: "Test Workflow",
       contents: {
@@ -78,7 +78,7 @@ describe("fal workflows create integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const validation = provider.v1.workflows.create.validatePayload({
+    const validation = provider.ai.v1.workflows.create.validatePayload({
       title: "Test Workflow without name",
     });
 
@@ -92,7 +92,7 @@ describe("fal workflows create integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const schema = provider.v1.workflows.create.payloadSchema;
+    const schema = provider.ai.v1.workflows.create.payloadSchema;
     expect(schema).toBeDefined();
     expect(schema.method).toBe("POST");
     expect(schema.path).toBe("/workflows");

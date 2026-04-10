@@ -4,15 +4,15 @@ import { fal } from "@nakedapi/fal";
 describe("fal compute instances", () => {
   it("should expose compute instances namespace methods", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    expect(typeof provider.v1.compute.instances).toBe("function");
-    expect(typeof provider.v1.compute.instances.get).toBe("function");
-    expect(typeof provider.v1.compute.instances.create).toBe("function");
-    expect(typeof provider.v1.compute.instances.terminate).toBe("function");
+    expect(typeof provider.ai.v1.compute.instances).toBe("function");
+    expect(typeof provider.ai.v1.compute.instances.get).toBe("function");
+    expect(typeof provider.ai.v1.compute.instances.create).toBe("function");
+    expect(typeof provider.ai.v1.compute.instances.terminate).toBe("function");
   });
 
   it("should expose create payloadSchema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const schema = provider.v1.compute.instances.create.payloadSchema;
+    const schema = provider.ai.v1.compute.instances.create.payloadSchema;
     expect(schema).toBeDefined();
     expect(schema.method).toBe("POST");
     expect(schema.path).toBe("/compute/instances");
@@ -27,7 +27,7 @@ describe("fal compute instances", () => {
 
   it("should validate create params — valid", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.v1.compute.instances.create.validatePayload({
+    const result = provider.ai.v1.compute.instances.create.validatePayload({
       instance_type: "gpu_1x_h100_sxm5",
       ssh_key: "ssh-rsa AAAAB3...",
     });
@@ -37,7 +37,7 @@ describe("fal compute instances", () => {
 
   it("should validate create params — valid with sector", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.v1.compute.instances.create.validatePayload({
+    const result = provider.ai.v1.compute.instances.create.validatePayload({
       instance_type: "gpu_8x_h100_sxm5",
       ssh_key: "ssh-rsa AAAAB3...",
       sector: "sector_1",
@@ -48,7 +48,7 @@ describe("fal compute instances", () => {
 
   it("should validate create params — missing required", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.v1.compute.instances.create.validatePayload({});
+    const result = provider.ai.v1.compute.instances.create.validatePayload({});
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("instance_type is required");
     expect(result.errors).toContain("ssh_key is required");
@@ -56,7 +56,7 @@ describe("fal compute instances", () => {
 
   it("should validate create params — wrong types", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.v1.compute.instances.create.validatePayload({
+    const result = provider.ai.v1.compute.instances.create.validatePayload({
       instance_type: 123,
       ssh_key: false,
     });
@@ -67,7 +67,7 @@ describe("fal compute instances", () => {
 
   it("should validate create params — invalid instance_type enum", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.v1.compute.instances.create.validatePayload({
+    const result = provider.ai.v1.compute.instances.create.validatePayload({
       instance_type: "gpu_4x_a100",
       ssh_key: "ssh-rsa AAAAB3...",
     });
@@ -77,7 +77,7 @@ describe("fal compute instances", () => {
 
   it("should validate create params — invalid sector enum", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.v1.compute.instances.create.validatePayload({
+    const result = provider.ai.v1.compute.instances.create.validatePayload({
       instance_type: "gpu_8x_h100_sxm5",
       ssh_key: "ssh-rsa AAAAB3...",
       sector: "sector_99",
@@ -88,8 +88,8 @@ describe("fal compute instances", () => {
 
   it("should expose terminate method", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    expect(typeof provider.v1.compute.instances.terminate).toBe("function");
-    expect(typeof provider.delete.v1.compute.instances.terminate).toBe(
+    expect(typeof provider.ai.v1.compute.instances.terminate).toBe("function");
+    expect(typeof provider.delete.ai.v1.compute.instances.terminate).toBe(
       "function"
     );
   });

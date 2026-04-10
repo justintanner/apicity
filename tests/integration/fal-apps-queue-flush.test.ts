@@ -5,7 +5,7 @@ describe("fal apps queue flush validation", () => {
   it("should validate payload for required fields", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     const result =
-      provider.delete.v1.serverless.apps.queue.flush.validatePayload({
+      provider.delete.ai.v1.serverless.apps.queue.flush.validatePayload({
         owner: "test-owner",
         name: "test-app",
       });
@@ -16,7 +16,7 @@ describe("fal apps queue flush validation", () => {
   it("should reject payload missing required fields", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     const result =
-      provider.delete.v1.serverless.apps.queue.flush.validatePayload({
+      provider.delete.ai.v1.serverless.apps.queue.flush.validatePayload({
         idempotency_key: "test-key",
       });
     expect(result.valid).toBe(false);

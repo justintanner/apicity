@@ -6,25 +6,27 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    expect(provider.v1.queue.submit.payloadSchema).toBeDefined();
-    expect(provider.v1.queue.submit.payloadSchema.method).toBe("POST");
+    expect(provider.ai.v1.queue.submit.payloadSchema).toBeDefined();
+    expect(provider.ai.v1.queue.submit.payloadSchema.method).toBe("POST");
     expect(
-      provider.v1.queue.submit.payloadSchema.fields.endpoint_id
+      provider.ai.v1.queue.submit.payloadSchema.fields.endpoint_id
     ).toBeDefined();
     expect(
-      provider.v1.queue.submit.payloadSchema.fields.endpoint_id.required
+      provider.ai.v1.queue.submit.payloadSchema.fields.endpoint_id.required
     ).toBe(true);
-    expect(provider.v1.queue.submit.payloadSchema.fields.input).toBeDefined();
-    expect(provider.v1.queue.submit.payloadSchema.fields.input.required).toBe(
-      true
-    );
+    expect(
+      provider.ai.v1.queue.submit.payloadSchema.fields.input
+    ).toBeDefined();
+    expect(
+      provider.ai.v1.queue.submit.payloadSchema.fields.input.required
+    ).toBe(true);
   });
 
   it("should validate queue submit params — valid", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.v1.queue.submit.validatePayload({
+    const result = provider.ai.v1.queue.submit.validatePayload({
       endpoint_id: "fal-ai/flux/schnell",
       input: { prompt: "a cat" },
     });
@@ -36,7 +38,7 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.v1.queue.submit.validatePayload({});
+    const result = provider.ai.v1.queue.submit.validatePayload({});
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("endpoint_id is required");
     expect(result.errors).toContain("input is required");
@@ -46,7 +48,7 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.v1.queue.submit.validatePayload({
+    const result = provider.ai.v1.queue.submit.validatePayload({
       endpoint_id: 123,
       input: "not-an-object",
     });
@@ -59,7 +61,7 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.v1.queue.submit.validatePayload({
+    const result = provider.ai.v1.queue.submit.validatePayload({
       endpoint_id: "fal-ai/flux/schnell",
       input: { prompt: "a cat" },
       priority: "urgent",
@@ -72,10 +74,10 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    expect(typeof provider.v1.queue.submit).toBe("function");
-    expect(typeof provider.v1.queue.status).toBe("function");
-    expect(typeof provider.v1.queue.result).toBe("function");
-    expect(typeof provider.v1.queue.cancel).toBe("function");
+    expect(typeof provider.ai.v1.queue.submit).toBe("function");
+    expect(typeof provider.ai.v1.queue.status).toBe("function");
+    expect(typeof provider.ai.v1.queue.result).toBe("function");
+    expect(typeof provider.ai.v1.queue.cancel).toBe("function");
   });
 
   it("should accept custom queueBaseURL", () => {
@@ -83,6 +85,6 @@ describe("fal queue validation", () => {
       apiKey: "fal-test-key",
       queueBaseURL: "https://custom-queue.example.com",
     });
-    expect(provider.v1.queue).toBeDefined();
+    expect(provider.ai.v1.queue).toBeDefined();
   });
 });

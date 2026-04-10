@@ -18,7 +18,7 @@ describe("fal compute instances get integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     // This API key doesn't have compute access - expect permission error
-    await expect(provider.v1.compute.instances()).rejects.toThrow(
+    await expect(provider.ai.v1.compute.instances()).rejects.toThrow(
       /Compute access requires additional permissions/
     );
   });
@@ -27,7 +27,7 @@ describe("fal compute instances get integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    await expect(provider.v1.compute.instances()).rejects.toThrow(
+    await expect(provider.ai.v1.compute.instances()).rejects.toThrow(
       /Compute access requires additional permissions/
     );
   });

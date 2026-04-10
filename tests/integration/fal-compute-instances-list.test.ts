@@ -20,7 +20,7 @@ describe.skip("fal compute instances list integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.v1.compute.instances();
+    const result = await provider.ai.v1.compute.instances();
 
     expect(result).toBeDefined();
     expect(result.instances).toBeDefined();
@@ -32,7 +32,7 @@ describe.skip("fal compute instances list integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.v1.compute.instances({ limit: 5 });
+    const result = await provider.ai.v1.compute.instances({ limit: 5 });
 
     expect(result).toBeDefined();
     expect(result.instances).toBeDefined();
@@ -44,7 +44,7 @@ describe.skip("fal compute instances list integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.get.v1.compute.instances();
+    const result = await provider.get.ai.v1.compute.instances();
 
     expect(result).toBeDefined();
     expect(result.instances).toBeDefined();

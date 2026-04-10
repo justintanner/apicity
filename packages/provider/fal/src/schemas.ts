@@ -296,3 +296,68 @@ export const workflowCreateSchema: PayloadSchema = {
     },
   },
 };
+
+export const bytedanceSeedance2p0ImageToVideoSchema: PayloadSchema = {
+  method: "POST",
+  path: "/bytedance/seedance-2.0/image-to-video",
+  contentType: "application/json",
+  fields: {
+    prompt: {
+      type: "string",
+      required: true,
+      description: "Text prompt describing desired motion and action",
+    },
+    image_url: {
+      type: "string",
+      required: true,
+      description:
+        "URL or data URL of the starting frame image (JPEG, PNG, WebP, max 30 MB)",
+    },
+    end_image_url: {
+      type: "string",
+      description: "Optional URL of the ending frame image",
+    },
+    resolution: {
+      type: "string",
+      enum: ["480p", "720p"],
+      description: "Video resolution (default 720p)",
+    },
+    duration: {
+      type: "string",
+      enum: [
+        "auto",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+      ],
+      description: "Duration in seconds, 4-15 or auto (default auto)",
+    },
+    aspect_ratio: {
+      type: "string",
+      enum: ["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"],
+      description: "Aspect ratio of the generated video (default auto)",
+    },
+    generate_audio: {
+      type: "boolean",
+      description:
+        "Whether to generate synchronized audio (default true). Cost is identical either way.",
+    },
+    seed: {
+      type: "number",
+      description: "Random seed for reproducibility",
+    },
+    end_user_id: {
+      type: "string",
+      description: "Unique end-user ID",
+    },
+  },
+};

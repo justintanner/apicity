@@ -20,7 +20,7 @@ describe("fal compute instances post integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
 
-    const result = await provider.post.v1.compute.instances.create({
+    const result = await provider.post.ai.v1.compute.instances.create({
       instance_type: "gpu_1x_h100_sxm5",
       ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7...",
     });
@@ -37,7 +37,7 @@ describe("fal compute instances post integration", () => {
     });
 
     const validation =
-      provider.post.v1.compute.instances.create.validatePayload({
+      provider.post.ai.v1.compute.instances.create.validatePayload({
         instance_type: "gpu_1x_h100_sxm5",
         ssh_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7...",
       });
@@ -52,7 +52,7 @@ describe("fal compute instances post integration", () => {
     });
 
     const validation =
-      provider.post.v1.compute.instances.create.validatePayload({
+      provider.post.ai.v1.compute.instances.create.validatePayload({
         region: "us-west",
       });
 

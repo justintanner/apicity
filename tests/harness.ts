@@ -26,14 +26,26 @@ export function setupPollyForFileUploads(recordingName: string): PollyContext {
   });
 }
 
+type RawPollyMode = "record" | "replay" | "passthrough" | "record-missing";
+type PollyAdapterMode = "record" | "replay" | "passthrough";
+
+function resolvePollyMode(): {
+  raw: RawPollyMode;
+  adapter: PollyAdapterMode;
+  recordIfMissing: boolean;
+} {
+  const raw = (process.env.POLLY_MODE ?? "replay") as RawPollyMode;
+  if (raw === "record-missing") {
+    return { raw, adapter: "replay", recordIfMissing: true };
+  }
+  return { raw, adapter: raw, recordIfMissing: false };
+}
+
 function setupPollyWithOptions(
   recordingName: string,
   options: { matchRequestsBy?: Record<string, unknown> }
 ): PollyContext {
-  const mode = (process.env.POLLY_MODE ?? "replay") as
-    | "record"
-    | "replay"
-    | "passthrough";
+  const { raw, adapter, recordIfMissing } = resolvePollyMode();
   const recordingsDir = path.resolve(import.meta.dirname, "recordings");
 
   const defaultMatchRequestsBy = {
@@ -41,13 +53,13 @@ function setupPollyWithOptions(
   };
 
   const polly = new Polly(recordingName, {
-    mode,
+    mode: adapter,
     adapters: [FetchAdapter],
     persister: FSPersister,
     persisterOptions: {
       fs: { recordingsDir },
     },
-    recordIfMissing: mode === "record",
+    recordIfMissing,
     recordFailedRequests: true,
     timing: Timing.fixed(0),
     matchRequestsBy: options.matchRequestsBy ?? defaultMatchRequestsBy,
@@ -66,7 +78,7 @@ function setupPollyWithOptions(
     }
   });
 
-  return { polly, mode };
+  return { polly, mode: raw };
 }
 
 export async function teardownPolly(ctx: PollyContext): Promise<void> {
@@ -114,9 +126,6 @@ export function recordingExists(recordingName: string): boolean {
   return false;
 }
 
-export function getPollyMode(): string {
-  return (process.env.POLLY_MODE ?? "replay") as
-    | "record"
-    | "replay"
-    | "passthrough";
+export function getPollyMode(): RawPollyMode {
+  return (process.env.POLLY_MODE ?? "replay") as RawPollyMode;
 }

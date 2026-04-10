@@ -92,26 +92,42 @@ Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness
 
 **Integration test recording workflow — NEVER skip this when adding/modifying integration tests:**
 
+The recording system uses two modes, chosen based on whether you're adding new tests or explicitly overwriting existing ones:
+
+- **`record-missing` (default)** — Only records tests whose HAR files don't already exist. Existing recordings replay from disk. Use this when *adding* a new test. Safe to run without a file filter: it will only hit the network for new tests.
+- **`record` (destructive)** — Overwrites existing HAR files. Use this only when you intentionally want to re-record an existing test (e.g., API payload changed). **Hard-errors if run without a test file filter** to prevent accidental full-suite re-records. Override with `POLLY_FORCE_ALL=1` if you really do need to re-record everything.
+
 1. Write the test file in `tests/integration/`.
-2. Record fixtures for **only** the new/changed file:
+2. Record fixtures for the new test:
 
    ```bash
-   # Uses 1Password CLI to resolve secrets from .env.tpl:
+   # Default: record-missing. Only new tests hit the network; existing HARs untouched.
+   # Uses 1Password CLI to resolve secrets from .env.tpl.
+   pnpm run test:integration:record-missing
+   ```
+
+   Or target a specific file for speed:
+
+   ```bash
+   pnpm run test:integration:record-missing -- tests/integration/<file>.test.ts
+   ```
+
+   To intentionally re-record an existing test (destructive):
+
+   ```bash
    pnpm run test:integration:record -- tests/integration/<file>.test.ts
    ```
 
-   This sends real API requests and writes HAR files to `tests/recordings/`.
-
-3. Verify the test passes in replay mode:
+3. Verify the test passes in pure replay mode:
    ```bash
    pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
 
-Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility.
+Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility, and uploads both an interactive HAR viewer and a full-page screenshot of the viewer as artifacts.
 
 **Secrets management:**
 
-API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run --env-file=.env.tpl`). The `.env.tpl` file contains `op://` secret references (e.g., `op://NakedAPI/OPENAI_API_KEY/password`) — no plaintext secrets are stored on disk. The `test:integration:record` script uses `op run` automatically.
+API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run --env-file=.env.tpl`). The `.env.tpl` file contains `op://` secret references (e.g., `op://NakedAPI/OPENAI_API_KEY/password`) — no plaintext secrets are stored on disk. Both `test:integration:record` and `test:integration:record-missing` use `op run` automatically.
 
 Alternatively, copy `.env.template` to `.env` and fill in your keys manually. Use `source .env` before running tests with `POLLY_MODE=record`.
 

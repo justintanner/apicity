@@ -83,6 +83,14 @@ function buildRepoUrl(filePath: string): string {
   return `https://raw.githubusercontent.com/${repo}/${ref}/${filePath}`;
 }
 
+function buildArtifactLink(): string | null {
+  const server = process.env.GITHUB_SERVER_URL;
+  const repo = process.env.GITHUB_REPOSITORY;
+  const runId = process.env.GITHUB_RUN_ID;
+  if (!server || !repo || !runId) return null;
+  return `${server}/${repo}/actions/runs/${runId}#artifacts`;
+}
+
 function mimeToExt(mime: string): string {
   if (mime.includes("png")) return "png";
   if (mime.includes("webp")) return "webp";
@@ -779,6 +787,18 @@ function generateSummary(recordings: ChangedRecording[]): string {
     `${parts.join(", ")} for ${providerList} (${totalEntries} total API calls)`,
     "",
   ];
+
+  const artifactLink = buildArtifactLink();
+  if (artifactLink) {
+    lines.push(
+      "### 📸 Harness Preview",
+      "",
+      `**[Download full-page screenshot & interactive viewer](${artifactLink})** — ` +
+        "the `harness-report` artifact contains a 1920px-wide PNG showing every changed " +
+        "recording with input + output media rendered inline, plus the interactive HAR viewer.",
+      ""
+    );
+  }
 
   for (const recording of recordings) {
     lines.push(renderCard(recording));

@@ -38,10 +38,8 @@
           -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
         background: #1e1e2e;
         color: #cdd6f4;
-        height: 100vh;
-        display: grid;
-        grid-template-rows: auto auto 1fr;
-        overflow: hidden;
+        min-height: 100vh;
+        overflow-x: hidden;
       }
 
       /* Topbar */
@@ -54,13 +52,14 @@
         gap: 8px;
         flex-shrink: 0;
         z-index: 100;
+        position: sticky;
+        top: 0;
       }
       #topbar-left {
         display: flex;
-        align-items: center;
-        gap: 8px;
+        align-items: baseline;
+        gap: 12px;
         flex: 1;
-        flex-wrap: wrap;
       }
       #topbar-right {
         flex-shrink: 0;
@@ -71,122 +70,100 @@
         color: #89b4fa;
         letter-spacing: 0.5px;
       }
-
-      /* Custom Dropdown */
-      #test-selector {
-        position: relative;
+      #rec-count {
+        font-size: 12px;
+        color: #6c7086;
       }
-      #test-selector-btn {
-        background: #313244;
-        border: 1px solid #45475a;
-        border-radius: 6px;
-        color: #cdd6f4;
-        padding: 6px 12px;
-        font-size: 13px;
-        cursor: pointer;
+      .recording-section-header .review-badge,
+      .recording-section-header .info-model {
+        margin-left: 0;
+      }
+      .recording-section-header .endpoint {
+        color: #6c7086;
+        font-size: 11px;
+        margin-left: auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 50%;
+      }
+      .section-actions {
         display: flex;
-        align-items: center;
-        gap: 8px;
-        min-width: 280px;
-        max-width: 480px;
+        gap: 6px;
+        margin-left: 8px;
+      }
+      .section-actions button {
+        padding: 4px 10px;
+        border: none;
+        border-radius: 4px;
+        font-size: 11px;
+        cursor: pointer;
+        font-weight: 600;
         font-family: inherit;
       }
-      #test-selector-btn:hover {
-        background: #45475a;
+      .section-actions .approve {
+        background: #a6e3a1;
+        color: #1e1e2e;
       }
-      #test-selector-label {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        flex: 1;
-        text-align: left;
+      .section-actions .approve:hover {
+        background: #94e2d5;
       }
-      .selector-arrow {
-        font-size: 10px;
-        flex-shrink: 0;
+      .section-actions .approve:disabled {
+        opacity: 0.4;
+        cursor: default;
       }
-      #test-selector-dropdown {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        margin-top: 4px;
-        background: #181825;
-        border: 1px solid #45475a;
-        border-radius: 8px;
-        min-width: 480px;
-        max-width: 680px;
-        max-height: 70vh;
-        overflow-y: auto;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-        z-index: 200;
+      .section-actions .copy-llm {
+        background: #89b4fa;
+        color: #1e1e2e;
       }
-      #test-selector-dropdown.hidden {
-        display: none;
-      }
-      .dd-item {
-        padding: 6px 12px;
-        cursor: pointer;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        border-left: 3px solid transparent;
-        flex-wrap: wrap;
-        white-space: nowrap;
-      }
-      .dd-endpoint {
-        font-size: 11px;
-        color: #6c7086;
-        width: 100%;
-        padding-left: 14px;
-        margin-top: -2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .dd-item:hover {
-        background: #313244;
-      }
-      .dd-item.active {
-        background: #313244;
-        border-left-color: #89b4fa;
+      .section-actions .copy-llm:hover {
+        background: #74c7ec;
       }
 
-      /* Metadata bar */
-      #rec-meta {
-        padding: 6px 16px;
+      /* Recording sections (single-page vertical layout) */
+      #sections {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding: 24px;
+        max-width: 100%;
+      }
+      .recording-section {
         background: #181825;
+        border: 1px solid #313244;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .recording-section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        background: #11111b;
         border-bottom: 1px solid #313244;
-        font-size: 12px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-shrink: 0;
+        position: sticky;
+        top: 49px;
+        z-index: 50;
       }
-      #rec-meta.hidden {
-        display: none;
+      .recording-title {
+        font-weight: 700;
+        font-size: 14px;
+        color: #cdd6f4;
       }
-
-      /* Columns */
-      #columns {
+      .recording-section-body {
+        padding: 16px;
+      }
+      .txn-row {
         display: flex;
-        overflow-x: auto;
-        overflow-y: hidden;
-        min-height: 0;
-        gap: 1px;
-        background: #313244;
+        flex-wrap: wrap;
+        gap: 16px;
       }
       .txn-col {
-        flex: 1 0 600px;
-        max-width: 100%;
-        overflow-y: auto;
-        padding: 16px;
-        background: #1e1e2e;
+        flex: 1 1 540px;
         min-width: 0;
-      }
-      .txn-col:only-child {
-        flex: 1 0 0;
-        max-width: none;
+        background: #1e1e2e;
+        border-radius: 8px;
+        padding: 12px;
       }
 
       /* Dots */
@@ -329,45 +306,8 @@
         color: #6c7086;
       }
 
-      /* Buttons */
-      #topbar button {
-        padding: 6px 14px;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        cursor: pointer;
-        font-weight: 600;
-        flex-shrink: 0;
-        font-family: inherit;
-      }
-      #approve-btn {
-        background: #a6e3a1;
-        color: #1e1e2e;
-      }
-      #approve-btn:hover {
-        background: #94e2d5;
-      }
-      #approve-btn:disabled {
-        opacity: 0.4;
-        cursor: default;
-      }
       .hidden {
         display: none !important;
-      }
-      #copy-llm-btn {
-        background: #89b4fa;
-        color: #1e1e2e;
-      }
-      #copy-llm-btn:hover {
-        background: #74c7ec;
-      }
-      #copy-llm-btn:disabled {
-        opacity: 0.4;
-        cursor: default;
-      }
-      #status-msg {
-        font-size: 12px;
-        color: #a6adc8;
       }
 
       /* Media previews */
@@ -427,23 +367,12 @@
   <body>
     <header id="topbar">
       <div id="topbar-left">
-        <div id="test-selector">
-          <button id="test-selector-btn">
-            <span id="test-selector-label">Select a recording...</span>
-            <span class="selector-arrow">&#x25BE;</span>
-          </button>
-          <div id="test-selector-dropdown" class="hidden"></div>
-        </div>
-        <button id="approve-btn" class="hidden" disabled>Approve</button>
-        <button id="copy-llm-btn" disabled>Copy for LLM</button>
-        <span id="status-msg"></span>
+        <span id="branding">NakedAPI HAR Viewer</span>
+        <span id="rec-count"></span>
       </div>
-      <div id="topbar-right">
-        <span id="branding">NakedAPI</span>
-      </div>
+      <div id="topbar-right"></div>
     </header>
-    <div id="rec-meta" class="hidden"></div>
-    <div id="columns"></div>
+    <main id="sections"></main>
     <script>
       /* === Config === */
       var VIEWER_CONFIG = {
@@ -452,9 +381,7 @@
 
       /* === State === */
       var recordings = [];
-      var selected = null;
       var renderGeneration = 0;
-      var dropdownOpen = false;
 
       /* === HAR Parsing Utilities === */
       function displayName(recName) {
@@ -1149,218 +1076,141 @@
         return html;
       }
 
-      function renderRecMeta(rec) {
-        var meta = document.getElementById("rec-meta");
-        var info = extractInfo(rec);
+      /* === Main Render === */
+      function renderRecordingSection(rec, recIdx) {
         var dn = displayName(rec.name);
-        var html = "";
+        var info = extractInfo(rec);
+        var ep = recEndpoint(rec);
+
+        var html = '<section class="recording-section" data-rec-idx="' +
+          recIdx + '" data-rec-source="' + escapeHtml(rec.source || "") + '">';
+
+        html += '<div class="recording-section-header">';
         if (rec.gitStatus)
           html += '<span class="dot ' + rec.gitStatus + '"></span>';
-        html +=
-          '<span style="font-weight:600">' +
-          escapeHtml(dn.provider + ": " + dn.test) +
-          "</span>";
+        html += '<span class="recording-title">' +
+          escapeHtml(dn.provider + ": " + dn.test) + "</span>";
         if (info.model)
-          html +=
-            '<span class="info-model">' + escapeHtml(info.model) + "</span>";
-        if (info.endpoint)
-          html +=
-            '<span style="color:#6c7086;font-size:11px">' +
-            escapeHtml(info.endpoint) +
-            "</span>";
+          html += '<span class="info-model">' +
+            escapeHtml(info.model) + "</span>";
         if (rec.gitStatus && rec.gitStatus !== "clean")
           html += '<span class="review-badge needs-review">review</span>';
-        meta.innerHTML = html;
-        meta.classList.remove("hidden");
-      }
+        if (ep)
+          html += '<span class="endpoint">' + escapeHtml(ep) + "</span>";
 
-      /* === Dropdown === */
-      function getSelectionLabel() {
-        if (selected !== null && recordings[selected]) {
-          var dn = displayName(recordings[selected].name);
-          var ep = recEndpoint(recordings[selected]);
-          return dn.provider + ": " + dn.test + (ep ? " \u2014 " + ep : "");
+        html += '<div class="section-actions">';
+        if (VIEWER_CONFIG.features.gitApprove) {
+          var approveDisabled = rec.gitStatus === "clean";
+          html += '<button class="approve"' +
+            (approveDisabled ? " disabled" : "") + ">" +
+            (approveDisabled ? "Approved" : "Approve") + "</button>";
         }
-        return "Select a recording...";
-      }
+        html += '<button class="copy-llm">Copy for LLM</button>';
+        html += "</div>";
+        html += "</div>";
 
-      function populateDropdown() {
-        document.getElementById("test-selector-label").textContent =
-          getSelectionLabel();
-        var dd = document.getElementById("test-selector-dropdown");
-        var html = "";
-
-        for (var i = 0; i < recordings.length; i++) {
-          var dn = displayName(recordings[i].name);
-          var recActive = selected === i;
-          var ep = recEndpoint(recordings[i]);
-          var title = dn.provider + ": " + dn.test;
-          html +=
-            '<div class="dd-item' +
-            (recActive ? " active" : "") +
-            '" data-idx="' +
-            i +
-            '">';
-          if (recordings[i].gitStatus)
-            html += '<span class="dot ' + recordings[i].gitStatus + '"></span>';
-          html += escapeHtml(title);
-          if (recordings[i].gitStatus && recordings[i].gitStatus !== "clean")
-            html += '<span class="review-badge needs-review">review</span>';
-          if (ep)
-            html += '<div class="dd-endpoint">' + escapeHtml(ep) + "</div>";
-          html += "</div>";
+        html += '<div class="recording-section-body">';
+        var groups = groupTransactions(rec.entries);
+        html += '<div class="txn-row">';
+        for (var g = 0; g < groups.length; g++) {
+          html += '<div class="txn-col">' +
+            renderTransactionColumn(groups[g], g) + "</div>";
         }
-
-        dd.innerHTML = html;
-
-        dd.querySelectorAll(".dd-item").forEach(function (el) {
-          el.addEventListener("click", function (e) {
-            e.stopPropagation();
-            selected = parseInt(el.dataset.idx);
-            dropdownOpen = false;
-            dd.classList.add("hidden");
-            render();
-          });
-        });
+        html += "</div>";
+        html += "</div>";
+        html += "</section>";
+        return html;
       }
 
-      /* === Main Render === */
       function render() {
         renderGeneration++;
 
-        populateDropdown();
+        var sectionsEl = document.getElementById("sections");
+        var countEl = document.getElementById("rec-count");
 
-        var columnsEl = document.getElementById("columns");
-        var metaEl = document.getElementById("rec-meta");
-        var approveBtn = document.getElementById("approve-btn");
-        var copyLlmBtn = document.getElementById("copy-llm-btn");
-        var statusMsg = document.getElementById("status-msg");
-
-        // Reset
-        if (VIEWER_CONFIG.features.gitApprove) {
-          approveBtn.classList.remove("hidden");
+        if (!recordings.length) {
+          sectionsEl.innerHTML =
+            '<div class="empty">No recordings loaded</div>';
+          countEl.textContent = "";
+          return;
         }
-        approveBtn.disabled = true;
-        approveBtn.textContent = "Approve";
-        copyLlmBtn.disabled = true;
-        statusMsg.textContent = "";
-        statusMsg.style.color = "#a6adc8";
-        metaEl.classList.add("hidden");
 
-        if (selected !== null && recordings[selected]) {
-          var rec = recordings[selected];
-          renderRecMeta(rec);
+        countEl.textContent =
+          recordings.length + " recording" +
+          (recordings.length === 1 ? "" : "s");
 
-          var groups = groupTransactions(rec.entries);
-          var recHtml = "";
-          for (var g = 0; g < groups.length; g++) {
-            recHtml +=
-              '<div class="txn-col">' +
-              renderTransactionColumn(groups[g], g) +
-              "</div>";
-          }
-          columnsEl.innerHTML = recHtml;
-
-          copyLlmBtn.disabled = false;
-
-          if (VIEWER_CONFIG.features.gitApprove) {
-            approveBtn.disabled = rec.gitStatus === "clean";
-            if (rec.gitStatus === "clean") {
-              statusMsg.textContent = "Approved";
-              statusMsg.style.color = "#a6e3a1";
-            } else {
-              statusMsg.textContent =
-                "Pending review \u2014 approve to stage for commit";
-              statusMsg.style.color = "#f38ba8";
-            }
-          }
-        } else {
-          columnsEl.innerHTML =
-            '<div class="txn-col"><div class="empty">Select a recording</div></div>';
+        var html = "";
+        for (var i = 0; i < recordings.length; i++) {
+          html += renderRecordingSection(recordings[i], i);
         }
+        sectionsEl.innerHTML = html;
       }
 
       /* === Event Listeners === */
 
-      // Dropdown toggle
-      document
-        .getElementById("test-selector-btn")
-        .addEventListener("click", function (e) {
-          e.stopPropagation();
-          var dd = document.getElementById("test-selector-dropdown");
-          dropdownOpen = !dropdownOpen;
-          if (dropdownOpen) {
-            dd.classList.remove("hidden");
-          } else {
-            dd.classList.add("hidden");
+      // Per-section action delegation: approve + copy-for-llm
+      document.addEventListener("click", async function (e) {
+        var section = e.target.closest(".recording-section");
+        if (!section) return;
+        var recIdx = parseInt(section.dataset.recIdx, 10);
+        var rec = recordings[recIdx];
+        if (!rec) return;
+
+        if (e.target.classList.contains("approve")) {
+          if (!VIEWER_CONFIG.features.gitApprove) return;
+          e.target.textContent = "Approving...";
+          try {
+            var res = await fetch("/api/approve", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ path: rec.source }),
+            });
+            if (res.ok) {
+              rec.gitStatus = "clean";
+              e.target.textContent = "Approved";
+              e.target.disabled = true;
+              var dot = section.querySelector(".dot");
+              if (dot) dot.className = "dot clean";
+              var badge = section.querySelector(".review-badge");
+              if (badge) badge.remove();
+            } else {
+              e.target.textContent = "Failed";
+            }
+          } catch (err) {
+            e.target.textContent = "Failed";
           }
-        });
-      document.addEventListener("click", function () {
-        if (dropdownOpen) {
-          dropdownOpen = false;
-          document
-            .getElementById("test-selector-dropdown")
-            .classList.add("hidden");
+          return;
         }
-      });
 
-      // Approve
-      document
-        .getElementById("approve-btn")
-        .addEventListener("click", async function () {
-          if (selected === null || !VIEWER_CONFIG.features.gitApprove) return;
-          var rec = recordings[selected];
-          document.getElementById("status-msg").textContent = "Approving...";
-          var res = await fetch("/api/approve", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ path: rec.source }),
-          });
-          if (res.ok) {
-            rec.gitStatus = "clean";
-            document.getElementById("status-msg").textContent = "Approved";
-            document.getElementById("status-msg").style.color = "#a6e3a1";
-            document.getElementById("approve-btn").disabled = true;
-            render();
-          } else {
-            document.getElementById("status-msg").textContent =
-              "Failed to approve";
-          }
-        });
-
-      // Copy for LLM
-      document
-        .getElementById("copy-llm-btn")
-        .addEventListener("click", function () {
+        if (e.target.classList.contains("copy-llm")) {
           var texts = [];
-          if (selected !== null && recordings[selected]) {
-            var rec = recordings[selected];
-            var groups = groupTransactions(rec.entries);
-            for (var g = 0; g < groups.length; g++) {
-              var first = groups[g].entries[0];
-              var last = groups[g].entries[groups[g].entries.length - 1];
-              if (groups[g].entries.length === 1) {
-                texts.push(buildTransactionText(first));
-              } else {
-                texts.push(
-                  buildTransactionText({
-                    request: first.request,
-                    response: last.response,
-                  })
-                );
-              }
+          var groups = groupTransactions(rec.entries);
+          for (var g = 0; g < groups.length; g++) {
+            var first = groups[g].entries[0];
+            var last = groups[g].entries[groups[g].entries.length - 1];
+            if (groups[g].entries.length === 1) {
+              texts.push(buildTransactionText(first));
+            } else {
+              texts.push(
+                buildTransactionText({
+                  request: first.request,
+                  response: last.response,
+                })
+              );
             }
           }
           if (!texts.length) return;
           var text = texts.join("\n\n---\n\n");
-          var btn = document.getElementById("copy-llm-btn");
+          var btn = e.target;
+          var originalText = btn.textContent;
           navigator.clipboard.writeText(text).then(function () {
             btn.textContent = "Copied!";
             setTimeout(function () {
-              btn.textContent = "Copy for LLM";
+              btn.textContent = originalText;
             }, 1200);
           });
-        });
+        }
+      });
 
       // Copy button delegation
       document.addEventListener("click", function (e) {
@@ -1379,7 +1229,6 @@
       if (typeof HAR_DATA !== "undefined") {
         recordings = HAR_DATA.recordings || [];
         if (HAR_DATA.features) VIEWER_CONFIG.features = HAR_DATA.features;
-        if (recordings.length) selected = 0;
         render();
       } else {
         fetch("/api/data")
@@ -1389,7 +1238,6 @@
           .then(function (data) {
             recordings = data.recordings || [];
             if (data.features) VIEWER_CONFIG.features = data.features;
-            if (recordings.length) selected = 0;
             render();
           });
       }

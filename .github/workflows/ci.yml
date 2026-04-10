@@ -108,6 +108,12 @@ jobs:
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Screenshot harness viewer
+        run: npx tsx tests/harness-screenshot.ts harness-report.html harness-report.png
+
       - name: Generate harness summary
         id: summary
         run: npx tsx tests/harness-summary.ts
@@ -137,9 +143,11 @@ jobs:
           gh pr comment ${{ github.event.pull_request.number }} \
             --body-file harness-summary.md
 
-      - name: Upload HAR viewer
+      - name: Upload harness artifacts
         uses: actions/upload-artifact@v4
         with:
           name: harness-report
-          path: harness-report.html
+          path: |
+            harness-report.html
+            harness-report.png
           retention-days: 30

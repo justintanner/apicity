@@ -1,9 +1,8 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xAI responses CRUD integration", () => {
+describe("xAI responses CRUD integration", () => {
   let ctx: PollyContext;
   let createdResponseId: string | null = null;
 
@@ -11,9 +10,7 @@ describe.skip("xAI responses CRUD integration", () => {
     // Cleanup
     if (createdResponseId) {
       try {
-        const provider = xai({
-          apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
-        });
+        const provider = createXaiProvider();
         await provider.delete.v1.responses(createdResponseId);
       } catch {
         // Ignore cleanup errors
@@ -25,9 +22,7 @@ describe.skip("xAI responses CRUD integration", () => {
 
   it("should create a response", async () => {
     ctx = setupPolly("xai/responses-crud-create");
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
-    });
+    const provider = createXaiProvider();
     const result = await provider.post.v1.responses({
       model: "grok-4-fast",
       input: "Hello!",
@@ -39,9 +34,7 @@ describe.skip("xAI responses CRUD integration", () => {
 
   it("should get a response by id", async () => {
     ctx = setupPolly("xai/responses-crud-get");
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
-    });
+    const provider = createXaiProvider();
     // Create
     const created = await provider.post.v1.responses({
       model: "grok-4-fast",
@@ -54,11 +47,9 @@ describe.skip("xAI responses CRUD integration", () => {
     expect(result.id).toBe(created.id);
   });
 
-  it("should delete a response", async () => {
+  it("should delete a response", { timeout: 60_000 }, async () => {
     ctx = setupPolly("xai/responses-crud-delete");
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
-    });
+    const provider = createXaiProvider();
     // Create
     const created = await provider.post.v1.responses({
       model: "grok-4-fast",

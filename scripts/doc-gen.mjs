@@ -335,6 +335,122 @@ async function generateReadme(providerDir, providerName) {
   sections.push("```");
   sections.push("");
 
+  // Rate Limiting section for xai provider
+  if (providerName === "xai") {
+    sections.push("## Rate Limiting");
+    sections.push("");
+    sections.push(
+      "Client-side rate limiting that queues requests to stay within xAI API limits."
+    );
+    sections.push("");
+    sections.push("```typescript");
+    sections.push("import {");
+    sections.push("  xai as createXai,");
+    sections.push("  withRateLimit,");
+    sections.push("  withRetry,");
+    sections.push("  createRateLimiter,");
+    sections.push("  XAI_RATE_LIMITS,");
+    sections.push('} from "@nakedapi/xai";');
+    sections.push("");
+    sections.push(
+      "const xai = createXai({ apiKey: process.env.XAI_API_KEY! });"
+    );
+    sections.push("```");
+    sections.push("");
+    sections.push("### Using xAI tier presets");
+    sections.push("");
+    sections.push("```typescript");
+    sections.push(
+      "// Use built-in tier presets (free, tier1, tier2, tier3, tier4)"
+    );
+    sections.push("const limiter = createRateLimiter(XAI_RATE_LIMITS.tier1);");
+    sections.push("// => { rpm: 60, concurrent: 10 }");
+    sections.push("");
+    sections.push(
+      "const chat = withRateLimit(xai.post.v1.chat.completions, limiter);"
+    );
+    sections.push("```");
+    sections.push("");
+    sections.push("### Custom limits");
+    sections.push("");
+    sections.push("```typescript");
+    sections.push(
+      "const limiter = createRateLimiter({ rpm: 30, concurrent: 5 });"
+    );
+    sections.push(
+      "const chat = withRateLimit(xai.post.v1.chat.completions, limiter);"
+    );
+    sections.push("```");
+    sections.push("");
+    sections.push("### Shared limiter across endpoints");
+    sections.push("");
+    sections.push(
+      "RPM limits apply globally, so share a single limiter across all endpoints:"
+    );
+    sections.push("");
+    sections.push("```typescript");
+    sections.push("const limiter = createRateLimiter(XAI_RATE_LIMITS.tier2);");
+    sections.push("");
+    sections.push(
+      "const chat = withRateLimit(xai.post.v1.chat.completions, limiter);"
+    );
+    sections.push(
+      "const responses = withRateLimit(xai.post.v1.responses, limiter);"
+    );
+    sections.push(
+      "const images = withRateLimit(xai.post.v1.images.generations, limiter);"
+    );
+    sections.push("```");
+    sections.push("");
+    sections.push("### Composing with retry");
+    sections.push("");
+    sections.push(
+      "Place `withRateLimit` innermost so retries count against the limit:"
+    );
+    sections.push("");
+    sections.push("```typescript");
+    sections.push("const limiter = createRateLimiter(XAI_RATE_LIMITS.tier1);");
+    sections.push("");
+    sections.push("const chat = withRetry(");
+    sections.push("  withRateLimit(xai.post.v1.chat.completions, limiter),");
+    sections.push("  { retries: 2 }");
+    sections.push(");");
+    sections.push("```");
+    sections.push("");
+    sections.push("### Batch processing");
+    sections.push("");
+    sections.push(
+      "Fire requests in parallel — the limiter handles pacing automatically:"
+    );
+    sections.push("");
+    sections.push("```typescript");
+    sections.push("const limiter = createRateLimiter(XAI_RATE_LIMITS.tier1);");
+    sections.push(
+      "const chat = withRateLimit(xai.post.v1.chat.completions, limiter);"
+    );
+    sections.push("");
+    sections.push("const results = await Promise.all(");
+    sections.push("  prompts.map((p) =>");
+    sections.push("    chat({");
+    sections.push('      model: "grok-3",');
+    sections.push('      messages: [{ role: "user", content: p }],');
+    sections.push("    })");
+    sections.push("  )");
+    sections.push(");");
+    sections.push("```");
+    sections.push("");
+    sections.push("### xAI rate limit tiers");
+    sections.push("");
+    sections.push("| Preset | RPM | Concurrent | Spend threshold |");
+    sections.push("|--------|-----|------------|-----------------|");
+    sections.push("| `free` | 5 | 2 | $0 |");
+    sections.push("| `tier1` | 60 | 10 | $0+ |");
+    sections.push("| `tier2` | 200 | 25 | $100+ |");
+    sections.push("| `tier3` | 500 | 50 | $500+ |");
+    sections.push("| `tier4` | 1000 | 100 | $1,000+ |");
+    sections.push("");
+  }
+
   // License
   sections.push("## License");
   sections.push("");

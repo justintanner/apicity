@@ -11,8 +11,19 @@ export {
 export { KieError } from "./types";
 
 // Export middleware
-export { withRetry, withFallback } from "./middleware";
-export type { RetryOptions, FallbackOptions } from "./middleware";
+export {
+  withRetry,
+  withFallback,
+  withRateLimit,
+  createRateLimiter,
+} from "./middleware";
+export type {
+  RetryOptions,
+  FallbackOptions,
+  RateLimiterOptions,
+  RateLimiter,
+  RateLimitOptions,
+} from "./middleware";
 
 // Export sub-provider factory functions
 export { createVeoProvider } from "./veo";

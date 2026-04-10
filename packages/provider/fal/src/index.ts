@@ -5,8 +5,19 @@ export { fal, buildQueryString } from "./fal";
 export { FalError } from "./types";
 
 // Export middleware
-export { withRetry, withFallback } from "./middleware";
-export type { RetryOptions, FallbackOptions } from "./middleware";
+export {
+  withRetry,
+  withFallback,
+  withRateLimit,
+  createRateLimiter,
+} from "./middleware";
+export type {
+  RetryOptions,
+  FallbackOptions,
+  RateLimiterOptions,
+  RateLimiter,
+  RateLimitOptions,
+} from "./middleware";
 
 // Export all types
 export type {

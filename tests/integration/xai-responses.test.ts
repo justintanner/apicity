@@ -1,9 +1,8 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xai responses API", () => {
+describe("xai responses API", () => {
   let ctx: PollyContext;
 
   afterEach(async () => {
@@ -12,9 +11,7 @@ describe.skip("xai responses API", () => {
 
   it("should create a response", async () => {
     ctx = setupPolly("xai/responses-create");
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    });
+    const provider = createXaiProvider();
     const result = await provider.post.v1.responses({
       model: "grok-4-fast",
       input: "What is 2 + 2? Reply with just the number.",

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai, XaiError } from "@nakedapi/xai";
+import { XaiError } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xAI error handling integration", () => {
+describe("xAI error handling integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe.skip("xAI error handling integration", () => {
   });
 
   it("should extract error message from API error response with message field", async () => {
-    const provider = xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
+    const provider = createXaiProvider();
 
     // Trigger an error by sending an invalid request
     // This tests line 150-152 where error.message is extracted
@@ -35,7 +35,7 @@ describe.skip("xAI error handling integration", () => {
   });
 
   it("should handle API error without message field in error object", async () => {
-    const provider = xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
+    const provider = createXaiProvider();
 
     // Send a request with invalid parameters to trigger error without message
     try {
@@ -55,7 +55,7 @@ describe.skip("xAI error handling integration", () => {
   it("should handle rate limit error when encountered", async () => {
     // Note: Rate limits are hard to trigger consistently
     // This test verifies the error structure if we do hit a 429
-    const provider = xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
+    const provider = createXaiProvider();
 
     // Make a successful request first
     const result = await provider.get.v1.models();

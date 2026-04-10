@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xAI batches cancel integration", () => {
+describe("xAI batches cancel integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
@@ -15,9 +14,7 @@ describe.skip("xAI batches cancel integration", () => {
   });
 
   it("should cancel a batch", async () => {
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    });
+    const provider = createXaiProvider();
 
     // First create a batch
     const batch = await provider.post.v1.batches({

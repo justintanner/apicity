@@ -1,9 +1,8 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xai tokenize-text integration", () => {
+describe("xai tokenize-text integration", () => {
   let ctx: PollyContext;
 
   afterEach(async () => {
@@ -13,9 +12,7 @@ describe.skip("xai tokenize-text integration", () => {
   // POST /v1/tokenize-text
   it("should tokenize text and return token details", async () => {
     ctx = setupPolly("xai/tokenize-text");
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    });
+    const provider = createXaiProvider();
     const result = await provider.post.v1.tokenizeText({
       model: "grok-3",
       text: "Hello world!",
@@ -32,7 +29,7 @@ describe.skip("xai tokenize-text integration", () => {
 
   // Payload validation
   it("should expose payloadSchema and validatePayload", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXaiProvider();
     const endpoint = provider.post.v1.tokenizeText;
     expect(endpoint.payloadSchema).toBeDefined();
     expect(endpoint.payloadSchema.method).toBe("POST");

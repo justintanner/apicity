@@ -5,8 +5,19 @@ export { anthropic } from "./anthropic";
 export { AnthropicError } from "./types";
 
 // Export middleware
-export { withRetry, withFallback } from "./middleware";
-export type { RetryOptions, FallbackOptions } from "./middleware";
+export {
+  withRetry,
+  withFallback,
+  withRateLimit,
+  createRateLimiter,
+} from "./middleware";
+export type {
+  RetryOptions,
+  FallbackOptions,
+  RateLimiterOptions,
+  RateLimiter,
+  RateLimitOptions,
+} from "./middleware";
 
 // Export SSE utilities
 export { sseToIterable, parseAnthropicStream } from "./sse";

@@ -7,9 +7,17 @@ export {
   withFallback,
   withStreamRetry,
   withStreamFallback,
+  withRateLimit,
+  createRateLimiter,
 } from "./middleware";
 
-export type { RetryOptions, FallbackOptions } from "./middleware";
+export type {
+  RetryOptions,
+  FallbackOptions,
+  RateLimiterOptions,
+  RateLimiter,
+  RateLimitOptions,
+} from "./middleware";
 
 export { sseToIterable } from "./sse";
 

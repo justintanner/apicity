@@ -43,10 +43,7 @@ describe("xAI validation error integration", () => {
 
     const result = provider.post.v1.chat.completions.validatePayload({
       model: "grok-3-fast",
-      messages: [
-        { role: "user", content: "Hello" },
-        { role: "assistant" },
-      ],
+      messages: [{ role: "user", content: "Hello" }, { role: "assistant" }],
     });
 
     expect(result.valid).toBe(false);

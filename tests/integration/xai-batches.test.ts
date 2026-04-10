@@ -1,13 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xai batches integration", () => {
-  function createProvider() {
-    return xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
-  }
-
+describe("xai batches integration", () => {
   describe("create and list batches", () => {
     let ctx: PollyContext;
 
@@ -20,7 +15,7 @@ describe.skip("xai batches integration", () => {
     });
 
     it("should create a batch and list it", async () => {
-      const provider = createProvider();
+      const provider = createXaiProvider();
       const created = await provider.post.v1.batches({
         name: "Integration Test Batch",
       });
@@ -47,7 +42,7 @@ describe.skip("xai batches integration", () => {
     });
 
     it("should get a specific batch by id", async () => {
-      const provider = createProvider();
+      const provider = createXaiProvider();
       const created = await provider.post.v1.batches({
         name: "Get Test Batch",
       });
@@ -68,8 +63,8 @@ describe.skip("xai batches integration", () => {
       await teardownPolly(ctx);
     });
 
-    it("should cancel a batch", async () => {
-      const provider = createProvider();
+    it("should cancel a batch", { timeout: 60_000 }, async () => {
+      const provider = createXaiProvider();
       const created = await provider.post.v1.batches({
         name: "Cancel Test Batch",
       });
@@ -90,8 +85,8 @@ describe.skip("xai batches integration", () => {
       await teardownPolly(ctx);
     });
 
-    it("should add requests and list them", async () => {
-      const provider = createProvider();
+    it("should add requests and list them", { timeout: 60_000 }, async () => {
+      const provider = createXaiProvider();
       const created = await provider.post.v1.batches({
         name: "Requests Test Batch",
       });

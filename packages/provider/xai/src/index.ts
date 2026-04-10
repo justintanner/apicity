@@ -5,8 +5,20 @@ export { xai } from "./xai";
 export { XaiError } from "./types";
 
 // Export middleware
-export { withRetry, withFallback } from "./middleware";
-export type { RetryOptions, FallbackOptions } from "./middleware";
+export {
+  withRetry,
+  withFallback,
+  withRateLimit,
+  createRateLimiter,
+  XAI_RATE_LIMITS,
+} from "./middleware";
+export type {
+  RetryOptions,
+  FallbackOptions,
+  RateLimiterOptions,
+  RateLimiter,
+  RateLimitOptions,
+} from "./middleware";
 
 // Export all types
 export type {

@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xAI image generation models integration", () => {
+describe("xAI image generation models integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
@@ -15,9 +14,7 @@ describe.skip("xAI image generation models integration", () => {
   });
 
   it("should list image generation models", async () => {
-    const provider = xai({
-      apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
-    });
+    const provider = createXaiProvider();
     const result = await provider.get.v1.imageGenerationModels();
     expect(result.models).toBeDefined();
     expect(Array.isArray(result.models)).toBe(true);

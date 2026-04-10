@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@nakedapi/xai";
+import { createXaiProvider } from "../xai-provider";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("xai integration", () => {
+describe("xai integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
@@ -15,7 +14,7 @@ describe.skip("xai integration", () => {
   });
 
   it("should complete a chat request", async () => {
-    const provider = xai({ apiKey: process.env.XAI_API_KEY ?? "sk-test-key" });
+    const provider = createXaiProvider();
     const result = await provider.post.v1.chat.completions({
       model: "grok-3-fast",
       messages: [{ role: "user", content: "Say hello in one sentence." }],

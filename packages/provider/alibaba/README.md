@@ -67,6 +67,38 @@ alibaba.chat.completions.validatePayload(data)
 
 </details>
 
+<details>
+<summary><b><code>services.aigc.videogeneration.videosynthesis</code></b> — <code>POST /services/aigc/video-generation/video-synthesis</code></summary>
+
+**Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `model` | string | Yes | Wan image-to-video model ID (e.g. wan2.7-i2v, wan2.6-i2v-flash) |
+| `input` | object | Yes | Prompt + image (and optional audio) inputs |
+| `img_url` | string | Yes | Public HTTPS URL or base64 data URL of the first frame |
+| `audio_url` | string | No | Optional public HTTPS URL of an audio track for audio-video sync (wan2.5/2.6/2.7) |
+| `parameters` | object | No | Generation parameters<br>Enum: `480P`, `720P`, `1080P` |
+| `duration` | number | No | Video duration in seconds (model-dependent, 2-15s) |
+| `shot_type` | string | No | Multi-shot narrative mode (wan2.6+ only); default single<br>Enum: `single`, `multi` |
+| `prompt_extend` | boolean | No | Enable intelligent prompt rewriting |
+| `watermark` | boolean | No | Embed a watermark in the output |
+| `audio` | boolean | No | For wan2.6-i2v-flash: set false to force silent output (billed at video-without-audio rate) |
+| `seed` | number | No | Random seed for reproducibility |
+| `negative_prompt` | string | No | Negative prompt — things to avoid in the output |
+
+**Validation:**
+
+```typescript
+// Access the schema
+alibaba.video.synthesis.payloadSchema
+
+// Validate data
+alibaba.video.synthesis.validatePayload(data)
+```
+
+</details>
+
 ## Middleware
 
 ```typescript

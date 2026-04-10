@@ -6,15 +6,22 @@ import {
   AlibabaModelListResponse,
   AlibabaProvider,
   AlibabaError,
+  AlibabaVideoSynthesisRequest,
+  AlibabaVideoSynthesisSubmitResponse,
+  AlibabaTaskStatusResponse,
 } from "./types";
 import type { ValidationResult } from "./types";
-import { chatCompletionsSchema } from "./schemas";
+import { chatCompletionsSchema, videoSynthesisSchema } from "./schemas";
 import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
 
 export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   const baseURL =
     opts.baseURL ?? "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
+  const nativeBaseURL = (() => {
+    const u = new URL(baseURL);
+    return `${u.origin}/api/v1`;
+  })();
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
@@ -34,7 +41,11 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   async function makeRequest<T>(
     path: string,
     body: unknown,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    options: {
+      baseOverride?: string;
+      extraHeaders?: Record<string, string>;
+    } = {}
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -44,11 +55,12 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     }
 
     try {
-      const res = await doFetch(`${baseURL}${path}`, {
+      const res = await doFetch(`${options.baseOverride ?? baseURL}${path}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${opts.apiKey}`,
           "Content-Type": "application/json",
+          ...(options.extraHeaders ?? {}),
         },
         body: JSON.stringify(body),
         signal: controller.signal,
@@ -149,7 +161,8 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
 
   async function makeGetRequest<T>(
     path: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    options: { baseOverride?: string } = {}
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -159,7 +172,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     }
 
     try {
-      const res = await doFetch(`${baseURL}${path}`, {
+      const res = await doFetch(`${options.baseOverride ?? baseURL}${path}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${opts.apiKey}`,
@@ -252,13 +265,59 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     },
   };
 
+  const postApiV1 = {
+    services: {
+      aigc: {
+        videoGeneration: {
+          videoSynthesis: Object.assign(
+            async (
+              req: AlibabaVideoSynthesisRequest,
+              signal?: AbortSignal
+            ): Promise<AlibabaVideoSynthesisSubmitResponse> => {
+              return makeRequest<AlibabaVideoSynthesisSubmitResponse>(
+                "/services/aigc/video-generation/video-synthesis",
+                req,
+                signal,
+                {
+                  baseOverride: nativeBaseURL,
+                  extraHeaders: { "X-DashScope-Async": "enable" },
+                }
+              );
+            },
+            {
+              payloadSchema: videoSynthesisSchema,
+              validatePayload(data: unknown): ValidationResult {
+                return validatePayload(data, videoSynthesisSchema);
+              },
+            }
+          ),
+        },
+      },
+    },
+  };
+
+  const getApiV1 = {
+    tasks: async (
+      taskId: string,
+      signal?: AbortSignal
+    ): Promise<AlibabaTaskStatusResponse> => {
+      return makeGetRequest<AlibabaTaskStatusResponse>(
+        `/tasks/${encodeURIComponent(taskId)}`,
+        signal,
+        { baseOverride: nativeBaseURL }
+      );
+    },
+  };
+
   return {
     post: {
       v1: postV1,
       stream: { v1: postStreamV1 },
+      api: { v1: postApiV1 },
     },
     get: {
       v1: getV1,
+      api: { v1: getApiV1 },
     },
   };
 }

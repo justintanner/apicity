@@ -127,3 +127,81 @@ export const chatCompletionsSchema: PayloadSchema = {
     },
   },
 };
+
+export const videoSynthesisSchema: PayloadSchema = {
+  method: "POST",
+  path: "/services/aigc/video-generation/video-synthesis",
+  contentType: "application/json",
+  fields: {
+    model: {
+      type: "string",
+      required: true,
+      description:
+        "Wan image-to-video model ID (e.g. wan2.7-i2v, wan2.6-i2v-flash)",
+    },
+    input: {
+      type: "object",
+      required: true,
+      description: "Prompt + image (and optional audio) inputs",
+      properties: {
+        prompt: {
+          type: "string",
+          required: true,
+          description: "Text prompt describing the desired motion / scene",
+        },
+        img_url: {
+          type: "string",
+          required: true,
+          description: "Public HTTPS URL or base64 data URL of the first frame",
+        },
+        audio_url: {
+          type: "string",
+          description:
+            "Optional public HTTPS URL of an audio track for audio-video sync (wan2.5/2.6/2.7)",
+        },
+      },
+    },
+    parameters: {
+      type: "object",
+      description: "Generation parameters",
+      properties: {
+        resolution: {
+          type: "string",
+          enum: ["480P", "720P", "1080P"],
+          description: "Output resolution",
+        },
+        duration: {
+          type: "number",
+          description: "Video duration in seconds (model-dependent, 2-15s)",
+        },
+        shot_type: {
+          type: "string",
+          enum: ["single", "multi"],
+          description:
+            "Multi-shot narrative mode (wan2.6+ only); default single",
+        },
+        prompt_extend: {
+          type: "boolean",
+          description: "Enable intelligent prompt rewriting",
+        },
+        watermark: {
+          type: "boolean",
+          description: "Embed a watermark in the output",
+        },
+        audio: {
+          type: "boolean",
+          description:
+            "For wan2.6-i2v-flash: set false to force silent output (billed at video-without-audio rate)",
+        },
+        seed: {
+          type: "number",
+          description: "Random seed for reproducibility",
+        },
+        negative_prompt: {
+          type: "string",
+          description: "Negative prompt — things to avoid in the output",
+        },
+      },
+    },
+  },
+};

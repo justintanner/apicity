@@ -915,11 +915,7 @@
             body.input.reference_image &&
             Array.isArray(body.input.reference_image)
           ) {
-            for (
-              var ri = 0;
-              ri < body.input.reference_image.length;
-              ri++
-            ) {
+            for (var ri = 0; ri < body.input.reference_image.length; ri++) {
               info.assets.push(body.input.reference_image[ri]);
             }
           }
@@ -928,11 +924,7 @@
             body.input.reference_video &&
             Array.isArray(body.input.reference_video)
           ) {
-            for (
-              var rv = 0;
-              rv < body.input.reference_video.length;
-              rv++
-            ) {
+            for (var rv = 0; rv < body.input.reference_video.length; rv++) {
               info.assets.push(body.input.reference_video[rv]);
             }
           }

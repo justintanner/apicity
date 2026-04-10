@@ -14,7 +14,7 @@ import { sseToIterable } from "./sse";
 
 export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   const baseURL =
-    opts.baseURL ?? "https://dashscope.aliyuncs.com/compatible-mode/v1";
+    opts.baseURL ?? "https://dashscope-intl.aliyuncs.com/compatible-mode/v1";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 

@@ -39,7 +39,7 @@
     "test:coverage": "vitest run --config tests/vitest.integration.ts --coverage",
     "harness": "npx tsx tests/harness-serve.ts tests/recordings/",
     "harness:report": "npx tsx tests/harness-report.ts",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"ALIBABA_CLOUD_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

@@ -12,7 +12,7 @@ describe("alibaba models list", () => {
   it("should list available models", async () => {
     ctx = setupPolly("alibaba/models-list");
     const provider = alibaba({
-      apiKey: process.env.ALIBABA_CLOUD_API_KEY ?? "test-key",
+      apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
     const result = await provider.get.v1.models();

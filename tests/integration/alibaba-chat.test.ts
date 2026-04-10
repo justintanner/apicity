@@ -2,8 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { alibaba } from "@nakedapi/alibaba";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("alibaba chat completions", () => {
+describe("alibaba chat completions", () => {
   let ctx: PollyContext;
 
   afterEach(async () => {
@@ -13,7 +12,7 @@ describe.skip("alibaba chat completions", () => {
   it("should complete a chat request", async () => {
     ctx = setupPolly("alibaba/chat-hello");
     const provider = alibaba({
-      apiKey: process.env.ALIBABA_CLOUD_API_KEY ?? "test-key",
+      apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
     const result = await provider.post.v1.chat.completions({

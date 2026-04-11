@@ -2,8 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { kimicoding } from "@nakedapi/kimicoding";
 
-// SKIP: recordings contain 429 rate-limit responses — re-record when API limits clear
-describe.skip("kimicoding chat stream integration", () => {
+describe("kimicoding chat stream integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {

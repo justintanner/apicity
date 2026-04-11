@@ -12,12 +12,21 @@ version = 1
 id = "enumerate"
 title = "Enumerate HAR files with mtime"
 description = """
-List every `*.har` under `tests/recordings/`, with modification time:
+List every `*.har` under `tests/recordings/`, with modification time.
+
+`stat`'s format flag differs between GNU (`-c '%Y %n'`, Linux) and BSD
+(`-f '%m %N'`, macOS). Har-auditor runs in the Linux container, but this
+formula may also be invoked locally during dev — pick the right one:
 
 ```sh
 cd {{.RigRoot}}
+if stat -c '%Y %n' /dev/null >/dev/null 2>&1; then
+  STAT_FMT='-c %Y %n'     # GNU (Linux)
+else
+  STAT_FMT='-f %m %N'     # BSD (macOS)
+fi
 find tests/recordings -name 'recording.har' -print0 \\
-  | xargs -0 stat -f '%m %N' \\
+  | xargs -0 stat $STAT_FMT \\
   | sort -n > /tmp/apicity-har-mtimes.txt
 ```
 

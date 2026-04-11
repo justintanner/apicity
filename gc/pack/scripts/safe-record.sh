@@ -43,11 +43,13 @@ if [ ! -d "$RECORDINGS_DIR" ]; then
 fi
 
 # Extract setupPolly("...") / setupPollyForFileUploads("...") arg strings.
-# Matches a single-line call; project uses this pattern exclusively.
-# grep -oE captures through the closing quote, then sed strips the prefix and
-# the trailing quote.
-NAMES=$(grep -oE 'setupPolly(ForFileUploads)?\("[^"]+"' "$TEST_FILE" \
-    | sed -E 's/^setupPolly(ForFileUploads)?\("//' \
+# Matches a single-line call. Tolerates whitespace between the function
+# name and the opening paren, and between the paren and the opening quote,
+# so that manual edits or a different formatter setting won't silently
+# break the parser. grep -oE captures through the closing quote, then sed
+# strips the prefix and the trailing quote.
+NAMES=$(grep -oE 'setupPolly(ForFileUploads)?[[:space:]]*\([[:space:]]*"[^"]+"' "$TEST_FILE" \
+    | sed -E 's/^setupPolly(ForFileUploads)?[[:space:]]*\([[:space:]]*"//' \
     | sed -E 's/"$//' \
     | sort -u)
 

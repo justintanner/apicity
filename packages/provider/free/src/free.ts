@@ -308,7 +308,7 @@ export function free(opts?: FreeOptions): FreeProvider {
       ): Promise<FilebinUploadResponse> => {
         const bin =
           req.bin ??
-          `nakedapi-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+          `apicity-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
         const filename = req.filename ?? "upload";
         return makeBinaryPostRequest<FilebinUploadResponse>(
           `https://filebin.net/${bin}/${filename}`,

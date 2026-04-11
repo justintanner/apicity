@@ -23,10 +23,10 @@ describe("free filebin upload", () => {
     const result = await provider.filebin.upload({
       file,
       filename: "test.txt",
-      bin: "nakedapi-test",
+      bin: "apicity-test",
     });
 
-    expect(result.bin.id).toBe("nakedapi-test");
+    expect(result.bin.id).toBe("apicity-test");
     expect(result.file.filename).toBe("test.txt");
     expect(result.file.sha256).toBeTruthy();
     expect(result.bin.expired_at).toBeTruthy();
@@ -41,7 +41,7 @@ describe("free filebin upload", () => {
     const result = await provider.filebin.upload({
       file,
       filename: "cat1.jpg",
-      bin: "nakedapi-test-img",
+      bin: "apicity-test-img",
     });
 
     expect(result.file.bytes).toBe(imgBuffer.length);

@@ -57,7 +57,6 @@ import {
   logsStreamSchema,
   filesUploadUrlSchema,
   filesUploadLocalSchema,
-  computeInstanceCreateSchema,
   appsFlushQueueSchema,
 } from "../../packages/provider/fal/src/schemas";
 import {
@@ -126,7 +125,6 @@ describe("schema structure", () => {
     { name: "fal/logsStream", schema: logsStreamSchema },
     { name: "fal/filesUploadUrl", schema: filesUploadUrlSchema },
     { name: "fal/filesUploadLocal", schema: filesUploadLocalSchema },
-    { name: "fal/computeInstanceCreate", schema: computeInstanceCreateSchema },
     { name: "fal/appsFlushQueue", schema: appsFlushQueueSchema },
     { name: "fal/deletePayloads", schema: deletePayloadsSchema },
     { name: "kie/createTask", schema: createTaskSchema },
@@ -739,21 +737,6 @@ describe("schema + validatePayload integration", () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("target_path is required");
     expect(result.errors).toContain("file is required");
-  });
-
-  it("fal computeInstanceCreate: accepts valid request", () => {
-    const result = validatePayload(
-      { instance_type: "gpu_8x_h100_sxm5", ssh_key: "ssh-rsa AAA..." },
-      computeInstanceCreateSchema
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it("fal computeInstanceCreate: rejects missing required fields", () => {
-    const result = validatePayload({}, computeInstanceCreateSchema);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain("instance_type is required");
-    expect(result.errors).toContain("ssh_key is required");
   });
 
   it("fal appsFlushQueue: accepts valid request", () => {

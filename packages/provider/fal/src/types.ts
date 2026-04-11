@@ -362,70 +362,6 @@ export interface FalWorkflowCreateResponse {
   workflow: FalWorkflowDetail;
 }
 
-// ==================== Compute Instances ====================
-
-// Compute instance type
-export type FalComputeInstanceType = "gpu_8x_h100_sxm5" | "gpu_1x_h100_sxm5";
-
-// Compute region
-export type FalComputeRegion =
-  | "us-west"
-  | "us-central"
-  | "us-east"
-  | "eu-north"
-  | "eu-west"
-  | "other";
-
-// Compute sector
-export type FalComputeSector = "sector_1" | "sector_2" | "sector_3";
-
-// Compute instance status
-export type FalComputeInstanceStatus =
-  | "ready"
-  | "init"
-  | "pending"
-  | "provisioning"
-  | "stopped"
-  | "unknown";
-
-// Compute instance
-export interface FalComputeInstance {
-  id: string;
-  instance_type: FalComputeInstanceType;
-  region: FalComputeRegion;
-  sector?: FalComputeSector;
-  ip?: string;
-  status: FalComputeInstanceStatus;
-  creator_user_nickname?: string;
-}
-
-// List compute instances parameters
-export type FalComputeInstancesListParams = FalPaginatedParams;
-
-// List compute instances response
-export interface FalComputeInstancesListResponse {
-  instances: FalComputeInstance[];
-  next_cursor: string | null;
-  has_more: boolean;
-}
-
-// Get compute instance parameters
-export interface FalComputeInstanceGetParams {
-  id: string;
-}
-
-// Create compute instance parameters
-export interface FalComputeInstanceCreateParams {
-  instance_type: FalComputeInstanceType;
-  ssh_key: string;
-  sector?: FalComputeSector;
-}
-
-// Delete compute instance parameters
-export interface FalComputeInstanceDeleteParams {
-  id: string;
-}
-
 // ==================== fal.run inference models ====================
 
 // Generic file output returned by fal.run inference models
@@ -881,47 +817,11 @@ interface FalWorkflowsNamespace {
   create: FalWorkflowCreateMethod;
 }
 
-// Compute instances namespace types
-interface FalComputeInstanceCreateMethod {
-  (
-    params: FalComputeInstanceCreateParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstance>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
-}
-
-interface FalComputeInstancesNamespace {
-  (
-    params?: FalComputeInstancesListParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstancesListResponse>;
-  get(
-    params: FalComputeInstanceGetParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstance>;
-  create: FalComputeInstanceCreateMethod;
-  terminate(
-    params: FalComputeInstanceDeleteParams,
-    signal?: AbortSignal
-  ): Promise<void>;
-  // Verb accessor for POST on /compute/instances
-  post(
-    params: FalComputeInstanceCreateParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstance>;
-}
-
-interface FalComputeNamespace {
-  instances: FalComputeInstancesNamespace;
-}
-
 interface FalV1Namespace {
   models: FalModelsNamespace;
   queue: FalQueueNamespace;
   serverless: FalServerlessNamespace;
   workflows: FalWorkflowsNamespace;
-  compute: FalComputeNamespace;
 }
 
 // api.fal.ai wrapper — everything under /v1
@@ -1022,27 +922,11 @@ interface FalGetV1WorkflowsNamespace {
   ): Promise<FalWorkflowGetResponse>;
 }
 
-interface FalGetV1ComputeInstancesNamespace {
-  (
-    params?: FalComputeInstancesListParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstancesListResponse>;
-  get(
-    params: FalComputeInstanceGetParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstance>;
-}
-
-interface FalGetV1ComputeNamespace {
-  instances: FalGetV1ComputeInstancesNamespace;
-}
-
 interface FalGetV1Namespace {
   models: FalGetV1ModelsNamespace;
   queue: FalGetV1QueueNamespace;
   serverless: FalGetV1ServerlessNamespace;
   workflows: FalGetV1WorkflowsNamespace;
-  compute: FalGetV1ComputeNamespace;
 }
 
 // POST v1 namespace
@@ -1072,18 +956,6 @@ interface FalPostV1ServerlessNamespace {
   files: FalPostV1ServerlessFilesNamespace;
 }
 
-interface FalPostV1ComputeInstancesNamespace {
-  (
-    params: FalComputeInstanceCreateParams,
-    signal?: AbortSignal
-  ): Promise<FalComputeInstance>;
-  create: FalComputeInstanceCreateMethod;
-}
-
-interface FalPostV1ComputeNamespace {
-  instances: FalPostV1ComputeInstancesNamespace;
-}
-
 interface FalPostV1WorkflowsNamespace {
   create: FalWorkflowCreateMethod;
 }
@@ -1092,7 +964,6 @@ interface FalPostV1Namespace {
   models: FalPostV1ModelsNamespace;
   queue: FalPostV1QueueNamespace;
   serverless: FalPostV1ServerlessNamespace;
-  compute: FalPostV1ComputeNamespace;
   workflows: FalPostV1WorkflowsNamespace;
 }
 
@@ -1146,21 +1017,9 @@ interface FalDeleteV1ServerlessNamespace {
   apps: FalDeleteV1ServerlessAppsNamespace;
 }
 
-interface FalDeleteV1ComputeInstancesNamespace {
-  terminate(
-    params: FalComputeInstanceDeleteParams,
-    signal?: AbortSignal
-  ): Promise<void>;
-}
-
-interface FalDeleteV1ComputeNamespace {
-  instances: FalDeleteV1ComputeInstancesNamespace;
-}
-
 interface FalDeleteV1Namespace {
   models: FalDeleteV1ModelsNamespace;
   serverless: FalDeleteV1ServerlessNamespace;
-  compute: FalDeleteV1ComputeNamespace;
 }
 
 // Verb-prefixed root namespaces

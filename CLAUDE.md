@@ -73,7 +73,7 @@ packages/provider/<name>/
 
 **openai** — Chat, embeddings, images, files, models, moderations, batches, responses, audio, fine-tuning
 **xai** — Chat, images, video, files, batches, collections, search, models, auth, realtime, responses, tokenize-text
-**fal** — Models (pricing, usage, analytics, requests), queue, serverless (files, logs, apps, metrics), compute, workflows
+**fal** — Models (pricing, usage, analytics, requests), queue, serverless (files, logs, apps, metrics), workflows
 **kimicoding** — Messages, streaming, models, embeddings, countTokens
 **kie** — Media generation (video/image/audio), sub-providers (veo, suno, chat, claude)
 **anthropic** — Messages, streaming, batches, files, models, skills, admin/org APIs

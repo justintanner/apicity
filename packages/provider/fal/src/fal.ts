@@ -41,12 +41,6 @@ import {
   FalWorkflowGetResponse,
   FalWorkflowCreateParams,
   FalWorkflowCreateResponse,
-  FalComputeInstancesListParams,
-  FalComputeInstancesListResponse,
-  FalComputeInstanceGetParams,
-  FalComputeInstance,
-  FalComputeInstanceCreateParams,
-  FalComputeInstanceDeleteParams,
   FalAppsQueueParams,
   FalAppsQueueResponse,
   FalAppsFlushQueueParams,
@@ -63,7 +57,6 @@ import {
   logsStreamSchema,
   filesUploadUrlSchema,
   filesUploadLocalSchema,
-  computeInstanceCreateSchema,
   appsFlushQueueSchema,
   workflowCreateSchema,
   bytedanceSeedance2p0ImageToVideoSchema,
@@ -1040,81 +1033,6 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
-  const computeInstances = Object.assign(
-    async function instances(
-      params?: FalComputeInstancesListParams,
-      signal?: AbortSignal
-    ): Promise<FalComputeInstancesListResponse> {
-      return makeRequest<FalComputeInstancesListResponse>(
-        "GET",
-        "/compute/instances",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-    {
-      async get(
-        params: FalComputeInstanceGetParams,
-        signal?: AbortSignal
-      ): Promise<FalComputeInstance> {
-        return makeRequest<FalComputeInstance>(
-          "GET",
-          `/compute/instances/${encodeURIComponent(params.id)}`,
-          undefined,
-          signal
-        );
-      },
-
-      create: Object.assign(
-        async function create(
-          params: FalComputeInstanceCreateParams,
-          signal?: AbortSignal
-        ): Promise<FalComputeInstance> {
-          return makeRequest<FalComputeInstance>(
-            "POST",
-            "/compute/instances",
-            params as unknown as Record<string, unknown>,
-            signal
-          );
-        },
-        {
-          payloadSchema: computeInstanceCreateSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, computeInstanceCreateSchema);
-          },
-        }
-      ),
-
-      async terminate(
-        params: FalComputeInstanceDeleteParams,
-        signal?: AbortSignal
-      ): Promise<void> {
-        return makeRequest<void>(
-          "DELETE",
-          `/compute/instances/${encodeURIComponent(params.id)}`,
-          undefined,
-          signal
-        );
-      },
-      // Verb accessor for POST on /compute/instances
-      post: async function create(
-        params: FalComputeInstanceCreateParams,
-        signal?: AbortSignal
-      ): Promise<FalComputeInstance> {
-        return makeRequest<FalComputeInstance>(
-          "POST",
-          "/compute/instances",
-          params as unknown as Record<string, unknown>,
-          signal
-        );
-      },
-    }
-  );
-
-  const compute = {
-    instances: computeInstances,
-  };
-
   // ==================== Verb-Prefixed API Surface ====================
 
   // GET v1 namespace
@@ -1420,43 +1338,11 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
-  const getV1ComputeInstances = Object.assign(
-    async function instances(
-      params?: FalComputeInstancesListParams,
-      signal?: AbortSignal
-    ): Promise<FalComputeInstancesListResponse> {
-      return makeRequest<FalComputeInstancesListResponse>(
-        "GET",
-        "/compute/instances",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-    {
-      async get(
-        params: FalComputeInstanceGetParams,
-        signal?: AbortSignal
-      ): Promise<FalComputeInstance> {
-        return makeRequest<FalComputeInstance>(
-          "GET",
-          `/compute/instances/${encodeURIComponent(params.id)}`,
-          undefined,
-          signal
-        );
-      },
-    }
-  );
-
-  const getV1Compute = {
-    instances: getV1ComputeInstances,
-  };
-
   const getV1 = {
     models: getV1Models,
     queue: getV1Queue,
     serverless: getV1Serverless,
     workflows: getV1Workflows,
-    compute: getV1Compute,
   };
 
   // POST v1 namespace
@@ -1619,47 +1505,6 @@ export function fal(opts: FalOptions): FalProvider {
     files: postV1ServerlessFiles,
   };
 
-  const postV1ComputeInstancesCreate = Object.assign(
-    async function create(
-      params: FalComputeInstanceCreateParams,
-      signal?: AbortSignal
-    ): Promise<FalComputeInstance> {
-      return makeRequest<FalComputeInstance>(
-        "POST",
-        "/compute/instances",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-    {
-      payloadSchema: computeInstanceCreateSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, computeInstanceCreateSchema);
-      },
-    }
-  );
-
-  const postV1ComputeInstances = Object.assign(
-    async function instances(
-      params: FalComputeInstanceCreateParams,
-      signal?: AbortSignal
-    ): Promise<FalComputeInstance> {
-      return makeRequest<FalComputeInstance>(
-        "POST",
-        "/compute/instances",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-    {
-      create: postV1ComputeInstancesCreate,
-    }
-  );
-
-  const postV1Compute = {
-    instances: postV1ComputeInstances,
-  };
-
   const postV1WorkflowsCreate = Object.assign(
     async function create(
       params: FalWorkflowCreateParams,
@@ -1688,7 +1533,6 @@ export function fal(opts: FalOptions): FalProvider {
     models: postV1Models,
     queue: postV1Queue,
     serverless: postV1Serverless,
-    compute: postV1Compute,
     workflows: postV1Workflows,
   };
 
@@ -1860,24 +1704,6 @@ export function fal(opts: FalOptions): FalProvider {
     ),
   };
 
-  const deleteV1ComputeInstances = {
-    async terminate(
-      params: FalComputeInstanceDeleteParams,
-      signal?: AbortSignal
-    ): Promise<void> {
-      return makeRequest<void>(
-        "DELETE",
-        `/compute/instances/${encodeURIComponent(params.id)}`,
-        undefined,
-        signal
-      );
-    },
-  };
-
-  const deleteV1Compute = {
-    instances: deleteV1ComputeInstances,
-  };
-
   const deleteV1Serverless = {
     apps: {
       queue: deleteV1ServerlessAppsQueue,
@@ -1887,7 +1713,6 @@ export function fal(opts: FalOptions): FalProvider {
   const deleteV1 = {
     models: deleteV1Models,
     serverless: deleteV1Serverless,
-    compute: deleteV1Compute,
   };
 
   const aiV1 = {
@@ -1895,7 +1720,6 @@ export function fal(opts: FalOptions): FalProvider {
     queue,
     serverless,
     workflows,
-    compute,
   };
 
   return {

@@ -199,30 +199,6 @@ export const filesUploadLocalSchema: PayloadSchema = {
   },
 };
 
-export const computeInstanceCreateSchema: PayloadSchema = {
-  method: "POST",
-  path: "/compute/instances",
-  contentType: "application/json",
-  fields: {
-    instance_type: {
-      type: "string",
-      required: true,
-      enum: ["gpu_8x_h100_sxm5", "gpu_1x_h100_sxm5"],
-      description: "GPU instance type",
-    },
-    ssh_key: {
-      type: "string",
-      required: true,
-      description: "SSH public key for instance access",
-    },
-    sector: {
-      type: "string",
-      enum: ["sector_1", "sector_2", "sector_3"],
-      description: "Sector assignment (only valid with gpu_8x_h100_sxm5)",
-    },
-  },
-};
-
 export const appsFlushQueueSchema: PayloadSchema = {
   method: "DELETE",
   path: "/serverless/apps/{owner}/{name}/queue",

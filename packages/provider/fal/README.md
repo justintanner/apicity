@@ -183,29 +183,6 @@ fal.files.upload.local.validatePayload(data)
 </details>
 
 <details>
-<summary><b><code>compute.instances</code></b> — <code>POST /compute/instances</code></summary>
-
-**Parameters:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `instance_type` | string | Yes | GPU instance type<br>Enum: `gpu_8x_h100_sxm5`, `gpu_1x_h100_sxm5` |
-| `ssh_key` | string | Yes | SSH public key for instance access |
-| `sector` | string | No | Sector assignment (only valid with gpu_8x_h100_sxm5)<br>Enum: `sector_1`, `sector_2`, `sector_3` |
-
-**Validation:**
-
-```typescript
-// Access the schema
-fal.compute.instance.create.payloadSchema
-
-// Validate data
-fal.compute.instance.create.validatePayload(data)
-```
-
-</details>
-
-<details>
 <summary><b><code>workflows</code></b> — <code>POST /workflows</code></summary>
 
 **Parameters:**

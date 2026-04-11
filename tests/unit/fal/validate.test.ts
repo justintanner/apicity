@@ -6,7 +6,6 @@ import {
   logsHistorySchema,
   filesUploadUrlSchema,
   workflowCreateSchema,
-  computeInstanceCreateSchema,
 } from "../../../packages/provider/fal/src/schemas";
 
 describe("fal validatePayload", () => {
@@ -264,31 +263,6 @@ describe("fal validatePayload", () => {
       );
       expect(result.valid).toBe(false);
       expect(result.errors).toContain("contents is required");
-    });
-
-    it("should validate compute instance create", () => {
-      const result = validatePayload(
-        {
-          instance_type: "gpu_1x_h100_sxm5",
-          ssh_key: "ssh-rsa AAAA...",
-        },
-        computeInstanceCreateSchema
-      );
-      expect(result.valid).toBe(true);
-    });
-
-    it("should reject invalid instance_type enum", () => {
-      const result = validatePayload(
-        {
-          instance_type: "invalid_type",
-          ssh_key: "ssh-rsa AAAA...",
-        },
-        computeInstanceCreateSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain(
-        "instance_type must be one of: gpu_8x_h100_sxm5, gpu_1x_h100_sxm5"
-      );
     });
 
     it("should validate files upload URL", () => {

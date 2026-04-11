@@ -103,27 +103,30 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Ensure harness-generated dir
+        run: mkdir -p tests/fixtures/harness-generated
+
       - name: Generate harness report
-        run: npx tsx tests/harness-report.ts > harness-report.html
+        run: npx tsx tests/harness-report.ts > tests/fixtures/harness-generated/harness-report.html
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
       - name: Screenshot harness viewer (full)
         uses: ./.github/actions/screenshot-harness
         with:
-          html-source: harness-report.html
-          output: harness-report.png
+          html-source: tests/fixtures/harness-generated/harness-report.html
+          output: tests/fixtures/harness-generated/harness-report.png
 
       - name: Generate media-only harness report
-        run: npx tsx tests/harness-report.ts --media-only > harness-report-media.html
+        run: npx tsx tests/harness-report.ts --media-only > tests/fixtures/harness-generated/harness-report-media.html
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
       - name: Screenshot harness viewer (media)
         uses: ./.github/actions/screenshot-harness
         with:
-          html-source: harness-report-media.html
-          output: harness-report-media.png
+          html-source: tests/fixtures/harness-generated/harness-report-media.html
+          output: tests/fixtures/harness-generated/harness-report-media.png
 
       - name: Generate harness summary
         id: summary
@@ -159,8 +162,8 @@ jobs:
         with:
           name: harness-report
           path: |
-            harness-report.html
-            harness-report.png
-            harness-report-media.html
-            harness-report-media.png
+            tests/fixtures/harness-generated/harness-report.html
+            tests/fixtures/harness-generated/harness-report.png
+            tests/fixtures/harness-generated/harness-report-media.html
+            tests/fixtures/harness-generated/harness-report-media.png
           retention-days: 30

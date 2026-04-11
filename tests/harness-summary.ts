@@ -216,6 +216,7 @@ const SOURCE_FILE_MAP: Array<[RegExp, string | null]> = [
   [/^xai\/video-image-to-video/, "tests/fixtures/cat1.jpg"],
   [/^xai\/video-reference-images/, "tests/fixtures/cat1.jpg"],
   [/^openai\/vision/, "tests/fixtures/red.png"],
+  [/^fal\/nano-banana-pro-edit/, "tests/fixtures/man.jpg"],
   [/^kimicoding\/.*image-base64/, null],
   [/^kie\/e2e-motion-control/, null],
   [/^kie\/kling-motion-control/, null],
@@ -788,16 +789,36 @@ function generateSummary(recordings: ChangedRecording[]): string {
     "",
   ];
 
-  const artifactLink = buildArtifactLink();
-  if (artifactLink) {
-    lines.push(
-      "### 📸 Harness Preview",
-      "",
-      `**[Download full-page screenshot & interactive viewer](${artifactLink})** — ` +
-        "the `harness-report` artifact contains a 1920px-wide PNG showing every changed " +
-        "recording with input + output media rendered inline, plus the interactive HAR viewer.",
-      ""
-    );
+  const screenshotPath = `${ASSETS_DIR}/harness-report.png`;
+  const mediaScreenshotPath = `${ASSETS_DIR}/harness-report-media.png`;
+  const hasScreenshot = fs.existsSync(screenshotPath);
+  const hasMediaScreenshot = fs.existsSync(mediaScreenshotPath);
+
+  if (hasScreenshot || hasMediaScreenshot) {
+    lines.push("### 📸 Harness Preview", "");
+    if (hasScreenshot) {
+      lines.push(
+        `<img src="${buildRepoUrl(screenshotPath)}" alt="harness report (full)" width="900">`,
+        ""
+      );
+    }
+    if (hasMediaScreenshot) {
+      lines.push(
+        "<details><summary><strong>Media-only screenshot</strong></summary>",
+        "",
+        `<img src="${buildRepoUrl(mediaScreenshotPath)}" alt="harness report (media-only)" width="900">`,
+        "",
+        "</details>",
+        ""
+      );
+    }
+    const artifactLink = buildArtifactLink();
+    if (artifactLink) {
+      lines.push(
+        `*Interactive HAR viewer and HTML sources in the [\`harness-report\` workflow artifact](${artifactLink}).*`,
+        ""
+      );
+    }
   }
 
   for (const recording of recordings) {

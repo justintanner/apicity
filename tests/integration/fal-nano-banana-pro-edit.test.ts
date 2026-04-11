@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import fs from "fs";
+import path from "path";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { fal } from "@nakedapi/fal";
 
@@ -13,19 +15,25 @@ describe("fal nano-banana-pro edit integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should edit images with a prompt", async () => {
+  it("should edit an image with a prompt", async () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
 
+    const fixturePath = path.resolve(
+      import.meta.dirname,
+      "..",
+      "fixtures",
+      "man.jpg"
+    );
+    const b64 = fs.readFileSync(fixturePath).toString("base64");
+    const imageDataUrl = `data:image/jpeg;base64,${b64}`;
+
     const result = await provider.run.nanoBananaPro.edit({
       prompt:
-        "make a photo of the man driving the car down the california coastline",
-      image_urls: [
-        "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png",
-        "https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input-2.png",
-      ],
+        "make a photo of the man driving a red mercedes convertible down the california coastline at sunset",
+      image_urls: [imageDataUrl],
     });
 
     expect(result).toBeDefined();

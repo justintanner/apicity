@@ -1,12 +1,13 @@
 # Workflow state (ephemeral, harness-generated)
 tests/workflow-state.json
 
-# CI-generated harness artifacts
+# CI-generated harness summary (written at repo root)
 harness-summary.md
-harness-report.html
-harness-report.png
-harness-report-media.html
-harness-report-media.png
+
+# Harness-generated viewer HTMLs — ephemeral, regenerated per run. Only PNGs
+# under tests/fixtures/harness-generated/ are committed so PR comments can
+# embed them via raw.githubusercontent.com URLs.
+tests/fixtures/harness-generated/*.html
 
 # Cached media from harness workflows
 harness_media/

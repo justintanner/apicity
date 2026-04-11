@@ -464,6 +464,15 @@
             /: "((?:\\.|[^"\\])*)"/g,
             ': <span class="json-str">"$1"</span>'
           )
+          // Wrap array-element strings in raw JSON: `"..."` preceded by `[`
+          // or `,` (with optional whitespace) and NOT followed by `:` (which
+          // would make it an object key, not an element). Must run on raw
+          // JSON before keys/values are wrapped in spans, to avoid matching
+          // HTML attribute quotes.
+          .replace(
+            /([\[,])(\s*)"((?:\\.|[^"\\])*)"(?!\s*:)/g,
+            '$1$2<span class="json-str">"$3"</span>'
+          )
           .replace(/: (\d+\.?\d*)/g, ': <span class="json-num">$1</span>')
           .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
           .replace(/: (null)/g, ': <span class="json-null">$1</span>');
@@ -718,6 +727,59 @@
             } catch (e) {
               return match;
             }
+          }
+        );
+        // Generic key-agnostic truncation: any `data:image/...;base64,<long>` span
+        // anywhere in the JSON (array elements, nested objects, any key name).
+        // The negative lookahead prevents double-matching spans the per-key
+        // passes above already handled.
+        html = html.replace(
+          /<span class="json-str">"(data:(image|video|audio)\/[a-z+0-9.-]+;base64,)([A-Za-z0-9+\/=]{40,})"<\/span>(?!<img|<video|<audio)/g,
+          function (match, prefix, mediaType, b64) {
+            var preview =
+              mediaType === "video"
+                ? '<video class="video-preview" controls src="' +
+                  prefix +
+                  b64 +
+                  '"></video>'
+                : mediaType === "audio"
+                  ? '<audio class="audio-preview" controls src="' +
+                    prefix +
+                    b64 +
+                    '"></audio>'
+                  : '<img class="b64-img-preview" src="' +
+                    prefix +
+                    b64 +
+                    '">';
+            return (
+              '<span class="json-str">"' +
+              prefix +
+              b64.substring(0, 40) +
+              '...<span class="b64-truncated">[' +
+              b64.length +
+              ' chars]</span>"</span>' +
+              preview
+            );
+          }
+        );
+        // Generic key-agnostic truncation: any bare base64 blob of 200+ chars
+        // that starts with a known image magic header.
+        html = html.replace(
+          /<span class="json-str">"((?:iVBOR|\/9j\/|R0lGOD|UklGR)[A-Za-z0-9+\/=]{200,})"<\/span>(?!<img)/g,
+          function (match, b64) {
+            var mime = inferMimeType(b64) || "image/jpeg";
+            return (
+              '<span class="json-str">"' +
+              b64.substring(0, 40) +
+              '...<span class="b64-truncated">[' +
+              b64.length +
+              ' chars]</span>"</span>' +
+              '<img class="b64-img-preview" src="data:' +
+              mime +
+              ";base64," +
+              b64 +
+              '">'
+            );
           }
         );
         return html;

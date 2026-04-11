@@ -46,18 +46,14 @@ import {
   responsesDeleteSchema as xaiResponsesDeleteSchema,
   tokenizeTextSchema,
   realtimeClientSecretsSchema,
-  apiKeyCreateSchema,
-  apiKeyUpdateSchema,
 } from "../../packages/provider/xai/src/schemas";
 import {
   pricingEstimateSchema,
   deletePayloadsSchema,
   queueSubmitSchema,
-  logsHistorySchema,
   logsStreamSchema,
   filesUploadUrlSchema,
   filesUploadLocalSchema,
-  appsFlushQueueSchema,
 } from "../../packages/provider/fal/src/schemas";
 import {
   createTaskSchema,
@@ -121,11 +117,9 @@ describe("schema structure", () => {
       schema: checkpointPermissionsCreateSchema,
     },
     { name: "fal/queueSubmit", schema: queueSubmitSchema },
-    { name: "fal/logsHistory", schema: logsHistorySchema },
     { name: "fal/logsStream", schema: logsStreamSchema },
     { name: "fal/filesUploadUrl", schema: filesUploadUrlSchema },
     { name: "fal/filesUploadLocal", schema: filesUploadLocalSchema },
-    { name: "fal/appsFlushQueue", schema: appsFlushQueueSchema },
     { name: "fal/deletePayloads", schema: deletePayloadsSchema },
     { name: "kie/createTask", schema: createTaskSchema },
     { name: "kie/downloadUrl", schema: downloadUrlSchema },
@@ -490,32 +484,6 @@ describe("schema + validatePayload integration", () => {
     expect(result.valid).toBe(true);
   });
 
-  it("xai apiKeyCreate: accepts valid request", () => {
-    const result = validatePayload({ name: "test-key" }, apiKeyCreateSchema);
-    expect(result.valid).toBe(true);
-  });
-
-  it("xai apiKeyCreate: rejects missing name", () => {
-    const result = validatePayload({}, apiKeyCreateSchema);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain("name is required");
-  });
-
-  it("xai apiKeyUpdate: accepts valid request", () => {
-    const result = validatePayload(
-      { apiKey: { name: "renamed-key" }, fieldMask: "name" },
-      apiKeyUpdateSchema
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it("xai apiKeyUpdate: rejects missing required fields", () => {
-    const result = validatePayload({}, apiKeyUpdateSchema);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain("apiKey is required");
-    expect(result.errors).toContain("fieldMask is required");
-  });
-
   it("anthropic messages: accepts valid request", () => {
     const result = validatePayload(
       {
@@ -694,16 +662,6 @@ describe("schema + validatePayload integration", () => {
     expect(result.errors).toContain("input is required");
   });
 
-  it("fal logsHistory: accepts valid request", () => {
-    const result = validatePayload({ limit: 100 }, logsHistorySchema);
-    expect(result.valid).toBe(true);
-  });
-
-  it("fal logsHistory: accepts empty request", () => {
-    const result = validatePayload({}, logsHistorySchema);
-    expect(result.valid).toBe(true);
-  });
-
   it("fal logsStream: accepts valid request", () => {
     const result = validatePayload({ level: "info" }, logsStreamSchema);
     expect(result.valid).toBe(true);
@@ -737,21 +695,6 @@ describe("schema + validatePayload integration", () => {
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("target_path is required");
     expect(result.errors).toContain("file is required");
-  });
-
-  it("fal appsFlushQueue: accepts valid request", () => {
-    const result = validatePayload(
-      { owner: "username", name: "my-app" },
-      appsFlushQueueSchema
-    );
-    expect(result.valid).toBe(true);
-  });
-
-  it("fal appsFlushQueue: rejects missing required fields", () => {
-    const result = validatePayload({}, appsFlushQueueSchema);
-    expect(result.valid).toBe(false);
-    expect(result.errors).toContain("owner is required");
-    expect(result.errors).toContain("name is required");
   });
 });
 

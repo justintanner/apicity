@@ -21,18 +21,11 @@ import {
   FalQueueSubmitResponse,
   FalQueueStatusParams,
   FalQueueStatusResponse,
-  FalQueueResultParams,
-  FalQueueResultResponse,
-  FalQueueCancelParams,
-  FalQueueCancelResponse,
-  FalLogsHistoryParams,
-  FalLogsHistoryResponse,
   FalLogsStreamParams,
   FalLabelFilter,
   FalLogEntry,
   FalFileItem,
   FalFilesListParams,
-  FalFilesDownloadParams,
   FalFilesUploadUrlParams,
   FalFilesUploadLocalParams,
   FalWorkflowListParams,
@@ -41,7 +34,6 @@ import {
   FalWorkflowGetResponse,
   FalAppsQueueParams,
   FalAppsQueueResponse,
-  FalAppsFlushQueueParams,
   FalSeedance2p0ImageToVideoParams,
   FalSeedance2p0ImageToVideoResponse,
   FalRunNamespace,
@@ -51,11 +43,9 @@ import {
   pricingEstimateSchema,
   deletePayloadsSchema,
   queueSubmitSchema,
-  logsHistorySchema,
   logsStreamSchema,
   filesUploadUrlSchema,
   filesUploadLocalSchema,
-  appsFlushQueueSchema,
   bytedanceSeedance2p0ImageToVideoSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
@@ -235,76 +225,6 @@ export function fal(opts: FalOptions): FalProvider {
 
       if (res.status === 204) {
         return undefined as T;
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof FalError) throw error;
-      throw new FalError(`Fal request failed: ${error}`, 500, "server_error");
-    }
-  }
-
-  async function makePostWithQuery<T>(
-    path: string,
-    queryParams: Record<string, unknown>,
-    body?: unknown,
-    signal?: AbortSignal
-  ): Promise<T> {
-    const qs = buildQueryString(queryParams);
-    const url = `${baseURL}${path}${qs}`;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    const requestInit: RequestInit = {
-      method: "POST",
-      headers: {
-        Authorization: `Key ${opts.apiKey}`,
-        "Content-Type": "application/json",
-      },
-      signal: controller.signal,
-    };
-
-    if (body !== undefined) {
-      requestInit.body = JSON.stringify(body);
-    }
-
-    try {
-      const res = await doFetch(url, requestInit);
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let errorData: unknown;
-        try {
-          errorData = await res.json();
-        } catch {
-          errorData = null;
-        }
-
-        if (isFalApiErrorResponse(errorData)) {
-          throw new FalError(
-            errorData.error.message,
-            res.status,
-            errorData.error.type,
-            errorData.error.request_id,
-            errorData.error.docs_url,
-            errorData
-          );
-        }
-
-        throw new FalError(
-          `Fal API error: ${res.status}`,
-          res.status,
-          "server_error",
-          undefined,
-          undefined,
-          errorData
-        );
       }
 
       return (await res.json()) as T;
@@ -666,34 +586,6 @@ export function fal(opts: FalOptions): FalProvider {
         queueBaseURL
       );
     },
-
-    async result(
-      params: FalQueueResultParams,
-      signal?: AbortSignal
-    ): Promise<FalQueueResultResponse> {
-      return makeRequest<FalQueueResultResponse>(
-        "GET",
-        `/${params.endpoint_id}/requests/${params.request_id}`,
-        undefined,
-        signal,
-        undefined,
-        queueBaseURL
-      );
-    },
-
-    async cancel(
-      params: FalQueueCancelParams,
-      signal?: AbortSignal
-    ): Promise<FalQueueCancelResponse> {
-      return makeRequest<FalQueueCancelResponse>(
-        "PUT",
-        `/${params.endpoint_id}/requests/${params.request_id}/cancel`,
-        undefined,
-        signal,
-        undefined,
-        queueBaseURL
-      );
-    },
   };
 
   function buildLogsQueryParams(
@@ -711,27 +603,6 @@ export function fal(opts: FalOptions): FalProvider {
 
   const serverless = {
     logs: {
-      history: Object.assign(
-        async function history(
-          params?: FalLogsHistoryParams,
-          body?: FalLabelFilter[],
-          signal?: AbortSignal
-        ): Promise<FalLogsHistoryResponse> {
-          return makePostWithQuery<FalLogsHistoryResponse>(
-            "/serverless/logs/history",
-            buildLogsQueryParams(params as unknown as Record<string, unknown>),
-            body,
-            signal
-          );
-        },
-        {
-          payloadSchema: logsHistorySchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, logsHistorySchema);
-          },
-        }
-      ),
-
       stream: Object.assign(
         async function stream(
           params?: FalLogsStreamParams,
@@ -764,18 +635,6 @@ export function fal(opts: FalOptions): FalProvider {
           ? `/serverless/files/list/${params.dir}`
           : "/serverless/files/list";
         return makeRequest<FalFileItem[]>("GET", path, undefined, signal);
-      },
-
-      async download(
-        params: FalFilesDownloadParams,
-        signal?: AbortSignal
-      ): Promise<Response> {
-        return makeRawRequest(
-          "GET",
-          `/serverless/files/file/${params.file}`,
-          undefined,
-          signal
-        );
       },
 
       uploadUrl: Object.assign(
@@ -834,96 +693,17 @@ export function fal(opts: FalOptions): FalProvider {
     },
 
     apps: {
-      queue: Object.assign(
-        async function queue(
-          params: FalAppsQueueParams,
-          signal?: AbortSignal
-        ): Promise<FalAppsQueueResponse> {
-          return makeRequest<FalAppsQueueResponse>(
-            "GET",
-            `/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`,
-            undefined,
-            signal
-          );
-        },
-        {
-          flush: Object.assign(
-            async function flush(
-              params: FalAppsFlushQueueParams,
-              signal?: AbortSignal
-            ): Promise<void> {
-              const headers: Record<string, string> = {};
-              if (params.idempotency_key) {
-                headers["Idempotency-Key"] = params.idempotency_key;
-              }
-
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-              if (signal) {
-                attachAbortHandler(signal, controller);
-              }
-
-              const url = `${baseURL}/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`;
-
-              try {
-                const res = await doFetch(url, {
-                  method: "DELETE",
-                  headers: {
-                    Authorization: `Key ${opts.apiKey}`,
-                    ...headers,
-                  },
-                  signal: controller.signal,
-                });
-                clearTimeout(timeoutId);
-
-                if (!res.ok) {
-                  let errorData: unknown;
-                  try {
-                    errorData = await res.json();
-                  } catch {
-                    errorData = null;
-                  }
-
-                  if (isFalApiErrorResponse(errorData)) {
-                    throw new FalError(
-                      errorData.error.message,
-                      res.status,
-                      errorData.error.type,
-                      errorData.error.request_id,
-                      errorData.error.docs_url,
-                      errorData
-                    );
-                  }
-
-                  throw new FalError(
-                    `Fal API error: ${res.status}`,
-                    res.status,
-                    "server_error",
-                    undefined,
-                    undefined,
-                    errorData
-                  );
-                }
-              } catch (error) {
-                clearTimeout(timeoutId);
-                if (error instanceof FalError) throw error;
-                throw new FalError(
-                  `Fal request failed: ${error}`,
-                  500,
-                  "server_error"
-                );
-              }
-            },
-            {
-              payloadSchema: appsFlushQueueSchema,
-              validatePayload(data: unknown): ValidationResult {
-                return validatePayload(data, appsFlushQueueSchema);
-              },
-            }
-          ),
-        }
-      ),
+      async queue(
+        params: FalAppsQueueParams,
+        signal?: AbortSignal
+      ): Promise<FalAppsQueueResponse> {
+        return makeRequest<FalAppsQueueResponse>(
+          "GET",
+          `/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`,
+          undefined,
+          signal
+        );
+      },
     },
 
     async metrics(signal?: AbortSignal): Promise<string> {
@@ -1148,43 +928,6 @@ export function fal(opts: FalOptions): FalProvider {
         queueBaseURL
       );
     },
-
-    async result(
-      params: FalQueueResultParams,
-      signal?: AbortSignal
-    ): Promise<FalQueueResultResponse> {
-      return makeRequest<FalQueueResultResponse>(
-        "GET",
-        `/${params.endpoint_id}/requests/${params.request_id}`,
-        undefined,
-        signal,
-        undefined,
-        queueBaseURL
-      );
-    },
-  };
-
-  const getV1ServerlessLogs = {
-    history: Object.assign(
-      async function history(
-        params?: FalLogsHistoryParams,
-        body?: FalLabelFilter[],
-        signal?: AbortSignal
-      ): Promise<FalLogsHistoryResponse> {
-        return makePostWithQuery<FalLogsHistoryResponse>(
-          "/serverless/logs/history",
-          buildLogsQueryParams(params as unknown as Record<string, unknown>),
-          body,
-          signal
-        );
-      },
-      {
-        payloadSchema: logsHistorySchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, logsHistorySchema);
-        },
-      }
-    ),
   };
 
   const getV1ServerlessFiles = {
@@ -1196,18 +939,6 @@ export function fal(opts: FalOptions): FalProvider {
         ? `/serverless/files/list/${params.dir}`
         : "/serverless/files/list";
       return makeRequest<FalFileItem[]>("GET", path, undefined, signal);
-    },
-
-    async download(
-      params: FalFilesDownloadParams,
-      signal?: AbortSignal
-    ): Promise<Response> {
-      return makeRawRequest(
-        "GET",
-        `/serverless/files/file/${params.file}`,
-        undefined,
-        signal
-      );
     },
   };
 
@@ -1226,7 +957,6 @@ export function fal(opts: FalOptions): FalProvider {
   };
 
   const getV1Serverless = {
-    logs: getV1ServerlessLogs,
     files: getV1ServerlessFiles,
     apps: getV1ServerlessApps,
 
@@ -1398,29 +1128,6 @@ export function fal(opts: FalOptions): FalProvider {
     ),
   };
 
-  const postV1ServerlessLogs = {
-    history: Object.assign(
-      async function history(
-        params?: FalLogsHistoryParams,
-        body?: FalLabelFilter[],
-        signal?: AbortSignal
-      ): Promise<FalLogsHistoryResponse> {
-        return makePostWithQuery<FalLogsHistoryResponse>(
-          "/serverless/logs/history",
-          buildLogsQueryParams(params as unknown as Record<string, unknown>),
-          body,
-          signal
-        );
-      },
-      {
-        payloadSchema: logsHistorySchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, logsHistorySchema);
-        },
-      }
-    ),
-  };
-
   const postV1ServerlessFiles = {
     uploadUrl: Object.assign(
       async function uploadUrl(
@@ -1478,7 +1185,6 @@ export function fal(opts: FalOptions): FalProvider {
   };
 
   const postV1Serverless = {
-    logs: postV1ServerlessLogs,
     files: postV1ServerlessFiles,
   };
 
@@ -1525,27 +1231,6 @@ export function fal(opts: FalOptions): FalProvider {
     v1: postStreamV1,
   };
 
-  // PUT v1 namespace
-  const putV1Queue = {
-    async cancel(
-      params: FalQueueCancelParams,
-      signal?: AbortSignal
-    ): Promise<FalQueueCancelResponse> {
-      return makeRequest<FalQueueCancelResponse>(
-        "PUT",
-        `/${params.endpoint_id}/requests/${params.request_id}/cancel`,
-        undefined,
-        signal,
-        undefined,
-        queueBaseURL
-      );
-    },
-  };
-
-  const putV1 = {
-    queue: putV1Queue,
-  };
-
   // DELETE v1 namespace
   const deleteV1ModelsRequests = {
     payloads: Object.assign(
@@ -1578,93 +1263,8 @@ export function fal(opts: FalOptions): FalProvider {
     requests: deleteV1ModelsRequests,
   };
 
-  const deleteV1ServerlessAppsQueue = {
-    flush: Object.assign(
-      async function flush(
-        params: FalAppsFlushQueueParams,
-        signal?: AbortSignal
-      ): Promise<void> {
-        const headers: Record<string, string> = {};
-        if (params.idempotency_key) {
-          headers["Idempotency-Key"] = params.idempotency_key;
-        }
-
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-        if (signal) {
-          attachAbortHandler(signal, controller);
-        }
-
-        const url = `${baseURL}/serverless/apps/${encodeURIComponent(params.owner)}/${encodeURIComponent(params.name)}/queue`;
-
-        try {
-          const res = await doFetch(url, {
-            method: "DELETE",
-            headers: {
-              Authorization: `Key ${opts.apiKey}`,
-              ...headers,
-            },
-            signal: controller.signal,
-          });
-          clearTimeout(timeoutId);
-
-          if (!res.ok) {
-            let errorData: unknown;
-            try {
-              errorData = await res.json();
-            } catch {
-              errorData = null;
-            }
-
-            if (isFalApiErrorResponse(errorData)) {
-              throw new FalError(
-                errorData.error.message,
-                res.status,
-                errorData.error.type,
-                errorData.error.request_id,
-                errorData.error.docs_url,
-                errorData
-              );
-            }
-
-            throw new FalError(
-              `Fal API error: ${res.status}`,
-              res.status,
-              "server_error",
-              undefined,
-              undefined,
-              errorData
-            );
-          }
-        } catch (error) {
-          clearTimeout(timeoutId);
-          if (error instanceof FalError) throw error;
-          throw new FalError(
-            `Fal request failed: ${error}`,
-            500,
-            "server_error"
-          );
-        }
-      },
-      {
-        payloadSchema: appsFlushQueueSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, appsFlushQueueSchema);
-        },
-      }
-    ),
-  };
-
-  const deleteV1Serverless = {
-    apps: {
-      queue: deleteV1ServerlessAppsQueue,
-    },
-  };
-
   const deleteV1 = {
     models: deleteV1Models,
-    serverless: deleteV1Serverless,
   };
 
   const aiV1 = {
@@ -1682,7 +1282,6 @@ export function fal(opts: FalOptions): FalProvider {
     // Verb-prefixed API surface
     get: { ai: { v1: getV1 } },
     post: { ai: { v1: postV1 }, run, stream: postStream },
-    put: { ai: { v1: putV1 } },
     delete: { ai: { v1: deleteV1 } },
   };
 }

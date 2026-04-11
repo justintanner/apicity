@@ -52,15 +52,6 @@ import {
   XaiRealtimeConnection,
   XaiRealtimeClientEvent,
   XaiRealtimeServerEvent,
-  XaiApiKeyCreateRequest,
-  XaiApiKey,
-  XaiApiKeyListParams,
-  XaiApiKeyListResponse,
-  XaiApiKeyUpdateRequest,
-  XaiApiKeyPropagationResponse,
-  XaiTeamModelsResponse,
-  XaiTeamEndpointsResponse,
-  XaiManagementKeyValidationResponse,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -79,8 +70,6 @@ import {
   documentSearchSchema,
   tokenizeTextSchema,
   realtimeClientSecretsSchema,
-  apiKeyCreateSchema,
-  apiKeyUpdateSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -258,45 +247,6 @@ export function xai(opts: XaiOptions): XaiProvider {
     return parts.length > 0 ? `?${parts.join("&")}` : "";
   }
 
-  const authTeams = {
-    async models(
-      teamId: string,
-      signal?: AbortSignal
-    ): Promise<XaiTeamModelsResponse> {
-      return await makeManagementRequest(
-        "GET",
-        `/auth/teams/${encodeURIComponent(teamId)}/models`,
-        undefined,
-        signal
-      );
-    },
-
-    async endpoints(
-      teamId: string,
-      signal?: AbortSignal
-    ): Promise<XaiTeamEndpointsResponse> {
-      return await makeManagementRequest(
-        "GET",
-        `/auth/teams/${encodeURIComponent(teamId)}/endpoints`,
-        undefined,
-        signal
-      );
-    },
-  };
-
-  const authManagementKeys = {
-    async validation(
-      signal?: AbortSignal
-    ): Promise<XaiManagementKeyValidationResponse> {
-      return await makeManagementRequest(
-        "GET",
-        "/auth/management-keys/validation",
-        undefined,
-        signal
-      );
-    },
-  };
-
   // POST /v1/batches (create) with cancel and requests methods
   const postBatches = Object.assign(
     async function createBatch(
@@ -354,39 +304,6 @@ export function xai(opts: XaiOptions): XaiProvider {
           "POST",
           `/collections/${collectionId}/documents/${fileId}`,
           req ?? {},
-          signal
-        );
-      },
-    }
-  );
-
-  // POST /auth/teams/{teamId}/api-keys (create) with rotate method
-  const postAuthApiKeys = Object.assign(
-    async function createApiKey(
-      teamId: string,
-      req: XaiApiKeyCreateRequest,
-      signal?: AbortSignal
-    ): Promise<XaiApiKey> {
-      return await makeManagementRequest(
-        "POST",
-        `/auth/teams/${encodeURIComponent(teamId)}/api-keys`,
-        req,
-        signal
-      );
-    },
-    {
-      payloadSchema: apiKeyCreateSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, apiKeyCreateSchema);
-      },
-      rotate: async function rotateApiKey(
-        apiKeyId: string,
-        signal?: AbortSignal
-      ): Promise<XaiApiKey> {
-        return await makeManagementRequest(
-          "POST",
-          `/auth/api-keys/${encodeURIComponent(apiKeyId)}/rotate`,
-          {},
           signal
         );
       },
@@ -617,36 +534,6 @@ export function xai(opts: XaiOptions): XaiProvider {
     documents: getCollectionsDocuments,
   });
 
-  // GET /auth/teams/{teamId}/api-keys (list) with propagation
-  const getAuthApiKeys = Object.assign(
-    async function listApiKeys(
-      teamId: string,
-      params?: XaiApiKeyListParams,
-      signal?: AbortSignal
-    ): Promise<XaiApiKeyListResponse> {
-      const query = buildManagementQuery(params ?? {});
-      return await makeManagementRequest(
-        "GET",
-        `/auth/teams/${encodeURIComponent(teamId)}/api-keys${query}`,
-        undefined,
-        signal
-      );
-    },
-    {
-      propagation: async function getPropagation(
-        apiKeyId: string,
-        signal?: AbortSignal
-      ): Promise<XaiApiKeyPropagationResponse> {
-        return await makeManagementRequest(
-          "GET",
-          `/auth/api-keys/${encodeURIComponent(apiKeyId)}/propagation`,
-          undefined,
-          signal
-        );
-      },
-    }
-  );
-
   // DELETE /v1/collections/{collectionId} with documents
   const deleteCollections = Object.assign(
     async function deleteCollection(
@@ -694,28 +581,6 @@ export function xai(opts: XaiOptions): XaiProvider {
       payloadSchema: collectionUpdateSchema,
       validatePayload(data: unknown): ValidationResult {
         return validatePayload(data, collectionUpdateSchema);
-      },
-    }
-  );
-
-  // PUT /auth/api-keys/{apiKeyId}
-  const putAuthApiKeys = Object.assign(
-    async function updateApiKey(
-      apiKeyId: string,
-      req: XaiApiKeyUpdateRequest,
-      signal?: AbortSignal
-    ): Promise<XaiApiKey> {
-      return await makeManagementRequest(
-        "PUT",
-        `/auth/api-keys/${encodeURIComponent(apiKeyId)}`,
-        req,
-        signal
-      );
-    },
-    {
-      payloadSchema: apiKeyUpdateSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, apiKeyUpdateSchema);
       },
     }
   );
@@ -995,9 +860,6 @@ export function xai(opts: XaiOptions): XaiProvider {
             }
           ),
         },
-        auth: {
-          apiKeys: postAuthApiKeys,
-        },
       },
     },
     get: {
@@ -1089,11 +951,6 @@ export function xai(opts: XaiOptions): XaiProvider {
         videoGenerationModels: getVideoGenerationModels,
         batches: getBatchesNamespace,
         collections: getCollectionsNamespace,
-        auth: {
-          apiKeys: getAuthApiKeys,
-          teams: authTeams,
-          managementKeys: authManagementKeys,
-        },
       },
     },
     delete: {
@@ -1150,27 +1007,11 @@ export function xai(opts: XaiOptions): XaiProvider {
           }
         },
         collections: deleteCollections,
-        auth: {
-          apiKeys: async function deleteApiKey(
-            apiKeyId: string,
-            signal?: AbortSignal
-          ): Promise<void> {
-            await makeManagementRequest(
-              "DELETE",
-              `/auth/api-keys/${encodeURIComponent(apiKeyId)}`,
-              undefined,
-              signal
-            );
-          },
-        },
       },
     },
     put: {
       v1: {
         collections: putCollections,
-        auth: {
-          apiKeys: putAuthApiKeys,
-        },
       },
     },
     patch: {

@@ -368,57 +368,6 @@ describe("xAI provider core", () => {
 
       expect(capturedHeaders["authorization"]).toBe("Bearer sk-api-key");
     });
-
-    it("encodes teamId in management URL", async () => {
-      let capturedUrl = "";
-
-      const mockFetch = async (input: RequestInfo | URL) => {
-        capturedUrl = String(input);
-        return new Response(
-          JSON.stringify({ apiKeys: [], paginationToken: null }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      };
-
-      const provider = xai({
-        apiKey: "sk-api-key",
-        managementApiKey: "sk-mgmt-key",
-        fetch: mockFetch,
-      });
-      await provider.get.v1.auth.apiKeys("team/abc+123");
-
-      expect(capturedUrl).toContain("/auth/teams/team%2Fabc%2B123/api-keys");
-    });
-
-    it("builds management query with array params", async () => {
-      let capturedUrl = "";
-
-      const mockFetch = async (input: RequestInfo | URL) => {
-        capturedUrl = String(input);
-        return new Response(
-          JSON.stringify({ apiKeys: [], paginationToken: null }),
-          {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-      };
-
-      const provider = xai({
-        apiKey: "sk-api-key",
-        managementApiKey: "sk-mgmt-key",
-        fetch: mockFetch,
-      });
-      await provider.get.v1.auth.apiKeys("team-123", {
-        aclFilters: ["api-key:read", "api-key:write"],
-      });
-
-      expect(capturedUrl).toContain("aclFilters=api-key%3Aread");
-      expect(capturedUrl).toContain("aclFilters=api-key%3Awrite");
-    });
   });
 
   describe("files upload (multipart/form-data)", () => {
@@ -476,7 +425,6 @@ describe("xAI provider core", () => {
       expect(provider.post.v1.documents.search).toBeDefined();
       expect(provider.post.v1.tokenizeText).toBeDefined();
       expect(provider.post.v1.realtime.clientSecrets).toBeDefined();
-      expect(provider.post.v1.auth.apiKeys).toBeDefined();
     });
 
     it("has correct get.v1 namespace", () => {
@@ -492,10 +440,6 @@ describe("xAI provider core", () => {
       expect(provider.get.v1.videoGenerationModels).toBeDefined();
       expect(provider.get.v1.batches).toBeDefined();
       expect(provider.get.v1.collections).toBeDefined();
-      expect(provider.get.v1.auth.apiKeys).toBeDefined();
-      expect(provider.get.v1.auth.teams.models).toBeDefined();
-      expect(provider.get.v1.auth.teams.endpoints).toBeDefined();
-      expect(provider.get.v1.auth.managementKeys.validation).toBeDefined();
     });
 
     it("has correct delete.v1 namespace", () => {
@@ -504,14 +448,12 @@ describe("xAI provider core", () => {
       expect(provider.delete.v1.responses).toBeDefined();
       expect(provider.delete.v1.files).toBeDefined();
       expect(provider.delete.v1.collections).toBeDefined();
-      expect(provider.delete.v1.auth.apiKeys).toBeDefined();
     });
 
     it("has correct put.v1 namespace", () => {
       const provider = xai({ apiKey: "sk-test" });
 
       expect(provider.put.v1.collections).toBeDefined();
-      expect(provider.put.v1.auth.apiKeys).toBeDefined();
     });
 
     it("has correct patch.v1 namespace", () => {

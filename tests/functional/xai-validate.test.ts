@@ -15,8 +15,6 @@ import {
   responsesSchema,
   tokenizeTextSchema,
   realtimeClientSecretsSchema,
-  apiKeyCreateSchema,
-  apiKeyUpdateSchema,
 } from "../../packages/provider/xai/src/schemas";
 
 describe("xAI validatePayload", () => {
@@ -444,52 +442,6 @@ describe("xAI validatePayload", () => {
     it("accepts empty request (all fields optional)", () => {
       const result = validatePayload({}, realtimeClientSecretsSchema);
       expect(result.valid).toBe(true);
-    });
-  });
-
-  describe("API key management", () => {
-    it("accepts valid API key create request", () => {
-      const result = validatePayload(
-        {
-          name: "my-api-key",
-          acls: ["api-key:endpoint:*"],
-          qps: 10,
-          qpm: 100,
-          tpm: "1000000",
-          expireTime: "2025-12-31T23:59:59Z",
-        },
-        apiKeyCreateSchema
-      );
-      expect(result.valid).toBe(true);
-    });
-
-    it("rejects missing required name", () => {
-      const result = validatePayload({}, apiKeyCreateSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("name is required");
-    });
-
-    it("accepts valid API key update request", () => {
-      const result = validatePayload(
-        {
-          apiKey: { name: "renamed-key", disabled: false },
-          fieldMask: "name,disabled",
-        },
-        apiKeyUpdateSchema
-      );
-      expect(result.valid).toBe(true);
-    });
-
-    it("rejects missing required apiKey field", () => {
-      const result = validatePayload({ fieldMask: "name" }, apiKeyUpdateSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("apiKey is required");
-    });
-
-    it("rejects missing required fieldMask", () => {
-      const result = validatePayload({ apiKey: {} }, apiKeyUpdateSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("fieldMask is required");
     });
   });
 

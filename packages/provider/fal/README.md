@@ -77,37 +77,6 @@ fal.queue.submit.validatePayload(data)
 </details>
 
 <details>
-<summary><b><code>serverless.logs.history</code></b> — <code>POST /serverless/logs/history</code></summary>
-
-**Parameters:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `limit` | number | No | Number of results per page (1-1000) |
-| `cursor` | string | No | Pagination cursor from previous response |
-| `start` | string | No | Start date in ISO8601 (defaults to 24h ago) |
-| `end` | string | No | End date in ISO8601, exclusive (defaults to now) |
-| `app_id` | array | No |  |
-| `revision` | string | No | Filter by revision |
-| `run_source` | string | No | Filter by run source<br>Enum: `grpc-run`, `grpc-register`, `gateway`, `cron` |
-| `search` | string | No | Free-text search |
-| `level` | string | No | Minimum log level |
-| `job_id` | string | No | Filter by job ID |
-| `request_id` | string | No | Filter by request ID |
-
-**Validation:**
-
-```typescript
-// Access the schema
-fal.logs.history.payloadSchema
-
-// Validate data
-fal.logs.history.validatePayload(data)
-```
-
-</details>
-
-<details>
 <summary><b><code>serverless.logs.stream</code></b> — <code>POST /serverless/logs/stream</code></summary>
 
 **Parameters:**
@@ -212,29 +181,6 @@ fal.bytedance.seedance2p0.image.to.video.validatePayload(data)
 </details>
 
 ### DELETE Endpoints
-
-<details>
-<summary><b><code>serverless.apps.owner.name.queue</code></b> — <code>DELETE /serverless/apps/{owner}/{name}/queue</code></summary>
-
-**Parameters:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `owner` | string | Yes | Username of the app owner |
-| `name` | string | Yes | Application name |
-| `idempotency_key` | string | No | Optional idempotency key for safe retries |
-
-**Validation:**
-
-```typescript
-// Access the schema
-fal.apps.flush.queue.payloadSchema
-
-// Validate data
-fal.apps.flush.queue.validatePayload(data)
-```
-
-</details>
 
 <details>
 <summary><b><code>models.requests.request_id.payloads</code></b> — <code>DELETE /models/requests/{request_id}/payloads</code></summary>

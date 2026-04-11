@@ -377,32 +377,6 @@ xai.tokenize.text.validatePayload(data)
 </details>
 
 <details>
-<summary><b><code>auth.teams.teamId.apikeys</code></b> — <code>POST /auth/teams/{teamId}/api-keys</code></summary>
-
-**Parameters:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Name for the API key |
-| `acls` | array | No | ACL permission strings (e.g. api-key:endpoint:*) |
-| `qps` | number | No | Queries per second limit |
-| `qpm` | number | No | Queries per minute limit |
-| `tpm` | string | No | Tokens per minute limit |
-| `expireTime` | string | No | Expiration time (ISO 8601) |
-
-**Validation:**
-
-```typescript
-// Access the schema
-xai.api.key.create.payloadSchema
-
-// Validate data
-xai.api.key.create.validatePayload(data)
-```
-
-</details>
-
-<details>
 <summary><b><code>videos.extensions</code></b> — <code>POST /videos/extensions</code></summary>
 
 **Parameters:**
@@ -477,34 +451,6 @@ xai.collection.update.payloadSchema
 
 // Validate data
 xai.collection.update.validatePayload(data)
-```
-
-</details>
-
-<details>
-<summary><b><code>auth.apikeys.api_key_id</code></b> — <code>PUT /auth/api-keys/{api_key_id}</code></summary>
-
-**Parameters:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `apiKey` | object | Yes | Fields to update on the API key |
-| `qps` | number | No | Queries per second limit |
-| `qpm` | number | No | Queries per minute limit |
-| `tpm` | string | No | Tokens per minute limit |
-| `disabled` | boolean | No | Whether the key is disabled |
-| `expireTime` | string | No | Expiration time (ISO 8601) |
-| `aclStrings` | array | No | ACL permission strings |
-| `fieldMask` | string | Yes | Comma-separated field names to update |
-
-**Validation:**
-
-```typescript
-// Access the schema
-xai.api.key.update.payloadSchema
-
-// Validate data
-xai.api.key.update.validatePayload(data)
 ```
 
 </details>

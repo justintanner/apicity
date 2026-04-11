@@ -447,16 +447,10 @@ export interface FalLogsFilterParams {
   request_id?: string;
 }
 
-// History-specific parameters (adds pagination)
-export interface FalLogsHistoryParams extends FalLogsFilterParams {
-  limit?: number;
-  cursor?: string;
-}
-
 // Stream parameters (same filters, no pagination)
 export type FalLogsStreamParams = FalLogsFilterParams;
 
-// Log entry returned by both history items and stream events
+// Log entry returned by stream events
 export interface FalLogEntry {
   timestamp: string;
   level: string;
@@ -464,13 +458,6 @@ export interface FalLogEntry {
   app: string;
   revision: string;
   labels?: Record<string, string>;
-}
-
-// History response
-export interface FalLogsHistoryResponse {
-  next_cursor: string | null;
-  has_more: boolean;
-  items: FalLogEntry[];
 }
 
 // ==================== Serverless Files ====================
@@ -490,11 +477,6 @@ export interface FalFileItem {
 // List files parameters
 export interface FalFilesListParams {
   dir?: string;
-}
-
-// Download file parameters
-export interface FalFilesDownloadParams {
-  file: string;
 }
 
 // Upload from URL parameters
@@ -588,28 +570,6 @@ export type FalQueueStatusResponse =
   | FalQueueInProgressStatus
   | FalQueueCompletedStatus;
 
-// Queue result parameters
-export interface FalQueueResultParams {
-  endpoint_id: string;
-  request_id: string;
-}
-
-// Queue result response (model-specific output)
-export interface FalQueueResultResponse {
-  [key: string]: unknown;
-}
-
-// Queue cancel parameters
-export interface FalQueueCancelParams {
-  endpoint_id: string;
-  request_id: string;
-}
-
-// Queue cancel response
-export interface FalQueueCancelResponse {
-  status: string;
-}
-
 // ==================== Serverless Apps Queue ====================
 
 // Get queue size parameters
@@ -621,13 +581,6 @@ export interface FalAppsQueueParams {
 // Get queue size response
 export interface FalAppsQueueResponse {
   queue_size: number;
-}
-
-// Flush queue parameters
-export interface FalAppsFlushQueueParams {
-  owner: string;
-  name: string;
-  idempotency_key?: string;
 }
 
 // ==================== Provider ====================
@@ -693,27 +646,9 @@ interface FalQueueNamespace {
     params: FalQueueStatusParams,
     signal?: AbortSignal
   ): Promise<FalQueueStatusResponse>;
-  result(
-    params: FalQueueResultParams,
-    signal?: AbortSignal
-  ): Promise<FalQueueResultResponse>;
-  cancel(
-    params: FalQueueCancelParams,
-    signal?: AbortSignal
-  ): Promise<FalQueueCancelResponse>;
 }
 
 // Serverless logs namespace types
-interface FalLogsHistoryMethod {
-  (
-    params?: FalLogsHistoryParams,
-    body?: FalLabelFilter[],
-    signal?: AbortSignal
-  ): Promise<FalLogsHistoryResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
-}
-
 interface FalLogsStreamMethod {
   (
     params?: FalLogsStreamParams,
@@ -725,7 +660,6 @@ interface FalLogsStreamMethod {
 }
 
 interface FalServerlessLogsNamespace {
-  history: FalLogsHistoryMethod;
   stream: FalLogsStreamMethod;
 }
 
@@ -747,18 +681,8 @@ interface FalServerlessFilesNamespace {
     params?: FalFilesListParams,
     signal?: AbortSignal
   ): Promise<FalFileItem[]>;
-  download(
-    params: FalFilesDownloadParams,
-    signal?: AbortSignal
-  ): Promise<Response>;
   uploadUrl: FalFilesUploadUrlMethod;
   uploadLocal: FalFilesUploadLocalMethod;
-}
-
-interface FalAppsFlushQueueMethod {
-  (params: FalAppsFlushQueueParams, signal?: AbortSignal): Promise<void>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
 }
 
 interface FalServerlessAppsQueueNamespace {
@@ -766,7 +690,6 @@ interface FalServerlessAppsQueueNamespace {
     params: FalAppsQueueParams,
     signal?: AbortSignal
   ): Promise<FalAppsQueueResponse>;
-  flush: FalAppsFlushQueueMethod;
 }
 
 interface FalServerlessAppsNamespace {
@@ -850,14 +773,6 @@ interface FalGetV1QueueNamespace {
     params: FalQueueStatusParams,
     signal?: AbortSignal
   ): Promise<FalQueueStatusResponse>;
-  result(
-    params: FalQueueResultParams,
-    signal?: AbortSignal
-  ): Promise<FalQueueResultResponse>;
-}
-
-interface FalGetV1ServerlessLogsNamespace {
-  history: FalLogsHistoryMethod;
 }
 
 interface FalGetV1ServerlessFilesNamespace {
@@ -865,10 +780,6 @@ interface FalGetV1ServerlessFilesNamespace {
     params?: FalFilesListParams,
     signal?: AbortSignal
   ): Promise<FalFileItem[]>;
-  download(
-    params: FalFilesDownloadParams,
-    signal?: AbortSignal
-  ): Promise<Response>;
 }
 
 interface FalGetV1ServerlessAppsNamespace {
@@ -879,7 +790,6 @@ interface FalGetV1ServerlessAppsNamespace {
 }
 
 interface FalGetV1ServerlessNamespace {
-  logs: FalGetV1ServerlessLogsNamespace;
   files: FalGetV1ServerlessFilesNamespace;
   apps: FalGetV1ServerlessAppsNamespace;
   metrics(signal?: AbortSignal): Promise<string>;
@@ -916,17 +826,12 @@ interface FalPostV1QueueNamespace {
   submit: FalQueueSubmitMethod;
 }
 
-interface FalPostV1ServerlessLogsNamespace {
-  history: FalLogsHistoryMethod;
-}
-
 interface FalPostV1ServerlessFilesNamespace {
   uploadUrl: FalFilesUploadUrlMethod;
   uploadLocal: FalFilesUploadLocalMethod;
 }
 
 interface FalPostV1ServerlessNamespace {
-  logs: FalPostV1ServerlessLogsNamespace;
   files: FalPostV1ServerlessFilesNamespace;
 }
 
@@ -953,18 +858,6 @@ interface FalPostStreamNamespace {
   v1: FalPostStreamV1Namespace;
 }
 
-// PUT v1 namespace
-interface FalPutV1QueueNamespace {
-  cancel(
-    params: FalQueueCancelParams,
-    signal?: AbortSignal
-  ): Promise<FalQueueCancelResponse>;
-}
-
-interface FalPutV1Namespace {
-  queue: FalPutV1QueueNamespace;
-}
-
 // DELETE v1 namespace
 interface FalDeleteV1ModelsRequestsNamespace {
   payloads: FalDeletePayloadsMethod;
@@ -974,21 +867,8 @@ interface FalDeleteV1ModelsNamespace {
   requests: FalDeleteV1ModelsRequestsNamespace;
 }
 
-interface FalDeleteV1ServerlessAppsQueueNamespace {
-  flush: FalAppsFlushQueueMethod;
-}
-
-interface FalDeleteV1ServerlessAppsNamespace {
-  queue: FalDeleteV1ServerlessAppsQueueNamespace;
-}
-
-interface FalDeleteV1ServerlessNamespace {
-  apps: FalDeleteV1ServerlessAppsNamespace;
-}
-
 interface FalDeleteV1Namespace {
   models: FalDeleteV1ModelsNamespace;
-  serverless: FalDeleteV1ServerlessNamespace;
 }
 
 // Verb-prefixed root namespaces
@@ -1002,10 +882,6 @@ interface FalPostNamespace {
   stream: FalPostStreamNamespace;
 }
 
-interface FalPutNamespace {
-  ai: { v1: FalPutV1Namespace };
-}
-
 interface FalDeleteNamespace {
   ai: { v1: FalDeleteV1Namespace };
 }
@@ -1016,6 +892,5 @@ export interface FalProvider {
   run: FalRunNamespace;
   get: FalGetNamespace;
   post: FalPostNamespace;
-  put: FalPutNamespace;
   delete: FalDeleteNamespace;
 }

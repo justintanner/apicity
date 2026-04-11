@@ -1115,226 +1115,6 @@ export interface XaiRealtimeConnection {
   [Symbol.asyncIterator](): AsyncIterableIterator<XaiRealtimeServerEvent>;
 }
 
-// Management API Auth types
-
-// POST /auth/teams/{teamId}/api-keys request
-export interface XaiApiKeyCreateRequest {
-  name: string;
-  acls?: string[];
-  qps?: number;
-  qpm?: number;
-  tpm?: string | null;
-  expireTime?: string;
-}
-
-// API key object (returned from create, list, update, rotate)
-export interface XaiApiKey {
-  redactedApiKey: string;
-  apiKey?: string;
-  userId: string;
-  name: string;
-  createTime: string;
-  modifyTime: string;
-  teamId: string;
-  apiKeyId: string;
-  disabled: boolean;
-  expireTime?: string;
-  qps?: number;
-  qpm?: number;
-  tpm?: string;
-  aclStrings: string[];
-}
-
-// GET /auth/teams/{teamId}/api-keys query params
-export interface XaiApiKeyListParams {
-  pageSize?: number;
-  paginationToken?: string;
-  aclFilters?: string[];
-}
-
-// GET /auth/teams/{teamId}/api-keys response
-export interface XaiApiKeyListResponse {
-  apiKeys: XaiApiKey[];
-  paginationToken?: string;
-}
-
-// PUT /auth/api-keys/{id} request
-export interface XaiApiKeyUpdateRequest {
-  apiKey: {
-    name?: string;
-    qps?: number;
-    qpm?: number;
-    tpm?: string;
-    disabled?: boolean;
-    expireTime?: string;
-    aclStrings?: string[];
-  };
-  fieldMask: string;
-}
-
-// GET /auth/api-keys/{id}/propagation response
-export interface XaiApiKeyPropagationResponse {
-  icPropagation: Record<string, boolean>;
-}
-
-// Team model rate limits
-export interface XaiTeamModelRateLimits {
-  queryOffset?: string;
-  queryBaseRate?: string;
-  queryMultiplier?: string;
-  tokenOffset?: string;
-  tokenBaseRate?: string;
-  tokenMultiplier?: string;
-}
-
-// Team language model (from /auth/teams/{teamId}/models)
-export interface XaiTeamLanguageModel {
-  name: string;
-  version: string;
-  inputModalities: string[];
-  outputModalities: string[];
-  promptTextTokenPrice: string;
-  promptImageTokenPrice?: string;
-  cachedPromptTokenPrice?: string;
-  completionTextTokenPrice: string;
-  searchPrice?: string;
-  rps: string;
-  rpm: string;
-  tpm: string;
-  rph?: string;
-  rpd?: string;
-  cluster: string;
-  maxPromptLength?: number;
-  aliases: string[];
-  features?: Record<string, boolean>;
-  algorithm?: string;
-  rateLimits?: XaiTeamModelRateLimits;
-  batchDiscountPercent?: number;
-}
-
-// Team embedding model
-export interface XaiTeamEmbeddingModel {
-  name: string;
-  version: string;
-  inputModalities: string[];
-  promptTextTokenPrice?: string;
-  rps: string;
-  rpm: string;
-  tpm: string;
-  cluster: string;
-  aliases: string[];
-  rateLimits?: XaiTeamModelRateLimits;
-}
-
-// Resolution pricing entry
-export interface XaiResolutionPricing {
-  resolution: string;
-  pricePerImage?: string;
-  pricePerSecond?: string;
-}
-
-// Team image generation model
-export interface XaiTeamImageGenerationModel {
-  name: string;
-  version: string;
-  inputModalities: string[];
-  outputModalities: string[];
-  imagePrice?: string;
-  rps: string;
-  rpm: string;
-  tpm: string;
-  cluster: string;
-  aliases: string[];
-  resolutionPricing?: XaiResolutionPricing[];
-  rateLimits?: XaiTeamModelRateLimits;
-}
-
-// Team video generation model
-export interface XaiTeamVideoGenerationModel {
-  name: string;
-  version: string;
-  inputModalities: string[];
-  outputModalities: string[];
-  rps: string;
-  rpm: string;
-  tpm: string;
-  cluster: string;
-  aliases: string[];
-  resolutionPricing?: XaiResolutionPricing[];
-  rateLimits?: XaiTeamModelRateLimits;
-}
-
-// Team audio model
-export interface XaiTeamAudioModel {
-  name: string;
-  version: string;
-  inputModalities: string[];
-  outputModalities: string[];
-  promptTokenPrice?: string;
-  completionTokenPrice?: string;
-  rps: string;
-  rpm: string;
-  tpm: string;
-  cluster: string;
-  aliases: string[];
-  rateLimits?: XaiTeamModelRateLimits;
-}
-
-// Cluster config in team models response
-export interface XaiTeamClusterConfig {
-  clusterName: string;
-  languageModels?: XaiTeamLanguageModel[];
-  embeddingModels?: XaiTeamEmbeddingModel[];
-  imageGenerationModels?: XaiTeamImageGenerationModel[];
-  audioModels?: XaiTeamAudioModel[];
-  videoGenerationModels?: XaiTeamVideoGenerationModel[];
-}
-
-// GET /auth/teams/{teamId}/models response
-export interface XaiTeamModelsResponse {
-  clusterConfigs: XaiTeamClusterConfig[];
-}
-
-// ACL entry for team endpoints
-export interface XaiAclEntry {
-  acl: string;
-  description: string;
-  namespace: string;
-  key: string;
-  value: string;
-}
-
-// GET /auth/teams/{teamId}/endpoints response
-export interface XaiTeamEndpointsResponse {
-  acls: XaiAclEntry[];
-}
-
-// IP range for management key validation
-export interface XaiIpRange {
-  address: {
-    ipv4?: string;
-    ipv6?: string;
-  };
-  prefixLength: number;
-}
-
-// GET /auth/management-keys/validation response
-export interface XaiManagementKeyValidationResponse {
-  apiKeyId: string;
-  teamId: string;
-  scope: "SCOPE_UNSPECIFIED" | "SCOPE_TEAM" | "SCOPE_ORGANIZATION";
-  scopeId: string;
-  ownerUserId: string;
-  createTime: string;
-  modifyTime: string;
-  name: string;
-  acls: string[];
-  redactedApiKey: string;
-  ipRanges?: {
-    ipRanges: XaiIpRange[];
-  } | null;
-}
-
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -1476,17 +1256,6 @@ interface XaiRealtimeClientSecretsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface XaiPostAuthApiKeysMethod {
-  (
-    teamId: string,
-    req: XaiApiKeyCreateRequest,
-    signal?: AbortSignal
-  ): Promise<XaiApiKey>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
-  rotate(apiKeyId: string, signal?: AbortSignal): Promise<XaiApiKey>;
-}
-
 // Generic list/get method type for models
 interface XaiGetModelsLikeMethod<ListResponse, Item> {
   (
@@ -1514,7 +1283,6 @@ interface XaiPostV1 {
   documents: { search: XaiDocumentSearchMethod };
   tokenizeText: XaiTokenizeTextMethod;
   realtime: { clientSecrets: XaiRealtimeClientSecretsMethod };
-  auth: { apiKeys: XaiPostAuthApiKeysMethod };
 }
 
 // GET v1 namespace
@@ -1563,36 +1331,6 @@ interface XaiGetCollectionsMethod {
   documents: XaiGetCollectionsDocumentsMethod;
 }
 
-interface XaiGetAuthApiKeysMethod {
-  (
-    teamId: string,
-    params?: XaiApiKeyListParams,
-    signal?: AbortSignal
-  ): Promise<XaiApiKeyListResponse>;
-  propagation(
-    apiKeyId: string,
-    signal?: AbortSignal
-  ): Promise<XaiApiKeyPropagationResponse>;
-}
-
-interface XaiGetAuthTeamsMethod {
-  models(teamId: string, signal?: AbortSignal): Promise<XaiTeamModelsResponse>;
-  endpoints(
-    teamId: string,
-    signal?: AbortSignal
-  ): Promise<XaiTeamEndpointsResponse>;
-}
-
-interface XaiGetAuthManagementKeysMethod {
-  validation(signal?: AbortSignal): Promise<XaiManagementKeyValidationResponse>;
-}
-
-interface XaiGetAuthNamespace {
-  apiKeys: XaiGetAuthApiKeysMethod;
-  teams: XaiGetAuthTeamsMethod;
-  managementKeys: XaiGetAuthManagementKeysMethod;
-}
-
 interface XaiGetV1 {
   responses(id: string, signal?: AbortSignal): Promise<XaiResponseResponse>;
   chat: {
@@ -1618,7 +1356,6 @@ interface XaiGetV1 {
   >;
   batches: XaiGetBatchesMethod;
   collections: XaiGetCollectionsMethod;
-  auth: XaiGetAuthNamespace;
 }
 
 // DELETE v1 namespace
@@ -1639,9 +1376,6 @@ interface XaiDeleteV1 {
       signal?: AbortSignal
     ): Promise<void>;
   };
-  auth: {
-    apiKeys(apiKeyId: string, signal?: AbortSignal): Promise<void>;
-  };
 }
 
 // PUT v1 namespace
@@ -1655,21 +1389,8 @@ interface XaiPutCollectionsMethod {
   validatePayload(data: unknown): ValidationResult;
 }
 
-interface XaiPutAuthApiKeysMethod {
-  (
-    apiKeyId: string,
-    req: XaiApiKeyUpdateRequest,
-    signal?: AbortSignal
-  ): Promise<XaiApiKey>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
-}
-
 interface XaiPutV1 {
   collections: XaiPutCollectionsMethod;
-  auth: {
-    apiKeys: XaiPutAuthApiKeysMethod;
-  };
 }
 
 // PATCH v1 namespace

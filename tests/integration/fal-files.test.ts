@@ -7,7 +7,6 @@ describe("fal serverless files validation", () => {
     expect(provider.ai.v1.serverless).toBeDefined();
     expect(provider.ai.v1.serverless.files).toBeDefined();
     expect(typeof provider.ai.v1.serverless.files.list).toBe("function");
-    expect(typeof provider.ai.v1.serverless.files.download).toBe("function");
     expect(typeof provider.ai.v1.serverless.files.uploadUrl).toBe("function");
     expect(typeof provider.ai.v1.serverless.files.uploadLocal).toBe("function");
   });

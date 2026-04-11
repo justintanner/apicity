@@ -3,7 +3,7 @@ import { validatePayload } from "../../../packages/provider/fal/src/validate";
 import {
   pricingEstimateSchema,
   queueSubmitSchema,
-  logsHistorySchema,
+  logsStreamSchema,
   filesUploadUrlSchema,
 } from "../../../packages/provider/fal/src/schemas";
 
@@ -176,10 +176,9 @@ describe("fal validatePayload", () => {
     it("should validate array items with correct type", () => {
       const result = validatePayload(
         {
-          limit: 10,
-          app_id: ["app1", "app2"], // Array of strings
+          app_id: ["app1", "app2"],
         },
-        logsHistorySchema
+        logsStreamSchema
       );
       expect(result.valid).toBe(true);
     });
@@ -187,10 +186,9 @@ describe("fal validatePayload", () => {
     it("should reject array items with wrong type", () => {
       const result = validatePayload(
         {
-          limit: 10,
-          app_id: ["app1", 123, "app3"], // 123 is not a string
+          app_id: ["app1", 123, "app3"],
         },
-        logsHistorySchema
+        logsStreamSchema
       );
       expect(result.valid).toBe(false);
       expect(result.errors).toContain("app_id[1] must be of type string");
@@ -199,10 +197,9 @@ describe("fal validatePayload", () => {
     it("should reject non-array for array field", () => {
       const result = validatePayload(
         {
-          limit: 10,
-          app_id: "not-an-array", // Should be array
+          app_id: "not-an-array",
         },
-        logsHistorySchema
+        logsStreamSchema
       );
       expect(result.valid).toBe(false);
       expect(result.errors).toContain("app_id must be of type array");

@@ -241,48 +241,6 @@ describe("xai buildQuery", () => {
   });
 });
 
-describe("xai buildManagementQuery", () => {
-  it("expands arrays into repeated key-value pairs", async () => {
-    let capturedUrl = "";
-    const mockFetch = (url: string): Promise<Response> => {
-      capturedUrl = url;
-      return Promise.resolve(
-        new Response(JSON.stringify({ apiKeys: [] }), { status: 200 })
-      );
-    };
-    const p = xai({
-      apiKey: "test",
-      managementApiKey: "mgmt-key",
-      fetch: mockFetch as typeof fetch,
-    });
-    // auth.apiKeys takes teamId as first arg, params as second
-    await p.get.v1.auth.apiKeys("team-123", {
-      aclFilters: ["filter1", "filter2"],
-    });
-    // Management query expands arrays as: aclFilters=filter1&aclFilters=filter2
-    const queryPart = capturedUrl.split("?")[1] || "";
-    expect(queryPart).toMatch(/aclFilters=filter1/);
-    expect(queryPart).toMatch(/aclFilters=filter2/);
-  });
-
-  it("handles non-array values normally", async () => {
-    let capturedUrl = "";
-    const mockFetch = (url: string): Promise<Response> => {
-      capturedUrl = url;
-      return Promise.resolve(
-        new Response(JSON.stringify({ apiKeys: [] }), { status: 200 })
-      );
-    };
-    const p = xai({
-      apiKey: "test",
-      managementApiKey: "mgmt-key",
-      fetch: mockFetch as typeof fetch,
-    });
-    await p.get.v1.auth.apiKeys("team-123", { pageSize: 20 });
-    expect(capturedUrl).toContain("pageSize=20");
-  });
-});
-
 describe("anthropic list query params", () => {
   it("uses bracket notation for array params via workspaces", async () => {
     let capturedUrl = "";

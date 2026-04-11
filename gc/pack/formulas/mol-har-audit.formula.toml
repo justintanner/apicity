@@ -1,0 +1,102 @@
+description = """
+Nightly staleness sweep of apicity's HAR recordings. Read-only. Files one
+re-record bead per stale recording, routed to endpoint-builder. Never edits
+source files, never deletes HARs.
+
+Dispatched by the `nightly-har-audit` order (cron: 3 AM local).
+"""
+formula = "mol-har-audit"
+version = 1
+
+[[steps]]
+id = "enumerate"
+title = "Enumerate HAR files with mtime"
+description = """
+List every `*.har` under `tests/recordings/`, with modification time:
+
+```sh
+cd {{.RigRoot}}
+find tests/recordings -name 'recording.har' -print0 \\
+  | xargs -0 stat -f '%m %N' \\
+  | sort -n > /tmp/apicity-har-mtimes.txt
+```
+
+Record the count. Note the age of the oldest and newest file. Carry this
+list into the next step.
+"""
+
+[[steps]]
+id = "classify"
+title = "Flag stale recordings"
+needs = ["enumerate"]
+description = """
+For each HAR file, check three staleness conditions:
+
+1. **Age**: mtime older than 90 days. Compute with `date -v-90d +%s` on
+   macOS or `date -d '90 days ago' +%s` on Linux; compare to the stat
+   output from the previous step.
+
+2. **Dead model IDs**: grep the HAR for any model ID strings. Cross-
+   reference against `packages/provider/<provider>/src/models.ts` (or
+   the equivalent source of truth — some providers fetch models from the
+   API rather than listing them in source; if so, skip this check for
+   that provider and note the skip in the final summary).
+
+3. **Deprecation headers**: grep the response headers in the HAR for
+   `sunset`, `deprecation`, `x-deprecation`, or any `x-*-deprecated`
+   variant.
+
+Build a list of `{har_path, provider, test_file, reasons[]}` tuples. Do
+not delete anything. Do not edit anything.
+"""
+
+[[steps]]
+id = "file-beads"
+title = "File one re-record bead per stale HAR"
+needs = ["classify"]
+description = """
+For each flagged recording, create a bead:
+
+- **Title**: `Re-record <provider>/<slug>`  (slug is the test file stem)
+- **Body**:
+  ```
+  HAR: <path>
+  Test: tests/integration/<file>.test.ts
+  Reasons: <age | dead model id `<id>` | deprecation header>
+  Safe re-record command:
+    scripts/safe-record.sh <provider> tests/integration/<file>.test.ts
+  ```
+- **Metadata**: `gc.routed_to=endpoint-builder`
+
+**Never** suggest `pnpm run dev:rerecord` in the bead body. The user has
+been burned by an edge case that can clobber the whole HAR suite. The
+safe script is the only sanctioned path.
+
+If the audit finds zero stale recordings, close this bead with the note
+`clean: <count> HARs, oldest <age>` and exit. Do not file an empty
+summary bead.
+"""
+
+[[steps]]
+id = "summary"
+title = "File audit summary (only if anything was flagged)"
+needs = ["file-beads"]
+description = """
+If the classify step flagged at least one recording, create one summary
+bead:
+
+- **Title**: `har-audit: <n> stale recordings on <date>`
+- **Body**:
+  ```
+  Total HARs scanned: <count>
+  Stale: <n>
+    by age (>90d): <k>
+    by dead model id: <k>
+    by deprecation header: <k>
+  Skipped model-id checks for providers: <list>
+  Individual re-record beads: <bead ids>
+  ```
+- **No routing metadata** — this is informational, for humans.
+
+Then close the parent audit bead (this one) and exit.
+"""

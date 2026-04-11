@@ -1,0 +1,6 @@
+[order]
+description = "Preflight current HEAD when it changes (debounced 10 minutes)"
+formula = "mol-preflight-check"
+gate = "cooldown"
+interval = "10m"
+pool = "preflight-sentinel"

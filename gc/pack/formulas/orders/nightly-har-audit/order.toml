@@ -1,0 +1,6 @@
+[order]
+description = "Nightly HAR staleness sweep for apicity"
+formula = "mol-har-audit"
+gate = "cron"
+schedule = "0 3 * * *"
+pool = "har-auditor"

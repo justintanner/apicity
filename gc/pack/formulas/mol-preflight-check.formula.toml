@@ -1,0 +1,99 @@
+description = """
+Read-only preflight gate for the human's current working branch in the
+apicity rig. Runs prettier --check + lint + offline test replay and files a
+bead on failure. Never modifies files.
+
+Dispatched by the `preflight-on-change` order on a 10-minute cooldown.
+"""
+formula = "mol-preflight-check"
+version = 1
+
+[[steps]]
+id = "locate-head"
+title = "Locate current HEAD in the rig"
+description = """
+`cd {{.RigRoot}}` and read the current commit:
+
+```sh
+SHA=$(git -C {{.RigRoot}} rev-parse HEAD)
+BRANCH=$(git -C {{.RigRoot}} rev-parse --abbrev-ref HEAD)
+CHANGED=$(git -C {{.RigRoot}} diff --name-only origin/main...HEAD)
+```
+
+Record these for the failure-report step. If `origin/main` is unreachable
+(no network), fall back to `main` and note it in the bead body.
+"""
+
+[[steps]]
+id = "format-check"
+title = "Prettier --check (read-only)"
+needs = ["locate-head"]
+description = """
+Run prettier in check mode — NEVER --write. The human owns their working
+copy; you do not modify it.
+
+```sh
+cd {{.RigRoot}} && npx prettier --check .
+```
+
+If this fails, capture the list of unformatted files. Do not attempt to
+fix them. Skip ahead to the `report` step with `step=prettier`.
+"""
+
+[[steps]]
+id = "lint"
+title = "pnpm run lint"
+needs = ["format-check"]
+description = """
+Run lint. It has a prelint hook that runs build first, so this implicitly
+verifies the build as well.
+
+```sh
+cd {{.RigRoot}} && pnpm run lint
+```
+
+On failure, capture the last ~40 lines of output and proceed to `report`
+with `step=lint`.
+"""
+
+[[steps]]
+id = "test-run"
+title = "pnpm run test:run (offline Polly replay)"
+needs = ["lint"]
+description = """
+Run the integration suite in replay mode. Zero network, zero keys.
+
+```sh
+cd {{.RigRoot}} && pnpm run test:run
+```
+
+On failure, capture the last ~40 lines of output and proceed to `report`
+with `step=test:run`.
+"""
+
+[[steps]]
+id = "report"
+title = "Report result"
+needs = ["test-run"]
+description = """
+On overall success, close this bead with a one-line note:
+`HEAD <sha> on <branch>: clean`.
+
+On any step failure, create a new bead:
+- **Title**: `preflight-fail: <step> on <branch>`
+- **Body**:
+  ```
+  Commit: <sha>
+  Step:   <prettier|lint|test:run>
+  Changed files since origin/main:
+    <list>
+  Last output:
+  <paste ~40 lines>
+  ```
+- **Metadata**: set `gc.routed_to=endpoint-builder` ONLY if the fix is
+  mechanical (prettier formatting, auto-fixable lint rule, a test with a
+  stale HAR). For anything else — real test failures, type errors, unknown
+  lint rules — leave unrouted for human triage.
+
+Then close this preflight bead (pass or fail, you are done).
+"""

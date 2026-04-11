@@ -1,0 +1,213 @@
+description = """
+Implement one new endpoint for the apicity monorepo, start to PR, in one
+agent session. One endpoint per PR — no bundling.
+
+Variables (passed via `gc sling --formula mol-add-endpoint --var ...`):
+- `{{provider}}` — lowercase provider name (openai, xai, fal, kimicoding, kie, anthropic, fireworks, alibaba, free)
+- `{{method}}` — HTTP verb (GET, POST, PUT, DELETE, PATCH)
+- `{{path}}` — upstream URL path, e.g. `/v1/embeddings`
+- `{{slug}}` — short identifier for the test file, e.g. `embeddings` (used in file names and branch)
+
+The agent reads each step description, executes it in the worktree, and moves
+to the next. Re-record work (from har-auditor) seeds this formula with the
+same vars but starts from the `record` step — the first five steps are
+idempotent no-ops if the endpoint already exists in the factory.
+"""
+formula = "mol-add-endpoint"
+version = 1
+
+[[steps]]
+id = "research"
+title = "Study upstream spec and existing pattern"
+description = """
+Fetch the upstream docs for `{{method}} {{path}}` on provider `{{provider}}`.
+Summarize the request body, response shape, auth model, and any pagination
+or streaming semantics.
+
+Then read one existing endpoint in
+`packages/provider/{{provider}}/src/` that mirrors this shape (similar verb,
+similar payload complexity). Note its types, schema, factory wiring, and
+integration test. You will mirror that pattern exactly.
+
+If the existing codebase has no similar pattern — this is the first POST
+body of this complexity, the first streaming endpoint, the first file upload
+— stop and file a clarification bead. Do not invent a new pattern without
+human input.
+
+Record your findings in a scratch note (not committed) so the next steps
+can reference them.
+"""
+
+[[steps]]
+id = "types"
+title = "Add request/response interfaces"
+needs = ["research"]
+description = """
+Edit `packages/provider/{{provider}}/src/types.ts`:
+- Add PascalCase interfaces for the request body and response.
+- Prefer `interface` over `type` for object shapes (project convention).
+- Use `Record<string, unknown>` only where the upstream shape is genuinely
+  open (provider-specific metadata blobs, vendor extensions).
+- No `any`. Ever. The repo has `@typescript-eslint/no-explicit-any: error`.
+
+Export the new types from `packages/provider/{{provider}}/src/index.ts`.
+Update the provider interface if one exists.
+"""
+
+[[steps]]
+id = "schema"
+title = "Add PayloadSchema (POST/PUT/PATCH only)"
+needs = ["types"]
+description = """
+POST/PUT/PATCH endpoints get a payload schema; GET/DELETE do not.
+
+If this endpoint has a request body, edit
+`packages/provider/{{provider}}/src/schemas.ts`:
+- Add a `PayloadSchema` object covering required fields, types, enums,
+  nested shapes, and array item shapes.
+- Match the interfaces you just added in `types.ts` one-to-one.
+- The factory will wire this onto the endpoint function via `Object.assign`
+  so callers can read `.payloadSchema` and call `.validatePayload(data)`.
+
+If it's a GET/DELETE, skip this step and mark it done.
+"""
+
+[[steps]]
+id = "factory"
+title = "Wire endpoint into the factory"
+needs = ["schema"]
+description = """
+Edit `packages/provider/{{provider}}/src/{{provider}}.ts`:
+- Add the method at the path matching `{{path}}`.
+- Kebab-case URL segments become camelCase properties, strict: never
+  bracket-notation kebab-case. `/v1/language-models` → `v1.languageModels`.
+- Use `Object.assign` for callable namespaces when a segment needs both
+  a direct call and child methods (e.g. `v1.models(params)` plus
+  `v1.models.pricing(params)`).
+- For POST/PUT/PATCH endpoints, attach the schema:
+  `Object.assign(fn, { payloadSchema, validatePayload: (data) => validate(payloadSchema, data) })`.
+- Auth and error handling follow the existing pattern in the same file —
+  do not invent a new error class or retry policy.
+"""
+
+[[steps]]
+id = "test"
+title = "Write the integration test"
+needs = ["factory"]
+description = """
+Create `tests/integration/{{provider}}-{{slug}}.test.ts`:
+
+```ts
+import { describe, it, beforeEach, afterEach, expect } from "vitest";
+import { {{provider}} as create{{provider_title}} } from "@apicity/{{provider}}";
+import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+
+describe("{{provider}} {{method}} {{path}}", () => {
+  let ctx: PollyContext;
+  beforeEach(() => {
+    ctx = setupPolly("{{provider}}/{{slug}}");
+  });
+  afterEach(async () => {
+    await teardownPolly(ctx);
+  });
+
+  it("returns the expected shape", async () => {
+    const client = create{{provider_title}}({ apiKey: process.env.{{provider_upper}}_API_KEY! });
+    const result = await client./* path to method */({ /* minimal valid payload */ });
+    expect(result).toMatchObject({ /* assert the real shape */ });
+  });
+});
+```
+
+Assert the real response shape, not a mock. Do NOT use vitest's mocking —
+Polly records the real HTTP exchange and replays it offline in CI. Zero
+mocks is a hard rule from the user's global CLAUDE.md.
+"""
+
+[[steps]]
+id = "record"
+title = "Record the HAR fixture (safely)"
+needs = ["test"]
+description = """
+From the worktree root, run:
+
+```sh
+{{.ConfigDir}}/scripts/safe-record.sh {{provider}} tests/integration/{{provider}}-{{slug}}.test.ts
+```
+
+This wraps `rm -rf` of the specific recording dirs referenced by the test
+(never more, never less) and re-runs vitest under `POLLY_MODE=record-missing`
+via `op run --env-file=.env.tpl`. Keys resolve from 1Password; nothing
+plaintext lands on disk.
+
+**NEVER** run `pnpm run dev:rerecord`. The user has been burned by a HAR-
+suite clobbering edge case. The safe script is the only sanctioned path.
+
+If the record fails because `op` is not signed in, stop and ask the human
+to run `eval $(op signin)` in the shell that launched `gc start`. Do not
+try to work around it.
+"""
+
+[[steps]]
+id = "replay"
+title = "Verify pure replay"
+needs = ["record"]
+description = """
+Run the same test without keys, in pure replay mode:
+
+```sh
+pnpm run test:run tests/integration/{{provider}}-{{slug}}.test.ts
+```
+
+It must pass offline. If it fails in replay but passed in record, the test
+is matching on a header or body field that varies between runs — fix the
+matcher in the test, not by re-recording.
+"""
+
+[[steps]]
+id = "preflight"
+title = "Run dev:preflight"
+needs = ["replay"]
+description = """
+Run `pnpm run dev:preflight` (format + lint + test:run). Fix what it
+catches — type errors, lint violations, formatter whitespace. Re-run until
+clean. Do not skip lint with `// eslint-disable` unless the codebase
+already uses that exact disable for the same reason.
+"""
+
+[[steps]]
+id = "pr"
+title = "Commit and open PR (one endpoint per PR)"
+needs = ["preflight"]
+description = """
+Create the branch, commit everything as one unit, push, open the PR.
+
+```sh
+git checkout -b add-{{provider}}-{{slug}}
+git add packages/provider/{{provider}}/src \
+        tests/integration/{{provider}}-{{slug}}.test.ts \
+        tests/recordings/{{provider}}_*/{{slug}}_*
+git commit -m "feat({{provider}}): add {{method}} {{path}}"
+git push -u origin add-{{provider}}-{{slug}}
+gh pr create \
+  --title "Add {{provider}} {{method}} {{path}}" \
+  --body "$(cat <<'EOF'
+Implements `{{method}} {{path}}` for @apicity/{{provider}}.
+
+- types: request/response interfaces in src/types.ts
+- schema: PayloadSchema in src/schemas.ts (if POST/PUT/PATCH)
+- factory: method wired at {{path}} (kebab→camel)
+- test: Polly integration test with recorded HAR
+- HAR replays cleanly offline
+
+Upstream spec: <link you gathered in the research step>
+EOF
+)"
+```
+
+PR opens under the host shell's `gh auth` identity — that's the human's
+personal account, by design. Do not configure alternate credentials.
+
+After `gh pr create` returns, print the PR URL and exit. Do not watch CI;
+the human takes over from here.
+"""

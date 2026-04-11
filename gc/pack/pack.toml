@@ -1,0 +1,70 @@
+# Apicity — Gas City pack for the apicity TypeScript monorepo.
+#
+# Three rig-scoped agents own the repeating parts of the dev loop:
+#   endpoint-builder   — flagship: implement one endpoint per PR
+#   preflight-sentinel — read-only gate: prettier --check + lint + test:run
+#   har-auditor        — nightly staleness sweep, files re-record beads
+#
+# All three are singletons (max_active_sessions = 1). endpoint-builder and
+# har-auditor run in isolated git worktrees so they never race the human's
+# working copy. preflight-sentinel runs in its own state dir and cd's into
+# the rig to check HEAD in-place.
+
+[pack]
+name = "apicity"
+schema = 1
+
+[formulas]
+dir = "formulas"
+
+# ── ENDPOINT-BUILDER — flagship PR-opener. Worktree-isolated. ────────────
+[[agent]]
+name = "endpoint-builder"
+scope = "rig"
+wake_mode = "fresh"
+work_dir = ".gc/worktrees/{{.Rig}}/endpoint-builder"
+prompt_template = "prompts/endpoint-builder.md"
+nudge = "Check hook for routed endpoint work, then walk the add-endpoint formula start to finish."
+pre_start = [
+    "{{.ConfigDir}}/scripts/op-check.sh {{.RigRoot}}",
+    "{{.ConfigDir}}/scripts/worktree-setup.sh {{.RigRoot}} {{.WorkDir}} {{.AgentBase}} --sync",
+]
+session_setup = [
+    "pnpm install --frozen-lockfile",
+]
+idle_timeout = "2h"
+
+    [agent.pool]
+    min = 0
+    max = 1
+
+# ── PREFLIGHT-SENTINEL — read-only branch gate. In-place (cd RigRoot). ───
+[[agent]]
+name = "preflight-sentinel"
+scope = "rig"
+wake_mode = "resume"
+work_dir = ".gc/agents/{{.Rig}}/preflight-sentinel"
+prompt_template = "prompts/preflight-sentinel.md"
+nudge = "Check hook for preflight work, then run the preflight-check formula against the rig's current HEAD."
+idle_timeout = "4h"
+
+    [agent.pool]
+    min = 0
+    max = 1
+
+# ── HAR-AUDITOR — nightly staleness sweep. Worktree-isolated, read-only. ─
+[[agent]]
+name = "har-auditor"
+scope = "rig"
+wake_mode = "fresh"
+work_dir = ".gc/worktrees/{{.Rig}}/har-auditor"
+prompt_template = "prompts/har-auditor.md"
+nudge = "Check hook for the nightly har-audit formula and walk it."
+pre_start = [
+    "{{.ConfigDir}}/scripts/worktree-setup.sh {{.RigRoot}} {{.WorkDir}} {{.AgentBase}} --sync",
+]
+idle_timeout = "1h"
+
+    [agent.pool]
+    min = 0
+    max = 1

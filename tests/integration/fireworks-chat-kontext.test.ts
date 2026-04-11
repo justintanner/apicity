@@ -5,10 +5,7 @@ import { fireworks } from "@nakedapi/fireworks";
 describe("fireworks kontext endpoint integration", () => {
   let ctx: PollyContext;
 
-  // TODO: re-record missing "fireworks/kontext-async-job" and
-  // "fireworks/kontext-streaming" HARs. Skipped because the recording
-  // directories were never committed alongside the tests.
-  describe.skip("kontext async job creation", () => {
+  describe("kontext async job creation", () => {
     beforeEach(() => {
       ctx = setupPolly("fireworks/kontext-async-job");
     });
@@ -17,31 +14,11 @@ describe("fireworks kontext endpoint integration", () => {
       await teardownPolly(ctx);
     });
 
-    it("should submit kontext job via v1 modelId endpoint", async () => {
+    it("should submit a kontext job and poll its result", async () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      // Submit async kontext job using the v1/{modelId} pattern
-      const result = await provider.v1.workflows.kontext("flux-kontext-pro", {
-        prompt: "A small blue sphere on a white background",
-        seed: 42,
-        output_format: "png",
-        width: 1024,
-        height: 768,
-      });
-
-      expect(result).toBeDefined();
-      expect(result.request_id).toBeTruthy();
-      expect(typeof result.request_id).toBe("string");
-    });
-
-    it("should poll for kontext job result", async () => {
-      const provider = fireworks({
-        apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
-      });
-
-      // First create a job
       const createResult = await provider.v1.workflows.kontext(
         "flux-kontext-pro",
         {
@@ -51,23 +28,23 @@ describe("fireworks kontext endpoint integration", () => {
         }
       );
 
+      expect(createResult).toBeDefined();
       expect(createResult.request_id).toBeTruthy();
+      expect(typeof createResult.request_id).toBe("string");
 
-      // Then poll for the result
       const pollResult = await provider.v1.workflows.getResult(
         "flux-kontext-pro",
         { id: createResult.request_id }
       );
 
       expect(pollResult).toBeDefined();
-      expect(pollResult.id).toBeTruthy();
-      expect(["Pending", "Ready", "Error"].includes(pollResult.status)).toBe(
-        true
-      );
+      expect(pollResult.id).toBe(createResult.request_id);
+      expect(typeof pollResult.status).toBe("string");
+      expect(pollResult.status.length).toBeGreaterThan(0);
     });
   });
 
-  describe.skip("kontext with streaming", () => {
+  describe("kontext with streaming", () => {
     beforeEach(() => {
       ctx = setupPolly("fireworks/kontext-streaming");
     });

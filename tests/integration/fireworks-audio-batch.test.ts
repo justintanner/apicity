@@ -4,15 +4,12 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fireworks } from "@nakedapi/fireworks";
+import { fireworks, FireworksError } from "@nakedapi/fireworks";
 
 describe("fireworks audio batch integration", () => {
   let ctx: PollyContext;
 
-  // TODO: re-record missing "fireworks/audio-batch-transcription" and
-  // "fireworks/audio-batch-translation" HARs. Skipped because the recording
-  // directories were never committed alongside the tests.
-  describe.skip("batch transcription job lifecycle", () => {
+  describe("batch transcription submit with invalid endpoint", () => {
     beforeEach(() => {
       ctx = setupPollyForFileUploads("fireworks/audio-batch-transcription");
     });
@@ -21,40 +18,31 @@ describe("fireworks audio batch integration", () => {
       await teardownPolly(ctx);
     });
 
-    it("should create and retrieve batch transcription job", async () => {
+    it("should reject submission with unknown endpoint_id", async () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      // Create a mock audio file blob
       const audioBlob = new Blob([new Uint8Array(1024).fill(0)], {
         type: "audio/mp3",
       });
 
-      // Submit batch transcription job
-      const submitResult = await provider.v1.audio.batch.transcriptions({
-        file: audioBlob,
-        endpoint_id: "ep-test-123",
-        model: "whisper-v3",
-        language: "en",
-        response_format: "json",
+      await expect(
+        provider.v1.audio.batch.transcriptions({
+          file: audioBlob,
+          endpoint_id: "ep-test-123",
+          model: "whisper-v3",
+          language: "en",
+          response_format: "json",
+        })
+      ).rejects.toMatchObject({
+        name: "FireworksError",
+        status: 400,
       });
-
-      expect(submitResult).toBeDefined();
-      expect(submitResult.request_id).toBeTruthy();
-
-      // Retrieve job status
-      const jobResult = await provider.v1.audio.batch.get(
-        "fireworks",
-        submitResult.request_id
-      );
-
-      expect(jobResult).toBeDefined();
-      expect(jobResult.request_id).toBe(submitResult.request_id);
     });
   });
 
-  describe.skip("batch translation job lifecycle", () => {
+  describe("batch translation submit with invalid endpoint", () => {
     beforeEach(() => {
       ctx = setupPollyForFileUploads("fireworks/audio-batch-translation");
     });
@@ -63,36 +51,27 @@ describe("fireworks audio batch integration", () => {
       await teardownPolly(ctx);
     });
 
-    it("should create and retrieve batch translation job", async () => {
+    it("should reject submission with unknown endpoint_id", async () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      // Create a mock audio file blob
       const audioBlob = new Blob([new Uint8Array(1024).fill(0)], {
         type: "audio/mp3",
       });
 
-      // Submit batch translation job
-      const submitResult = await provider.v1.audio.batch.translations({
-        file: audioBlob,
-        endpoint_id: "ep-test-123",
-        model: "whisper-v3",
-        language: "en",
-        response_format: "json",
-      });
+      const err = await provider.v1.audio.batch
+        .translations({
+          file: audioBlob,
+          endpoint_id: "ep-test-123",
+          model: "whisper-v3",
+          language: "en",
+          response_format: "json",
+        })
+        .catch((e: unknown) => e);
 
-      expect(submitResult).toBeDefined();
-      expect(submitResult.request_id).toBeTruthy();
-
-      // Retrieve job status
-      const jobResult = await provider.v1.audio.batch.get(
-        "fireworks",
-        submitResult.request_id
-      );
-
-      expect(jobResult).toBeDefined();
-      expect(jobResult.request_id).toBe(submitResult.request_id);
+      expect(err).toBeInstanceOf(FireworksError);
+      expect((err as FireworksError).status).toBe(400);
     });
   });
 

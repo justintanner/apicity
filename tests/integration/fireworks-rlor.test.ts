@@ -125,13 +125,7 @@ describe("fireworks rlor trainer jobs integration", () => {
     });
   });
 
-  // TODO: recordings "fireworks/rlor-trainer-jobs-create",
-  // "fireworks/rlor-trainer-jobs-get", and
-  // "fireworks/rlor-trainer-jobs-execute-step" have corrupted/mismatched _id
-  // hashes (e.g. contain non-hex chars) and/or don't match current request
-  // shapes. Skipped until they can be re-recorded against the live Fireworks
-  // API.
-  describe.skip("create RLOR trainer job", () => {
+  describe("create RLOR trainer job", () => {
     let ctx: PollyContext;
     beforeEach(() => {
       ctx = setupPolly("fireworks/rlor-trainer-jobs-create");
@@ -140,8 +134,7 @@ describe("fireworks rlor trainer jobs integration", () => {
       await teardownPolly(ctx);
     });
 
-    // Skipped - recordings need re-recording with valid API key
-    it.skip("should create RLOR trainer job with valid parameters", async () => {
+    it("should create RLOR trainer job with valid parameters", async () => {
       const result = await provider().v1.accounts.rlorTrainerJobs.create(
         accountId,
         {
@@ -160,7 +153,7 @@ describe("fireworks rlor trainer jobs integration", () => {
     });
   });
 
-  describe.skip("get RLOR trainer job", () => {
+  describe("get RLOR trainer job", () => {
     let ctx: PollyContext;
     beforeEach(() => {
       ctx = setupPolly("fireworks/rlor-trainer-jobs-get");
@@ -169,8 +162,7 @@ describe("fireworks rlor trainer jobs integration", () => {
       await teardownPolly(ctx);
     });
 
-    // Skipped - recordings need re-recording with valid API key
-    it.skip("should get RLOR trainer job status", async () => {
+    it("should get RLOR trainer job status", async () => {
       const jobId = "test-rlor-job-id";
       const result = await provider().v1.accounts.rlorTrainerJobs.get(
         accountId,
@@ -181,7 +173,7 @@ describe("fireworks rlor trainer jobs integration", () => {
     });
   });
 
-  describe.skip("execute RLOR training step", () => {
+  describe("execute RLOR training step", () => {
     let ctx: PollyContext;
     beforeEach(() => {
       ctx = setupPolly("fireworks/rlor-trainer-jobs-execute-step");
@@ -190,8 +182,7 @@ describe("fireworks rlor trainer jobs integration", () => {
       await teardownPolly(ctx);
     });
 
-    // Skipped - recordings need re-recording with valid API key
-    it.skip("should execute training step", async () => {
+    it("should execute training step", async () => {
       const jobId = "test-rlor-job-id";
       const result =
         await provider().v1.accounts.rlorTrainerJobs.executeTrainStep(

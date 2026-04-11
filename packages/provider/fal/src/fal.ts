@@ -39,8 +39,6 @@ import {
   FalWorkflowListResponse,
   FalWorkflowGetParams,
   FalWorkflowGetResponse,
-  FalWorkflowCreateParams,
-  FalWorkflowCreateResponse,
   FalAppsQueueParams,
   FalAppsQueueResponse,
   FalAppsFlushQueueParams,
@@ -58,7 +56,6 @@ import {
   filesUploadUrlSchema,
   filesUploadLocalSchema,
   appsFlushQueueSchema,
-  workflowCreateSchema,
   bytedanceSeedance2p0ImageToVideoSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
@@ -1010,26 +1007,6 @@ export function fal(opts: FalOptions): FalProvider {
           signal
         );
       },
-
-      create: Object.assign(
-        async function create(
-          params: FalWorkflowCreateParams,
-          signal?: AbortSignal
-        ): Promise<FalWorkflowCreateResponse> {
-          return makeRequest<FalWorkflowCreateResponse>(
-            "POST",
-            "/workflows",
-            params as unknown as Record<string, unknown>,
-            signal
-          );
-        },
-        {
-          payloadSchema: workflowCreateSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, workflowCreateSchema);
-          },
-        }
-      ),
     }
   );
 
@@ -1505,35 +1482,10 @@ export function fal(opts: FalOptions): FalProvider {
     files: postV1ServerlessFiles,
   };
 
-  const postV1WorkflowsCreate = Object.assign(
-    async function create(
-      params: FalWorkflowCreateParams,
-      signal?: AbortSignal
-    ): Promise<FalWorkflowCreateResponse> {
-      return makeRequest<FalWorkflowCreateResponse>(
-        "POST",
-        "/workflows",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-    {
-      payloadSchema: workflowCreateSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, workflowCreateSchema);
-      },
-    }
-  );
-
-  const postV1Workflows = {
-    create: postV1WorkflowsCreate,
-  };
-
   const postV1 = {
     models: postV1Models,
     queue: postV1Queue,
     serverless: postV1Serverless,
-    workflows: postV1Workflows,
   };
 
   // POST stream v1 namespace

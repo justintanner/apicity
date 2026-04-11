@@ -347,21 +347,6 @@ export interface FalWorkflowGetResponse {
   workflow: FalWorkflowDetail;
 }
 
-// Workflow create parameters
-export interface FalWorkflowCreateParams {
-  name: string;
-  title?: string;
-  description?: string;
-  tags?: string[];
-  is_public?: boolean;
-  contents: Record<string, unknown>;
-}
-
-// Workflow create response
-export interface FalWorkflowCreateResponse {
-  workflow: FalWorkflowDetail;
-}
-
 // ==================== fal.run inference models ====================
 
 // Generic file output returned by fal.run inference models
@@ -795,16 +780,6 @@ interface FalServerlessNamespace {
   metrics(signal?: AbortSignal): Promise<string>;
 }
 
-// Workflow create method type
-interface FalWorkflowCreateMethod {
-  (
-    params: FalWorkflowCreateParams,
-    signal?: AbortSignal
-  ): Promise<FalWorkflowCreateResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
-}
-
 interface FalWorkflowsNamespace {
   (
     params?: FalWorkflowListParams,
@@ -814,7 +789,6 @@ interface FalWorkflowsNamespace {
     params: FalWorkflowGetParams,
     signal?: AbortSignal
   ): Promise<FalWorkflowGetResponse>;
-  create: FalWorkflowCreateMethod;
 }
 
 interface FalV1Namespace {
@@ -956,15 +930,10 @@ interface FalPostV1ServerlessNamespace {
   files: FalPostV1ServerlessFilesNamespace;
 }
 
-interface FalPostV1WorkflowsNamespace {
-  create: FalWorkflowCreateMethod;
-}
-
 interface FalPostV1Namespace {
   models: FalPostV1ModelsNamespace;
   queue: FalPostV1QueueNamespace;
   serverless: FalPostV1ServerlessNamespace;
-  workflows: FalPostV1WorkflowsNamespace;
 }
 
 // POST stream v1 namespace

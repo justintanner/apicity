@@ -183,32 +183,6 @@ fal.files.upload.local.validatePayload(data)
 </details>
 
 <details>
-<summary><b><code>workflows</code></b> — <code>POST /workflows</code></summary>
-
-**Parameters:**
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | Yes | Unique workflow name (URL-safe) |
-| `title` | string | No | Human-readable workflow title |
-| `description` | string | No | Workflow description |
-| `tags` | array | No |  |
-| `is_public` | boolean | No | Whether the workflow is publicly visible |
-| `contents` | object | Yes | Workflow definition contents (nodes and edges) |
-
-**Validation:**
-
-```typescript
-// Access the schema
-fal.workflow.create.payloadSchema
-
-// Validate data
-fal.workflow.create.validatePayload(data)
-```
-
-</details>
-
-<details>
 <summary><b><code>bytedance.seedance2.0.imagetovideo</code></b> — <code>POST /bytedance/seedance-2.0/image-to-video</code></summary>
 
 **Parameters:**

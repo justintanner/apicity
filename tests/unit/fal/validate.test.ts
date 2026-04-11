@@ -5,7 +5,6 @@ import {
   queueSubmitSchema,
   logsHistorySchema,
   filesUploadUrlSchema,
-  workflowCreateSchema,
 } from "../../../packages/provider/fal/src/schemas";
 
 describe("fal validatePayload", () => {
@@ -236,33 +235,6 @@ describe("fal validatePayload", () => {
         queueSubmitSchema
       );
       expect(result.valid).toBe(true);
-    });
-
-    it("should validate workflow create schema", () => {
-      const result = validatePayload(
-        {
-          name: "my-workflow",
-          title: "My Workflow",
-          description: "Test workflow",
-          tags: ["test", "demo"],
-          is_public: false,
-          contents: { nodes: [], edges: [] },
-        },
-        workflowCreateSchema
-      );
-      expect(result.valid).toBe(true);
-    });
-
-    it("should reject workflow create without required contents", () => {
-      const result = validatePayload(
-        {
-          name: "my-workflow",
-          // Missing required 'contents' field
-        },
-        workflowCreateSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("contents is required");
     });
 
     it("should validate files upload URL", () => {

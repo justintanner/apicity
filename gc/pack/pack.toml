@@ -20,7 +20,5 @@ session_setup = [
     "pnpm install --frozen-lockfile",
 ]
 idle_timeout = "2h"
-
-    [agent.pool]
-    min = 0
-    max = 1
+min_active_sessions = 0
+max_active_sessions = 1

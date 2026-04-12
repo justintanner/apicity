@@ -38,6 +38,13 @@ else
     SYNC="${4:-}"
 fi
 
+# Resolve to absolute so git -C "$RIG_ROOT" and plain shell commands
+# agree on the same path regardless of CWD vs rig-root divergence.
+case "$WT" in
+    /*) ;;
+    *) WT="$(pwd)/$WT" ;;
+esac
+
 sync_worktree() {
     [ "$SYNC" = "--sync" ] || return 0
     if ! git -C "$WT" remote get-url origin >/dev/null 2>&1; then

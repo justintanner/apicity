@@ -149,32 +149,43 @@ describe("fireworks dataset upload validation", () => {
     });
   });
 
-  it("enforces dataset field requirements and format enums around upload flows", () => {
+  it("enforces dataset field requirements and format enums around upload flows via Zod", () => {
     const provider = fireworks({ apiKey: "fw-test-key" });
 
     const missingCreateFields =
-      provider.v1.accounts.datasets.create.validatePayload({});
-    const invalidFormat = provider.v1.accounts.datasets.update.validatePayload({
-      format: "CSV" as "CHAT",
-    });
+      provider.v1.accounts.datasets.create.schema.safeParse({});
+    const invalidFormat = provider.v1.accounts.datasets.update.schema.safeParse(
+      {
+        format: "CSV",
+      }
+    );
     const missingUploadFiles =
-      provider.v1.accounts.datasets.getUploadEndpoint.validatePayload({});
+      provider.v1.accounts.datasets.getUploadEndpoint.schema.safeParse({});
     const emptyValidateUpload =
-      provider.v1.accounts.datasets.validateUpload.validatePayload({});
+      provider.v1.accounts.datasets.validateUpload.schema.safeParse({});
 
-    expect(missingCreateFields.valid).toBe(false);
-    expect(missingCreateFields.errors).toEqual(
-      expect.arrayContaining(["dataset is required", "datasetId is required"])
-    );
+    expect(missingCreateFields.success).toBe(false);
+    expect(
+      missingCreateFields.error?.issues.some((i) => i.path.includes("dataset"))
+    ).toBe(true);
+    expect(
+      missingCreateFields.error?.issues.some((i) =>
+        i.path.includes("datasetId")
+      )
+    ).toBe(true);
 
-    expect(invalidFormat.valid).toBe(false);
-    expect(invalidFormat.errors).toContain(
-      "format must be one of: FORMAT_UNSPECIFIED, CHAT, COMPLETION, RL"
-    );
+    expect(invalidFormat.success).toBe(false);
+    expect(
+      invalidFormat.error?.issues.some((i) => i.path.includes("format"))
+    ).toBe(true);
 
-    expect(missingUploadFiles.valid).toBe(false);
-    expect(missingUploadFiles.errors).toContain("filenameToSize is required");
+    expect(missingUploadFiles.success).toBe(false);
+    expect(
+      missingUploadFiles.error?.issues.some((i) =>
+        i.path.includes("filenameToSize")
+      )
+    ).toBe(true);
 
-    expect(emptyValidateUpload).toEqual({ valid: true, errors: [] });
+    expect(emptyValidateUpload.success).toBe(true);
   });
 });

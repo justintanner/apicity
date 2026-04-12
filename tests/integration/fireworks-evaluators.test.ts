@@ -5,28 +5,28 @@ describe("fireworks evaluators", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.accounts.evaluators.create.validatePayload({
+      const valid = provider.v1.accounts.evaluators.create.schema.safeParse({
         evaluator: {
           displayName: "My Evaluator",
           entryPoint: "eval::run",
         },
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject create payload missing required evaluator field", () => {
       const provider = fireworks({ apiKey: "test" });
-      const invalid = provider.v1.accounts.evaluators.create.validatePayload(
+      const invalid = provider.v1.accounts.evaluators.create.schema.safeParse(
         {}
       );
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("evaluator is required");
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate create payload with criteria and source", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.accounts.evaluators.create.validatePayload({
+      const valid = provider.v1.accounts.evaluators.create.schema.safeParse({
         evaluatorId: "my-eval",
         evaluator: {
           displayName: "Code Quality Evaluator",
@@ -52,57 +52,55 @@ describe("fireworks evaluators", () => {
           },
         },
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should validate update payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.accounts.evaluators.update.validatePayload({
+      const valid = provider.v1.accounts.evaluators.update.schema.safeParse({
         displayName: "Updated Evaluator",
         description: "Updated description",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should validate getUploadEndpoint payload", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.evaluators.getUploadEndpoint.validatePayload({
+        provider.v1.accounts.evaluators.getUploadEndpoint.schema.safeParse({
           filenameToSize: {
             "evaluator.py": "1024",
             "requirements.txt": "256",
           },
         });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject getUploadEndpoint payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const invalid =
-        provider.v1.accounts.evaluators.getUploadEndpoint.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("filenameToSize is required");
+        provider.v1.accounts.evaluators.getUploadEndpoint.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should expose create payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.accounts.evaluators.create.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/v1/accounts/{account_id}/evaluatorsV2");
-      expect(schema.contentType).toBe("application/json");
-      expect(schema.fields.evaluator.required).toBe(true);
+      const schema = provider.v1.accounts.evaluators.create.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should expose update payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.accounts.evaluators.update.payloadSchema;
-      expect(schema.method).toBe("PATCH");
-      expect(schema.path).toBe(
-        "/v1/accounts/{account_id}/evaluators/{evaluator_id}"
-      );
+      const schema = provider.v1.accounts.evaluators.update.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
   });
 

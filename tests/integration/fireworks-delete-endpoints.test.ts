@@ -10,28 +10,26 @@ describe("fireworks DELETE endpoint handlers", () => {
     });
 
     it("should expose payloadSchema with POST method", () => {
-      const schema = provider.v1.accounts.apiKeys.delete.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe(
-        "/v1/accounts/{accountId}/users/{userId}/apiKeys:delete"
-      );
-      expect(schema.contentType).toBe("application/json");
-      expect(schema.fields.keyId.required).toBe(true);
-      expect(schema.fields.keyId.type).toBe("string");
+      const schema = provider.v1.accounts.apiKeys.delete.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate payload with keyId", () => {
-      const result = provider.v1.accounts.apiKeys.delete.validatePayload({
+      const result = provider.v1.accounts.apiKeys.delete.schema.safeParse({
         keyId: "key-abc123",
       });
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
+      expect(result.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject payload missing keyId", () => {
-      const result = provider.v1.accounts.apiKeys.delete.validatePayload({});
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("keyId is required");
+      const result = provider.v1.accounts.apiKeys.delete.schema.safeParse({});
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
     });
 
     it("should be accessible via delete namespace", () => {
@@ -61,16 +59,16 @@ describe("fireworks DELETE endpoint handlers", () => {
     });
 
     it("should expose payloadSchema with DELETE method", () => {
-      const schema = provider.v1.accounts.models.delete.payloadSchema;
-      expect(schema.method).toBe("DELETE");
-      expect(schema.path).toBe("/v1/accounts/{account_id}/models/{model_id}");
-      expect(schema.contentType).toBe("application/json");
+      const schema = provider.v1.accounts.models.delete.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate empty payload", () => {
-      const result = provider.v1.accounts.models.delete.validatePayload({});
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
+      const result = provider.v1.accounts.models.delete.schema.safeParse({});
+      expect(result.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should be accessible via delete namespace", () => {

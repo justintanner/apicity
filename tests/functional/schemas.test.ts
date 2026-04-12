@@ -68,6 +68,23 @@ import {
   AnthropicFileUploadRequestSchema,
   AnthropicSkillsCreateRequestSchema,
 } from "../../packages/provider/anthropic/src/zod";
+import {
+  FireworksChatRequestSchema,
+  FireworksCompletionRequestSchema,
+  FireworksEmbeddingRequestSchema,
+  FireworksRerankRequestSchema,
+  AnthropicMessagesRequestSchema as FwAnthropicMessagesRequestSchema,
+  FireworksTextToImageRequestSchema,
+  FireworksKontextRequestSchema,
+  FireworksGetResultRequestSchema,
+  FireworksSFTCreateRequestSchema,
+  FireworksDpoJobCreateRequestSchema,
+  FireworksRFTCreateRequestSchema,
+  FireworksBatchJobCreateRequestSchema,
+  FireworksCreateDeploymentRequestSchema,
+  FireworksCreateEvaluatorRequestSchema,
+  FireworksCreateEvaluationJobRequestSchema,
+} from "../../packages/provider/fireworks/src/zod";
 
 describe("schema structure", () => {
   // All providers now use Zod schemas — verify they expose safeParse
@@ -169,6 +186,42 @@ describe("schema structure", () => {
     {
       name: "anthropic/skillsCreate",
       schema: AnthropicSkillsCreateRequestSchema,
+    },
+    { name: "fireworks/chat", schema: FireworksChatRequestSchema },
+    { name: "fireworks/completions", schema: FireworksCompletionRequestSchema },
+    { name: "fireworks/embeddings", schema: FireworksEmbeddingRequestSchema },
+    { name: "fireworks/rerank", schema: FireworksRerankRequestSchema },
+    {
+      name: "fireworks/messages",
+      schema: FwAnthropicMessagesRequestSchema,
+    },
+    {
+      name: "fireworks/textToImage",
+      schema: FireworksTextToImageRequestSchema,
+    },
+    { name: "fireworks/kontext", schema: FireworksKontextRequestSchema },
+    { name: "fireworks/getResult", schema: FireworksGetResultRequestSchema },
+    { name: "fireworks/sftCreate", schema: FireworksSFTCreateRequestSchema },
+    {
+      name: "fireworks/dpoJobCreate",
+      schema: FireworksDpoJobCreateRequestSchema,
+    },
+    { name: "fireworks/rftCreate", schema: FireworksRFTCreateRequestSchema },
+    {
+      name: "fireworks/batchJobCreate",
+      schema: FireworksBatchJobCreateRequestSchema,
+    },
+    {
+      name: "fireworks/createDeployment",
+      schema: FireworksCreateDeploymentRequestSchema,
+    },
+    {
+      name: "fireworks/createEvaluator",
+      schema: FireworksCreateEvaluatorRequestSchema,
+    },
+    {
+      name: "fireworks/createEvaluationJob",
+      schema: FireworksCreateEvaluationJobRequestSchema,
     },
   ];
 
@@ -613,6 +666,60 @@ describe("schema + validatePayload integration", () => {
     expect(result.success).toBe(false);
     expect(
       result.error?.issues.some((i) => i.path.includes("project_ids"))
+    ).toBe(true);
+  });
+
+  it("fireworks chat: accepts valid request", () => {
+    const result = FireworksChatRequestSchema.safeParse({
+      model: "accounts/fireworks/models/llama-v3p1-70b-instruct",
+      messages: [{ role: "user", content: "Hello" }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("fireworks chat: rejects missing required fields", () => {
+    const result = FireworksChatRequestSchema.safeParse({});
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.some((i) => i.path.includes("model"))).toBe(
+      true
+    );
+    expect(result.error?.issues.some((i) => i.path.includes("messages"))).toBe(
+      true
+    );
+  });
+
+  it("fireworks embeddings: accepts valid request", () => {
+    const result = FireworksEmbeddingRequestSchema.safeParse({
+      model: "nomic-ai/nomic-embed-text-v1.5",
+      input: "hello",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("fireworks rerank: accepts valid request", () => {
+    const result = FireworksRerankRequestSchema.safeParse({
+      model: "fireworks/qwen3-reranker-8b",
+      query: "test",
+      documents: ["doc1"],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("fireworks textToImage: accepts valid request", () => {
+    const result = FireworksTextToImageRequestSchema.safeParse({
+      prompt: "A cat",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("fireworks batchJobCreate: rejects missing required fields", () => {
+    const result = FireworksBatchJobCreateRequestSchema.safeParse({});
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.some((i) => i.path.includes("model"))).toBe(
+      true
+    );
+    expect(
+      result.error?.issues.some((i) => i.path.includes("inputDatasetId"))
     ).toBe(true);
   });
 

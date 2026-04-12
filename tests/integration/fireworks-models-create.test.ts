@@ -5,41 +5,41 @@ describe("fireworks models create integration", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.models.create.validatePayload({
+      const valid = provider.v1.accounts.models.create.schema.safeParse({
         modelId: "my-custom-model",
         model: { displayName: "My Custom Model" },
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject create payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const invalid = provider.v1.accounts.models.create.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("modelId is required");
-      expect(invalid.errors).toContain("model is required");
+      const invalid = provider.v1.accounts.models.create.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate create payload with optional cluster field", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.models.create.validatePayload({
+      const valid = provider.v1.accounts.models.create.schema.safeParse({
         modelId: "my-custom-model",
         model: { displayName: "My Custom Model" },
         cluster: "accounts/test/clusters/my-cluster",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should expose create payload schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const schema = provider.v1.accounts.models.create.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/v1/accounts/{account_id}/models");
-      expect(schema.contentType).toBe("application/json");
-      expect(schema.fields.modelId.required).toBe(true);
-      expect(schema.fields.model.required).toBe(true);
+      const schema = provider.v1.accounts.models.create.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
   });
 });

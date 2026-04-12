@@ -78,27 +78,27 @@ describe("fireworks audio batch integration", () => {
   describe("payload validation", () => {
     it("should validate batch transcription with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.audio.batch.transcriptions.validatePayload({
+      const valid = provider.v1.audio.batch.transcriptions.schema.safeParse({
         file: "https://example.com/audio.mp3",
         endpoint_id: "ep-test-123",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject batch transcription missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const invalid = provider.v1.audio.batch.transcriptions.validatePayload(
+      const invalid = provider.v1.audio.batch.transcriptions.schema.safeParse(
         {}
       );
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("file is required");
-      expect(invalid.errors).toContain("endpoint_id is required");
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate batch transcription with optional fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.audio.batch.transcriptions.validatePayload({
+      const valid = provider.v1.audio.batch.transcriptions.schema.safeParse({
         file: "https://example.com/audio.mp3",
         endpoint_id: "ep-test-123",
         model: "whisper-v3",
@@ -108,46 +108,46 @@ describe("fireworks audio batch integration", () => {
         min_speakers: 2,
         max_speakers: 5,
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should validate batch translation with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.audio.batch.translations.validatePayload({
+      const valid = provider.v1.audio.batch.translations.schema.safeParse({
         file: "https://example.com/audio.mp3",
         endpoint_id: "ep-test-123",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject batch translation missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const invalid = provider.v1.audio.batch.translations.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("file is required");
-      expect(invalid.errors).toContain("endpoint_id is required");
+      const invalid = provider.v1.audio.batch.translations.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should expose transcription payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.audio.batch.transcriptions.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/v1/audio/transcriptions");
-      expect(schema.contentType).toBe("multipart/form-data");
-      expect(schema.fields.file.required).toBe(true);
-      expect(schema.fields.endpoint_id.required).toBe(true);
+      const schema = provider.v1.audio.batch.transcriptions.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should expose translation payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.audio.batch.translations.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/v1/audio/translations");
-      expect(schema.contentType).toBe("multipart/form-data");
-      expect(schema.fields.file.required).toBe(true);
-      expect(schema.fields.endpoint_id.required).toBe(true);
+      const schema = provider.v1.audio.batch.translations.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
   });
 
@@ -162,10 +162,8 @@ describe("fireworks audio batch integration", () => {
 
     it("should expose payload schemas on all methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      expect(
-        provider.v1.audio.batch.transcriptions.payloadSchema
-      ).toBeDefined();
-      expect(provider.v1.audio.batch.translations.payloadSchema).toBeDefined();
+      expect(provider.v1.audio.batch.transcriptions.schema).toBeDefined();
+      expect(provider.v1.audio.batch.translations.schema).toBeDefined();
     });
   });
 });

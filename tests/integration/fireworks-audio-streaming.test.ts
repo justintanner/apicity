@@ -9,14 +9,12 @@ describe("fireworks audio streaming transcriptions", () => {
 
     expect(provider.v1.audio.transcriptions.streaming).toBeDefined();
     expect(typeof provider.v1.audio.transcriptions.streaming).toBe("function");
+    expect(provider.v1.audio.transcriptions.streaming.schema).toBeDefined();
     expect(
-      provider.v1.audio.transcriptions.streaming.payloadSchema
-    ).toBeDefined();
-    expect(provider.v1.audio.transcriptions.streaming.payloadSchema.path).toBe(
-      "/v1/audio/transcriptions/streaming"
-    );
+      typeof provider.v1.audio.transcriptions.streaming.schema.safeParse
+    ).toBe("function");
     expect(
-      typeof provider.v1.audio.transcriptions.streaming.validatePayload
+      typeof provider.v1.audio.transcriptions.streaming.schema.safeParse
     ).toBe("function");
   });
 
@@ -25,18 +23,20 @@ describe("fireworks audio streaming transcriptions", () => {
       apiKey: "fw-test-key",
     });
 
-    const valid = provider.v1.audio.transcriptions.streaming.validatePayload({
+    const valid = provider.v1.audio.transcriptions.streaming.schema.safeParse({
       language: "en",
       temperature: 0,
     });
-    expect(valid.valid).toBe(true);
-    expect(valid.errors).toHaveLength(0);
+    expect(valid.success).toBe(true);
+    // errors checked via success;
 
-    const invalid = provider.v1.audio.transcriptions.streaming.validatePayload({
-      temperature: "not-a-number",
-    });
-    expect(invalid.valid).toBe(false);
-    expect(invalid.errors.length).toBeGreaterThan(0);
+    const invalid = provider.v1.audio.transcriptions.streaming.schema.safeParse(
+      {
+        temperature: "not-a-number",
+      }
+    );
+    expect(invalid.success).toBe(false);
+    expect(invalid.error?.issues.length).toBeGreaterThan(0);
   });
 
   it("should create a streaming session with expected API", () => {

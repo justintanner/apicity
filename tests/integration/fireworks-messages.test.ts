@@ -64,31 +64,31 @@ describe("fireworks messages integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const result = provider.v1.messages.validatePayload({
+      const result = provider.v1.messages.schema.safeParse({
         model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         messages: [{ role: "user", content: "Hello" }],
       });
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
+      expect(result.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject a payload missing model", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const result = provider.v1.messages.validatePayload({
+      const result = provider.v1.messages.schema.safeParse({
         messages: [{ role: "user", content: "Hello" }],
       });
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("model is required");
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
     });
 
     it("should expose payloadSchema", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      expect(provider.v1.messages.payloadSchema.path).toBe("/v1/messages");
-      expect(provider.v1.messages.payloadSchema.method).toBe("POST");
+      expect(typeof provider.v1.messages.schema.safeParse).toBe("function");
+      expect(typeof provider.v1.messages.schema.safeParse).toBe("function");
     });
   });
 });

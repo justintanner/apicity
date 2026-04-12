@@ -146,59 +146,53 @@ import {
   FireworksProvider,
   FireworksError,
 } from "./types";
-import type { ValidationResult, PayloadSchema } from "./types";
-import {
-  chatCompletionsSchema,
-  completionsSchema,
-  embeddingsSchema,
-  rerankSchema,
-  messagesSchema,
-  textToImageSchema,
-  kontextSchema,
-  getResultSchema,
-  audioTranscriptionsSchema,
-  audioTranslationsSchema,
-  modelsListSchema,
-  modelsCreateSchema,
-  modelsGetSchema,
-  modelsUpdateSchema,
-  modelsDeleteSchema,
-  modelsPrepareSchema,
-  modelsGetUploadEndpointSchema,
-  modelsGetDownloadEndpointSchema,
-  modelsValidateUploadSchema,
-  batchInferenceJobCreateSchema,
-  sftCreateSchema,
-  createDeploymentSchema,
-  updateDeploymentSchema,
-  scaleDeploymentSchema,
-  audioBatchTranscriptionsSchema,
-  audioBatchTranslationsSchema,
-  audioStreamingTranscriptionsSchema,
-  dpoJobCreateSchema,
-  createDeployedModelSchema,
-  updateDeployedModelSchema,
-  createUserSchema,
-  updateUserSchema,
-  createApiKeySchema,
-  deleteApiKeySchema,
-  createSecretSchema,
-  updateSecretSchema,
-  datasetsCreateSchema,
-  datasetsUpdateSchema,
-  datasetsGetUploadEndpointSchema,
-  datasetsGetDownloadEndpointSchema,
-  datasetsValidateUploadSchema,
-  createEvaluatorSchema,
-  updateEvaluatorSchema,
-  getUploadEndpointEvaluatorSchema,
-  createEvaluationJobSchema,
-  rftCreateSchema,
-  rlorTrainerJobCreateSchema,
-  rlorTrainerJobExecuteStepSchema,
-} from "./schemas";
-import { validatePayload } from "./validate";
 import { sseToIterable } from "./sse";
+import {
+  FireworksChatRequestSchema,
+  FireworksCompletionRequestSchema,
+  FireworksEmbeddingRequestSchema,
+  FireworksRerankRequestSchema,
+  AnthropicMessagesRequestSchema,
+  FireworksTextToImageRequestSchema,
+  FireworksKontextRequestSchema,
+  FireworksGetResultRequestSchema,
+  FireworksTranscriptionRequestSchema,
+  FireworksTranslationRequestSchema,
+  FireworksStreamingTranscriptionOptionsSchema,
+  FireworksAudioBatchTranscriptionRequestSchema,
+  FireworksAudioBatchTranslationRequestSchema,
+  FireworksCreateModelRequestSchema,
+  FireworksPrepareModelRequestSchema,
+  FireworksGetUploadEndpointRequestSchema,
+  FireworksUpdateModelRequestSchema,
+  FireworksValidateUploadRequestSchema,
+  FireworksBatchJobCreateRequestSchema,
+  FireworksSFTCreateRequestSchema,
+  FireworksCreateDeploymentRequestSchema,
+  FireworksUpdateDeploymentRequestSchema,
+  FireworksScaleDeploymentRequestSchema,
+  FireworksDpoJobCreateRequestSchema,
+  FireworksCreateDeployedModelRequestSchema,
+  FireworksUpdateDeployedModelRequestSchema,
+  FireworksCreateUserRequestSchema,
+  FireworksUpdateUserRequestSchema,
+  FireworksCreateApiKeyRequestSchema,
+  FireworksDeleteApiKeyRequestSchema,
+  FireworksCreateSecretRequestSchema,
+  FireworksUpdateSecretRequestSchema,
+  FireworksCreateDatasetRequestSchema,
+  FireworksUpdateDatasetRequestSchema,
+  FireworksDatasetGetUploadEndpointRequestSchema,
+  FireworksDatasetValidateUploadRequestSchema,
+  FireworksCreateEvaluatorRequestSchema,
+  FireworksUpdateEvaluatorRequestSchema,
+  FireworksGetUploadEndpointEvaluatorRequestSchema,
+  FireworksCreateEvaluationJobRequestSchema,
+  FireworksRFTCreateRequestSchema,
+  FireworksRlorTrainerJobCreateRequestSchema,
+  FireworksRlorTrainerJobExecuteStepRequestSchema,
+  FireworksEmptySchema,
+} from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -724,10 +718,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: chatCompletionsSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, chatCompletionsSchema);
-          },
+          schema: FireworksChatRequestSchema,
         }
       ),
     },
@@ -743,10 +734,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       {
-        payloadSchema: completionsSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, completionsSchema);
-        },
+        schema: FireworksCompletionRequestSchema,
       }
     ),
     embeddings: Object.assign(
@@ -761,10 +749,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       {
-        payloadSchema: embeddingsSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, embeddingsSchema);
-        },
+        schema: FireworksEmbeddingRequestSchema,
       }
     ),
     rerank: Object.assign(
@@ -779,17 +764,11 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       {
-        payloadSchema: rerankSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, rerankSchema);
-        },
+        schema: FireworksRerankRequestSchema,
       }
     ),
     messages: Object.assign(messagesImpl, {
-      payloadSchema: messagesSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, messagesSchema);
-      },
+      schema: AnthropicMessagesRequestSchema,
     }),
     workflows: {
       textToImage: Object.assign(
@@ -806,10 +785,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: textToImageSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, textToImageSchema);
-          },
+          schema: FireworksTextToImageRequestSchema,
         }
       ),
       kontext: Object.assign(
@@ -826,10 +802,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: kontextSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, kontextSchema);
-          },
+          schema: FireworksKontextRequestSchema,
         }
       ),
       getResult: Object.assign(
@@ -846,10 +819,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: getResultSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, getResultSchema);
-          },
+          schema: FireworksGetResultRequestSchema,
         }
       ),
     },
@@ -906,10 +876,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: audioTranscriptionsSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, audioTranscriptionsSchema);
-          },
+          schema: FireworksTranscriptionRequestSchema,
         }
       ),
       translations: Object.assign(
@@ -959,10 +926,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: audioTranslationsSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, audioTranslationsSchema);
-          },
+          schema: FireworksTranslationRequestSchema,
         }
       ),
       batch: {
@@ -1019,10 +983,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: audioBatchTranscriptionsSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, audioBatchTranscriptionsSchema);
-            },
+            schema: FireworksAudioBatchTranscriptionRequestSchema,
           }
         ),
         translations: Object.assign(
@@ -1073,10 +1034,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: audioBatchTranslationsSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, audioBatchTranslationsSchema);
-            },
+            schema: FireworksAudioBatchTranslationRequestSchema,
           }
         ),
       },
@@ -1099,10 +1057,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createUserSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createUserSchema);
-            },
+            schema: FireworksCreateUserRequestSchema,
           }
         ),
         update: Object.assign(
@@ -1121,10 +1076,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: updateUserSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, updateUserSchema);
-            },
+            schema: FireworksUpdateUserRequestSchema,
             async post(
               accountId: string,
               userId: string,
@@ -1158,10 +1110,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsCreateSchema);
-            },
+            schema: FireworksCreateModelRequestSchema,
           }
         ),
         prepare: Object.assign(
@@ -1180,10 +1129,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsPrepareSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsPrepareSchema);
-            },
+            schema: FireworksPrepareModelRequestSchema,
           }
         ),
         getUploadEndpoint: Object.assign(
@@ -1202,10 +1148,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsGetUploadEndpointSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsGetUploadEndpointSchema);
-            },
+            schema: FireworksGetUploadEndpointRequestSchema,
           }
         ),
       },
@@ -1226,10 +1169,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createDeploymentSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createDeploymentSchema);
-            },
+            schema: FireworksCreateDeploymentRequestSchema,
           }
         ),
         undelete: async (
@@ -1263,10 +1203,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createDeployedModelSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createDeployedModelSchema);
-            },
+            schema: FireworksCreateDeployedModelRequestSchema,
           }
         ),
       },
@@ -1287,10 +1224,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createApiKeySchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createApiKeySchema);
-            },
+            schema: FireworksCreateApiKeyRequestSchema,
           }
         ),
       },
@@ -1310,10 +1244,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createSecretSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createSecretSchema);
-            },
+            schema: FireworksCreateSecretRequestSchema,
           }
         ),
       },
@@ -1333,10 +1264,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: datasetsCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, datasetsCreateSchema);
-            },
+            schema: FireworksCreateDatasetRequestSchema,
           }
         ),
         getUploadEndpoint: Object.assign(
@@ -1355,10 +1283,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: datasetsGetUploadEndpointSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, datasetsGetUploadEndpointSchema);
-            },
+            schema: FireworksDatasetGetUploadEndpointRequestSchema,
           }
         ),
         validateUpload: Object.assign(
@@ -1377,10 +1302,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: datasetsValidateUploadSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, datasetsValidateUploadSchema);
-            },
+            schema: FireworksDatasetValidateUploadRequestSchema,
           }
         ),
       },
@@ -1400,10 +1322,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: batchInferenceJobCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, batchInferenceJobCreateSchema);
-            },
+            schema: FireworksBatchJobCreateRequestSchema,
           }
         ),
       },
@@ -1427,10 +1346,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: sftCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, sftCreateSchema);
-            },
+            schema: FireworksSFTCreateRequestSchema,
           }
         ),
         resume: async (
@@ -1462,10 +1378,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: dpoJobCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, dpoJobCreateSchema);
-            },
+            schema: FireworksDpoJobCreateRequestSchema,
           }
         ),
         resume: async (
@@ -1511,10 +1424,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createEvaluatorSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createEvaluatorSchema);
-            },
+            schema: FireworksCreateEvaluatorRequestSchema,
           }
         ),
         getUploadEndpoint: Object.assign(
@@ -1533,10 +1443,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: getUploadEndpointEvaluatorSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, getUploadEndpointEvaluatorSchema);
-            },
+            schema: FireworksGetUploadEndpointEvaluatorRequestSchema,
           }
         ),
         validateUpload: async (
@@ -1569,10 +1476,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: createEvaluationJobSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, createEvaluationJobSchema);
-            },
+            schema: FireworksCreateEvaluationJobRequestSchema,
           }
         ),
         getExecutionLogEndpoint: async (
@@ -1610,10 +1514,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: rftCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, rftCreateSchema);
-            },
+            schema: FireworksRFTCreateRequestSchema,
           }
         ),
         resume: async (
@@ -1646,10 +1547,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: rlorTrainerJobCreateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, rlorTrainerJobCreateSchema);
-            },
+            schema: FireworksRlorTrainerJobCreateRequestSchema,
           }
         ),
         executeTrainStep: Object.assign(
@@ -1668,10 +1566,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: rlorTrainerJobExecuteStepSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, rlorTrainerJobExecuteStepSchema);
-            },
+            schema: FireworksRlorTrainerJobExecuteStepRequestSchema,
           }
         ),
         resume: async (
@@ -1706,10 +1601,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         {
-          payloadSchema: chatCompletionsSchema,
-          validatePayload(data: unknown): ValidationResult {
-            return validatePayload(data, chatCompletionsSchema);
-          },
+          schema: FireworksChatRequestSchema,
         }
       ),
     },
@@ -1725,17 +1617,11 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       {
-        payloadSchema: completionsSchema,
-        validatePayload(data: unknown): ValidationResult {
-          return validatePayload(data, completionsSchema);
-        },
+        schema: FireworksCompletionRequestSchema,
       }
     ),
     messages: Object.assign(messagesStreamImpl, {
-      payloadSchema: messagesSchema,
-      validatePayload(data: unknown): ValidationResult {
-        return validatePayload(data, messagesSchema);
-      },
+      schema: AnthropicMessagesRequestSchema,
     }),
   };
 
@@ -1857,10 +1743,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsListSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsListSchema);
-            },
+            schema: FireworksEmptySchema,
           }
         ),
         get: Object.assign(
@@ -1879,10 +1762,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsGetSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsGetSchema);
-            },
+            schema: FireworksEmptySchema,
           }
         ),
         getDownloadEndpoint: Object.assign(
@@ -1901,10 +1781,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsGetDownloadEndpointSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsGetDownloadEndpointSchema);
-            },
+            schema: FireworksEmptySchema,
           }
         ),
         validateUpload: Object.assign(
@@ -1923,10 +1800,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsValidateUploadSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsValidateUploadSchema);
-            },
+            schema: FireworksValidateUploadRequestSchema,
           }
         ),
       },
@@ -1974,10 +1848,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: datasetsGetDownloadEndpointSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, datasetsGetDownloadEndpointSchema);
-            },
+            schema: FireworksEmptySchema,
           }
         ),
       },
@@ -2359,10 +2230,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: updateUserSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, updateUserSchema);
-            },
+            schema: FireworksUpdateUserRequestSchema,
             async post(
               accountId: string,
               userId: string,
@@ -2397,10 +2265,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsUpdateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsUpdateSchema);
-            },
+            schema: FireworksUpdateModelRequestSchema,
             async post(
               accountId: string,
               modelId: string,
@@ -2435,10 +2300,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: datasetsUpdateSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, datasetsUpdateSchema);
-            },
+            schema: FireworksUpdateDatasetRequestSchema,
           }
         ),
       },
@@ -2459,10 +2321,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: updateDeploymentSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, updateDeploymentSchema);
-            },
+            schema: FireworksUpdateDeploymentRequestSchema,
             async post(
               accountId: string,
               deploymentId: string,
@@ -2495,10 +2354,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: scaleDeploymentSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, scaleDeploymentSchema);
-            },
+            schema: FireworksScaleDeploymentRequestSchema,
           }
         ),
       },
@@ -2519,10 +2375,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: updateDeployedModelSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, updateDeployedModelSchema);
-            },
+            schema: FireworksUpdateDeployedModelRequestSchema,
           }
         ),
       },
@@ -2543,10 +2396,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: updateSecretSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, updateSecretSchema);
-            },
+            schema: FireworksUpdateSecretRequestSchema,
           }
         ),
       },
@@ -2568,10 +2418,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: updateEvaluatorSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, updateEvaluatorSchema);
-            },
+            schema: FireworksUpdateEvaluatorRequestSchema,
           }
         ),
       },
@@ -2598,10 +2445,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: deleteApiKeySchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, deleteApiKeySchema);
-            },
+            schema: FireworksDeleteApiKeyRequestSchema,
           }
         ),
       },
@@ -2636,10 +2480,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: modelsDeleteSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, modelsDeleteSchema);
-            },
+            schema: FireworksEmptySchema,
           }
         ),
       },
@@ -2688,10 +2529,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           {
-            payloadSchema: undefined as unknown as PayloadSchema,
-            validatePayload(): ValidationResult {
-              return { valid: true, errors: [] };
-            },
+            schema: FireworksEmptySchema,
           }
         ),
       },
@@ -2962,10 +2800,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             return session;
           },
           {
-            payloadSchema: audioStreamingTranscriptionsSchema,
-            validatePayload(data: unknown): ValidationResult {
-              return validatePayload(data, audioStreamingTranscriptionsSchema);
-            },
+            schema: FireworksStreamingTranscriptionOptionsSchema,
           }
         ),
       },

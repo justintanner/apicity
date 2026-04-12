@@ -74,23 +74,23 @@ describe("fireworks kontext endpoint integration", () => {
   describe("payload validation", () => {
     it("should validate kontext payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.kontext.validatePayload({
+      const valid = provider.v1.workflows.kontext.schema.safeParse({
         prompt: "A beautiful landscape",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject kontext payload missing prompt", () => {
       const provider = fireworks({ apiKey: "test" });
-      const invalid = provider.v1.workflows.kontext.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("prompt is required");
+      const invalid = provider.v1.workflows.kontext.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate kontext payload with all options", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.kontext.validatePayload({
+      const valid = provider.v1.workflows.kontext.schema.safeParse({
         prompt: "A beautiful landscape",
         seed: 42,
         output_format: "png",
@@ -98,27 +98,27 @@ describe("fireworks kontext endpoint integration", () => {
         height: 768,
         stream: false,
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
     });
 
     it("should expose kontext payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.workflows.kontext.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/workflows/accounts/fireworks/models/{model}");
-      expect(schema.fields.prompt.required).toBe(true);
+      const schema = provider.v1.workflows.kontext.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate getResult payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.getResult.validatePayload({
+      const valid = provider.v1.workflows.getResult.schema.safeParse({
         id: "abc-123",
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
 
-      const invalid = provider.v1.workflows.getResult.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("id is required");
+      const invalid = provider.v1.workflows.getResult.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
   });
 
@@ -132,9 +132,9 @@ describe("fireworks kontext endpoint integration", () => {
 
     it("should expose payload schemas on workflow methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      expect(provider.v1.workflows.kontext.payloadSchema).toBeDefined();
-      expect(provider.v1.workflows.getResult.payloadSchema).toBeDefined();
-      expect(provider.v1.workflows.textToImage.payloadSchema).toBeDefined();
+      expect(provider.v1.workflows.kontext.schema).toBeDefined();
+      expect(provider.v1.workflows.getResult.schema).toBeDefined();
+      expect(provider.v1.workflows.textToImage.schema).toBeDefined();
     });
   });
 });

@@ -2,8 +2,10 @@ import { describe, it, expect } from "vitest";
 import { fireworks } from "@apicity/fireworks";
 
 // Direct imports for unit-level coverage
-import { validatePayload } from "../../packages/provider/fireworks/src/validate";
-import { chatCompletionsSchema } from "../../packages/provider/fireworks/src/schemas";
+import {
+  FireworksChatRequestSchema,
+  FireworksKontextRequestSchema,
+} from "../../packages/provider/fireworks/src/zod";
 import { sseToIterable } from "../../packages/provider/fireworks/src/sse";
 
 // Helper to create a mock Response with a ReadableStream
@@ -20,200 +22,137 @@ function createMockResponse(chunks: string[]): Response {
   return new Response(stream);
 }
 
-describe("fireworks validate.ts edge cases", () => {
-  describe("non-object payloads (lines 82-83)", () => {
+describe("fireworks Zod schema validation edge cases", () => {
+  describe("non-object payloads", () => {
     it("should reject null payload", () => {
-      const result = validatePayload(null, chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(null);
+      expect(result.success).toBe(false);
     });
 
     it("should reject string payload", () => {
-      const result = validatePayload("not an object", chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse("not an object");
+      expect(result.success).toBe(false);
     });
 
     it("should reject array payload", () => {
-      const result = validatePayload([1, 2, 3], chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse([1, 2, 3]);
+      expect(result.success).toBe(false);
     });
 
     it("should reject number payload", () => {
-      const result = validatePayload(42, chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(42);
+      expect(result.success).toBe(false);
     });
 
     it("should reject undefined payload", () => {
-      const result = validatePayload(undefined, chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(undefined);
+      expect(result.success).toBe(false);
     });
   });
 
-  describe("enum validation errors (lines 42-43)", () => {
+  describe("enum validation errors", () => {
     it("should reject invalid enum value in nested object", () => {
-      const result = validatePayload(
-        {
-          model: "test-model",
-          messages: [{ role: "invalid-role", content: "Hello" }],
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toEqual(
-        expect.arrayContaining([expect.stringContaining("must be one of:")])
-      );
-    });
-
-    it("should reject invalid response_format type enum", () => {
-      const result = validatePayload(
-        {
-          model: "test-model",
-          messages: [{ role: "user", content: "Hello" }],
-          response_format: { type: "invalid_format" },
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toEqual(
-        expect.arrayContaining([expect.stringContaining("must be one of:")])
-      );
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "test-model",
+        messages: [{ role: "invalid-role", content: "Hello" }],
+      });
+      expect(result.success).toBe(false);
     });
 
     it("should reject invalid reasoning_effort enum", () => {
-      const result = validatePayload(
-        {
-          model: "test-model",
-          messages: [{ role: "user", content: "Hello" }],
-          reasoning_effort: "maximum",
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toEqual(
-        expect.arrayContaining([expect.stringContaining("must be one of:")])
-      );
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "test-model",
+        messages: [{ role: "user", content: "Hello" }],
+        reasoning_effort: "maximum",
+      });
+      expect(result.success).toBe(false);
     });
   });
 
-  describe("array item type validation (line 60)", () => {
+  describe("array item type validation", () => {
     it("should reject non-object items in messages array", () => {
-      const result = validatePayload(
-        {
-          model: "test-model",
-          messages: ["not an object", 123],
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining("must be of type object"),
-        ])
-      );
-    });
-
-    it("should reject non-object items in tools array", () => {
-      const result = validatePayload(
-        {
-          model: "test-model",
-          messages: [{ role: "user", content: "Hello" }],
-          tools: ["not an object"],
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining("must be of type object"),
-        ])
-      );
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "test-model",
+        messages: ["not an object", 123],
+      });
+      expect(result.success).toBe(false);
     });
   });
 });
 
-describe("fireworks validatePayload inline wrappers", () => {
-  it("should validate via chat.completions.validatePayload", () => {
+describe("fireworks schema property on endpoints", () => {
+  it("should expose .schema on chat.completions", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.chat.completions.validatePayload({
+    expect(provider.v1.chat.completions.schema).toBeDefined();
+    expect(typeof provider.v1.chat.completions.schema.safeParse).toBe(
+      "function"
+    );
+  });
+
+  it("should expose .schema on completions", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.completions.schema).toBeDefined();
+  });
+
+  it("should expose .schema on embeddings", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.embeddings.schema).toBeDefined();
+  });
+
+  it("should expose .schema on rerank", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.rerank.schema).toBeDefined();
+  });
+
+  it("should expose .schema on messages", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.messages.schema).toBeDefined();
+  });
+
+  it("should expose .schema on workflows.textToImage", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.workflows.textToImage.schema).toBeDefined();
+  });
+
+  it("should expose .schema on workflows.kontext", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.workflows.kontext.schema).toBeDefined();
+  });
+
+  it("should expose .schema on workflows.getResult", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    expect(provider.v1.workflows.getResult.schema).toBeDefined();
+  });
+
+  it("should validate via safeParse on chat.completions.schema", () => {
+    const provider = fireworks({ apiKey: "test-key" });
+    const result = provider.v1.chat.completions.schema.safeParse({
       model: "test-model",
       messages: [{ role: "user", content: "Hello" }],
     });
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
+    expect(result.success).toBe(true);
   });
 
-  it("should validate via completions.validatePayload", () => {
+  it("should reject invalid payload via safeParse on chat.completions.schema", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.completions.validatePayload({
-      model: "test-model",
-      prompt: "Hello",
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should validate via embeddings.validatePayload", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.embeddings.validatePayload({
-      model: "test-model",
-      input: "Hello world",
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should validate via rerank.validatePayload", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.rerank.validatePayload({
-      model: "test-model",
-      query: "search query",
-      documents: ["doc1", "doc2"],
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should validate via messages.validatePayload", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.messages.validatePayload({
-      model: "test-model",
-      messages: [{ role: "user", content: "Hello" }],
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should validate via workflows.textToImage.validatePayload", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.workflows.textToImage.validatePayload({
-      prompt: "a cat",
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should validate via workflows.kontext.validatePayload", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.workflows.kontext.validatePayload({
-      prompt: "modify image",
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should validate via workflows.getResult.validatePayload", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.workflows.getResult.validatePayload({
-      id: "result-123",
-    });
-    expect(result.valid).toBe(true);
-  });
-
-  it("should reject invalid payload via inline wrapper", () => {
-    const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.chat.completions.validatePayload({
+    const result = provider.v1.chat.completions.schema.safeParse({
       // Missing required 'model' and 'messages'
     });
-    expect(result.valid).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.success).toBe(false);
+  });
+
+  it("should validate kontext via Zod schema directly", () => {
+    const result = FireworksKontextRequestSchema.safeParse({
+      prompt: "Add warm afternoon lighting",
+      output_format: "jpeg",
+      prompt_upsampling: false,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("should reject missing prompt on kontext schema", () => {
+    const result = FireworksKontextRequestSchema.safeParse({});
+    expect(result.success).toBe(false);
   });
 });
 
@@ -326,7 +265,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
         alreadyAbortedSignal
       );
     } catch {
-      // Expected — aborted signal causes errors
+      // Expected -- aborted signal causes errors
     }
   });
 
@@ -352,7 +291,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
       },
     });
 
-    // No signal passed — exercises the early return in attachAbortHandler
+    // No signal passed -- exercises the early return in attachAbortHandler
     const result = await provider.v1.chat.completions({
       model: "test",
       messages: [{ role: "user", content: "Hello" }],

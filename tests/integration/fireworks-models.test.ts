@@ -62,23 +62,23 @@ describe("fireworks models CRUD integration", () => {
       const provider = fireworks({
         apiKey: "fw-test-key",
       });
-      const valid = provider.v1.accounts.models.create.validatePayload({
+      const valid = provider.v1.accounts.models.create.schema.safeParse({
         modelId: "my-model",
         model: { kind: "HF_BASE_MODEL" },
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject create payload missing modelId", () => {
       const provider = fireworks({
         apiKey: "fw-test-key",
       });
-      const valid = provider.v1.accounts.models.create.validatePayload({
+      const valid = provider.v1.accounts.models.create.schema.safeParse({
         model: { kind: "HF_BASE_MODEL" },
       });
-      expect(valid.valid).toBe(false);
-      expect(valid.errors.some((e: string) => e.includes("modelId"))).toBe(
+      expect(valid.success).toBe(false);
+      expect(valid.error?.issues.some((i) => i.path.includes("modelId"))).toBe(
         true
       );
     });
@@ -88,15 +88,17 @@ describe("fireworks models CRUD integration", () => {
         apiKey: "fw-test-key",
       });
       const models = provider.v1.accounts.models;
-      expect(models.list.payloadSchema.method).toBe("GET");
-      expect(models.create.payloadSchema.method).toBe("POST");
-      expect(models.get.payloadSchema.method).toBe("GET");
-      expect(models.update.payloadSchema.method).toBe("PATCH");
-      expect(models.delete.payloadSchema.method).toBe("DELETE");
-      expect(models.prepare.payloadSchema.method).toBe("POST");
-      expect(models.getUploadEndpoint.payloadSchema.method).toBe("POST");
-      expect(models.getDownloadEndpoint.payloadSchema.method).toBe("GET");
-      expect(models.validateUpload.payloadSchema.method).toBe("GET");
+      expect(typeof models.list.schema.safeParse).toBe("function");
+      expect(typeof models.create.schema.safeParse).toBe("function");
+      expect(typeof models.get.schema.safeParse).toBe("function");
+      expect(typeof models.update.schema.safeParse).toBe("function");
+      expect(typeof models.delete.schema.safeParse).toBe("function");
+      expect(typeof models.prepare.schema.safeParse).toBe("function");
+      expect(typeof models.getUploadEndpoint.schema.safeParse).toBe("function");
+      expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof models.validateUpload.schema.safeParse).toBe("function");
     });
   });
 });

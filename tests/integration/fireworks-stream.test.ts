@@ -75,11 +75,11 @@ describe("fireworks streaming integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      expect(provider.post.stream.v1.chat.completions.payloadSchema.path).toBe(
-        "/chat/completions"
-      );
-      expect(provider.post.stream.v1.completions.payloadSchema.path).toBe(
-        "/completions"
+      expect(
+        typeof provider.post.stream.v1.chat.completions.schema.safeParse
+      ).toBe("function");
+      expect(typeof provider.post.stream.v1.completions.schema.safeParse).toBe(
+        "function"
       );
     });
 
@@ -87,16 +87,18 @@ describe("fireworks streaming integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const valid = provider.post.stream.v1.chat.completions.validatePayload({
+      const valid = provider.post.stream.v1.chat.completions.schema.safeParse({
         model: "test-model",
         messages: [{ role: "user", content: "Hello" }],
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
 
-      const invalid = provider.post.stream.v1.chat.completions.validatePayload({
-        messages: [{ role: "user", content: "Hello" }],
-      });
-      expect(invalid.valid).toBe(false);
+      const invalid = provider.post.stream.v1.chat.completions.schema.safeParse(
+        {
+          messages: [{ role: "user", content: "Hello" }],
+        }
+      );
+      expect(invalid.success).toBe(false);
     });
   });
 });

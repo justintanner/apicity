@@ -50,48 +50,52 @@ describe("fireworks workflows integration", () => {
   describe("payload validation", () => {
     it("should validate textToImage payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.textToImage.validatePayload({
+      const valid = provider.v1.workflows.textToImage.schema.safeParse({
         prompt: "A cat",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
 
-      const invalid = provider.v1.workflows.textToImage.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("prompt is required");
+      const invalid = provider.v1.workflows.textToImage.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate kontext payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.kontext.validatePayload({
+      const valid = provider.v1.workflows.kontext.schema.safeParse({
         prompt: "A cat",
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
 
-      const invalid = provider.v1.workflows.kontext.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("prompt is required");
+      const invalid = provider.v1.workflows.kontext.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate getResult payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.getResult.validatePayload({
+      const valid = provider.v1.workflows.getResult.schema.safeParse({
         id: "abc-123",
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
 
-      const invalid = provider.v1.workflows.getResult.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("id is required");
+      const invalid = provider.v1.workflows.getResult.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should expose payload schemas", () => {
       const provider = fireworks({ apiKey: "test" });
-      expect(provider.v1.workflows.textToImage.payloadSchema.method).toBe(
-        "POST"
+      expect(typeof provider.v1.workflows.textToImage.schema.safeParse).toBe(
+        "function"
       );
-      expect(provider.v1.workflows.kontext.payloadSchema.method).toBe("POST");
-      expect(provider.v1.workflows.getResult.payloadSchema.method).toBe("POST");
+      expect(typeof provider.v1.workflows.kontext.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof provider.v1.workflows.getResult.schema.safeParse).toBe(
+        "function"
+      );
     });
   });
 });

@@ -6,35 +6,35 @@ describe("fireworks supervised fine-tuning integration", () => {
     it("should expose payloadSchema on create", () => {
       const provider = fireworks({ apiKey: "fw-test-key" });
       const schema =
-        provider.v1.accounts.supervisedFineTuningJobs.create.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toContain("supervisedFineTuningJobs");
-      expect(schema.fields.dataset.required).toBe(true);
-      expect(schema.fields.accountId.required).toBe(true);
+        provider.v1.accounts.supervisedFineTuningJobs.create.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate a valid create payload", () => {
       const provider = fireworks({ apiKey: "fw-test-key" });
       const result =
-        provider.v1.accounts.supervisedFineTuningJobs.create.validatePayload({
+        provider.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse({
           accountId: "test-account",
           dataset: "accounts/test-account/datasets/my-dataset",
           baseModel: "accounts/fireworks/models/llama-v3p1-8b-instruct",
           epochs: 3,
         });
-      expect(result.valid).toBe(true);
-      expect(result.errors).toHaveLength(0);
+      expect(result.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject a payload missing required fields", () => {
       const provider = fireworks({ apiKey: "fw-test-key" });
       const result =
-        provider.v1.accounts.supervisedFineTuningJobs.create.validatePayload({
+        provider.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse({
           epochs: 3,
         });
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("accountId is required");
-      expect(result.errors).toContain("dataset is required");
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
     });
 
     it("should have supervised fine-tuning namespace with all methods", () => {

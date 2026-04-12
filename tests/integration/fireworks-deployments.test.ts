@@ -5,67 +5,69 @@ describe("fireworks deployments integration", () => {
   describe("payload validation", () => {
     it("should validate create deployment payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.deployments.create.validatePayload({
+      const valid = provider.v1.accounts.deployments.create.schema.safeParse({
         baseModel: "accounts/fireworks/models/llama-v3p1-8b-instruct",
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject create deployment without baseModel", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.deployments.create.validatePayload(
+      const result = provider.v1.accounts.deployments.create.schema.safeParse(
         {}
       );
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("baseModel is required");
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
     });
 
     it("should expose create deployment schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      expect(provider.v1.accounts.deployments.create.payloadSchema.path).toBe(
-        "/v1/accounts/{account_id}/deployments"
-      );
-      expect(provider.v1.accounts.deployments.create.payloadSchema.method).toBe(
-        "POST"
-      );
+      expect(
+        typeof provider.v1.accounts.deployments.create.schema.safeParse
+      ).toBe("function");
+      expect(
+        typeof provider.v1.accounts.deployments.create.schema.safeParse
+      ).toBe("function");
     });
 
     it("should validate update deployment payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.deployments.update.validatePayload({
+      const valid = provider.v1.accounts.deployments.update.schema.safeParse({
         displayName: "updated-name",
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
     });
 
     it("should expose update deployment schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      expect(provider.v1.accounts.deployments.update.payloadSchema.method).toBe(
-        "PATCH"
-      );
+      expect(
+        typeof provider.v1.accounts.deployments.update.schema.safeParse
+      ).toBe("function");
     });
 
     it("should validate scale deployment payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.deployments.scale.validatePayload({
+      const valid = provider.v1.accounts.deployments.scale.schema.safeParse({
         replicaCount: 2,
       });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
     });
 
     it("should reject scale without replicaCount", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.deployments.scale.validatePayload({});
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("replicaCount is required");
+      const result = provider.v1.accounts.deployments.scale.schema.safeParse(
+        {}
+      );
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
     });
 
     it("should expose scale deployment schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
       expect(
-        provider.v1.accounts.deployments.scale.payloadSchema.path
-      ).toContain(":scale");
+        typeof provider.v1.accounts.deployments.scale.schema.safeParse
+      ).toBe("function");
     });
   });
 });

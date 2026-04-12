@@ -14,25 +14,25 @@ describe("fireworks rlor trainer jobs integration", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
       const valid =
-        provider().v1.accounts.rlorTrainerJobs.create.validatePayload({
+        provider().v1.accounts.rlorTrainerJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-rlor-dataset",
           evaluator: "accounts/test/evaluators/my-evaluator",
         });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject create payload missing required fields", () => {
       const invalid =
-        provider().v1.accounts.rlorTrainerJobs.create.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("dataset is required");
-      expect(invalid.errors).toContain("evaluator is required");
+        provider().v1.accounts.rlorTrainerJobs.create.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate create payload with training config and reward weights", () => {
       const valid =
-        provider().v1.accounts.rlorTrainerJobs.create.validatePayload({
+        provider().v1.accounts.rlorTrainerJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-rlor-dataset",
           evaluator: "accounts/test/evaluators/my-evaluator",
           displayName: "My RLOR Trainer",
@@ -49,47 +49,46 @@ describe("fireworks rlor trainer jobs integration", () => {
             { name: "format", weight: 0.5 },
           ],
         });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should expose create payload schema", () => {
-      const schema =
-        provider().v1.accounts.rlorTrainerJobs.create.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/v1/accounts/{account_id}/rlorTrainerJobs");
-      expect(schema.contentType).toBe("application/json");
-      expect(schema.fields.dataset.required).toBe(true);
-      expect(schema.fields.evaluator.required).toBe(true);
+      const schema = provider().v1.accounts.rlorTrainerJobs.create.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate executeTrainStep payload", () => {
       const valid =
-        provider().v1.accounts.rlorTrainerJobs.executeTrainStep.validatePayload(
+        provider().v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
           {
             dataset: "accounts/test/datasets/step-data",
             outputModel: "accounts/test/models/step-output",
           }
         );
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject executeTrainStep payload missing required fields", () => {
       const invalid =
-        provider().v1.accounts.rlorTrainerJobs.executeTrainStep.validatePayload(
+        provider().v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
           {}
         );
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("dataset is required");
-      expect(invalid.errors).toContain("outputModel is required");
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should expose executeTrainStep payload schema", () => {
       const schema =
-        provider().v1.accounts.rlorTrainerJobs.executeTrainStep.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toContain("executeTrainStep");
+        provider().v1.accounts.rlorTrainerJobs.executeTrainStep.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
   });
 

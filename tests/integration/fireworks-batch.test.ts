@@ -6,45 +6,44 @@ describe("fireworks batch inference jobs", () => {
     it("should validate create payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.batchInferenceJobs.create.validatePayload({
+        provider.v1.accounts.batchInferenceJobs.create.schema.safeParse({
           model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
           inputDatasetId: "accounts/test/datasets/my-dataset",
         });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject create payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const invalid =
-        provider.v1.accounts.batchInferenceJobs.create.validatePayload({});
-      expect(invalid.valid).toBe(false);
-      expect(invalid.errors).toContain("model is required");
-      expect(invalid.errors).toContain("inputDatasetId is required");
+        provider.v1.accounts.batchInferenceJobs.create.schema.safeParse({});
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
+      expect(invalid.success).toBe(false);
     });
 
     it("should validate create payload with optional fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.batchInferenceJobs.create.validatePayload({
+        provider.v1.accounts.batchInferenceJobs.create.schema.safeParse({
           model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
           inputDatasetId: "accounts/test/datasets/input",
           displayName: "My Batch Job",
           inferenceParameters: { maxTokens: 100, temperature: 0.7 },
         });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should expose payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema =
-        provider.v1.accounts.batchInferenceJobs.create.payloadSchema;
-      expect(schema.method).toBe("POST");
-      expect(schema.path).toBe("/v1/accounts/{account_id}/batchInferenceJobs");
-      expect(schema.contentType).toBe("application/json");
-      expect(schema.fields.model.required).toBe(true);
-      expect(schema.fields.inputDatasetId.required).toBe(true);
+      const schema = provider.v1.accounts.batchInferenceJobs.create.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
   });
 

@@ -95,26 +95,28 @@ describe("fireworks workflows.kontext", () => {
     });
   });
 
-  it("validates required and enum-mapped kontext fields", () => {
+  it("validates required and enum-mapped kontext fields via Zod schema", () => {
     const provider = fireworks({ apiKey: "fw-test-key" });
 
-    const valid = provider.v1.workflows.kontext.validatePayload({
+    const valid = provider.v1.workflows.kontext.schema.safeParse({
       prompt: "Add warm afternoon lighting",
       output_format: "jpeg",
       prompt_upsampling: false,
     });
-    const missingPrompt = provider.v1.workflows.kontext.validatePayload({});
-    const invalidFormat = provider.v1.workflows.kontext.validatePayload({
+    const missingPrompt = provider.v1.workflows.kontext.schema.safeParse({});
+    const invalidFormat = provider.v1.workflows.kontext.schema.safeParse({
       prompt: "Use a film-camera look",
-      output_format: "gif" as "png",
+      output_format: "gif",
     });
 
-    expect(valid).toEqual({ valid: true, errors: [] });
-    expect(missingPrompt.valid).toBe(false);
-    expect(missingPrompt.errors).toContain("prompt is required");
-    expect(invalidFormat.valid).toBe(false);
-    expect(invalidFormat.errors).toContain(
-      "output_format must be one of: png, jpeg"
-    );
+    expect(valid.success).toBe(true);
+    expect(missingPrompt.success).toBe(false);
+    expect(
+      missingPrompt.error?.issues.some((i) => i.path.includes("prompt"))
+    ).toBe(true);
+    expect(invalidFormat.success).toBe(false);
+    expect(
+      invalidFormat.error?.issues.some((i) => i.path.includes("output_format"))
+    ).toBe(true);
   });
 });

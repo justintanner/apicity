@@ -46,6 +46,10 @@ export default defineConfig({
         "../packages/provider/fal/src/zod"
       ),
       "@apicity/fal": path.resolve(__dirname, "../packages/provider/fal/src"),
+      "@apicity/fireworks/zod": path.resolve(
+        __dirname,
+        "../packages/provider/fireworks/src/zod"
+      ),
       "@apicity/fireworks": path.resolve(
         __dirname,
         "../packages/provider/fireworks/src"

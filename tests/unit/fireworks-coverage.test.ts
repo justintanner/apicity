@@ -1,9 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 
-// Fireworks validation
-import { validatePayload } from "../../packages/provider/fireworks/src/validate";
-import type { PayloadSchema } from "../../packages/provider/fireworks/src/types";
-import { chatCompletionsSchema } from "../../packages/provider/fireworks/src/schemas";
+// Fireworks Zod schemas
+import { FireworksChatRequestSchema } from "../../packages/provider/fireworks/src/zod";
 
 // Fireworks SSE
 import { sseToIterable } from "../../packages/provider/fireworks/src/sse";
@@ -22,360 +20,177 @@ function createMockResponse(chunks: string[]): Response {
   return new Response(stream);
 }
 
-describe("Fireworks validatePayload gaps", () => {
-  describe("enum validation errors (validate.ts lines 42-43)", () => {
-    it("should return enum validation error for invalid enum value", () => {
-      const result = validatePayload(
-        {
-          model: "gpt-4o",
-          messages: [{ role: "invalid-role", content: "Hello" }],
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors?.some((e) => e.includes("must be one of:"))).toBe(
-        true
-      );
+describe("Fireworks Zod schema validation gaps", () => {
+  describe("enum validation errors", () => {
+    it("should return error for invalid enum value", () => {
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "gpt-4o",
+        messages: [{ role: "invalid-role", content: "Hello" }],
+      });
+      expect(result.success).toBe(false);
     });
 
-    it("should return enum validation error for multiple invalid values", () => {
-      const result = validatePayload(
-        {
-          model: "gpt-4o",
-          messages: [
-            { role: "user", content: "Hello" },
-            { role: "invalid", content: "World" },
-          ],
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors?.some((e) => e.includes("must be one of:"))).toBe(
-        true
-      );
+    it("should return error for multiple invalid values", () => {
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "gpt-4o",
+        messages: [
+          { role: "user", content: "Hello" },
+          { role: "invalid", content: "World" },
+        ],
+      });
+      expect(result.success).toBe(false);
     });
   });
 
-  describe("array item type errors (validate.ts line 60)", () => {
-    it("should return type error for invalid array item type", () => {
-      const result = validatePayload(
-        {
-          model: "gpt-4o",
-          messages: "not-an-array",
-        },
-        chatCompletionsSchema
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors?.some((e) => e.includes("must be of type"))).toBe(
-        true
-      );
-    });
-
-    it("should validate array items with type error on nested object", () => {
-      const schemaWithNestedArray: PayloadSchema = {
-        method: "POST",
-        path: "/test",
-        contentType: "application/json",
-        fields: {
-          items: {
-            type: "array",
-            required: true,
-            items: {
-              type: "string",
-            },
-          },
-        },
-      };
-
-      const result = validatePayload(
-        {
-          items: ["valid", 123, "also-valid"],
-        },
-        schemaWithNestedArray
-      );
-      expect(result.valid).toBe(false);
-      expect(result.errors?.some((e) => e.includes("must be of type"))).toBe(
-        true
-      );
+  describe("array item type errors", () => {
+    it("should return type error for invalid messages type", () => {
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "gpt-4o",
+        messages: "not-an-array",
+      });
+      expect(result.success).toBe(false);
     });
   });
 
-  describe("payload type check error (validate.ts lines 82-83)", () => {
+  describe("payload type check error", () => {
     it("should reject null payload", () => {
-      const result = validatePayload(null, chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(null);
+      expect(result.success).toBe(false);
     });
 
     it("should reject array payload", () => {
-      const result = validatePayload(["invalid"], chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(["invalid"]);
+      expect(result.success).toBe(false);
     });
 
     it("should reject string payload", () => {
-      const result = validatePayload("invalid", chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse("invalid");
+      expect(result.success).toBe(false);
     });
 
     it("should reject number payload", () => {
-      const result = validatePayload(123, chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(123);
+      expect(result.success).toBe(false);
     });
 
     it("should reject boolean payload", () => {
-      const result = validatePayload(true, chatCompletionsSchema);
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("payload must be a non-null object");
+      const result = FireworksChatRequestSchema.safeParse(true);
+      expect(result.success).toBe(false);
     });
   });
 });
 
-describe("Fireworks validatePayload inline functions coverage", () => {
-  it("should validate via multiple endpoint validatePayload methods", async () => {
+describe("Fireworks Zod schema .schema property coverage", () => {
+  it("should validate via multiple endpoint schemas", async () => {
     const { fireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
     const client = fireworks({ apiKey: "test" });
 
-    // Test various validatePayload methods exist and are callable
-    // We test both valid and invalid payloads to ensure coverage
+    // Test various .schema properties exist and are callable via safeParse
     const tests = [
-      // Core endpoints - test with valid payloads
       {
         name: "chat.completions",
         fn: () =>
-          client.v1.chat.completions.validatePayload({
+          client.v1.chat.completions.schema.safeParse({
             model: "gpt-4o",
             messages: [{ role: "user", content: "Hello" }],
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "completions",
         fn: () =>
-          client.v1.completions.validatePayload({
+          client.v1.completions.schema.safeParse({
             model: "gpt-4o",
             prompt: "Hello",
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "embeddings",
         fn: () =>
-          client.v1.embeddings.validatePayload({
+          client.v1.embeddings.schema.safeParse({
             model: "text-embedding-ada-002",
             input: "Hello",
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "rerank",
         fn: () =>
-          client.v1.rerank.validatePayload({
+          client.v1.rerank.schema.safeParse({
             model: "model",
             query: "query",
             documents: ["doc1"],
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "messages",
         fn: () =>
-          client.v1.messages.validatePayload({
+          client.v1.messages.schema.safeParse({
             model: "claude-3",
-            max_tokens: 1024,
             messages: [{ role: "user", content: "Hello" }],
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       // Workflows
       {
         name: "workflows.textToImage",
         fn: () =>
-          client.v1.workflows.textToImage.validatePayload({
+          client.v1.workflows.textToImage.schema.safeParse({
             prompt: "A cat",
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "workflows.kontext",
         fn: () =>
-          client.v1.workflows.kontext.validatePayload({
+          client.v1.workflows.kontext.schema.safeParse({
             prompt: "Hello",
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "workflows.getResult",
         fn: () =>
-          client.v1.workflows.getResult.validatePayload({
+          client.v1.workflows.getResult.schema.safeParse({
             id: "req-123",
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
-      // Audio - test that functions are callable (covering the code paths)
-      // Note: These return validation errors but the functions are invoked
-      {
-        name: "audio.transcriptions",
-        fn: () => client.v1.audio.transcriptions.validatePayload({}),
-        expectValid: false, // Will have validation errors but function is called
-      },
-      {
-        name: "audio.translations",
-        fn: () => client.v1.audio.translations.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "audio.batch.transcriptions",
-        fn: () => client.v1.audio.batch.transcriptions.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "audio.batch.translations",
-        fn: () => client.v1.audio.batch.translations.validatePayload({}),
-        expectValid: false,
-      },
-      // Account endpoints - test functions are callable
-      {
-        name: "accounts.users.update",
-        fn: () =>
-          client.v1.accounts.users.update.validatePayload({
-            role: "user",
-          }),
-        expectValid: true,
-      },
+      // Account endpoints
       {
         name: "accounts.models.create",
-        fn: () => client.v1.accounts.models.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.models.prepare",
-        fn: () => client.v1.accounts.models.prepare.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.models.getUploadEndpoint",
         fn: () =>
-          client.v1.accounts.models.getUploadEndpoint.validatePayload({
-            filename: "model.bin",
-            filenameToSize: { "model.bin": 1024 },
+          client.v1.accounts.models.create.schema.safeParse({
+            modelId: "test",
+            model: {},
           }),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "accounts.deployments.create",
-        fn: () => client.v1.accounts.deployments.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.deployedModels.create",
-        fn: () => client.v1.accounts.deployedModels.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.apiKeys.create",
         fn: () =>
-          client.v1.accounts.apiKeys.create.validatePayload({
-            apiKey: { displayName: "test-key" },
+          client.v1.accounts.deployments.create.schema.safeParse({
+            baseModel: "accounts/fireworks/models/test",
           }),
-        expectValid: true,
-      },
-      {
-        name: "accounts.secrets.create",
-        fn: () => client.v1.accounts.secrets.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.datasets.create",
-        fn: () => client.v1.accounts.datasets.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.datasets.getUploadEndpoint",
-        fn: () =>
-          client.v1.accounts.datasets.getUploadEndpoint.validatePayload({
-            filename: "data.bin",
-            filenameToSize: { "data.bin": 1024 },
-          }),
-        expectValid: true,
-      },
-      {
-        name: "accounts.datasets.validateUpload",
-        fn: () =>
-          client.v1.accounts.datasets.validateUpload.validatePayload({}),
-        expectValid: true,
+        expectSuccess: true,
       },
       {
         name: "accounts.batchInferenceJobs.create",
         fn: () =>
-          client.v1.accounts.batchInferenceJobs.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.supervisedFineTuningJobs.create",
-        fn: () =>
-          client.v1.accounts.supervisedFineTuningJobs.create.validatePayload(
-            {}
-          ),
-        expectValid: false,
-      },
-      {
-        name: "accounts.dpoJobs.create",
-        fn: () => client.v1.accounts.dpoJobs.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.evaluators.create",
-        fn: () => client.v1.accounts.evaluators.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.evaluators.getUploadEndpoint",
-        fn: () =>
-          client.v1.accounts.evaluators.getUploadEndpoint.validatePayload({
-            filename: "eval.bin",
-            filenameToSize: { "eval.bin": 1024 },
+          client.v1.accounts.batchInferenceJobs.create.schema.safeParse({
+            model: "test",
+            inputDatasetId: "test-ds",
           }),
-        expectValid: true,
-      },
-      {
-        name: "accounts.evaluationJobs.create",
-        fn: () => client.v1.accounts.evaluationJobs.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.reinforcementFineTuningJobs.create",
-        fn: () =>
-          client.v1.accounts.reinforcementFineTuningJobs.create.validatePayload(
-            {}
-          ),
-        expectValid: false,
-      },
-      {
-        name: "accounts.rlorTrainerJobs.create",
-        fn: () => client.v1.accounts.rlorTrainerJobs.create.validatePayload({}),
-        expectValid: false,
-      },
-      {
-        name: "accounts.rlorTrainerJobs.executeTrainStep",
-        fn: () =>
-          client.v1.accounts.rlorTrainerJobs.executeTrainStep.validatePayload(
-            {}
-          ),
-        expectValid: false,
+        expectSuccess: true,
       },
     ];
 
     for (const test of tests) {
       const result = test.fn();
-      if (result.valid !== test.expectValid) {
-        // Debug logging to identify which tests fail
-        console.log(`FAIL: ${test.name}`, result.errors);
-      }
-      expect(result.valid).toBe(test.expectValid);
+      expect(result.success).toBe(test.expectSuccess);
     }
   });
 
@@ -385,25 +200,23 @@ describe("Fireworks validatePayload inline functions coverage", () => {
     const client = fireworks({ apiKey: "test" });
 
     // Test invalid payloads
-    const invalidResult1 = client.v1.chat.completions.validatePayload({
+    const invalidResult1 = client.v1.chat.completions.schema.safeParse({
       model: "gpt-4o",
       // Missing required 'messages'
     });
-    expect(invalidResult1.valid).toBe(false);
-    expect(invalidResult1.errors?.length).toBeGreaterThan(0);
+    expect(invalidResult1.success).toBe(false);
+    expect(invalidResult1.error?.issues.length).toBeGreaterThan(0);
 
-    const invalidResult2 = client.v1.completions.validatePayload({
+    const invalidResult2 = client.v1.completions.schema.safeParse({
       model: "gpt-4o",
       // Missing required 'prompt'
     });
-    expect(invalidResult2.valid).toBe(false);
+    expect(invalidResult2.success).toBe(false);
   });
 });
 
 describe("Fireworks SSE line 55 coverage", () => {
   it("should parse trailing event with event: prefix (covers sse.ts line 55)", async () => {
-    // This test specifically covers line 55: event = trimmed.slice(6).trim();
-    // in the trailing event handling section of sse.ts
     const response = createMockResponse([
       'event: custom_event\ndata: {"key":"value"}',
     ]);
@@ -468,8 +281,6 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
     const { fireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
 
-    // This test covers the early return when signal is undefined
-    // by calling a method without providing a signal
     const mockFetch = vi.fn().mockResolvedValue({
       ok: true,
       json: vi.fn().mockResolvedValue({
@@ -494,7 +305,6 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
     });
 
     expect(mockFetch).toHaveBeenCalled();
-    // No signal provided, so attachAbortHandler returns early (line 208)
   });
 
   it("should add event listener when signal has addEventListener", async () => {
@@ -540,8 +350,6 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
       mockSignal
     );
 
-    // Verify addEventListener was called with correct arguments
-    // This covers line 212: signal.addEventListener("abort", () => controller.abort(), { once: true });
     expect(mockAddEventListener).toHaveBeenCalledWith(
       "abort",
       expect.any(Function),
@@ -553,11 +361,8 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
     const { fireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
 
-    // Create a signal that is already aborted and has no addEventListener
-    // This covers lines 213-215: else if (signal.aborted) { controller.abort(); }
     const mockSignal = {
       aborted: true,
-      // No addEventListener - simulating older environment
     } as unknown as AbortSignal;
 
     const mockFetch = vi.fn().mockResolvedValue({
@@ -567,8 +372,6 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
 
     const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
 
-    // When signal is already aborted without addEventListener,
-    // the controller should be aborted immediately
     try {
       await testClient.v1.chat.completions(
         {

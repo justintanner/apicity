@@ -1,5 +1,5 @@
-// Tests for validatePayload — pure function, no API calls
-// Providers migrated to Zod (openai, kie, kimicoding, free, xai, anthropic) are tested via safeParse.
+// Tests for Zod schema validation across all providers (safeParse).
+// All providers now use Zod schemas -- this file validates the safeParse interface.
 import { describe, it, expect } from "vitest";
 
 // OpenAI validation (Zod schemas)
@@ -28,6 +28,18 @@ import {
   AnthropicMessageRequestSchema,
   AnthropicCountTokensRequestSchema,
 } from "../../packages/provider/anthropic/src/zod";
+
+// Fireworks validation (Zod schemas)
+import {
+  FireworksChatRequestSchema,
+  FireworksCompletionRequestSchema,
+  FireworksEmbeddingRequestSchema,
+  FireworksRerankRequestSchema,
+  AnthropicMessagesRequestSchema as FwMessagesSchema,
+  FireworksTextToImageRequestSchema,
+  FireworksSFTCreateRequestSchema,
+  FireworksBatchJobCreateRequestSchema,
+} from "../../packages/provider/fireworks/src/zod";
 
 describe("validatePayload", () => {
   describe("OpenAI", () => {
@@ -169,6 +181,100 @@ describe("validatePayload", () => {
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("Fireworks", () => {
+    it("should validate valid chat completion payload", () => {
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "accounts/fireworks/models/llama-v3p1-70b-instruct",
+        messages: [{ role: "user", content: "Hello" }],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject invalid chat completion payload", () => {
+      const result = FireworksChatRequestSchema.safeParse({
+        model: "test-model",
+        // Missing required 'messages' field
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
+
+    it("should validate valid completions payload", () => {
+      const result = FireworksCompletionRequestSchema.safeParse({
+        model: "test-model",
+        prompt: "Hello",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate valid embeddings payload", () => {
+      const result = FireworksEmbeddingRequestSchema.safeParse({
+        model: "nomic-ai/nomic-embed-text-v1.5",
+        input: "Hello world",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate valid rerank payload", () => {
+      const result = FireworksRerankRequestSchema.safeParse({
+        model: "fireworks/qwen3-reranker-8b",
+        query: "test query",
+        documents: ["doc1", "doc2"],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate valid messages (Anthropic format) payload", () => {
+      const result = FwMessagesSchema.safeParse({
+        model: "accounts/fireworks/models/llama-v3p1-70b-instruct",
+        messages: [{ role: "user", content: "Hello" }],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate valid text-to-image payload", () => {
+      const result = FireworksTextToImageRequestSchema.safeParse({
+        prompt: "A sunset over mountains",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate valid SFT create payload", () => {
+      const result = FireworksSFTCreateRequestSchema.safeParse({
+        accountId: "my-account",
+        dataset: "accounts/my-account/datasets/train-data",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject SFT create missing required fields", () => {
+      const result = FireworksSFTCreateRequestSchema.safeParse({});
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("accountId"))
+      ).toBe(true);
+      expect(result.error?.issues.some((i) => i.path.includes("dataset"))).toBe(
+        true
+      );
+    });
+
+    it("should validate valid batch job create payload", () => {
+      const result = FireworksBatchJobCreateRequestSchema.safeParse({
+        model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+        inputDatasetId: "accounts/my-account/datasets/input",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject batch job create missing required fields", () => {
+      const result = FireworksBatchJobCreateRequestSchema.safeParse({});
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("model"))).toBe(
+        true
+      );
     });
   });
 });

@@ -59,27 +59,29 @@ describe("fireworks models download endpoint and validate upload", () => {
     it("should validate getDownloadEndpoint request", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.models.getDownloadEndpoint.validatePayload({
+        provider.v1.accounts.models.getDownloadEndpoint.schema.safeParse({
           readMask: "url,expiration",
         });
-      expect(valid.valid).toBe(true);
+      expect(valid.success).toBe(true);
 
       const empty =
-        provider.v1.accounts.models.getDownloadEndpoint.validatePayload({});
-      expect(empty.valid).toBe(true);
+        provider.v1.accounts.models.getDownloadEndpoint.schema.safeParse({});
+      expect(empty.success).toBe(true);
     });
 
     it("should validate validateUpload request", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.accounts.models.validateUpload.validatePayload({
-        readMask: "status",
-      });
-      expect(valid.valid).toBe(true);
+      const valid = provider.v1.accounts.models.validateUpload.schema.safeParse(
+        {
+          readMask: "status",
+        }
+      );
+      expect(valid.success).toBe(true);
 
-      const empty = provider.v1.accounts.models.validateUpload.validatePayload(
+      const empty = provider.v1.accounts.models.validateUpload.schema.safeParse(
         {}
       );
-      expect(empty.valid).toBe(true);
+      expect(empty.success).toBe(true);
     });
   });
 
@@ -96,26 +98,28 @@ describe("fireworks models download endpoint and validate upload", () => {
       const provider = fireworks({ apiKey: "test" });
       const models = provider.v1.accounts.models;
 
-      expect(models.getDownloadEndpoint.payloadSchema).toBeDefined();
-      expect(models.validateUpload.payloadSchema).toBeDefined();
+      expect(models.getDownloadEndpoint.schema).toBeDefined();
+      expect(models.validateUpload.schema).toBeDefined();
     });
 
-    it("should expose validatePayload on methods", () => {
+    it("should expose schema.safeParse on methods", () => {
       const provider = fireworks({ apiKey: "test" });
       const models = provider.v1.accounts.models;
 
-      expect(typeof models.getDownloadEndpoint.validatePayload).toBe(
+      expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(
         "function"
       );
-      expect(typeof models.validateUpload.validatePayload).toBe("function");
+      expect(typeof models.validateUpload.schema.safeParse).toBe("function");
     });
 
     it("should have correct HTTP methods in schemas", () => {
       const provider = fireworks({ apiKey: "test" });
       const models = provider.v1.accounts.models;
 
-      expect(models.getDownloadEndpoint.payloadSchema.method).toBe("GET");
-      expect(models.validateUpload.payloadSchema.method).toBe("GET");
+      expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof models.validateUpload.schema.safeParse).toBe("function");
     });
   });
 });

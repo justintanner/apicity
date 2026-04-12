@@ -1,16 +1,103 @@
-// Fireworks AI provider options
-export interface FireworksOptions {
-  apiKey: string;
-  baseURL?: string;
-  audioBaseURL?: string;
-  audioStreamingBaseURL?: string;
-  timeout?: number;
-  fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
-  WebSocket?: new (
-    url: string | URL,
-    protocols?: string | string[]
-  ) => WebSocket;
-}
+import type { z } from "zod";
+
+// ---------------------------------------------------------------------------
+// Request types — derived from Zod schemas (source of truth in zod.ts)
+// ---------------------------------------------------------------------------
+
+export type {
+  FireworksChatRequest,
+  FireworksCompletionRequest,
+  FireworksEmbeddingRequest,
+  FireworksRerankRequest,
+  AnthropicMessagesRequest,
+  FireworksTranscriptionRequest,
+  FireworksTranslationRequest,
+  FireworksStreamingTranscriptionOptions,
+  FireworksAudioBatchTranscriptionRequest,
+  FireworksAudioBatchTranslationRequest,
+  FireworksTextToImageRequest,
+  FireworksKontextRequest,
+  FireworksGetResultRequest,
+  FireworksCreateModelRequest,
+  FireworksUpdateModelRequest,
+  FireworksPrepareModelRequest,
+  FireworksGetUploadEndpointRequest,
+  FireworksValidateUploadRequest,
+  FireworksBatchJobCreateRequest,
+  FireworksSFTCreateRequest,
+  FireworksDpoJobCreateRequest,
+  FireworksRFTCreateRequest,
+  FireworksRlorTrainerJobCreateRequest,
+  FireworksRlorTrainerJobExecuteStepRequest,
+  FireworksCreateDeploymentRequest,
+  FireworksUpdateDeploymentRequest,
+  FireworksScaleDeploymentRequest,
+  FireworksCreateDeployedModelRequest,
+  FireworksUpdateDeployedModelRequest,
+  FireworksCreateDatasetRequest,
+  FireworksUpdateDatasetRequest,
+  FireworksDatasetGetUploadEndpointRequest,
+  FireworksDatasetValidateUploadRequest,
+  FireworksCreateUserRequest,
+  FireworksUpdateUserRequest,
+  FireworksCreateApiKeyRequest,
+  FireworksDeleteApiKeyRequest,
+  FireworksCreateSecretRequest,
+  FireworksUpdateSecretRequest,
+  FireworksCreateEvaluatorRequest,
+  FireworksUpdateEvaluatorRequest,
+  FireworksGetUploadEndpointEvaluatorRequest,
+  FireworksCreateEvaluationJobRequest,
+  FireworksOptions,
+} from "./zod";
+
+// Fireworks AI provider options (kept for backward compatibility -- canonical type is in zod.ts)
+// Re-import to use in local interface definitions
+import type {
+  FireworksChatRequest,
+  FireworksCompletionRequest,
+  FireworksEmbeddingRequest,
+  FireworksRerankRequest,
+  AnthropicMessagesRequest,
+  FireworksTranscriptionRequest,
+  FireworksTranslationRequest,
+  FireworksStreamingTranscriptionOptions,
+  FireworksAudioBatchTranscriptionRequest,
+  FireworksAudioBatchTranslationRequest,
+  FireworksTextToImageRequest,
+  FireworksKontextRequest,
+  FireworksGetResultRequest,
+  FireworksCreateModelRequest,
+  FireworksPrepareModelRequest,
+  FireworksGetUploadEndpointRequest,
+  FireworksValidateUploadRequest,
+  FireworksBatchJobCreateRequest,
+  FireworksSFTCreateRequest,
+  FireworksDpoJobCreateRequest,
+  FireworksRFTCreateRequest,
+  FireworksRlorTrainerJobCreateRequest,
+  FireworksRlorTrainerJobExecuteStepRequest,
+  FireworksCreateDeploymentRequest,
+  FireworksUpdateDeploymentRequest,
+  FireworksScaleDeploymentRequest,
+  FireworksCreateDeployedModelRequest,
+  FireworksUpdateDeployedModelRequest,
+  FireworksCreateDatasetRequest,
+  FireworksUpdateDatasetRequest,
+  FireworksDatasetGetUploadEndpointRequest,
+  FireworksDatasetValidateUploadRequest,
+  FireworksCreateUserRequest,
+  FireworksUpdateUserRequest,
+  FireworksCreateApiKeyRequest,
+  FireworksDeleteApiKeyRequest,
+  FireworksCreateSecretRequest,
+  FireworksUpdateSecretRequest,
+  FireworksCreateEvaluatorRequest,
+  FireworksUpdateEvaluatorRequest,
+  FireworksGetUploadEndpointEvaluatorRequest,
+  FireworksCreateEvaluationJobRequest,
+  FireworksUpdateModelRequest,
+} from "./zod";
 
 // Chat message
 export interface FireworksMessage {
@@ -52,37 +139,6 @@ export interface FireworksUsage {
 }
 
 // Chat request
-export interface FireworksChatRequest {
-  model: string;
-  messages: FireworksMessage[];
-  temperature?: number;
-  top_p?: number;
-  top_k?: number;
-  max_tokens?: number;
-  max_completion_tokens?: number;
-  n?: number;
-  stop?: string | string[];
-  stream?: boolean;
-  tools?: FireworksTool[];
-  tool_choice?:
-    | "auto"
-    | "none"
-    | "required"
-    | { type: "function"; function: { name: string } };
-  response_format?: {
-    type: "text" | "json_object" | "json_schema" | "grammar";
-    json_schema?: Record<string, unknown>;
-    grammar?: Record<string, unknown>;
-  };
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  logprobs?: boolean;
-  top_logprobs?: number;
-  reasoning_effort?: "low" | "medium" | "high" | "none";
-  user?: string;
-}
-
-// Chat response
 export interface FireworksChatChoice {
   index: number;
   message: {
@@ -126,35 +182,6 @@ export interface FireworksChatStreamChunk {
 }
 
 // Completions request
-export interface FireworksCompletionRequest {
-  model: string;
-  prompt: string | string[] | number[] | number[][];
-  max_tokens?: number;
-  max_completion_tokens?: number;
-  temperature?: number;
-  top_p?: number;
-  top_k?: number;
-  n?: number;
-  stop?: string | string[];
-  stream?: boolean;
-  echo?: boolean;
-  echo_last?: number;
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  repetition_penalty?: number;
-  logprobs?: boolean | number;
-  top_logprobs?: number;
-  response_format?: {
-    type: "text" | "json_object" | "json_schema" | "grammar";
-    json_schema?: Record<string, unknown>;
-    grammar?: Record<string, unknown>;
-  };
-  reasoning_effort?: "low" | "medium" | "high" | "none";
-  seed?: number;
-  user?: string;
-}
-
-// Completions response
 export interface FireworksCompletionChoice {
   index: number;
   text: string;
@@ -203,10 +230,7 @@ export interface AnthropicUrlImageSource {
   url: string;
 }
 
-export type AnthropicImageSource =
-  | AnthropicBase64ImageSource
-  | AnthropicUrlImageSource;
-
+export type AnthropicImageSource = AnthropicBase64ImageSource;
 export interface AnthropicTextBlock {
   type: "text";
   text: string;
@@ -247,9 +271,7 @@ export type AnthropicInputContentBlock =
   | AnthropicImageBlock
   | AnthropicThinkingBlock
   | AnthropicRedactedThinkingBlock
-  | AnthropicToolUseBlock
-  | AnthropicToolResultBlock;
-
+  | AnthropicToolUseBlock;
 export type AnthropicMessageContent = string | AnthropicInputContentBlock[];
 
 export interface AnthropicInputMessage {
@@ -269,45 +291,16 @@ export interface AnthropicThinkingConfig {
   budget_tokens?: number;
 }
 
-export interface AnthropicMessagesRequest {
-  model: string;
-  messages: AnthropicInputMessage[];
-  max_tokens?: number;
-  system?: string | { type: "text"; text: string }[];
-  temperature?: number;
-  top_p?: number;
-  top_k?: number;
-  stop_sequences?: string[];
-  stream?: boolean;
-  metadata?: { user_id?: string };
-  thinking?: AnthropicThinkingConfig;
-  tools?: AnthropicToolDefinition[];
-  tool_choice?:
-    | { type: "auto"; disable_parallel_tool_use?: boolean }
-    | { type: "any"; disable_parallel_tool_use?: boolean }
-    | { type: "none" }
-    | {
-        type: "tool";
-        name: string;
-        disable_parallel_tool_use?: boolean;
-      };
-  raw_output?: boolean;
-}
-
 export type AnthropicResponseContentBlock =
   | AnthropicTextBlock
   | AnthropicThinkingBlock
-  | AnthropicRedactedThinkingBlock
-  | AnthropicToolUseBlock;
-
+  | AnthropicRedactedThinkingBlock;
 export type AnthropicStopReason =
   | "end_turn"
   | "max_tokens"
   | "stop_sequence"
   | "tool_use"
-  | "pause_turn"
-  | "refusal";
-
+  | "pause_turn";
 export interface AnthropicMessagesResponse {
   id: string;
   type: "message";
@@ -343,14 +336,6 @@ export interface AnthropicStreamEvent {
 }
 
 // Embeddings request
-export interface FireworksEmbeddingRequest {
-  model: string;
-  input: string | string[] | number[] | number[][];
-  dimensions?: number;
-  prompt_template?: string;
-  return_logits?: number[];
-  normalize?: boolean;
-}
 
 // Embeddings response
 export interface FireworksEmbeddingData {
@@ -372,13 +357,6 @@ export interface FireworksEmbeddingResponse {
 }
 
 // Rerank request
-export interface FireworksRerankRequest {
-  model: string;
-  query: string;
-  documents: string[];
-  top_n?: number;
-  return_documents?: boolean;
-}
 
 // Rerank response
 export interface FireworksRerankResult {
@@ -401,21 +379,6 @@ export interface FireworksRerankResponse {
 }
 
 // Audio transcription request
-export interface FireworksTranscriptionRequest {
-  file: Blob | string;
-  model?: string;
-  vad_model?: "silero" | "whisperx-pyannet";
-  alignment_model?: "mms_fa" | "tdnn_ffn";
-  language?: string;
-  prompt?: string;
-  temperature?: number | number[];
-  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
-  timestamp_granularities?: string | string[];
-  diarize?: "true" | "false";
-  min_speakers?: number;
-  max_speakers?: number;
-  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
-}
 
 // Audio transcription response (json format)
 export interface FireworksTranscriptionResponse {
@@ -453,18 +416,6 @@ export interface FireworksTranscriptionVerboseResponse {
 }
 
 // Audio translation request
-export interface FireworksTranslationRequest {
-  file: Blob | string;
-  model?: string;
-  vad_model?: "silero" | "whisperx-pyannet";
-  alignment_model?: "mms_fa" | "tdnn_ffn";
-  language?: string;
-  prompt?: string;
-  temperature?: number | number[];
-  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
-  timestamp_granularities?: string | string[];
-  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
-}
 
 // Audio translation response
 export interface FireworksTranslationResponse {
@@ -472,15 +423,6 @@ export interface FireworksTranslationResponse {
 }
 
 // Audio streaming transcription (WebSocket)
-
-export interface FireworksStreamingTranscriptionOptions {
-  language?: string;
-  prompt?: string;
-  temperature?: number;
-  response_format?: "verbose_json";
-  timestamp_granularities?: string[];
-  baseURL?: string;
-}
 
 export interface FireworksStreamingTranscriptionWord {
   word: string;
@@ -540,9 +482,7 @@ export interface FireworksStreamingCheckpointEvent {
 export type FireworksStreamingTranscriptionMessage =
   | FireworksStreamingTranscriptionResult
   | FireworksStreamingStateClearedEvent
-  | FireworksStreamingOutputTraceEvent
-  | FireworksStreamingCheckpointEvent;
-
+  | FireworksStreamingOutputTraceEvent;
 export interface FireworksStreamingTranscriptionSession {
   send(audio: ArrayBuffer | Uint8Array): void;
   clearState(resetId?: string): void;
@@ -571,39 +511,6 @@ export interface FireworksSFTWandbConfig {
   entity?: string;
   runId?: string;
   url?: string;
-}
-
-export interface FireworksSFTCreateRequest {
-  accountId: string;
-  dataset: string;
-  displayName?: string;
-  baseModel?: string;
-  warmStartFrom?: string;
-  outputModel?: string;
-  jinjaTemplate?: string;
-  epochs?: number;
-  learningRate?: number;
-  maxContextLength?: number;
-  loraRank?: number;
-  earlyStop?: boolean;
-  evaluationDataset?: string;
-  isTurbo?: boolean;
-  evalAutoCarveout?: boolean;
-  region?: string;
-  nodes?: number;
-  batchSize?: number;
-  batchSizeSamples?: number;
-  gradientAccumulationSteps?: number;
-  learningRateWarmupSteps?: number;
-  mtpEnabled?: boolean;
-  mtpNumDraftTokens?: number;
-  mtpFreezeBaseModel?: boolean;
-  optimizerWeightDecay?: number;
-  usePurpose?: string;
-  awsS3Config?: FireworksSFTAwsS3Config;
-  azureBlobStorageConfig?: FireworksSFTAzureBlobStorageConfig;
-  wandbConfig?: FireworksSFTWandbConfig;
-  supervisedFineTuningJobId?: string;
 }
 
 export interface FireworksSFTJobProgress {
@@ -742,19 +649,7 @@ export type FireworksBatchJobState =
   | "JOB_STATE_DELETING_CLEANING_UP"
   | "JOB_STATE_RE_QUEUEING"
   | "JOB_STATE_IDLE"
-  | "JOB_STATE_EARLY_STOPPED"
-  | "JOB_STATE_PAUSED";
-
-export interface FireworksBatchJobCreateRequest {
-  model: string;
-  inputDatasetId: string;
-  displayName?: string;
-  outputDatasetId?: string;
-  inferenceParameters?: FireworksBatchInferenceParameters;
-  precision?: string;
-  continuedFromJobName?: string;
-}
-
+  | "JOB_STATE_EARLY_STOPPED";
 export interface FireworksBatchJob {
   name?: string;
   displayName?: string;
@@ -787,37 +682,6 @@ export interface FireworksBatchJobListResponse {
 
 // Audio batch processing types
 
-export interface FireworksAudioBatchTranscriptionRequest {
-  file: Blob | string;
-  endpoint_id: string;
-  model?: string;
-  vad_model?: "silero" | "whisperx-pyannet";
-  alignment_model?: "mms_fa" | "tdnn_ffn";
-  language?: string;
-  prompt?: string;
-  temperature?: number | number[];
-  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
-  timestamp_granularities?: string | string[];
-  diarize?: "true" | "false";
-  min_speakers?: number;
-  max_speakers?: number;
-  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
-}
-
-export interface FireworksAudioBatchTranslationRequest {
-  file: Blob | string;
-  endpoint_id: string;
-  model?: string;
-  vad_model?: "silero" | "whisperx-pyannet";
-  alignment_model?: "mms_fa" | "tdnn_ffn";
-  language?: string;
-  prompt?: string;
-  temperature?: number | number[];
-  response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
-  timestamp_granularities?: string | string[];
-  preprocessing?: "none" | "dynamic" | "soft_dynamic" | "bass_dynamic";
-}
-
 export interface FireworksAudioBatchSubmitResponse {
   batch_id: string;
 }
@@ -826,9 +690,7 @@ export type FireworksAudioBatchJobStatus =
   | "PENDING"
   | "RUNNING"
   | "COMPLETED"
-  | "FAILED"
-  | "CANCELLED";
-
+  | "FAILED";
 export interface FireworksAudioBatchJob {
   batch_id?: string;
   status?: FireworksAudioBatchJobStatus;
@@ -876,10 +738,7 @@ export type FireworksTrainingRegion =
   | "NA_BRITISHCOLUMBIA_1"
   | "US_GEORGIA_4"
   | "EU_ICELAND_3"
-  | "US_OHIO_1"
-  | "US_NEWYORK_1";
-
-// Base training config (shared across SFT, DPO, RFT)
+  | "US_OHIO_1";
 export interface FireworksBaseTrainingConfig {
   baseModel?: string;
   warmStartFrom?: string;
@@ -903,9 +762,7 @@ export type FireworksRLLossMethod =
   | "GRPO"
   | "DAPO"
   | "DPO"
-  | "ORPO"
-  | "GSPO_TOKEN";
-
+  | "ORPO";
 export interface FireworksRLLossConfig {
   method?: FireworksRLLossMethod;
   klBeta?: number;
@@ -935,16 +792,6 @@ export interface FireworksAzureBlobStorageConfig {
 }
 
 // DPO Fine-Tuning Job types
-
-export interface FireworksDpoJobCreateRequest {
-  dataset: string;
-  displayName?: string;
-  trainingConfig?: FireworksBaseTrainingConfig;
-  lossConfig?: FireworksRLLossConfig;
-  wandbConfig?: FireworksWandbConfig;
-  awsS3Config?: FireworksAwsS3Config;
-  azureBlobStorageConfig?: FireworksAzureBlobStorageConfig;
-}
 
 export interface FireworksDpoJob {
   name?: string;
@@ -990,15 +837,11 @@ export interface FireworksMetricsFileEndpointResponse {
 export type FireworksEvaluatorState =
   | "STATE_UNSPECIFIED"
   | "ACTIVE"
-  | "BUILDING"
-  | "BUILD_FAILED";
-
+  | "BUILDING";
 export type FireworksEvaluatorSourceType =
   | "TYPE_UNSPECIFIED"
   | "TYPE_UPLOAD"
-  | "TYPE_GITHUB"
-  | "TYPE_TEMPORARY";
-
+  | "TYPE_GITHUB";
 export type FireworksCriterionType = "TYPE_UNSPECIFIED" | "CODE_SNIPPETS";
 
 export interface FireworksCodeSnippets {
@@ -1037,31 +880,6 @@ export interface FireworksEvaluator {
   defaultDataset?: string;
 }
 
-export interface FireworksCreateEvaluatorRequest {
-  evaluatorId?: string;
-  evaluator: {
-    displayName?: string;
-    description?: string;
-    requirements?: string;
-    entryPoint?: string;
-    commitHash?: string;
-    defaultDataset?: string;
-    criteria?: FireworksCriterion[];
-    source?: FireworksEvaluatorSource;
-  };
-}
-
-export interface FireworksUpdateEvaluatorRequest {
-  displayName?: string;
-  description?: string;
-  requirements?: string;
-  entryPoint?: string;
-  commitHash?: string;
-  defaultDataset?: string;
-  criteria?: FireworksCriterion[];
-  source?: FireworksEvaluatorSource;
-}
-
 export interface FireworksUpdateEvaluatorOptions {
   prepareCodeUpload?: boolean;
 }
@@ -1081,11 +899,6 @@ export interface FireworksListEvaluatorsResponse {
 }
 
 export interface FireworksGetEvaluatorRequest {
-  readMask?: string;
-}
-
-export interface FireworksGetUploadEndpointEvaluatorRequest {
-  filenameToSize: Record<string, string>;
   readMask?: string;
 }
 
@@ -1128,9 +941,7 @@ export type FireworksEvaluationJobState =
   | "JOB_STATE_CREATING_INPUT_DATASET"
   | "JOB_STATE_IDLE"
   | "JOB_STATE_CANCELLING"
-  | "JOB_STATE_EARLY_STOPPED"
-  | "JOB_STATE_PAUSED";
-
+  | "JOB_STATE_EARLY_STOPPED";
 export interface FireworksEvaluationJob {
   name?: string;
   displayName?: string;
@@ -1145,19 +956,6 @@ export interface FireworksEvaluationJob {
   outputStats?: string;
   metrics?: Record<string, number>;
   awsS3Config?: FireworksAwsS3Config;
-}
-
-export interface FireworksCreateEvaluationJobRequest {
-  evaluationJobId?: string;
-  leaderboardIds?: string[];
-  evaluationJob: {
-    displayName?: string;
-    evaluator: string;
-    inputDataset: string;
-    outputDataset: string;
-    outputStats?: string;
-    awsS3Config?: FireworksAwsS3Config;
-  };
 }
 
 export interface FireworksListEvaluationJobsRequest {
@@ -1191,19 +989,6 @@ export interface FireworksRFTInferenceParams {
   temperature?: number;
   topP?: number;
   topK?: number;
-}
-
-export interface FireworksRFTCreateRequest {
-  dataset: string;
-  evaluator: string;
-  displayName?: string;
-  trainingConfig?: FireworksBaseTrainingConfig;
-  inferenceParams?: FireworksRFTInferenceParams;
-  lossConfig?: FireworksRLLossConfig;
-  wandbConfig?: FireworksWandbConfig;
-  awsS3Config?: FireworksAwsS3Config;
-  azureBlobStorageConfig?: FireworksAzureBlobStorageConfig;
-  reinforcementFineTuningJobId?: string;
 }
 
 export interface FireworksRFTJob {
@@ -1251,19 +1036,6 @@ export interface FireworksRlorRewardWeight {
   weight?: number;
 }
 
-export interface FireworksRlorTrainerJobCreateRequest {
-  dataset: string;
-  evaluator: string;
-  displayName?: string;
-  trainingConfig?: FireworksBaseTrainingConfig;
-  inferenceParams?: FireworksRFTInferenceParams;
-  lossConfig?: FireworksRLLossConfig;
-  rewardWeights?: FireworksRlorRewardWeight[];
-  wandbConfig?: FireworksWandbConfig;
-  awsS3Config?: FireworksAwsS3Config;
-  azureBlobStorageConfig?: FireworksAzureBlobStorageConfig;
-}
-
 export interface FireworksRlorTrainerJob {
   name?: string;
   displayName?: string;
@@ -1303,41 +1075,13 @@ export interface FireworksRlorTrainerJobGetRequest {
   readMask?: string;
 }
 
-export interface FireworksRlorTrainerJobExecuteStepRequest {
-  dataset: string;
-  outputModel: string;
-}
-
-// Payload schema types
-export interface PayloadFieldSchema {
-  type: "string" | "number" | "boolean" | "array" | "object";
-  required?: boolean;
-  description?: string;
-  enum?: readonly (string | number | boolean)[];
-  items?: PayloadFieldSchema;
-  properties?: Record<string, PayloadFieldSchema>;
-}
-
-export interface PayloadSchema {
-  method: "GET" | "POST" | "PATCH" | "DELETE";
-  path: string;
-  contentType: "application/json" | "multipart/form-data";
-  fields: Record<string, PayloadFieldSchema>;
-}
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-}
-
 // Namespace types
 interface FireworksChatCompletionsStreamMethod {
   (
     req: FireworksChatRequest,
     signal?: AbortSignal
   ): AsyncIterable<FireworksChatStreamChunk>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksChatCompletionsStreamMethod {
@@ -1345,8 +1089,7 @@ interface FireworksChatCompletionsStreamMethod {
     req: FireworksChatRequest,
     signal?: AbortSignal
   ): AsyncIterable<FireworksChatStreamChunk>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksChatCompletionsMethod {
@@ -1354,8 +1097,7 @@ interface FireworksChatCompletionsMethod {
     req: FireworksChatRequest,
     signal?: AbortSignal
   ): Promise<FireworksChatResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksChatNamespace {
@@ -1367,8 +1109,7 @@ interface FireworksCompletionsStreamMethod {
     req: FireworksCompletionRequest,
     signal?: AbortSignal
   ): AsyncIterable<FireworksCompletionStreamChunk>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksCompletionsMethod {
@@ -1376,8 +1117,7 @@ interface FireworksCompletionsMethod {
     req: FireworksCompletionRequest,
     signal?: AbortSignal
   ): Promise<FireworksCompletionResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksEmbeddingsMethod {
@@ -1385,8 +1125,7 @@ interface FireworksEmbeddingsMethod {
     req: FireworksEmbeddingRequest,
     signal?: AbortSignal
   ): Promise<FireworksEmbeddingResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksRerankMethod {
@@ -1394,8 +1133,7 @@ interface FireworksRerankMethod {
     req: FireworksRerankRequest,
     signal?: AbortSignal
   ): Promise<FireworksRerankResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksMessagesStreamMethod {
@@ -1403,8 +1141,7 @@ interface FireworksMessagesStreamMethod {
     req: AnthropicMessagesRequest,
     signal?: AbortSignal
   ): AsyncIterable<AnthropicStreamEvent>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksMessagesMethod {
@@ -1412,16 +1149,14 @@ interface FireworksMessagesMethod {
     req: AnthropicMessagesRequest,
     signal?: AbortSignal
   ): Promise<AnthropicMessagesResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksStreamingTranscriptionsMethod {
   (
     opts?: FireworksStreamingTranscriptionOptions
   ): FireworksStreamingTranscriptionSession;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksTranscriptionsMethod {
@@ -1430,8 +1165,7 @@ interface FireworksTranscriptionsMethod {
     signal?: AbortSignal
   ): Promise<FireworksTranscriptionResponse>;
   streaming: FireworksStreamingTranscriptionsMethod;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksTranslationsMethod {
@@ -1439,8 +1173,7 @@ interface FireworksTranslationsMethod {
     req: FireworksTranslationRequest,
     signal?: AbortSignal
   ): Promise<FireworksTranslationResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksAudioNamespace {
@@ -1454,8 +1187,7 @@ interface FireworksAudioBatchTranscriptionsMethod {
     req: FireworksAudioBatchTranscriptionRequest,
     signal?: AbortSignal
   ): Promise<FireworksAudioBatchSubmitResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksAudioBatchTranslationsMethod {
@@ -1463,8 +1195,7 @@ interface FireworksAudioBatchTranslationsMethod {
     req: FireworksAudioBatchTranslationRequest,
     signal?: AbortSignal
   ): Promise<FireworksAudioBatchSubmitResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksAudioBatchNamespace {
@@ -1483,8 +1214,7 @@ interface FireworksBatchJobCreateMethod {
     req: FireworksBatchJobCreateRequest,
     signal?: AbortSignal
   ): Promise<FireworksBatchJob>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksBatchInferenceJobsNamespace {
@@ -1511,8 +1241,7 @@ interface FireworksSFTCreateMethod {
     req: FireworksSFTCreateRequest,
     signal?: AbortSignal
   ): Promise<FireworksSFTJob>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksSFTListMethod {
@@ -1575,24 +1304,6 @@ export interface FireworksProvider {
 }
 
 // Text-to-image request (synchronous FLUX schnell/dev)
-export interface FireworksTextToImageRequest {
-  prompt: string;
-  aspect_ratio?:
-    | "1:1"
-    | "21:9"
-    | "16:9"
-    | "3:2"
-    | "5:4"
-    | "4:5"
-    | "2:3"
-    | "9:16"
-    | "9:21"
-    | "4:3"
-    | "3:4";
-  guidance_scale?: number;
-  num_inference_steps?: number;
-  seed?: number;
-}
 
 // Text-to-image JSON response
 export interface FireworksTextToImageResponse {
@@ -1603,17 +1314,6 @@ export interface FireworksTextToImageResponse {
 }
 
 // Kontext async request (FLUX Kontext Pro/Max)
-export interface FireworksKontextRequest {
-  prompt: string;
-  input_image?: string | null;
-  seed?: number | null;
-  aspect_ratio?: string | null;
-  output_format?: "png" | "jpeg";
-  webhook_url?: string | null;
-  webhook_secret?: string | null;
-  prompt_upsampling?: boolean;
-  safety_tolerance?: number;
-}
 
 // Kontext async create response
 export interface FireworksKontextResponse {
@@ -1621,9 +1321,6 @@ export interface FireworksKontextResponse {
 }
 
 // Kontext get_result request
-export interface FireworksGetResultRequest {
-  id: string;
-}
 
 // Kontext get_result response
 export interface FireworksGetResultResponse {
@@ -1647,8 +1344,7 @@ interface FireworksTextToImageMethod {
     req: FireworksTextToImageRequest,
     signal?: AbortSignal
   ): Promise<FireworksTextToImageResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksKontextMethod {
@@ -1657,8 +1353,7 @@ interface FireworksKontextMethod {
     req: FireworksKontextRequest,
     signal?: AbortSignal
   ): Promise<FireworksKontextResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksGetResultMethod {
@@ -1667,8 +1362,7 @@ interface FireworksGetResultMethod {
     req: FireworksGetResultRequest,
     signal?: AbortSignal
   ): Promise<FireworksGetResultResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksWorkflowsNamespace {
@@ -1690,9 +1384,7 @@ export type FireworksModelKind =
   | "FIRE_AGENT"
   | "LIVE_MERGE"
   | "CUSTOM_MODEL"
-  | "EMBEDDING_MODEL"
-  | "SNAPSHOT_MODEL";
-
+  | "EMBEDDING_MODEL";
 export type FireworksModelState = "STATE_UNSPECIFIED" | "UPLOADING" | "READY";
 
 export type FireworksDeploymentPrecision =
@@ -1709,9 +1401,7 @@ export type FireworksDeploymentPrecision =
   | "NF4"
   | "FP4"
   | "BF16"
-  | "FP4_BLOCKSCALED_MM"
-  | "FP4_MX_MOE";
-
+  | "FP4_BLOCKSCALED_MM";
 export type FireworksStatusCode =
   | "OK"
   | "CANCELLED"
@@ -1728,21 +1418,13 @@ export type FireworksStatusCode =
   | "OUT_OF_RANGE"
   | "UNIMPLEMENTED"
   | "INTERNAL"
-  | "UNAVAILABLE"
-  | "DATA_LOSS";
-
-export type FireworksCheckpointFormat =
-  | "NATIVE"
-  | "HUGGINGFACE"
-  | "UNINITIALIZED";
-
+  | "UNAVAILABLE";
+export type FireworksCheckpointFormat = "NATIVE" | "HUGGINGFACE";
 export type FireworksDeployedModelState =
   | "STATE_UNSPECIFIED"
   | "UNDEPLOYING"
   | "DEPLOYING"
-  | "DEPLOYED"
-  | "UPDATING";
-
+  | "DEPLOYED";
 export type FireworksSnapshotType = "FULL_SNAPSHOT" | "INCREMENTAL_SNAPSHOT";
 
 export interface FireworksBaseModelDetails {
@@ -1840,46 +1522,7 @@ export interface FireworksListModelsResponse {
   totalSize?: number;
 }
 
-export interface FireworksCreateModelRequest {
-  modelId: string;
-  model: FireworksModel;
-  cluster?: string;
-}
-
 export interface FireworksGetModelRequest {
-  readMask?: string;
-}
-
-export interface FireworksUpdateModelRequest {
-  displayName?: string;
-  description?: string;
-  kind?: FireworksModelKind;
-  githubUrl?: string;
-  huggingFaceUrl?: string;
-  baseModelDetails?: FireworksBaseModelDetails;
-  peftDetails?: FireworksPEFTDetails;
-  teftDetails?: FireworksTEFTDetails;
-  public?: boolean;
-  conversationConfig?: FireworksConversationConfig;
-  contextLength?: number;
-  supportsImageInput?: boolean;
-  supportsTools?: boolean;
-  defaultDraftModel?: string;
-  defaultDraftTokenCount?: number;
-  supportsLora?: boolean;
-  useHfApplyChatTemplate?: boolean;
-  trainingContextLength?: number;
-  snapshotType?: FireworksSnapshotType;
-}
-
-export interface FireworksPrepareModelRequest {
-  precision: FireworksDeploymentPrecision;
-  readMask?: string;
-}
-
-export interface FireworksGetUploadEndpointRequest {
-  filenameToSize: Record<string, number>;
-  enableResumableUpload?: boolean;
   readMask?: string;
 }
 
@@ -1896,12 +1539,6 @@ export interface FireworksGetDownloadEndpointResponse {
   filenameToSignedUrls?: Record<string, string>;
 }
 
-export interface FireworksValidateUploadRequest {
-  skipHfConfigValidation?: boolean;
-  trustRemoteCode?: boolean;
-  configOnly?: boolean;
-}
-
 export interface FireworksValidateUploadResponse {
   warnings?: string[];
 }
@@ -1913,8 +1550,7 @@ interface FireworksModelsListMethod {
     req?: FireworksListModelsRequest,
     signal?: AbortSignal
   ): Promise<FireworksListModelsResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsCreateMethod {
@@ -1923,8 +1559,7 @@ interface FireworksModelsCreateMethod {
     req: FireworksCreateModelRequest,
     signal?: AbortSignal
   ): Promise<FireworksModel>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsGetMethod {
@@ -1934,8 +1569,7 @@ interface FireworksModelsGetMethod {
     req?: FireworksGetModelRequest,
     signal?: AbortSignal
   ): Promise<FireworksModel>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsUpdateMethod {
@@ -1945,8 +1579,7 @@ interface FireworksModelsUpdateMethod {
     req: FireworksUpdateModelRequest,
     signal?: AbortSignal
   ): Promise<FireworksModel>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
   // Verb accessor for POST on /accounts/:id/models/:mid
   post(
     accountId: string,
@@ -1962,8 +1595,7 @@ interface FireworksModelsDeleteMethod {
     modelId: string,
     signal?: AbortSignal
   ): Promise<Record<string, never>>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsPrepareMethod {
@@ -1973,8 +1605,7 @@ interface FireworksModelsPrepareMethod {
     req: FireworksPrepareModelRequest,
     signal?: AbortSignal
   ): Promise<Record<string, never>>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsGetUploadEndpointMethod {
@@ -1984,8 +1615,7 @@ interface FireworksModelsGetUploadEndpointMethod {
     req: FireworksGetUploadEndpointRequest,
     signal?: AbortSignal
   ): Promise<FireworksGetUploadEndpointResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsGetDownloadEndpointMethod {
@@ -1995,8 +1625,7 @@ interface FireworksModelsGetDownloadEndpointMethod {
     req?: FireworksGetDownloadEndpointRequest,
     signal?: AbortSignal
   ): Promise<FireworksGetDownloadEndpointResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksModelsValidateUploadMethod {
@@ -2006,8 +1635,7 @@ interface FireworksModelsValidateUploadMethod {
     req?: FireworksValidateUploadRequest,
     signal?: AbortSignal
   ): Promise<FireworksValidateUploadResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 export interface FireworksModelsNamespace {
@@ -2034,9 +1662,7 @@ export type FireworksDeploymentState =
   | "READY"
   | "DELETING"
   | "FAILED"
-  | "UPDATING"
-  | "DELETED";
-
+  | "UPDATING";
 export type FireworksAcceleratorType =
   | "ACCELERATOR_TYPE_UNSPECIFIED"
   | "NVIDIA_A100_80GB"
@@ -2047,9 +1673,7 @@ export type FireworksAcceleratorType =
   | "NVIDIA_L4_24GB"
   | "NVIDIA_H200_141GB"
   | "NVIDIA_B200_180GB"
-  | "AMD_MI325X_256GB"
-  | "AMD_MI350X_288GB";
-
+  | "AMD_MI325X_256GB";
 export interface FireworksAutoscalingPolicy {
   scaleUpWindow?: string;
   scaleDownWindow?: string;
@@ -2099,26 +1723,6 @@ export interface FireworksDeployment {
   pricingPlanId?: string;
 }
 
-export interface FireworksCreateDeploymentRequest {
-  baseModel: string;
-  displayName?: string;
-  description?: string;
-  minReplicaCount?: number;
-  maxReplicaCount?: number;
-  maxWithRevocableReplicaCount?: number;
-  autoscalingPolicy?: FireworksAutoscalingPolicy;
-  acceleratorCount?: number;
-  acceleratorType?: FireworksAcceleratorType;
-  precision?: FireworksDeploymentPrecision;
-  enableAddons?: boolean;
-  draftTokenCount?: number;
-  draftModel?: string;
-  ngramSpeculationLength?: number;
-  enableSessionAffinity?: boolean;
-  maxContextLength?: number;
-  deploymentShape?: string;
-}
-
 export interface FireworksCreateDeploymentOptions {
   deploymentId?: string;
   disableAutoDeploy?: boolean;
@@ -2140,26 +1744,6 @@ export interface FireworksListDeploymentsResponse {
   deployments: FireworksDeployment[];
   nextPageToken?: string;
   totalSize?: number;
-}
-
-export interface FireworksUpdateDeploymentRequest {
-  baseModel?: string;
-  displayName?: string;
-  description?: string;
-  minReplicaCount?: number;
-  maxReplicaCount?: number;
-  maxWithRevocableReplicaCount?: number;
-  autoscalingPolicy?: FireworksAutoscalingPolicy;
-  acceleratorCount?: number;
-  acceleratorType?: FireworksAcceleratorType;
-  precision?: FireworksDeploymentPrecision;
-  enableAddons?: boolean;
-  maxContextLength?: number;
-  deploymentShape?: string;
-}
-
-export interface FireworksScaleDeploymentRequest {
-  replicaCount: number;
 }
 
 export interface FireworksDeleteDeploymentOptions {
@@ -2237,28 +1821,8 @@ export interface FireworksDeployedModel {
   public?: boolean;
 }
 
-export interface FireworksCreateDeployedModelRequest {
-  displayName?: string;
-  description?: string;
-  model: string;
-  deployment: string;
-  default?: boolean;
-  serverless?: boolean;
-  public?: boolean;
-}
-
 export interface FireworksCreateDeployedModelOptions {
   replaceMergedAddon?: boolean;
-}
-
-export interface FireworksUpdateDeployedModelRequest {
-  displayName?: string;
-  description?: string;
-  model?: string;
-  deployment?: string;
-  default?: boolean;
-  serverless?: boolean;
-  public?: boolean;
 }
 
 export interface FireworksListDeployedModelsRequest {
@@ -2286,8 +1850,7 @@ interface FireworksCreateDeploymentMethod {
     options?: FireworksCreateDeploymentOptions,
     signal?: AbortSignal
   ): Promise<FireworksDeployment>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksUpdateDeploymentMethod {
@@ -2297,8 +1860,7 @@ interface FireworksUpdateDeploymentMethod {
     req: FireworksUpdateDeploymentRequest,
     signal?: AbortSignal
   ): Promise<FireworksDeployment>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
   // Verb accessor for POST on /accounts/:id/deployments/:did
   post(
     accountId: string,
@@ -2315,8 +1877,7 @@ interface FireworksScaleDeploymentMethod {
     req: FireworksScaleDeploymentRequest,
     signal?: AbortSignal
   ): Promise<Record<string, unknown>>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDeploymentsNamespace {
@@ -2384,9 +1945,7 @@ export type FireworksDatasetState = "STATE_UNSPECIFIED" | "UPLOADING" | "READY";
 export type FireworksDatasetFormat =
   | "FORMAT_UNSPECIFIED"
   | "CHAT"
-  | "COMPLETION"
-  | "RL";
-
+  | "COMPLETION";
 export interface FireworksDatasetStatus {
   code?: FireworksStatusCode;
   message?: string;
@@ -2427,13 +1986,6 @@ export interface FireworksDataset {
   averageTurnCount?: number;
 }
 
-export interface FireworksCreateDatasetRequest {
-  dataset: Partial<FireworksDataset>;
-  datasetId: string;
-  sourceDatasetId?: string;
-  filter?: string;
-}
-
 export interface FireworksListDatasetsRequest {
   pageSize?: number;
   pageToken?: string;
@@ -2452,24 +2004,6 @@ export interface FireworksGetDatasetRequest {
   readMask?: string;
 }
 
-export interface FireworksUpdateDatasetRequest {
-  displayName?: string;
-  exampleCount?: number;
-  userUploaded?: Record<string, unknown>;
-  evaluationResult?: FireworksDatasetEvaluationResult;
-  transformed?: FireworksDatasetTransformed;
-  splitted?: FireworksDatasetSplitted;
-  evalProtocol?: Record<string, unknown>;
-  externalUrl?: string;
-  format?: FireworksDatasetFormat;
-  sourceJobName?: string;
-}
-
-export interface FireworksDatasetGetUploadEndpointRequest {
-  filenameToSize: Record<string, number>;
-  readMask?: string;
-}
-
 export interface FireworksDatasetGetUploadEndpointResponse {
   filenameToSignedUrls?: Record<string, string>;
 }
@@ -2483,10 +2017,6 @@ export interface FireworksDatasetGetDownloadEndpointResponse {
   filenameToSignedUrls?: Record<string, string>;
 }
 
-export interface FireworksDatasetValidateUploadRequest {
-  [key: string]: unknown;
-}
-
 // Dataset namespace types
 
 interface FireworksDatasetCreateMethod {
@@ -2495,8 +2025,7 @@ interface FireworksDatasetCreateMethod {
     req: FireworksCreateDatasetRequest,
     signal?: AbortSignal
   ): Promise<FireworksDataset>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDatasetUpdateMethod {
@@ -2506,8 +2035,7 @@ interface FireworksDatasetUpdateMethod {
     req: FireworksUpdateDatasetRequest,
     signal?: AbortSignal
   ): Promise<FireworksDataset>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDatasetGetUploadEndpointMethod {
@@ -2517,8 +2045,7 @@ interface FireworksDatasetGetUploadEndpointMethod {
     req: FireworksDatasetGetUploadEndpointRequest,
     signal?: AbortSignal
   ): Promise<FireworksDatasetGetUploadEndpointResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDatasetGetDownloadEndpointMethod {
@@ -2528,8 +2055,7 @@ interface FireworksDatasetGetDownloadEndpointMethod {
     req?: FireworksDatasetGetDownloadEndpointRequest,
     signal?: AbortSignal
   ): Promise<FireworksDatasetGetDownloadEndpointResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDatasetValidateUploadMethod {
@@ -2539,8 +2065,7 @@ interface FireworksDatasetValidateUploadMethod {
     req?: FireworksDatasetValidateUploadRequest,
     signal?: AbortSignal
   ): Promise<Record<string, unknown>>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDatasetsNamespace {
@@ -2575,8 +2100,7 @@ interface FireworksCreateDeployedModelMethod {
     options?: FireworksCreateDeployedModelOptions,
     signal?: AbortSignal
   ): Promise<FireworksDeployedModel>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksUpdateDeployedModelMethod {
@@ -2586,8 +2110,7 @@ interface FireworksUpdateDeployedModelMethod {
     req: FireworksUpdateDeployedModelRequest,
     signal?: AbortSignal
   ): Promise<FireworksDeployedModel>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDeployedModelsNamespace {
@@ -2618,8 +2141,7 @@ interface FireworksDpoJobCreateMethod {
     req: FireworksDpoJobCreateRequest,
     signal?: AbortSignal
   ): Promise<FireworksDpoJob>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDpoJobsNamespace {
@@ -2660,16 +2182,12 @@ export type FireworksAccountState =
   | "STATE_UNSPECIFIED"
   | "CREATING"
   | "READY"
-  | "UPDATING"
-  | "DELETING";
-
+  | "UPDATING";
 export type FireworksAccountSuspendState =
   | "UNSUSPENDED"
   | "FAILED_PAYMENTS"
   | "CREDIT_DEPLETED"
-  | "MONTHLY_SPEND_LIMIT_EXCEEDED"
-  | "BLOCKED_BY_ABUSE_RULE";
-
+  | "MONTHLY_SPEND_LIMIT_EXCEEDED";
 export interface FireworksAccount {
   name: string;
   displayName?: string;
@@ -2702,19 +2220,12 @@ export interface FireworksGetAccountRequest {
 
 // User types
 
-export type FireworksUserRole =
-  | "admin"
-  | "user"
-  | "contributor"
-  | "inference-user";
-
+export type FireworksUserRole = "admin" | "user" | "contributor";
 export type FireworksUserState =
   | "STATE_UNSPECIFIED"
   | "CREATING"
   | "READY"
-  | "UPDATING"
-  | "DELETING";
-
+  | "UPDATING";
 export interface FireworksUser {
   name: string;
   displayName?: string;
@@ -2741,26 +2252,12 @@ export interface FireworksListUsersResponse {
   totalSize?: number;
 }
 
-export interface FireworksCreateUserRequest {
-  displayName?: string;
-  email?: string;
-  role: FireworksUserRole;
-  serviceAccount?: boolean;
-}
-
 export interface FireworksCreateUserOptions {
   userId?: string;
 }
 
 export interface FireworksGetUserRequest {
   readMask?: string;
-}
-
-export interface FireworksUpdateUserRequest {
-  role: FireworksUserRole;
-  displayName?: string;
-  email?: string;
-  serviceAccount?: boolean;
 }
 
 // API Key types
@@ -2790,19 +2287,6 @@ export interface FireworksListApiKeysResponse {
   totalSize?: number;
 }
 
-export interface FireworksCreateApiKeyRequest {
-  apiKey: {
-    displayName?: string;
-    expireTime?: string;
-  };
-}
-
-export interface FireworksDeleteApiKeyRequest {
-  keyId: string;
-}
-
-// Secret types
-
 export interface FireworksSecret {
   name: string;
   keyName: string;
@@ -2821,17 +2305,6 @@ export interface FireworksListSecretsResponse {
   secrets: FireworksSecret[];
   nextPageToken?: string;
   totalSize?: number;
-}
-
-export interface FireworksCreateSecretRequest {
-  name?: string;
-  keyName: string;
-  value: string;
-}
-
-export interface FireworksUpdateSecretRequest {
-  keyName: string;
-  value?: string;
 }
 
 // Account management namespace types
@@ -2866,8 +2339,7 @@ interface FireworksCreateUserMethod {
     options?: FireworksCreateUserOptions,
     signal?: AbortSignal
   ): Promise<FireworksUser>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksUpdateUserMethod {
@@ -2877,8 +2349,7 @@ interface FireworksUpdateUserMethod {
     req: FireworksUpdateUserRequest,
     signal?: AbortSignal
   ): Promise<FireworksUser>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
   // Verb accessor for POST on /accounts/:id/users/:uid
   post(
     accountId: string,
@@ -2906,8 +2377,7 @@ interface FireworksCreateApiKeyMethod {
     req: FireworksCreateApiKeyRequest,
     signal?: AbortSignal
   ): Promise<FireworksApiKey>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksDeleteApiKeyMethod {
@@ -2917,8 +2387,7 @@ interface FireworksDeleteApiKeyMethod {
     req: FireworksDeleteApiKeyRequest,
     signal?: AbortSignal
   ): Promise<Record<string, never>>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksSecretsNamespace {
@@ -2948,8 +2417,7 @@ interface FireworksCreateSecretMethod {
     req: FireworksCreateSecretRequest,
     signal?: AbortSignal
   ): Promise<FireworksSecret>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 // Evaluators namespace types
@@ -2959,8 +2427,7 @@ interface FireworksCreateEvaluatorMethod {
     req: FireworksCreateEvaluatorRequest,
     signal?: AbortSignal
   ): Promise<FireworksEvaluator>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksUpdateEvaluatorMethod {
@@ -2971,8 +2438,7 @@ interface FireworksUpdateEvaluatorMethod {
     options?: FireworksUpdateEvaluatorOptions,
     signal?: AbortSignal
   ): Promise<FireworksEvaluator>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksGetUploadEndpointEvaluatorMethod {
@@ -2982,8 +2448,7 @@ interface FireworksGetUploadEndpointEvaluatorMethod {
     req: FireworksGetUploadEndpointEvaluatorRequest,
     signal?: AbortSignal
   ): Promise<FireworksGetUploadEndpointEvaluatorResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksEvaluatorsNamespace {
@@ -3032,8 +2497,7 @@ interface FireworksCreateEvaluationJobMethod {
     req: FireworksCreateEvaluationJobRequest,
     signal?: AbortSignal
   ): Promise<FireworksEvaluationJob>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksUpdateSecretMethod {
@@ -3043,8 +2507,7 @@ interface FireworksUpdateSecretMethod {
     req: FireworksUpdateSecretRequest,
     signal?: AbortSignal
   ): Promise<FireworksSecret>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksEvaluationJobsNamespace {
@@ -3079,8 +2542,7 @@ interface FireworksRFTCreateMethod {
     req: FireworksRFTCreateRequest,
     signal?: AbortSignal
   ): Promise<FireworksRFTJob>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksRFTNamespace {
@@ -3115,8 +2577,7 @@ interface FireworksRlorTrainerJobCreateMethod {
     req: FireworksRlorTrainerJobCreateRequest,
     signal?: AbortSignal
   ): Promise<FireworksRlorTrainerJob>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksRlorTrainerJobExecuteStepMethod {
@@ -3126,8 +2587,7 @@ interface FireworksRlorTrainerJobExecuteStepMethod {
     req: FireworksRlorTrainerJobExecuteStepRequest,
     signal?: AbortSignal
   ): Promise<Record<string, unknown>>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksRlorTrainerJobsNamespace {
@@ -3215,8 +2675,7 @@ interface FireworksPostV1AudioTranscriptionsMethod {
     req: FireworksTranscriptionRequest,
     signal?: AbortSignal
   ): Promise<FireworksTranscriptionResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksPostV1AudioTranslationsMethod {
@@ -3224,8 +2683,7 @@ interface FireworksPostV1AudioTranslationsMethod {
     req: FireworksTranslationRequest,
     signal?: AbortSignal
   ): Promise<FireworksTranslationResponse>;
-  payloadSchema: PayloadSchema;
-  validatePayload(data: unknown): ValidationResult;
+  schema: z.ZodType;
 }
 
 interface FireworksPostV1AudioBatchNamespace {

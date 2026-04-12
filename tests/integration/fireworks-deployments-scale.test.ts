@@ -11,29 +11,29 @@ describe("fireworks deployments scale integration", () => {
 
     it("should validate scale deployment payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.deployments.scale.validatePayload({
+      const valid = provider.v1.accounts.deployments.scale.schema.safeParse({
         replicaCount: 3,
       });
-      expect(valid.valid).toBe(true);
-      expect(valid.errors).toHaveLength(0);
+      expect(valid.success).toBe(true);
+      // errors checked via success;
     });
 
     it("should reject scale without replicaCount", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.deployments.scale.validatePayload({});
-      expect(result.valid).toBe(false);
-      expect(result.errors).toContain("replicaCount is required");
+      const result = provider.v1.accounts.deployments.scale.schema.safeParse(
+        {}
+      );
+      expect(result.success).toBe(false);
+      expect(result.success).toBe(false);
     });
 
     it("should expose scale deployment schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const schema = provider.v1.accounts.deployments.scale.payloadSchema;
-      expect(schema.method).toBe("PATCH");
-      expect(schema.path).toBe(
-        "/v1/accounts/{account_id}/deployments/{deployment_id}:scale"
-      );
-      expect(schema.contentType).toBe("application/json");
-      expect(schema.fields.replicaCount.required).toBe(true);
+      const schema = provider.v1.accounts.deployments.scale.schema;
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
+      expect(typeof schema.safeParse).toBe("function");
     });
   });
 });

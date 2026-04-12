@@ -102,6 +102,8 @@ export type {
   FalSeedreamV5LiteImageSize,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteEditResponse,
+  FalSeedreamV5LiteTextToImageParams,
+  FalSeedreamV5LiteTextToImageResponse,
   FalRunNamespace,
   FalProvider,
   PayloadFieldSchema,

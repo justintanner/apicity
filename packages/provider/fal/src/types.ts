@@ -477,6 +477,21 @@ export interface FalSeedreamV5LiteEditResponse {
   seed: number;
 }
 
+// Bytedance Seedream v5 Lite text-to-image
+export interface FalSeedreamV5LiteTextToImageParams {
+  prompt: string;
+  image_size?: FalSeedreamV5LiteImageSize;
+  num_images?: number;
+  max_images?: number;
+  sync_mode?: boolean;
+  enable_safety_checker?: boolean;
+}
+
+export interface FalSeedreamV5LiteTextToImageResponse {
+  images: FalFile[];
+  seed: number;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -820,6 +835,7 @@ export interface FalRunBytedanceSeedance2p0Namespace {
 
 export interface FalRunBytedanceSeedreamV5LiteNamespace {
   edit: FalSeedreamV5LiteEditFn;
+  textToImage: FalSeedreamV5LiteTextToImageFn;
 }
 
 export interface FalRunBytedanceSeedreamV5Namespace {
@@ -860,6 +876,14 @@ type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditParams,
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteEditResponse>) & {
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+};
+
+type FalSeedreamV5LiteTextToImageFn = ((
+  params: FalSeedreamV5LiteTextToImageParams,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5LiteTextToImageResponse>) & {
   payloadSchema: PayloadSchema;
   validatePayload(data: unknown): ValidationResult;
 };

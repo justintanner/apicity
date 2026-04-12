@@ -42,6 +42,8 @@ import {
   FalNanoBananaProEditResponse,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteEditResponse,
+  FalSeedreamV5LiteTextToImageParams,
+  FalSeedreamV5LiteTextToImageResponse,
   FalRunNamespace,
 } from "./types";
 import type { ValidationResult } from "./types";
@@ -56,6 +58,7 @@ import {
   nanoBananaProTextToImageSchema,
   nanoBananaProEditSchema,
   seedreamV5LiteEditSchema,
+  seedreamV5LiteTextToImageSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -588,6 +591,28 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  const seedreamV5LiteTextToImage = Object.assign(
+    async function textToImage(
+      params: FalSeedreamV5LiteTextToImageParams,
+      signal?: AbortSignal
+    ): Promise<FalSeedreamV5LiteTextToImageResponse> {
+      return makeRequest<FalSeedreamV5LiteTextToImageResponse>(
+        "POST",
+        "/fal-ai/bytedance/seedream/v5/lite/text-to-image",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      payloadSchema: seedreamV5LiteTextToImageSchema,
+      validatePayload(data: unknown): ValidationResult {
+        return validatePayload(data, seedreamV5LiteTextToImageSchema);
+      },
+    }
+  );
+
   const run: FalRunNamespace = {
     bytedance: {
       seedance2p0: {
@@ -597,6 +622,7 @@ export function fal(opts: FalOptions): FalProvider {
         v5: {
           lite: {
             edit: seedreamV5LiteEdit,
+            textToImage: seedreamV5LiteTextToImage,
           },
         },
       },

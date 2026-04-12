@@ -268,6 +268,32 @@ fal.seedream.v5.lite.edit.validatePayload(data)
 
 </details>
 
+<details>
+<summary><b><code>falai.bytedance.seedream.v5.lite.texttoimage</code></b> — <code>POST /fal-ai/bytedance/seedream/v5/lite/text-to-image</code></summary>
+
+**Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `prompt` | string | Yes | The text prompt used to generate the image |
+| `image_size` | string | No | The size of the generated image. Default: auto_2K. Can also be an object with width/height.<br>Enum: `auto_2K`, `auto_4K` |
+| `num_images` | number | No | Number of separate model generations to run. Range: 1-6, default: 1 |
+| `max_images` | number | No | Enables multi-image generation. Total images will be between num_images and max_images*num_images. Range: 1-6, default: 1 |
+| `sync_mode` | boolean | No | If true, media is returned as a data URI and not available in request history. Default: false |
+| `enable_safety_checker` | boolean | No | If set to true, the safety checker will be enabled. Default: true |
+
+**Validation:**
+
+```typescript
+// Access the schema
+fal.seedream.v5.lite.text.to.image.payloadSchema
+
+// Validate data
+fal.seedream.v5.lite.text.to.image.validatePayload(data)
+```
+
+</details>
+
 ### DELETE Endpoints
 
 <details>

@@ -38,6 +38,8 @@ import {
   FalSeedance2p0ImageToVideoResponse,
   FalNanoBananaProEditParams,
   FalNanoBananaProEditResponse,
+  FalSeedreamV5LiteEditParams,
+  FalSeedreamV5LiteEditResponse,
   FalRunNamespace,
 } from "./types";
 import type { ValidationResult } from "./types";
@@ -50,6 +52,7 @@ import {
   filesUploadLocalSchema,
   bytedanceSeedance2p0ImageToVideoSchema,
   nanoBananaProEditSchema,
+  seedreamV5LiteEditSchema,
 } from "./schemas";
 import { validatePayload } from "./validate";
 
@@ -538,10 +541,39 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  const seedreamV5LiteEdit = Object.assign(
+    async function edit(
+      params: FalSeedreamV5LiteEditParams,
+      signal?: AbortSignal
+    ): Promise<FalSeedreamV5LiteEditResponse> {
+      return makeRequest<FalSeedreamV5LiteEditResponse>(
+        "POST",
+        "/fal-ai/bytedance/seedream/v5/lite/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      payloadSchema: seedreamV5LiteEditSchema,
+      validatePayload(data: unknown): ValidationResult {
+        return validatePayload(data, seedreamV5LiteEditSchema);
+      },
+    }
+  );
+
   const run: FalRunNamespace = {
     bytedance: {
       seedance2p0: {
         imageToVideo: bytedanceSeedance2p0ImageToVideo,
+      },
+      seedream: {
+        v5: {
+          lite: {
+            edit: seedreamV5LiteEdit,
+          },
+        },
       },
     },
     nanoBananaPro: {

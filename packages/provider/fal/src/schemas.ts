@@ -303,3 +303,49 @@ export const nanoBananaProEditSchema: PayloadSchema = {
     },
   },
 };
+
+export const seedreamV5LiteEditSchema: PayloadSchema = {
+  method: "POST",
+  path: "/fal-ai/bytedance/seedream/v5/lite/edit",
+  contentType: "application/json",
+  fields: {
+    prompt: {
+      type: "string",
+      required: true,
+      description: "The text prompt used to edit the image",
+    },
+    image_urls: {
+      type: "array",
+      required: true,
+      items: { type: "string" },
+      description:
+        "List of URLs of input images for editing. Up to 10 images allowed.",
+    },
+    image_size: {
+      type: "string",
+      enum: ["auto_2K", "auto_4K"],
+      description:
+        "The size of the generated image. Default: auto_2K. Can also be an object with width/height.",
+    },
+    num_images: {
+      type: "number",
+      description:
+        "Number of separate model generations to run. Range: 1-6, default: 1",
+    },
+    max_images: {
+      type: "number",
+      description:
+        "Enables multi-image generation. Total images will be between num_images and max_images*num_images. Range: 1-6, default: 1",
+    },
+    sync_mode: {
+      type: "boolean",
+      description:
+        "If true, media is returned as a data URI and not available in request history. Default: false",
+    },
+    enable_safety_checker: {
+      type: "boolean",
+      description:
+        "If set to true, the safety checker will be enabled. Default: true",
+    },
+  },
+};

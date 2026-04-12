@@ -438,6 +438,27 @@ export interface FalNanoBananaProEditResponse {
   description: string;
 }
 
+// Bytedance Seedream v5 Lite image editing
+export type FalSeedreamV5LiteImageSize =
+  | "auto_2K"
+  | "auto_4K"
+  | { width: number; height: number };
+
+export interface FalSeedreamV5LiteEditParams {
+  prompt: string;
+  image_urls: string[];
+  image_size?: FalSeedreamV5LiteImageSize;
+  num_images?: number;
+  max_images?: number;
+  sync_mode?: boolean;
+  enable_safety_checker?: boolean;
+}
+
+export interface FalSeedreamV5LiteEditResponse {
+  images: FalFile[];
+  seed: number;
+}
+
 // Payload schema types
 export interface PayloadFieldSchema {
   type: "string" | "number" | "boolean" | "array" | "object";
@@ -779,8 +800,21 @@ export interface FalRunBytedanceSeedance2p0Namespace {
   imageToVideo: FalSeedance2p0ImageToVideoFn;
 }
 
+export interface FalRunBytedanceSeedreamV5LiteNamespace {
+  edit: FalSeedreamV5LiteEditFn;
+}
+
+export interface FalRunBytedanceSeedreamV5Namespace {
+  lite: FalRunBytedanceSeedreamV5LiteNamespace;
+}
+
+export interface FalRunBytedanceSeedreamNamespace {
+  v5: FalRunBytedanceSeedreamV5Namespace;
+}
+
 export interface FalRunBytedanceNamespace {
   seedance2p0: FalRunBytedanceSeedance2p0Namespace;
+  seedream: FalRunBytedanceSeedreamNamespace;
 }
 
 type FalNanoBananaProEditFn = ((
@@ -794,6 +828,14 @@ type FalNanoBananaProEditFn = ((
 export interface FalRunNanoBananaProNamespace {
   edit: FalNanoBananaProEditFn;
 }
+
+type FalSeedreamV5LiteEditFn = ((
+  params: FalSeedreamV5LiteEditParams,
+  signal?: AbortSignal
+) => Promise<FalSeedreamV5LiteEditResponse>) & {
+  payloadSchema: PayloadSchema;
+  validatePayload(data: unknown): ValidationResult;
+};
 
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;

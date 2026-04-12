@@ -217,6 +217,7 @@ const SOURCE_FILE_MAP: Array<[RegExp, string | null]> = [
   [/^xai\/video-reference-images/, "tests/fixtures/cat1.jpg"],
   [/^openai\/vision/, "tests/fixtures/red.png"],
   [/^fal\/nano-banana-pro-edit/, "tests/fixtures/man.jpg"],
+  [/^fal\/bytedance-seedream-v5-lite-edit/, "tests/fixtures/man.jpg"],
   [/^kimicoding\/.*image-base64/, null],
   [/^kie\/e2e-motion-control/, null],
   [/^kie\/kling-motion-control/, null],

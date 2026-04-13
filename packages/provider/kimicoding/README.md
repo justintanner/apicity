@@ -24,7 +24,84 @@ const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! })
 
 ## API Reference
 
-All methods include their payload schema and a `validatePayload()` function for runtime validation.
+5 endpoints across 1 group. Each method mirrors an upstream URL path.
+
+### coding
+
+<details>
+<summary><code>GET</code> <b><code>kimicoding.coding.v1.models</code></b></summary>
+
+<code>GET https://api.kimi.com/coding/v1/models</code>
+
+[Upstream docs ↗](https://platform.moonshot.ai/docs)
+
+```typescript
+const res = await kimicoding.coding.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kimicoding.coding.v1.countTokens</code></b></summary>
+
+<code>POST https://api.kimi.com/coding/v1/tokens/count</code>
+
+[Upstream docs ↗](https://platform.moonshot.ai/docs)
+
+```typescript
+const res = await kimicoding.coding.v1.countTokens({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kimicoding.coding.v1.embeddings</code></b></summary>
+
+<code>POST https://api.kimi.com/coding/v1/embeddings</code>
+
+[Upstream docs ↗](https://platform.moonshot.ai/docs)
+
+```typescript
+const res = await kimicoding.coding.v1.embeddings({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kimicoding.coding.v1.messages</code></b></summary>
+
+<code>POST https://api.kimi.com/coding/v1/messages</code>
+
+[Upstream docs ↗](https://platform.moonshot.ai/docs)
+
+```typescript
+const res = await kimicoding.coding.v1.messages({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kimicoding.coding.v1.messages</code></b></summary>
+
+<code>POST https://api.kimi.com/coding/v1/messages</code>
+
+[Upstream docs ↗](https://platform.moonshot.ai/docs)
+
+```typescript
+const res = await kimicoding.coding.v1.messages({ /* ... */ });
+```
+
+Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
+
+</details>
 
 ## Middleware
 

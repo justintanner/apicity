@@ -24,7 +24,75 @@ const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
 
 ## API Reference
 
-All methods include their payload schema and a `validatePayload()` function for runtime validation.
+4 endpoints across 4 groups. Each method mirrors an upstream URL path.
+
+### chat
+
+<details>
+<summary><code>POST</code> <b><code>alibaba.v1.chat.completions</code></b></summary>
+
+<code>POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions</code>
+
+[Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
+
+```typescript
+const res = await alibaba.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
+
+</details>
+
+### models
+
+<details>
+<summary><code>GET</code> <b><code>alibaba.v1.models</code></b></summary>
+
+<code>GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models</code>
+
+[Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
+
+```typescript
+const res = await alibaba.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
+
+</details>
+
+### services
+
+<details>
+<summary><code>POST</code> <b><code>alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis</code></b></summary>
+
+<code>POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/services/aigc/video-generation/video-synthesis</code>
+
+[Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
+
+```typescript
+const res = await alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis({ /* ... */ });
+```
+
+Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
+
+</details>
+
+### tasks
+
+<details>
+<summary><code>GET</code> <b><code>alibaba.api.v1.tasks</code></b></summary>
+
+<code>GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/tasks/{taskId}</code>
+
+[Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
+
+```typescript
+const res = await alibaba.api.v1.tasks({ /* ... */ });
+```
+
+Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
+
+</details>
 
 ## Middleware
 

@@ -174,9 +174,25 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
    Object.assign on the endpoint function.
 4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`.
    Use Object.assign for callable namespaces.
-5. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
+5. **URL comment (required)** — Place a 2-line comment immediately above the
+   endpoint property in the factory:
+
+   ```typescript
+   // POST https://api.openai.com/v1/chat/completions
+   // Docs: https://platform.openai.com/docs/api-reference/chat/create
+   completions: Object.assign(async (req) => { ... }, { schema: ... })
+   ```
+
+   Line 1 is `// {METHOD} {full upstream URL}` (must match the URL the factory
+   actually hits). Line 2 is `// Docs: {upstream docs URL}` whose hostname is
+   on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. Also
+   add a `(provider, dotPath, method, fullUrl, docsUrl)` row to
+   `scripts/endpoint-docs.tsv` (the source of truth for docs URLs). Both are
+   enforced by `pnpm run lint:endpoints`. For overloaded endpoints (one async
+   function that dispatches to multiple paths), comment the default path.
+6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
    using setupPolly/teardownPolly. Record fixtures, verify replay.
-6. **Commit and PR** — One endpoint per PR.
+7. **Commit and PR** — One endpoint per PR.
 
 ## Development Workflow
 

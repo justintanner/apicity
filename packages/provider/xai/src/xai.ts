@@ -245,7 +245,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     return parts.length > 0 ? `?${parts.join("&")}` : "";
   }
 
-  // POST /v1/batches (create) with cancel and requests methods
+  // POST https://api.x.ai/v1/batches
+  // Docs: https://docs.x.ai/docs/api-reference
   const postBatches = Object.assign(
     async function createBatch(
       req: XaiBatchCreateRequest,
@@ -255,6 +256,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
     {
       schema: XaiBatchCreateRequestSchema,
+      // POST https://api.x.ai/v1/batches/{batchId}:cancel
+      // Docs: https://docs.x.ai/docs/api-reference
       cancel: async function cancelBatch(
         batchId: string,
         signal?: AbortSignal
@@ -266,6 +269,8 @@ export function xai(opts: XaiOptions): XaiProvider {
           signal
         );
       },
+      // POST https://api.x.ai/v1/batches/{batchId}/requests
+      // Docs: https://docs.x.ai/docs/api-reference
       requests: async function addRequests(
         batchId: string,
         req: XaiBatchAddRequestsBody,
@@ -276,7 +281,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
-  // POST /v1/collections (create) with documents method
+  // POST https://api.x.ai/v1/collections
+  // Docs: https://docs.x.ai/docs/api-reference
   const postCollections = Object.assign(
     async function createCollection(
       req: XaiCollectionCreateRequest,
@@ -286,6 +292,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
     {
       schema: XaiCollectionCreateRequestSchema,
+      // POST https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}
+      // Docs: https://docs.x.ai/docs/api-reference
       documents: async function addDocument(
         collectionId: string,
         fileId: string,
@@ -302,7 +310,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
-  // GET /v1/files (list) and GET /v1/files/{fileId} (get)
+  // GET https://api.x.ai/v1/files/{fileIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getFiles(
     fileIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -323,7 +332,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
-  // GET /v1/models (list) and GET /v1/models/{modelId} (get)
+  // GET https://api.x.ai/v1/models/{modelIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getModels(
     modelIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -344,7 +354,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
-  // GET /v1/language-models (list) and GET /v1/language-models/{modelId} (get)
+  // GET https://api.x.ai/v1/language-models/{modelIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getLanguageModels(
     modelIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -365,7 +376,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
-  // GET /v1/image-generation-models (list) and GET /v1/image-generation-models/{modelId} (get)
+  // GET https://api.x.ai/v1/image-generation-models/{modelIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getImageGenerationModels(
     modelIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -386,7 +398,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
-  // GET /v1/video-generation-models (list) and GET /v1/video-generation-models/{modelId} (get)
+  // GET https://api.x.ai/v1/video-generation-models/{modelIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getVideoGenerationModels(
     modelIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
@@ -407,7 +420,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
-  // GET /v1/batches (list) and GET /v1/batches/{batchId} (get) with requests and results methods
+  // GET https://api.x.ai/v1/batches/{paramsOrIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getBatches(
     paramsOrIdOrSignal?: XaiBatchListParams | string | AbortSignal,
     signal?: AbortSignal
@@ -430,6 +444,8 @@ export function xai(opts: XaiOptions): XaiProvider {
   }
 
   const getBatchesNamespace = Object.assign(getBatches, {
+    // GET https://api.x.ai/v1/batches/{batchId}/requests{query}
+    // Docs: https://docs.x.ai/docs/api-reference
     requests: async function listRequests(
       batchId: string,
       params?: XaiBatchRequestListParams,
@@ -443,6 +459,8 @@ export function xai(opts: XaiOptions): XaiProvider {
         signal
       );
     },
+    // GET https://api.x.ai/v1/batches/{batchId}/results{query}
+    // Docs: https://docs.x.ai/docs/api-reference
     results: async function listResults(
       batchId: string,
       params?: XaiBatchResultListParams,
@@ -458,7 +476,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
   });
 
-  // GET /v1/collections (list) and GET /v1/collections/{collectionId} (get) with documents
+  // GET https://api.x.ai/v1/collections/{paramsOrIdOrSignal}
+  // Docs: https://docs.x.ai/docs/api-reference
   async function getCollections(
     paramsOrIdOrSignal?: XaiCollectionListParams | string | AbortSignal,
     signal?: AbortSignal
@@ -480,6 +499,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     );
   }
 
+  // GET https://api.x.ai/v1/collections/{collectionId}/documents/{paramsOrFileId}
+  // Docs: https://docs.x.ai/docs/api-reference
   const getCollectionsDocuments = Object.assign(
     async function listDocuments(
       collectionId: string,
@@ -503,6 +524,8 @@ export function xai(opts: XaiOptions): XaiProvider {
       );
     },
     {
+      // GET https://api.x.ai/v1/collections/{collectionId}/documents:batchGet{query}
+      // Docs: https://docs.x.ai/docs/api-reference
       batchGet: async function batchGetDocuments(
         collectionId: string,
         fileIds: string[],
@@ -526,7 +549,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     documents: getCollectionsDocuments,
   });
 
-  // DELETE /v1/collections/{collectionId} with documents
+  // DELETE https://api.x.ai/v1/collections/{collectionId}
+  // Docs: https://docs.x.ai/docs/api-reference
   const deleteCollections = Object.assign(
     async function deleteCollection(
       collectionId: string,
@@ -540,6 +564,8 @@ export function xai(opts: XaiOptions): XaiProvider {
       );
     },
     {
+      // DELETE https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}
+      // Docs: https://docs.x.ai/docs/api-reference
       documents: async function deleteDocument(
         collectionId: string,
         fileId: string,
@@ -555,7 +581,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
-  // PUT /v1/collections/{collectionId}
+  // PUT https://api.x.ai/v1/collections/{collectionId}
+  // Docs: https://docs.x.ai/docs/api-reference
   const putCollections = Object.assign(
     async function updateCollection(
       collectionId: string,
@@ -577,6 +604,8 @@ export function xai(opts: XaiOptions): XaiProvider {
   return {
     post: {
       v1: {
+        // POST https://api.x.ai/v1/responses
+        // Docs: https://docs.x.ai/docs/api-reference
         responses: Object.assign(
           async function postResponses(
             req: XaiResponseRequest,
@@ -594,6 +623,8 @@ export function xai(opts: XaiOptions): XaiProvider {
           }
         ),
         chat: {
+          // POST https://api.x.ai/v1/chat/completions
+          // Docs: https://docs.x.ai/docs/api-reference
           completions: Object.assign(
             async function completions(
               req: XaiChatRequest,
@@ -612,6 +643,8 @@ export function xai(opts: XaiOptions): XaiProvider {
           ),
         },
         images: {
+          // POST https://api.x.ai/v1/images/generations
+          // Docs: https://docs.x.ai/docs/api-reference
           generations: Object.assign(
             async function generations(
               req: XaiImageGenerateRequest,
@@ -628,6 +661,8 @@ export function xai(opts: XaiOptions): XaiProvider {
               schema: XaiImageGenerateRequestSchema,
             }
           ),
+          // POST https://api.x.ai/v1/images/edits
+          // Docs: https://docs.x.ai/docs/api-reference
           edits: Object.assign(
             async function edits(
               req: XaiImageEditRequest,
@@ -641,6 +676,8 @@ export function xai(opts: XaiOptions): XaiProvider {
           ),
         },
         videos: {
+          // POST https://api.x.ai/v1/videos/generations
+          // Docs: https://docs.x.ai/docs/api-reference
           generations: Object.assign(
             async function generations(
               req: XaiVideoGenerateRequest,
@@ -657,6 +694,8 @@ export function xai(opts: XaiOptions): XaiProvider {
               schema: XaiVideoGenerateRequestSchema,
             }
           ),
+          // POST https://api.x.ai/v1/videos/edits
+          // Docs: https://docs.x.ai/docs/api-reference
           edits: Object.assign(
             async function edits(
               req: XaiVideoEditRequest,
@@ -668,6 +707,8 @@ export function xai(opts: XaiOptions): XaiProvider {
               schema: XaiVideoEditRequestSchema,
             }
           ),
+          // POST https://api.x.ai/v1/videos/extensions
+          // Docs: https://docs.x.ai/docs/api-reference
           extensions: Object.assign(
             async function extensions(
               req: XaiVideoExtendRequest,
@@ -685,6 +726,8 @@ export function xai(opts: XaiOptions): XaiProvider {
             }
           ),
         },
+        // POST https://api.x.ai/v1/files
+        // Docs: https://docs.x.ai/docs/api-reference
         files: Object.assign(async function postFiles(
           file: Blob,
           filename: string,
@@ -742,6 +785,8 @@ export function xai(opts: XaiOptions): XaiProvider {
         batches: postBatches,
         collections: postCollections,
         documents: {
+          // POST https://api.x.ai/v1/documents/search
+          // Docs: https://docs.x.ai/docs/api-reference
           search: Object.assign(
             async function search(
               req: XaiDocumentSearchRequest,
@@ -759,6 +804,8 @@ export function xai(opts: XaiOptions): XaiProvider {
             }
           ),
         },
+        // POST https://api.x.ai/v1/tokenize-text
+        // Docs: https://docs.x.ai/docs/api-reference
         tokenizeText: Object.assign(
           async function tokenizeText(
             req: XaiTokenizeTextRequest,
@@ -776,6 +823,8 @@ export function xai(opts: XaiOptions): XaiProvider {
           }
         ),
         realtime: {
+          // POST https://api.x.ai/v1/realtime/client_secrets
+          // Docs: https://docs.x.ai/docs/api-reference
           clientSecrets: Object.assign(
             async function clientSecrets(
               req: XaiRealtimeClientSecretRequest,
@@ -797,6 +846,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
     get: {
       v1: {
+        // GET https://api.x.ai/v1/responses/{id}
+        // Docs: https://docs.x.ai/docs/api-reference
         responses: async function getResponses(
           id: string,
           signal?: AbortSignal
@@ -809,6 +860,8 @@ export function xai(opts: XaiOptions): XaiProvider {
           );
         },
         chat: {
+          // GET https://api.x.ai/v1/chat/deferred-completion/{requestId}
+          // Docs: https://docs.x.ai/docs/api-reference
           deferredCompletion: async function deferredCompletion(
             requestId: string,
             signal?: AbortSignal
@@ -866,6 +919,8 @@ export function xai(opts: XaiOptions): XaiProvider {
             }
           },
         },
+        // GET https://api.x.ai/v1/videos/{requestId}
+        // Docs: https://docs.x.ai/docs/api-reference
         videos: async function getVideos(
           requestId: string,
           signal?: AbortSignal
@@ -888,6 +943,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     },
     delete: {
       v1: {
+        // DELETE https://api.x.ai/v1/responses/{id}
+        // Docs: https://docs.x.ai/docs/api-reference
         responses: async function deleteResponses(
           id: string,
           signal?: AbortSignal
@@ -899,6 +956,8 @@ export function xai(opts: XaiOptions): XaiProvider {
             signal
           );
         },
+        // DELETE https://api.x.ai/v1/files/{fileId}
+        // Docs: https://docs.x.ai/docs/api-reference
         files: async function deleteFiles(
           fileId: string,
           signal?: AbortSignal
@@ -950,6 +1009,8 @@ export function xai(opts: XaiOptions): XaiProvider {
     patch: {
       v1: {
         collections: {
+          // PATCH https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}
+          // Docs: https://docs.x.ai/docs/api-reference
           documents: async function regenerateDocument(
             collectionId: string,
             fileId: string,

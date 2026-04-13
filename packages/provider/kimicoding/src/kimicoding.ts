@@ -128,6 +128,8 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  // POST https://api.kimi.com/coding/v1/messages
+  // Docs: https://platform.moonshot.ai/docs
   async function* streamImpl(
     req: ChatRequest,
     signal?: AbortSignal
@@ -179,6 +181,8 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  // POST https://api.kimi.com/coding/v1/messages
+  // Docs: https://platform.moonshot.ai/docs
   async function chatImpl(
     req: ChatRequest,
     signal?: AbortSignal
@@ -219,6 +223,8 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  // POST https://api.kimi.com/coding/v1/embeddings
+  // Docs: https://platform.moonshot.ai/docs
   async function embeddingsImpl(
     req: EmbeddingRequest,
     signal?: AbortSignal
@@ -259,6 +265,8 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  // POST https://api.kimi.com/coding/v1/tokens/count
+  // Docs: https://platform.moonshot.ai/docs
   async function countTokensImpl(
     req: CountTokensRequest,
     signal?: AbortSignal
@@ -315,6 +323,8 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     schema: CountTokensRequestSchema,
   });
 
+  // GET https://api.kimi.com/coding/v1/models
+  // Docs: https://platform.moonshot.ai/docs
   async function listModelsFn(
     signal?: AbortSignal
   ): Promise<KimiCodingModelListResponse> {

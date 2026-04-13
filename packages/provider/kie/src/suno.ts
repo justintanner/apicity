@@ -47,6 +47,8 @@ export function createSunoProvider(
 ): SunoProvider {
   const requestOpts = { apiKey, doFetch, timeout };
 
+  // POST https://api.kie.ai/api/v1/generate
+  // Docs: https://docs.kie.ai
   async function createTask(
     req: SunoGenerateRequest
   ): Promise<SunoSubmitResponse> {

@@ -430,6 +430,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
   // POST v1 namespace
   const postV1 = {
     chat: {
+      // POST https://api.openai.com/v1/chat/completions/{id}
+      // Docs: https://platform.openai.com/docs/api-reference
       completions: Object.assign(
         async (
           reqOrId: OpenAiChatRequest | string,
@@ -460,6 +462,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       ),
     },
     audio: {
+      // POST https://api.openai.com/v1/audio/speech
+      // Docs: https://platform.openai.com/docs/api-reference
       speech: Object.assign(
         async (
           req: OpenAiSpeechRequest,
@@ -471,6 +475,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           schema: OpenAiSpeechRequestSchema,
         }
       ),
+      // POST https://api.openai.com/v1/audio/transcriptions
+      // Docs: https://platform.openai.com/docs/api-reference
       transcriptions: Object.assign(
         async (
           req: OpenAiTranscribeRequest,
@@ -496,6 +502,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           schema: OpenAiTranscribeRequestSchema,
         }
       ),
+      // POST https://api.openai.com/v1/audio/translations
+      // Docs: https://platform.openai.com/docs/api-reference
       translations: Object.assign(
         async (
           req: OpenAiTranslateRequest,
@@ -521,6 +529,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         }
       ),
     },
+    // POST https://api.openai.com/v1/embeddings
+    // Docs: https://platform.openai.com/docs/api-reference
     embeddings: Object.assign(
       async (
         req: OpenAiEmbeddingRequest,
@@ -537,6 +547,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       }
     ),
     images: {
+      // POST https://api.openai.com/v1/images/generations
+      // Docs: https://platform.openai.com/docs/api-reference
       generations: Object.assign(
         async (
           req: OpenAiImageGenerationRequest,
@@ -552,6 +564,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           schema: OpenAiImageGenerationRequestSchema,
         }
       ),
+      // POST https://api.openai.com/v1/images/edits
+      // Docs: https://platform.openai.com/docs/api-reference
       edits: Object.assign(
         async (
           req: OpenAiImageEditRequest,
@@ -594,6 +608,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         }
       ),
     },
+    // POST https://api.openai.com/v1/files
+    // Docs: https://platform.openai.com/docs/api-reference
     files: Object.assign(
       async (
         req: OpenAiFileUploadRequest,
@@ -616,6 +632,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         schema: OpenAiFileUploadRequestSchema,
       }
     ),
+    // POST https://api.openai.com/v1/moderations
+    // Docs: https://platform.openai.com/docs/api-reference
     moderations: Object.assign(
       async (
         req: OpenAiModerationRequest,
@@ -631,6 +649,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         schema: OpenAiModerationRequestSchema,
       }
     ),
+    // POST https://api.openai.com/v1/responses
+    // Docs: https://platform.openai.com/docs/api-reference
     responses: Object.assign(
       async (
         req: OpenAiResponseRequest,
@@ -644,6 +664,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiResponseRequestSchema,
+        // POST https://api.openai.com/v1/responses/compact
+        // Docs: https://platform.openai.com/docs/api-reference
         compact: Object.assign(
           async (
             req: OpenAiResponseCompactRequest,
@@ -659,6 +681,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             schema: OpenAiResponseCompactRequestSchema,
           }
         ),
+        // POST https://api.openai.com/v1/responses/input_tokens
+        // Docs: https://platform.openai.com/docs/api-reference
         inputTokens: Object.assign(
           async (
             req: OpenAiResponseInputTokensRequest,
@@ -674,6 +698,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             schema: OpenAiResponseInputTokensRequestSchema,
           }
         ),
+        // POST https://api.openai.com/v1/responses/{id}/cancel
+        // Docs: https://platform.openai.com/docs/api-reference
         cancel: Object.assign(
           async (
             id: string,
@@ -688,6 +714,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         ),
       }
     ),
+    // POST https://api.openai.com/v1/batches
+    // Docs: https://platform.openai.com/docs/api-reference
     batches: Object.assign(
       async (
         req: OpenAiBatchCreateRequest,
@@ -697,6 +725,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiBatchCreateRequestSchema,
+        // POST https://api.openai.com/v1/batches/{id}/cancel
+        // Docs: https://platform.openai.com/docs/api-reference
         cancel: Object.assign(
           async (id: string, signal?: AbortSignal): Promise<OpenAiBatch> => {
             return makeEmptyPostRequest<OpenAiBatch>(
@@ -709,6 +739,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       }
     ),
     fine_tuning: {
+      // POST https://api.openai.com/v1/fine_tuning/jobs
+      // Docs: https://platform.openai.com/docs/api-reference
       jobs: Object.assign(
         async (
           req: OpenAiFineTuningJobCreateRequest,
@@ -722,6 +754,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         },
         {
           schema: OpenAiFineTuningJobCreateRequestSchema,
+          // POST https://api.openai.com/v1/fine_tuning/jobs/{id}/cancel
+          // Docs: https://platform.openai.com/docs/api-reference
           cancel: Object.assign(
             async (
               id: string,
@@ -734,6 +768,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             },
             {}
           ),
+          // POST https://api.openai.com/v1/fine_tuning/jobs/{id}/pause
+          // Docs: https://platform.openai.com/docs/api-reference
           pause: Object.assign(
             async (
               id: string,
@@ -746,6 +782,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
             },
             {}
           ),
+          // POST https://api.openai.com/v1/fine_tuning/jobs/{id}/resume
+          // Docs: https://platform.openai.com/docs/api-reference
           resume: Object.assign(
             async (
               id: string,
@@ -761,6 +799,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         }
       ),
       checkpoints: {
+        // POST https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions
+        // Docs: https://platform.openai.com/docs/api-reference
         permissions: Object.assign(
           async (
             checkpoint: string,
@@ -784,6 +824,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
   // GET v1 namespace
   const getV1 = {
     chat: {
+      // GET https://api.openai.com/v1/chat/completions/{idOrOpts}
+      // Docs: https://platform.openai.com/docs/api-reference
       completions: Object.assign(
         async (
           idOrOpts?: string | OpenAiStoredCompletionListOptions,
@@ -819,6 +861,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           messages: undefined as unknown,
         }
       ) as import("./types").OpenAiGetV1ChatCompletions,
+      // GET https://api.openai.com/v1/chat/completions/{id}/messages
+      // Docs: https://platform.openai.com/docs/api-reference
       completionsMessages: async (
         id: string,
         opts?: OpenAiStoredCompletionMessageListOptions,
@@ -835,6 +879,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         );
       },
     },
+    // GET https://api.openai.com/v1/files/{idOrOpts}
+    // Docs: https://platform.openai.com/docs/api-reference
     files: Object.assign(
       async (
         idOrOpts?: string | OpenAiFileListRequest,
@@ -857,6 +903,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         return makeGetRequest<OpenAiFileListResponse>("/files", query, signal);
       },
       {
+        // GET https://api.openai.com/v1/files/{id}/content
+        // Docs: https://platform.openai.com/docs/api-reference
         content: async (id: string, signal?: AbortSignal): Promise<string> => {
           return makeGetTextRequest(
             `/files/${encodeURIComponent(id)}/content`,
@@ -865,6 +913,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         },
       }
     ) as import("./types").OpenAiGetV1FilesNamespace,
+    // GET https://api.openai.com/v1/models/{id}
+    // Docs: https://platform.openai.com/docs/api-reference
     models: Object.assign(
       async (
         id?: string | AbortSignal,
@@ -887,6 +937,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       },
       {}
     ) as import("./types").OpenAiGetV1ModelsNamespace,
+    // GET https://api.openai.com/v1/responses/{id}
+    // Docs: https://platform.openai.com/docs/api-reference
     responses: Object.assign(
       async (
         id: string,
@@ -903,6 +955,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         );
       },
       {
+        // GET https://api.openai.com/v1/responses/{id}/input_items
+        // Docs: https://platform.openai.com/docs/api-reference
         inputItems: async (
           id: string,
           opts?: OpenAiResponseInputItemsOptions,
@@ -921,6 +975,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         },
       }
     ),
+    // GET https://api.openai.com/v1/batches/{idOrOpts}
+    // Docs: https://platform.openai.com/docs/api-reference
     batches: Object.assign(
       async (
         idOrOpts?: string | OpenAiBatchListParams,
@@ -950,6 +1006,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       {}
     ) as import("./types").OpenAiGetV1BatchesNamespace,
     fine_tuning: {
+      // GET https://api.openai.com/v1/fine_tuning/jobs/{idOrOpts}
+      // Docs: https://platform.openai.com/docs/api-reference
       jobs: Object.assign(
         async (
           idOrOpts?: string | OpenAiFineTuningJobListOptions,
@@ -980,6 +1038,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           );
         },
         {
+          // GET https://api.openai.com/v1/fine_tuning/jobs/{id}/events
+          // Docs: https://platform.openai.com/docs/api-reference
           events: async (
             id: string,
             opts?: OpenAiFineTuningJobEventListOptions,
@@ -994,6 +1054,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
               signal
             );
           },
+          // GET https://api.openai.com/v1/fine_tuning/jobs/{id}/checkpoints
+          // Docs: https://platform.openai.com/docs/api-reference
           checkpoints: async (
             id: string,
             opts?: OpenAiFineTuningJobCheckpointListOptions,
@@ -1014,6 +1076,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         checkpoints: import("./types").OpenAiGetV1FineTuningJobsCheckpoints;
       },
       checkpoints: {
+        // GET https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions
+        // Docs: https://platform.openai.com/docs/api-reference
         permissions: async (
           checkpoint: string,
           opts?: OpenAiCheckpointPermissionListOptions,
@@ -1037,6 +1101,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
   // DELETE v1 namespace
   const deleteV1 = {
     chat: {
+      // DELETE https://api.openai.com/v1/chat/completions/{id}
+      // Docs: https://platform.openai.com/docs/api-reference
       completions: async (
         id: string,
         signal?: AbortSignal
@@ -1047,6 +1113,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         );
       },
     },
+    // DELETE https://api.openai.com/v1/files/{id}
+    // Docs: https://platform.openai.com/docs/api-reference
     files: async (
       id: string,
       signal?: AbortSignal
@@ -1056,6 +1124,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         signal
       );
     },
+    // DELETE https://api.openai.com/v1/models/{id}
+    // Docs: https://platform.openai.com/docs/api-reference
     models: async (
       id: string,
       signal?: AbortSignal
@@ -1065,6 +1135,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         signal
       );
     },
+    // DELETE https://api.openai.com/v1/responses/{id}
+    // Docs: https://platform.openai.com/docs/api-reference
     responses: async (
       id: string,
       signal?: AbortSignal
@@ -1076,6 +1148,8 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
     },
     fine_tuning: {
       checkpoints: {
+        // DELETE https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions/{permissionId}
+        // Docs: https://platform.openai.com/docs/api-reference
         permissions: async (
           checkpoint: string,
           permissionId: string,

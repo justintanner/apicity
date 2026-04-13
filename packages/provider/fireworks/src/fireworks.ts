@@ -337,6 +337,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     }
   }
 
+  // POST https://api.fireworks.ai/inference/v1/messages
+  // Docs: https://docs.fireworks.ai/api-reference
   async function* messagesStreamImpl(
     req: AnthropicMessagesRequest,
     signal?: AbortSignal
@@ -395,6 +397,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     }
   }
 
+  // POST https://api.fireworks.ai/inference/v1/messages
+  // Docs: https://docs.fireworks.ai/api-reference
   async function messagesImpl(
     req: AnthropicMessagesRequest,
     signal?: AbortSignal
@@ -706,6 +710,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
   // POST namespace - methods that use HTTP POST
   const postV1 = {
     chat: {
+      // POST https://api.fireworks.ai/inference/v1/chat/completions
+      // Docs: https://docs.fireworks.ai/api-reference
       completions: Object.assign(
         async (
           req: FireworksChatRequest,
@@ -722,6 +728,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         }
       ),
     },
+    // POST https://api.fireworks.ai/inference/v1/completions
+    // Docs: https://docs.fireworks.ai/api-reference
     completions: Object.assign(
       async (
         req: FireworksCompletionRequest,
@@ -737,6 +745,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         schema: FireworksCompletionRequestSchema,
       }
     ),
+    // POST https://api.fireworks.ai/inference/v1/embeddings
+    // Docs: https://docs.fireworks.ai/api-reference
     embeddings: Object.assign(
       async (
         req: FireworksEmbeddingRequest,
@@ -752,6 +762,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         schema: FireworksEmbeddingRequestSchema,
       }
     ),
+    // POST https://api.fireworks.ai/inference/v1/rerank
+    // Docs: https://docs.fireworks.ai/api-reference
     rerank: Object.assign(
       async (
         req: FireworksRerankRequest,
@@ -771,6 +783,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
       schema: AnthropicMessagesRequestSchema,
     }),
     workflows: {
+      // POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/text_to_image
+      // Docs: https://docs.fireworks.ai/api-reference
       textToImage: Object.assign(
         async (
           model: string,
@@ -788,6 +802,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           schema: FireworksTextToImageRequestSchema,
         }
       ),
+      // POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}
+      // Docs: https://docs.fireworks.ai/api-reference
       kontext: Object.assign(
         async (
           model: string,
@@ -805,6 +821,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           schema: FireworksKontextRequestSchema,
         }
       ),
+      // POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/get_result
+      // Docs: https://docs.fireworks.ai/api-reference
       getResult: Object.assign(
         async (
           model: string,
@@ -824,6 +842,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
       ),
     },
     audio: {
+      // POST https://api.fireworks.ai/inference/v1/audio/transcriptions
+      // Docs: https://docs.fireworks.ai/api-reference
       transcriptions: Object.assign(
         async (
           req: FireworksTranscriptionRequest,
@@ -879,6 +899,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           schema: FireworksTranscriptionRequestSchema,
         }
       ),
+      // POST https://api.fireworks.ai/inference/v1/audio/translations
+      // Docs: https://docs.fireworks.ai/api-reference
       translations: Object.assign(
         async (
           req: FireworksTranslationRequest,
@@ -930,6 +952,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         }
       ),
       batch: {
+        // POST https://api.fireworks.ai/inference/v1/audio/transcriptions
+        // Docs: https://docs.fireworks.ai/api-reference
         transcriptions: Object.assign(
           async (
             req: FireworksAudioBatchTranscriptionRequest,
@@ -986,6 +1010,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksAudioBatchTranscriptionRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/audio/translations
+        // Docs: https://docs.fireworks.ai/api-reference
         translations: Object.assign(
           async (
             req: FireworksAudioBatchTranslationRequest,
@@ -1041,6 +1067,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     },
     accounts: {
       users: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1060,6 +1088,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateUserRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -1095,6 +1125,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       models: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1113,6 +1145,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateModelRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:prepare
+        // Docs: https://docs.fireworks.ai/api-reference
         prepare: Object.assign(
           async (
             accountId: string,
@@ -1132,6 +1166,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksPrepareModelRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:getUploadEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getUploadEndpoint: Object.assign(
           async (
             accountId: string,
@@ -1153,6 +1189,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       deployments: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1172,6 +1210,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateDeploymentRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}:undelete
+        // Docs: https://docs.fireworks.ai/api-reference
         undelete: async (
           accountId: string,
           deploymentId: string,
@@ -1187,6 +1227,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       deployedModels: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1208,6 +1250,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       apiKeys: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1229,6 +1273,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       secrets: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1249,6 +1295,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       datasets: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1267,6 +1315,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateDatasetRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:getUploadEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getUploadEndpoint: Object.assign(
           async (
             accountId: string,
@@ -1286,6 +1336,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksDatasetGetUploadEndpointRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:validateUpload
+        // Docs: https://docs.fireworks.ai/api-reference
         validateUpload: Object.assign(
           async (
             accountId: string,
@@ -1307,6 +1359,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       batchInferenceJobs: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1327,6 +1381,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       supervisedFineTuningJobs: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/supervisedFineTuningJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             req: FireworksSFTCreateRequest,
@@ -1349,6 +1405,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksSFTCreateRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume
+        // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           req: FireworksSFTResumeRequest,
           signal?: AbortSignal
@@ -1363,6 +1421,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       dpoJobs: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1381,6 +1441,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksDpoJobCreateRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:resume
+        // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           accountId: string,
           jobId: string,
@@ -1394,6 +1456,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getMetricsFileEndpoint: async (
           accountId: string,
           jobId: string,
@@ -1409,6 +1473,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       evaluators: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluatorsV2
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1427,6 +1493,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateEvaluatorRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getUploadEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getUploadEndpoint: Object.assign(
           async (
             accountId: string,
@@ -1446,6 +1514,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksGetUploadEndpointEvaluatorRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload
+        // Docs: https://docs.fireworks.ai/api-reference
         validateUpload: async (
           accountId: string,
           evaluatorId: string,
@@ -1461,6 +1531,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       evaluationJobs: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1479,6 +1551,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateEvaluationJobRequestSchema,
           }
         ),
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getExecutionLogEndpoint: async (
           accountId: string,
           evaluationJobId: string,
@@ -1494,6 +1568,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       reinforcementFineTuningJobs: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1517,6 +1593,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksRFTCreateRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume
+        // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           accountId: string,
           jobId: string,
@@ -1532,6 +1610,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       rlorTrainerJobs: {
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
             accountId: string,
@@ -1550,6 +1630,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksRlorTrainerJobCreateRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:executeTrainStep
+        // Docs: https://docs.fireworks.ai/api-reference
         executeTrainStep: Object.assign(
           async (
             accountId: string,
@@ -1569,6 +1651,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksRlorTrainerJobExecuteStepRequestSchema,
           }
         ),
+        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume
+        // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           accountId: string,
           jobId: string,
@@ -1628,6 +1712,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
   // GET namespace - methods that use HTTP GET
   const getV1 = {
     accounts: {
+      // GET https://api.fireworks.ai/inference/v1/v1/accounts
+      // Docs: https://docs.fireworks.ai/api-reference
       list: async (
         params?: FireworksListAccountsRequest,
         signal?: AbortSignal
@@ -1640,6 +1726,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           signal
         );
       },
+      // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}
+      // Docs: https://docs.fireworks.ai/api-reference
       get: async (
         accountId: string,
         params?: FireworksGetAccountRequest,
@@ -1654,6 +1742,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       users: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListUsersRequest,
@@ -1667,6 +1757,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           userId: string,
@@ -1683,6 +1775,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       apiKeys: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           userId: string,
@@ -1699,6 +1793,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       secrets: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListSecretsRequest,
@@ -1712,6 +1808,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           secretId: string,
@@ -1728,6 +1826,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       models: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models
+        // Docs: https://docs.fireworks.ai/api-reference
         list: Object.assign(
           async (
             accountId: string,
@@ -1746,6 +1846,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksEmptySchema,
           }
         ),
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: Object.assign(
           async (
             accountId: string,
@@ -1765,6 +1867,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksEmptySchema,
           }
         ),
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:getDownloadEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getDownloadEndpoint: Object.assign(
           async (
             accountId: string,
@@ -1784,6 +1888,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksEmptySchema,
           }
         ),
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:validateUpload
+        // Docs: https://docs.fireworks.ai/api-reference
         validateUpload: Object.assign(
           async (
             accountId: string,
@@ -1805,6 +1911,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       datasets: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListDatasetsRequest,
@@ -1818,6 +1926,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           datasetId: string,
@@ -1832,6 +1942,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:getDownloadEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getDownloadEndpoint: Object.assign(
           async (
             accountId: string,
@@ -1853,6 +1965,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       batchInferenceJobs: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           req?: FireworksBatchJobListRequest,
@@ -1866,6 +1980,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           jobId: string,
@@ -1881,6 +1997,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       supervisedFineTuningJobs: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/supervisedFineTuningJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           req: FireworksSFTListRequest,
           signal?: AbortSignal
@@ -1900,6 +2018,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           req: FireworksSFTGetRequest,
           signal?: AbortSignal
@@ -1914,6 +2034,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       deployments: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListDeploymentsRequest,
@@ -1927,6 +2049,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           deploymentId: string,
@@ -1942,6 +2066,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       deploymentShapes: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           shapeId: string,
@@ -1957,6 +2083,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         versions: {
+          // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions
+          // Docs: https://docs.fireworks.ai/api-reference
           list: async (
             accountId: string,
             shapeId: string,
@@ -1971,6 +2099,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
               signal
             );
           },
+          // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions/{versionId}
+          // Docs: https://docs.fireworks.ai/api-reference
           get: async (
             accountId: string,
             shapeId: string,
@@ -1989,6 +2119,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       deployedModels: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListDeployedModelsRequest,
@@ -2002,6 +2134,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           deployedModelId: string,
@@ -2018,6 +2152,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       dpoJobs: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           req?: FireworksDpoJobListRequest,
@@ -2031,6 +2167,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           jobId: string,
@@ -2047,6 +2185,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       evaluators: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListEvaluatorsRequest,
@@ -2060,6 +2200,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           evaluatorId: string,
@@ -2074,6 +2216,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getBuildLogEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
         getBuildLogEndpoint: async (
           accountId: string,
           evaluatorId: string,
@@ -2088,6 +2232,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getSourceCodeSignedUrl
+        // Docs: https://docs.fireworks.ai/api-reference
         getSourceCodeSignedUrl: async (
           accountId: string,
           evaluatorId: string,
@@ -2104,6 +2250,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       evaluationJobs: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           params?: FireworksListEvaluationJobsRequest,
@@ -2117,6 +2265,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           evaluationJobId: string,
@@ -2133,6 +2283,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       reinforcementFineTuningJobs: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           req?: FireworksRFTListRequest,
@@ -2146,6 +2298,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           jobId: string,
@@ -2162,6 +2316,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       rlorTrainerJobs: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs
+        // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
           req?: FireworksRlorTrainerJobListRequest,
@@ -2175,6 +2331,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           jobId: string,
@@ -2193,6 +2351,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     },
     audio: {
       batch: {
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batch_job/{batchId}
+        // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
           batchId: string,
@@ -2214,6 +2374,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
   const patchV1 = {
     accounts: {
       users: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2249,6 +2411,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       models: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2284,6 +2448,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       datasets: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2305,6 +2471,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       deployments: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2338,6 +2506,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             },
           }
         ),
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}:scale
+        // Docs: https://docs.fireworks.ai/api-reference
         scale: Object.assign(
           async (
             accountId: string,
@@ -2359,6 +2529,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       deployedModels: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2380,6 +2552,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       secrets: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2401,6 +2575,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       evaluators: {
+        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}
+        // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
             accountId: string,
@@ -2429,6 +2605,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
   const deleteV1 = {
     accounts: {
       apiKeys: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys:delete
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: Object.assign(
           async (
             accountId: string,
@@ -2450,6 +2628,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       secrets: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           secretId: string,
@@ -2465,6 +2645,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       models: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: Object.assign(
           async (
             accountId: string,
@@ -2485,6 +2667,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       datasets: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           datasetId: string,
@@ -2500,6 +2684,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       batchInferenceJobs: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           jobId: string,
@@ -2515,6 +2701,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       supervisedFineTuningJobs: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: Object.assign(
           async (
             req: FireworksSFTDeleteRequest,
@@ -2534,6 +2722,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         ),
       },
       deployments: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           deploymentId: string,
@@ -2550,6 +2740,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       deployedModels: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           deployedModelId: string,
@@ -2565,6 +2757,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       dpoJobs: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           jobId: string,
@@ -2580,6 +2774,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       evaluators: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           evaluatorId: string,
@@ -2595,6 +2791,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       evaluationJobs: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           evaluationJobId: string,
@@ -2610,6 +2808,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       reinforcementFineTuningJobs: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           jobId: string,
@@ -2625,6 +2825,8 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
         },
       },
       rlorTrainerJobs: {
+        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}
+        // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
           jobId: string,

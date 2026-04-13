@@ -339,6 +339,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
 
   // --- Define POST methods ---
 
+  // POST https://api.anthropic.com/v1/messages
+  // Docs: https://docs.anthropic.com/en/api
   const postMessages = Object.assign(
     async function messages(
       req: AnthropicMessageRequest,
@@ -352,6 +354,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     },
     {
       schema: AnthropicMessageRequestSchema,
+      // POST https://api.anthropic.com/v1/messages/count_tokens
+      // Docs: https://docs.anthropic.com/en/api
       countTokens: Object.assign(
         async function countTokens(
           req: AnthropicCountTokensRequest,
@@ -367,6 +371,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
           schema: AnthropicCountTokensRequestSchema,
         }
       ),
+      // POST https://api.anthropic.com/v1/messages/batches
+      // Docs: https://docs.anthropic.com/en/api
       batches: Object.assign(
         async function batches(
           req: AnthropicBatchCreateRequest,
@@ -380,6 +386,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
         },
         {
           schema: AnthropicBatchCreateRequestSchema,
+          // POST https://api.anthropic.com/v1/messages/batches/{batchId}/cancel
+          // Docs: https://docs.anthropic.com/en/api
           cancel: async function cancel(
             batchId: string,
             signal?: AbortSignal
@@ -394,6 +402,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     }
   );
 
+  // POST https://api.anthropic.com/v1/files
+  // Docs: https://docs.anthropic.com/en/api
   const postFiles = Object.assign(
     async function upload(
       file: Blob,
@@ -414,7 +424,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     }
   );
 
-  // POST stream namespace methods
+  // POST https://api.anthropic.com/v1/messages
+  // Docs: https://docs.anthropic.com/en/api
   const postMessagesStream = Object.assign(
     async function stream(
       req: AnthropicMessageRequest,
@@ -428,6 +439,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     }
   );
 
+  // POST https://api.anthropic.com/v1/skills
+  // Docs: https://docs.anthropic.com/en/api
   const postSkillsCreate = Object.assign(
     async function create(
       displayTitle: string,
@@ -452,6 +465,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     }
   );
 
+  // POST https://api.anthropic.com/v1/skills/{skillId}/versions
+  // Docs: https://docs.anthropic.com/en/api
   const postSkillVersionsCreate = Object.assign(
     async function create(
       skillId: string,
@@ -477,6 +492,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
 
   // --- Define GET methods ---
 
+  // GET https://api.anthropic.com/v1/messages/batches
+  // Docs: https://docs.anthropic.com/en/api
   async function getBatchesList(
     params?: AnthropicListParams,
     signal?: AbortSignal
@@ -488,6 +505,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/messages/batches/{batchId}
+  // Docs: https://docs.anthropic.com/en/api
   async function getBatchesRetrieve(
     batchId: string,
     signal?: AbortSignal
@@ -499,6 +518,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/messages/batches/{batchId}/results
+  // Docs: https://docs.anthropic.com/en/api
   async function getBatchesResults(
     batchId: string,
     signal?: AbortSignal
@@ -509,6 +530,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/models
+  // Docs: https://docs.anthropic.com/en/api
   async function getModelsList(
     params?: AnthropicListParams,
     signal?: AbortSignal
@@ -520,6 +543,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/models/{modelId}
+  // Docs: https://docs.anthropic.com/en/api
   async function getModelsRetrieve(
     modelId: string,
     signal?: AbortSignal
@@ -531,6 +556,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/files
+  // Docs: https://docs.anthropic.com/en/api
   async function getFilesList(
     params?: AnthropicListParams,
     signal?: AbortSignal
@@ -544,6 +571,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/files/{fileId}
+  // Docs: https://docs.anthropic.com/en/api
   async function getFilesRetrieve(
     fileId: string,
     signal?: AbortSignal
@@ -557,6 +586,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/files/{fileId}/content
+  // Docs: https://docs.anthropic.com/en/api
   async function getFilesContent(
     fileId: string,
     signal?: AbortSignal
@@ -569,6 +600,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/skills
+  // Docs: https://docs.anthropic.com/en/api
   async function getSkillsList(
     params?: AnthropicSkillsListParams,
     signal?: AbortSignal
@@ -586,6 +619,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/skills/{skillId}
+  // Docs: https://docs.anthropic.com/en/api
   async function getSkillsRetrieve(
     skillId: string,
     signal?: AbortSignal
@@ -599,6 +634,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/v1/skills/{skillId}/versions
+  // Docs: https://docs.anthropic.com/en/api
   async function getSkillVersionsList(
     skillId: string,
     params?: AnthropicSkillVersionsListParams,
@@ -618,6 +655,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
 
   // --- Define DELETE methods ---
 
+  // DELETE https://api.anthropic.com/v1/messages/batches/{batchId}
+  // Docs: https://docs.anthropic.com/en/api
   async function deleteBatchesDel(
     batchId: string,
     signal?: AbortSignal
@@ -628,6 +667,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // DELETE https://api.anthropic.com/v1/files/{fileId}
+  // Docs: https://docs.anthropic.com/en/api
   async function deleteFilesDel(
     fileId: string,
     signal?: AbortSignal
@@ -640,6 +681,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // DELETE https://api.anthropic.com/v1/skills/{skillId}
+  // Docs: https://docs.anthropic.com/en/api
   async function deleteSkillsDel(
     skillId: string,
     signal?: AbortSignal
@@ -652,6 +695,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // DELETE https://api.anthropic.com/v1/skills/{skillId}/versions/{version}
+  // Docs: https://docs.anthropic.com/en/api
   async function deleteSkillVersionsDel(
     skillId: string,
     version: string,
@@ -728,6 +773,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
   // --- Build legacy v1 namespace (backward compatibility) ---
 
   const legacyV1 = {
+    // POST https://api.anthropic.com/v1/messages
+    // Docs: https://docs.anthropic.com/en/api
     messages: Object.assign(
       async function messages(
         req: AnthropicMessageRequest,
@@ -738,6 +785,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
       {
         schema: AnthropicMessageRequestSchema,
         stream: postMessagesStream,
+        // POST https://api.anthropic.com/v1/messages/count_tokens
+        // Docs: https://docs.anthropic.com/en/api
         countTokens: Object.assign(
           async function countTokens(
             req: AnthropicCountTokensRequest,
@@ -749,6 +798,8 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
             schema: AnthropicCountTokensRequestSchema,
           }
         ),
+        // POST https://api.anthropic.com/v1/messages/batches
+        // Docs: https://docs.anthropic.com/en/api
         batches: Object.assign(
           async function batches(
             req: AnthropicBatchCreateRequest,

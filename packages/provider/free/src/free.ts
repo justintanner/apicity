@@ -171,6 +171,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- tmpfiles.org -----------------------------------------------------------
 
   const tmpfilesApiV1 = {
+    // POST https://tmpfiles.org/api/v1/upload
+    // Docs: https://tmpfiles.org/
     upload: Object.assign(
       async (
         req: TmpfilesUploadRequest,
@@ -193,6 +195,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- uguu.se ----------------------------------------------------------------
 
   const uguu = {
+    // POST https://uguu.se/upload
+    // Docs: https://uguu.se/
     upload: Object.assign(
       async (
         req: UguuUploadRequest,
@@ -215,6 +219,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- catbox.moe -------------------------------------------------------------
 
   const catbox = {
+    // POST https://catbox.moe/user/api.php
+    // Docs: https://catbox.moe/tools.php
     upload: Object.assign(
       async (
         req: CatboxUploadRequest,
@@ -238,6 +244,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- litterbox.catbox.moe ---------------------------------------------------
 
   const litterbox = {
+    // POST https://litterbox.catbox.moe/resources/internals/api.php
+    // Docs: https://litterbox.catbox.moe/
     upload: Object.assign(
       async (
         req: LitterboxUploadRequest,
@@ -262,6 +270,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- gofile.io --------------------------------------------------------------
 
   const gofile = {
+    // POST https://upload.gofile.io/uploadfile
+    // Docs: https://gofile.io/api
     upload: Object.assign(
       async (
         req: GofileUploadRequest,
@@ -284,6 +294,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- filebin.net ------------------------------------------------------------
 
   const filebin = {
+    // POST https://filebin.net/{bin}/{filename}
+    // Docs: https://filebin.net/
     upload: Object.assign(
       async (
         req: FilebinUploadRequest,
@@ -309,6 +321,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- temp.sh ----------------------------------------------------------------
 
   const tempsh = {
+    // POST https://temp.sh/upload
+    // Docs: https://temp.sh/
     upload: Object.assign(
       async (
         req: TempshUploadRequest,
@@ -327,6 +341,8 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- tmpfile.link (tfLink) --------------------------------------------------
 
   const tflink = {
+    // POST https://tmpfile.link/api/upload
+    // Docs: https://tmpfile.link/
     upload: Object.assign(
       async (
         req: TflinkUploadRequest,

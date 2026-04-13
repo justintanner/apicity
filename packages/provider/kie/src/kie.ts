@@ -56,6 +56,8 @@ export function kie(opts: KieOptions): KieProvider {
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+  // POST https://api.kie.ai/api/v1/jobs/createTask
+  // Docs: https://docs.kie.ai
   async function createTask(
     req: MediaGenerationRequest
   ): Promise<TaskResponse> {
@@ -102,6 +104,8 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  // GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}
+  // Docs: https://docs.kie.ai
   async function recordInfo(taskId: string): Promise<KieTaskInfo> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -148,6 +152,8 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  // POST https://api.kie.ai/api/file-stream-upload
+  // Docs: https://docs.kie.ai
   async function fileStreamUpload(
     req: UploadMediaRequest
   ): Promise<UploadMediaResponse> {
@@ -209,6 +215,8 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  // POST https://api.kie.ai/api/file-url-upload
+  // Docs: https://docs.kie.ai
   async function fileUrlUpload(
     req: FileUrlUploadRequest
   ): Promise<UploadMediaResponse> {
@@ -259,6 +267,8 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  // POST https://api.kie.ai/api/file-base64-upload
+  // Docs: https://docs.kie.ai
   async function fileBase64Upload(
     req: FileBase64UploadRequest
   ): Promise<UploadMediaResponse> {
@@ -310,6 +320,8 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  // POST https://api.kie.ai/api/v1/common/download-url
+  // Docs: https://docs.kie.ai
   async function downloadUrl(
     req: DownloadUrlRequest
   ): Promise<DownloadUrlResponse> {
@@ -356,6 +368,8 @@ export function kie(opts: KieOptions): KieProvider {
     }
   }
 
+  // GET https://api.kie.ai/api/v1/chat/credit
+  // Docs: https://docs.kie.ai
   async function credit(): Promise<KieCreditsResponse> {
     const res = await doFetch(`${baseURL}/api/v1/chat/credit`, {
       method: "GET",

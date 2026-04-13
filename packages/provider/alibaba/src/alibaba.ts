@@ -216,6 +216,8 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
 
   const postV1 = {
     chat: {
+      // POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
+      // Docs: https://help.aliyun.com/zh/model-studio
       completions: Object.assign(
         async (
           req: AlibabaChatRequest,
@@ -255,6 +257,8 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   };
 
   const getV1 = {
+    // GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models
+    // Docs: https://help.aliyun.com/zh/model-studio
     models: async (signal?: AbortSignal): Promise<AlibabaModelListResponse> => {
       return makeGetRequest<AlibabaModelListResponse>("/models", signal);
     },
@@ -264,6 +268,8 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     services: {
       aigc: {
         videoGeneration: {
+          // POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/services/aigc/video-generation/video-synthesis
+          // Docs: https://help.aliyun.com/zh/model-studio
           videoSynthesis: Object.assign(
             async (
               req: AlibabaVideoSynthesisRequest,
@@ -289,6 +295,8 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   };
 
   const getApiV1 = {
+    // GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/tasks/{taskId}
+    // Docs: https://help.aliyun.com/zh/model-studio
     tasks: async (
       taskId: string,
       signal?: AbortSignal

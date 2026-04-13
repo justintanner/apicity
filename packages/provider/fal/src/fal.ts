@@ -384,6 +384,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   }
 
+  // GET https://api.fal.ai/v1/models/pricing
+  // Docs: https://docs.fal.ai
   const pricing = Object.assign(
     async function pricing(
       params: FalPricingParams,
@@ -397,6 +399,8 @@ export function fal(opts: FalOptions): FalProvider {
       );
     },
     {
+      // POST https://api.fal.ai/v1/models/pricing/estimate
+      // Docs: https://docs.fal.ai
       estimate: Object.assign(
         async function estimate(
           req: FalEstimateRequest,
@@ -429,6 +433,8 @@ export function fal(opts: FalOptions): FalProvider {
       );
     },
 
+    // DELETE https://api.fal.ai/v1/models/requests/{param}/payloads
+    // Docs: https://docs.fal.ai
     payloads: Object.assign(
       async function payloads(
         params: FalDeletePayloadsParams,
@@ -452,6 +458,8 @@ export function fal(opts: FalOptions): FalProvider {
     ),
   };
 
+  // GET https://api.fal.ai/v1/models
+  // Docs: https://docs.fal.ai
   const models = Object.assign(
     async function models(
       params?: FalModelSearchParams,
@@ -498,6 +506,8 @@ export function fal(opts: FalOptions): FalProvider {
   const queueBaseURL = opts.queueBaseURL ?? "https://queue.fal.run";
   const runBaseURL = opts.runBaseURL ?? "https://fal.run";
 
+  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video
+  // Docs: https://docs.fal.ai
   const bytedanceSeedance2p0ImageToVideo = Object.assign(
     async function imageToVideo(
       params: FalSeedance2p0ImageToVideoParams,
@@ -517,6 +527,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit
+  // Docs: https://docs.fal.ai
   const nanoBananaProEdit = Object.assign(
     async function edit(
       params: FalNanoBananaProEditParams,
@@ -536,6 +548,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro
+  // Docs: https://docs.fal.ai
   const nanoBananaProTextToImage = Object.assign(
     async function textToImage(
       params: FalNanoBananaProTextToImageParams,
@@ -555,6 +569,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit
+  // Docs: https://docs.fal.ai
   const seedreamV5LiteEdit = Object.assign(
     async function edit(
       params: FalSeedreamV5LiteEditParams,
@@ -574,6 +590,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image
+  // Docs: https://docs.fal.ai
   const seedreamV5LiteTextToImage = Object.assign(
     async function textToImage(
       params: FalSeedreamV5LiteTextToImageParams,
@@ -593,6 +611,8 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  // POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2
+  // Docs: https://docs.fal.ai
   const elevenlabsSpeechToTextScribeV2 = Object.assign(
     async function scribeV2(
       params: FalElevenlabsSpeechToTextScribeV2Params,
@@ -640,6 +660,8 @@ export function fal(opts: FalOptions): FalProvider {
   };
 
   const queue = {
+    // POST https://api.fal.ai/v1/POST
+    // Docs: https://docs.fal.ai
     submit: Object.assign(
       async function submit(
         params: FalQueueSubmitParams,
@@ -718,6 +740,8 @@ export function fal(opts: FalOptions): FalProvider {
 
   const serverless = {
     logs: {
+      // POST https://api.fal.ai/v1/serverless/logs/stream
+      // Docs: https://docs.fal.ai
       stream: Object.assign(
         async function stream(
           params?: FalLogsStreamParams,
@@ -749,6 +773,8 @@ export function fal(opts: FalOptions): FalProvider {
         return makeRequest<FalFileItem[]>("GET", path, undefined, signal);
       },
 
+      // POST https://api.fal.ai/v1/serverless/files/file/url/{param}
+      // Docs: https://docs.fal.ai
       uploadUrl: Object.assign(
         async function uploadUrl(
           params: FalFilesUploadUrlParams,
@@ -766,6 +792,8 @@ export function fal(opts: FalOptions): FalProvider {
         }
       ),
 
+      // POST https://api.fal.ai/v1/serverless/files/file/local/{param}
+      // Docs: https://docs.fal.ai
       uploadLocal: Object.assign(
         async function uploadLocal(
           params: FalFilesUploadLocalParams,
@@ -869,6 +897,8 @@ export function fal(opts: FalOptions): FalProvider {
       }
     },
   };
+  // GET https://api.fal.ai/v1/workflows
+  // Docs: https://docs.fal.ai
   const workflows = Object.assign(
     async function workflows(
       params?: FalWorkflowListParams,
@@ -898,7 +928,8 @@ export function fal(opts: FalOptions): FalProvider {
 
   // ==================== Verb-Prefixed API Surface ====================
 
-  // GET v1 namespace
+  // GET https://api.fal.ai/v1/models/pricing
+  // Docs: https://docs.fal.ai
   const getV1ModelsPricing = Object.assign(
     async function pricing(
       params: FalPricingParams,
@@ -912,6 +943,8 @@ export function fal(opts: FalOptions): FalProvider {
       );
     },
     {
+      // GET https://api.fal.ai/v1/models/pricing/estimate
+      // Docs: https://docs.fal.ai
       estimate: Object.assign(
         async function estimate(
           req: FalEstimateRequest,
@@ -944,6 +977,8 @@ export function fal(opts: FalOptions): FalProvider {
       );
     },
 
+    // GET https://api.fal.ai/v1/models/requests/{param}/payloads
+    // Docs: https://docs.fal.ai
     payloads: Object.assign(
       async function payloads(
         params: FalDeletePayloadsParams,
@@ -967,6 +1002,8 @@ export function fal(opts: FalOptions): FalProvider {
     ),
   };
 
+  // GET https://api.fal.ai/v1/models
+  // Docs: https://docs.fal.ai
   const getV1Models = Object.assign(
     async function models(
       params?: FalModelSearchParams,
@@ -1118,6 +1155,8 @@ export function fal(opts: FalOptions): FalProvider {
     },
   };
 
+  // GET https://api.fal.ai/v1/workflows
+  // Docs: https://docs.fal.ai
   const getV1Workflows = Object.assign(
     async function workflows(
       params?: FalWorkflowListParams,
@@ -1154,6 +1193,8 @@ export function fal(opts: FalOptions): FalProvider {
 
   // POST v1 namespace
   const postV1ModelsPricing = {
+    // POST https://api.fal.ai/v1/models/pricing/estimate
+    // Docs: https://docs.fal.ai
     estimate: Object.assign(
       async function estimate(
         req: FalEstimateRequest,
@@ -1177,6 +1218,8 @@ export function fal(opts: FalOptions): FalProvider {
   };
 
   const postV1Queue = {
+    // POST https://api.fal.ai/v1/POST
+    // Docs: https://docs.fal.ai
     submit: Object.assign(
       async function submit(
         params: FalQueueSubmitParams,
@@ -1223,6 +1266,8 @@ export function fal(opts: FalOptions): FalProvider {
   };
 
   const postV1ServerlessFiles = {
+    // POST https://api.fal.ai/v1/serverless/files/file/url/{param}
+    // Docs: https://docs.fal.ai
     uploadUrl: Object.assign(
       async function uploadUrl(
         params: FalFilesUploadUrlParams,
@@ -1240,6 +1285,8 @@ export function fal(opts: FalOptions): FalProvider {
       }
     ),
 
+    // POST https://api.fal.ai/v1/serverless/files/file/local/{param}
+    // Docs: https://docs.fal.ai
     uploadLocal: Object.assign(
       async function uploadLocal(
         params: FalFilesUploadLocalParams,
@@ -1284,6 +1331,8 @@ export function fal(opts: FalOptions): FalProvider {
 
   // POST stream v1 namespace
   const postStreamV1ServerlessLogs = {
+    // POST https://api.fal.ai/v1/serverless/logs/stream
+    // Docs: https://docs.fal.ai
     stream: Object.assign(
       async function stream(
         params?: FalLogsStreamParams,
@@ -1318,6 +1367,8 @@ export function fal(opts: FalOptions): FalProvider {
 
   // DELETE v1 namespace
   const deleteV1ModelsRequests = {
+    // DELETE https://api.fal.ai/v1/models/requests/{param}/payloads
+    // Docs: https://docs.fal.ai
     payloads: Object.assign(
       async function payloads(
         params: FalDeletePayloadsParams,

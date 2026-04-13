@@ -210,6 +210,18 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// ElevenLabs Speech to Text Scribe V2
+// ---------------------------------------------------------------------------
+
+export const FalElevenlabsSpeechToTextScribeV2RequestSchema = z.object({
+  audio_url: z.string(),
+  language_code: z.string().optional(),
+  tag_audio_events: z.boolean().optional(),
+  diarize: z.boolean().optional(),
+  keyterms: z.array(z.string()).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
 
@@ -258,5 +270,8 @@ export type FalSeedreamV5LiteEditParams = z.infer<
 >;
 export type FalSeedreamV5LiteTextToImageParams = z.infer<
   typeof FalSeedreamV5LiteTextToImageRequestSchema
+>;
+export type FalElevenlabsSpeechToTextScribeV2Params = z.infer<
+  typeof FalElevenlabsSpeechToTextScribeV2RequestSchema
 >;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

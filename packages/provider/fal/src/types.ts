@@ -17,6 +17,7 @@ export type {
   FalNanoBananaProEditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalElevenlabsSpeechToTextScribeV2Params,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -32,6 +33,7 @@ import type {
   FalNanoBananaProEditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalElevenlabsSpeechToTextScribeV2Params,
 } from "./zod";
 
 // Error types returned by fal API
@@ -358,6 +360,25 @@ export interface FalFile {
   content_type?: string;
   file_name?: string;
   file_size?: number;
+}
+
+// ==================== ElevenLabs Speech to Text Scribe V2 ====================
+
+// Transcription word details
+export interface FalTranscriptionWord {
+  text: string;
+  start: number;
+  end: number;
+  speaker_id: string;
+  type: "word" | "spacing" | "audio_event";
+}
+
+// ElevenLabs Scribe V2 speech-to-text response
+export interface FalElevenlabsSpeechToTextScribeV2Response {
+  text: string;
+  language_code: string;
+  language_probability: number;
+  words: FalTranscriptionWord[];
 }
 
 // ByteDance Seedance 2.0 image-to-video
@@ -759,6 +780,28 @@ type FalSeedreamV5LiteTextToImageFn = ((
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
+  falAi: FalRunFalAiNamespace;
+}
+
+// ==================== fal.run fal-ai namespace ====================
+
+type FalElevenlabsSpeechToTextScribeV2Fn = ((
+  params: FalElevenlabsSpeechToTextScribeV2Params,
+  signal?: AbortSignal
+) => Promise<FalElevenlabsSpeechToTextScribeV2Response>) & {
+  schema: z.ZodType<FalElevenlabsSpeechToTextScribeV2Params>;
+};
+
+export interface FalRunElevenlabsSpeechToTextNamespace {
+  scribeV2: FalElevenlabsSpeechToTextScribeV2Fn;
+}
+
+export interface FalRunElevenlabsNamespace {
+  speechToText: FalRunElevenlabsSpeechToTextNamespace;
+}
+
+export interface FalRunFalAiNamespace {
+  elevenlabs: FalRunElevenlabsNamespace;
 }
 
 // ==================== Verb-Prefixed API Surface ====================

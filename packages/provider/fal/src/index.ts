@@ -101,6 +101,12 @@ export type {
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5LiteTextToImageResponse,
+  FalTranscriptionWord,
+  FalElevenlabsSpeechToTextScribeV2Params,
+  FalElevenlabsSpeechToTextScribeV2Response,
+  FalRunElevenlabsSpeechToTextNamespace,
+  FalRunElevenlabsNamespace,
+  FalRunFalAiNamespace,
   FalRunNamespace,
   FalProvider,
 } from "./types";

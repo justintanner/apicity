@@ -44,6 +44,8 @@ import {
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5LiteTextToImageResponse,
+  FalElevenlabsSpeechToTextScribeV2Params,
+  FalElevenlabsSpeechToTextScribeV2Response,
   FalRunNamespace,
 } from "./types";
 import {
@@ -58,6 +60,7 @@ import {
   FalNanoBananaProEditRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
+  FalElevenlabsSpeechToTextScribeV2RequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -590,6 +593,25 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  const elevenlabsSpeechToTextScribeV2 = Object.assign(
+    async function scribeV2(
+      params: FalElevenlabsSpeechToTextScribeV2Params,
+      signal?: AbortSignal
+    ): Promise<FalElevenlabsSpeechToTextScribeV2Response> {
+      return makeRequest<FalElevenlabsSpeechToTextScribeV2Response>(
+        "POST",
+        "/fal-ai/elevenlabs/speech-to-text/scribe-v2",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalElevenlabsSpeechToTextScribeV2RequestSchema,
+    }
+  );
+
   const run: FalRunNamespace = {
     bytedance: {
       seedance2p0: {
@@ -607,6 +629,13 @@ export function fal(opts: FalOptions): FalProvider {
     nanoBananaPro: {
       textToImage: nanoBananaProTextToImage,
       edit: nanoBananaProEdit,
+    },
+    falAi: {
+      elevenlabs: {
+        speechToText: {
+          scribeV2: elevenlabsSpeechToTextScribeV2,
+        },
+      },
     },
   };
 

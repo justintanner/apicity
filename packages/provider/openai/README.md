@@ -153,14 +153,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>openai.v1.chat.completionsMessages</code></b></summary>
+<summary><code>GET</code> <b><code>openai.v1.chat.completions.messages</code></b></summary>
 
 <code>GET https://api.openai.com/v1/chat/completions/{id}/messages</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completionsMessages({ /* ... */ });
+const res = await openai.v1.chat.completions.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -261,17 +261,17 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 </details>
 
-### fine_tuning
+### fineTuning
 
 <details>
-<summary><code>DELETE</code> <b><code>openai.v1.fine_tuning.checkpoints.permissions</code></b></summary>
+<summary><code>DELETE</code> <b><code>openai.v1.fineTuning.checkpoints.permissions</code></b></summary>
 
 <code>DELETE https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions/{permissionId}</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.checkpoints.permissions({ /* ... */ });
+const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -279,14 +279,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>openai.v1.fine_tuning.checkpoints.permissions</code></b></summary>
+<summary><code>GET</code> <b><code>openai.v1.fineTuning.checkpoints.permissions</code></b></summary>
 
 <code>GET https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.checkpoints.permissions({ /* ... */ });
+const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -294,14 +294,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>openai.v1.fine_tuning.jobs</code></b></summary>
+<summary><code>GET</code> <b><code>openai.v1.fineTuning.jobs</code></b></summary>
 
 <code>GET https://api.openai.com/v1/fine_tuning/jobs/{idOrOpts}</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -309,14 +309,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>openai.v1.fine_tuning.jobs.checkpoints</code></b></summary>
+<summary><code>GET</code> <b><code>openai.v1.fineTuning.jobs.checkpoints</code></b></summary>
 
 <code>GET https://api.openai.com/v1/fine_tuning/jobs/{id}/checkpoints</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs.checkpoints({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs.checkpoints({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -324,14 +324,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>openai.v1.fine_tuning.jobs.events</code></b></summary>
+<summary><code>GET</code> <b><code>openai.v1.fineTuning.jobs.events</code></b></summary>
 
 <code>GET https://api.openai.com/v1/fine_tuning/jobs/{id}/events</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs.events({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs.events({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -339,14 +339,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>openai.v1.fine_tuning.checkpoints.permissions</code></b></summary>
+<summary><code>POST</code> <b><code>openai.v1.fineTuning.checkpoints.permissions</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.checkpoints.permissions({ /* ... */ });
+const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -354,14 +354,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>openai.v1.fine_tuning.jobs</code></b></summary>
+<summary><code>POST</code> <b><code>openai.v1.fineTuning.jobs</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -369,14 +369,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>openai.v1.fine_tuning.jobs.cancel</code></b></summary>
+<summary><code>POST</code> <b><code>openai.v1.fineTuning.jobs.cancel</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs/{id}/cancel</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs.cancel({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -384,14 +384,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>openai.v1.fine_tuning.jobs.pause</code></b></summary>
+<summary><code>POST</code> <b><code>openai.v1.fineTuning.jobs.pause</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs/{id}/pause</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs.pause({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs.pause({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -399,14 +399,14 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>openai.v1.fine_tuning.jobs.resume</code></b></summary>
+<summary><code>POST</code> <b><code>openai.v1.fineTuning.jobs.resume</code></b></summary>
 
 <code>POST https://api.openai.com/v1/fine_tuning/jobs/{id}/resume</code>
 
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fine_tuning.jobs.resume({ /* ... */ });
+const res = await openai.v1.fineTuning.jobs.resume({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

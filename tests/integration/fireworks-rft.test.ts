@@ -6,7 +6,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     it("should validate create payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
+        provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {
             dataset: "accounts/test/datasets/my-rft-dataset",
             evaluator: "accounts/test/evaluators/my-evaluator",
@@ -19,7 +19,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     it("should reject create payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const invalid =
-        provider.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
+        provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {}
         );
       expect(invalid.success).toBe(false);
@@ -30,7 +30,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     it("should validate create payload with training and loss config", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
+        provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {
             dataset: "accounts/test/datasets/my-rft-dataset",
             evaluator: "accounts/test/evaluators/my-evaluator",
@@ -58,7 +58,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     it("should validate create payload with cloud storage config", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
+        provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {
             dataset: "accounts/test/datasets/s3-dataset",
             evaluator: "accounts/test/evaluators/my-evaluator",
@@ -74,7 +74,8 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     it("should expose payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
       const schema =
-        provider.v1.accounts.reinforcementFineTuningJobs.create.schema;
+        provider.inference.v1.accounts.reinforcementFineTuningJobs.create
+          .schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -86,7 +87,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
   describe("namespace structure", () => {
     it("should expose create, get, list, delete, and resume methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      const rft = provider.v1.accounts.reinforcementFineTuningJobs;
+      const rft = provider.inference.v1.accounts.reinforcementFineTuningJobs;
       expect(typeof rft.create).toBe("function");
       expect(typeof rft.get).toBe("function");
       expect(typeof rft.list).toBe("function");
@@ -101,7 +102,7 @@ describe("fireworks rlor trainer jobs", () => {
     it("should validate create payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.rlorTrainerJobs.create.schema.safeParse({
+        provider.inference.v1.accounts.rlorTrainerJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-rlor-dataset",
           evaluator: "accounts/test/evaluators/my-evaluator",
         });
@@ -112,7 +113,9 @@ describe("fireworks rlor trainer jobs", () => {
     it("should reject create payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const invalid =
-        provider.v1.accounts.rlorTrainerJobs.create.schema.safeParse({});
+        provider.inference.v1.accounts.rlorTrainerJobs.create.schema.safeParse(
+          {}
+        );
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
@@ -121,7 +124,7 @@ describe("fireworks rlor trainer jobs", () => {
     it("should validate create payload with training config and reward weights", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.rlorTrainerJobs.create.schema.safeParse({
+        provider.inference.v1.accounts.rlorTrainerJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-rlor-dataset",
           evaluator: "accounts/test/evaluators/my-evaluator",
           displayName: "My RLOR Trainer",
@@ -144,7 +147,8 @@ describe("fireworks rlor trainer jobs", () => {
 
     it("should expose payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.accounts.rlorTrainerJobs.create.schema;
+      const schema =
+        provider.inference.v1.accounts.rlorTrainerJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -157,10 +161,12 @@ describe("fireworks rlor trainer jobs", () => {
     it("should validate executeTrainStep payload", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse({
-          dataset: "accounts/test/datasets/step-data",
-          outputModel: "accounts/test/models/step-output",
-        });
+        provider.inference.v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
+          {
+            dataset: "accounts/test/datasets/step-data",
+            outputModel: "accounts/test/models/step-output",
+          }
+        );
       expect(valid.success).toBe(true);
       // errors checked via success;
     });
@@ -168,7 +174,7 @@ describe("fireworks rlor trainer jobs", () => {
     it("should reject executeTrainStep payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test" });
       const invalid =
-        provider.v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
+        provider.inference.v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
           {}
         );
       expect(invalid.success).toBe(false);
@@ -179,7 +185,7 @@ describe("fireworks rlor trainer jobs", () => {
     it("should expose executeTrainStep payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
       const schema =
-        provider.v1.accounts.rlorTrainerJobs.executeTrainStep.schema;
+        provider.inference.v1.accounts.rlorTrainerJobs.executeTrainStep.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
     });
@@ -188,7 +194,7 @@ describe("fireworks rlor trainer jobs", () => {
   describe("namespace structure", () => {
     it("should expose create, get, list, delete, executeTrainStep, and resume methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      const rlor = provider.v1.accounts.rlorTrainerJobs;
+      const rlor = provider.inference.v1.accounts.rlorTrainerJobs;
       expect(typeof rlor.create).toBe("function");
       expect(typeof rlor.get).toBe("function");
       expect(typeof rlor.list).toBe("function");

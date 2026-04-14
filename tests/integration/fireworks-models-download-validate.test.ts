@@ -23,7 +23,7 @@ describe("fireworks models download endpoint and validate upload", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      const err = await provider.v1.accounts.models
+      const err = await provider.inference.v1.accounts.models
         .getDownloadEndpoint(accountId, modelId, { readMask: "url,expiration" })
         .catch((e: unknown) => e);
 
@@ -46,7 +46,7 @@ describe("fireworks models download endpoint and validate upload", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      const err = await provider.v1.accounts.models
+      const err = await provider.inference.v1.accounts.models
         .validateUpload(accountId, modelId, { readMask: "status,errors" })
         .catch((e: unknown) => e);
 
@@ -59,28 +59,32 @@ describe("fireworks models download endpoint and validate upload", () => {
     it("should validate getDownloadEndpoint request", () => {
       const provider = fireworks({ apiKey: "test" });
       const valid =
-        provider.v1.accounts.models.getDownloadEndpoint.schema.safeParse({
-          readMask: "url,expiration",
-        });
+        provider.inference.v1.accounts.models.getDownloadEndpoint.schema.safeParse(
+          {
+            readMask: "url,expiration",
+          }
+        );
       expect(valid.success).toBe(true);
 
       const empty =
-        provider.v1.accounts.models.getDownloadEndpoint.schema.safeParse({});
+        provider.inference.v1.accounts.models.getDownloadEndpoint.schema.safeParse(
+          {}
+        );
       expect(empty.success).toBe(true);
     });
 
     it("should validate validateUpload request", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.accounts.models.validateUpload.schema.safeParse(
-        {
+      const valid =
+        provider.inference.v1.accounts.models.validateUpload.schema.safeParse({
           readMask: "status",
-        }
-      );
+        });
       expect(valid.success).toBe(true);
 
-      const empty = provider.v1.accounts.models.validateUpload.schema.safeParse(
-        {}
-      );
+      const empty =
+        provider.inference.v1.accounts.models.validateUpload.schema.safeParse(
+          {}
+        );
       expect(empty.success).toBe(true);
     });
   });
@@ -88,7 +92,7 @@ describe("fireworks models download endpoint and validate upload", () => {
   describe("namespace structure", () => {
     it("should expose getDownloadEndpoint and validateUpload methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      const models = provider.v1.accounts.models;
+      const models = provider.inference.v1.accounts.models;
 
       expect(typeof models.getDownloadEndpoint).toBe("function");
       expect(typeof models.validateUpload).toBe("function");
@@ -96,7 +100,7 @@ describe("fireworks models download endpoint and validate upload", () => {
 
     it("should expose payload schemas on methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      const models = provider.v1.accounts.models;
+      const models = provider.inference.v1.accounts.models;
 
       expect(models.getDownloadEndpoint.schema).toBeDefined();
       expect(models.validateUpload.schema).toBeDefined();
@@ -104,7 +108,7 @@ describe("fireworks models download endpoint and validate upload", () => {
 
     it("should expose schema.safeParse on methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      const models = provider.v1.accounts.models;
+      const models = provider.inference.v1.accounts.models;
 
       expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(
         "function"
@@ -114,7 +118,7 @@ describe("fireworks models download endpoint and validate upload", () => {
 
     it("should have correct HTTP methods in schemas", () => {
       const provider = fireworks({ apiKey: "test" });
-      const models = provider.v1.accounts.models;
+      const models = provider.inference.v1.accounts.models;
 
       expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(
         "function"

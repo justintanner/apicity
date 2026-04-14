@@ -25,7 +25,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
-      await p.ai.v1.models();
+      await p.v1.models();
     } catch (err) {
       capturedError = err as Error;
     }
@@ -50,7 +50,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
-      await p.ai.v1.models();
+      await p.v1.models();
     } catch (err) {
       capturedError = err as Error;
     }
@@ -67,7 +67,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
-      await p.ai.v1.models();
+      await p.v1.models();
     } catch (err) {
       capturedError = err as Error;
     }
@@ -85,7 +85,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
-      await p.ai.v1.models();
+      await p.v1.models();
     } catch (err) {
       capturedError = err as Error;
     }
@@ -104,7 +104,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
-      await p.ai.v1.models();
+      await p.v1.models();
     } catch (err) {
       capturedError = err as Error;
     }
@@ -133,7 +133,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
-      await p.ai.v1.models();
+      await p.v1.models();
     } catch (err) {
       capturedError = err as Error & { request_id?: string; docs_url?: string };
     }

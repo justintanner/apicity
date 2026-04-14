@@ -62,7 +62,7 @@ describe("openai stored completions integration", () => {
 
     // List messages
     const messages: OpenAiStoredCompletionMessageListResponse =
-      await provider.get.v1.chat.completionsMessages(created.id);
+      await provider.get.v1.chat.completions.messages(created.id);
 
     expect(messages.object).toBe("list");
     expect(Array.isArray(messages.data)).toBe(true);

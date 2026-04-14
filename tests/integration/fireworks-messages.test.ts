@@ -18,7 +18,7 @@ describe("fireworks messages integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.v1.messages({
+      const result = await provider.inference.v1.messages({
         model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         messages: [{ role: "user", content: "Say hello in one sentence." }],
         max_tokens: 64,
@@ -45,7 +45,7 @@ describe("fireworks messages integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const events: unknown[] = [];
-      for await (const event of provider.post.stream.v1.messages({
+      for await (const event of provider.post.stream.inference.v1.messages({
         model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         messages: [{ role: "user", content: "Say hello in one sentence." }],
         max_tokens: 64,
@@ -64,7 +64,7 @@ describe("fireworks messages integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const result = provider.v1.messages.schema.safeParse({
+      const result = provider.inference.v1.messages.schema.safeParse({
         model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         messages: [{ role: "user", content: "Hello" }],
       });
@@ -76,7 +76,7 @@ describe("fireworks messages integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const result = provider.v1.messages.schema.safeParse({
+      const result = provider.inference.v1.messages.schema.safeParse({
         messages: [{ role: "user", content: "Hello" }],
       });
       expect(result.success).toBe(false);
@@ -87,8 +87,12 @@ describe("fireworks messages integration", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      expect(typeof provider.v1.messages.schema.safeParse).toBe("function");
-      expect(typeof provider.v1.messages.schema.safeParse).toBe("function");
+      expect(typeof provider.inference.v1.messages.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof provider.inference.v1.messages.schema.safeParse).toBe(
+        "function"
+      );
     });
   });
 });

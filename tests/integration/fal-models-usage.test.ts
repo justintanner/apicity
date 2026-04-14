@@ -14,7 +14,7 @@ describe("fal models usage integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.usage({
+    const result = await provider.v1.models.usage({
       endpoint_id: "fal-ai/flux/dev",
       limit: 5,
     });
@@ -27,7 +27,7 @@ describe("fal models usage integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.analytics({
+    const result = await provider.v1.models.analytics({
       endpoint_id: "fal-ai/flux/dev",
     });
     expect(result).toBeDefined();

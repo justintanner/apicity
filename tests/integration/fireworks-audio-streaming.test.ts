@@ -7,14 +7,20 @@ describe("fireworks audio streaming transcriptions", () => {
       apiKey: "fw-test-key",
     });
 
-    expect(provider.v1.audio.transcriptions.streaming).toBeDefined();
-    expect(typeof provider.v1.audio.transcriptions.streaming).toBe("function");
-    expect(provider.v1.audio.transcriptions.streaming.schema).toBeDefined();
+    expect(provider.inference.v1.audio.transcriptions.streaming).toBeDefined();
+    expect(typeof provider.inference.v1.audio.transcriptions.streaming).toBe(
+      "function"
+    );
     expect(
-      typeof provider.v1.audio.transcriptions.streaming.schema.safeParse
+      provider.inference.v1.audio.transcriptions.streaming.schema
+    ).toBeDefined();
+    expect(
+      typeof provider.inference.v1.audio.transcriptions.streaming.schema
+        .safeParse
     ).toBe("function");
     expect(
-      typeof provider.v1.audio.transcriptions.streaming.schema.safeParse
+      typeof provider.inference.v1.audio.transcriptions.streaming.schema
+        .safeParse
     ).toBe("function");
   });
 
@@ -23,18 +29,18 @@ describe("fireworks audio streaming transcriptions", () => {
       apiKey: "fw-test-key",
     });
 
-    const valid = provider.v1.audio.transcriptions.streaming.schema.safeParse({
-      language: "en",
-      temperature: 0,
-    });
+    const valid =
+      provider.inference.v1.audio.transcriptions.streaming.schema.safeParse({
+        language: "en",
+        temperature: 0,
+      });
     expect(valid.success).toBe(true);
     // errors checked via success;
 
-    const invalid = provider.v1.audio.transcriptions.streaming.schema.safeParse(
-      {
+    const invalid =
+      provider.inference.v1.audio.transcriptions.streaming.schema.safeParse({
         temperature: "not-a-number",
-      }
-    );
+      });
     expect(invalid.success).toBe(false);
     expect(invalid.error?.issues.length).toBeGreaterThan(0);
   });
@@ -57,7 +63,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    const session = provider.v1.audio.transcriptions.streaming({
+    const session = provider.inference.v1.audio.transcriptions.streaming({
       language: "en",
       timestamp_granularities: ["word", "segment"],
     });
@@ -88,7 +94,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    provider.v1.audio.transcriptions.streaming({
+    provider.inference.v1.audio.transcriptions.streaming({
       language: "en",
       prompt: "technical discussion",
       temperature: 0,
@@ -126,7 +132,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    provider.v1.audio.transcriptions.streaming({
+    provider.inference.v1.audio.transcriptions.streaming({
       language: "en",
     });
 
@@ -153,7 +159,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    provider.v1.audio.transcriptions.streaming({
+    provider.inference.v1.audio.transcriptions.streaming({
       language: "en",
       baseURL: "wss://audio-streaming.us-virginia-1.direct.fireworks.ai",
     });
@@ -176,7 +182,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    const session = provider.v1.audio.transcriptions.streaming();
+    const session = provider.inference.v1.audio.transcriptions.streaming();
     const audioChunk = new Uint8Array([1, 2, 3, 4]);
     session.send(audioChunk);
 
@@ -196,7 +202,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    const session = provider.v1.audio.transcriptions.streaming();
+    const session = provider.inference.v1.audio.transcriptions.streaming();
     session.clearState("reset-123");
 
     expect(mockSend).toHaveBeenCalledTimes(1);
@@ -219,7 +225,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    const session = provider.v1.audio.transcriptions.streaming();
+    const session = provider.inference.v1.audio.transcriptions.streaming();
     session.trace("trace-456");
 
     expect(mockSend).toHaveBeenCalledTimes(1);
@@ -242,7 +248,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    const session = provider.v1.audio.transcriptions.streaming();
+    const session = provider.inference.v1.audio.transcriptions.streaming();
     session.close();
 
     expect(mockSend).toHaveBeenCalledTimes(1);
@@ -268,7 +274,7 @@ describe("fireworks audio streaming transcriptions", () => {
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
 
-    const session = provider.v1.audio.transcriptions.streaming({
+    const session = provider.inference.v1.audio.transcriptions.streaming({
       language: "en",
     });
 

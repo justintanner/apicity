@@ -6,17 +6,15 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    expect(provider.ai.v1.queue.submit.schema).toBeDefined();
-    expect(typeof provider.ai.v1.queue.submit.schema.safeParse).toBe(
-      "function"
-    );
+    expect(provider.v1.queue.submit.schema).toBeDefined();
+    expect(typeof provider.v1.queue.submit.schema.safeParse).toBe("function");
   });
 
   it("should validate queue submit params - valid", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.ai.v1.queue.submit.schema.safeParse({
+    const result = provider.v1.queue.submit.schema.safeParse({
       endpoint_id: "fal-ai/flux/schnell",
       input: { prompt: "a cat" },
     });
@@ -27,7 +25,7 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.ai.v1.queue.submit.schema.safeParse({});
+    const result = provider.v1.queue.submit.schema.safeParse({});
     expect(result.success).toBe(false);
     expect(
       result.error?.issues.some((i) => i.path.includes("endpoint_id"))
@@ -41,7 +39,7 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.ai.v1.queue.submit.schema.safeParse({
+    const result = provider.v1.queue.submit.schema.safeParse({
       endpoint_id: 123,
       input: "not-an-object",
     });
@@ -52,7 +50,7 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    const result = provider.ai.v1.queue.submit.schema.safeParse({
+    const result = provider.v1.queue.submit.schema.safeParse({
       endpoint_id: "fal-ai/flux/schnell",
       input: { prompt: "a cat" },
       priority: "urgent",
@@ -64,8 +62,8 @@ describe("fal queue validation", () => {
     const provider = fal({
       apiKey: "fal-test-key",
     });
-    expect(typeof provider.ai.v1.queue.submit).toBe("function");
-    expect(typeof provider.ai.v1.queue.status).toBe("function");
+    expect(typeof provider.v1.queue.submit).toBe("function");
+    expect(typeof provider.v1.queue.status).toBe("function");
   });
 
   it("should accept custom queueBaseURL", () => {
@@ -73,6 +71,6 @@ describe("fal queue validation", () => {
       apiKey: "fal-test-key",
       queueBaseURL: "https://custom-queue.example.com",
     });
-    expect(provider.ai.v1.queue).toBeDefined();
+    expect(provider.v1.queue).toBeDefined();
   });
 });

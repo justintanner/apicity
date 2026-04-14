@@ -24,36 +24,34 @@ const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
 
 ## API Reference
 
-4 endpoints across 4 groups. Each method mirrors an upstream URL path.
+4 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
-### chat
-
-<details>
-<summary><code>POST</code> <b><code>alibaba.v1.chat.completions</code></b></summary>
-
-<code>POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions</code>
-
-[Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
-
-```typescript
-const res = await alibaba.v1.chat.completions({ /* ... */ });
-```
-
-Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
-
-</details>
-
-### models
+### compatibleMode
 
 <details>
-<summary><code>GET</code> <b><code>alibaba.v1.models</code></b></summary>
+<summary><code>GET</code> <b><code>alibaba.compatibleMode.v1.models</code></b></summary>
 
 <code>GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models</code>
 
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.v1.models({ /* ... */ });
+const res = await alibaba.compatibleMode.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>alibaba.compatibleMode.v1.chat.completions</code></b></summary>
+
+<code>POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions</code>
+
+[Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
+
+```typescript
+const res = await alibaba.compatibleMode.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)

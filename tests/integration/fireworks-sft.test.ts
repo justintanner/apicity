@@ -6,7 +6,7 @@ describe("fireworks supervised fine-tuning integration", () => {
     it("should expose payloadSchema on create", () => {
       const provider = fireworks({ apiKey: "fw-test-key" });
       const schema =
-        provider.v1.accounts.supervisedFineTuningJobs.create.schema;
+        provider.inference.v1.accounts.supervisedFineTuningJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -16,12 +16,14 @@ describe("fireworks supervised fine-tuning integration", () => {
     it("should validate a valid create payload", () => {
       const provider = fireworks({ apiKey: "fw-test-key" });
       const result =
-        provider.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse({
-          accountId: "test-account",
-          dataset: "accounts/test-account/datasets/my-dataset",
-          baseModel: "accounts/fireworks/models/llama-v3p1-8b-instruct",
-          epochs: 3,
-        });
+        provider.inference.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse(
+          {
+            accountId: "test-account",
+            dataset: "accounts/test-account/datasets/my-dataset",
+            baseModel: "accounts/fireworks/models/llama-v3p1-8b-instruct",
+            epochs: 3,
+          }
+        );
       expect(result.success).toBe(true);
       // errors checked via success;
     });
@@ -29,9 +31,11 @@ describe("fireworks supervised fine-tuning integration", () => {
     it("should reject a payload missing required fields", () => {
       const provider = fireworks({ apiKey: "fw-test-key" });
       const result =
-        provider.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse({
-          epochs: 3,
-        });
+        provider.inference.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse(
+          {
+            epochs: 3,
+          }
+        );
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
@@ -39,22 +43,24 @@ describe("fireworks supervised fine-tuning integration", () => {
 
     it("should have supervised fine-tuning namespace with all methods", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      expect(provider.v1.accounts.supervisedFineTuningJobs).toBeDefined();
-      expect(provider.v1.accounts.supervisedFineTuningJobs.create).toBeTypeOf(
-        "function"
-      );
-      expect(provider.v1.accounts.supervisedFineTuningJobs.list).toBeTypeOf(
-        "function"
-      );
-      expect(provider.v1.accounts.supervisedFineTuningJobs.get).toBeTypeOf(
-        "function"
-      );
-      expect(provider.v1.accounts.supervisedFineTuningJobs.delete).toBeTypeOf(
-        "function"
-      );
-      expect(provider.v1.accounts.supervisedFineTuningJobs.resume).toBeTypeOf(
-        "function"
-      );
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs
+      ).toBeDefined();
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs.create
+      ).toBeTypeOf("function");
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs.list
+      ).toBeTypeOf("function");
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs.get
+      ).toBeTypeOf("function");
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs.delete
+      ).toBeTypeOf("function");
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs.resume
+      ).toBeTypeOf("function");
     });
   });
 });

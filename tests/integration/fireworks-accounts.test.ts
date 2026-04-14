@@ -18,7 +18,7 @@ describe("fireworks accounts integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.v1.accounts.get("jwtanner");
+      const result = await provider.inference.v1.accounts.get("jwtanner");
       expect(result.name).toBeTruthy();
     });
   });
@@ -38,9 +38,12 @@ describe("fireworks accounts integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.v1.accounts.users.list("jwtanner", {
-        pageSize: 5,
-      });
+      const result = await provider.inference.v1.accounts.users.list(
+        "jwtanner",
+        {
+          pageSize: 5,
+        }
+      );
       expect(result.users).toBeInstanceOf(Array);
     });
   });
@@ -61,7 +64,7 @@ describe("fireworks accounts integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       // Use the user ID from the recording (jwtanner)
-      const result = await provider.v1.accounts.users.get(
+      const result = await provider.inference.v1.accounts.users.get(
         "jwtanner",
         "jwtanner"
       );
@@ -85,7 +88,7 @@ describe("fireworks accounts integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       // Use the user ID from the recording (jwtanner)
-      const result = await provider.v1.accounts.apiKeys.list(
+      const result = await provider.inference.v1.accounts.apiKeys.list(
         "jwtanner",
         "jwtanner"
       );
@@ -108,9 +111,12 @@ describe("fireworks accounts integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.v1.accounts.secrets.list("jwtanner", {
-        pageSize: 5,
-      });
+      const result = await provider.inference.v1.accounts.secrets.list(
+        "jwtanner",
+        {
+          pageSize: 5,
+        }
+      );
       expect(result.secrets).toBeInstanceOf(Array);
     });
 
@@ -118,13 +124,16 @@ describe("fireworks accounts integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const listResult = await provider.v1.accounts.secrets.list("jwtanner", {
-        pageSize: 5,
-      });
+      const listResult = await provider.inference.v1.accounts.secrets.list(
+        "jwtanner",
+        {
+          pageSize: 5,
+        }
+      );
       if (listResult.secrets.length > 0) {
         const secretId = listResult.secrets[0].name?.split("/").pop() ?? "";
         if (secretId) {
-          const result = await provider.v1.accounts.secrets.get(
+          const result = await provider.inference.v1.accounts.secrets.get(
             "jwtanner",
             secretId
           );
@@ -138,50 +147,54 @@ describe("fireworks accounts integration", () => {
   describe("payload validation", () => {
     it("should validate create user payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.users.create.schema.safeParse({
-        role: "user",
-        email: "test@example.com",
-      });
+      const valid =
+        provider.inference.v1.accounts.users.create.schema.safeParse({
+          role: "user",
+          email: "test@example.com",
+        });
       expect(valid.success).toBe(true);
       // errors checked via success;
     });
 
     it("should reject create user without role", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.users.create.schema.safeParse({
-        email: "test@example.com",
-      });
+      const result =
+        provider.inference.v1.accounts.users.create.schema.safeParse({
+          email: "test@example.com",
+        });
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
     });
 
     it("should expose create user schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const schema = provider.v1.accounts.users.create.schema;
+      const schema = provider.inference.v1.accounts.users.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate update user payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.users.update.schema.safeParse({
-        role: "admin",
-      });
+      const valid =
+        provider.inference.v1.accounts.users.update.schema.safeParse({
+          role: "admin",
+        });
       expect(valid.success).toBe(true);
     });
 
     it("should reject update user without role", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.users.update.schema.safeParse({
-        displayName: "New Name",
-      });
+      const result =
+        provider.inference.v1.accounts.users.update.schema.safeParse({
+          displayName: "New Name",
+        });
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
     });
 
     it("should expose update user schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const schema = provider.v1.accounts.users.update.schema;
+      const schema = provider.inference.v1.accounts.users.update.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -189,73 +202,81 @@ describe("fireworks accounts integration", () => {
 
     it("should validate create api key payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.apiKeys.create.schema.safeParse({
-        apiKey: { displayName: "test-key" },
-      });
+      const valid =
+        provider.inference.v1.accounts.apiKeys.create.schema.safeParse({
+          apiKey: { displayName: "test-key" },
+        });
       expect(valid.success).toBe(true);
     });
 
     it("should reject create api key without apiKey object", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.apiKeys.create.schema.safeParse({});
+      const result =
+        provider.inference.v1.accounts.apiKeys.create.schema.safeParse({});
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
     });
 
     it("should validate delete api key payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.apiKeys.delete.schema.safeParse({
-        keyId: "key-123",
-      });
+      const valid =
+        provider.inference.v1.accounts.apiKeys.delete.schema.safeParse({
+          keyId: "key-123",
+        });
       expect(valid.success).toBe(true);
     });
 
     it("should reject delete api key without keyId", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.apiKeys.delete.schema.safeParse({});
+      const result =
+        provider.inference.v1.accounts.apiKeys.delete.schema.safeParse({});
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
     });
 
     it("should validate create secret payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.secrets.create.schema.safeParse({
-        keyName: "MY_SECRET",
-        value: "secret-value",
-      });
+      const valid =
+        provider.inference.v1.accounts.secrets.create.schema.safeParse({
+          keyName: "MY_SECRET",
+          value: "secret-value",
+        });
       expect(valid.success).toBe(true);
     });
 
     it("should reject create secret without keyName", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.secrets.create.schema.safeParse({
-        value: "secret-value",
-      });
+      const result =
+        provider.inference.v1.accounts.secrets.create.schema.safeParse({
+          value: "secret-value",
+        });
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
     });
 
     it("should validate update secret payload", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const valid = provider.v1.accounts.secrets.update.schema.safeParse({
-        keyName: "MY_SECRET",
-        value: "new-value",
-      });
+      const valid =
+        provider.inference.v1.accounts.secrets.update.schema.safeParse({
+          keyName: "MY_SECRET",
+          value: "new-value",
+        });
       expect(valid.success).toBe(true);
     });
 
     it("should reject update secret without keyName", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const result = provider.v1.accounts.secrets.update.schema.safeParse({
-        value: "new-value",
-      });
+      const result =
+        provider.inference.v1.accounts.secrets.update.schema.safeParse({
+          value: "new-value",
+        });
       expect(result.success).toBe(false);
       expect(result.success).toBe(false);
     });
 
     it("should expose update secret schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const schema = provider.v1.accounts.secrets.update.schema;
+      const schema = provider.inference.v1.accounts.secrets.update.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");

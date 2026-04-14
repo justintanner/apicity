@@ -20,7 +20,7 @@ describe("fireworks workflows integration", () => {
       });
 
       // Submit async request
-      const createResult = await provider.v1.workflows.kontext(
+      const createResult = await provider.inference.v1.workflows.kontext(
         "flux-kontext-pro",
         {
           prompt: "A small blue sphere on a white background",
@@ -31,7 +31,7 @@ describe("fireworks workflows integration", () => {
       expect(createResult.request_id).toBeTruthy();
 
       // Poll for result
-      const pollResult = await provider.v1.workflows.getResult(
+      const pollResult = await provider.inference.v1.workflows.getResult(
         "flux-kontext-pro",
         { id: createResult.request_id }
       );
@@ -50,52 +50,57 @@ describe("fireworks workflows integration", () => {
   describe("payload validation", () => {
     it("should validate textToImage payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.textToImage.schema.safeParse({
-        prompt: "A cat",
-      });
+      const valid =
+        provider.inference.v1.workflows.textToImage.schema.safeParse({
+          prompt: "A cat",
+        });
       expect(valid.success).toBe(true);
       // errors checked via success;
 
-      const invalid = provider.v1.workflows.textToImage.schema.safeParse({});
+      const invalid =
+        provider.inference.v1.workflows.textToImage.schema.safeParse({});
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
     });
 
     it("should validate kontext payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.kontext.schema.safeParse({
+      const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
         prompt: "A cat",
       });
       expect(valid.success).toBe(true);
 
-      const invalid = provider.v1.workflows.kontext.schema.safeParse({});
+      const invalid = provider.inference.v1.workflows.kontext.schema.safeParse(
+        {}
+      );
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
     });
 
     it("should validate getResult payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.getResult.schema.safeParse({
+      const valid = provider.inference.v1.workflows.getResult.schema.safeParse({
         id: "abc-123",
       });
       expect(valid.success).toBe(true);
 
-      const invalid = provider.v1.workflows.getResult.schema.safeParse({});
+      const invalid =
+        provider.inference.v1.workflows.getResult.schema.safeParse({});
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
     });
 
     it("should expose payload schemas", () => {
       const provider = fireworks({ apiKey: "test" });
-      expect(typeof provider.v1.workflows.textToImage.schema.safeParse).toBe(
-        "function"
-      );
-      expect(typeof provider.v1.workflows.kontext.schema.safeParse).toBe(
-        "function"
-      );
-      expect(typeof provider.v1.workflows.getResult.schema.safeParse).toBe(
-        "function"
-      );
+      expect(
+        typeof provider.inference.v1.workflows.textToImage.schema.safeParse
+      ).toBe("function");
+      expect(
+        typeof provider.inference.v1.workflows.kontext.schema.safeParse
+      ).toBe("function");
+      expect(
+        typeof provider.inference.v1.workflows.getResult.schema.safeParse
+      ).toBe("function");
     });
   });
 });

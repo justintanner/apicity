@@ -91,7 +91,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "chat.completions",
         fn: () =>
-          client.v1.chat.completions.schema.safeParse({
+          client.inference.v1.chat.completions.schema.safeParse({
             model: "gpt-4o",
             messages: [{ role: "user", content: "Hello" }],
           }),
@@ -100,7 +100,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "completions",
         fn: () =>
-          client.v1.completions.schema.safeParse({
+          client.inference.v1.completions.schema.safeParse({
             model: "gpt-4o",
             prompt: "Hello",
           }),
@@ -109,7 +109,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "embeddings",
         fn: () =>
-          client.v1.embeddings.schema.safeParse({
+          client.inference.v1.embeddings.schema.safeParse({
             model: "text-embedding-ada-002",
             input: "Hello",
           }),
@@ -118,7 +118,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "rerank",
         fn: () =>
-          client.v1.rerank.schema.safeParse({
+          client.inference.v1.rerank.schema.safeParse({
             model: "model",
             query: "query",
             documents: ["doc1"],
@@ -128,7 +128,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "messages",
         fn: () =>
-          client.v1.messages.schema.safeParse({
+          client.inference.v1.messages.schema.safeParse({
             model: "claude-3",
             messages: [{ role: "user", content: "Hello" }],
           }),
@@ -138,7 +138,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "workflows.textToImage",
         fn: () =>
-          client.v1.workflows.textToImage.schema.safeParse({
+          client.inference.v1.workflows.textToImage.schema.safeParse({
             prompt: "A cat",
           }),
         expectSuccess: true,
@@ -146,7 +146,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "workflows.kontext",
         fn: () =>
-          client.v1.workflows.kontext.schema.safeParse({
+          client.inference.v1.workflows.kontext.schema.safeParse({
             prompt: "Hello",
           }),
         expectSuccess: true,
@@ -154,7 +154,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "workflows.getResult",
         fn: () =>
-          client.v1.workflows.getResult.schema.safeParse({
+          client.inference.v1.workflows.getResult.schema.safeParse({
             id: "req-123",
           }),
         expectSuccess: true,
@@ -163,7 +163,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "accounts.models.create",
         fn: () =>
-          client.v1.accounts.models.create.schema.safeParse({
+          client.inference.v1.accounts.models.create.schema.safeParse({
             modelId: "test",
             model: {},
           }),
@@ -172,7 +172,7 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "accounts.deployments.create",
         fn: () =>
-          client.v1.accounts.deployments.create.schema.safeParse({
+          client.inference.v1.accounts.deployments.create.schema.safeParse({
             baseModel: "accounts/fireworks/models/test",
           }),
         expectSuccess: true,
@@ -180,10 +180,12 @@ describe("Fireworks Zod schema .schema property coverage", () => {
       {
         name: "accounts.batchInferenceJobs.create",
         fn: () =>
-          client.v1.accounts.batchInferenceJobs.create.schema.safeParse({
-            model: "test",
-            inputDatasetId: "test-ds",
-          }),
+          client.inference.v1.accounts.batchInferenceJobs.create.schema.safeParse(
+            {
+              model: "test",
+              inputDatasetId: "test-ds",
+            }
+          ),
         expectSuccess: true,
       },
     ];
@@ -200,14 +202,15 @@ describe("Fireworks Zod schema .schema property coverage", () => {
     const client = fireworks({ apiKey: "test" });
 
     // Test invalid payloads
-    const invalidResult1 = client.v1.chat.completions.schema.safeParse({
-      model: "gpt-4o",
-      // Missing required 'messages'
-    });
+    const invalidResult1 =
+      client.inference.v1.chat.completions.schema.safeParse({
+        model: "gpt-4o",
+        // Missing required 'messages'
+      });
     expect(invalidResult1.success).toBe(false);
     expect(invalidResult1.error?.issues.length).toBeGreaterThan(0);
 
-    const invalidResult2 = client.v1.completions.schema.safeParse({
+    const invalidResult2 = client.inference.v1.completions.schema.safeParse({
       model: "gpt-4o",
       // Missing required 'prompt'
     });
@@ -299,7 +302,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
     });
 
     const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
-    await testClient.v1.chat.completions({
+    await testClient.inference.v1.chat.completions({
       model: "gpt-4o",
       messages: [{ role: "user", content: "Hello" }],
     });
@@ -342,7 +345,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
 
     const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
 
-    await testClient.v1.chat.completions(
+    await testClient.inference.v1.chat.completions(
       {
         model: "gpt-4o",
         messages: [{ role: "user", content: "Hello" }],
@@ -373,7 +376,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
     const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
 
     try {
-      await testClient.v1.chat.completions(
+      await testClient.inference.v1.chat.completions(
         {
           model: "gpt-4o",
           messages: [{ role: "user", content: "Hello" }],
@@ -407,7 +410,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
 
     const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
 
-    const requestPromise = testClient.v1.chat.completions(
+    const requestPromise = testClient.inference.v1.chat.completions(
       {
         model: "gpt-4o",
         messages: [{ role: "user", content: "Hello" }],

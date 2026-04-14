@@ -23,12 +23,14 @@ describe("fireworks streaming integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const chunks: FireworksChatStreamChunk[] = [];
-      for await (const chunk of provider.post.stream.v1.chat.completions({
-        model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
-        messages: [{ role: "user", content: "Say hello in one sentence." }],
-        temperature: 0,
-        max_tokens: 64,
-      })) {
+      for await (const chunk of provider.post.stream.inference.v1.chat.completions(
+        {
+          model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
+          messages: [{ role: "user", content: "Say hello in one sentence." }],
+          temperature: 0,
+          max_tokens: 64,
+        }
+      )) {
         chunks.push(chunk);
       }
       expect(chunks.length).toBeGreaterThan(0);
@@ -54,7 +56,7 @@ describe("fireworks streaming integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const chunks: FireworksCompletionStreamChunk[] = [];
-      for await (const chunk of provider.post.stream.v1.completions({
+      for await (const chunk of provider.post.stream.inference.v1.completions({
         model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
         prompt: "Once upon a time",
         temperature: 0,
@@ -76,28 +78,29 @@ describe("fireworks streaming integration", () => {
         apiKey: "test-key",
       });
       expect(
-        typeof provider.post.stream.v1.chat.completions.schema.safeParse
+        typeof provider.post.stream.inference.v1.chat.completions.schema
+          .safeParse
       ).toBe("function");
-      expect(typeof provider.post.stream.v1.completions.schema.safeParse).toBe(
-        "function"
-      );
+      expect(
+        typeof provider.post.stream.inference.v1.completions.schema.safeParse
+      ).toBe("function");
     });
 
     it("should validate payloads on stream methods", () => {
       const provider = fireworks({
         apiKey: "test-key",
       });
-      const valid = provider.post.stream.v1.chat.completions.schema.safeParse({
-        model: "test-model",
-        messages: [{ role: "user", content: "Hello" }],
-      });
+      const valid =
+        provider.post.stream.inference.v1.chat.completions.schema.safeParse({
+          model: "test-model",
+          messages: [{ role: "user", content: "Hello" }],
+        });
       expect(valid.success).toBe(true);
 
-      const invalid = provider.post.stream.v1.chat.completions.schema.safeParse(
-        {
+      const invalid =
+        provider.post.stream.inference.v1.chat.completions.schema.safeParse({
           messages: [{ role: "user", content: "Hello" }],
-        }
-      );
+        });
       expect(invalid.success).toBe(false);
     });
   });

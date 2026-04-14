@@ -14,7 +14,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models({ limit: 5 });
+    const result = await provider.v1.models({ limit: 5 });
     expect(result.models).toBeDefined();
     expect(Array.isArray(result.models)).toBe(true);
     expect(result.models.length).toBeGreaterThan(0);
@@ -26,7 +26,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models({ q: "flux", limit: 3 });
+    const result = await provider.v1.models({ q: "flux", limit: 3 });
     expect(result.models).toBeDefined();
     expect(result.models.length).toBeGreaterThan(0);
   });
@@ -36,7 +36,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.pricing({
+    const result = await provider.v1.models.pricing({
       endpoint_id: "fal-ai/flux/dev",
     });
     expect(result.prices).toBeDefined();
@@ -50,7 +50,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.pricing.estimate({
+    const result = await provider.v1.models.pricing.estimate({
       estimate_type: "unit_price",
       endpoints: {
         "fal-ai/flux/dev": { unit_quantity: 100 },
@@ -66,7 +66,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.usage({
+    const result = await provider.v1.models.usage({
       endpoint_id: "fal-ai/flux/dev",
       limit: 5,
     });
@@ -79,7 +79,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.analytics({
+    const result = await provider.v1.models.analytics({
       endpoint_id: "fal-ai/flux/dev",
     });
     expect(result).toBeDefined();
@@ -91,7 +91,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.models.requests.byEndpoint({
+    const result = await provider.v1.models.requests.byEndpoint({
       endpoint_id: "fal-ai/flux/dev",
       limit: 5,
     });
@@ -105,7 +105,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.workflows({ limit: 3 });
+    const result = await provider.v1.workflows({ limit: 3 });
     expect(result.workflows).toBeDefined();
     expect(Array.isArray(result.workflows)).toBe(true);
     expect(result.has_more).toBeDefined();
@@ -116,7 +116,7 @@ describe("fal integration", () => {
     const provider = fal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
-    const result = await provider.ai.v1.workflows({
+    const result = await provider.v1.workflows({
       search: "flux",
       limit: 3,
     });
@@ -130,7 +130,7 @@ describe("fal integration", () => {
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     try {
-      await provider.ai.v1.workflows.get({
+      await provider.v1.workflows.get({
         username: "fal",
         workflow_name: "flux-pro-v1.1-ultra-and-relight",
       });

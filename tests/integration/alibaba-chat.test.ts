@@ -15,7 +15,7 @@ describe("alibaba chat completions", () => {
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
-    const result = await provider.post.v1.chat.completions({
+    const result = await provider.post.compatibleMode.v1.chat.completions({
       model: "qwen3-max",
       messages: [{ role: "user", content: "Say hello in one sentence." }],
       temperature: 0,

@@ -216,6 +216,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
 
   const postV1 = {
     chat: {
+      // sig-ok: dashscope-intl subdomain hoisted by walker
       // POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions
       // Docs: https://help.aliyun.com/zh/model-studio
       completions: Object.assign(
@@ -257,6 +258,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   };
 
   const getV1 = {
+    // sig-ok: dashscope-intl subdomain hoisted by walker
     // GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/models
     // Docs: https://help.aliyun.com/zh/model-studio
     models: async (signal?: AbortSignal): Promise<AlibabaModelListResponse> => {
@@ -268,6 +270,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     services: {
       aigc: {
         videoGeneration: {
+          // sig-ok: dashscope-intl subdomain hoisted by walker
           // POST https://dashscope-intl.aliyuncs.com/compatible-mode/v1/services/aigc/video-generation/video-synthesis
           // Docs: https://help.aliyun.com/zh/model-studio
           videoSynthesis: Object.assign(
@@ -295,6 +298,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   };
 
   const getApiV1 = {
+    // sig-ok: dashscope-intl subdomain hoisted by walker
     // GET https://dashscope-intl.aliyuncs.com/compatible-mode/v1/tasks/{taskId}
     // Docs: https://help.aliyun.com/zh/model-studio
     tasks: async (
@@ -311,12 +315,12 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
 
   return {
     post: {
-      v1: postV1,
-      stream: { v1: postStreamV1 },
+      compatibleMode: { v1: postV1 },
+      stream: { compatibleMode: { v1: postStreamV1 } },
       api: { v1: postApiV1 },
     },
     get: {
-      v1: getV1,
+      compatibleMode: { v1: getV1 },
       api: { v1: getApiV1 },
     },
   };

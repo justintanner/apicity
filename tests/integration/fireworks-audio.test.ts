@@ -28,7 +28,7 @@ describe("fireworks audio transcriptions", () => {
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
 
-    const result = await provider.v1.audio.transcriptions({
+    const result = await provider.inference.v1.audio.transcriptions({
       file,
       model: "whisper-v3",
       response_format: "json",
@@ -61,7 +61,7 @@ describe("fireworks audio translations", () => {
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
 
-    const result = await provider.v1.audio.translations({
+    const result = await provider.inference.v1.audio.translations({
       file,
       model: "whisper-v3",
       response_format: "json",

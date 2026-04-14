@@ -19,7 +19,7 @@ describe("fireworks kontext endpoint integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
-      const createResult = await provider.v1.workflows.kontext(
+      const createResult = await provider.inference.v1.workflows.kontext(
         "flux-kontext-pro",
         {
           prompt: "A cat sitting on a windowsill",
@@ -32,7 +32,7 @@ describe("fireworks kontext endpoint integration", () => {
       expect(createResult.request_id).toBeTruthy();
       expect(typeof createResult.request_id).toBe("string");
 
-      const pollResult = await provider.v1.workflows.getResult(
+      const pollResult = await provider.inference.v1.workflows.getResult(
         "flux-kontext-pro",
         { id: createResult.request_id }
       );
@@ -59,12 +59,15 @@ describe("fireworks kontext endpoint integration", () => {
       });
 
       // Submit kontext job that supports streaming
-      const result = await provider.v1.workflows.kontext("flux-kontext-pro", {
-        prompt: "A serene landscape",
-        stream: true,
-        seed: 42,
-        output_format: "png",
-      });
+      const result = await provider.inference.v1.workflows.kontext(
+        "flux-kontext-pro",
+        {
+          prompt: "A serene landscape",
+          stream: true,
+          seed: 42,
+          output_format: "png",
+        }
+      );
 
       expect(result).toBeDefined();
       expect(result.request_id).toBeTruthy();
@@ -74,7 +77,7 @@ describe("fireworks kontext endpoint integration", () => {
   describe("payload validation", () => {
     it("should validate kontext payload with required fields", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.kontext.schema.safeParse({
+      const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
         prompt: "A beautiful landscape",
       });
       expect(valid.success).toBe(true);
@@ -83,14 +86,16 @@ describe("fireworks kontext endpoint integration", () => {
 
     it("should reject kontext payload missing prompt", () => {
       const provider = fireworks({ apiKey: "test" });
-      const invalid = provider.v1.workflows.kontext.schema.safeParse({});
+      const invalid = provider.inference.v1.workflows.kontext.schema.safeParse(
+        {}
+      );
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
     });
 
     it("should validate kontext payload with all options", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.kontext.schema.safeParse({
+      const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
         prompt: "A beautiful landscape",
         seed: 42,
         output_format: "png",
@@ -103,7 +108,7 @@ describe("fireworks kontext endpoint integration", () => {
 
     it("should expose kontext payload schema", () => {
       const provider = fireworks({ apiKey: "test" });
-      const schema = provider.v1.workflows.kontext.schema;
+      const schema = provider.inference.v1.workflows.kontext.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -111,12 +116,13 @@ describe("fireworks kontext endpoint integration", () => {
 
     it("should validate getResult payload", () => {
       const provider = fireworks({ apiKey: "test" });
-      const valid = provider.v1.workflows.getResult.schema.safeParse({
+      const valid = provider.inference.v1.workflows.getResult.schema.safeParse({
         id: "abc-123",
       });
       expect(valid.success).toBe(true);
 
-      const invalid = provider.v1.workflows.getResult.schema.safeParse({});
+      const invalid =
+        provider.inference.v1.workflows.getResult.schema.safeParse({});
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
     });
@@ -125,16 +131,18 @@ describe("fireworks kontext endpoint integration", () => {
   describe("namespace structure", () => {
     it("should expose workflows namespace with kontext and getResult", () => {
       const provider = fireworks({ apiKey: "test" });
-      expect(typeof provider.v1.workflows.kontext).toBe("function");
-      expect(typeof provider.v1.workflows.getResult).toBe("function");
-      expect(typeof provider.v1.workflows.textToImage).toBe("function");
+      expect(typeof provider.inference.v1.workflows.kontext).toBe("function");
+      expect(typeof provider.inference.v1.workflows.getResult).toBe("function");
+      expect(typeof provider.inference.v1.workflows.textToImage).toBe(
+        "function"
+      );
     });
 
     it("should expose payload schemas on workflow methods", () => {
       const provider = fireworks({ apiKey: "test" });
-      expect(provider.v1.workflows.kontext.schema).toBeDefined();
-      expect(provider.v1.workflows.getResult.schema).toBeDefined();
-      expect(provider.v1.workflows.textToImage.schema).toBeDefined();
+      expect(provider.inference.v1.workflows.kontext.schema).toBeDefined();
+      expect(provider.inference.v1.workflows.getResult.schema).toBeDefined();
+      expect(provider.inference.v1.workflows.textToImage.schema).toBeDefined();
     });
   });
 });

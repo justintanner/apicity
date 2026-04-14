@@ -18,7 +18,7 @@ describe("fireworks embeddings integration", () => {
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
 
-    const result = await provider.v1.embeddings({
+    const result = await provider.inference.v1.embeddings({
       model: "nomic-ai/nomic-embed-text-v1.5",
       input: "Hello world",
     });

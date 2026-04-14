@@ -15,7 +15,7 @@ describe("alibaba models list", () => {
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
-    const result = await provider.get.v1.models();
+    const result = await provider.get.compatibleMode.v1.models();
 
     expect(result.data.length).toBeGreaterThan(0);
     expect(result.data[0].id).toBeTruthy();

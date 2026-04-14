@@ -80,7 +80,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
         baseURL: opts.baseURL,
         fetch: opts.fetch,
         timeout: opts.timeout,
-      }).ai.v1.models(),
+      }).v1.models(),
     successBody: { models: [], next_cursor: null, has_more: false },
   },
   {
@@ -93,7 +93,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
         baseURL: opts.baseURL,
         fetch: opts.fetch,
         timeout: opts.timeout,
-      }).v1.chat.completions({
+      }).inference.v1.chat.completions({
         model: "accounts/fireworks/models/test-model",
         messages: [{ role: "user", content: "hello" }],
       }),

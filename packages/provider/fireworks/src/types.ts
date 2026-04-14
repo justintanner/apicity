@@ -1295,7 +1295,7 @@ interface FireworksV1Namespace {
 
 // Provider interface
 export interface FireworksProvider {
-  v1: FireworksV1Namespace;
+  inference: { v1: FireworksV1Namespace };
   post: FireworksPostNamespace;
   get: FireworksGetNamespace;
   patch: FireworksPatchNamespace;
@@ -2836,9 +2836,9 @@ interface FireworksPostStreamV1Namespace {
 }
 
 interface FireworksPostNamespace {
-  v1: FireworksPostV1Namespace;
+  inference: { v1: FireworksPostV1Namespace };
   stream: {
-    v1: FireworksPostStreamV1Namespace;
+    inference: { v1: FireworksPostStreamV1Namespace };
   };
 }
 
@@ -3130,7 +3130,7 @@ interface FireworksGetV1Namespace {
 }
 
 interface FireworksGetNamespace {
-  v1: FireworksGetV1Namespace;
+  inference: { v1: FireworksGetV1Namespace };
 }
 
 // PATCH v1 namespace types
@@ -3178,7 +3178,7 @@ interface FireworksPatchV1Namespace {
 }
 
 interface FireworksPatchNamespace {
-  v1: FireworksPatchV1Namespace;
+  inference: { v1: FireworksPatchV1Namespace };
 }
 
 // DELETE v1 namespace types
@@ -3296,7 +3296,7 @@ interface FireworksDeleteV1Namespace {
 }
 
 interface FireworksDeleteNamespace {
-  v1: FireworksDeleteV1Namespace;
+  inference: { v1: FireworksDeleteV1Namespace };
 }
 
 // WS (WebSocket) v1 namespace types
@@ -3313,5 +3313,5 @@ interface FireworksWsV1Namespace {
 }
 
 interface FireworksWsNamespace {
-  v1: FireworksWsV1Namespace;
+  inference: { v1: FireworksWsV1Namespace };
 }

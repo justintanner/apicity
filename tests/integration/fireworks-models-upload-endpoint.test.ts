@@ -6,9 +6,11 @@ describe("fireworks models upload endpoint integration", () => {
     it("should validate getUploadEndpoint payload with required fields", () => {
       const provider = fireworks({ apiKey: "test-key" });
       const valid =
-        provider.v1.accounts.models.getUploadEndpoint.schema.safeParse({
-          filenameToSize: { "model.safetensors": 4096000 },
-        });
+        provider.inference.v1.accounts.models.getUploadEndpoint.schema.safeParse(
+          {
+            filenameToSize: { "model.safetensors": 4096000 },
+          }
+        );
       expect(valid.success).toBe(true);
       // errors checked via success;
     });
@@ -16,7 +18,9 @@ describe("fireworks models upload endpoint integration", () => {
     it("should reject getUploadEndpoint payload missing required fields", () => {
       const provider = fireworks({ apiKey: "test-key" });
       const invalid =
-        provider.v1.accounts.models.getUploadEndpoint.schema.safeParse({});
+        provider.inference.v1.accounts.models.getUploadEndpoint.schema.safeParse(
+          {}
+        );
       expect(invalid.success).toBe(false);
       expect(invalid.success).toBe(false);
     });
@@ -24,21 +28,24 @@ describe("fireworks models upload endpoint integration", () => {
     it("should validate getUploadEndpoint payload with optional fields", () => {
       const provider = fireworks({ apiKey: "test-key" });
       const valid =
-        provider.v1.accounts.models.getUploadEndpoint.schema.safeParse({
-          filenameToSize: {
-            "model.safetensors": 4096000,
-            "config.json": 512,
-          },
-          enableResumableUpload: true,
-          readMask: "*",
-        });
+        provider.inference.v1.accounts.models.getUploadEndpoint.schema.safeParse(
+          {
+            filenameToSize: {
+              "model.safetensors": 4096000,
+              "config.json": 512,
+            },
+            enableResumableUpload: true,
+            readMask: "*",
+          }
+        );
       expect(valid.success).toBe(true);
       // errors checked via success;
     });
 
     it("should expose getUploadEndpoint payload schema", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      const schema = provider.v1.accounts.models.getUploadEndpoint.schema;
+      const schema =
+        provider.inference.v1.accounts.models.getUploadEndpoint.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -49,13 +56,15 @@ describe("fireworks models upload endpoint integration", () => {
   describe("namespace structure", () => {
     it("should expose upload and download endpoint methods on models", () => {
       const provider = fireworks({ apiKey: "test-key" });
-      expect(provider.v1.accounts.models.getUploadEndpoint).toBeTypeOf(
+      expect(
+        provider.inference.v1.accounts.models.getUploadEndpoint
+      ).toBeTypeOf("function");
+      expect(
+        provider.inference.v1.accounts.models.getDownloadEndpoint
+      ).toBeTypeOf("function");
+      expect(provider.inference.v1.accounts.models.validateUpload).toBeTypeOf(
         "function"
       );
-      expect(provider.v1.accounts.models.getDownloadEndpoint).toBeTypeOf(
-        "function"
-      );
-      expect(provider.v1.accounts.models.validateUpload).toBeTypeOf("function");
     });
   });
 });

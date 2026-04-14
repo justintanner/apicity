@@ -935,7 +935,7 @@ export interface OpenAiPostV1Namespace {
   batches: OpenAiPostV1Batches & {
     cancel: OpenAiPostV1BatchesCancel;
   };
-  fine_tuning: OpenAiPostV1FineTuningNamespace;
+  fineTuning: OpenAiPostV1FineTuningNamespace;
 }
 
 // --- GET v1 namespace types ---
@@ -946,6 +946,7 @@ export interface OpenAiGetV1ChatCompletions {
     signal?: AbortSignal
   ): Promise<OpenAiStoredCompletionListResponse>;
   (id: string, signal?: AbortSignal): Promise<OpenAiChatResponse>;
+  messages: OpenAiGetV1ChatCompletionsMessages;
 }
 
 export interface OpenAiGetV1ChatCompletionsMessages {
@@ -1031,7 +1032,6 @@ export interface OpenAiGetV1FineTuningCheckpointsPermissions {
 
 export interface OpenAiGetV1ChatNamespace {
   completions: OpenAiGetV1ChatCompletions;
-  completionsMessages: OpenAiGetV1ChatCompletionsMessages;
 }
 
 export interface OpenAiGetV1FilesNamespace {
@@ -1081,7 +1081,7 @@ export interface OpenAiGetV1Namespace {
   models: OpenAiGetV1ModelsNamespace;
   responses: OpenAiGetV1ResponsesNamespace;
   batches: OpenAiGetV1BatchesNamespace;
-  fine_tuning: OpenAiGetV1FineTuningNamespace;
+  fineTuning: OpenAiGetV1FineTuningNamespace;
 }
 
 // --- DELETE v1 namespace types ---
@@ -1140,7 +1140,7 @@ export interface OpenAiDeleteV1Namespace {
   files: OpenAiDeleteV1FilesNamespace;
   models: OpenAiDeleteV1ModelsNamespace;
   responses: OpenAiDeleteV1ResponsesNamespace;
-  fine_tuning: OpenAiDeleteV1FineTuningNamespace;
+  fineTuning: OpenAiDeleteV1FineTuningNamespace;
 }
 
 // --- Provider interface ---

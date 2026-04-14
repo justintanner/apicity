@@ -4,23 +4,23 @@ import { fal } from "@apicity/fal";
 describe("fal serverless files validation", () => {
   it("should expose serverless files namespace", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    expect(provider.ai.v1.serverless).toBeDefined();
-    expect(provider.ai.v1.serverless.files).toBeDefined();
-    expect(typeof provider.ai.v1.serverless.files.list).toBe("function");
-    expect(typeof provider.ai.v1.serverless.files.uploadUrl).toBe("function");
-    expect(typeof provider.ai.v1.serverless.files.uploadLocal).toBe("function");
+    expect(provider.v1.serverless).toBeDefined();
+    expect(provider.v1.serverless.files).toBeDefined();
+    expect(typeof provider.v1.serverless.files.list).toBe("function");
+    expect(typeof provider.v1.serverless.files.uploadUrl).toBe("function");
+    expect(typeof provider.v1.serverless.files.uploadLocal).toBe("function");
   });
 
   it("should expose uploadUrl schema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const schema = provider.ai.v1.serverless.files.uploadUrl.schema;
+    const schema = provider.v1.serverless.files.uploadUrl.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should validate uploadUrl params - valid", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.ai.v1.serverless.files.uploadUrl.schema.safeParse({
+    const result = provider.v1.serverless.files.uploadUrl.schema.safeParse({
       file: "datasets/image.jpg",
       url: "https://example.com/image.jpg",
     });
@@ -29,9 +29,7 @@ describe("fal serverless files validation", () => {
 
   it("should validate uploadUrl params - missing required", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.ai.v1.serverless.files.uploadUrl.schema.safeParse(
-      {}
-    );
+    const result = provider.v1.serverless.files.uploadUrl.schema.safeParse({});
     expect(result.success).toBe(false);
     expect(result.error?.issues.some((i) => i.path.includes("file"))).toBe(
       true
@@ -41,7 +39,7 @@ describe("fal serverless files validation", () => {
 
   it("should validate uploadUrl params - wrong types", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.ai.v1.serverless.files.uploadUrl.schema.safeParse({
+    const result = provider.v1.serverless.files.uploadUrl.schema.safeParse({
       file: 123,
       url: true,
     });
@@ -50,25 +48,23 @@ describe("fal serverless files validation", () => {
 
   it("should expose uploadLocal schema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const schema = provider.ai.v1.serverless.files.uploadLocal.schema;
+    const schema = provider.v1.serverless.files.uploadLocal.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should validate uploadLocal params - valid", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.ai.v1.serverless.files.uploadLocal.schema.safeParse(
-      {
-        target_path: "datasets/image.jpg",
-        file: new Blob(["test"]),
-      }
-    );
+    const result = provider.v1.serverless.files.uploadLocal.schema.safeParse({
+      target_path: "datasets/image.jpg",
+      file: new Blob(["test"]),
+    });
     expect(result.success).toBe(true);
   });
 
   it("should validate uploadLocal params - missing required", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.ai.v1.serverless.files.uploadLocal.schema.safeParse(
+    const result = provider.v1.serverless.files.uploadLocal.schema.safeParse(
       {}
     );
     expect(result.success).toBe(false);
@@ -82,13 +78,11 @@ describe("fal serverless files validation", () => {
 
   it("should validate uploadLocal params - optional unzip field", () => {
     const provider = fal({ apiKey: "fal-test-key" });
-    const result = provider.ai.v1.serverless.files.uploadLocal.schema.safeParse(
-      {
-        target_path: "datasets/archive.zip",
-        file: new Blob(["test"]),
-        unzip: true,
-      }
-    );
+    const result = provider.v1.serverless.files.uploadLocal.schema.safeParse({
+      target_path: "datasets/archive.zip",
+      file: new Blob(["test"]),
+      unzip: true,
+    });
     expect(result.success).toBe(true);
   });
 });

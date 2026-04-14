@@ -221,8 +221,8 @@ export interface AlibabaPostApiNamespace {
 }
 
 export interface AlibabaPostNamespace {
-  v1: AlibabaPostV1Namespace;
-  stream: { v1: AlibabaPostStreamV1Namespace };
+  compatibleMode: { v1: AlibabaPostV1Namespace };
+  stream: { compatibleMode: { v1: AlibabaPostStreamV1Namespace } };
   api: AlibabaPostApiNamespace;
 }
 
@@ -242,7 +242,7 @@ export interface AlibabaGetApiNamespace {
 }
 
 export interface AlibabaGetNamespace {
-  v1: AlibabaGetV1Namespace;
+  compatibleMode: { v1: AlibabaGetV1Namespace };
   api: AlibabaGetApiNamespace;
 }
 

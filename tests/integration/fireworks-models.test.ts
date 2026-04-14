@@ -19,9 +19,12 @@ describe("fireworks models CRUD integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.v1.accounts.models.list(accountId, {
-        pageSize: 5,
-      });
+      const result = await provider.inference.v1.accounts.models.list(
+        accountId,
+        {
+          pageSize: 5,
+        }
+      );
       expect(result.models).toBeDefined();
       expect(Array.isArray(result.models)).toBe(true);
     });
@@ -40,7 +43,7 @@ describe("fireworks models CRUD integration", () => {
       const provider = fireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.v1.accounts.models.get(
+      const result = await provider.inference.v1.accounts.models.get(
         accountId,
         "llama-v3p3-70b-instruct"
       );
@@ -62,10 +65,11 @@ describe("fireworks models CRUD integration", () => {
       const provider = fireworks({
         apiKey: "fw-test-key",
       });
-      const valid = provider.v1.accounts.models.create.schema.safeParse({
-        modelId: "my-model",
-        model: { kind: "HF_BASE_MODEL" },
-      });
+      const valid =
+        provider.inference.v1.accounts.models.create.schema.safeParse({
+          modelId: "my-model",
+          model: { kind: "HF_BASE_MODEL" },
+        });
       expect(valid.success).toBe(true);
       // errors checked via success;
     });
@@ -74,9 +78,10 @@ describe("fireworks models CRUD integration", () => {
       const provider = fireworks({
         apiKey: "fw-test-key",
       });
-      const valid = provider.v1.accounts.models.create.schema.safeParse({
-        model: { kind: "HF_BASE_MODEL" },
-      });
+      const valid =
+        provider.inference.v1.accounts.models.create.schema.safeParse({
+          model: { kind: "HF_BASE_MODEL" },
+        });
       expect(valid.success).toBe(false);
       expect(valid.error?.issues.some((i) => i.path.includes("modelId"))).toBe(
         true
@@ -87,7 +92,7 @@ describe("fireworks models CRUD integration", () => {
       const provider = fireworks({
         apiKey: "fw-test-key",
       });
-      const models = provider.v1.accounts.models;
+      const models = provider.inference.v1.accounts.models;
       expect(typeof models.list.schema.safeParse).toBe("function");
       expect(typeof models.create.schema.safeParse).toBe("function");
       expect(typeof models.get.schema.safeParse).toBe("function");

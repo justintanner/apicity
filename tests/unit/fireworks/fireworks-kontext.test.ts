@@ -32,7 +32,7 @@ describe("fireworks workflows.kontext", () => {
       seed: 7,
     };
 
-    const result = await provider.v1.workflows.kontext(
+    const result = await provider.inference.v1.workflows.kontext(
       "flux-kontext-pro",
       payload
     );
@@ -68,9 +68,12 @@ describe("fireworks workflows.kontext", () => {
     );
     const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
 
-    const result = await provider.v1.workflows.getResult("flux-kontext-pro", {
-      id: "req-123",
-    });
+    const result = await provider.inference.v1.workflows.getResult(
+      "flux-kontext-pro",
+      {
+        id: "req-123",
+      }
+    );
 
     expect(result).toMatchObject({
       id: "req-123",
@@ -98,16 +101,18 @@ describe("fireworks workflows.kontext", () => {
   it("validates required and enum-mapped kontext fields via Zod schema", () => {
     const provider = fireworks({ apiKey: "fw-test-key" });
 
-    const valid = provider.v1.workflows.kontext.schema.safeParse({
+    const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
       prompt: "Add warm afternoon lighting",
       output_format: "jpeg",
       prompt_upsampling: false,
     });
-    const missingPrompt = provider.v1.workflows.kontext.schema.safeParse({});
-    const invalidFormat = provider.v1.workflows.kontext.schema.safeParse({
-      prompt: "Use a film-camera look",
-      output_format: "gif",
-    });
+    const missingPrompt =
+      provider.inference.v1.workflows.kontext.schema.safeParse({});
+    const invalidFormat =
+      provider.inference.v1.workflows.kontext.schema.safeParse({
+        prompt: "Use a film-camera look",
+        output_format: "gif",
+      });
 
     expect(valid.success).toBe(true);
     expect(missingPrompt.success).toBe(false);

@@ -171,6 +171,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- tmpfiles.org -----------------------------------------------------------
 
   const tmpfilesApiV1 = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://tmpfiles.org/api/v1/upload
     // Docs: https://tmpfiles.org/
     upload: Object.assign(
@@ -195,6 +196,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- uguu.se ----------------------------------------------------------------
 
   const uguu = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://uguu.se/upload
     // Docs: https://uguu.se/
     upload: Object.assign(
@@ -219,6 +221,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- catbox.moe -------------------------------------------------------------
 
   const catbox = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://catbox.moe/user/api.php
     // Docs: https://catbox.moe/tools.php
     upload: Object.assign(
@@ -244,6 +247,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- litterbox.catbox.moe ---------------------------------------------------
 
   const litterbox = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://litterbox.catbox.moe/resources/internals/api.php
     // Docs: https://litterbox.catbox.moe/
     upload: Object.assign(
@@ -270,6 +274,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- gofile.io --------------------------------------------------------------
 
   const gofile = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://upload.gofile.io/uploadfile
     // Docs: https://gofile.io/api
     upload: Object.assign(
@@ -294,6 +299,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- filebin.net ------------------------------------------------------------
 
   const filebin = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://filebin.net/{bin}/{filename}
     // Docs: https://filebin.net/
     upload: Object.assign(
@@ -321,6 +327,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- temp.sh ----------------------------------------------------------------
 
   const tempsh = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://temp.sh/upload
     // Docs: https://temp.sh/
     upload: Object.assign(
@@ -341,6 +348,7 @@ export function free(opts?: FreeOptions): FreeProvider {
   // -- tmpfile.link (tfLink) --------------------------------------------------
 
   const tflink = {
+    // sig-ok: service-name grouping (multi-host wrapper)
     // POST https://tmpfile.link/api/upload
     // Docs: https://tmpfile.link/
     upload: Object.assign(

@@ -157,7 +157,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
         apiKey: "fal-test",
         fetch: fetchImpl,
         timeout,
-      }).ai.v1.models();
+      }).v1.models();
     },
     rateLimitBody: {
       error: { type: "rate_limited", message: "Slow down" },
@@ -179,7 +179,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
         apiKey: "fw-test",
         fetch: fetchImpl,
         timeout,
-      }).v1.chat.completions({
+      }).inference.v1.chat.completions({
         model: "accounts/fireworks/models/llama-v3p1-8b-instruct",
         messages: [{ role: "user", content: "Hello" }],
       });

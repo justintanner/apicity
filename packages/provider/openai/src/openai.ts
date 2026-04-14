@@ -738,7 +738,7 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         ),
       }
     ),
-    fine_tuning: {
+    fineTuning: {
       // POST https://api.openai.com/v1/fine_tuning/jobs
       // Docs: https://platform.openai.com/docs/api-reference
       jobs: Object.assign(
@@ -857,27 +857,25 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
           );
         },
         {
-          // For accessing completions.messages as a property
-          messages: undefined as unknown,
+          // GET https://api.openai.com/v1/chat/completions/{id}/messages
+          // Docs: https://platform.openai.com/docs/api-reference
+          messages: async (
+            id: string,
+            opts?: OpenAiStoredCompletionMessageListOptions,
+            signal?: AbortSignal
+          ): Promise<OpenAiStoredCompletionMessageListResponse> => {
+            const query: Record<string, string | undefined> = {};
+            if (opts?.after) query.after = opts.after;
+            if (opts?.limit !== undefined) query.limit = String(opts.limit);
+            if (opts?.order) query.order = opts.order;
+            return makeGetRequest<OpenAiStoredCompletionMessageListResponse>(
+              `/chat/completions/${encodeURIComponent(id)}/messages`,
+              query,
+              signal
+            );
+          },
         }
       ) as import("./types").OpenAiGetV1ChatCompletions,
-      // GET https://api.openai.com/v1/chat/completions/{id}/messages
-      // Docs: https://platform.openai.com/docs/api-reference
-      completionsMessages: async (
-        id: string,
-        opts?: OpenAiStoredCompletionMessageListOptions,
-        signal?: AbortSignal
-      ): Promise<OpenAiStoredCompletionMessageListResponse> => {
-        const query: Record<string, string | undefined> = {};
-        if (opts?.after) query.after = opts.after;
-        if (opts?.limit !== undefined) query.limit = String(opts.limit);
-        if (opts?.order) query.order = opts.order;
-        return makeGetRequest<OpenAiStoredCompletionMessageListResponse>(
-          `/chat/completions/${encodeURIComponent(id)}/messages`,
-          query,
-          signal
-        );
-      },
     },
     // GET https://api.openai.com/v1/files/{idOrOpts}
     // Docs: https://platform.openai.com/docs/api-reference
@@ -1005,7 +1003,7 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
       },
       {}
     ) as import("./types").OpenAiGetV1BatchesNamespace,
-    fine_tuning: {
+    fineTuning: {
       // GET https://api.openai.com/v1/fine_tuning/jobs/{idOrOpts}
       // Docs: https://platform.openai.com/docs/api-reference
       jobs: Object.assign(
@@ -1146,7 +1144,7 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         signal
       );
     },
-    fine_tuning: {
+    fineTuning: {
       checkpoints: {
         // DELETE https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions/{permissionId}
         // Docs: https://platform.openai.com/docs/api-reference

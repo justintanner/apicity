@@ -24,294 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-26 endpoints across 5 groups. Each method mirrors an upstream URL path.
-
-### ai
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.models</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.models.pricing</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models/pricing</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.pricing({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.models.pricing.estimate</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.pricing.estimate({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>DELETE</code> <b><code>fal.ai.v1.models.requests.payloads</code></b></summary>
-
-<code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.requests.payloads({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.queue.submit</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/POST</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.queue.submit({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.serverless.files.uploadLocal</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.serverless.files.uploadLocal({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.serverless.files.uploadUrl</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.serverless.files.uploadUrl({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.serverless.logs</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/logs/stream</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.serverless.logs({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.workflows</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/workflows</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.workflows({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>DELETE</code> <b><code>fal.ai.v1.models.requests.payloads</code></b></summary>
-
-<code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.requests.payloads({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.models</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.models.pricing</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models/pricing</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.pricing({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.models.pricing.estimate</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models/pricing/estimate</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.pricing.estimate({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.models.requests.payloads</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/models/requests/{param}/payloads</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.requests.payloads({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>GET</code> <b><code>fal.ai.v1.workflows</code></b></summary>
-
-<code>GET https://api.fal.ai/v1/workflows</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.workflows({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.models.pricing.estimate</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.models.pricing.estimate({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.queue.submit</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/POST</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.queue.submit({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.serverless.files.uploadLocal</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.serverless.files.uploadLocal({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>fal.ai.v1.serverless.files.uploadUrl</code></b></summary>
-
-<code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
-
-[Upstream docs ↗](https://docs.fal.ai)
-
-```typescript
-const res = await fal.ai.v1.serverless.files.uploadUrl({ /* ... */ });
-```
-
-Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
-
-</details>
+26 endpoints across 7 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -377,6 +90,158 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+### models
+
+<details>
+<summary><code>DELETE</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
+
+<code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.requests.payloads({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models.pricing</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/pricing</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.pricing({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models.pricing.estimate</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/pricing/estimate</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.pricing.estimate({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/requests/{param}/payloads</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.requests.payloads({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.models.pricing.estimate</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.pricing.estimate({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models.pricing</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/pricing</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.pricing({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.models.pricing.estimate</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/models/pricing/estimate</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.pricing.estimate({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
+
+<code>DELETE https://api.fal.ai/v1/models/requests/{param}/payloads</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.requests.payloads({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### nanoBananaPro
 
 <details>
@@ -409,6 +274,38 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 </details>
 
+### queue
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.queue.submit</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/POST</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.queue.submit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.queue.submit</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/POST</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.queue.submit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
 ### serverless
 
 <details>
@@ -420,6 +317,113 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.v1.serverless.logs({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadLocal</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.serverless.files.uploadLocal({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadUrl</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.serverless.files.uploadUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadLocal</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/serverless/files/file/local/{param}</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.serverless.files.uploadLocal({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.serverless.files.uploadUrl</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/serverless/files/file/url/{param}</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.serverless.files.uploadUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.v1.serverless.logs</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/serverless/logs/stream</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.serverless.logs({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### workflows
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.workflows</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/workflows</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.workflows({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.workflows</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/workflows</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.workflows({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

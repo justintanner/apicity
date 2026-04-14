@@ -22,7 +22,9 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list accounts", async () => {
-        const result = await provider().v1.accounts.list({ pageSize: 5 });
+        const result = await provider().inference.v1.accounts.list({
+          pageSize: 5,
+        });
         expect(result).toBeDefined();
         expect(result.accounts).toBeDefined();
         expect(Array.isArray(result.accounts)).toBe(true);
@@ -39,7 +41,7 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should get a specific account", async () => {
-        const result = await provider().v1.accounts.get(accountId);
+        const result = await provider().inference.v1.accounts.get(accountId);
         expect(result).toBeDefined();
       });
     });
@@ -56,9 +58,12 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list users for an account", async () => {
-        const result = await provider().v1.accounts.users.list(accountId, {
-          pageSize: 5,
-        });
+        const result = await provider().inference.v1.accounts.users.list(
+          accountId,
+          {
+            pageSize: 5,
+          }
+        );
         expect(result).toBeDefined();
         expect(result.users).toBeDefined();
         expect(Array.isArray(result.users)).toBe(true);
@@ -75,7 +80,7 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should get a specific user", async () => {
-        const result = await provider().v1.accounts.users.get(
+        const result = await provider().inference.v1.accounts.users.get(
           accountId,
           "jwtanner"
         );
@@ -96,7 +101,7 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list api keys for a user", async () => {
-        const result = await provider().v1.accounts.apiKeys.list(
+        const result = await provider().inference.v1.accounts.apiKeys.list(
           accountId,
           "jwtanner"
         );
@@ -118,9 +123,12 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list secrets for an account", async () => {
-        const result = await provider().v1.accounts.secrets.list(accountId, {
-          pageSize: 5,
-        });
+        const result = await provider().inference.v1.accounts.secrets.list(
+          accountId,
+          {
+            pageSize: 5,
+          }
+        );
         expect(result).toBeDefined();
         expect(result.secrets).toBeDefined();
         expect(Array.isArray(result.secrets)).toBe(true);
@@ -139,9 +147,12 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list datasets for an account", async () => {
-        const result = await provider().v1.accounts.datasets.list(accountId, {
-          pageSize: 5,
-        });
+        const result = await provider().inference.v1.accounts.datasets.list(
+          accountId,
+          {
+            pageSize: 5,
+          }
+        );
         expect(result).toBeDefined();
         expect(result.datasets).toBeDefined();
         expect(Array.isArray(result.datasets)).toBe(true);
@@ -160,12 +171,13 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list batch inference jobs", async () => {
-        const result = await provider().v1.accounts.batchInferenceJobs.list(
-          accountId,
-          {
-            pageSize: 5,
-          }
-        );
+        const result =
+          await provider().inference.v1.accounts.batchInferenceJobs.list(
+            accountId,
+            {
+              pageSize: 5,
+            }
+          );
         expect(result).toBeDefined();
         expect(result.batchInferenceJobs).toBeDefined();
         expect(Array.isArray(result.batchInferenceJobs)).toBe(true);
@@ -185,7 +197,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list supervised fine-tuning jobs", async () => {
         const result =
-          await provider().v1.accounts.supervisedFineTuningJobs.list({
+          await provider().inference.v1.accounts.supervisedFineTuningJobs.list({
             accountId,
             pageSize: 5,
           });
@@ -205,7 +217,7 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list deployments for an account", async () => {
-        const result = await provider().v1.accounts.deployments.list(
+        const result = await provider().inference.v1.accounts.deployments.list(
           accountId,
           { pageSize: 5 }
         );
@@ -227,10 +239,11 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list deployed models for an account", async () => {
-        const result = await provider().v1.accounts.deployedModels.list(
-          accountId,
-          { pageSize: 5 }
-        );
+        const result =
+          await provider().inference.v1.accounts.deployedModels.list(
+            accountId,
+            { pageSize: 5 }
+          );
         expect(result).toBeDefined();
         expect(result.deployedModels).toBeDefined();
         expect(Array.isArray(result.deployedModels)).toBe(true);
@@ -250,7 +263,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list deployment shape versions", async () => {
         const result =
-          await provider().v1.accounts.deploymentShapes.versions.list(
+          await provider().inference.v1.accounts.deploymentShapes.versions.list(
             accountId,
             "llama-v3p1-8b-instruct-a100-80gb-1x",
             { pageSize: 5 }
@@ -273,9 +286,12 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list DPO jobs for an account", async () => {
-        const result = await provider().v1.accounts.dpoJobs.list(accountId, {
-          pageSize: 5,
-        });
+        const result = await provider().inference.v1.accounts.dpoJobs.list(
+          accountId,
+          {
+            pageSize: 5,
+          }
+        );
         expect(result).toBeDefined();
         expect(result.dpoJobs).toBeDefined();
         expect(Array.isArray(result.dpoJobs)).toBe(true);
@@ -294,9 +310,12 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list evaluators for an account", async () => {
-        const result = await provider().v1.accounts.evaluators.list(accountId, {
-          pageSize: 5,
-        });
+        const result = await provider().inference.v1.accounts.evaluators.list(
+          accountId,
+          {
+            pageSize: 5,
+          }
+        );
         expect(result).toBeDefined();
         expect(result.evaluators).toBeDefined();
         expect(Array.isArray(result.evaluators)).toBe(true);
@@ -313,7 +332,7 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should get a specific evaluator", async () => {
-        const result = await provider().v1.accounts.evaluators.get(
+        const result = await provider().inference.v1.accounts.evaluators.get(
           accountId,
           "gsm8k-evaluator"
         );
@@ -333,7 +352,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should call getBuildLogEndpoint and handle API response", async () => {
         const p = provider();
-        const call = p.v1.accounts.evaluators.getBuildLogEndpoint(
+        const call = p.inference.v1.accounts.evaluators.getBuildLogEndpoint(
           accountId,
           "gsm8k-evaluator"
         );
@@ -353,7 +372,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should call getSourceCodeSignedUrl and handle API response", async () => {
         const p = provider();
-        const call = p.v1.accounts.evaluators.getSourceCodeSignedUrl(
+        const call = p.inference.v1.accounts.evaluators.getSourceCodeSignedUrl(
           accountId,
           "gsm8k-evaluator"
         );
@@ -374,10 +393,11 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list evaluation jobs for an account", async () => {
-        const result = await provider().v1.accounts.evaluationJobs.list(
-          accountId,
-          { pageSize: 5 }
-        );
+        const result =
+          await provider().inference.v1.accounts.evaluationJobs.list(
+            accountId,
+            { pageSize: 5 }
+          );
         expect(result).toBeDefined();
         expect(result.evaluationJobs).toBeDefined();
         expect(Array.isArray(result.evaluationJobs)).toBe(true);
@@ -397,7 +417,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list reinforcement fine-tuning jobs", async () => {
         const result =
-          await provider().v1.accounts.reinforcementFineTuningJobs.list(
+          await provider().inference.v1.accounts.reinforcementFineTuningJobs.list(
             accountId,
             { pageSize: 5 }
           );
@@ -418,7 +438,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should get a specific RFT job", async () => {
         const result =
-          await provider().v1.accounts.reinforcementFineTuningJobs.get(
+          await provider().inference.v1.accounts.reinforcementFineTuningJobs.get(
             accountId,
             "demo-rft-job"
           );
@@ -439,10 +459,11 @@ describe("fireworks GET endpoints integration", () => {
       });
 
       it("should list RLOR trainer jobs", async () => {
-        const result = await provider().v1.accounts.rlorTrainerJobs.list(
-          accountId,
-          { pageSize: 5 }
-        );
+        const result =
+          await provider().inference.v1.accounts.rlorTrainerJobs.list(
+            accountId,
+            { pageSize: 5 }
+          );
         expect(result).toBeDefined();
         expect(result.rlorTrainerJobs).toBeDefined();
         expect(Array.isArray(result.rlorTrainerJobs)).toBe(true);

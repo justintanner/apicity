@@ -17,7 +17,7 @@ describe("fireworks completions integration", () => {
     const provider = fireworks({
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
-    const result = await provider.v1.completions({
+    const result = await provider.inference.v1.completions({
       model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
       prompt: "The capital of France is",
       max_tokens: 32,

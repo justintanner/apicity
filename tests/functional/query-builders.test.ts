@@ -23,7 +23,7 @@ describe("fal buildQueryString", () => {
       );
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.ai.v1.models();
+    await p.v1.models();
     expect(capturedUrl).not.toContain("?");
   });
 
@@ -39,7 +39,7 @@ describe("fal buildQueryString", () => {
       );
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.ai.v1.models({ endpoint_id: "test-model" });
+    await p.v1.models({ endpoint_id: "test-model" });
     expect(capturedUrl).toContain("endpoint_id=test-model");
   });
 
@@ -55,7 +55,7 @@ describe("fal buildQueryString", () => {
       );
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.ai.v1.models({ endpoint_id: "test-model", q: "search" });
+    await p.v1.models({ endpoint_id: "test-model", q: "search" });
     expect(capturedUrl).toMatch(/endpoint_id=test-model/);
     expect(capturedUrl).toMatch(/q=search/);
     expect(capturedUrl).toContain("?");
@@ -73,7 +73,7 @@ describe("fal buildQueryString", () => {
       );
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.ai.v1.models({ endpoint_id: "test-model", q: undefined });
+    await p.v1.models({ endpoint_id: "test-model", q: undefined });
     expect(capturedUrl).toContain("endpoint_id=test-model");
     expect(capturedUrl).not.toContain("q=");
   });
@@ -90,7 +90,7 @@ describe("fal buildQueryString", () => {
       );
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.ai.v1.models.pricing({ endpoint_id: ["model1", "model2"] });
+    await p.v1.models.pricing({ endpoint_id: ["model1", "model2"] });
     // Fal uses URLSearchParams which serializes arrays as repeated keys
     const params = new URLSearchParams(capturedUrl.split("?")[1]);
     const values = params.getAll("endpoint_id");
@@ -110,7 +110,7 @@ describe("fal buildQueryString", () => {
       );
     };
     const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.ai.v1.models({ limit: 10 });
+    await p.v1.models({ limit: 10 });
     expect(capturedUrl).toContain("limit=10");
   });
 });

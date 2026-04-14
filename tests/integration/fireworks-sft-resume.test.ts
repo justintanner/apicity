@@ -6,11 +6,11 @@ describe("fireworks sft resume integration", () => {
     it("should have resume method on supervisedFineTuningJobs", () => {
       const provider = fireworks({ apiKey: "test-key" });
       expect(
-        provider.v1.accounts.supervisedFineTuningJobs.resume
+        provider.inference.v1.accounts.supervisedFineTuningJobs.resume
       ).toBeDefined();
-      expect(provider.v1.accounts.supervisedFineTuningJobs.resume).toBeTypeOf(
-        "function"
-      );
+      expect(
+        provider.inference.v1.accounts.supervisedFineTuningJobs.resume
+      ).toBeTypeOf("function");
     });
   });
 });

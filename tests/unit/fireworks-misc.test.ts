@@ -83,50 +83,50 @@ describe("fireworks Zod schema validation edge cases", () => {
 describe("fireworks schema property on endpoints", () => {
   it("should expose .schema on chat.completions", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.chat.completions.schema).toBeDefined();
-    expect(typeof provider.v1.chat.completions.schema.safeParse).toBe(
+    expect(provider.inference.v1.chat.completions.schema).toBeDefined();
+    expect(typeof provider.inference.v1.chat.completions.schema.safeParse).toBe(
       "function"
     );
   });
 
   it("should expose .schema on completions", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.completions.schema).toBeDefined();
+    expect(provider.inference.v1.completions.schema).toBeDefined();
   });
 
   it("should expose .schema on embeddings", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.embeddings.schema).toBeDefined();
+    expect(provider.inference.v1.embeddings.schema).toBeDefined();
   });
 
   it("should expose .schema on rerank", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.rerank.schema).toBeDefined();
+    expect(provider.inference.v1.rerank.schema).toBeDefined();
   });
 
   it("should expose .schema on messages", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.messages.schema).toBeDefined();
+    expect(provider.inference.v1.messages.schema).toBeDefined();
   });
 
   it("should expose .schema on workflows.textToImage", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.workflows.textToImage.schema).toBeDefined();
+    expect(provider.inference.v1.workflows.textToImage.schema).toBeDefined();
   });
 
   it("should expose .schema on workflows.kontext", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.workflows.kontext.schema).toBeDefined();
+    expect(provider.inference.v1.workflows.kontext.schema).toBeDefined();
   });
 
   it("should expose .schema on workflows.getResult", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    expect(provider.v1.workflows.getResult.schema).toBeDefined();
+    expect(provider.inference.v1.workflows.getResult.schema).toBeDefined();
   });
 
   it("should validate via safeParse on chat.completions.schema", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.chat.completions.schema.safeParse({
+    const result = provider.inference.v1.chat.completions.schema.safeParse({
       model: "test-model",
       messages: [{ role: "user", content: "Hello" }],
     });
@@ -135,7 +135,7 @@ describe("fireworks schema property on endpoints", () => {
 
   it("should reject invalid payload via safeParse on chat.completions.schema", () => {
     const provider = fireworks({ apiKey: "test-key" });
-    const result = provider.v1.chat.completions.schema.safeParse({
+    const result = provider.inference.v1.chat.completions.schema.safeParse({
       // Missing required 'model' and 'messages'
     });
     expect(result.success).toBe(false);
@@ -222,7 +222,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
     });
 
     try {
-      await provider.v1.chat.completions(
+      await provider.inference.v1.chat.completions(
         {
           model: "test",
           messages: [{ role: "user", content: "Hello" }],
@@ -257,7 +257,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
     });
 
     try {
-      await provider.v1.chat.completions(
+      await provider.inference.v1.chat.completions(
         {
           model: "test",
           messages: [{ role: "user", content: "Hello" }],
@@ -292,7 +292,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
     });
 
     // No signal passed -- exercises the early return in attachAbortHandler
-    const result = await provider.v1.chat.completions({
+    const result = await provider.inference.v1.chat.completions({
       model: "test",
       messages: [{ role: "user", content: "Hello" }],
     });

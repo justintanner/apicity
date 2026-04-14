@@ -62,18 +62,14 @@ function formatUsageSnippet(providerName, dotPath) {
 
 function renderEndpointDetails(ep, providerName, docsUrl) {
   const method = ep.method ?? "";
-  const headerCode = method
-    ? `<code>${method}</code> `
-    : "";
+  const headerCode = method ? `<code>${method}</code> ` : "";
   const summary = `${headerCode}<b><code>${providerName}${ep.dotPath ? "." + ep.dotPath : ""}</code></b>`;
 
   const urlLine = ep.fullUrl
     ? `<code>${method ? method + " " : ""}${ep.fullUrl}</code>`
     : "";
   const docsLine =
-    docsUrl && docsUrl.length > 0
-      ? `[Upstream docs ↗](${docsUrl})`
-      : "";
+    docsUrl && docsUrl.length > 0 ? `[Upstream docs ↗](${docsUrl})` : "";
 
   const usage = formatUsageSnippet(providerName, ep.dotPath);
   const relSrc = ep.file.replace(
@@ -112,10 +108,7 @@ function groupEndpoints(endpoints) {
 function renderApiReference(providerName, endpoints) {
   const sections = ["## API Reference", ""];
   if (endpoints.length === 0) {
-    sections.push(
-      "_No endpoints discovered for this provider yet._",
-      ""
-    );
+    sections.push("_No endpoints discovered for this provider yet._", "");
     return sections.join("\n");
   }
 
@@ -278,9 +271,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("## Quick Start");
   sections.push("");
   sections.push("```typescript");
-  sections.push(
-    `import { ${providerName} as ${factory} } from "${pkgName}";`
-  );
+  sections.push(`import { ${providerName} as ${factory} } from "${pkgName}";`);
   sections.push("");
   sections.push(
     `const ${providerName} = ${factory}({ apiKey: process.env.${envKey}! });`
@@ -319,7 +310,12 @@ async function generateReadme(providerDir, providerName, endpoints) {
 }
 
 async function regenerate(providerName, endpointsByProvider) {
-  const providerDir = path.join(REPO_ROOT, "packages", "provider", providerName);
+  const providerDir = path.join(
+    REPO_ROOT,
+    "packages",
+    "provider",
+    providerName
+  );
   const readmePath = path.join(providerDir, "README.md");
   const endpoints = endpointsByProvider.get(providerName) ?? [];
   const readme = await generateReadme(providerDir, providerName, endpoints);

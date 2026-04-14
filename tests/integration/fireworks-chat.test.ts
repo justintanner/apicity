@@ -17,7 +17,7 @@ describe("fireworks chat completions integration", () => {
     const provider = fireworks({
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
-    const result = await provider.v1.chat.completions({
+    const result = await provider.inference.v1.chat.completions({
       model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
       messages: [{ role: "user", content: "Say hello in one sentence." }],
       temperature: 0,

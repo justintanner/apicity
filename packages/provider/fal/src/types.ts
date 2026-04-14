@@ -708,11 +708,6 @@ interface FalV1Namespace {
   workflows: FalWorkflowsNamespace;
 }
 
-// api.fal.ai wrapper — everything under /v1
-interface FalAiNamespace {
-  v1: FalV1Namespace;
-}
-
 // ==================== fal.run run-namespace ====================
 
 type FalSeedance2p0ImageToVideoFn = ((
@@ -929,22 +924,22 @@ interface FalDeleteV1Namespace {
 
 // Verb-prefixed root namespaces
 interface FalGetNamespace {
-  ai: { v1: FalGetV1Namespace };
+  v1: FalGetV1Namespace;
 }
 
 interface FalPostNamespace {
-  ai: { v1: FalPostV1Namespace };
+  v1: FalPostV1Namespace;
   run: FalRunNamespace;
   stream: FalPostStreamNamespace;
 }
 
 interface FalDeleteNamespace {
-  ai: { v1: FalDeleteV1Namespace };
+  v1: FalDeleteV1Namespace;
 }
 
 // Provider interface
 export interface FalProvider {
-  ai: FalAiNamespace;
+  v1: FalV1Namespace;
   run: FalRunNamespace;
   get: FalGetNamespace;
   post: FalPostNamespace;

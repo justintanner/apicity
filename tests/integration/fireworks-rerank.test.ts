@@ -18,7 +18,7 @@ describe("fireworks rerank integration", () => {
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
 
-    const result = await provider.v1.rerank({
+    const result = await provider.inference.v1.rerank({
       model: "fireworks/qwen3-reranker-8b",
       query: "What is the capital of France?",
       documents: [

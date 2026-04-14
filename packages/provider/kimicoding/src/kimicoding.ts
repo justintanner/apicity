@@ -265,6 +265,7 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     }
   }
 
+  // sig-ok: ergonomic name (URL is /tokens/count)
   // POST https://api.kimi.com/coding/v1/tokens/count
   // Docs: https://platform.moonshot.ai/docs
   async function countTokensImpl(

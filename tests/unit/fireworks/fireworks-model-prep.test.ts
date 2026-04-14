@@ -70,15 +70,19 @@ describe("fireworks model preparation", () => {
 
     const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
 
-    await provider.v1.accounts.models.prepare("acct-123", "model-456", {
-      precision: "FP8",
-      readMask: "state,status",
-    });
+    await provider.inference.v1.accounts.models.prepare(
+      "acct-123",
+      "model-456",
+      {
+        precision: "FP8",
+        readMask: "state,status",
+      }
+    );
 
     const stages: PreparationStage[] = [];
 
     for (let i = 0; i < snapshots.length; i++) {
-      const model = await provider.v1.accounts.models.get(
+      const model = await provider.inference.v1.accounts.models.get(
         "acct-123",
         "model-456",
         {
@@ -127,7 +131,7 @@ describe("fireworks dataset upload validation", () => {
     const mockFetch = vi.fn().mockResolvedValue(createJsonResponse({}));
     const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
 
-    await provider.v1.accounts.datasets.validateUpload(
+    await provider.inference.v1.accounts.datasets.validateUpload(
       "acct-123",
       "dataset-456"
     );
@@ -153,16 +157,19 @@ describe("fireworks dataset upload validation", () => {
     const provider = fireworks({ apiKey: "fw-test-key" });
 
     const missingCreateFields =
-      provider.v1.accounts.datasets.create.schema.safeParse({});
-    const invalidFormat = provider.v1.accounts.datasets.update.schema.safeParse(
-      {
+      provider.inference.v1.accounts.datasets.create.schema.safeParse({});
+    const invalidFormat =
+      provider.inference.v1.accounts.datasets.update.schema.safeParse({
         format: "CSV",
-      }
-    );
+      });
     const missingUploadFiles =
-      provider.v1.accounts.datasets.getUploadEndpoint.schema.safeParse({});
+      provider.inference.v1.accounts.datasets.getUploadEndpoint.schema.safeParse(
+        {}
+      );
     const emptyValidateUpload =
-      provider.v1.accounts.datasets.validateUpload.schema.safeParse({});
+      provider.inference.v1.accounts.datasets.validateUpload.schema.safeParse(
+        {}
+      );
 
     expect(missingCreateFields.success).toBe(false);
     expect(

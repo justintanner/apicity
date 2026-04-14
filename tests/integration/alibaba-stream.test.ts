@@ -16,12 +16,14 @@ describe("alibaba chat completions streaming", () => {
     });
 
     const chunks: AlibabaChatStreamChunk[] = [];
-    for await (const chunk of provider.post.stream.v1.chat.completions({
-      model: "qwen3-max",
-      messages: [{ role: "user", content: "Say hello in one sentence." }],
-      temperature: 0,
-      max_tokens: 64,
-    })) {
+    for await (const chunk of provider.post.stream.compatibleMode.v1.chat.completions(
+      {
+        model: "qwen3-max",
+        messages: [{ role: "user", content: "Say hello in one sentence." }],
+        temperature: 0,
+        max_tokens: 64,
+      }
+    )) {
       chunks.push(chunk);
     }
 

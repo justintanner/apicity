@@ -163,8 +163,7 @@ state.json
 CLAUDE.md
 CLAUDE.local.md
 
-# Gas Town / Claude Code local harness files
-.gc/
+# Claude Code local harness files
 .claude/
 .runtime/
 test-branch-protection.txt

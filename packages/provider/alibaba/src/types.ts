@@ -17,6 +17,14 @@ export type {
   AlibabaVideoSynthesisInput,
   AlibabaVideoSynthesisParameters,
   AlibabaVideoSynthesisRequest,
+  AlibabaImageTextContent,
+  AlibabaImageImageContent,
+  AlibabaImageContent,
+  AlibabaImageGenerationMessage,
+  AlibabaImageGenerationInput,
+  AlibabaColorPaletteItem,
+  AlibabaImageGenerationParameters,
+  AlibabaImageGenerationRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -95,6 +103,33 @@ export interface AlibabaModelListResponse {
   data: AlibabaModel[];
 }
 
+// -- Image generation (Wan 2.7 — async) --------------------------------------
+
+export interface AlibabaImageGenerationContent {
+  type: "image";
+  image: string;
+}
+
+export interface AlibabaImageGenerationResultMessage {
+  role: "assistant";
+  content: AlibabaImageGenerationContent[];
+}
+
+export interface AlibabaImageGenerationChoice {
+  finish_reason: string;
+  message: AlibabaImageGenerationResultMessage;
+}
+
+export interface AlibabaImageGenerationSubmitOutput {
+  task_id: string;
+  task_status: AlibabaTaskStatus;
+}
+
+export interface AlibabaImageGenerationSubmitResponse {
+  output: AlibabaImageGenerationSubmitOutput;
+  request_id: string;
+}
+
 // -- Video synthesis (native DashScope /api/v1) -----------------------------
 
 export type AlibabaTaskStatus =
@@ -127,6 +162,8 @@ export interface AlibabaTaskOutput {
   message?: string;
   orig_prompt?: string;
   actual_prompt?: string;
+  finished?: boolean;
+  choices?: AlibabaImageGenerationChoice[];
 }
 
 export interface AlibabaTaskUsage {
@@ -135,6 +172,11 @@ export interface AlibabaTaskUsage {
   output_video_duration?: number;
   SR?: number;
   video_count?: number;
+  image_count?: number;
+  size?: string;
+  input_tokens?: number;
+  output_tokens?: number;
+  total_tokens?: number;
 }
 
 export interface AlibabaTaskStatusResponse {
@@ -161,7 +203,11 @@ export class AlibabaError extends Error {
 
 // -- Method interfaces ------------------------------------------------------
 
-import type { AlibabaChatRequest, AlibabaVideoSynthesisRequest } from "./zod";
+import type {
+  AlibabaChatRequest,
+  AlibabaVideoSynthesisRequest,
+  AlibabaImageGenerationRequest,
+} from "./zod";
 
 export interface AlibabaChatCompletionsMethod {
   (req: AlibabaChatRequest, signal?: AbortSignal): Promise<AlibabaChatResponse>;
@@ -182,6 +228,14 @@ export interface AlibabaVideoSynthesisMethod {
     signal?: AbortSignal
   ): Promise<AlibabaVideoSynthesisSubmitResponse>;
   schema: z.ZodType<AlibabaVideoSynthesisRequest>;
+}
+
+export interface AlibabaImageGenerationMethod {
+  (
+    req: AlibabaImageGenerationRequest,
+    signal?: AbortSignal
+  ): Promise<AlibabaImageGenerationSubmitResponse>;
+  schema: z.ZodType<AlibabaImageGenerationRequest>;
 }
 
 // -- Namespace interfaces ---------------------------------------------------
@@ -206,8 +260,13 @@ export interface AlibabaPostApiV1VideoGenerationNamespace {
   videoSynthesis: AlibabaVideoSynthesisMethod;
 }
 
+export interface AlibabaPostApiV1ImageGenerationNamespace {
+  generation: AlibabaImageGenerationMethod;
+}
+
 export interface AlibabaPostApiV1AigcNamespace {
   videoGeneration: AlibabaPostApiV1VideoGenerationNamespace;
+  imageGeneration: AlibabaPostApiV1ImageGenerationNamespace;
 }
 
 export interface AlibabaPostApiV1ServicesNamespace {

@@ -113,6 +113,58 @@ export const AlibabaVideoSynthesisRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Image generation request (Wan 2.7 — async)
+// ---------------------------------------------------------------------------
+
+export const AlibabaImageTextContentSchema = z.object({
+  text: z.string().max(5000),
+});
+
+export const AlibabaImageImageContentSchema = z.object({
+  image: z.string(),
+});
+
+export const AlibabaImageContentSchema = z.union([
+  AlibabaImageTextContentSchema,
+  AlibabaImageImageContentSchema,
+]);
+
+export const AlibabaImageGenerationMessageSchema = z.object({
+  role: z.literal("user"),
+  content: z.array(AlibabaImageContentSchema),
+});
+
+export const AlibabaImageGenerationInputSchema = z.object({
+  messages: z.array(AlibabaImageGenerationMessageSchema).length(1),
+});
+
+export const AlibabaColorPaletteItemSchema = z.object({
+  hex: z.string(),
+  ratio: z.string(),
+});
+
+export const AlibabaImageGenerationParametersSchema = z.object({
+  size: z.string().optional(),
+  n: z.number().int().min(1).max(12).optional(),
+  watermark: z.boolean().optional(),
+  thinking_mode: z.boolean().optional(),
+  color_palette: z
+    .array(AlibabaColorPaletteItemSchema)
+    .min(3)
+    .max(10)
+    .optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  enable_sequential: z.boolean().optional(),
+  bbox_list: z.array(z.array(z.array(z.number()))).optional(),
+});
+
+export const AlibabaImageGenerationRequestSchema = z.object({
+  model: z.enum(["wan2.7-image-pro", "wan2.7-image"]),
+  input: AlibabaImageGenerationInputSchema,
+  parameters: AlibabaImageGenerationParametersSchema.optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
 
@@ -151,5 +203,27 @@ export type AlibabaVideoSynthesisParameters = z.infer<
 >;
 export type AlibabaVideoSynthesisRequest = z.infer<
   typeof AlibabaVideoSynthesisRequestSchema
+>;
+export type AlibabaImageTextContent = z.infer<
+  typeof AlibabaImageTextContentSchema
+>;
+export type AlibabaImageImageContent = z.infer<
+  typeof AlibabaImageImageContentSchema
+>;
+export type AlibabaImageContent = z.infer<typeof AlibabaImageContentSchema>;
+export type AlibabaImageGenerationMessage = z.infer<
+  typeof AlibabaImageGenerationMessageSchema
+>;
+export type AlibabaImageGenerationInput = z.infer<
+  typeof AlibabaImageGenerationInputSchema
+>;
+export type AlibabaColorPaletteItem = z.infer<
+  typeof AlibabaColorPaletteItemSchema
+>;
+export type AlibabaImageGenerationParameters = z.infer<
+  typeof AlibabaImageGenerationParametersSchema
+>;
+export type AlibabaImageGenerationRequest = z.infer<
+  typeof AlibabaImageGenerationRequestSchema
 >;
 export type AlibabaOptions = z.infer<typeof AlibabaOptionsSchema>;

@@ -1,7 +1,7 @@
 {
   "name": "@apicity/alibaba",
   "version": "0.1.0",
-  "description": "Alibaba Cloud Model Studio provider for chat completions and streaming.",
+  "description": "Alibaba Cloud Model Studio provider for chat completions, image generation, and streaming.",
   "license": "MIT",
   "repository": "github:justintanner/apicity",
   "type": "module",
@@ -37,6 +37,8 @@
     "dashscope",
     "qwen",
     "qwen3",
+    "wan",
+    "image-generation",
     "chat",
     "apicity"
   ],

@@ -9,10 +9,13 @@ import {
   AlibabaVideoSynthesisRequest,
   AlibabaVideoSynthesisSubmitResponse,
   AlibabaTaskStatusResponse,
+  AlibabaImageGenerationRequest,
+  AlibabaImageGenerationSubmitResponse,
 } from "./types";
 import {
   AlibabaChatRequestSchema,
   AlibabaVideoSynthesisRequestSchema,
+  AlibabaImageGenerationRequestSchema,
 } from "./zod";
 import { sseToIterable } from "./sse";
 
@@ -290,6 +293,30 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
             },
             {
               schema: AlibabaVideoSynthesisRequestSchema,
+            }
+          ),
+        },
+        imageGeneration: {
+          // sig-ok: dashscope subdomain hoisted by walker
+          // POST https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation
+          // Docs: https://www.alibabacloud.com/help/en/model-studio/image-generation
+          generation: Object.assign(
+            async (
+              req: AlibabaImageGenerationRequest,
+              signal?: AbortSignal
+            ): Promise<AlibabaImageGenerationSubmitResponse> => {
+              return makeRequest<AlibabaImageGenerationSubmitResponse>(
+                "/services/aigc/image-generation/generation",
+                req,
+                signal,
+                {
+                  baseOverride: nativeBaseURL,
+                  extraHeaders: { "X-DashScope-Async": "enable" },
+                }
+              );
+            },
+            {
+              schema: AlibabaImageGenerationRequestSchema,
             }
           ),
         },

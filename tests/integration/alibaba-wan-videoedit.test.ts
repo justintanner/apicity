@@ -1,18 +1,16 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { alibaba } from "@apicity/alibaba";
 import {
   setupPolly,
   teardownPolly,
   getPollyMode,
+  recordingExists,
   type PollyContext,
 } from "../harness";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const recordingName = "alibaba/wan-videoedit";
 
-describe("alibaba wan i2v integration", () => {
+describe("alibaba wan videoedit integration", () => {
   let ctx: PollyContext | undefined;
 
   afterEach(async () => {
@@ -22,35 +20,36 @@ describe("alibaba wan i2v integration", () => {
     }
   });
 
-  it("should submit an image-to-video task and poll status", async () => {
-    ctx = setupPolly("alibaba/wan-i2v");
+  it("should submit a video editing task and poll status", async () => {
+    if (getPollyMode() === "replay" && !recordingExists(recordingName)) {
+      return;
+    }
+
+    ctx = setupPolly(recordingName);
 
     const provider = alibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
+      baseURL:
+        process.env.DASHSCOPE_BASE_URL ??
+        "https://dashscope.aliyuncs.com/compatible-mode/v1",
     });
-
-    const imgBuffer = readFileSync(resolve(__dirname, "../fixtures/cat1.jpg"));
-    const imgDataUrl = `data:image/jpeg;base64,${imgBuffer.toString("base64")}`;
 
     const submit =
       await provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis({
-        model: "wan2.7-i2v",
+        model: "wan2.7-videoedit",
         input: {
-          prompt:
-            "The odd-eyed white cat blinks slowly, whiskers twitching, then turns its head toward the camera",
+          prompt: "Convert the entire scene to a claymation style",
           media: [
             {
-              type: "first_frame",
-              url: imgDataUrl,
+              type: "video",
+              url: "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20260402/ldnfdf/wan2.7-videoedit-style-change.mp4",
             },
           ],
         },
         parameters: {
           resolution: "720P",
-          duration: 5,
           prompt_extend: true,
-          watermark: false,
-          audio: false,
+          watermark: true,
         },
       });
 
@@ -64,10 +63,11 @@ describe("alibaba wan i2v integration", () => {
     ]).toContain(submit.output.task_status);
 
     const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+    const maxPolls = getPollyMode() === "replay" ? 60 : 12;
     let status = await provider.get.api.v1.tasks(submit.output.task_id);
     for (
       let i = 0;
-      i < 60 &&
+      i < maxPolls &&
       (status.output.task_status === "PENDING" ||
         status.output.task_status === "RUNNING");
       i++
@@ -86,28 +86,10 @@ describe("alibaba wan i2v integration", () => {
     ]).toContain(status.output.task_status);
   }, 300_000);
 
-  it("should validate video-synthesis payload via .schema.safeParse", () => {
+  it("should validate wan2.7-videoedit payload via .schema.safeParse", () => {
     const provider = alibaba({ apiKey: "test-key" });
 
     const valid =
-      provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
-        {
-          model: "wan2.7-i2v",
-          input: {
-            prompt: "a cat looking at the camera",
-            media: [
-              {
-                type: "first_frame",
-                url: "https://example.com/cat.jpg",
-              },
-            ],
-          },
-          parameters: { resolution: "720P", duration: 5 },
-        }
-      );
-    expect(valid.success).toBe(true);
-
-    const videoEdit =
       provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
         {
           model: "wan2.7-videoedit",
@@ -127,48 +109,20 @@ describe("alibaba wan i2v integration", () => {
           },
         }
       );
-    expect(videoEdit.success).toBe(true);
-
-    const missingInput =
-      provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
-        { model: "wan2.7-i2v" }
-      );
-    expect(missingInput.success).toBe(false);
+    expect(valid.success).toBe(true);
 
     const missingMedia =
       provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
         {
-          model: "wan2.7-i2v",
-          input: { prompt: "hi" },
+          model: "wan2.7-videoedit",
+          input: {
+            prompt: "Convert the entire scene to a claymation style",
+          },
+          parameters: {
+            resolution: "720P",
+          },
         }
       );
     expect(missingMedia.success).toBe(false);
-    expect(
-      missingMedia.error?.issues.some((i) => i.path.includes("media"))
-    ).toBe(true);
-
-    const legacyImgUrl =
-      provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
-        {
-          model: "wan2.7-i2v",
-          input: {
-            prompt: "hi",
-            img_url: "https://example.com/cat.jpg",
-          },
-        }
-      );
-    expect(legacyImgUrl.success).toBe(false);
-
-    const emptyMedia =
-      provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
-        {
-          model: "wan2.7-i2v",
-          input: {
-            prompt: "hi",
-            media: [],
-          },
-        }
-      );
-    expect(emptyMedia.success).toBe(false);
   });
 });

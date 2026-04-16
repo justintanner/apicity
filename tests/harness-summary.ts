@@ -164,6 +164,15 @@ function isPollingEntry(entry: HarEntry): boolean {
   if (resBody.code === 422 && resBody.msg === "recordInfo is null") {
     return true;
   }
+  // Alibaba/DashScope polling: output.task_status while async task runs
+  const output = resBody.output as Record<string, unknown> | undefined;
+  if (
+    output &&
+    typeof output.task_status === "string" &&
+    ["PENDING", "RUNNING", "SUSPENDED"].includes(output.task_status)
+  ) {
+    return true;
+  }
   return false;
 }
 
@@ -281,6 +290,24 @@ function extractInputMedia(
     if (Array.isArray(imageUrls)) {
       for (const url of imageUrls) {
         items.push({ type: "image", url });
+      }
+    }
+    const media = input.media as Array<Record<string, unknown>> | undefined;
+    if (Array.isArray(media)) {
+      for (const item of media) {
+        if (typeof item.url !== "string") continue;
+        const mediaType =
+          item.type === "driving_audio" ||
+          (typeof item.url === "string" &&
+            /\.(mp3|wav|flac|aac)(?:\?|$)/i.test(item.url))
+            ? "audio"
+            : item.type === "video" ||
+                item.type === "first_clip" ||
+                (typeof item.url === "string" &&
+                  /\.(mp4|webm|mov)(?:\?|$)/i.test(item.url))
+              ? "video"
+              : "image";
+        items.push({ type: mediaType, url: item.url });
       }
     }
     const refImage = input.reference_image as string[] | undefined;
@@ -607,6 +634,13 @@ function extractOutputMedia(
       const error = resBody.error as Record<string, unknown> | undefined;
       const msg = error?.message ?? "generation failed";
       lines.push(`**Output**: Failed — ${msg}`, "");
+      return lines;
+    }
+
+    // Alibaba/DashScope completed task: output.video_url
+    const output = resBody.output as Record<string, unknown> | undefined;
+    if (output && typeof output.video_url === "string" && output.video_url) {
+      lines.push(`**Output**: [Watch video](${output.video_url})`, "");
       return lines;
     }
 

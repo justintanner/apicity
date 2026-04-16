@@ -117,6 +117,7 @@ export function entryHasMedia(entry: HarEntry): boolean {
 
   const reqBody = entry.request.postData?.text ?? "";
   if (BASE64_MEDIA_MARKERS.some((m) => reqBody.includes(m))) return true;
+  if (MEDIA_URL_EXT.test(reqBody)) return true;
 
   return false;
 }

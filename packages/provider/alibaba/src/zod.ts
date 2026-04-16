@@ -86,6 +86,7 @@ export const AlibabaVideoSynthesisInputSchema = z.object({
           "last_frame",
           "driving_audio",
           "first_clip",
+          "video",
         ]),
         url: z.string().min(1),
       })

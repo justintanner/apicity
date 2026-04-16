@@ -1,0 +1,1 @@
+/Users/jwt/gc/.gc/system/packs/gastown/scripts/worktree-setup.sh

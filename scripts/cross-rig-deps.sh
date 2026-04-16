@@ -1,0 +1,1 @@
+/Users/jwt/gc/.gc/system/packs/maintenance/scripts/cross-rig-deps.sh

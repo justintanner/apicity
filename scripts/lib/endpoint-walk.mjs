@@ -461,14 +461,24 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
       if (p) return { method: m || "POST", path: p };
     }
 
-    // Shape C: helper("/path", body, signal) — method inferred from helper name
+    // Shape C: helper("/path", body?, signal?, options?) — method inferred from helper name
     if (HELPER_METHOD_HINTS[name]) {
       const p = extractPath(args[0]);
       if (p) {
+        // Check for baseOverride in the last argument (could be index 2 or 3 depending on helper)
+        let baseOverride = null;
+        for (let i = args.length - 1; i >= 2; i--) {
+          const bo = extractBaseOverride(args[i]);
+          if (bo) {
+            baseOverride = bo;
+            break;
+          }
+        }
         return {
           method: HELPER_METHOD_HINTS[name],
           path: p,
           absolute: ABSOLUTE_URL_HELPERS.has(name) || /^https?:\/\//i.test(p),
+          baseOverride,
         };
       }
     }
@@ -583,6 +593,7 @@ const BASE_URL_IDENTIFIERS = new Set([
   "apiBaseURL",
   "uploadBaseURL",
   "uploadBase",
+  "nativeBaseURL", // alibaba uses this for /api/v1 vs /compatible-mode/v1
 ]);
 
 function extractPath(argNode) {
@@ -644,6 +655,30 @@ function extractMethodFromOptions(argNode) {
     const init = prop.getInitializer();
     if (init && init.getKind() === SyntaxKind.StringLiteral) {
       return init.getLiteralText().toUpperCase();
+    }
+  }
+  return null;
+}
+
+function extractBaseOverride(optionsNode) {
+  if (!optionsNode) return null;
+  if (optionsNode.getKind() !== SyntaxKind.ObjectLiteralExpression) return null;
+  for (const prop of optionsNode.getProperties()) {
+    if (prop.getKind() !== SyntaxKind.PropertyAssignment) continue;
+    const name = prop.getName?.();
+    if (name !== "baseOverride") continue;
+    const init = prop.getInitializer();
+    if (!init) continue;
+    // Direct string literal
+    if (init.getKind() === SyntaxKind.StringLiteral) {
+      return init.getLiteralText();
+    }
+    // Identifier like nativeBaseURL — resolve it if possible
+    if (init.getKind() === SyntaxKind.Identifier) {
+      const idName = init.getText();
+      if (BASE_URL_IDENTIFIERS.has(idName)) {
+        return `{${idName}}`;
+      }
     }
   }
   return null;
@@ -827,6 +862,7 @@ async function* walkAllEndpointsRaw(project) {
             method: methodFromBody,
             path: rawPath,
             absolute,
+            baseOverride,
           } = extractMethodAndPath(leafNode);
           const methodFromPath = methodFromPathStack(dotPath);
           const method = methodFromPath || methodFromBody;
@@ -838,6 +874,22 @@ async function* walkAllEndpointsRaw(project) {
             fullUrl = null;
           } else if (absolute || /^https?:\/\//i.test(pth)) {
             fullUrl = pth;
+          } else if (baseOverride) {
+            // Handle baseOverride like {nativeBaseURL} or literal URL
+            let b = baseOverride;
+            if (b.startsWith("{") && b.endsWith("}")) {
+              const baseName = b.slice(1, -1);
+              // For now, only nativeBaseURL is known — derive it from baseURL
+              if (baseName === "nativeBaseURL" && baseURL) {
+                const u = new URL(baseURL);
+                b = `${u.origin}/api/v1`;
+              } else {
+                b = baseURL || "";
+              }
+            }
+            b = b.replace(/\/$/, "");
+            const p = pth.startsWith("/") ? pth : "/" + pth;
+            fullUrl = b + p;
           } else if (baseURL) {
             const b = baseURL.replace(/\/$/, "");
             const p = pth.startsWith("/") ? pth : "/" + pth;

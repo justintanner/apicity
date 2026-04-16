@@ -1,0 +1,1 @@
+/Users/jwt/gc/.gc/system/packs/maintenance/scripts/wisp-compact.sh

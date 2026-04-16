@@ -1,0 +1,1 @@
+/Users/jwt/gc/.gc/system/packs/gastown/scripts/checks/adopt-pr-review-approved.sh

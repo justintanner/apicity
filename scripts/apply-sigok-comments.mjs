@@ -51,7 +51,7 @@ function reasonFor(provider) {
     case "fireworks":
       return "walker can't see baseURL override / management subpath";
     case "alibaba":
-      return "dashscope-intl subdomain hoisted by walker";
+      return "dashscope subdomain hoisted by walker";
     case "fal":
       return "stylistic dotPath divergence from URL";
     case "kimicoding":

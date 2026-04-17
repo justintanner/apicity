@@ -237,9 +237,9 @@ export const GrokImageToImageRequestSchema = z.object({
   model: z.literal("grok-imagine/image-to-image"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().optional(),
+    prompt: z.string().max(390000).optional(),
     image_urls: z.tuple([z.string()]),
-    aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
+    nsfw_checker: z.boolean().default(false),
   }),
 });
 

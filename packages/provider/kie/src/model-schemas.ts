@@ -129,17 +129,20 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "grok-imagine/image-to-image": {
     type: "image",
     fields: {
-      prompt: { type: "string", description: "Modification prompt" },
+      prompt: {
+        type: "string",
+        description: "Modification prompt (max 390000 chars)",
+      },
       image_urls: {
         type: "array",
         required: true,
-        description: "Input image URLs (max 5)",
+        description: "Input image URL (exactly 1)",
         items: { type: "string" },
       },
-      aspect_ratio: {
-        type: "string",
-        enum: ["2:3", "3:2", "1:1", "16:9", "9:16"],
-        description: "Output aspect ratio",
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Enable content filtering (default false; false returns raw model output)",
       },
     },
   },

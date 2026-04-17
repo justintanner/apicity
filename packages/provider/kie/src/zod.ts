@@ -265,7 +265,7 @@ export const GrokImageToVideoRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().max(5000).optional(),
-    image_urls: z.array(z.string()).optional(),
+    image_urls: z.array(z.string()).max(7).optional(),
     task_id: z.string().max(100).optional(),
     index: z.number().int().min(0).max(5).optional(),
     mode: GrokImagineModeSchema.optional(),

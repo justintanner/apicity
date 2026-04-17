@@ -194,23 +194,28 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "grok-imagine/image-to-video": {
     type: "video",
     fields: {
-      prompt: { type: "string", description: "Video generation prompt" },
+      prompt: {
+        type: "string",
+        description: "Video generation prompt (max 5000 chars)",
+      },
       image_urls: {
         type: "array",
         description: "Reference image URLs (max 7)",
         items: { type: "string" },
       },
-      task_id: { type: "string", description: "Reference task ID" },
-      index: { type: "number", description: "Frame index (0-5)" },
+      task_id: {
+        type: "string",
+        description: "Reference task ID (max 100 chars)",
+      },
+      index: { type: "number", description: "Frame index (0-5, default 0)" },
       mode: {
         type: "string",
         enum: ["fun", "normal", "spicy"],
         description: "Generation mode (default normal)",
       },
       duration: {
-        type: "string",
-        enum: ["6", "10"],
-        description: "Duration in seconds (default 6)",
+        type: "number",
+        description: "Duration in seconds (6-30, default 6)",
       },
       resolution: {
         type: "string",
@@ -221,6 +226,11 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         enum: ["2:3", "3:2", "1:1", "16:9", "9:16"],
         description: "Output aspect ratio (default 16:9)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Enable content filtering (default false; false returns raw model output)",
       },
     },
   },

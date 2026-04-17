@@ -282,8 +282,8 @@ export const GrokVideoExtendRequestSchema = z.object({
   input: z.object({
     task_id: z.string().min(1).max(100),
     prompt: z.string().min(1).max(5000),
-    extend_at: z.number().optional(),
-    extend_times: GrokImagineDurationSchema.optional(),
+    extend_at: z.string(),
+    extend_times: GrokImagineDurationSchema,
   }),
 });
 

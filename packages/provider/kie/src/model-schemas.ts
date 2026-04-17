@@ -241,7 +241,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       task_id: {
         type: "string",
         required: true,
-        description: "Video task ID to extend",
+        description: "Video task ID to extend (max 100 chars)",
       },
       prompt: {
         type: "string",
@@ -249,11 +249,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Extension prompt",
       },
       extend_at: {
-        type: "number",
+        type: "string",
+        required: true,
         description: "Starting position for extension",
       },
       extend_times: {
         type: "string",
+        required: true,
         enum: ["6", "10"],
         description: "Extension duration in seconds (default '6')",
       },

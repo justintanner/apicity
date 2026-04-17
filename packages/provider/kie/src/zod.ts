@@ -12,7 +12,6 @@ export const KieMediaModelSchema = z.enum([
   "grok-imagine/text-to-video",
   "grok-imagine/image-to-video",
   "nano-banana-pro",
-  "bytedance/seedance-1.5-pro",
   "nano-banana-2",
   "gpt-image/1.5-image-to-image",
   "seedream/5-lite-image-to-image",
@@ -24,6 +23,7 @@ export const KieMediaModelSchema = z.enum([
   "qwen2/text-to-image",
   "qwen2/image-edit",
   "bytedance/seedance-2-fast",
+  "bytedance/seedance-2",
   "wan/2-7-image-to-video",
   "wan/2-7-text-to-video",
   "wan/2-7-r2v",
@@ -65,10 +65,6 @@ export const GrokImagineModeSchema = z.enum(["fun", "normal", "spicy"]);
 export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
 export const GrokImagineResolutionSchema = z.enum(["480p", "720p"]);
-
-export const SeedanceDurationSchema = z.enum(["4", "8", "12"]);
-
-export const SeedanceResolutionSchema = z.enum(["480p", "720p", "1080p"]);
 
 export const NanoBananaResolutionSchema = z.enum(["1K", "2K", "4K"]);
 
@@ -322,23 +318,6 @@ export const NanoBananaProRequestSchema = z.object({
   }),
 });
 
-export const SeedanceVideoRequestSchema = z.object({
-  model: z.literal("bytedance/seedance-1.5-pro"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().min(1),
-    input_urls: z.array(z.string()).optional(),
-    aspect_ratio: z
-      .enum(["1:1", "21:9", "4:3", "3:4", "16:9", "9:16"])
-      .optional(),
-    resolution: SeedanceResolutionSchema.optional(),
-    duration: SeedanceDurationSchema.optional(),
-    fixed_lens: z.boolean().optional(),
-    generate_audio: z.boolean().optional(),
-    nsfw_checker: z.boolean().default(false),
-  }),
-});
-
 export const Seedance2FastRequestSchema = z.object({
   model: z.literal("bytedance/seedance-2-fast"),
   callBackUrl: z.string().optional(),
@@ -353,6 +332,29 @@ export const Seedance2FastRequestSchema = z.object({
     return_last_frame: z.boolean().optional(),
     generate_audio: z.boolean().optional(),
     resolution: z.enum(["480p", "720p"]).optional(),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
+      .optional(),
+    duration: z.number().int().min(4).max(15).default(5),
+    web_search: z.boolean(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+export const Seedance2RequestSchema = z.object({
+  model: z.literal("bytedance/seedance-2"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(3).max(20000),
+    first_frame_url: z.string().optional(),
+    last_frame_url: z.string().optional(),
+    reference_image_urls: z.array(z.string()).max(9).optional(),
+    reference_video_urls: z.array(z.string()).max(3).optional(),
+    reference_audio_urls: z.array(z.string()).max(3).optional(),
+    /** @deprecated */
+    return_last_frame: z.boolean().optional(),
+    generate_audio: z.boolean().optional(),
+    resolution: z.enum(["480p", "720p", "1080p"]).optional(),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
       .optional(),
@@ -813,7 +815,6 @@ export const MediaGenerationRequestSchema = z.union([
   GrokVideoExtendRequestSchema,
   GrokVideoUpscaleRequestSchema,
   NanoBananaProRequestSchema,
-  SeedanceVideoRequestSchema,
   NanoBanana2RequestSchema,
   GptImageToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
@@ -823,6 +824,7 @@ export const MediaGenerationRequestSchema = z.union([
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
   Seedance2FastRequestSchema,
+  Seedance2RequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -848,8 +850,6 @@ export type GrokImageToVideoDuration = z.infer<
   typeof GrokImageToVideoDurationSchema
 >;
 export type GrokImagineResolution = z.infer<typeof GrokImagineResolutionSchema>;
-export type SeedanceDuration = z.infer<typeof SeedanceDurationSchema>;
-export type SeedanceResolution = z.infer<typeof SeedanceResolutionSchema>;
 export type NanoBananaResolution = z.infer<typeof NanoBananaResolutionSchema>;
 export type NanoBananaOutputFormat = z.infer<
   typeof NanoBananaOutputFormatSchema
@@ -898,8 +898,8 @@ export type GrokVideoUpscaleRequest = z.infer<
   typeof GrokVideoUpscaleRequestSchema
 >;
 export type NanoBananaProRequest = z.infer<typeof NanoBananaProRequestSchema>;
-export type SeedanceVideoRequest = z.infer<typeof SeedanceVideoRequestSchema>;
 export type Seedance2FastRequest = z.infer<typeof Seedance2FastRequestSchema>;
+export type Seedance2Request = z.infer<typeof Seedance2RequestSchema>;
 export type NanoBanana2Request = z.infer<typeof NanoBanana2RequestSchema>;
 export type GptImageToImageRequest = z.infer<
   typeof GptImageToImageRequestSchema

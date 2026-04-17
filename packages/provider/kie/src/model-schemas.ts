@@ -316,50 +316,6 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
-  "bytedance/seedance-1.5-pro": {
-    type: "video",
-    fields: {
-      prompt: {
-        type: "string",
-        required: true,
-        description: "Video generation prompt (3-2500 chars)",
-      },
-      input_urls: {
-        type: "array",
-        description: "Reference image URLs (max 2)",
-        items: { type: "string" },
-      },
-      aspect_ratio: {
-        type: "string",
-        required: true,
-        enum: ["1:1", "21:9", "4:3", "3:4", "16:9", "9:16"],
-        description: "Output aspect ratio (default 1:1)",
-      },
-      resolution: {
-        type: "string",
-        enum: ["480p", "720p", "1080p"],
-        description: "Output resolution (default 720p)",
-      },
-      duration: {
-        type: "number",
-        enum: [4, 8, 12],
-        description: "Duration in seconds (default 8)",
-      },
-      fixed_lens: {
-        type: "boolean",
-        description: "Lock camera movement",
-      },
-      generate_audio: {
-        type: "boolean",
-        description: "Generate accompanying audio",
-      },
-      nsfw_checker: {
-        type: "boolean",
-        description: "Content safety filter",
-      },
-    },
-  },
-
   "bytedance/seedance-2-fast": {
     type: "video",
     fields: {
@@ -414,6 +370,73 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       duration: {
         type: "number",
         description: "Duration in seconds, 4-15 (default 8)",
+      },
+      web_search: {
+        type: "boolean",
+        required: true,
+        description: "Use online search",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter (default false)",
+      },
+    },
+  },
+
+  "bytedance/seedance-2": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Video generation prompt (3-20000 chars)",
+      },
+      first_frame_url: {
+        type: "string",
+        description: "First frame image URL or asset://{assetId}",
+      },
+      last_frame_url: {
+        type: "string",
+        description: "Last frame image URL or asset://{assetId}",
+      },
+      reference_image_urls: {
+        type: "array",
+        description:
+          "Reference image URLs or asset:// refs (max 9 total with first+last frames)",
+        items: { type: "string" },
+      },
+      reference_video_urls: {
+        type: "array",
+        description: "Reference video URLs (max 3, total duration <= 15s)",
+        items: { type: "string" },
+      },
+      reference_audio_urls: {
+        type: "array",
+        description: "Reference audio URLs (max 3, total duration <= 15s)",
+        items: { type: "string" },
+      },
+      return_last_frame: {
+        type: "boolean",
+        description:
+          "Return the last frame of the video as an image (default false)",
+      },
+      generate_audio: {
+        type: "boolean",
+        description: "Generate accompanying audio (default true, higher cost)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p", "1080p"],
+        description: "Output resolution (default 720p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"],
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: {
+        type: "number",
+        description: "Duration in seconds, 4-15 (default 5)",
       },
       web_search: {
         type: "boolean",

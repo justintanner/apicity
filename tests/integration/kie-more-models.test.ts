@@ -66,9 +66,10 @@ describe("kie additional models", () => {
       // Validate bytedance/seedance schema
       const seedanceResult =
         provider.post.api.v1.jobs.createTask.schema.safeParse({
-          model: "bytedance/seedance-1.5-pro",
+          model: "bytedance/seedance-2",
           input: {
             prompt: "Test video",
+            web_search: false,
           },
         });
       expect(seedanceResult.success).toBe(true);

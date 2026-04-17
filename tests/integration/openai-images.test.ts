@@ -1,12 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { openai } from "@apicity/openai";
 
 describe("openai images integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("openai/images-generations");
+    ctx = setupPollyIgnoringBody("openai/images-generations");
   });
 
   afterEach(async () => {

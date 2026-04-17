@@ -1,12 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fal } from "@apicity/fal";
 
 describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("fal/bytedance-seedream-v5-lite-text-to-image");
+    ctx = setupPollyIgnoringBody(
+      "fal/bytedance-seedream-v5-lite-text-to-image"
+    );
   });
 
   afterEach(async () => {

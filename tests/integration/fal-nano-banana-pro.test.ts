@@ -1,12 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fal } from "@apicity/fal";
 
 describe("fal nano-banana-pro text-to-image integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("fal/nano-banana-pro");
+    ctx = setupPollyIgnoringBody("fal/nano-banana-pro");
   });
 
   afterEach(async () => {

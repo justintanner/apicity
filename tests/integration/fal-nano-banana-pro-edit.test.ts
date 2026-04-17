@@ -1,14 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fs from "fs";
 import path from "path";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fal } from "@apicity/fal";
 
 describe("fal nano-banana-pro edit integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("fal/nano-banana-pro-edit");
+    ctx = setupPollyIgnoringBody("fal/nano-banana-pro-edit");
   });
 
   afterEach(async () => {

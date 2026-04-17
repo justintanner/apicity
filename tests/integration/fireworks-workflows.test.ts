@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fireworks } from "@apicity/fireworks";
 
 describe("fireworks workflows integration", () => {
@@ -7,7 +11,7 @@ describe("fireworks workflows integration", () => {
     let ctx: PollyContext;
 
     beforeEach(() => {
-      ctx = setupPolly("fireworks/kontext-pro");
+      ctx = setupPollyIgnoringBody("fireworks/kontext-pro");
     });
 
     afterEach(async () => {

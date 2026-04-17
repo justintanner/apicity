@@ -26,6 +26,18 @@ export function setupPollyForFileUploads(recordingName: string): PollyContext {
   });
 }
 
+export function setupPollyIgnoringBody(recordingName: string): PollyContext {
+  // Disable body matching when the factory injects defaults that weren't in
+  // the original HAR (e.g. NSFW/safety permissive defaults). Headers are
+  // still matched so requests can't collide across endpoints.
+  return setupPollyWithOptions(recordingName, {
+    matchRequestsBy: {
+      headers: { exclude: ["authorization", "user-agent", "x-api-key"] },
+      body: false,
+    },
+  });
+}
+
 type RawPollyMode = "record" | "replay" | "passthrough" | "record-missing";
 type PollyAdapterMode = "record" | "replay" | "passthrough";
 

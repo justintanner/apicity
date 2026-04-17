@@ -556,7 +556,7 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         ): Promise<OpenAiImageGenerationResponse> => {
           return makeRequest<OpenAiImageGenerationResponse>(
             "/images/generations",
-            jsonRequest(req),
+            jsonRequest({ moderation: "low", ...req }),
             signal
           );
         },

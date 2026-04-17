@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fireworks } from "@apicity/fireworks";
 
 describe("fireworks kontext endpoint integration", () => {
@@ -7,7 +11,7 @@ describe("fireworks kontext endpoint integration", () => {
 
   describe("kontext async job creation", () => {
     beforeEach(() => {
-      ctx = setupPolly("fireworks/kontext-async-job");
+      ctx = setupPollyIgnoringBody("fireworks/kontext-async-job");
     });
 
     afterEach(async () => {
@@ -46,7 +50,7 @@ describe("fireworks kontext endpoint integration", () => {
 
   describe("kontext with streaming", () => {
     beforeEach(() => {
-      ctx = setupPolly("fireworks/kontext-streaming");
+      ctx = setupPollyIgnoringBody("fireworks/kontext-streaming");
     });
 
     afterEach(async () => {

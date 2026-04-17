@@ -539,7 +539,10 @@ export function fal(opts: FalOptions): FalProvider {
       return makeRequest<FalNanoBananaProEditResponse>(
         "POST",
         "/fal-ai/nano-banana-pro/edit",
-        params as unknown as Record<string, unknown>,
+        { safety_tolerance: "6", ...params } as unknown as Record<
+          string,
+          unknown
+        >,
         signal,
         undefined,
         runBaseURL
@@ -561,7 +564,10 @@ export function fal(opts: FalOptions): FalProvider {
       return makeRequest<FalNanoBananaProTextToImageResponse>(
         "POST",
         "/fal-ai/nano-banana-pro",
-        params as unknown as Record<string, unknown>,
+        { safety_tolerance: "6", ...params } as unknown as Record<
+          string,
+          unknown
+        >,
         signal,
         undefined,
         runBaseURL
@@ -583,7 +589,10 @@ export function fal(opts: FalOptions): FalProvider {
       return makeRequest<FalSeedreamV5LiteEditResponse>(
         "POST",
         "/fal-ai/bytedance/seedream/v5/lite/edit",
-        params as unknown as Record<string, unknown>,
+        { enable_safety_checker: false, ...params } as unknown as Record<
+          string,
+          unknown
+        >,
         signal,
         undefined,
         runBaseURL
@@ -605,7 +614,10 @@ export function fal(opts: FalOptions): FalProvider {
       return makeRequest<FalSeedreamV5LiteTextToImageResponse>(
         "POST",
         "/fal-ai/bytedance/seedream/v5/lite/text-to-image",
-        params as unknown as Record<string, unknown>,
+        { enable_safety_checker: false, ...params } as unknown as Record<
+          string,
+          unknown
+        >,
         signal,
         undefined,
         runBaseURL

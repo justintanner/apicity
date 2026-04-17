@@ -1,14 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fs from "fs";
 import path from "path";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { fal } from "@apicity/fal";
 
 describe("fal bytedance seedream v5 lite edit integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("fal/bytedance-seedream-v5-lite-edit");
+    ctx = setupPollyIgnoringBody("fal/bytedance-seedream-v5-lite-edit");
   });
 
   afterEach(async () => {

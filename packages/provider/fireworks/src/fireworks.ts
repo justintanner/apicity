@@ -813,7 +813,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
           return await makeWorkflowRequest<FireworksKontextResponse>(
             model,
             "",
-            req,
+            { safety_tolerance: 6, ...req },
             signal
           );
         },

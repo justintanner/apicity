@@ -50,7 +50,6 @@ describe("alibaba wan i2v integration", () => {
           duration: 5,
           prompt_extend: true,
           watermark: false,
-          audio: false,
         },
       });
 

@@ -75,13 +75,15 @@ export const AlibabaChatRequestSchema = z.object({
 // ---------------------------------------------------------------------------
 // Video synthesis request
 //
-// Covers the new DashScope image-to-video protocol (wan2.7 family). The
-// `media` array carries reference assets tagged by `type`; the wan2.7-i2v
-// model accepts first_frame/last_frame/driving_audio/first_clip, and
-// wan2.7-videoedit additionally accepts `video`. Each type can appear at
-// most once. Per-model business rules (required asset combinations,
-// resolution whitelist) are enforced via outer .refine() so the inner
-// field shapes stay introspectable by UI layers.
+// Covers the DashScope wan2.7 video-synthesis protocol for two models:
+//   - wan2.7-i2v (image-to-video) accepts media types
+//     first_frame/last_frame/driving_audio/first_clip.
+//   - wan2.7-videoedit (instruction-based video editing) accepts exactly one
+//     `video` media entry plus up to 4 `reference_image` entries.
+//
+// Per-model business rules (required/allowed media, parameter applicability,
+// duration caps) are enforced via outer .refine() so the inner field shapes
+// stay introspectable by UI layers.
 // ---------------------------------------------------------------------------
 
 export const AlibabaVideoMediaTypeSchema = z.enum([
@@ -90,6 +92,7 @@ export const AlibabaVideoMediaTypeSchema = z.enum([
   "driving_audio",
   "first_clip",
   "video",
+  "reference_image",
 ]);
 
 export const AlibabaVideoMediaSchema = z.object({
@@ -100,16 +103,16 @@ export const AlibabaVideoMediaSchema = z.object({
 export const AlibabaVideoSynthesisInputSchema = z.object({
   prompt: z.string().max(5000).optional(),
   negative_prompt: z.string().max(500).optional(),
-  media: z.array(AlibabaVideoMediaSchema).min(1),
+  media: z.array(AlibabaVideoMediaSchema).min(1).max(5),
 });
 
 export const AlibabaVideoSynthesisParametersSchema = z.object({
-  resolution: z.enum(["480P", "720P", "1080P"]).optional(),
+  resolution: z.enum(["720P", "1080P"]).optional(),
+  ratio: z.enum(["16:9", "9:16", "1:1", "4:3", "3:4"]).optional(),
   duration: z.number().int().min(2).max(15).optional(),
-  shot_type: z.enum(["single", "multi"]).optional(),
+  audio_setting: z.enum(["auto", "origin"]).optional(),
   prompt_extend: z.boolean().optional(),
   watermark: z.boolean().optional(),
-  audio: z.boolean().optional(),
   seed: z.number().int().min(0).max(2147483647).optional(),
 });
 
@@ -121,11 +124,15 @@ export const AlibabaVideoSynthesisRequestSchema = z
   })
   .refine(
     (v) => {
-      const types = v.input.media.map((m) => m.type);
-      return new Set(types).size === types.length;
+      // reference_image may repeat (up to 4); all other types must be unique.
+      const nonRef = v.input.media
+        .map((m) => m.type)
+        .filter((t) => t !== "reference_image");
+      return new Set(nonRef).size === nonRef.length;
     },
     {
-      message: "media entries must have unique `type` values",
+      message:
+        "media entries must have unique `type` values (except reference_image)",
       path: ["input", "media"],
     }
   )
@@ -163,11 +170,78 @@ export const AlibabaVideoSynthesisRequestSchema = z
   .refine(
     (v) => {
       if (v.model !== "wan2.7-i2v") return true;
-      return v.parameters?.resolution !== "480P";
+      return !v.input.media.some(
+        (m) => m.type === "video" || m.type === "reference_image"
+      );
     },
     {
-      message: "wan2.7-i2v supports only 720P or 1080P",
-      path: ["parameters", "resolution"],
+      message:
+        "wan2.7-i2v does not accept media of type video or reference_image",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (v.model !== "wan2.7-videoedit") return true;
+      return v.input.media.filter((m) => m.type === "video").length === 1;
+    },
+    {
+      message:
+        "wan2.7-videoedit requires exactly one media entry of type video",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (v.model !== "wan2.7-videoedit") return true;
+      return (
+        v.input.media.filter((m) => m.type === "reference_image").length <= 4
+      );
+    },
+    {
+      message:
+        "wan2.7-videoedit accepts at most 4 media entries of type reference_image",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (v.model !== "wan2.7-videoedit") return true;
+      return v.input.media.every(
+        (m) => m.type === "video" || m.type === "reference_image"
+      );
+    },
+    {
+      message:
+        "wan2.7-videoedit only accepts media of type video or reference_image",
+      path: ["input", "media"],
+    }
+  )
+  .refine(
+    (v) => {
+      if (v.model !== "wan2.7-videoedit") return true;
+      const d = v.parameters?.duration;
+      return d === undefined || d <= 10;
+    },
+    {
+      message: "wan2.7-videoedit duration must be at most 10 seconds",
+      path: ["parameters", "duration"],
+    }
+  )
+  .refine(
+    (v) => v.model === "wan2.7-videoedit" || v.parameters?.ratio === undefined,
+    {
+      message: "ratio is only supported by wan2.7-videoedit",
+      path: ["parameters", "ratio"],
+    }
+  )
+  .refine(
+    (v) =>
+      v.model === "wan2.7-videoedit" ||
+      v.parameters?.audio_setting === undefined,
+    {
+      message: "audio_setting is only supported by wan2.7-videoedit",
+      path: ["parameters", "audio_setting"],
     }
   );
 

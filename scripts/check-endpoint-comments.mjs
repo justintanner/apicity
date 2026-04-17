@@ -33,6 +33,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
     "help.aliyun.com",
     "bailian.console.aliyun.com",
     "dashscope.console.aliyun.com",
+    "www.alibabacloud.com",
   ],
   free: [
     "tmpfiles.org",

@@ -21,17 +21,17 @@ Standalone-first TypeScript AI provider packages. Each is self-contained with ze
 
 ## Providers
 
-| Package                                             | Version                                                                                                                           | Description                                                    | Docs                                                       |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ---------------------------------------------------------- |
-| [@apicity/openai](packages/provider/openai)         | [![npm](https://img.shields.io/npm/v/@apicity/openai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/openai)         | Chat, embeddings, images, responses, audio                     | [README](packages/provider/openai/README.md#api-reference)     |
-| [@apicity/xai](packages/provider/xai)               | [![npm](https://img.shields.io/npm/v/@apicity/xai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/xai)               | Grok chat, images, video, files, batches, collections, search  | [README](packages/provider/xai/README.md#api-reference)        |
-| [@apicity/fal](packages/provider/fal)               | [![npm](https://img.shields.io/npm/v/@apicity/fal?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fal)               | Model registry, pricing, usage, analytics                      | [README](packages/provider/fal/README.md#api-reference)        |
-| [@apicity/kimicoding](packages/provider/kimicoding) | [![npm](https://img.shields.io/npm/v/@apicity/kimicoding?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kimicoding) | Messages, models, embeddings                                   | [README](packages/provider/kimicoding/README.md#api-reference) |
-| [@apicity/kie](packages/provider/kie)               | [![npm](https://img.shields.io/npm/v/@apicity/kie?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kie)               | Media generation (video/image/audio), sub-providers            | [README](packages/provider/kie/README.md#api-reference)        |
-| [@apicity/anthropic](packages/provider/anthropic)   | [![npm](https://img.shields.io/npm/v/@apicity/anthropic?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/anthropic)   | Messages, streaming, batches, files, models, admin APIs        | [README](packages/provider/anthropic/README.md#api-reference)  |
-| [@apicity/fireworks](packages/provider/fireworks)   | [![npm](https://img.shields.io/npm/v/@apicity/fireworks?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fireworks)   | Chat, completions, embeddings, audio, deployments, fine-tuning | [README](packages/provider/fireworks/README.md#api-reference)  |
-| [@apicity/alibaba](packages/provider/alibaba)       | [![npm](https://img.shields.io/npm/v/@apicity/alibaba?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/alibaba)       | Qwen chat/streaming, Wan image & video generation (async)      | [README](packages/provider/alibaba/README.md#api-reference)    |
-| [@apicity/free](packages/provider/free)             | [![npm](https://img.shields.io/npm/v/@apicity/free?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/free)             | File upload/hosting to free services (catbox, gofile, tmpfiles, etc.) | [README](packages/provider/free/README.md#api-reference) |
+| Package                                             | Version                                                                                                                           | Description                                                           | Docs                                                           |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------- |
+| [@apicity/openai](packages/provider/openai)         | [![npm](https://img.shields.io/npm/v/@apicity/openai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/openai)         | Chat, embeddings, images, responses, audio                            | [README](packages/provider/openai/README.md#api-reference)     |
+| [@apicity/xai](packages/provider/xai)               | [![npm](https://img.shields.io/npm/v/@apicity/xai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/xai)               | Grok chat, images, video, files, batches, collections, search         | [README](packages/provider/xai/README.md#api-reference)        |
+| [@apicity/fal](packages/provider/fal)               | [![npm](https://img.shields.io/npm/v/@apicity/fal?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fal)               | Model registry, pricing, usage, analytics                             | [README](packages/provider/fal/README.md#api-reference)        |
+| [@apicity/kimicoding](packages/provider/kimicoding) | [![npm](https://img.shields.io/npm/v/@apicity/kimicoding?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kimicoding) | Messages, models, embeddings                                          | [README](packages/provider/kimicoding/README.md#api-reference) |
+| [@apicity/kie](packages/provider/kie)               | [![npm](https://img.shields.io/npm/v/@apicity/kie?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kie)               | Media generation (video/image/audio), sub-providers                   | [README](packages/provider/kie/README.md#api-reference)        |
+| [@apicity/anthropic](packages/provider/anthropic)   | [![npm](https://img.shields.io/npm/v/@apicity/anthropic?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/anthropic)   | Messages, streaming, batches, files, models, admin APIs               | [README](packages/provider/anthropic/README.md#api-reference)  |
+| [@apicity/fireworks](packages/provider/fireworks)   | [![npm](https://img.shields.io/npm/v/@apicity/fireworks?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fireworks)   | Chat, completions, embeddings, audio, deployments, fine-tuning        | [README](packages/provider/fireworks/README.md#api-reference)  |
+| [@apicity/alibaba](packages/provider/alibaba)       | [![npm](https://img.shields.io/npm/v/@apicity/alibaba?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/alibaba)       | Qwen chat/streaming, Wan image & video generation (async)             | [README](packages/provider/alibaba/README.md#api-reference)    |
+| [@apicity/free](packages/provider/free)             | [![npm](https://img.shields.io/npm/v/@apicity/free?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/free)             | File upload/hosting to free services (catbox, gofile, tmpfiles, etc.) | [README](packages/provider/free/README.md#api-reference)       |
 
 ## Quick Start
 
@@ -148,17 +148,17 @@ Each package exports `PayloadSchema`, `PayloadFieldSchema`, and `ValidationResul
 
 Every dev-loop phase is one named pnpm script:
 
-| Command                             | When to run it                                                |
-| ----------------------------------- | ------------------------------------------------------------- |
-| `pnpm run test:run`                 | Replay all tests from disk (no network, no keys)              |
-| `pnpm run test:run <file>`          | Replay a single test file                                     |
-| `pnpm run dev:record -- <file>`     | Record fixtures for a _new_ test (1Password, safe)            |
-| `pnpm run dev:rerecord -- <file>`   | Overwrite an existing HAR (destructive, file-filter required) |
-| `pnpm run dev:preflight`            | Format + lint + replay tests — run this before `git push`     |
-| `pnpm run ci:local`                 | Exact CI mirror: build + lint + replay tests                  |
-| `pnpm run harness`                  | Review recordings in a local viewer (localhost:3475)          |
-| `pnpm run harness:screenshot`       | Generate the full harness-report PNG locally                  |
-| `pnpm run harness:screenshot:media` | Generate the media-only harness-report PNG locally            |
+| Command                             | When to run it                                                 |
+| ----------------------------------- | -------------------------------------------------------------- |
+| `pnpm run test:run`                 | Replay all tests from disk (no network, no keys)               |
+| `pnpm run test:run <file>`          | Replay a single test file                                      |
+| `pnpm run dev:record -- <file>`     | Record fixtures for a _new_ test (1Password, safe)             |
+| `pnpm run dev:rerecord -- <file>`   | Overwrite an existing HAR (destructive, file-filter required)  |
+| `pnpm run dev:preflight`            | Format + lint + replay tests — run this before `git push`      |
+| `pnpm run ci:local`                 | Exact CI mirror: build + lint + replay tests                   |
+| `pnpm run harness`                  | Review recordings in a local viewer (localhost:3475)           |
+| `pnpm run harness:screenshot`       | Generate the full harness-report PNG locally                   |
+| `pnpm run harness:screenshot:media` | Generate the media-only harness-report PNG locally             |
 | `pnpm run check:op`                 | Verify 1Password is resolving every provider key in `.env.tpl` |
 
 ### Secrets Management

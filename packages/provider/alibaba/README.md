@@ -24,7 +24,7 @@ const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
 
 ## API Reference
 
-5 endpoints across 3 groups. Each method mirrors an upstream URL path.
+6 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### compatibleMode
 
@@ -67,6 +67,21 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 
 ```typescript
 const res = await alibaba.api.v1.services.aigc.imageGeneration.generation({ /* ... */ });
+```
+
+Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>alibaba.api.v1.services.aigc.multimodalGeneration.generation</code></b></summary>
+
+<code>POST https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation</code>
+
+[Upstream docs ↗](https://www.alibabacloud.com/help/en/model-studio/qwen-image-edit)
+
+```typescript
+const res = await alibaba.api.v1.services.aigc.multimodalGeneration.generation({ /* ... */ });
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)

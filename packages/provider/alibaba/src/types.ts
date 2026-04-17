@@ -27,6 +27,10 @@ export type {
   AlibabaColorPaletteItem,
   AlibabaImageGenerationParameters,
   AlibabaImageGenerationRequest,
+  AlibabaMultimodalGenerationMessage,
+  AlibabaMultimodalGenerationInput,
+  AlibabaMultimodalGenerationParameters,
+  AlibabaMultimodalGenerationRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -132,6 +136,41 @@ export interface AlibabaImageGenerationSubmitResponse {
   request_id: string;
 }
 
+// -- Multimodal generation (Qwen image editing — sync) ----------------------
+
+export interface AlibabaMultimodalGenerationImagePart {
+  image: string;
+}
+
+export interface AlibabaMultimodalGenerationResultMessage {
+  role: "assistant";
+  content: AlibabaMultimodalGenerationImagePart[];
+}
+
+export interface AlibabaMultimodalGenerationChoice {
+  finish_reason: string;
+  message: AlibabaMultimodalGenerationResultMessage;
+}
+
+export interface AlibabaMultimodalGenerationOutput {
+  choices: AlibabaMultimodalGenerationChoice[];
+}
+
+export interface AlibabaMultimodalGenerationUsage {
+  image_count?: number;
+  width?: number;
+  height?: number;
+  input_tokens?: number;
+  output_tokens?: number;
+  characters?: number;
+}
+
+export interface AlibabaMultimodalGenerationResponse {
+  output: AlibabaMultimodalGenerationOutput;
+  usage?: AlibabaMultimodalGenerationUsage;
+  request_id: string;
+}
+
 // -- Video synthesis (native DashScope /api/v1) -----------------------------
 
 export type AlibabaTaskStatus =
@@ -209,6 +248,7 @@ import type {
   AlibabaChatRequest,
   AlibabaVideoSynthesisRequest,
   AlibabaImageGenerationRequest,
+  AlibabaMultimodalGenerationRequest,
 } from "./zod";
 
 export interface AlibabaChatCompletionsMethod {
@@ -240,6 +280,14 @@ export interface AlibabaImageGenerationMethod {
   schema: z.ZodType<AlibabaImageGenerationRequest>;
 }
 
+export interface AlibabaMultimodalGenerationMethod {
+  (
+    req: AlibabaMultimodalGenerationRequest,
+    signal?: AbortSignal
+  ): Promise<AlibabaMultimodalGenerationResponse>;
+  schema: z.ZodType<AlibabaMultimodalGenerationRequest>;
+}
+
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface AlibabaPostV1ChatNamespace {
@@ -266,9 +314,14 @@ export interface AlibabaPostApiV1ImageGenerationNamespace {
   generation: AlibabaImageGenerationMethod;
 }
 
+export interface AlibabaPostApiV1MultimodalGenerationNamespace {
+  generation: AlibabaMultimodalGenerationMethod;
+}
+
 export interface AlibabaPostApiV1AigcNamespace {
   videoGeneration: AlibabaPostApiV1VideoGenerationNamespace;
   imageGeneration: AlibabaPostApiV1ImageGenerationNamespace;
+  multimodalGeneration: AlibabaPostApiV1MultimodalGenerationNamespace;
 }
 
 export interface AlibabaPostApiV1ServicesNamespace {

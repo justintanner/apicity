@@ -307,6 +307,97 @@ export const AlibabaImageGenerationRequestSchema = z.object({
 export const AlibabaImageReferenceSlotsSchema = z.array(z.string()).max(9);
 
 // ---------------------------------------------------------------------------
+// Multimodal generation (Qwen image editing — sync)
+//
+// Covers the DashScope Qwen image-editing protocol at
+// /api/v1/services/aigc/multimodal-generation/generation. Accepts 1–3 input
+// images plus one text instruction and returns image URLs synchronously.
+// ---------------------------------------------------------------------------
+
+export const AlibabaMultimodalGenerationMessageSchema = z.object({
+  role: z.literal("user"),
+  content: z.array(AlibabaImageContentSchema).min(1).max(4),
+});
+
+export const AlibabaMultimodalGenerationInputSchema = z.object({
+  messages: z.array(AlibabaMultimodalGenerationMessageSchema).length(1),
+});
+
+export const AlibabaMultimodalGenerationParametersSchema = z.object({
+  n: z.number().int().min(1).max(6).optional(),
+  negative_prompt: z.string().max(500).optional(),
+  size: z.string().optional(),
+  prompt_extend: z.boolean().optional(),
+  watermark: z.boolean().optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+});
+
+export const AlibabaMultimodalGenerationRequestSchema = z
+  .object({
+    model: z.enum([
+      "qwen-image-2.0-pro",
+      "qwen-image-2.0-pro-2026-03-03",
+      "qwen-image-2.0",
+      "qwen-image-2.0-2026-03-03",
+      "qwen-image-edit-max",
+      "qwen-image-edit-max-2026-01-16",
+      "qwen-image-edit-plus",
+      "qwen-image-edit-plus-2025-12-15",
+      "qwen-image-edit-plus-2025-10-30",
+      "qwen-image-edit",
+    ]),
+    input: AlibabaMultimodalGenerationInputSchema,
+    parameters: AlibabaMultimodalGenerationParametersSchema.optional(),
+  })
+  .refine(
+    (v) => {
+      const parts = v.input.messages[0].content;
+      const text = parts.filter((p) => "text" in p).length;
+      const img = parts.filter((p) => "image" in p).length;
+      return text === 1 && img <= 3;
+    },
+    {
+      message: "content must contain exactly 1 text and 0–3 image parts",
+      path: ["input", "messages", 0, "content"],
+    }
+  )
+  .refine(
+    (v) => {
+      // qwen-image-edit family requires at least 1 image (pure editing model).
+      if (!v.model.startsWith("qwen-image-edit")) return true;
+      const parts = v.input.messages[0].content;
+      return parts.some((p) => "image" in p);
+    },
+    {
+      message: "qwen-image-edit* models require at least 1 image part",
+      path: ["input", "messages", 0, "content"],
+    }
+  )
+  .refine(
+    (v) => v.model !== "qwen-image-edit" || (v.parameters?.n ?? 1) === 1,
+    {
+      message: "qwen-image-edit only supports n=1",
+      path: ["parameters", "n"],
+    }
+  )
+  .refine(
+    (v) => v.model !== "qwen-image-edit" || v.parameters?.size === undefined,
+    {
+      message: "qwen-image-edit does not support custom size",
+      path: ["parameters", "size"],
+    }
+  )
+  .refine(
+    (v) =>
+      v.model !== "qwen-image-edit" ||
+      v.parameters?.prompt_extend === undefined,
+    {
+      message: "qwen-image-edit does not support prompt_extend",
+      path: ["parameters", "prompt_extend"],
+    }
+  );
+
+// ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
 
@@ -372,5 +463,17 @@ export type AlibabaImageGenerationRequest = z.infer<
 >;
 export type AlibabaImageReferenceSlots = z.infer<
   typeof AlibabaImageReferenceSlotsSchema
+>;
+export type AlibabaMultimodalGenerationMessage = z.infer<
+  typeof AlibabaMultimodalGenerationMessageSchema
+>;
+export type AlibabaMultimodalGenerationInput = z.infer<
+  typeof AlibabaMultimodalGenerationInputSchema
+>;
+export type AlibabaMultimodalGenerationParameters = z.infer<
+  typeof AlibabaMultimodalGenerationParametersSchema
+>;
+export type AlibabaMultimodalGenerationRequest = z.infer<
+  typeof AlibabaMultimodalGenerationRequestSchema
 >;
 export type AlibabaOptions = z.infer<typeof AlibabaOptionsSchema>;

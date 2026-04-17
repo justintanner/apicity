@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+alibaba	api.v1.services.aigc.multimodalGeneration.generation	POST	https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation	https://www.alibabacloud.com/help/en/model-studio/qwen-image-edit
 alibaba	api.v1.services.aigc.videoGeneration.videoSynthesis	POST	https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis	https://help.aliyun.com/zh/model-studio
 alibaba	api.v1.tasks	GET	https://dashscope.aliyuncs.com/api/v1/tasks/{taskId}	https://help.aliyun.com/zh/model-studio
 alibaba	compatibleMode.v1.chat.completions	POST	https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions	https://help.aliyun.com/zh/model-studio

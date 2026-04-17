@@ -11,11 +11,14 @@ import {
   AlibabaTaskStatusResponse,
   AlibabaImageGenerationRequest,
   AlibabaImageGenerationSubmitResponse,
+  AlibabaMultimodalGenerationRequest,
+  AlibabaMultimodalGenerationResponse,
 } from "./types";
 import {
   AlibabaChatRequestSchema,
   AlibabaVideoSynthesisRequestSchema,
   AlibabaImageGenerationRequestSchema,
+  AlibabaMultimodalGenerationRequestSchema,
 } from "./zod";
 import { sseToIterable } from "./sse";
 
@@ -317,6 +320,27 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
             },
             {
               schema: AlibabaImageGenerationRequestSchema,
+            }
+          ),
+        },
+        multimodalGeneration: {
+          // sig-ok: dashscope subdomain hoisted by walker
+          // POST https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation
+          // Docs: https://www.alibabacloud.com/help/en/model-studio/qwen-image-edit
+          generation: Object.assign(
+            async (
+              req: AlibabaMultimodalGenerationRequest,
+              signal?: AbortSignal
+            ): Promise<AlibabaMultimodalGenerationResponse> => {
+              return makeRequest<AlibabaMultimodalGenerationResponse>(
+                "/services/aigc/multimodal-generation/generation",
+                req,
+                signal,
+                { baseOverride: nativeBaseURL }
+              );
+            },
+            {
+              schema: AlibabaMultimodalGenerationRequestSchema,
             }
           ),
         },

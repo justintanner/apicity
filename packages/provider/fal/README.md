@@ -24,7 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-42 endpoints across 13 groups. Each method mirrors an upstream URL path.
+44 endpoints across 14 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -535,6 +535,38 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.v1.serverless.logs({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### veo3p1
+
+<details>
+<summary><code>POST</code> <b><code>fal.veo3p1.imageToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.veo3p1.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.veo3p1.textToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/veo3.1</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.veo3p1.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

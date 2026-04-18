@@ -32,6 +32,8 @@ export type {
   FalNanoBananaTextToImageParams,
   FalNanoBananaEditParams,
   FalXaiGrokImagineVideoImageToVideoParams,
+  FalVeo3p1TextToVideoParams,
+  FalVeo3p1ImageToVideoParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -62,6 +64,8 @@ import type {
   FalNanoBananaTextToImageParams,
   FalNanoBananaEditParams,
   FalXaiGrokImagineVideoImageToVideoParams,
+  FalVeo3p1TextToVideoParams,
+  FalVeo3p1ImageToVideoParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -679,6 +683,25 @@ export interface FalXaiGrokImagineVideoImageToVideoResponse {
   video: FalFile;
 }
 
+// Google Veo 3.1 (text-to-video and image-to-video)
+export type FalVeo3p1AspectRatio = "16:9" | "9:16";
+
+export type FalVeo3p1ImageToVideoAspectRatio = "auto" | FalVeo3p1AspectRatio;
+
+export type FalVeo3p1Duration = "4s" | "6s" | "8s";
+
+export type FalVeo3p1Resolution = "720p" | "1080p" | "4k";
+
+export type FalVeo3p1SafetyTolerance = "1" | "2" | "3" | "4" | "5" | "6";
+
+export interface FalVeo3p1TextToVideoResponse {
+  video: FalFile;
+}
+
+export interface FalVeo3p1ImageToVideoResponse {
+  video: FalFile;
+}
+
 // ==================== Serverless Logs ====================
 
 // Label filter for log queries
@@ -1129,6 +1152,25 @@ export interface FalRunNanoBananaNamespace {
   edit: FalNanoBananaEditFn;
 }
 
+type FalVeo3p1TextToVideoFn = ((
+  params: FalVeo3p1TextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalVeo3p1TextToVideoResponse>) & {
+  schema: z.ZodType<FalVeo3p1TextToVideoParams>;
+};
+
+type FalVeo3p1ImageToVideoFn = ((
+  params: FalVeo3p1ImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalVeo3p1ImageToVideoResponse>) & {
+  schema: z.ZodType<FalVeo3p1ImageToVideoParams>;
+};
+
+export interface FalRunVeo3p1Namespace {
+  textToVideo: FalVeo3p1TextToVideoFn;
+  imageToVideo: FalVeo3p1ImageToVideoFn;
+}
+
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
@@ -1136,6 +1178,7 @@ export interface FalRunNamespace {
   nanoBanana2: FalRunNanoBanana2Namespace;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
+  veo3p1: FalRunVeo3p1Namespace;
   falAi: FalRunFalAiNamespace;
   wan: FalRunWanNamespace;
   xai: FalRunXaiNamespace;

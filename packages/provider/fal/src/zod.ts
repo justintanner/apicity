@@ -562,6 +562,39 @@ export const FalXaiGrokImagineImageEditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Veo 3.1 text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalVeo3p1TextToVideoRequestSchema = z.object({
+  prompt: z.string().max(20000),
+  aspect_ratio: z.enum(["16:9", "9:16"]).optional(),
+  duration: z.enum(["4s", "6s", "8s"]).optional(),
+  resolution: z.enum(["720p", "1080p", "4k"]).optional(),
+  generate_audio: z.boolean().optional(),
+  negative_prompt: z.string().optional(),
+  seed: z.number().int().optional(),
+  auto_fix: z.boolean().optional(),
+  safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Veo 3.1 image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalVeo3p1ImageToVideoRequestSchema = z.object({
+  prompt: z.string().max(20000),
+  image_url: z.string(),
+  aspect_ratio: z.enum(["auto", "16:9", "9:16"]).optional(),
+  duration: z.enum(["4s", "6s", "8s"]).optional(),
+  resolution: z.enum(["720p", "1080p", "4k"]).optional(),
+  generate_audio: z.boolean().optional(),
+  negative_prompt: z.string().optional(),
+  seed: z.number().int().optional(),
+  auto_fix: z.boolean().optional(),
+  safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // xAI Grok Imagine Video image-to-video
 // ---------------------------------------------------------------------------
 
@@ -675,5 +708,11 @@ export type FalNanoBananaEditParams = z.infer<
 >;
 export type FalXaiGrokImagineVideoImageToVideoParams = z.infer<
   typeof FalXaiGrokImagineVideoImageToVideoRequestSchema
+>;
+export type FalVeo3p1TextToVideoParams = z.infer<
+  typeof FalVeo3p1TextToVideoRequestSchema
+>;
+export type FalVeo3p1ImageToVideoParams = z.infer<
+  typeof FalVeo3p1ImageToVideoRequestSchema
 >;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

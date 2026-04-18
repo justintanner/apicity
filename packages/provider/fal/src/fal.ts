@@ -74,6 +74,10 @@ import {
   FalNanoBananaEditResponse,
   FalXaiGrokImagineVideoImageToVideoParams,
   FalXaiGrokImagineVideoImageToVideoResponse,
+  FalVeo3p1TextToVideoParams,
+  FalVeo3p1TextToVideoResponse,
+  FalVeo3p1ImageToVideoParams,
+  FalVeo3p1ImageToVideoResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -103,6 +107,8 @@ import {
   FalNanoBananaTextToImageRequestSchema,
   FalNanoBananaEditRequestSchema,
   FalXaiGrokImagineVideoImageToVideoRequestSchema,
+  FalVeo3p1TextToVideoRequestSchema,
+  FalVeo3p1ImageToVideoRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -913,6 +919,50 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/veo3.1
+  // Docs: https://docs.fal.ai
+  const veo3p1TextToVideo = Object.assign(
+    async function textToVideo(
+      params: FalVeo3p1TextToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalVeo3p1TextToVideoResponse> {
+      return makeRequest<FalVeo3p1TextToVideoResponse>(
+        "POST",
+        "/fal-ai/veo3.1",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalVeo3p1TextToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video
+  // Docs: https://docs.fal.ai
+  const veo3p1ImageToVideo = Object.assign(
+    async function imageToVideo(
+      params: FalVeo3p1ImageToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalVeo3p1ImageToVideoResponse> {
+      return makeRequest<FalVeo3p1ImageToVideoResponse>(
+        "POST",
+        "/fal-ai/veo3.1/image-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalVeo3p1ImageToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video
   // Docs: https://docs.fal.ai
   const xaiGrokImagineVideoImageToVideo = Object.assign(
@@ -1076,6 +1126,10 @@ export function fal(opts: FalOptions): FalProvider {
     },
     qwenImage,
     gptImage1p5,
+    veo3p1: {
+      textToVideo: veo3p1TextToVideo,
+      imageToVideo: veo3p1ImageToVideo,
+    },
     falAi: {
       elevenlabs: {
         speechToText: {

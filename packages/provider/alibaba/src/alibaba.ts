@@ -45,6 +45,25 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     }
   }
 
+  // DashScope returns either OpenAI-compat `{error: {message}}` (compatible-mode
+  // endpoints) or the native shape `{code, message, request_id}` (aigc/*
+  // endpoints). Surface whichever the server actually returned so callers see
+  // the real reason (e.g. `DataInspectionFailed`) instead of a bare status.
+  function formatErrorMessage(status: number, body: unknown): string {
+    if (typeof body === "object" && body !== null) {
+      if ("error" in body) {
+        const err = (body as { error: { message?: string } }).error;
+        if (err?.message) return `Alibaba API error ${status}: ${err.message}`;
+      }
+      const native = body as { code?: string; message?: string };
+      if (native.code && native.message) {
+        return `Alibaba API error ${status}: ${native.code}: ${native.message}`;
+      }
+      if (native.message) return `Alibaba API error ${status}: ${native.message}`;
+    }
+    return `Alibaba API error: ${status}`;
+  }
+
   async function makeRequest<T>(
     path: string,
     body: unknown,
@@ -76,24 +95,13 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        let message = `Alibaba API error: ${res.status}`;
         let resBody: unknown = null;
         try {
           resBody = await res.json();
-          if (
-            typeof resBody === "object" &&
-            resBody !== null &&
-            "error" in resBody
-          ) {
-            const err = (resBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `Alibaba API error ${res.status}: ${err.message}`;
-            }
-          }
         } catch {
           // ignore parse errors
         }
-        throw new AlibabaError(message, res.status, resBody);
+        throw new AlibabaError(formatErrorMessage(res.status, resBody), res.status, resBody);
       }
 
       return (await res.json()) as T;
@@ -130,24 +138,13 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        let message = `Alibaba API error: ${res.status}`;
         let resBody: unknown = null;
         try {
           resBody = await res.json();
-          if (
-            typeof resBody === "object" &&
-            resBody !== null &&
-            "error" in resBody
-          ) {
-            const err = (resBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `Alibaba API error ${res.status}: ${err.message}`;
-            }
-          }
         } catch {
           // ignore parse errors
         }
-        throw new AlibabaError(message, res.status, resBody);
+        throw new AlibabaError(formatErrorMessage(res.status, resBody), res.status, resBody);
       }
 
       for await (const { data } of sseToIterable(res)) {
@@ -190,24 +187,13 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        let message = `Alibaba API error: ${res.status}`;
         let resBody: unknown = null;
         try {
           resBody = await res.json();
-          if (
-            typeof resBody === "object" &&
-            resBody !== null &&
-            "error" in resBody
-          ) {
-            const err = (resBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `Alibaba API error ${res.status}: ${err.message}`;
-            }
-          }
         } catch {
           // ignore parse errors
         }
-        throw new AlibabaError(message, res.status, resBody);
+        throw new AlibabaError(formatErrorMessage(res.status, resBody), res.status, resBody);
       }
 
       return (await res.json()) as T;

@@ -15,6 +15,7 @@ export const KieMediaModelSchema = z.enum([
   "nano-banana-2",
   "gpt-image/1.5-image-to-image",
   "seedream/5-lite-image-to-image",
+  "seedream/5-lite-text-to-image",
   "elevenlabs/text-to-dialogue-v3",
   "elevenlabs/sound-effect-v2",
   "elevenlabs/speech-to-text",
@@ -412,6 +413,19 @@ export const SeedreamImageToImageRequestSchema = z.object({
   input: z.object({
     image_urls: z.array(z.string()),
     prompt: z.string().min(1),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
+      .optional(),
+    quality: z.enum(["basic", "high"]).optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+export const SeedreamTextToImageRequestSchema = z.object({
+  model: z.literal("seedream/5-lite-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(3).max(3000),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
       .optional(),
@@ -818,6 +832,7 @@ export const MediaGenerationRequestSchema = z.union([
   NanoBanana2RequestSchema,
   GptImageToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
+  SeedreamTextToImageRequestSchema,
   ElevenLabsDialogueRequestSchema,
   ElevenLabsSfxRequestSchema,
   ElevenLabsSttRequestSchema,
@@ -906,6 +921,9 @@ export type GptImageToImageRequest = z.infer<
 >;
 export type SeedreamImageToImageRequest = z.infer<
   typeof SeedreamImageToImageRequestSchema
+>;
+export type SeedreamTextToImageRequest = z.infer<
+  typeof SeedreamTextToImageRequestSchema
 >;
 export type ElevenLabsDialogueRequest = z.infer<
   typeof ElevenLabsDialogueRequestSchema

@@ -21,6 +21,7 @@ export type {
   NanoBanana2Request,
   GptImageToImageRequest,
   SeedreamImageToImageRequest,
+  SeedreamTextToImageRequest,
   ElevenLabsVoice,
   DialogueLine,
   ElevenLabsDialogueRequest,

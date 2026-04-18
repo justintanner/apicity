@@ -555,6 +555,31 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "seedream/5-lite-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Text description of the image to generate (3-3000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"],
+        description: "Output aspect ratio (default 1:1)",
+      },
+      quality: {
+        type: "string",
+        enum: ["basic", "high"],
+        description: "Output quality (basic=2K, high=4K, default basic)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
   "elevenlabs/text-to-dialogue-v3": {
     type: "audio",
     fields: {

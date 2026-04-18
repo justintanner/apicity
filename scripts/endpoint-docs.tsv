@@ -28,12 +28,17 @@ anthropic	v1.skills.versions.del	DELETE	https://api.anthropic.com/v1/skills/{ski
 anthropic	v1.skills.versions.list	GET	https://api.anthropic.com/v1/skills/{skillId}/versions	https://docs.anthropic.com/en/api
 fal	bytedance.seedance2p0.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video	https://docs.fal.ai
+fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
+fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai
 fal	bytedance.seedream.v5.lite.edit	POST	https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit	https://docs.fal.ai
 fal	bytedance.seedream.v5.lite.textToImage	POST	https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image	https://docs.fal.ai
 fal	falAi.elevenlabs.speechToText.scribeV2	POST	https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2	https://docs.fal.ai
 fal	gptImage1p5	POST	https://api.fal.ai/v1/fal-ai/gpt-image-1.5	https://docs.fal.ai
 fal	gptImage1p5.edit	POST	https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit	https://docs.fal.ai
 fal	klingVideo.v3.pro.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video	https://docs.fal.ai
+fal	klingVideo.v3.pro.textToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video	https://docs.fal.ai
+fal	klingVideo.v3.standard.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video	https://docs.fal.ai
+fal	klingVideo.v3.standard.textToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video	https://docs.fal.ai
 fal	nanoBanana.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana/edit	https://docs.fal.ai
 fal	nanoBanana.textToImage	POST	https://api.fal.ai/v1/fal-ai/nano-banana	https://docs.fal.ai
 fal	nanoBanana2.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana-2/edit	https://docs.fal.ai
@@ -58,6 +63,8 @@ fal	v1.workflows	GET	https://api.fal.ai/v1/workflows	https://docs.fal.ai
 fal	veo3p1.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video	https://docs.fal.ai
 fal	veo3p1.textToVideo	POST	https://api.fal.ai/v1/fal-ai/veo3.1	https://docs.fal.ai
 fal	wan.v2p7.edit	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/edit	https://docs.fal.ai
+fal	wan.v2p7.textToVideo	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video	https://docs.fal.ai
+fal	wan.v2p7.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video	https://docs.fal.ai
 fal	wan.v2p7.pro.edit	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit	https://docs.fal.ai
 fal	wan.v2p7.pro.textToImage	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image	https://docs.fal.ai
 fal	wan.v2p7.textToImage	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image	https://docs.fal.ai

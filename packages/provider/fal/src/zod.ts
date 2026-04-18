@@ -142,6 +142,72 @@ export const FalSeedance2p0TextToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.0 Fast image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalSeedance2p0FastImageToVideoRequestSchema = z.object({
+  prompt: z.string(),
+  image_url: z.string(),
+  end_image_url: z.string().optional(),
+  resolution: z.enum(["480p", "720p"]).optional(),
+  duration: z
+    .enum([
+      "auto",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .optional(),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  seed: z.number().optional(),
+  end_user_id: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Bytedance Seedance 2.0 Fast text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalSeedance2p0FastTextToVideoRequestSchema = z.object({
+  prompt: z.string(),
+  resolution: z.enum(["480p", "720p"]).optional(),
+  duration: z
+    .enum([
+      "auto",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .optional(),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  seed: z.number().optional(),
+  end_user_id: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana 2 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -520,6 +586,40 @@ export const FalWanV2p7EditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Wan v2.7 text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalWanV2p7TextToVideoRequestSchema = z.object({
+  prompt: z.string(),
+  audio_url: z.string().optional(),
+  aspect_ratio: z.enum(["16:9", "9:16", "1:1", "4:3", "3:4"]).optional(),
+  resolution: z.enum(["720p", "1080p"]).optional(),
+  duration: z.number().int().min(2).max(15).optional(),
+  negative_prompt: z.string().optional(),
+  enable_prompt_expansion: z.boolean().optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  enable_safety_checker: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Wan v2.7 image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalWanV2p7ImageToVideoRequestSchema = z.object({
+  prompt: z.string(),
+  image_url: z.string().optional(),
+  end_image_url: z.string().optional(),
+  video_url: z.string().optional(),
+  audio_url: z.string().optional(),
+  resolution: z.enum(["720p", "1080p"]).optional(),
+  duration: z.number().int().min(2).max(15).optional(),
+  negative_prompt: z.string().optional(),
+  enable_prompt_expansion: z.boolean().optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  enable_safety_checker: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // xAI Grok Imagine Image
 // ---------------------------------------------------------------------------
 
@@ -646,6 +746,83 @@ export const FalKlingVideoV3ProImageToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Kling Video v3 Pro text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalKlingVideoV3ProTextToVideoRequestSchema = z.object({
+  prompt: z.string().max(2500).optional(),
+  multi_prompt: z
+    .array(
+      z.object({
+        prompt: z.string(),
+        duration: z.string().optional(),
+      })
+    )
+    .optional(),
+  duration: z.string().optional(),
+  generate_audio: z.boolean().optional(),
+  shot_type: z.enum(["customize", "intelligent"]).optional(),
+  aspect_ratio: z.enum(["16:9", "9:16", "1:1"]).optional(),
+  negative_prompt: z.string().max(2500).optional(),
+  cfg_scale: z.number().min(0).max(2).optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Kling Video v3 Standard image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalKlingVideoV3StandardImageToVideoRequestSchema = z.object({
+  start_image_url: z.string(),
+  prompt: z.string().max(2500).optional(),
+  multi_prompt: z
+    .array(
+      z.object({
+        prompt: z.string(),
+        duration: z.string().optional(),
+      })
+    )
+    .optional(),
+  end_image_url: z.string().optional(),
+  duration: z.string().optional(),
+  generate_audio: z.boolean().optional(),
+  shot_type: z.enum(["customize", "intelligent"]).optional(),
+  negative_prompt: z.string().max(2500).optional(),
+  cfg_scale: z.number().min(0).max(2).optional(),
+  elements: z
+    .array(
+      z.object({
+        frontal_image_url: z.string().optional(),
+        reference_image_urls: z.array(z.string()).optional(),
+        video_url: z.string().optional(),
+        voice_id: z.string().optional(),
+      })
+    )
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Kling Video v3 Standard text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalKlingVideoV3StandardTextToVideoRequestSchema = z.object({
+  prompt: z.string().max(2500).optional(),
+  multi_prompt: z
+    .array(
+      z.object({
+        prompt: z.string(),
+        duration: z.string().optional(),
+      })
+    )
+    .optional(),
+  duration: z.string().optional(),
+  generate_audio: z.boolean().optional(),
+  shot_type: z.enum(["customize", "intelligent"]).optional(),
+  aspect_ratio: z.enum(["16:9", "9:16", "1:1"]).optional(),
+  negative_prompt: z.string().max(2500).optional(),
+  cfg_scale: z.number().min(0).max(2).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Veo 3.1 text-to-video
 // ---------------------------------------------------------------------------
 
@@ -745,6 +922,12 @@ export type FalSeedance2p0ImageToVideoParams = z.infer<
 export type FalSeedance2p0TextToVideoParams = z.infer<
   typeof FalSeedance2p0TextToVideoRequestSchema
 >;
+export type FalSeedance2p0FastImageToVideoParams = z.infer<
+  typeof FalSeedance2p0FastImageToVideoRequestSchema
+>;
+export type FalSeedance2p0FastTextToVideoParams = z.infer<
+  typeof FalSeedance2p0FastTextToVideoRequestSchema
+>;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema
 >;
@@ -770,6 +953,12 @@ export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
 export type FalWanV2p7EditParams = z.infer<typeof FalWanV2p7EditRequestSchema>;
+export type FalWanV2p7TextToVideoParams = z.infer<
+  typeof FalWanV2p7TextToVideoRequestSchema
+>;
+export type FalWanV2p7ImageToVideoParams = z.infer<
+  typeof FalWanV2p7ImageToVideoRequestSchema
+>;
 export type FalXaiGrokImagineImageParams = z.infer<
   typeof FalXaiGrokImagineImageRequestSchema
 >;
@@ -801,6 +990,15 @@ export type FalVeo3p1ImageToVideoParams = z.infer<
 >;
 export type FalKlingVideoV3ProImageToVideoParams = z.infer<
   typeof FalKlingVideoV3ProImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3ProTextToVideoParams = z.infer<
+  typeof FalKlingVideoV3ProTextToVideoRequestSchema
+>;
+export type FalKlingVideoV3StandardImageToVideoParams = z.infer<
+  typeof FalKlingVideoV3StandardImageToVideoRequestSchema
+>;
+export type FalKlingVideoV3StandardTextToVideoParams = z.infer<
+  typeof FalKlingVideoV3StandardTextToVideoRequestSchema
 >;
 export type FalSora2TextToVideoParams = z.infer<
   typeof FalSora2TextToVideoRequestSchema

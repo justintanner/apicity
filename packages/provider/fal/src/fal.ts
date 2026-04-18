@@ -38,6 +38,10 @@ import {
   FalSeedance2p0ImageToVideoResponse,
   FalSeedance2p0TextToVideoParams,
   FalSeedance2p0TextToVideoResponse,
+  FalSeedance2p0FastImageToVideoParams,
+  FalSeedance2p0FastImageToVideoResponse,
+  FalSeedance2p0FastTextToVideoParams,
+  FalSeedance2p0FastTextToVideoResponse,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProTextToImageResponse,
   FalNanoBananaProEditParams,
@@ -56,6 +60,10 @@ import {
   FalWanV2p7TextToImageResponse,
   FalWanV2p7EditParams,
   FalWanV2p7EditResponse,
+  FalWanV2p7TextToVideoParams,
+  FalWanV2p7TextToVideoResponse,
+  FalWanV2p7ImageToVideoParams,
+  FalWanV2p7ImageToVideoResponse,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageResponse,
   FalXaiGrokImagineImageEditParams,
@@ -80,6 +88,12 @@ import {
   FalVeo3p1ImageToVideoResponse,
   FalKlingVideoV3ProImageToVideoParams,
   FalKlingVideoV3ProImageToVideoResponse,
+  FalKlingVideoV3ProTextToVideoParams,
+  FalKlingVideoV3ProTextToVideoResponse,
+  FalKlingVideoV3StandardImageToVideoParams,
+  FalKlingVideoV3StandardImageToVideoResponse,
+  FalKlingVideoV3StandardTextToVideoParams,
+  FalKlingVideoV3StandardTextToVideoResponse,
   FalSora2TextToVideoParams,
   FalSora2TextToVideoResponse,
   FalSora2ImageToVideoParams,
@@ -95,6 +109,8 @@ import {
   FalFilesUploadLocalRequestSchema,
   FalSeedance2p0ImageToVideoRequestSchema,
   FalSeedance2p0TextToVideoRequestSchema,
+  FalSeedance2p0FastImageToVideoRequestSchema,
+  FalSeedance2p0FastTextToVideoRequestSchema,
   FalNanoBananaProTextToImageRequestSchema,
   FalNanoBananaProEditRequestSchema,
   FalNanoBanana2TextToImageRequestSchema,
@@ -104,6 +120,8 @@ import {
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
+  FalWanV2p7TextToVideoRequestSchema,
+  FalWanV2p7ImageToVideoRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
@@ -116,6 +134,9 @@ import {
   FalVeo3p1TextToVideoRequestSchema,
   FalVeo3p1ImageToVideoRequestSchema,
   FalKlingVideoV3ProImageToVideoRequestSchema,
+  FalKlingVideoV3ProTextToVideoRequestSchema,
+  FalKlingVideoV3StandardImageToVideoRequestSchema,
+  FalKlingVideoV3StandardTextToVideoRequestSchema,
   FalSora2TextToVideoRequestSchema,
   FalSora2ImageToVideoRequestSchema,
 } from "./zod";
@@ -608,6 +629,50 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video
+  // Docs: https://docs.fal.ai
+  const bytedanceSeedance2p0FastImageToVideo = Object.assign(
+    async function imageToVideo(
+      params: FalSeedance2p0FastImageToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalSeedance2p0FastImageToVideoResponse> {
+      return makeRequest<FalSeedance2p0FastImageToVideoResponse>(
+        "POST",
+        "/bytedance/seedance-2.0/fast/image-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalSeedance2p0FastImageToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video
+  // Docs: https://docs.fal.ai
+  const bytedanceSeedance2p0FastTextToVideo = Object.assign(
+    async function textToVideo(
+      params: FalSeedance2p0FastTextToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalSeedance2p0FastTextToVideoResponse> {
+      return makeRequest<FalSeedance2p0FastTextToVideoResponse>(
+        "POST",
+        "/bytedance/seedance-2.0/fast/text-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalSeedance2p0FastTextToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
   const nanoBananaProEdit = Object.assign(
@@ -906,6 +971,50 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video
+  // Docs: https://docs.fal.ai
+  const wanV2p7TextToVideo = Object.assign(
+    async function textToVideo(
+      params: FalWanV2p7TextToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalWanV2p7TextToVideoResponse> {
+      return makeRequest<FalWanV2p7TextToVideoResponse>(
+        "POST",
+        "/fal-ai/wan/v2.7/text-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalWanV2p7TextToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video
+  // Docs: https://docs.fal.ai
+  const wanV2p7ImageToVideo = Object.assign(
+    async function imageToVideo(
+      params: FalWanV2p7ImageToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalWanV2p7ImageToVideoResponse> {
+      return makeRequest<FalWanV2p7ImageToVideoResponse>(
+        "POST",
+        "/fal-ai/wan/v2.7/image-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalWanV2p7ImageToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-image/edit
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImageEdit = Object.assign(
@@ -990,6 +1099,72 @@ export function fal(opts: FalOptions): FalProvider {
     },
     {
       schema: FalKlingVideoV3ProImageToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video
+  // Docs: https://docs.fal.ai
+  const klingVideoV3ProTextToVideo = Object.assign(
+    async function textToVideo(
+      params: FalKlingVideoV3ProTextToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalKlingVideoV3ProTextToVideoResponse> {
+      return makeRequest<FalKlingVideoV3ProTextToVideoResponse>(
+        "POST",
+        "/fal-ai/kling-video/v3/pro/text-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalKlingVideoV3ProTextToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video
+  // Docs: https://docs.fal.ai
+  const klingVideoV3StandardImageToVideo = Object.assign(
+    async function imageToVideo(
+      params: FalKlingVideoV3StandardImageToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalKlingVideoV3StandardImageToVideoResponse> {
+      return makeRequest<FalKlingVideoV3StandardImageToVideoResponse>(
+        "POST",
+        "/fal-ai/kling-video/v3/standard/image-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalKlingVideoV3StandardImageToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video
+  // Docs: https://docs.fal.ai
+  const klingVideoV3StandardTextToVideo = Object.assign(
+    async function textToVideo(
+      params: FalKlingVideoV3StandardTextToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalKlingVideoV3StandardTextToVideoResponse> {
+      return makeRequest<FalKlingVideoV3StandardTextToVideoResponse>(
+        "POST",
+        "/fal-ai/kling-video/v3/standard/text-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalKlingVideoV3StandardTextToVideoRequestSchema,
     }
   );
 
@@ -1177,6 +1352,10 @@ export function fal(opts: FalOptions): FalProvider {
       seedance2p0: {
         imageToVideo: bytedanceSeedance2p0ImageToVideo,
         textToVideo: bytedanceSeedance2p0TextToVideo,
+        fast: {
+          imageToVideo: bytedanceSeedance2p0FastImageToVideo,
+          textToVideo: bytedanceSeedance2p0FastTextToVideo,
+        },
       },
       seedream: {
         v5: {
@@ -1204,6 +1383,11 @@ export function fal(opts: FalOptions): FalProvider {
       v3: {
         pro: {
           imageToVideo: klingVideoV3ProImageToVideo,
+          textToVideo: klingVideoV3ProTextToVideo,
+        },
+        standard: {
+          imageToVideo: klingVideoV3StandardImageToVideo,
+          textToVideo: klingVideoV3StandardTextToVideo,
         },
       },
     },
@@ -1227,6 +1411,8 @@ export function fal(opts: FalOptions): FalProvider {
       v2p7: {
         textToImage: wanV2p7TextToImage,
         edit: wanV2p7Edit,
+        textToVideo: wanV2p7TextToVideo,
+        imageToVideo: wanV2p7ImageToVideo,
         pro: {
           textToImage: wanV2p7ProTextToImage,
           edit: wanV2p7ProEdit,

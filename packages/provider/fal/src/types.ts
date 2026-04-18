@@ -14,6 +14,8 @@ export type {
   FalDeletePayloadsParams,
   FalSeedance2p0ImageToVideoParams,
   FalSeedance2p0TextToVideoParams,
+  FalSeedance2p0FastImageToVideoParams,
+  FalSeedance2p0FastTextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -23,6 +25,8 @@ export type {
   FalElevenlabsSpeechToTextScribeV2Params,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
+  FalWanV2p7TextToVideoParams,
+  FalWanV2p7ImageToVideoParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
@@ -35,6 +39,9 @@ export type {
   FalVeo3p1TextToVideoParams,
   FalVeo3p1ImageToVideoParams,
   FalKlingVideoV3ProImageToVideoParams,
+  FalKlingVideoV3ProTextToVideoParams,
+  FalKlingVideoV3StandardImageToVideoParams,
+  FalKlingVideoV3StandardTextToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
 } from "./zod";
@@ -49,6 +56,8 @@ import type {
   FalDeletePayloadsParams,
   FalSeedance2p0ImageToVideoParams,
   FalSeedance2p0TextToVideoParams,
+  FalSeedance2p0FastImageToVideoParams,
+  FalSeedance2p0FastTextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
@@ -58,6 +67,8 @@ import type {
   FalElevenlabsSpeechToTextScribeV2Params,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
+  FalWanV2p7TextToVideoParams,
+  FalWanV2p7ImageToVideoParams,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
@@ -70,6 +81,9 @@ import type {
   FalVeo3p1TextToVideoParams,
   FalVeo3p1ImageToVideoParams,
   FalKlingVideoV3ProImageToVideoParams,
+  FalKlingVideoV3ProTextToVideoParams,
+  FalKlingVideoV3StandardImageToVideoParams,
+  FalKlingVideoV3StandardTextToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
 } from "./zod";
@@ -454,6 +468,16 @@ export interface FalSeedance2p0TextToVideoResponse {
   seed: number;
 }
 
+export interface FalSeedance2p0FastImageToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
+export interface FalSeedance2p0FastTextToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
 // Nano Banana Pro image generation and editing (Google state-of-the-art image model)
 export type FalNanoBananaProAspectRatio =
   | "auto"
@@ -642,6 +666,18 @@ export interface FalWanV2p7EditResponse {
   seed: number;
 }
 
+export interface FalWanV2p7TextToVideoResponse {
+  video: FalFile;
+  seed: number;
+  actual_prompt?: string;
+}
+
+export interface FalWanV2p7ImageToVideoResponse {
+  video: FalFile;
+  seed: number;
+  actual_prompt?: string;
+}
+
 // xAI Grok Imagine Image
 export type FalXaiGrokImagineImageAspectRatio =
   | "2:1"
@@ -722,6 +758,18 @@ export interface FalKlingV3ComboElementInput {
 }
 
 export interface FalKlingVideoV3ProImageToVideoResponse {
+  video: FalFile;
+}
+
+export interface FalKlingVideoV3ProTextToVideoResponse {
+  video: FalFile;
+}
+
+export interface FalKlingVideoV3StandardImageToVideoResponse {
+  video: FalFile;
+}
+
+export interface FalKlingVideoV3StandardTextToVideoResponse {
   video: FalFile;
 }
 
@@ -1021,9 +1069,29 @@ type FalSeedance2p0TextToVideoFn = ((
   schema: z.ZodType<FalSeedance2p0TextToVideoParams>;
 };
 
+type FalSeedance2p0FastImageToVideoFn = ((
+  params: FalSeedance2p0FastImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p0FastImageToVideoResponse>) & {
+  schema: z.ZodType<FalSeedance2p0FastImageToVideoParams>;
+};
+
+type FalSeedance2p0FastTextToVideoFn = ((
+  params: FalSeedance2p0FastTextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p0FastTextToVideoResponse>) & {
+  schema: z.ZodType<FalSeedance2p0FastTextToVideoParams>;
+};
+
+export interface FalRunBytedanceSeedance2p0FastNamespace {
+  imageToVideo: FalSeedance2p0FastImageToVideoFn;
+  textToVideo: FalSeedance2p0FastTextToVideoFn;
+}
+
 export interface FalRunBytedanceSeedance2p0Namespace {
   imageToVideo: FalSeedance2p0ImageToVideoFn;
   textToVideo: FalSeedance2p0TextToVideoFn;
+  fast: FalRunBytedanceSeedance2p0FastNamespace;
 }
 
 export interface FalRunBytedanceSeedreamV5LiteNamespace {
@@ -1110,6 +1178,20 @@ type FalWanV2p7EditFn = ((
   schema: z.ZodType<FalWanV2p7EditParams>;
 };
 
+type FalWanV2p7TextToVideoFn = ((
+  params: FalWanV2p7TextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalWanV2p7TextToVideoResponse>) & {
+  schema: z.ZodType<FalWanV2p7TextToVideoParams>;
+};
+
+type FalWanV2p7ImageToVideoFn = ((
+  params: FalWanV2p7ImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalWanV2p7ImageToVideoResponse>) & {
+  schema: z.ZodType<FalWanV2p7ImageToVideoParams>;
+};
+
 export interface FalRunWanV2p7ProNamespace {
   textToImage: FalWanV2p7TextToImageFn;
   edit: FalWanV2p7EditFn;
@@ -1118,6 +1200,8 @@ export interface FalRunWanV2p7ProNamespace {
 export interface FalRunWanV2p7Namespace {
   textToImage: FalWanV2p7TextToImageFn;
   edit: FalWanV2p7EditFn;
+  textToVideo: FalWanV2p7TextToVideoFn;
+  imageToVideo: FalWanV2p7ImageToVideoFn;
   pro: FalRunWanV2p7ProNamespace;
 }
 
@@ -1231,12 +1315,40 @@ type FalKlingVideoV3ProImageToVideoFn = ((
   schema: z.ZodType<FalKlingVideoV3ProImageToVideoParams>;
 };
 
+type FalKlingVideoV3ProTextToVideoFn = ((
+  params: FalKlingVideoV3ProTextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoV3ProTextToVideoResponse>) & {
+  schema: z.ZodType<FalKlingVideoV3ProTextToVideoParams>;
+};
+
+type FalKlingVideoV3StandardImageToVideoFn = ((
+  params: FalKlingVideoV3StandardImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoV3StandardImageToVideoResponse>) & {
+  schema: z.ZodType<FalKlingVideoV3StandardImageToVideoParams>;
+};
+
+type FalKlingVideoV3StandardTextToVideoFn = ((
+  params: FalKlingVideoV3StandardTextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoV3StandardTextToVideoResponse>) & {
+  schema: z.ZodType<FalKlingVideoV3StandardTextToVideoParams>;
+};
+
 export interface FalRunKlingVideoV3ProNamespace {
   imageToVideo: FalKlingVideoV3ProImageToVideoFn;
+  textToVideo: FalKlingVideoV3ProTextToVideoFn;
+}
+
+export interface FalRunKlingVideoV3StandardNamespace {
+  imageToVideo: FalKlingVideoV3StandardImageToVideoFn;
+  textToVideo: FalKlingVideoV3StandardTextToVideoFn;
 }
 
 export interface FalRunKlingVideoV3Namespace {
   pro: FalRunKlingVideoV3ProNamespace;
+  standard: FalRunKlingVideoV3StandardNamespace;
 }
 
 export interface FalRunKlingVideoNamespace {

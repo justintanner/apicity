@@ -52,6 +52,8 @@ import {
   FalWanV2p7EditResponse,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageResponse,
+  FalXaiGrokImagineImageEditParams,
+  FalXaiGrokImagineImageEditResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -70,6 +72,7 @@ import {
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
   FalXaiGrokImagineImageRequestSchema,
+  FalXaiGrokImagineImageEditRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -748,6 +751,28 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/xai/grok-imagine-image/edit
+  // Docs: https://docs.fal.ai
+  const xaiGrokImagineImageEdit = Object.assign(
+    async function edit(
+      params: FalXaiGrokImagineImageEditParams,
+      signal?: AbortSignal
+    ): Promise<FalXaiGrokImagineImageEditResponse> {
+      return makeRequest<FalXaiGrokImagineImageEditResponse>(
+        "POST",
+        "/xai/grok-imagine-image/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalXaiGrokImagineImageEditRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-image
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImage = Object.assign(
@@ -766,6 +791,7 @@ export function fal(opts: FalOptions): FalProvider {
     },
     {
       schema: FalXaiGrokImagineImageRequestSchema,
+      edit: xaiGrokImagineImageEdit,
     }
   );
 

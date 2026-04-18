@@ -120,6 +120,8 @@ export type {
   FalXaiGrokImagineImageOutputFormat,
   FalXaiGrokImagineImageParams,
   FalXaiGrokImagineImageResponse,
+  FalXaiGrokImagineImageEditParams,
+  FalXaiGrokImagineImageEditResponse,
   FalRunXaiNamespace,
   FalRunNamespace,
   FalProvider,

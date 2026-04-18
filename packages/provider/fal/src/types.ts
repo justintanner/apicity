@@ -21,6 +21,7 @@ export type {
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
   FalXaiGrokImagineImageParams,
+  FalXaiGrokImagineImageEditParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -40,6 +41,7 @@ import type {
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
   FalXaiGrokImagineImageParams,
+  FalXaiGrokImagineImageEditParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -510,6 +512,11 @@ export interface FalXaiGrokImagineImageResponse {
   revised_prompt: string;
 }
 
+export interface FalXaiGrokImagineImageEditResponse {
+  images: FalFile[];
+  revised_prompt: string;
+}
+
 // ==================== Serverless Logs ====================
 
 // Label filter for log queries
@@ -853,11 +860,19 @@ export interface FalRunWanNamespace {
   v2p7: FalRunWanV2p7Namespace;
 }
 
+type FalXaiGrokImagineImageEditFn = ((
+  params: FalXaiGrokImagineImageEditParams,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineImageEditResponse>) & {
+  schema: z.ZodType<FalXaiGrokImagineImageEditParams>;
+};
+
 type FalXaiGrokImagineImageFn = ((
   params: FalXaiGrokImagineImageParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineImageResponse>) & {
   schema: z.ZodType<FalXaiGrokImagineImageParams>;
+  edit: FalXaiGrokImagineImageEditFn;
 };
 
 export interface FalRunXaiNamespace {

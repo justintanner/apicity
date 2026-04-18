@@ -24,7 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-31 endpoints across 9 groups. Each method mirrors an upstream URL path.
+32 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -503,6 +503,21 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.xai.grokImagineImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.xai.grokImagineImage.edit</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/xai/grok-imagine-image/edit</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.xai.grokImagineImage.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

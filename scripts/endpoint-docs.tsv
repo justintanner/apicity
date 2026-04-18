@@ -48,6 +48,7 @@ fal	wan.v2p7.pro.edit	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit	https:
 fal	wan.v2p7.pro.textToImage	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image	https://docs.fal.ai
 fal	wan.v2p7.textToImage	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image	https://docs.fal.ai
 fal	xai.grokImagineImage	POST	https://api.fal.ai/v1/xai/grok-imagine-image	https://docs.fal.ai
+fal	xai.grokImagineImage.edit	POST	https://api.fal.ai/v1/xai/grok-imagine-image/edit	https://docs.fal.ai
 fireworks	inference.v1.accounts	GET	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys	DELETE	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys:delete	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys.create	POST	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys	https://docs.fireworks.ai/api-reference

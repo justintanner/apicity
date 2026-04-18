@@ -29,6 +29,8 @@ export type {
   FalQwenImageEditParams,
   FalGptImage1p5Params,
   FalGptImage1p5EditParams,
+  FalNanoBananaTextToImageParams,
+  FalNanoBananaEditParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -56,6 +58,8 @@ import type {
   FalQwenImageEditParams,
   FalGptImage1p5Params,
   FalGptImage1p5EditParams,
+  FalNanoBananaTextToImageParams,
+  FalNanoBananaEditParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -559,6 +563,35 @@ export interface FalGptImage1p5EditResponse {
   images: FalFile[];
 }
 
+// Nano Banana (original variant, text-to-image and edit)
+export type FalNanoBananaAspectRatio =
+  | "21:9"
+  | "16:9"
+  | "3:2"
+  | "4:3"
+  | "5:4"
+  | "1:1"
+  | "4:5"
+  | "3:4"
+  | "2:3"
+  | "9:16";
+
+export type FalNanoBananaEditAspectRatio = "auto" | FalNanoBananaAspectRatio;
+
+export type FalNanoBananaOutputFormat = "jpeg" | "png" | "webp";
+
+export type FalNanoBananaSafetyTolerance = "1" | "2" | "3" | "4" | "5" | "6";
+
+export interface FalNanoBananaTextToImageResponse {
+  images: FalFile[];
+  description: string;
+}
+
+export interface FalNanoBananaEditResponse {
+  images: FalFile[];
+  description: string;
+}
+
 // Bytedance Seedream v5 Lite image editing
 export type FalSeedreamV5LiteImageSize =
   | "auto_2K"
@@ -1046,8 +1079,28 @@ type FalGptImage1p5Fn = ((
   edit: FalGptImage1p5EditFn;
 };
 
+type FalNanoBananaTextToImageFn = ((
+  params: FalNanoBananaTextToImageParams,
+  signal?: AbortSignal
+) => Promise<FalNanoBananaTextToImageResponse>) & {
+  schema: z.ZodType<FalNanoBananaTextToImageParams>;
+};
+
+type FalNanoBananaEditFn = ((
+  params: FalNanoBananaEditParams,
+  signal?: AbortSignal
+) => Promise<FalNanoBananaEditResponse>) & {
+  schema: z.ZodType<FalNanoBananaEditParams>;
+};
+
+export interface FalRunNanoBananaNamespace {
+  textToImage: FalNanoBananaTextToImageFn;
+  edit: FalNanoBananaEditFn;
+}
+
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
+  nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;
   qwenImage: FalQwenImageFn;

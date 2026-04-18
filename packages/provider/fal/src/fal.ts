@@ -68,6 +68,10 @@ import {
   FalGptImage1p5Response,
   FalGptImage1p5EditParams,
   FalGptImage1p5EditResponse,
+  FalNanoBananaTextToImageParams,
+  FalNanoBananaTextToImageResponse,
+  FalNanoBananaEditParams,
+  FalNanoBananaEditResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -94,6 +98,8 @@ import {
   FalQwenImageEditRequestSchema,
   FalGptImage1p5RequestSchema,
   FalGptImage1p5EditRequestSchema,
+  FalNanoBananaTextToImageRequestSchema,
+  FalNanoBananaEditRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -634,6 +640,50 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/nano-banana
+  // Docs: https://docs.fal.ai
+  const nanoBananaTextToImage = Object.assign(
+    async function textToImage(
+      params: FalNanoBananaTextToImageParams,
+      signal?: AbortSignal
+    ): Promise<FalNanoBananaTextToImageResponse> {
+      return makeRequest<FalNanoBananaTextToImageResponse>(
+        "POST",
+        "/fal-ai/nano-banana",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalNanoBananaTextToImageRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/nano-banana/edit
+  // Docs: https://docs.fal.ai
+  const nanoBananaEdit = Object.assign(
+    async function edit(
+      params: FalNanoBananaEditParams,
+      signal?: AbortSignal
+    ): Promise<FalNanoBananaEditResponse> {
+      return makeRequest<FalNanoBananaEditResponse>(
+        "POST",
+        "/fal-ai/nano-banana/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalNanoBananaEditRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-2
   // Docs: https://docs.fal.ai
   const nanoBanana2TextToImage = Object.assign(
@@ -990,6 +1040,10 @@ export function fal(opts: FalOptions): FalProvider {
     nanoBananaPro: {
       textToImage: nanoBananaProTextToImage,
       edit: nanoBananaProEdit,
+    },
+    nanoBanana: {
+      textToImage: nanoBananaTextToImage,
+      edit: nanoBananaEdit,
     },
     nanoBanana2: {
       textToImage: nanoBanana2TextToImage,

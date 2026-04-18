@@ -215,6 +215,64 @@ export const FalNanoBanana2EditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Nano Banana text-to-image
+// ---------------------------------------------------------------------------
+
+export const FalNanoBananaTextToImageRequestSchema = z.object({
+  prompt: z.string().min(3).max(50000),
+  num_images: z.number().int().min(1).max(4).optional(),
+  aspect_ratio: z
+    .enum([
+      "21:9",
+      "16:9",
+      "3:2",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "2:3",
+      "9:16",
+    ])
+    .optional(),
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
+  seed: z.number().optional(),
+  sync_mode: z.boolean().optional(),
+  limit_generations: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Nano Banana edit
+// ---------------------------------------------------------------------------
+
+export const FalNanoBananaEditRequestSchema = z.object({
+  prompt: z.string().min(3).max(50000),
+  image_urls: z.array(z.string()),
+  num_images: z.number().int().min(1).max(4).optional(),
+  aspect_ratio: z
+    .enum([
+      "auto",
+      "21:9",
+      "16:9",
+      "3:2",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "2:3",
+      "9:16",
+    ])
+    .optional(),
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
+  seed: z.number().optional(),
+  sync_mode: z.boolean().optional(),
+  limit_generations: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // GPT Image 1.5 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -594,5 +652,11 @@ export type FalQwenImageEditParams = z.infer<
 export type FalGptImage1p5Params = z.infer<typeof FalGptImage1p5RequestSchema>;
 export type FalGptImage1p5EditParams = z.infer<
   typeof FalGptImage1p5EditRequestSchema
+>;
+export type FalNanoBananaTextToImageParams = z.infer<
+  typeof FalNanoBananaTextToImageRequestSchema
+>;
+export type FalNanoBananaEditParams = z.infer<
+  typeof FalNanoBananaEditRequestSchema
 >;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

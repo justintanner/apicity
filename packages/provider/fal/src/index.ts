@@ -82,6 +82,8 @@ export type {
   FalSeedanceAspectRatio,
   FalSeedance2p0ImageToVideoParams,
   FalSeedance2p0ImageToVideoResponse,
+  FalSeedance2p0TextToVideoParams,
+  FalSeedance2p0TextToVideoResponse,
   FalRunBytedanceSeedance2p0Namespace,
   FalRunBytedanceSeedreamV5LiteNamespace,
   FalRunBytedanceSeedreamV5Namespace,

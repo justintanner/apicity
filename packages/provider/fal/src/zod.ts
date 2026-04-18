@@ -110,6 +110,38 @@ export const FalSeedance2p0ImageToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedance 2.0 text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalSeedance2p0TextToVideoRequestSchema = z.object({
+  prompt: z.string(),
+  resolution: z.enum(["480p", "720p"]).optional(),
+  duration: z
+    .enum([
+      "auto",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .optional(),
+  aspect_ratio: z
+    .enum(["auto", "21:9", "16:9", "4:3", "1:1", "3:4", "9:16"])
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  seed: z.number().optional(),
+  end_user_id: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana Pro text-to-image
 // ---------------------------------------------------------------------------
 
@@ -352,6 +384,9 @@ export type FalDeletePayloadsParams = z.infer<
 >;
 export type FalSeedance2p0ImageToVideoParams = z.infer<
   typeof FalSeedance2p0ImageToVideoRequestSchema
+>;
+export type FalSeedance2p0TextToVideoParams = z.infer<
+  typeof FalSeedance2p0TextToVideoRequestSchema
 >;
 export type FalNanoBananaProTextToImageParams = z.infer<
   typeof FalNanoBananaProTextToImageRequestSchema

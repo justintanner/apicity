@@ -24,7 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-32 endpoints across 9 groups. Each method mirrors an upstream URL path.
+33 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -37,6 +37,21 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ```typescript
 const res = await fal.bytedance.seedance2p0.imageToVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.textToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.bytedance.seedance2p0.textToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

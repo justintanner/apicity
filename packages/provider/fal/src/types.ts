@@ -13,6 +13,7 @@ export type {
   FalFilesUploadLocalParams,
   FalDeletePayloadsParams,
   FalSeedance2p0ImageToVideoParams,
+  FalSeedance2p0TextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalSeedreamV5LiteEditParams,
@@ -33,6 +34,7 @@ import type {
   FalFilesUploadLocalParams,
   FalDeletePayloadsParams,
   FalSeedance2p0ImageToVideoParams,
+  FalSeedance2p0TextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
   FalSeedreamV5LiteEditParams,
@@ -419,6 +421,11 @@ export interface FalSeedance2p0ImageToVideoResponse {
   seed: number;
 }
 
+export interface FalSeedance2p0TextToVideoResponse {
+  video: FalFile;
+  seed: number;
+}
+
 // Nano Banana Pro image generation and editing (Google state-of-the-art image model)
 export type FalNanoBananaProAspectRatio =
   | "auto"
@@ -776,8 +783,16 @@ type FalSeedance2p0ImageToVideoFn = ((
   schema: z.ZodType<FalSeedance2p0ImageToVideoParams>;
 };
 
+type FalSeedance2p0TextToVideoFn = ((
+  params: FalSeedance2p0TextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalSeedance2p0TextToVideoResponse>) & {
+  schema: z.ZodType<FalSeedance2p0TextToVideoParams>;
+};
+
 export interface FalRunBytedanceSeedance2p0Namespace {
   imageToVideo: FalSeedance2p0ImageToVideoFn;
+  textToVideo: FalSeedance2p0TextToVideoFn;
 }
 
 export interface FalRunBytedanceSeedreamV5LiteNamespace {

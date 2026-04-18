@@ -16,6 +16,8 @@ export type {
   FalSeedance2p0TextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
+  FalNanoBanana2TextToImageParams,
+  FalNanoBanana2EditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -37,6 +39,8 @@ import type {
   FalSeedance2p0TextToVideoParams,
   FalNanoBananaProTextToImageParams,
   FalNanoBananaProEditParams,
+  FalNanoBanana2TextToImageParams,
+  FalNanoBanana2EditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalElevenlabsSpeechToTextScribeV2Params,
@@ -456,6 +460,42 @@ export interface FalNanoBananaProEditResponse {
   description: string;
 }
 
+// Nano Banana 2 image generation and editing (Google's newer state-of-the-art image model)
+export type FalNanoBanana2AspectRatio =
+  | "auto"
+  | "21:9"
+  | "16:9"
+  | "3:2"
+  | "4:3"
+  | "5:4"
+  | "1:1"
+  | "4:5"
+  | "3:4"
+  | "2:3"
+  | "9:16"
+  | "4:1"
+  | "1:4"
+  | "8:1"
+  | "1:8";
+
+export type FalNanoBanana2OutputFormat = "jpeg" | "png" | "webp";
+
+export type FalNanoBanana2SafetyTolerance = "1" | "2" | "3" | "4" | "5" | "6";
+
+export type FalNanoBanana2Resolution = "0.5K" | "1K" | "2K" | "4K";
+
+export type FalNanoBanana2ThinkingLevel = "minimal" | "high";
+
+export interface FalNanoBanana2TextToImageResponse {
+  images: FalFile[];
+  description: string;
+}
+
+export interface FalNanoBanana2EditResponse {
+  images: FalFile[];
+  description: string;
+}
+
 // Bytedance Seedream v5 Lite image editing
 export type FalSeedreamV5LiteImageSize =
   | "auto_2K"
@@ -832,6 +872,25 @@ export interface FalRunNanoBananaProNamespace {
   edit: FalNanoBananaProEditFn;
 }
 
+type FalNanoBanana2TextToImageFn = ((
+  params: FalNanoBanana2TextToImageParams,
+  signal?: AbortSignal
+) => Promise<FalNanoBanana2TextToImageResponse>) & {
+  schema: z.ZodType<FalNanoBanana2TextToImageParams>;
+};
+
+type FalNanoBanana2EditFn = ((
+  params: FalNanoBanana2EditParams,
+  signal?: AbortSignal
+) => Promise<FalNanoBanana2EditResponse>) & {
+  schema: z.ZodType<FalNanoBanana2EditParams>;
+};
+
+export interface FalRunNanoBanana2Namespace {
+  textToImage: FalNanoBanana2TextToImageFn;
+  edit: FalNanoBanana2EditFn;
+}
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditParams,
   signal?: AbortSignal
@@ -897,6 +956,7 @@ export interface FalRunXaiNamespace {
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
+  nanoBanana2: FalRunNanoBanana2Namespace;
   falAi: FalRunFalAiNamespace;
   wan: FalRunWanNamespace;
   xai: FalRunXaiNamespace;

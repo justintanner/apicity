@@ -142,6 +142,79 @@ export const FalSeedance2p0TextToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Nano Banana 2 text-to-image
+// ---------------------------------------------------------------------------
+
+export const FalNanoBanana2TextToImageRequestSchema = z.object({
+  prompt: z.string(),
+  num_images: z.number().optional(),
+  seed: z.number().optional(),
+  aspect_ratio: z
+    .enum([
+      "auto",
+      "21:9",
+      "16:9",
+      "3:2",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "2:3",
+      "9:16",
+      "4:1",
+      "1:4",
+      "8:1",
+      "1:8",
+    ])
+    .optional(),
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
+  sync_mode: z.boolean().optional(),
+  resolution: z.enum(["0.5K", "1K", "2K", "4K"]).optional(),
+  limit_generations: z.boolean().optional(),
+  enable_web_search: z.boolean().optional(),
+  thinking_level: z.enum(["minimal", "high"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Nano Banana 2 edit
+// ---------------------------------------------------------------------------
+
+export const FalNanoBanana2EditRequestSchema = z.object({
+  prompt: z.string(),
+  image_urls: z.array(z.string()),
+  num_images: z.number().optional(),
+  seed: z.number().optional(),
+  aspect_ratio: z
+    .enum([
+      "auto",
+      "21:9",
+      "16:9",
+      "3:2",
+      "4:3",
+      "5:4",
+      "1:1",
+      "4:5",
+      "3:4",
+      "2:3",
+      "9:16",
+      "4:1",
+      "1:4",
+      "8:1",
+      "1:8",
+    ])
+    .optional(),
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  safety_tolerance: z.enum(["1", "2", "3", "4", "5", "6"]).optional(),
+  sync_mode: z.boolean().optional(),
+  resolution: z.enum(["0.5K", "1K", "2K", "4K"]).optional(),
+  limit_generations: z.boolean().optional(),
+  enable_web_search: z.boolean().optional(),
+  thinking_level: z.enum(["minimal", "high"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Nano Banana Pro text-to-image
 // ---------------------------------------------------------------------------
 
@@ -393,6 +466,12 @@ export type FalNanoBananaProTextToImageParams = z.infer<
 >;
 export type FalNanoBananaProEditParams = z.infer<
   typeof FalNanoBananaProEditRequestSchema
+>;
+export type FalNanoBanana2TextToImageParams = z.infer<
+  typeof FalNanoBanana2TextToImageRequestSchema
+>;
+export type FalNanoBanana2EditParams = z.infer<
+  typeof FalNanoBanana2EditRequestSchema
 >;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema

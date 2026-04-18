@@ -24,7 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-33 endpoints across 9 groups. Each method mirrors an upstream URL path.
+35 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -251,6 +251,38 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.v1.models.requests.payloads({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### nanoBanana2
+
+<details>
+<summary><code>POST</code> <b><code>fal.nanoBanana2.edit</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.nanoBanana2.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.nanoBanana2.textToImage</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/nano-banana-2</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.nanoBanana2.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

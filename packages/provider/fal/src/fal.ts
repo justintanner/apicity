@@ -42,6 +42,10 @@ import {
   FalNanoBananaProTextToImageResponse,
   FalNanoBananaProEditParams,
   FalNanoBananaProEditResponse,
+  FalNanoBanana2TextToImageParams,
+  FalNanoBanana2TextToImageResponse,
+  FalNanoBanana2EditParams,
+  FalNanoBanana2EditResponse,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageParams,
@@ -69,6 +73,8 @@ import {
   FalSeedance2p0TextToVideoRequestSchema,
   FalNanoBananaProTextToImageRequestSchema,
   FalNanoBananaProEditRequestSchema,
+  FalNanoBanana2TextToImageRequestSchema,
+  FalNanoBanana2EditRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
@@ -616,6 +622,50 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/nano-banana-2
+  // Docs: https://docs.fal.ai
+  const nanoBanana2TextToImage = Object.assign(
+    async function textToImage(
+      params: FalNanoBanana2TextToImageParams,
+      signal?: AbortSignal
+    ): Promise<FalNanoBanana2TextToImageResponse> {
+      return makeRequest<FalNanoBanana2TextToImageResponse>(
+        "POST",
+        "/fal-ai/nano-banana-2",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalNanoBanana2TextToImageRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit
+  // Docs: https://docs.fal.ai
+  const nanoBanana2Edit = Object.assign(
+    async function edit(
+      params: FalNanoBanana2EditParams,
+      signal?: AbortSignal
+    ): Promise<FalNanoBanana2EditResponse> {
+      return makeRequest<FalNanoBanana2EditResponse>(
+        "POST",
+        "/fal-ai/nano-banana-2/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalNanoBanana2EditRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
   const seedreamV5LiteEdit = Object.assign(
@@ -838,6 +888,10 @@ export function fal(opts: FalOptions): FalProvider {
     nanoBananaPro: {
       textToImage: nanoBananaProTextToImage,
       edit: nanoBananaProEdit,
+    },
+    nanoBanana2: {
+      textToImage: nanoBanana2TextToImage,
+      edit: nanoBanana2Edit,
     },
     falAi: {
       elevenlabs: {

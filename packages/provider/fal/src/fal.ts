@@ -701,6 +701,28 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image
+  // Docs: https://docs.fal.ai
+  const wanV2p7ProTextToImage = Object.assign(
+    async function textToImage(
+      params: FalWanV2p7TextToImageParams,
+      signal?: AbortSignal
+    ): Promise<FalWanV2p7TextToImageResponse> {
+      return makeRequest<FalWanV2p7TextToImageResponse>(
+        "POST",
+        "/fal-ai/wan/v2.7/pro/text-to-image",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalWanV2p7TextToImageRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit
   // Docs: https://docs.fal.ai
   const wanV2p7ProEdit = Object.assign(
@@ -752,6 +774,7 @@ export function fal(opts: FalOptions): FalProvider {
         textToImage: wanV2p7TextToImage,
         edit: wanV2p7Edit,
         pro: {
+          textToImage: wanV2p7ProTextToImage,
           edit: wanV2p7ProEdit,
         },
       },

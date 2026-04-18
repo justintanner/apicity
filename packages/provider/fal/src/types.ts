@@ -812,6 +812,7 @@ type FalWanV2p7EditFn = ((
 };
 
 export interface FalRunWanV2p7ProNamespace {
+  textToImage: FalWanV2p7TextToImageFn;
   edit: FalWanV2p7EditFn;
 }
 

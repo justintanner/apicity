@@ -27,6 +27,8 @@ export type {
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
   FalQwenImageEditParams,
+  FalGptImage1p5Params,
+  FalGptImage1p5EditParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -52,6 +54,8 @@ import type {
   FalXaiGrokImagineImageEditParams,
   FalQwenImageParams,
   FalQwenImageEditParams,
+  FalGptImage1p5Params,
+  FalGptImage1p5EditParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -530,6 +534,31 @@ export interface FalQwenImageEditResponse {
   prompt: string;
 }
 
+// GPT Image 1.5 (text-to-image and edit)
+export type FalGptImage1p5ImageSize = "1024x1024" | "1536x1024" | "1024x1536";
+
+export type FalGptImage1p5EditImageSize =
+  | "auto"
+  | "1024x1024"
+  | "1536x1024"
+  | "1024x1536";
+
+export type FalGptImage1p5Background = "auto" | "transparent" | "opaque";
+
+export type FalGptImage1p5Quality = "low" | "medium" | "high";
+
+export type FalGptImage1p5OutputFormat = "jpeg" | "png" | "webp";
+
+export type FalGptImage1p5InputFidelity = "low" | "high";
+
+export interface FalGptImage1p5Response {
+  images: FalFile[];
+}
+
+export interface FalGptImage1p5EditResponse {
+  images: FalFile[];
+}
+
 // Bytedance Seedream v5 Lite image editing
 export type FalSeedreamV5LiteImageSize =
   | "auto_2K"
@@ -1002,11 +1031,27 @@ type FalQwenImageFn = ((
   edit: FalQwenImageEditFn;
 };
 
+type FalGptImage1p5EditFn = ((
+  params: FalGptImage1p5EditParams,
+  signal?: AbortSignal
+) => Promise<FalGptImage1p5EditResponse>) & {
+  schema: z.ZodType<FalGptImage1p5EditParams>;
+};
+
+type FalGptImage1p5Fn = ((
+  params: FalGptImage1p5Params,
+  signal?: AbortSignal
+) => Promise<FalGptImage1p5Response>) & {
+  schema: z.ZodType<FalGptImage1p5Params>;
+  edit: FalGptImage1p5EditFn;
+};
+
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;
   qwenImage: FalQwenImageFn;
+  gptImage1p5: FalGptImage1p5Fn;
   falAi: FalRunFalAiNamespace;
   wan: FalRunWanNamespace;
   xai: FalRunXaiNamespace;

@@ -24,7 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-37 endpoints across 11 groups. Each method mirrors an upstream URL path.
+39 endpoints across 12 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -99,6 +99,38 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.falAi.elevenlabs.speechToText.scribeV2({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### gptImage1p5
+
+<details>
+<summary><code>POST</code> <b><code>fal.gptImage1p5</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.gptImage1p5({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.gptImage1p5.edit</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.gptImage1p5.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

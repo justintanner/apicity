@@ -64,6 +64,10 @@ import {
   FalQwenImageResponse,
   FalQwenImageEditParams,
   FalQwenImageEditResponse,
+  FalGptImage1p5Params,
+  FalGptImage1p5Response,
+  FalGptImage1p5EditParams,
+  FalGptImage1p5EditResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -88,6 +92,8 @@ import {
   FalXaiGrokImagineImageEditRequestSchema,
   FalQwenImageRequestSchema,
   FalQwenImageEditRequestSchema,
+  FalGptImage1p5RequestSchema,
+  FalGptImage1p5EditRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -899,6 +905,51 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit
+  // Docs: https://docs.fal.ai
+  const gptImage1p5Edit = Object.assign(
+    async function edit(
+      params: FalGptImage1p5EditParams,
+      signal?: AbortSignal
+    ): Promise<FalGptImage1p5EditResponse> {
+      return makeRequest<FalGptImage1p5EditResponse>(
+        "POST",
+        "/fal-ai/gpt-image-1.5/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalGptImage1p5EditRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5
+  // Docs: https://docs.fal.ai
+  const gptImage1p5 = Object.assign(
+    async function gptImage1p5(
+      params: FalGptImage1p5Params,
+      signal?: AbortSignal
+    ): Promise<FalGptImage1p5Response> {
+      return makeRequest<FalGptImage1p5Response>(
+        "POST",
+        "/fal-ai/gpt-image-1.5",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalGptImage1p5RequestSchema,
+      edit: gptImage1p5Edit,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/qwen-image
   // Docs: https://docs.fal.ai
   const qwenImage = Object.assign(
@@ -945,6 +996,7 @@ export function fal(opts: FalOptions): FalProvider {
       edit: nanoBanana2Edit,
     },
     qwenImage,
+    gptImage1p5,
     falAi: {
       elevenlabs: {
         speechToText: {

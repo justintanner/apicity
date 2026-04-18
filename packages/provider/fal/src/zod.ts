@@ -215,6 +215,39 @@ export const FalNanoBanana2EditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// GPT Image 1.5 text-to-image
+// ---------------------------------------------------------------------------
+
+export const FalGptImage1p5RequestSchema = z.object({
+  prompt: z.string().min(2).max(32000),
+  image_size: z.enum(["1024x1024", "1536x1024", "1024x1536"]).optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  background: z.enum(["auto", "transparent", "opaque"]).optional(),
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  quality: z.enum(["low", "medium", "high"]).optional(),
+  sync_mode: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// GPT Image 1.5 edit
+// ---------------------------------------------------------------------------
+
+export const FalGptImage1p5EditRequestSchema = z.object({
+  prompt: z.string().min(2).max(32000),
+  image_urls: z.array(z.string()),
+  image_size: z
+    .enum(["auto", "1024x1024", "1536x1024", "1024x1536"])
+    .optional(),
+  background: z.enum(["auto", "transparent", "opaque"]).optional(),
+  quality: z.enum(["low", "medium", "high"]).optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  input_fidelity: z.enum(["low", "high"]).optional(),
+  output_format: z.enum(["jpeg", "png", "webp"]).optional(),
+  sync_mode: z.boolean().optional(),
+  mask_image_url: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Qwen Image text-to-image
 // ---------------------------------------------------------------------------
 
@@ -557,5 +590,9 @@ export type FalXaiGrokImagineImageEditParams = z.infer<
 export type FalQwenImageParams = z.infer<typeof FalQwenImageRequestSchema>;
 export type FalQwenImageEditParams = z.infer<
   typeof FalQwenImageEditRequestSchema
+>;
+export type FalGptImage1p5Params = z.infer<typeof FalGptImage1p5RequestSchema>;
+export type FalGptImage1p5EditParams = z.infer<
+  typeof FalGptImage1p5EditRequestSchema
 >;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

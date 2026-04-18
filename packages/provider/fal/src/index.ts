@@ -110,6 +110,8 @@ export type {
   FalWanImageSize,
   FalWanV2p7TextToImageParams,
   FalWanV2p7TextToImageResponse,
+  FalWanV2p7EditParams,
+  FalWanV2p7EditResponse,
   FalRunWanV2p7Namespace,
   FalRunWanNamespace,
   FalRunNamespace,

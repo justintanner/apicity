@@ -235,6 +235,33 @@ export const FalWanV2p7TextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Wan v2.7 edit (image-to-image)
+// ---------------------------------------------------------------------------
+
+export const FalWanV2p7EditRequestSchema = z.object({
+  prompt: z.string(),
+  image_urls: z.array(z.string()).min(1).max(4),
+  negative_prompt: z.string().optional(),
+  image_size: z
+    .union([
+      z.enum([
+        "square_hd",
+        "square",
+        "portrait_4_3",
+        "portrait_16_9",
+        "landscape_4_3",
+        "landscape_16_9",
+      ]),
+      z.object({ width: z.number(), height: z.number() }),
+    ])
+    .optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  enable_prompt_expansion: z.boolean().optional(),
+  seed: z.number().int().min(0).max(2147483647).optional(),
+  enable_safety_checker: z.boolean().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // ElevenLabs Speech to Text Scribe V2
 // ---------------------------------------------------------------------------
 
@@ -302,4 +329,5 @@ export type FalElevenlabsSpeechToTextScribeV2Params = z.infer<
 export type FalWanV2p7TextToImageParams = z.infer<
   typeof FalWanV2p7TextToImageRequestSchema
 >;
+export type FalWanV2p7EditParams = z.infer<typeof FalWanV2p7EditRequestSchema>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

@@ -48,6 +48,8 @@ import {
   FalElevenlabsSpeechToTextScribeV2Response,
   FalWanV2p7TextToImageParams,
   FalWanV2p7TextToImageResponse,
+  FalWanV2p7EditParams,
+  FalWanV2p7EditResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -64,6 +66,7 @@ import {
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalWanV2p7TextToImageRequestSchema,
+  FalWanV2p7EditRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -675,6 +678,28 @@ export function fal(opts: FalOptions): FalProvider {
     }
   );
 
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit
+  // Docs: https://docs.fal.ai
+  const wanV2p7Edit = Object.assign(
+    async function edit(
+      params: FalWanV2p7EditParams,
+      signal?: AbortSignal
+    ): Promise<FalWanV2p7EditResponse> {
+      return makeRequest<FalWanV2p7EditResponse>(
+        "POST",
+        "/fal-ai/wan/v2.7/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalWanV2p7EditRequestSchema,
+    }
+  );
+
   const run: FalRunNamespace = {
     bytedance: {
       seedance2p0: {
@@ -703,6 +728,7 @@ export function fal(opts: FalOptions): FalProvider {
     wan: {
       v2p7: {
         textToImage: wanV2p7TextToImage,
+        edit: wanV2p7Edit,
       },
     },
   };

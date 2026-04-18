@@ -19,6 +19,7 @@ export type {
   FalSeedreamV5LiteTextToImageParams,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalWanV2p7TextToImageParams,
+  FalWanV2p7EditParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -36,6 +37,7 @@ import type {
   FalSeedreamV5LiteTextToImageParams,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalWanV2p7TextToImageParams,
+  FalWanV2p7EditParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -476,6 +478,11 @@ export interface FalWanV2p7TextToImageResponse {
   seed: number;
 }
 
+export interface FalWanV2p7EditResponse {
+  images: FalFile[];
+  seed: number;
+}
+
 // ==================== Serverless Logs ====================
 
 // Label filter for log queries
@@ -797,8 +804,16 @@ type FalWanV2p7TextToImageFn = ((
   schema: z.ZodType<FalWanV2p7TextToImageParams>;
 };
 
+type FalWanV2p7EditFn = ((
+  params: FalWanV2p7EditParams,
+  signal?: AbortSignal
+) => Promise<FalWanV2p7EditResponse>) & {
+  schema: z.ZodType<FalWanV2p7EditParams>;
+};
+
 export interface FalRunWanV2p7Namespace {
   textToImage: FalWanV2p7TextToImageFn;
+  edit: FalWanV2p7EditFn;
 }
 
 export interface FalRunWanNamespace {

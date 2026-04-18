@@ -43,6 +43,7 @@ fal	v1.serverless.files.uploadLocal	POST	https://api.fal.ai/v1/serverless/files/
 fal	v1.serverless.files.uploadUrl	POST	https://api.fal.ai/v1/serverless/files/file/url/{param}	https://docs.fal.ai
 fal	v1.serverless.logs	POST	https://api.fal.ai/v1/serverless/logs/stream	https://docs.fal.ai
 fal	v1.workflows	GET	https://api.fal.ai/v1/workflows	https://docs.fal.ai
+fal	wan.v2p7.edit	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/edit	https://docs.fal.ai
 fal	wan.v2p7.textToImage	POST	https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image	https://docs.fal.ai
 fireworks	inference.v1.accounts	GET	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys	DELETE	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys:delete	https://docs.fireworks.ai/api-reference

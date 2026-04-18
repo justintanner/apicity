@@ -72,6 +72,8 @@ import {
   FalNanoBananaTextToImageResponse,
   FalNanoBananaEditParams,
   FalNanoBananaEditResponse,
+  FalXaiGrokImagineVideoImageToVideoParams,
+  FalXaiGrokImagineVideoImageToVideoResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -100,6 +102,7 @@ import {
   FalGptImage1p5EditRequestSchema,
   FalNanoBananaTextToImageRequestSchema,
   FalNanoBananaEditRequestSchema,
+  FalXaiGrokImagineVideoImageToVideoRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -910,6 +913,28 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video
+  // Docs: https://docs.fal.ai
+  const xaiGrokImagineVideoImageToVideo = Object.assign(
+    async function imageToVideo(
+      params: FalXaiGrokImagineVideoImageToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalXaiGrokImagineVideoImageToVideoResponse> {
+      return makeRequest<FalXaiGrokImagineVideoImageToVideoResponse>(
+        "POST",
+        "/xai/grok-imagine-video/image-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalXaiGrokImagineVideoImageToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-image
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImage = Object.assign(
@@ -1070,6 +1095,9 @@ export function fal(opts: FalOptions): FalProvider {
     },
     xai: {
       grokImagineImage: xaiGrokImagineImage,
+      grokImagineVideo: {
+        imageToVideo: xaiGrokImagineVideoImageToVideo,
+      },
     },
   };
 

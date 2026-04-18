@@ -31,6 +31,7 @@ export type {
   FalGptImage1p5EditParams,
   FalNanoBananaTextToImageParams,
   FalNanoBananaEditParams,
+  FalXaiGrokImagineVideoImageToVideoParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -60,6 +61,7 @@ import type {
   FalGptImage1p5EditParams,
   FalNanoBananaTextToImageParams,
   FalNanoBananaEditParams,
+  FalXaiGrokImagineVideoImageToVideoParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -660,6 +662,23 @@ export interface FalXaiGrokImagineImageEditResponse {
   revised_prompt: string;
 }
 
+// xAI Grok Imagine Video (image-to-video)
+export type FalXaiGrokImagineVideoAspectRatio =
+  | "auto"
+  | "16:9"
+  | "4:3"
+  | "3:2"
+  | "1:1"
+  | "2:3"
+  | "3:4"
+  | "9:16";
+
+export type FalXaiGrokImagineVideoResolution = "480p" | "720p";
+
+export interface FalXaiGrokImagineVideoImageToVideoResponse {
+  video: FalFile;
+}
+
 // ==================== Serverless Logs ====================
 
 // Label filter for log queries
@@ -1045,8 +1064,20 @@ type FalXaiGrokImagineImageFn = ((
   edit: FalXaiGrokImagineImageEditFn;
 };
 
+type FalXaiGrokImagineVideoImageToVideoFn = ((
+  params: FalXaiGrokImagineVideoImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineVideoImageToVideoResponse>) & {
+  schema: z.ZodType<FalXaiGrokImagineVideoImageToVideoParams>;
+};
+
+export interface FalRunXaiGrokImagineVideoNamespace {
+  imageToVideo: FalXaiGrokImagineVideoImageToVideoFn;
+}
+
 export interface FalRunXaiNamespace {
   grokImagineImage: FalXaiGrokImagineImageFn;
+  grokImagineVideo: FalRunXaiGrokImagineVideoNamespace;
 }
 
 type FalQwenImageEditFn = ((

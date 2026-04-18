@@ -411,8 +411,8 @@ export const SeedreamImageToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-image-to-image"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    image_urls: z.array(z.string()),
-    prompt: z.string().min(1),
+    image_urls: z.array(z.string()).min(1).max(14),
+    prompt: z.string().min(3).max(3000),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
       .optional(),

@@ -70,7 +70,7 @@ describe("kie bytedance/seedance-2 multimodal reference integration", () => {
           resolution: "480p",
           aspect_ratio: "16:9",
           duration: 4,
-          generate_audio: false,
+          generate_audio: true,
           web_search: false,
           nsfw_checker: false,
         },

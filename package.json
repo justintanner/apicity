@@ -40,6 +40,7 @@
     "lint:fix": "eslint . --fix",
     "lint:endpoints": "node scripts/check-endpoint-comments.mjs",
     "lint:signatures": "node scripts/check-endpoint-signatures.mjs",
+    "lint:signatures:fix": "node scripts/apply-sigok-comments.mjs",
     "endpoint-map": "node scripts/endpoint-map.mjs",
     "endpoint-comments:apply": "node scripts/apply-endpoint-comments.mjs",
     "format": "prettier --write .",

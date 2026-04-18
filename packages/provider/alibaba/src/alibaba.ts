@@ -59,7 +59,8 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
       if (native.code && native.message) {
         return `Alibaba API error ${status}: ${native.code}: ${native.message}`;
       }
-      if (native.message) return `Alibaba API error ${status}: ${native.message}`;
+      if (native.message)
+        return `Alibaba API error ${status}: ${native.message}`;
     }
     return `Alibaba API error: ${status}`;
   }
@@ -101,7 +102,11 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
         } catch {
           // ignore parse errors
         }
-        throw new AlibabaError(formatErrorMessage(res.status, resBody), res.status, resBody);
+        throw new AlibabaError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
       }
 
       return (await res.json()) as T;
@@ -144,7 +149,11 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
         } catch {
           // ignore parse errors
         }
-        throw new AlibabaError(formatErrorMessage(res.status, resBody), res.status, resBody);
+        throw new AlibabaError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
       }
 
       for await (const { data } of sseToIterable(res)) {
@@ -193,7 +202,11 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
         } catch {
           // ignore parse errors
         }
-        throw new AlibabaError(formatErrorMessage(res.status, resBody), res.status, resBody);
+        throw new AlibabaError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
       }
 
       return (await res.json()) as T;

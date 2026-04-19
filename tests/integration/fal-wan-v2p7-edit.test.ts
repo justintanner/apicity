@@ -94,6 +94,16 @@ describe("fal wan v2.7 edit integration", () => {
     expect(v.success).toBe(false);
   });
 
+  it("should reject negative_prompt longer than 500 characters", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v = provider.run.wan.v2p7.edit.schema.safeParse({
+      prompt: "a cat",
+      image_urls: ["https://example.com/a.jpg"],
+      negative_prompt: "x".repeat(501),
+    });
+    expect(v.success).toBe(false);
+  });
+
   it("should expose schema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     const schema = provider.run.wan.v2p7.edit.schema;

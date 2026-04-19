@@ -539,7 +539,7 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
 
 export const FalWanV2p7TextToImageRequestSchema = z.object({
   prompt: z.string(),
-  negative_prompt: z.string().optional(),
+  negative_prompt: z.string().max(500).optional(),
   image_size: z
     .union([
       z.enum([
@@ -565,7 +565,7 @@ export const FalWanV2p7TextToImageRequestSchema = z.object({
 export const FalWanV2p7EditRequestSchema = z.object({
   prompt: z.string(),
   image_urls: z.array(z.string()).min(1).max(4),
-  negative_prompt: z.string().optional(),
+  negative_prompt: z.string().max(500).optional(),
   image_size: z
     .union([
       z.enum([

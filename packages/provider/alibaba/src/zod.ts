@@ -277,7 +277,9 @@ export const AlibabaColorPaletteItemSchema = z.object({
 });
 
 export const AlibabaImageGenerationParametersSchema = z.object({
-  size: z.string().optional(),
+  size: z
+    .union([z.enum(["1K", "2K", "4K"]), z.string().regex(/^\d+\*\d+$/)])
+    .optional(),
   n: z.number().int().min(1).max(12).optional(),
   negative_prompt: z.string().max(500).optional(),
   prompt_extend: z.boolean().optional(),

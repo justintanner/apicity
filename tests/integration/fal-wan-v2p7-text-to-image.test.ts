@@ -70,6 +70,15 @@ describe("fal wan v2.7 text-to-image integration", () => {
     expect(v.success).toBe(false);
   });
 
+  it("should reject negative_prompt longer than 500 characters", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v = provider.run.wan.v2p7.textToImage.schema.safeParse({
+      prompt: "a cat",
+      negative_prompt: "x".repeat(501),
+    });
+    expect(v.success).toBe(false);
+  });
+
   it("should expose schema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     const schema = provider.run.wan.v2p7.textToImage.schema;

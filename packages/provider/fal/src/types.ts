@@ -38,6 +38,9 @@ export type {
   FalXaiGrokImagineVideoImageToVideoParams,
   FalVeo3p1TextToVideoParams,
   FalVeo3p1ImageToVideoParams,
+  FalStorageUploadInitiateParams,
+  FalStorageUploadInitiateMultipartParams,
+  FalStorageUploadCompleteMultipartParams,
   FalKlingVideoV3ProImageToVideoParams,
   FalKlingVideoV3ProTextToVideoParams,
   FalKlingVideoV3StandardImageToVideoParams,
@@ -80,6 +83,9 @@ import type {
   FalXaiGrokImagineVideoImageToVideoParams,
   FalVeo3p1TextToVideoParams,
   FalVeo3p1ImageToVideoParams,
+  FalStorageUploadInitiateParams,
+  FalStorageUploadInitiateMultipartParams,
+  FalStorageUploadCompleteMultipartParams,
   FalKlingVideoV3ProImageToVideoParams,
   FalKlingVideoV3ProTextToVideoParams,
   FalKlingVideoV3StandardImageToVideoParams,
@@ -1548,10 +1554,59 @@ interface FalDeleteNamespace {
   v1: FalDeleteV1Namespace;
 }
 
+// Storage upload (CDN)
+
+export interface FalStorageLifecycle {
+  expiration_duration_seconds: number;
+  allow_io_storage?: boolean;
+}
+
+export interface FalStorageUploadInitiateResponse {
+  file_url: string;
+  upload_url: string;
+}
+
+export interface FalStorageUploadPartResponse {
+  partNumber: number;
+  etag: string;
+}
+
+type FalStorageUploadInitiateFn = ((
+  params: FalStorageUploadInitiateParams,
+  signal?: AbortSignal
+) => Promise<FalStorageUploadInitiateResponse>) & {
+  schema: z.ZodType<FalStorageUploadInitiateParams>;
+};
+
+type FalStorageUploadInitiateMultipartFn = ((
+  params: FalStorageUploadInitiateMultipartParams,
+  signal?: AbortSignal
+) => Promise<FalStorageUploadInitiateResponse>) & {
+  schema: z.ZodType<FalStorageUploadInitiateMultipartParams>;
+};
+
+type FalStorageUploadCompleteMultipartFn = ((
+  params: FalStorageUploadCompleteMultipartParams,
+  signal?: AbortSignal
+) => Promise<Response>) & {
+  schema: z.ZodType<FalStorageUploadCompleteMultipartParams>;
+};
+
+export interface FalStorageUploadNamespace {
+  initiate: FalStorageUploadInitiateFn;
+  initiateMultipart: FalStorageUploadInitiateMultipartFn;
+  completeMultipart: FalStorageUploadCompleteMultipartFn;
+}
+
+export interface FalStorageNamespace {
+  upload: FalStorageUploadNamespace;
+}
+
 // Provider interface
 export interface FalProvider {
   v1: FalV1Namespace;
   run: FalRunNamespace;
+  storage: FalStorageNamespace;
   get: FalGetNamespace;
   post: FalPostNamespace;
   delete: FalDeleteNamespace;

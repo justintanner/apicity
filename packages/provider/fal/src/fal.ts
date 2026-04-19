@@ -86,6 +86,11 @@ import {
   FalVeo3p1TextToVideoResponse,
   FalVeo3p1ImageToVideoParams,
   FalVeo3p1ImageToVideoResponse,
+  FalStorageUploadInitiateParams,
+  FalStorageUploadInitiateMultipartParams,
+  FalStorageUploadCompleteMultipartParams,
+  FalStorageUploadInitiateResponse,
+  FalStorageNamespace,
   FalKlingVideoV3ProImageToVideoParams,
   FalKlingVideoV3ProImageToVideoResponse,
   FalKlingVideoV3ProTextToVideoParams,
@@ -133,6 +138,9 @@ import {
   FalXaiGrokImagineVideoImageToVideoRequestSchema,
   FalVeo3p1TextToVideoRequestSchema,
   FalVeo3p1ImageToVideoRequestSchema,
+  FalStorageUploadInitiateRequestSchema,
+  FalStorageUploadInitiateMultipartRequestSchema,
+  FalStorageUploadCompleteMultipartRequestSchema,
   FalKlingVideoV3ProImageToVideoRequestSchema,
   FalKlingVideoV3ProTextToVideoRequestSchema,
   FalKlingVideoV3StandardImageToVideoRequestSchema,
@@ -583,6 +591,7 @@ export function fal(opts: FalOptions): FalProvider {
 
   const queueBaseURL = opts.queueBaseURL ?? "https://queue.fal.run";
   const runBaseURL = opts.runBaseURL ?? "https://fal.run";
+  const restBaseURL = opts.restBaseURL ?? "https://rest.fal.ai";
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video
@@ -1346,6 +1355,107 @@ export function fal(opts: FalOptions): FalProvider {
       edit: qwenImageEdit,
     }
   );
+
+  async function storageInitiateCall(
+    path: string,
+    params:
+      | FalStorageUploadInitiateParams
+      | FalStorageUploadInitiateMultipartParams,
+    signal?: AbortSignal
+  ): Promise<FalStorageUploadInitiateResponse> {
+    const {
+      file_name,
+      content_type,
+      storage_type = "fal-cdn-v3",
+      lifecycle,
+    } = params;
+    const url = `${restBaseURL}${path}?storage_type=${encodeURIComponent(storage_type)}`;
+    const headers: Record<string, string> = {
+      Authorization: `Key ${opts.apiKey}`,
+      "Content-Type": "application/json",
+    };
+    if (lifecycle) {
+      headers["X-Fal-Object-Lifecycle"] = JSON.stringify(lifecycle);
+    }
+    const res = await doFetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ file_name, content_type }),
+      signal,
+    });
+    if (!res.ok) {
+      throw new FalError(
+        `Fal storage error: ${res.status}`,
+        res.status,
+        "server_error"
+      );
+    }
+    return (await res.json()) as FalStorageUploadInitiateResponse;
+  }
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://rest.fal.ai/storage/upload/initiate
+  // Docs: https://docs.fal.ai
+  const storageUploadInitiate = Object.assign(
+    async function initiate(
+      params: FalStorageUploadInitiateParams,
+      signal?: AbortSignal
+    ): Promise<FalStorageUploadInitiateResponse> {
+      return storageInitiateCall("/storage/upload/initiate", params, signal);
+    },
+    {
+      schema: FalStorageUploadInitiateRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://rest.fal.ai/storage/upload/initiate-multipart
+  // Docs: https://docs.fal.ai
+  const storageUploadInitiateMultipart = Object.assign(
+    async function initiateMultipart(
+      params: FalStorageUploadInitiateMultipartParams,
+      signal?: AbortSignal
+    ): Promise<FalStorageUploadInitiateResponse> {
+      return storageInitiateCall(
+        "/storage/upload/initiate-multipart",
+        params,
+        signal
+      );
+    },
+    {
+      schema: FalStorageUploadInitiateMultipartRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://rest.fal.ai/storage/upload/complete-multipart
+  // Docs: https://docs.fal.ai
+  const storageUploadCompleteMultipart = Object.assign(
+    async function completeMultipart(
+      params: FalStorageUploadCompleteMultipartParams,
+      signal?: AbortSignal
+    ): Promise<Response> {
+      const upload = new URL(params.upload_url);
+      const completeUrl = `${upload.origin}${upload.pathname}/complete${upload.search}`;
+      return doFetch(completeUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ parts: params.parts }),
+        signal,
+      });
+    },
+    {
+      schema: FalStorageUploadCompleteMultipartRequestSchema,
+    }
+  );
+
+  const storage: FalStorageNamespace = {
+    upload: {
+      initiate: storageUploadInitiate,
+      initiateMultipart: storageUploadInitiateMultipart,
+      completeMultipart: storageUploadCompleteMultipart,
+    },
+  };
 
   const run: FalRunNamespace = {
     bytedance: {
@@ -2188,6 +2298,8 @@ export function fal(opts: FalOptions): FalProvider {
     v1: aiV1,
     // fal.run/* — synchronous inference
     run,
+    // rest.fal.ai/* — CDN storage uploads
+    storage,
     // Verb-prefixed API surface
     get: { v1: getV1 },
     post: { v1: postV1, run, stream: postStream },

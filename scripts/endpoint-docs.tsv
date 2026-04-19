@@ -58,6 +58,9 @@ fal	v1.models.requests.payloads	GET	https://api.fal.ai/v1/models/requests/{param
 fal	v1.queue.submit	POST	https://api.fal.ai/v1/POST	https://docs.fal.ai
 fal	v1.serverless.files.uploadLocal	POST	https://api.fal.ai/v1/serverless/files/file/local/{param}	https://docs.fal.ai
 fal	v1.serverless.files.uploadUrl	POST	https://api.fal.ai/v1/serverless/files/file/url/{param}	https://docs.fal.ai
+fal	storage.upload.initiate	POST	https://rest.fal.ai/storage/upload/initiate	https://docs.fal.ai
+fal	storage.upload.initiateMultipart	POST	https://rest.fal.ai/storage/upload/initiate-multipart	https://docs.fal.ai
+fal	storage.upload.completeMultipart	POST	https://rest.fal.ai/storage/upload/complete-multipart	https://docs.fal.ai
 fal	v1.serverless.logs	POST	https://api.fal.ai/v1/serverless/logs/stream	https://docs.fal.ai
 fal	v1.workflows	GET	https://api.fal.ai/v1/workflows	https://docs.fal.ai
 fal	veo3p1.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video	https://docs.fal.ai

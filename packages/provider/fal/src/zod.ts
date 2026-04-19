@@ -746,6 +746,41 @@ export const FalKlingVideoV3ProImageToVideoRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Storage upload (CDN) — initiate single PUT and multipart
+// ---------------------------------------------------------------------------
+
+const FalStorageLifecycleSchema = z.object({
+  expiration_duration_seconds: z.number().int().positive(),
+  allow_io_storage: z.boolean().optional(),
+});
+
+export const FalStorageUploadInitiateRequestSchema = z.object({
+  file_name: z.string(),
+  content_type: z.string(),
+  storage_type: z.literal("fal-cdn-v3").optional(),
+  lifecycle: FalStorageLifecycleSchema.optional(),
+});
+
+export const FalStorageUploadInitiateMultipartRequestSchema = z.object({
+  file_name: z.string(),
+  content_type: z.string(),
+  storage_type: z.literal("fal-cdn-v3").optional(),
+  lifecycle: FalStorageLifecycleSchema.optional(),
+});
+
+export const FalStorageUploadCompleteMultipartRequestSchema = z.object({
+  upload_url: z.string(),
+  parts: z
+    .array(
+      z.object({
+        partNumber: z.number().int().positive(),
+        etag: z.string(),
+      })
+    )
+    .min(1),
+});
+
+// ---------------------------------------------------------------------------
 // Kling Video v3 Pro text-to-video
 // ---------------------------------------------------------------------------
 
@@ -890,6 +925,7 @@ export const FalOptionsSchema = z.object({
   baseURL: z.string().url().optional(),
   queueBaseURL: z.string().url().optional(),
   runBaseURL: z.string().url().optional(),
+  restBaseURL: z.string().url().optional(),
   timeout: z.number().int().positive().optional(),
   fetch: z
     .custom<
@@ -987,6 +1023,15 @@ export type FalVeo3p1TextToVideoParams = z.infer<
 >;
 export type FalVeo3p1ImageToVideoParams = z.infer<
   typeof FalVeo3p1ImageToVideoRequestSchema
+>;
+export type FalStorageUploadInitiateParams = z.infer<
+  typeof FalStorageUploadInitiateRequestSchema
+>;
+export type FalStorageUploadInitiateMultipartParams = z.infer<
+  typeof FalStorageUploadInitiateMultipartRequestSchema
+>;
+export type FalStorageUploadCompleteMultipartParams = z.infer<
+  typeof FalStorageUploadCompleteMultipartRequestSchema
 >;
 export type FalKlingVideoV3ProImageToVideoParams = z.infer<
   typeof FalKlingVideoV3ProImageToVideoRequestSchema

@@ -92,6 +92,10 @@ import {
   FalXaiGrokImagineVideoImageToVideoResponse,
   FalXaiGrokImagineVideoReferenceToVideoParams,
   FalXaiGrokImagineVideoReferenceToVideoResponse,
+  FalXaiGrokImagineVideoExtendVideoParams,
+  FalXaiGrokImagineVideoExtendVideoResponse,
+  FalXaiGrokImagineVideoEditVideoParams,
+  FalXaiGrokImagineVideoEditVideoResponse,
   FalVeo3p1TextToVideoParams,
   FalVeo3p1TextToVideoResponse,
   FalVeo3p1ImageToVideoParams,
@@ -151,6 +155,8 @@ import {
   FalNanoBananaEditRequestSchema,
   FalXaiGrokImagineVideoImageToVideoRequestSchema,
   FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+  FalXaiGrokImagineVideoExtendVideoRequestSchema,
+  FalXaiGrokImagineVideoEditVideoRequestSchema,
   FalVeo3p1TextToVideoRequestSchema,
   FalVeo3p1ImageToVideoRequestSchema,
   FalStorageUploadInitiateRequestSchema,
@@ -1369,6 +1375,50 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/xai/grok-imagine-video/extend-video
+  // Docs: https://docs.fal.ai
+  const xaiGrokImagineVideoExtendVideo = Object.assign(
+    async function extendVideo(
+      params: FalXaiGrokImagineVideoExtendVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalXaiGrokImagineVideoExtendVideoResponse> {
+      return makeRequest<FalXaiGrokImagineVideoExtendVideoResponse>(
+        "POST",
+        "/xai/grok-imagine-video/extend-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalXaiGrokImagineVideoExtendVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/xai/grok-imagine-video/edit-video
+  // Docs: https://docs.fal.ai
+  const xaiGrokImagineVideoEditVideo = Object.assign(
+    async function editVideo(
+      params: FalXaiGrokImagineVideoEditVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalXaiGrokImagineVideoEditVideoResponse> {
+      return makeRequest<FalXaiGrokImagineVideoEditVideoResponse>(
+        "POST",
+        "/xai/grok-imagine-video/edit-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalXaiGrokImagineVideoEditVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-image
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImage = Object.assign(
@@ -1663,6 +1713,8 @@ export function fal(opts: FalOptions): FalProvider {
       grokImagineVideo: {
         imageToVideo: xaiGrokImagineVideoImageToVideo,
         referenceToVideo: xaiGrokImagineVideoReferenceToVideo,
+        extendVideo: xaiGrokImagineVideoExtendVideo,
+        editVideo: xaiGrokImagineVideoEditVideo,
       },
     },
   };

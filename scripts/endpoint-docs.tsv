@@ -76,6 +76,8 @@ fal	xai.grokImagineImage	POST	https://api.fal.ai/v1/xai/grok-imagine-image	https
 fal	xai.grokImagineImage.edit	POST	https://api.fal.ai/v1/xai/grok-imagine-image/edit	https://docs.fal.ai
 fal	xai.grokImagineVideo.imageToVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video	https://docs.fal.ai
 fal	xai.grokImagineVideo.referenceToVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/reference-to-video	https://docs.fal.ai
+fal	xai.grokImagineVideo.extendVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/extend-video	https://docs.fal.ai
+fal	xai.grokImagineVideo.editVideo	POST	https://api.fal.ai/v1/xai/grok-imagine-video/edit-video	https://docs.fal.ai
 fireworks	inference.v1.accounts	GET	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys	DELETE	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys:delete	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.accounts.apiKeys.create	POST	https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys	https://docs.fireworks.ai/api-reference

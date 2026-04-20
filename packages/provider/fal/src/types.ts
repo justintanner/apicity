@@ -41,6 +41,8 @@ export type {
   FalNanoBananaEditParams,
   FalXaiGrokImagineVideoImageToVideoParams,
   FalXaiGrokImagineVideoReferenceToVideoParams,
+  FalXaiGrokImagineVideoExtendVideoParams,
+  FalXaiGrokImagineVideoEditVideoParams,
   FalVeo3p1TextToVideoParams,
   FalVeo3p1ImageToVideoParams,
   FalStorageUploadInitiateParams,
@@ -91,6 +93,8 @@ import type {
   FalNanoBananaEditParams,
   FalXaiGrokImagineVideoImageToVideoParams,
   FalXaiGrokImagineVideoReferenceToVideoParams,
+  FalXaiGrokImagineVideoExtendVideoParams,
+  FalXaiGrokImagineVideoEditVideoParams,
   FalVeo3p1TextToVideoParams,
   FalVeo3p1ImageToVideoParams,
   FalStorageUploadInitiateParams,
@@ -785,6 +789,16 @@ export interface FalXaiGrokImagineVideoReferenceToVideoResponse {
   video: FalFile;
 }
 
+export interface FalXaiGrokImagineVideoExtendVideoResponse {
+  video: FalFile;
+}
+
+export type FalXaiGrokImagineVideoEditResolution = "auto" | "480p" | "720p";
+
+export interface FalXaiGrokImagineVideoEditVideoResponse {
+  video: FalFile;
+}
+
 // Google Veo 3.1 (text-to-video and image-to-video)
 export type FalVeo3p1AspectRatio = "16:9" | "9:16";
 
@@ -1330,9 +1344,25 @@ type FalXaiGrokImagineVideoReferenceToVideoFn = ((
   schema: z.ZodType<FalXaiGrokImagineVideoReferenceToVideoParams>;
 };
 
+type FalXaiGrokImagineVideoExtendVideoFn = ((
+  params: FalXaiGrokImagineVideoExtendVideoParams,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineVideoExtendVideoResponse>) & {
+  schema: z.ZodType<FalXaiGrokImagineVideoExtendVideoParams>;
+};
+
+type FalXaiGrokImagineVideoEditVideoFn = ((
+  params: FalXaiGrokImagineVideoEditVideoParams,
+  signal?: AbortSignal
+) => Promise<FalXaiGrokImagineVideoEditVideoResponse>) & {
+  schema: z.ZodType<FalXaiGrokImagineVideoEditVideoParams>;
+};
+
 export interface FalRunXaiGrokImagineVideoNamespace {
   imageToVideo: FalXaiGrokImagineVideoImageToVideoFn;
   referenceToVideo: FalXaiGrokImagineVideoReferenceToVideoFn;
+  extendVideo: FalXaiGrokImagineVideoExtendVideoFn;
+  editVideo: FalXaiGrokImagineVideoEditVideoFn;
 }
 
 export interface FalRunXaiNamespace {

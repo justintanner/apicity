@@ -119,12 +119,29 @@ export const XaiChatRequestSchema = z.object({
 // Images
 // ---------------------------------------------------------------------------
 
+const XaiImageAspectRatioSchema = z.enum([
+  "1:1",
+  "16:9",
+  "9:16",
+  "4:3",
+  "3:4",
+  "3:2",
+  "2:3",
+  "2:1",
+  "1:2",
+  "19.5:9",
+  "9:19.5",
+  "20:9",
+  "9:20",
+  "auto",
+]);
+
 export const XaiImageGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.string().optional(),
   n: z.number().int().min(1).optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
-  aspect_ratio: z.string().optional(),
+  aspect_ratio: XaiImageAspectRatioSchema.optional(),
   resolution: z.enum(["1k", "2k"]).optional(),
 });
 
@@ -135,7 +152,7 @@ export const XaiImageEditRequestSchema = z.object({
   images: z.array(XaiImageReferenceSchema).optional(),
   n: z.number().int().min(1).optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
-  aspect_ratio: z.string().optional(),
+  aspect_ratio: XaiImageAspectRatioSchema.optional(),
 });
 
 // ---------------------------------------------------------------------------

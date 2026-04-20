@@ -67,6 +67,35 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
     expect(v.success).toBe(false);
   });
 
+  it.each([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto_2K",
+    "auto_3K",
+  ])("should accept image_size preset %s", (preset) => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v =
+      provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({
+        prompt: "a cat",
+        image_size: preset,
+      });
+    expect(v.success).toBe(true);
+  });
+
+  it("should reject image_size auto_4K (not supported upstream)", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v =
+      provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({
+        prompt: "a cat",
+        image_size: "auto_4K",
+      });
+    expect(v.success).toBe(false);
+  });
+
   it("should expose schema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedream.v5.lite.textToImage.schema;

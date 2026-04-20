@@ -497,18 +497,31 @@ export const FalNanoBananaProEditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seedream v5 Lite (shared image_size)
+// ---------------------------------------------------------------------------
+
+const FalSeedreamV5LiteImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto_2K",
+    "auto_3K",
+  ]),
+  z.object({ width: z.number(), height: z.number() }),
+]);
+
+// ---------------------------------------------------------------------------
 // Bytedance Seedream v5 Lite edit
 // ---------------------------------------------------------------------------
 
 export const FalSeedreamV5LiteEditRequestSchema = z.object({
   prompt: z.string(),
-  image_urls: z.array(z.string()),
-  image_size: z
-    .union([
-      z.enum(["auto_2K", "auto_4K"]),
-      z.object({ width: z.number(), height: z.number() }),
-    ])
-    .optional(),
+  image_urls: z.array(z.string()).min(1).max(10),
+  image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
   num_images: z.number().optional(),
   max_images: z.number().optional(),
   sync_mode: z.boolean().optional(),
@@ -521,12 +534,7 @@ export const FalSeedreamV5LiteEditRequestSchema = z.object({
 
 export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
   prompt: z.string(),
-  image_size: z
-    .union([
-      z.enum(["auto_2K", "auto_4K"]),
-      z.object({ width: z.number(), height: z.number() }),
-    ])
-    .optional(),
+  image_size: FalSeedreamV5LiteImageSizeSchema.optional(),
   num_images: z.number().optional(),
   max_images: z.number().optional(),
   sync_mode: z.boolean().optional(),

@@ -24,7 +24,7 @@ const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
 ## API Reference
 
-57 endpoints across 17 groups. Each method mirrors an upstream URL path.
+59 endpoints across 17 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -750,6 +750,19 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>fal.wan.v2p7.editVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit-video</code>
+
+```typescript
+const res = await fal.wan.v2p7.editVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>fal.wan.v2p7.imageToVideo</code></b></summary>
 
 <code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video</code>
@@ -788,6 +801,19 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.wan.v2p7.pro.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.wan.v2p7.referenceToVideo</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/wan/v2.7/reference-to-video</code>
+
+```typescript
+const res = await fal.wan.v2p7.referenceToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

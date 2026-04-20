@@ -88,6 +88,56 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
     expect(v.success).toBe(false);
   });
 
+  it("should reject empty image_urls", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
+      prompt: "a cat",
+      image_urls: [],
+    });
+    expect(v.success).toBe(false);
+  });
+
+  it("should reject more than 10 image_urls", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
+      prompt: "a cat",
+      image_urls: Array.from(
+        { length: 11 },
+        (_, i) => `https://example.com/${i}.png`
+      ),
+    });
+    expect(v.success).toBe(false);
+  });
+
+  it.each([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto_2K",
+    "auto_3K",
+  ])("should accept image_size preset %s", (preset) => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
+      prompt: "a cat",
+      image_urls: ["https://example.com/cat.png"],
+      image_size: preset,
+    });
+    expect(v.success).toBe(true);
+  });
+
+  it("should reject image_size auto_4K (not supported upstream)", () => {
+    const provider = fal({ apiKey: "fal-test-key" });
+    const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
+      prompt: "a cat",
+      image_urls: ["https://example.com/cat.png"],
+      image_size: "auto_4K",
+    });
+    expect(v.success).toBe(false);
+  });
+
   it("should expose schema", () => {
     const provider = fal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedream.v5.lite.edit.schema;

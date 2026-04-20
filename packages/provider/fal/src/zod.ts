@@ -1036,10 +1036,26 @@ export const FalXaiGrokImagineVideoReferenceToVideoRequestSchema = z.object({
 // xAI Grok Imagine Video extend-video
 // ---------------------------------------------------------------------------
 
+// Upstream server-side invariant: source video length + `duration` must be
+// <= 15 seconds total, else it 422s with `video_duration_too_long`. Source
+// length isn't a request parameter, so this can't be validated client-side;
+// it's captured in `.describe()` below.
 export const FalXaiGrokImagineVideoExtendVideoRequestSchema = z.object({
   prompt: z.string(),
-  video_url: z.string(),
-  duration: z.number().int().min(2).max(10).optional(),
+  video_url: z
+    .string()
+    .describe(
+      "Source video URL. MP4 (H.264/H.265/AV1), 2-15s. Source length + `duration` must not exceed 15s total."
+    ),
+  duration: z
+    .number()
+    .int()
+    .min(2)
+    .max(10)
+    .optional()
+    .describe(
+      "Extension length in seconds (2-10, default 6). Source video length + this value must not exceed 15s total (server-enforced)."
+    ),
 });
 
 // ---------------------------------------------------------------------------

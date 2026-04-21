@@ -2,7 +2,12 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
-import { parseHarPaths, getGitStatus, recordingHasMedia } from "./har-data.js";
+import {
+  parseHarPaths,
+  getGitStatus,
+  getHarCommits,
+  recordingHasMedia,
+} from "./har-data.js";
 
 const args = process.argv.slice(2);
 
@@ -33,11 +38,21 @@ if (paths.length === 0) {
   process.exit(1);
 }
 
-const recordings = parseHarPaths(paths.map((p) => path.resolve(p)))
-  .filter((rec) => !mediaOnly || recordingHasMedia(rec))
-  .sort(
-    (a, b) => fs.statSync(b.source).mtimeMs - fs.statSync(a.source).mtimeMs
-  );
+const recordings = parseHarPaths(paths.map((p) => path.resolve(p))).filter(
+  (rec) => !mediaOnly || recordingHasMedia(rec)
+);
+
+const commitMap = getHarCommits(recordings.map((r) => r.source));
+for (const rec of recordings) {
+  rec.commit = commitMap.get(rec.source) ?? null;
+}
+
+recordings.sort((a, b) => {
+  const ad = a.commit?.date ?? Number.POSITIVE_INFINITY;
+  const bd = b.commit?.date ?? Number.POSITIVE_INFINITY;
+  if (ad !== bd) return bd - ad;
+  return a.source.localeCompare(b.source);
+});
 
 if (gitApprove) {
   for (const rec of recordings) {

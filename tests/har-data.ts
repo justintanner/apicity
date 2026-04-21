@@ -17,10 +17,18 @@ export interface HarEntry {
   };
 }
 
+export interface HarCommitInfo {
+  sha: string;
+  shortSha: string;
+  date: number;
+  subject: string;
+}
+
 export interface HarRecording {
   name: string;
   source: string;
   gitStatus?: "new" | "modified" | "clean";
+  commit?: HarCommitInfo | null;
   entries: HarEntry[];
 }
 
@@ -35,6 +43,61 @@ export function getGitStatus(filePath: string): "new" | "modified" | "clean" {
   } catch {
     return "new";
   }
+}
+
+export function getHarCommits(
+  filePaths: string[]
+): Map<string, HarCommitInfo | null> {
+  const result = new Map<string, HarCommitInfo | null>();
+  for (const p of filePaths) result.set(p, null);
+
+  let repoRoot: string;
+  try {
+    repoRoot = execSync("git rev-parse --show-toplevel", {
+      encoding: "utf-8",
+    }).trim();
+  } catch {
+    return result;
+  }
+
+  const relToAbs = new Map<string, string>();
+  for (const abs of filePaths) {
+    relToAbs.set(path.relative(repoRoot, abs), abs);
+  }
+
+  let log: string;
+  try {
+    log = execSync(
+      "git log --name-only --format=COMMIT%x09%H%x09%at%x09%s -- tests/recordings/",
+      { cwd: repoRoot, encoding: "utf-8", maxBuffer: 128 * 1024 * 1024 }
+    );
+  } catch {
+    return result;
+  }
+
+  let current: HarCommitInfo | null = null;
+  for (const line of log.split("\n")) {
+    if (!line) continue;
+    if (line.startsWith("COMMIT\t")) {
+      const parts = line.split("\t");
+      const sha = parts[1];
+      const at = parts[2];
+      const subject = parts.slice(3).join("\t");
+      current = {
+        sha,
+        shortSha: sha.slice(0, 7),
+        date: parseInt(at, 10),
+        subject,
+      };
+    } else if (current) {
+      const abs = relToAbs.get(line);
+      if (abs && result.get(abs) === null) {
+        result.set(abs, current);
+      }
+    }
+  }
+
+  return result;
 }
 
 export function extractProvider(filePath: string): string {

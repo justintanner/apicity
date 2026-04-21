@@ -150,6 +150,30 @@
         font-size: 14px;
         color: #cdd6f4;
       }
+      .title-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        min-width: 0;
+        max-width: 60%;
+      }
+      .recording-commit {
+        font-size: 11px;
+        color: #6c7086;
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .recording-commit .sha {
+        color: #fab387;
+        font-weight: 600;
+      }
+      .recording-commit.uncommitted {
+        color: #f38ba8;
+        font-style: italic;
+      }
       .recording-section-body {
         padding: 16px;
       }
@@ -1153,10 +1177,23 @@
         html += '<div class="recording-section-header">';
         if (rec.gitStatus)
           html += '<span class="dot ' + rec.gitStatus + '"></span>';
+        html += '<div class="title-stack">';
         html +=
           '<span class="recording-title">' +
           escapeHtml(dn.provider + ": " + dn.test) +
           "</span>";
+        if (rec.commit) {
+          html +=
+            '<span class="recording-commit"><span class="sha">' +
+            escapeHtml(rec.commit.shortSha) +
+            "</span> " +
+            escapeHtml(rec.commit.subject) +
+            "</span>";
+        } else {
+          html +=
+            '<span class="recording-commit uncommitted">uncommitted</span>';
+        }
+        html += "</div>";
         if (info.model)
           html +=
             '<span class="info-model">' + escapeHtml(info.model) + "</span>";

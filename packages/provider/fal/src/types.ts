@@ -54,6 +54,7 @@ export type {
   FalKlingVideoV3StandardTextToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
+  FalHunyuanImageV3InstructEditParams,
 } from "./zod";
 
 // Re-import for use in this file's interface definitions
@@ -106,6 +107,7 @@ import type {
   FalKlingVideoV3StandardTextToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
+  FalHunyuanImageV3InstructEditParams,
 } from "./zod";
 
 // Error types returned by fal API
@@ -701,6 +703,22 @@ export interface FalWanV2p7TextToImageResponse {
 }
 
 export interface FalWanV2p7EditResponse {
+  images: FalFile[];
+  seed: number;
+}
+
+// Hunyuan Image v3 Instruct Edit
+export type FalHunyuanImageV3ImageSize =
+  | "square_hd"
+  | "square"
+  | "portrait_4_3"
+  | "portrait_16_9"
+  | "landscape_4_3"
+  | "landscape_16_9"
+  | "auto"
+  | { width: number; height: number };
+
+export interface FalHunyuanImageV3InstructEditResponse {
   images: FalFile[];
   seed: number;
 }
@@ -1504,8 +1522,24 @@ export interface FalRunSora2Namespace {
   imageToVideo: FalSora2ImageToVideoFn;
 }
 
+type FalHunyuanImageV3InstructEditFn = ((
+  params: FalHunyuanImageV3InstructEditParams,
+  signal?: AbortSignal
+) => Promise<FalHunyuanImageV3InstructEditResponse>) & {
+  schema: z.ZodType<FalHunyuanImageV3InstructEditParams>;
+};
+
+export interface FalRunHunyuanV3Namespace {
+  instructEdit: FalHunyuanImageV3InstructEditFn;
+}
+
+export interface FalRunHunyuanNamespace {
+  v3: FalRunHunyuanV3Namespace;
+}
+
 export interface FalRunNamespace {
   bytedance: FalRunBytedanceNamespace;
+  hunyuan: FalRunHunyuanNamespace;
   klingVideo: FalRunKlingVideoNamespace;
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;

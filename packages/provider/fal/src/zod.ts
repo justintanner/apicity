@@ -655,6 +655,38 @@ export const FalWanV2p7EditRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Hunyuan Image v3 Instruct Edit (image-to-image)
+// ---------------------------------------------------------------------------
+
+const FalHunyuanImageV3ImageSizeSchema = z.union([
+  z.enum([
+    "square_hd",
+    "square",
+    "portrait_4_3",
+    "portrait_16_9",
+    "landscape_4_3",
+    "landscape_16_9",
+    "auto",
+  ]),
+  z.object({
+    width: z.number().int().positive(),
+    height: z.number().int().positive(),
+  }),
+]);
+
+export const FalHunyuanImageV3InstructEditRequestSchema = z.object({
+  prompt: z.string(),
+  image_urls: z.array(z.string().url()).min(1).max(3),
+  image_size: FalHunyuanImageV3ImageSizeSchema.optional(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  guidance_scale: z.number().min(1).max(20).optional(),
+  seed: z.number().int().optional(),
+  enable_safety_checker: z.boolean().optional(),
+  sync_mode: z.boolean().optional(),
+  output_format: z.enum(["jpeg", "png"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Wan v2.7 text-to-video
 // ---------------------------------------------------------------------------
 
@@ -1235,5 +1267,8 @@ export type FalSora2TextToVideoParams = z.infer<
 >;
 export type FalSora2ImageToVideoParams = z.infer<
   typeof FalSora2ImageToVideoRequestSchema
+>;
+export type FalHunyuanImageV3InstructEditParams = z.infer<
+  typeof FalHunyuanImageV3InstructEditRequestSchema
 >;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

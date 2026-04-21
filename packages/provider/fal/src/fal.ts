@@ -117,6 +117,8 @@ import {
   FalSora2TextToVideoResponse,
   FalSora2ImageToVideoParams,
   FalSora2ImageToVideoResponse,
+  FalHunyuanImageV3InstructEditParams,
+  FalHunyuanImageV3InstructEditResponse,
   FalRunNamespace,
 } from "./types";
 import {
@@ -168,6 +170,7 @@ import {
   FalKlingVideoV3StandardTextToVideoRequestSchema,
   FalSora2TextToVideoRequestSchema,
   FalSora2ImageToVideoRequestSchema,
+  FalHunyuanImageV3InstructEditRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -1199,6 +1202,28 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/hunyuan-image/v3/instruct/edit
+  // Docs: https://docs.fal.ai
+  const hunyuanImageV3InstructEdit = Object.assign(
+    async function v3InstructEdit(
+      params: FalHunyuanImageV3InstructEditParams,
+      signal?: AbortSignal
+    ): Promise<FalHunyuanImageV3InstructEditResponse> {
+      return makeRequest<FalHunyuanImageV3InstructEditResponse>(
+        "POST",
+        "/fal-ai/hunyuan-image/v3/instruct/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalHunyuanImageV3InstructEditRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video
   // Docs: https://docs.fal.ai
   const klingVideoV3ProImageToVideo = Object.assign(
@@ -1682,6 +1707,11 @@ export function fal(opts: FalOptions): FalProvider {
     sora2: {
       textToVideo: sora2TextToVideo,
       imageToVideo: sora2ImageToVideo,
+    },
+    hunyuan: {
+      v3: {
+        instructEdit: hunyuanImageV3InstructEdit,
+      },
     },
     veo3p1: {
       textToVideo: veo3p1TextToVideo,

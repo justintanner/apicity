@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import fs from "fs";
+import path from "path";
 import {
   setupPollyIgnoringBody,
   teardownPolly,
@@ -18,20 +20,23 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should edit an image with a prompt", async () => {
-    // Skip if no real API key (requires HAR recording)
-    if (!process.env.FAL_API_KEY || process.env.FAL_API_KEY === "fal-test-key") {
-      return;
-    }
     const provider = fal({
-      apiKey: process.env.FAL_API_KEY,
+      apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
 
+    const fixturePath = path.resolve(
+      import.meta.dirname,
+      "..",
+      "fixtures",
+      "cat1.jpg"
+    );
+    const b64 = fs.readFileSync(fixturePath).toString("base64");
+    const imageDataUrl = `data:image/jpeg;base64,${b64}`;
+
     const result = await provider.run.hunyuan.v3.instructEdit({
-      prompt: "Turn this artwork into a realistic image",
-      image_urls: [
-        "https://storage.googleapis.com/falserverless/model_tests/wan/dragon-warrior.jpg",
-      ],
+      prompt: "Turn this cat into a watercolor painting",
+      image_urls: [imageDataUrl],
       num_images: 1,
       enable_safety_checker: true,
     });

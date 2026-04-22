@@ -551,6 +551,27 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "gpt-image-2-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Image generation prompt (max 20000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["auto", "1:1", "16:9", "9:16", "3:2"],
+        description: "Output aspect ratio (default auto)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Enable content filtering (default false; false returns raw model output)",
+      },
+    },
+  },
+
   "seedream/5-lite-image-to-image": {
     type: "image",
     fields: {

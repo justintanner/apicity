@@ -15,6 +15,7 @@ export const KieMediaModelSchema = z.enum([
   "nano-banana-2",
   "gpt-image/1.5-image-to-image",
   "gpt-image-2-image-to-image",
+  "gpt-image-2-text-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "elevenlabs/text-to-dialogue-v3",
@@ -227,8 +228,8 @@ export const Qwen2ImageEditRequestSchema = z.object({
     image_url: z.array(z.string().min(1)).min(1).max(3),
     image_size: z
       .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"])
-      .optional(),
-    output_format: z.enum(["png", "jpeg"]).optional(),
+      .default("16:9"),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
     seed: z.number().optional(),
     nsfw_checker: z.boolean().default(false),
   }),
@@ -424,6 +425,24 @@ export const GptImage2ImageToImageRequestSchema = z.object({
     prompt: z.string().min(1).max(20000),
     input_urls: z.array(z.string()).min(1).max(16),
     aspect_ratio: GptImage2ImageToImageAspectRatioSchema.optional(),
+    nsfw_checker: z.boolean().optional(),
+  }),
+});
+
+export const GptImage2TextToImageAspectRatioSchema = z.enum([
+  "auto",
+  "1:1",
+  "16:9",
+  "9:16",
+  "3:2",
+]);
+
+export const GptImage2TextToImageRequestSchema = z.object({
+  model: z.literal("gpt-image-2-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(20000),
+    aspect_ratio: GptImage2TextToImageAspectRatioSchema.optional(),
     nsfw_checker: z.boolean().optional(),
   }),
 });
@@ -880,6 +899,7 @@ export const MediaGenerationRequestSchema = z.union([
   NanoBanana2RequestSchema,
   GptImageToImageRequestSchema,
   GptImage2ImageToImageRequestSchema,
+  GptImage2TextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   ElevenLabsDialogueRequestSchema,
@@ -973,6 +993,12 @@ export type GptImage2ImageToImageAspectRatio = z.infer<
 >;
 export type GptImage2ImageToImageRequest = z.infer<
   typeof GptImage2ImageToImageRequestSchema
+>;
+export type GptImage2TextToImageAspectRatio = z.infer<
+  typeof GptImage2TextToImageAspectRatioSchema
+>;
+export type GptImage2TextToImageRequest = z.infer<
+  typeof GptImage2TextToImageRequestSchema
 >;
 export type SeedreamImageToImageRequest = z.infer<
   typeof SeedreamImageToImageRequestSchema

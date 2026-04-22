@@ -524,6 +524,33 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "gpt-image-2-image-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Modification prompt (max 20000 chars)",
+      },
+      input_urls: {
+        type: "array",
+        required: true,
+        description: "Input image URLs (max 16)",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["auto", "1:1", "16:9", "9:16", "3:2", "2:3"],
+        description: "Output aspect ratio (default auto)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description:
+          "Enable content filtering (default false; false returns raw model output)",
+      },
+    },
+  },
+
   "seedream/5-lite-image-to-image": {
     type: "image",
     fields: {

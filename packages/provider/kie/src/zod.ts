@@ -655,17 +655,39 @@ const Wan27ImageInputShape = {
   nsfw_checker: z.boolean().default(false),
 } as const;
 
-export const Wan27ImageRequestSchema = z.object({
+const wan27ImageAspectRatioRequiresResolution = (v: {
+  input: { aspect_ratio?: unknown; resolution?: unknown };
+}): boolean =>
+  v.input.aspect_ratio === undefined || v.input.resolution !== undefined;
+
+const wan27ImageAspectRatioRefinement = {
+  message: "aspect_ratio requires resolution",
+  path: ["input", "resolution"] as Array<string | number>,
+};
+
+export const Wan27ImageInputSchema = z.object(Wan27ImageInputShape);
+
+const Wan27ImageRequestObjectSchema = z.object({
   model: z.literal("wan/2-7-image"),
   callBackUrl: z.string().optional(),
-  input: z.object(Wan27ImageInputShape),
+  input: Wan27ImageInputSchema,
 });
 
-export const Wan27ImageProRequestSchema = z.object({
+const Wan27ImageProRequestObjectSchema = z.object({
   model: z.literal("wan/2-7-image-pro"),
   callBackUrl: z.string().optional(),
-  input: z.object(Wan27ImageInputShape),
+  input: Wan27ImageInputSchema,
 });
+
+export const Wan27ImageRequestSchema = Wan27ImageRequestObjectSchema.refine(
+  wan27ImageAspectRatioRequiresResolution,
+  wan27ImageAspectRatioRefinement,
+);
+
+export const Wan27ImageProRequestSchema = Wan27ImageProRequestObjectSchema.refine(
+  wan27ImageAspectRatioRequiresResolution,
+  wan27ImageAspectRatioRefinement,
+);
 
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)

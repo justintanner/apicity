@@ -11,8 +11,10 @@ import path from "node:path";
 import {
   type ChangedRecording,
   type HarEntry,
+  getRequestBodyText,
   getBaseBranch,
   getChangedRecordings,
+  parseRequestBody,
 } from "./har-data.js";
 
 const MAX_PROMPT_LEN = 300;
@@ -58,13 +60,7 @@ function truncate(text: string, max: number): string {
 }
 
 function parseBody(entry: HarEntry): Record<string, unknown> | null {
-  const raw = entry.request.postData?.text;
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
+  return parseRequestBody(entry);
 }
 
 function parseResponseBody(entry: HarEntry): Record<string, unknown> | null {
@@ -421,17 +417,18 @@ function renderEntryRequest(entry: HarEntry): string[] {
 
   lines.push("```http", ...httpLines, "```");
 
-  if (isMultipartRequest(entry)) {
-    lines.push("```", "(multipart/form-data)", "```");
-  } else if (entry.request.postData?.text) {
+  const rawRequestBody = getRequestBodyText(entry);
+  if (rawRequestBody) {
     let bodyText: string;
     try {
-      const parsed = JSON.parse(entry.request.postData.text);
+      const parsed = JSON.parse(rawRequestBody);
       bodyText = JSON.stringify(parsed, null, 2);
     } catch {
-      bodyText = entry.request.postData.text;
+      bodyText = rawRequestBody;
     }
     lines.push("```json", truncate(bodyText, MAX_JSON_LEN), "```");
+  } else if (isMultipartRequest(entry)) {
+    lines.push("```", "(multipart/form-data)", "```");
   }
 
   return lines;

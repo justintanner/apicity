@@ -861,6 +861,66 @@
         }
       }
 
+      function appendRequestField(body, name, value) {
+        if (body[name] === undefined) {
+          body[name] = value;
+        } else if (Array.isArray(body[name])) {
+          body[name].push(value);
+        } else {
+          body[name] = [body[name], value];
+        }
+      }
+
+      function requestBodyFromParams(params) {
+        if (!params || !params.length) return null;
+        var body = { _multipart: true };
+        var hasFields = false;
+
+        for (var i = 0; i < params.length; i++) {
+          var param = params[i];
+          if (!param || !param.name) continue;
+
+          if (typeof param.value === "string") {
+            appendRequestField(body, param.name, param.value);
+            hasFields = true;
+            continue;
+          }
+
+          if (param.fileName || param.contentType) {
+            appendRequestField(body, param.name, {
+              _file: true,
+              filename: param.fileName || null,
+              contentType: param.contentType || null,
+            });
+            hasFields = true;
+          }
+        }
+
+        return hasFields ? body : null;
+      }
+
+      function getRequestBodyObject(entry) {
+        var postData = entry.request && entry.request.postData;
+        if (!postData) return null;
+        if (postData.text) {
+          try {
+            return JSON.parse(postData.text);
+          } catch (e) {
+            return null;
+          }
+        }
+        return requestBodyFromParams(postData.params);
+      }
+
+      function getRequestBodyText(entry) {
+        var postData = entry.request && entry.request.postData;
+        if (!postData) return null;
+        if (postData.text) return tryParseJson(postData.text);
+
+        var body = requestBodyFromParams(postData.params);
+        return body ? JSON.stringify(body, null, 2) : null;
+      }
+
       function buildTransactionText(entry) {
         var req = entry.request;
         var res = entry.response;
@@ -879,9 +939,10 @@
               : h.value;
           lines.push(titleCaseHeader(h.name) + ": " + val);
         }
-        if (req.postData && req.postData.text) {
+        var requestBodyText = getRequestBodyText(entry);
+        if (requestBodyText) {
           lines.push("");
-          lines.push(tryParseJson(req.postData.text));
+          lines.push(requestBodyText);
         }
         lines.push("");
         lines.push("RESPONSE " + res.status + " " + res.statusText);
@@ -915,7 +976,8 @@
           info.endpoint = entry.request.method + " " + entry.request.url;
         }
 
-        if (!entry.request.postData || !entry.request.postData.text) {
+        var body = getRequestBodyObject(entry);
+        if (!body) {
           try {
             var qurl = new URL(entry.request.url);
             qurl.searchParams.forEach(function (v, k) {
@@ -926,7 +988,6 @@
         }
 
         try {
-          var body = JSON.parse(entry.request.postData.text);
           info.model = body.model || null;
           if (body.messages && Array.isArray(body.messages)) {
             for (var i = 0; i < body.messages.length; i++) {
@@ -1062,11 +1123,11 @@
           ")</summary>";
         html += renderHeaders(req.headers);
         html += "</details>";
-        if (req.postData && req.postData.text) {
-          var bodyText = tryParseJson(req.postData.text);
+        var requestBodyText = getRequestBodyText(first);
+        if (requestBodyText) {
           html += wrapBody(
-            bodyText,
-            inlineMediaPreviews(syntaxHighlight(bodyText))
+            requestBodyText,
+            inlineMediaPreviews(syntaxHighlight(requestBodyText))
           );
         }
         html += "</div>";

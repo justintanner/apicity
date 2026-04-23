@@ -2,12 +2,25 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 
+export interface HarPostDataParam {
+  name: string;
+  value?: string;
+  fileName?: string;
+  contentType?: string;
+}
+
+export interface HarPostData {
+  text?: string;
+  mimeType?: string;
+  params?: HarPostDataParam[];
+}
+
 export interface HarEntry {
   request: {
     method: string;
     url: string;
     headers: Array<{ name: string; value: string }>;
-    postData?: { text: string };
+    postData?: HarPostData;
   };
   response: {
     status: number;
@@ -149,6 +162,75 @@ export function parseHarDir(dirPath: string): HarRecording[] {
   return results;
 }
 
+function appendRequestField(
+  body: Record<string, unknown>,
+  name: string,
+  value: unknown
+): void {
+  const current = body[name];
+  if (current === undefined) {
+    body[name] = value;
+    return;
+  }
+  if (Array.isArray(current)) {
+    current.push(value);
+    return;
+  }
+  body[name] = [current, value];
+}
+
+function summarizePostDataParams(
+  params: HarPostDataParam[] | undefined
+): Record<string, unknown> | null {
+  if (!params?.length) return null;
+
+  const body: Record<string, unknown> = { _multipart: true };
+  let hasFields = false;
+  for (const param of params) {
+    if (!param.name) continue;
+
+    if (typeof param.value === "string") {
+      appendRequestField(body, param.name, param.value);
+      hasFields = true;
+      continue;
+    }
+
+    if (param.fileName || param.contentType) {
+      appendRequestField(body, param.name, {
+        _file: true,
+        filename: param.fileName,
+        contentType: param.contentType ?? null,
+      });
+      hasFields = true;
+    }
+  }
+
+  return hasFields ? body : null;
+}
+
+export function parseRequestBody(
+  entry: HarEntry
+): Record<string, unknown> | null {
+  const raw = entry.request.postData?.text;
+  if (raw) {
+    try {
+      return JSON.parse(raw) as Record<string, unknown>;
+    } catch {
+      return null;
+    }
+  }
+
+  return summarizePostDataParams(entry.request.postData?.params);
+}
+
+export function getRequestBodyText(entry: HarEntry): string | null {
+  const raw = entry.request.postData?.text;
+  if (raw) return raw;
+
+  const body = summarizePostDataParams(entry.request.postData?.params);
+  return body ? JSON.stringify(body) : null;
+}
+
 const BASE64_MEDIA_MARKERS = [
   "data:image/",
   "data:video/",
@@ -178,7 +260,7 @@ export function entryHasMedia(entry: HarEntry): boolean {
   if (BASE64_MEDIA_MARKERS.some((m) => respBody.includes(m))) return true;
   if (MEDIA_URL_EXT.test(respBody)) return true;
 
-  const reqBody = entry.request.postData?.text ?? "";
+  const reqBody = getRequestBodyText(entry) ?? "";
   if (BASE64_MEDIA_MARKERS.some((m) => reqBody.includes(m))) return true;
   if (MEDIA_URL_EXT.test(reqBody)) return true;
 

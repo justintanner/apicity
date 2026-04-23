@@ -12,6 +12,66 @@ export interface PollyContext {
   mode: string;
 }
 
+interface MultipartFileSummary {
+  _file: true;
+  filename?: string;
+  contentType: string | null;
+  size: number;
+}
+
+type MultipartSummaryValue = string | MultipartFileSummary;
+
+function appendMultipartField(
+  summary: Record<string, unknown>,
+  name: string,
+  value: MultipartSummaryValue
+): void {
+  const current = summary[name];
+  if (current === undefined) {
+    summary[name] = value;
+    return;
+  }
+  if (Array.isArray(current)) {
+    current.push(value);
+    return;
+  }
+  summary[name] = [current, value];
+}
+
+function summarizeMultipartValue(
+  value: FormDataEntryValue
+): MultipartSummaryValue {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  const maybeNamed = value as Blob & { name?: string };
+  return {
+    _file: true,
+    filename: typeof maybeNamed.name === "string" ? maybeNamed.name : undefined,
+    contentType: value.type || null,
+    size: value.size,
+  };
+}
+
+function findHeaderValue(
+  headers: Array<{ name?: string; value?: string }> | undefined,
+  name: string
+): string | undefined {
+  const lower = name.toLowerCase();
+  return headers?.find((header) => header.name?.toLowerCase() === lower)?.value;
+}
+
+export function summarizeMultipartFormData(
+  form: FormData
+): Record<string, unknown> {
+  const summary: Record<string, unknown> = { _multipart: true };
+  for (const [name, value] of form.entries()) {
+    appendMultipartField(summary, name, summarizeMultipartValue(value));
+  }
+  return summary;
+}
+
 export function setupPolly(recordingName: string): PollyContext {
   return setupPollyWithOptions(recordingName, {});
 }
@@ -77,8 +137,9 @@ function setupPollyWithOptions(
     matchRequestsBy: options.matchRequestsBy ?? defaultMatchRequestsBy,
   });
 
-  // Redact Authorization headers before persisting to disk
-  polly.server.any().on("beforePersist", (_req, recording) => {
+  // Redact sensitive headers before persisting to disk and keep a scrubbed
+  // multipart summary so prompts remain visible in the harness viewer.
+  polly.server.any().on("beforePersist", (req, recording) => {
     const entries = recording.request?.headers ?? [];
     for (const header of entries) {
       if (header.name?.toLowerCase() === "authorization") {
@@ -87,6 +148,21 @@ function setupPollyWithOptions(
       if (header.name?.toLowerCase() === "x-api-key") {
         header.value = "***";
       }
+    }
+
+    if (
+      typeof FormData !== "undefined" &&
+      req.body instanceof FormData &&
+      recording.request
+    ) {
+      const contentType =
+        findHeaderValue(recording.request.headers, "content-type") ??
+        "multipart/form-data";
+      recording.request.postData ??= { mimeType: contentType, params: [] };
+      recording.request.postData.mimeType = contentType;
+      recording.request.postData.text = JSON.stringify(
+        summarizeMultipartFormData(req.body)
+      );
     }
   });
 

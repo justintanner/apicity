@@ -1271,4 +1271,57 @@ export type FalSora2ImageToVideoParams = z.infer<
 export type FalHunyuanImageV3InstructEditParams = z.infer<
   typeof FalHunyuanImageV3InstructEditRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Kling Video o3 4k reference-to-video
+// ---------------------------------------------------------------------------
+
+export const FalKlingVideoO3p4kReferenceToVideoRequestSchema = z.object({
+  prompt: z.string().optional(),
+  multi_prompt: z
+    .array(
+      z.object({
+        prompt: z.string(),
+        duration: z.string().optional(),
+      })
+    )
+    .optional(),
+  start_image_url: z.string().optional(),
+  end_image_url: z.string().optional(),
+  image_urls: z.array(z.string()).optional(),
+  elements: z
+    .array(
+      z.object({
+        frontal_image_url: z.string().optional(),
+        reference_image_urls: z.array(z.string()).optional(),
+        video_url: z.string().optional(),
+        voice_id: z.string().optional(),
+      })
+    )
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  duration: z
+    .enum([
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .optional(),
+  shot_type: z.string().optional(),
+  aspect_ratio: z.enum(["16:9", "9:16", "1:1"]).optional(),
+});
+
+export type FalKlingVideoO3p4kReferenceToVideoParams = z.infer<
+  typeof FalKlingVideoO3p4kReferenceToVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

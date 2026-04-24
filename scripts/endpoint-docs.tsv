@@ -40,6 +40,7 @@ fal	klingVideo.v3.pro.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video
 fal	klingVideo.v3.pro.textToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video	https://docs.fal.ai
 fal	klingVideo.v3.standard.imageToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video	https://docs.fal.ai
 fal	klingVideo.v3.standard.textToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video	https://docs.fal.ai
+fal	klingVideo.o3p4k.referenceToVideo	POST	https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video	https://docs.fal.ai
 fal	nanoBanana.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana/edit	https://docs.fal.ai
 fal	nanoBanana.textToImage	POST	https://api.fal.ai/v1/fal-ai/nano-banana	https://docs.fal.ai
 fal	nanoBanana2.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana-2/edit	https://docs.fal.ai

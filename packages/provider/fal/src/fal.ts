@@ -113,6 +113,8 @@ import {
   FalKlingVideoV3StandardImageToVideoResponse,
   FalKlingVideoV3StandardTextToVideoParams,
   FalKlingVideoV3StandardTextToVideoResponse,
+  FalKlingVideoO3p4kReferenceToVideoParams,
+  FalKlingVideoO3p4kReferenceToVideoResponse,
   FalSora2TextToVideoParams,
   FalSora2TextToVideoResponse,
   FalSora2ImageToVideoParams,
@@ -168,6 +170,7 @@ import {
   FalKlingVideoV3ProTextToVideoRequestSchema,
   FalKlingVideoV3StandardImageToVideoRequestSchema,
   FalKlingVideoV3StandardTextToVideoRequestSchema,
+  FalKlingVideoO3p4kReferenceToVideoRequestSchema,
   FalSora2TextToVideoRequestSchema,
   FalSora2ImageToVideoRequestSchema,
   FalHunyuanImageV3InstructEditRequestSchema,
@@ -1312,6 +1315,28 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video
+  // Docs: https://docs.fal.ai
+  const klingVideoO3p4kReferenceToVideo = Object.assign(
+    async function referenceToVideo(
+      params: FalKlingVideoO3p4kReferenceToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalKlingVideoO3p4kReferenceToVideoResponse> {
+      return makeRequest<FalKlingVideoO3p4kReferenceToVideoResponse>(
+        "POST",
+        "/fal-ai/kling-video/o3/4k/reference-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalKlingVideoO3p4kReferenceToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/veo3.1
   // Docs: https://docs.fal.ai
   const veo3p1TextToVideo = Object.assign(
@@ -1701,6 +1726,9 @@ export function fal(opts: FalOptions): FalProvider {
           imageToVideo: klingVideoV3StandardImageToVideo,
           textToVideo: klingVideoV3StandardTextToVideo,
         },
+      },
+      o3p4k: {
+        referenceToVideo: klingVideoO3p4kReferenceToVideo,
       },
     },
     gptImage1p5,

@@ -2,6 +2,8 @@
 
 This project uses **bd** (beads) for issue tracking. Run `bd prime` for full workflow context.
 
+**opencode users:** the [`opencode-beads`](https://github.com/joshuadavidthomas/opencode-beads) plugin auto-runs `bd prime` on session start and after compaction. Add it to your user-global opencode config (e.g. `~/.config/opencode/opencode.json`: `{ "plugin": ["opencode-beads"] }`). Without it, run `bd prime` manually at the start of each session.
+
 ## Quick Reference
 
 ```bash

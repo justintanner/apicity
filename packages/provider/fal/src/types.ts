@@ -52,6 +52,7 @@ export type {
   FalKlingVideoV3ProTextToVideoParams,
   FalKlingVideoV3StandardImageToVideoParams,
   FalKlingVideoV3StandardTextToVideoParams,
+  FalKlingVideoO3p4kImageToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
@@ -106,6 +107,7 @@ import type {
   FalKlingVideoV3ProTextToVideoParams,
   FalKlingVideoV3StandardImageToVideoParams,
   FalKlingVideoV3StandardTextToVideoParams,
+  FalKlingVideoO3p4kImageToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
@@ -867,6 +869,10 @@ export interface FalKlingVideoV3StandardTextToVideoResponse {
   video: FalFile;
 }
 
+export interface FalKlingVideoO3p4kImageToVideoResponse {
+  video: FalFile;
+}
+
 export interface FalKlingVideoO3p4kReferenceToVideoResponse {
   video: FalFile;
 }
@@ -1505,6 +1511,13 @@ export interface FalRunKlingVideoV3Namespace {
   standard: FalRunKlingVideoV3StandardNamespace;
 }
 
+type FalKlingVideoO3p4kImageToVideoFn = ((
+  params: FalKlingVideoO3p4kImageToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3p4kImageToVideoResponse>) & {
+  schema: z.ZodType<FalKlingVideoO3p4kImageToVideoParams>;
+};
+
 type FalKlingVideoO3p4kReferenceToVideoFn = ((
   params: FalKlingVideoO3p4kReferenceToVideoParams,
   signal?: AbortSignal
@@ -1513,6 +1526,7 @@ type FalKlingVideoO3p4kReferenceToVideoFn = ((
 };
 
 export interface FalRunKlingVideoO3p4kNamespace {
+  imageToVideo: FalKlingVideoO3p4kImageToVideoFn;
   referenceToVideo: FalKlingVideoO3p4kReferenceToVideoFn;
 }
 

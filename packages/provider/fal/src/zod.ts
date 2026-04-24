@@ -1273,6 +1273,47 @@ export type FalHunyuanImageV3InstructEditParams = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// Kling Video o3 4k image-to-video
+// ---------------------------------------------------------------------------
+
+export const FalKlingVideoO3p4kImageToVideoRequestSchema = z.object({
+  prompt: z.string().optional(),
+  image_url: z.string(),
+  end_image_url: z.string().optional(),
+  duration: z
+    .enum([
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .optional(),
+  generate_audio: z.boolean().optional(),
+  multi_prompt: z
+    .array(
+      z.object({
+        prompt: z.string(),
+        duration: z.string().optional(),
+      })
+    )
+    .optional(),
+  shot_type: z.string().optional(),
+});
+
+export type FalKlingVideoO3p4kImageToVideoParams = z.infer<
+  typeof FalKlingVideoO3p4kImageToVideoRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Kling Video o3 4k reference-to-video
 // ---------------------------------------------------------------------------
 

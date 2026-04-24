@@ -38,6 +38,87 @@ cp -rf source dest          # NOT: cp -r source dest
 - `apt-get` - use `-y` flag
 - `brew` - use `HOMEBREW_NO_AUTO_UPDATE=1` env var
 
+## Project Overview
+
+Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/free`). Each package has zero external dependencies.
+
+Method paths mirror upstream API URL paths segment-by-segment; kebab-case becomes camelCase (e.g. `/v1/chat/completions` → `openai.v1.chat.completions()`).
+
+`CLAUDE.md` is the canonical source for project conventions. This file is the self-sufficient summary for non-Claude harnesses (opencode, other agents). If they disagree, prefer `CLAUDE.md`.
+
+## Commands
+
+```bash
+pnpm install                     # Install dependencies
+pnpm run build                   # Build all packages
+pnpm run lint                    # Lint (runs build first via prelint)
+pnpm run test:run                # Run tests once (Polly.js replay; no network)
+
+pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
+pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
+pnpm run dev:preflight           # format + lint + test:run (run before git push)
+pnpm run ci:local                # build + lint + test:run (exact CI mirror)
+
+pnpm run check:op                # Verify 1Password service account is working
+pnpm run harness                 # Local HAR viewer at localhost:3475
+```
+
+## Adding a New Endpoint
+
+When assigned an endpoint task (e.g. "Add openai POST /v1/embeddings"):
+
+1. **Research** — Fetch upstream API docs. Study an existing endpoint in the same provider for patterns (types, schema, factory wiring, tests).
+2. **Types** — Add request/response interfaces to `types.ts` (PascalCase). Update the provider interface. Export from `index.ts`.
+3. **Schema** — Add PayloadSchema to `schemas.ts`. Add `validatePayload` via `Object.assign` on the endpoint function.
+4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`. Use `Object.assign` for callable namespaces.
+5. **URL comment (required)** — Place a 2-line comment immediately above the endpoint property in the factory:
+
+   ```typescript
+   // POST https://api.openai.com/v1/chat/completions
+   // Docs: https://platform.openai.com/docs/api-reference/chat/create
+   completions: Object.assign(async (req) => { ... }, { schema: ... })
+   ```
+
+   Line 1 is `// {METHOD} {full upstream URL}` (must match the URL the factory actually hits). Line 2 is `// Docs: {upstream docs URL}` whose hostname is on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. Also add a `(provider, dotPath, method, fullUrl, docsUrl)` row to `scripts/endpoint-docs.tsv`. Both are enforced by `pnpm run lint:endpoints`. For overloaded endpoints, comment the default path.
+6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts` using `setupPolly` / `teardownPolly`. Record fixtures, verify replay.
+7. **Commit and PR** — One endpoint per PR.
+
+## Integration Test Recording
+
+All tests use Polly.js HTTP record/replay — no mocks. Recordings live under `tests/recordings/` as HAR files and are committed alongside source.
+
+Two recording modes:
+
+- **`record-missing` (default, safe)** — Only records tests whose HAR files don't exist yet. Existing recordings replay from disk. Use this when *adding* a new test. Safe without a file filter.
+- **`record` (destructive)** — Overwrites existing HAR files. Use only when intentionally re-recording. **Hard-errors if run without a test file filter** (`tests/check-record-args.mjs` enforces this). Override with `POLLY_FORCE_ALL=1` only if you really mean to re-record everything.
+
+Workflow for a new test:
+
+```bash
+# Record only the new test's fixtures; existing HARs untouched.
+pnpm run dev:record -- tests/integration/<file>.test.ts
+
+# Verify pure replay:
+pnpm run test:run tests/integration/<file>.test.ts
+```
+
+**Pitfall:** `pnpm run dev:rerecord` without a file filter will refuse to run (by design). Do not set `POLLY_FORCE_ALL=1` to force it — prefer deleting the specific recording directory and re-running `dev:record` on that one test.
+
+API keys resolve at runtime via the 1Password CLI (`op run --env-file=.env.tpl`). No plaintext secrets on disk.
+
+## Code Conventions
+
+- ES modules; target ES2022; strict mode; `@typescript-eslint/no-explicit-any: "error"`
+- Double quotes, semicolons, trailing commas (ES5), 2-space indent, 80 char width
+- PascalCase for types/interfaces/errors, camelCase for functions
+- Error classes: extend `Error`, include `status` field, named `<Provider>Error`
+- Prefer `interface` over `type` for object shapes
+- `Record<string, unknown>` for API request/response bodies
+
+## Gascity Handoff
+
+Some `bd` issues are owned by `jwt-gascity[bot]@users.noreply.github.com`. Do not reassign those unless you are the bot. Use `bd search gascity` to surface interop-related work.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->
 
 ## Beads Issue Tracker

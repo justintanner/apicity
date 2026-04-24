@@ -447,6 +447,10 @@ export const GptImage2TextToImageRequestSchema = z.object({
   }),
 });
 
+// Kie's seedream/5-lite createTask rejects requests with `"This field is
+// required"` when `quality` is missing, even though their docs list it as
+// optional with a default. Treat it as required at the SDK boundary so the
+// type system forces callers to pick basic/high.
 export const SeedreamImageToImageRequestSchema = z.object({
   model: z.literal("seedream/5-lite-image-to-image"),
   callBackUrl: z.string().optional(),
@@ -456,7 +460,7 @@ export const SeedreamImageToImageRequestSchema = z.object({
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
       .optional(),
-    quality: z.enum(["basic", "high"]).optional(),
+    quality: z.enum(["basic", "high"]),
     nsfw_checker: z.boolean().default(false),
   }),
 });
@@ -469,7 +473,7 @@ export const SeedreamTextToImageRequestSchema = z.object({
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
       .optional(),
-    quality: z.enum(["basic", "high"]).optional(),
+    quality: z.enum(["basic", "high"]),
     nsfw_checker: z.boolean().default(false),
   }),
 });

@@ -593,8 +593,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       quality: {
         type: "string",
+        required: true,
         enum: ["basic", "high"],
-        description: "Output quality (basic=2K, high=4K, default basic)",
+        description:
+          "Output quality (basic=2K, high=4K). Required — Kie rejects createTask without it.",
       },
       nsfw_checker: {
         type: "boolean",
@@ -618,8 +620,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       quality: {
         type: "string",
+        required: true,
         enum: ["basic", "high"],
-        description: "Output quality (basic=2K, high=4K, default basic)",
+        description:
+          "Output quality (basic=2K, high=4K). Required — Kie rejects createTask without it.",
       },
       nsfw_checker: {
         type: "boolean",

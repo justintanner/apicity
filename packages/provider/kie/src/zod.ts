@@ -665,6 +665,25 @@ const wan27ImageAspectRatioRefinement = {
   path: ["input", "resolution"] as Array<string | number>,
 };
 
+const wan27Image4KRequiresNonSequentialTextToImage = (v: {
+  input: {
+    resolution?: unknown;
+    enable_sequential?: unknown;
+    input_urls?: unknown;
+  };
+}): boolean => {
+  if (v.input.resolution !== "4K") return true;
+  if (v.input.enable_sequential === true) return false;
+  const urls = v.input.input_urls;
+  if (Array.isArray(urls) && urls.length > 0) return false;
+  return true;
+};
+
+const wan27Image4KRefinement = {
+  message: "resolution 4K is only supported for non-sequential text-to-image",
+  path: ["input", "resolution"] as Array<string | number>,
+};
+
 export const Wan27ImageInputSchema = z.object(Wan27ImageInputShape);
 
 const Wan27ImageRequestObjectSchema = z.object({
@@ -681,13 +700,17 @@ const Wan27ImageProRequestObjectSchema = z.object({
 
 export const Wan27ImageRequestSchema = Wan27ImageRequestObjectSchema.refine(
   wan27ImageAspectRatioRequiresResolution,
-  wan27ImageAspectRatioRefinement,
-);
+  wan27ImageAspectRatioRefinement
+).refine(wan27Image4KRequiresNonSequentialTextToImage, wan27Image4KRefinement);
 
-export const Wan27ImageProRequestSchema = Wan27ImageProRequestObjectSchema.refine(
-  wan27ImageAspectRatioRequiresResolution,
-  wan27ImageAspectRatioRefinement,
-);
+export const Wan27ImageProRequestSchema =
+  Wan27ImageProRequestObjectSchema.refine(
+    wan27ImageAspectRatioRequiresResolution,
+    wan27ImageAspectRatioRefinement
+  ).refine(
+    wan27Image4KRequiresNonSequentialTextToImage,
+    wan27Image4KRefinement
+  );
 
 // ---------------------------------------------------------------------------
 // Wan 2.7 task result schemas (parsed from KieTaskInfoData.resultJson)

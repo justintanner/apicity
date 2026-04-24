@@ -54,6 +54,7 @@ export type {
   FalKlingVideoV3StandardTextToVideoParams,
   FalKlingVideoO3p4kImageToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoParams,
+  FalKlingVideoO3p4kTextToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
   FalHunyuanImageV3InstructEditParams,
@@ -109,6 +110,7 @@ import type {
   FalKlingVideoV3StandardTextToVideoParams,
   FalKlingVideoO3p4kImageToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoParams,
+  FalKlingVideoO3p4kTextToVideoParams,
   FalSora2TextToVideoParams,
   FalSora2ImageToVideoParams,
   FalHunyuanImageV3InstructEditParams,
@@ -877,6 +879,10 @@ export interface FalKlingVideoO3p4kReferenceToVideoResponse {
   video: FalFile;
 }
 
+export interface FalKlingVideoO3p4kTextToVideoResponse {
+  video: FalFile;
+}
+
 // OpenAI Sora 2 (text-to-video and image-to-video)
 export type FalSora2Model =
   | "sora-2"
@@ -1525,9 +1531,17 @@ type FalKlingVideoO3p4kReferenceToVideoFn = ((
   schema: z.ZodType<FalKlingVideoO3p4kReferenceToVideoParams>;
 };
 
+type FalKlingVideoO3p4kTextToVideoFn = ((
+  params: FalKlingVideoO3p4kTextToVideoParams,
+  signal?: AbortSignal
+) => Promise<FalKlingVideoO3p4kTextToVideoResponse>) & {
+  schema: z.ZodType<FalKlingVideoO3p4kTextToVideoParams>;
+};
+
 export interface FalRunKlingVideoO3p4kNamespace {
   imageToVideo: FalKlingVideoO3p4kImageToVideoFn;
   referenceToVideo: FalKlingVideoO3p4kReferenceToVideoFn;
+  textToVideo: FalKlingVideoO3p4kTextToVideoFn;
 }
 
 export interface FalRunKlingVideoNamespace {

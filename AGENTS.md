@@ -82,6 +82,7 @@ When assigned an endpoint task (e.g. "Add openai POST /v1/embeddings"):
    ```
 
    Line 1 is `// {METHOD} {full upstream URL}` (must match the URL the factory actually hits). Line 2 is `// Docs: {upstream docs URL}` whose hostname is on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. Also add a `(provider, dotPath, method, fullUrl, docsUrl)` row to `scripts/endpoint-docs.tsv`. Both are enforced by `pnpm run lint:endpoints`. For overloaded endpoints, comment the default path.
+
 6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts` using `setupPolly` / `teardownPolly`. Record fixtures, verify replay.
 7. **Commit and PR** — One endpoint per PR.
 
@@ -91,7 +92,7 @@ All tests use Polly.js HTTP record/replay — no mocks. Recordings live under `t
 
 Two recording modes:
 
-- **`record-missing` (default, safe)** — Only records tests whose HAR files don't exist yet. Existing recordings replay from disk. Use this when *adding* a new test. Safe without a file filter.
+- **`record-missing` (default, safe)** — Only records tests whose HAR files don't exist yet. Existing recordings replay from disk. Use this when _adding_ a new test. Safe without a file filter.
 - **`record` (destructive)** — Overwrites existing HAR files. Use only when intentionally re-recording. **Hard-errors if run without a test file filter** (`tests/check-record-args.mjs` enforces this). Override with `POLLY_FORCE_ALL=1` only if you really mean to re-record everything.
 
 Workflow for a new test:
@@ -122,6 +123,7 @@ API keys resolve at runtime via the 1Password CLI (`op run --env-file=.env.tpl`)
 Some `bd` issues are owned by `jwt-gascity[bot]@users.noreply.github.com`. Do not reassign those unless you are the bot. Use `bd search gascity` to surface interop-related work.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:full hash:f65d5d33 -->
+
 ## Issue Tracking with bd (beads)
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
@@ -187,10 +189,12 @@ bd close bd-42 --reason "Completed" --json
 5. **Complete**: `bd close <id> --reason "Done"`
 
 ### Quality
+
 - Use `--acceptance` and `--design` fields when creating issues
 - Use `--validate` to check description completeness
 
 ### Lifecycle
+
 - `bd defer <id>` / `bd supersede <id>` for issue management
 - `bd stale` / `bd orphans` / `bd lint` for hygiene
 - `bd human <id>` to flag for human decisions
@@ -237,6 +241,7 @@ For more details, see README.md and docs/QUICKSTART.md.
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push

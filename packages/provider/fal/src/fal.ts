@@ -117,6 +117,8 @@ import {
   FalKlingVideoO3p4kImageToVideoResponse,
   FalKlingVideoO3p4kReferenceToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoResponse,
+  FalKlingVideoO3p4kTextToVideoParams,
+  FalKlingVideoO3p4kTextToVideoResponse,
   FalSora2TextToVideoParams,
   FalSora2TextToVideoResponse,
   FalSora2ImageToVideoParams,
@@ -174,6 +176,7 @@ import {
   FalKlingVideoV3StandardTextToVideoRequestSchema,
   FalKlingVideoO3p4kImageToVideoRequestSchema,
   FalKlingVideoO3p4kReferenceToVideoRequestSchema,
+  FalKlingVideoO3p4kTextToVideoRequestSchema,
   FalSora2TextToVideoRequestSchema,
   FalSora2ImageToVideoRequestSchema,
   FalHunyuanImageV3InstructEditRequestSchema,
@@ -1362,6 +1365,28 @@ export function fal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/text-to-video
+  // Docs: https://docs.fal.ai
+  const klingVideoO3p4kTextToVideo = Object.assign(
+    async function textToVideo(
+      params: FalKlingVideoO3p4kTextToVideoParams,
+      signal?: AbortSignal
+    ): Promise<FalKlingVideoO3p4kTextToVideoResponse> {
+      return makeRequest<FalKlingVideoO3p4kTextToVideoResponse>(
+        "POST",
+        "/fal-ai/kling-video/o3/4k/text-to-video",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalKlingVideoO3p4kTextToVideoRequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/veo3.1
   // Docs: https://docs.fal.ai
   const veo3p1TextToVideo = Object.assign(
@@ -1755,6 +1780,7 @@ export function fal(opts: FalOptions): FalProvider {
       o3p4k: {
         imageToVideo: klingVideoO3p4kImageToVideo,
         referenceToVideo: klingVideoO3p4kReferenceToVideo,
+        textToVideo: klingVideoO3p4kTextToVideo,
       },
     },
     gptImage1p5,

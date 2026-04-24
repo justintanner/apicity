@@ -1365,4 +1365,44 @@ export const FalKlingVideoO3p4kReferenceToVideoRequestSchema = z.object({
 export type FalKlingVideoO3p4kReferenceToVideoParams = z.infer<
   typeof FalKlingVideoO3p4kReferenceToVideoRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Kling Video o3 4k text-to-video
+// ---------------------------------------------------------------------------
+
+export const FalKlingVideoO3p4kTextToVideoRequestSchema = z.object({
+  prompt: z.string().optional(),
+  duration: z
+    .enum([
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ])
+    .optional(),
+  aspect_ratio: z.enum(["16:9", "9:16", "1:1"]).optional(),
+  generate_audio: z.boolean().optional(),
+  multi_prompt: z
+    .array(
+      z.object({
+        prompt: z.string(),
+        duration: z.string().optional(),
+      })
+    )
+    .optional(),
+  shot_type: z.string().optional(),
+});
+
+export type FalKlingVideoO3p4kTextToVideoParams = z.infer<
+  typeof FalKlingVideoO3p4kTextToVideoRequestSchema
+>;
 export type FalOptions = z.infer<typeof FalOptionsSchema>;

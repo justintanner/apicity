@@ -203,6 +203,8 @@ export type {
   FalKlingVideoO3p4kImageToVideoResponse,
   FalKlingVideoO3p4kReferenceToVideoParams,
   FalKlingVideoO3p4kReferenceToVideoResponse,
+  FalKlingVideoO3p4kTextToVideoParams,
+  FalKlingVideoO3p4kTextToVideoResponse,
   FalRunKlingVideoV3ProNamespace,
   FalRunKlingVideoV3StandardNamespace,
   FalRunKlingVideoV3Namespace,

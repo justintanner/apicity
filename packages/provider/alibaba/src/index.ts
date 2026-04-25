@@ -22,6 +22,9 @@ export { sseToIterable } from "./sse";
 export type {
   AlibabaOptions,
   AlibabaRole,
+  AlibabaTextPart,
+  AlibabaImageUrlPart,
+  AlibabaContentPart,
   AlibabaMessage,
   AlibabaFunctionDefinition,
   AlibabaTool,

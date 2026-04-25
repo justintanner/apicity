@@ -8,6 +8,9 @@ export type {
   // Options
   AlibabaOptions,
   // Chat request
+  AlibabaTextPart,
+  AlibabaImageUrlPart,
+  AlibabaContentPart,
   AlibabaMessage,
   AlibabaFunctionDefinition,
   AlibabaTool,

@@ -26,9 +26,27 @@ export const AlibabaToolCallSchema = z.object({
   function: AlibabaToolCallFunctionSchema,
 });
 
+export const AlibabaTextPartSchema = z.object({
+  type: z.literal("text"),
+  text: z.string(),
+});
+
+export const AlibabaImageUrlPartSchema = z.object({
+  type: z.literal("image_url"),
+  image_url: z.object({
+    url: z.string(),
+    detail: z.enum(["auto", "low", "high"]).optional(),
+  }),
+});
+
+export const AlibabaContentPartSchema = z.discriminatedUnion("type", [
+  AlibabaTextPartSchema,
+  AlibabaImageUrlPartSchema,
+]);
+
 export const AlibabaMessageSchema = z.object({
   role: z.enum(["system", "user", "assistant", "tool"]),
-  content: z.string().nullable(),
+  content: z.union([z.string(), z.array(AlibabaContentPartSchema), z.null()]),
   name: z.string().optional(),
   tool_calls: z.array(AlibabaToolCallSchema).optional(),
   tool_call_id: z.string().optional(),
@@ -428,6 +446,9 @@ export type AlibabaToolCallFunction = z.infer<
   typeof AlibabaToolCallFunctionSchema
 >;
 export type AlibabaToolCall = z.infer<typeof AlibabaToolCallSchema>;
+export type AlibabaTextPart = z.infer<typeof AlibabaTextPartSchema>;
+export type AlibabaImageUrlPart = z.infer<typeof AlibabaImageUrlPartSchema>;
+export type AlibabaContentPart = z.infer<typeof AlibabaContentPartSchema>;
 export type AlibabaMessage = z.infer<typeof AlibabaMessageSchema>;
 export type AlibabaStreamOptions = z.infer<typeof AlibabaStreamOptionsSchema>;
 export type AlibabaResponseFormat = z.infer<typeof AlibabaResponseFormatSchema>;

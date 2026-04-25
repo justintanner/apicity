@@ -4,6 +4,18 @@ import { resolve } from "node:path";
 import { alibaba } from "@apicity/alibaba";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
+const SHOT_PATTERN =
+  /^(extreme close-up|close-up|medium close-up|medium shot|medium long shot|long shot|extreme long shot), (eye-level|low-angle|high-angle|overhead|dutch)$/;
+
+const CLIPFIRST_STYLE_SYSTEM_PROMPT = [
+  "You are an expert image-to-prompt analyst.",
+  "Return only a JSON object with keys prompt, shot, and pose.",
+  "prompt: a single-paragraph reproduction-ready image prompt, 1900 characters or fewer, with no line breaks.",
+  'shot: "<size>, <angle>" using standard cinematography terms.',
+  "pose: only body geometry for human figures, with no clothing, hair, background, or lighting details.",
+  "For cropped portraits, include the implied off-frame posture in the pose field.",
+].join(" ");
+
 describe("alibaba vision JSON integration", () => {
   let ctx: PollyContext | undefined;
 
@@ -33,7 +45,7 @@ describe("alibaba vision JSON integration", () => {
             },
             {
               type: "text",
-              text: "Analyze the subject pose and framing as JSON.",
+              text: "Analyze this image and return JSON with prompt, shot, and pose fields.",
             },
           ],
         },
@@ -46,10 +58,10 @@ describe("alibaba vision JSON integration", () => {
     expect(parsed.success).toBe(true);
   });
 
-  it("should analyze cat pose and framing as structured JSON", async () => {
-    ctx = setupPolly("alibaba/vision-pose-framing-json");
+  it("should analyze an image as clipfirst-style structured JSON", async () => {
+    ctx = setupPolly("alibaba/vision-analysis-json");
 
-    const imagePath = resolve(__dirname, "../fixtures/cat2.jpg");
+    const imagePath = resolve(__dirname, "../fixtures/man.jpg");
     const image = readFileSync(imagePath);
     const base64 = image.toString("base64");
 
@@ -62,21 +74,26 @@ describe("alibaba vision JSON integration", () => {
       model: "qwen3.5-plus",
       messages: [
         {
+          role: "system",
+          content: CLIPFIRST_STYLE_SYSTEM_PROMPT,
+        },
+        {
           role: "user",
           content: [
             {
               type: "image_url",
               image_url: {
                 url: `data:image/jpeg;base64,${base64}`,
-                detail: "low",
+                detail: "high",
               },
             },
             {
               type: "text",
               text: [
-                "Analyze this image and return only JSON.",
-                'Use keys "subject", "pose", "framing", "composition", and "notable_details".',
-                "Keep each value concise and grounded in visible evidence.",
+                "Analyze this image and produce a reproduction-ready JSON description.",
+                'Return only JSON with keys "prompt", "shot", and "pose".',
+                "The shot field must be lowercase cinematography terms in the form size, angle.",
+                "The pose field must describe only body geometry.",
               ].join(" "),
             },
           ],
@@ -92,14 +109,20 @@ describe("alibaba vision JSON integration", () => {
 
     const parsed = JSON.parse(content!) as Record<string, unknown>;
 
-    expect(parsed.subject).toEqual(expect.any(String));
-    expect(String(parsed.subject).toLowerCase()).toMatch(/cat/);
+    expect(parsed.prompt).toEqual(expect.any(String));
+    expect(String(parsed.prompt)).not.toContain("\n");
+    expect(String(parsed.prompt).length).toBeGreaterThan(80);
+    expect(String(parsed.prompt).length).toBeLessThanOrEqual(1900);
+    expect(parsed.shot).toEqual(expect.any(String));
+    expect(String(parsed.shot)).toMatch(SHOT_PATTERN);
     expect(parsed.pose).toEqual(expect.any(String));
     expect(String(parsed.pose)).not.toHaveLength(0);
-    expect(parsed.framing).toEqual(expect.any(String));
-    expect(String(parsed.framing)).not.toHaveLength(0);
-    expect(parsed.composition).toEqual(expect.any(String));
-    expect(parsed.notable_details).toEqual(expect.any(String));
+    expect(String(parsed.pose)).toMatch(
+      /\b(head|shoulder|torso|lean|forward|seated|camera)\b/i
+    );
+    expect(String(parsed.pose)).not.toMatch(
+      /\b(suit|tie|shirt|jacket|hair|background|light|lighting|blue)\b/i
+    );
     expect(result.usage?.total_tokens).toBeGreaterThan(0);
   }, 120_000);
 });

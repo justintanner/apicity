@@ -1,4 +1,4 @@
-export { alibaba } from "./alibaba";
+export { alibaba, uploadFile } from "./alibaba";
 
 export { AlibabaError } from "./types";
 

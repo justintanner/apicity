@@ -301,7 +301,12 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
                 signal,
                 {
                   baseOverride: nativeBaseURL,
-                  extraHeaders: { "X-DashScope-Async": "enable" },
+                  extraHeaders: {
+                    "X-DashScope-Async": "enable",
+                    // Required for any oss:// URI in the body to be resolved
+                    // server-side. Harmless when no oss:// URIs are present.
+                    "X-DashScope-OssResourceResolve": "enable",
+                  },
                 }
               );
             },
@@ -398,4 +403,58 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
       api: { v1: getApiV1 },
     },
   };
+}
+
+// Upload a file to DashScope's model-scoped OSS bucket via the
+// `getPolicy` + OSS PostObject flow. Returns an `oss://{key}` URI that the
+// matching aigc/* endpoints (e.g. video-synthesis) can resolve server-side.
+// Falls through whatever fetch implementation `provider` was constructed with.
+export async function uploadFile(
+  provider: AlibabaProvider,
+  args: {
+    model: string;
+    data: Uint8Array | Buffer;
+    filename: string;
+    contentType: string;
+  },
+): Promise<string> {
+  const policyRes = await provider.get.api.v1.uploads({
+    action: "getPolicy",
+    model: args.model,
+  });
+  const p = policyRes.data;
+
+  const uploadDir = p.upload_dir.replace(/^\/+|\/+$/g, "");
+  const key = `${uploadDir}/${args.filename}`;
+
+  const form = new FormData();
+  form.append("key", key);
+  form.append("OSSAccessKeyId", p.oss_access_key_id);
+  form.append("policy", p.policy);
+  form.append("Signature", p.signature);
+  form.append("x-oss-object-acl", p.x_oss_object_acl);
+  form.append("x-oss-forbid-overwrite", p.x_oss_forbid_overwrite);
+  form.append("Content-Type", args.contentType);
+  form.append("success_action_status", "200");
+  // `file` MUST be last — OSS PostObject spec.
+  form.append(
+    "file",
+    new Blob([new Uint8Array(args.data)], { type: args.contentType }),
+    args.filename,
+  );
+
+  const endpoint = p.upload_host.startsWith("http")
+    ? p.upload_host
+    : `https://${p.upload_host}`;
+  const res = await fetch(endpoint, { method: "POST", body: form });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new AlibabaError(
+      `OSS PostObject failed: ${res.status} ${res.statusText} ${body}`,
+      res.status,
+      body,
+    );
+  }
+
+  return `oss://${key}`;
 }

@@ -30,6 +30,7 @@ export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";
 export { createChatProvider } from "./chat";
 export { createClaudeProvider } from "./claude";
+export { createElevenLabsProvider } from "./elevenlabs";
 
 // Export SSE utility
 export { sseToIterable } from "./sse";
@@ -58,9 +59,6 @@ export type {
   SeedreamTextToImageRequest,
   ElevenLabsVoice,
   DialogueLine,
-  ElevenLabsDialogueRequest,
-  ElevenLabsSfxRequest,
-  ElevenLabsSttRequest,
   Qwen2TextToImageRequest,
   Qwen2ImageEditRequest,
   Seedance2FastRequest,
@@ -120,7 +118,31 @@ export type {
   VeoProvider,
 } from "./veo";
 
-export type { SunoModel, SunoGenerateRequest, SunoProvider } from "./suno";
+export type {
+  SunoModel,
+  SunoGenerateRequest,
+  SunoExtendRequest,
+  SunoWavRequest,
+  SunoVocalRemovalRequest,
+  SunoMp4Request,
+  SunoLyricsRequest,
+  SunoBoostStyleRequest,
+  SunoUploadCoverRequest,
+  SunoUploadExtendRequest,
+  SunoMidiRequest,
+  SunoProvider,
+} from "./suno";
+
+export type {
+  ElevenLabsModel,
+  ElevenLabsDialogueRequest,
+  ElevenLabsSfxRequest,
+  ElevenLabsSttRequest,
+  ElevenLabsAudioIsolationRequest,
+  ElevenLabsTtsMultilingualRequest,
+  ElevenLabsTtsTurboRequest,
+  ElevenLabsProvider,
+} from "./elevenlabs";
 
 export type {
   KieChatContentPart,

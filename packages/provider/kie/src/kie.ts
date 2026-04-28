@@ -25,6 +25,7 @@ import { createVeoProvider } from "./veo";
 import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
+import { createElevenLabsProvider } from "./elevenlabs";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -399,6 +400,12 @@ export function kie(opts: KieOptions): KieProvider {
   return {
     veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
     suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
+    elevenlabs: createElevenLabsProvider(
+      baseURL,
+      opts.apiKey,
+      doFetch,
+      timeout
+    ),
     chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
     ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
     modelInputSchemas,

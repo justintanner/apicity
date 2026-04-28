@@ -24,7 +24,7 @@ const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 
 ## API Reference
 
-11 endpoints across 9 groups. Each method mirrors an upstream URL path.
+21 endpoints across 15 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -131,6 +131,19 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### generate
 
 <details>
+<summary><code>GET</code> <b><code>kie.api.v1.generate.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}</code>
+
+```typescript
+const res = await kie.api.v1.generate.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.api.v1.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate</code>
@@ -139,6 +152,45 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 ```typescript
 const res = await kie.api.v1.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.generate.extend</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/extend</code>
+
+```typescript
+const res = await kie.api.v1.generate.extend({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.generate.uploadCover</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/upload-cover</code>
+
+```typescript
+const res = await kie.api.v1.generate.uploadCover({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.generate.uploadExtend</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/upload-extend</code>
+
+```typescript
+const res = await kie.api.v1.generate.uploadExtend({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -177,6 +229,66 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 
+### lyrics
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.lyrics</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/lyrics</code>
+
+```typescript
+const res = await kie.api.v1.lyrics({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### midi
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.midi.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/midi/generate</code>
+
+```typescript
+const res = await kie.api.v1.midi.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### mp4
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.mp4.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/mp4/generate</code>
+
+```typescript
+const res = await kie.api.v1.mp4.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### style
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.style.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/style/generate</code>
+
+```typescript
+const res = await kie.api.v1.style.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
 ### veo
 
 <details>
@@ -206,6 +318,36 @@ const res = await kie.api.v1.veo.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
+
+</details>
+
+### vocalRemoval
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.vocalRemoval.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/vocal-removal/generate</code>
+
+```typescript
+const res = await kie.api.v1.vocalRemoval.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### wav
+
+<details>
+<summary><code>POST</code> <b><code>kie.api.v1.wav.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/wav/generate</code>
+
+```typescript
+const res = await kie.api.v1.wav.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 </details>
 

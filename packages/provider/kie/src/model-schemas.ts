@@ -752,6 +752,155 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "elevenlabs/audio-isolation": {
+    type: "audio",
+    fields: {
+      audio_url: {
+        type: "string",
+        required: true,
+        description: "URL to audio file to isolate",
+      },
+      output_format: {
+        type: "string",
+        description: "Audio output format",
+      },
+    },
+  },
+
+  "elevenlabs/text-to-speech-multilingual-v2": {
+    type: "audio",
+    fields: {
+      text: {
+        type: "string",
+        required: true,
+        description: "Text to synthesize (max 5000 chars)",
+      },
+      voice: {
+        type: "string",
+        required: true,
+        enum: [
+          "Adam",
+          "Alice",
+          "Bill",
+          "Brian",
+          "Callum",
+          "Charlie",
+          "Chris",
+          "Daniel",
+          "Eric",
+          "George",
+          "Harry",
+          "Jessica",
+          "Laura",
+          "Liam",
+          "Lily",
+          "Matilda",
+          "River",
+          "Roger",
+          "Sarah",
+          "Will",
+        ],
+        description: "Voice to use for synthesis",
+      },
+      output_format: {
+        type: "string",
+        description: "Audio output format",
+      },
+      stability: {
+        type: "number",
+        enum: [0, 0.5, 1.0],
+        description: "Voice stability",
+      },
+      similarity_boost: {
+        type: "number",
+        description: "Similarity boost (0-1)",
+      },
+      style: {
+        type: "number",
+        description: "Style exaggeration (0-1)",
+      },
+      use_speaker_boost: {
+        type: "boolean",
+        description: "Use speaker boost",
+      },
+      speed: {
+        type: "number",
+        description: "Speech speed (0.5-2)",
+      },
+      language_code: {
+        type: "string",
+        description: "Language/locale code",
+      },
+    },
+  },
+
+  "elevenlabs/text-to-speech-turbo-2-5": {
+    type: "audio",
+    fields: {
+      text: {
+        type: "string",
+        required: true,
+        description: "Text to synthesize (max 5000 chars)",
+      },
+      voice: {
+        type: "string",
+        required: true,
+        enum: [
+          "Adam",
+          "Alice",
+          "Bill",
+          "Brian",
+          "Callum",
+          "Charlie",
+          "Chris",
+          "Daniel",
+          "Eric",
+          "George",
+          "Harry",
+          "Jessica",
+          "Laura",
+          "Liam",
+          "Lily",
+          "Matilda",
+          "River",
+          "Roger",
+          "Sarah",
+          "Will",
+        ],
+        description: "Voice to use for synthesis",
+      },
+      output_format: {
+        type: "string",
+        description: "Audio output format",
+      },
+      stability: {
+        type: "number",
+        enum: [0, 0.5, 1.0],
+        description: "Voice stability",
+      },
+      similarity_boost: {
+        type: "number",
+        description: "Similarity boost (0-1)",
+      },
+      style: {
+        type: "number",
+        description: "Style exaggeration (0-1)",
+      },
+      use_speaker_boost: {
+        type: "boolean",
+        description: "Use speaker boost",
+      },
+      speed: {
+        type: "number",
+        description: "Speech speed (0.5-2)",
+      },
+      language_code: {
+        type: "string",
+        description: "Language/locale code",
+      },
+    },
+  },
+
   "qwen2/text-to-image": {
     type: "image",
     fields: {

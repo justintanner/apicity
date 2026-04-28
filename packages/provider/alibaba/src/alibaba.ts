@@ -416,7 +416,7 @@ export async function uploadFile(
     data: Uint8Array | Buffer;
     filename: string;
     contentType: string;
-  },
+  }
 ): Promise<string> {
   const policyRes = await provider.get.api.v1.uploads({
     action: "getPolicy",
@@ -440,7 +440,7 @@ export async function uploadFile(
   form.append(
     "file",
     new Blob([new Uint8Array(args.data)], { type: args.contentType }),
-    args.filename,
+    args.filename
   );
 
   const endpoint = p.upload_host.startsWith("http")
@@ -452,7 +452,7 @@ export async function uploadFile(
     throw new AlibabaError(
       `OSS PostObject failed: ${res.status} ${res.statusText} ${body}`,
       res.status,
-      body,
+      body
     );
   }
 

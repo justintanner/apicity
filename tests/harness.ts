@@ -80,7 +80,14 @@ export function setupPollyForFileUploads(recordingName: string): PollyContext {
   // Disable body matching for FormData compatibility
   return setupPollyWithOptions(recordingName, {
     matchRequestsBy: {
-      headers: { exclude: ["authorization", "user-agent", "x-api-key", "x-dashscope-ossresourceresolve"] },
+      headers: {
+        exclude: [
+          "authorization",
+          "user-agent",
+          "x-api-key",
+          "x-dashscope-ossresourceresolve",
+        ],
+      },
       body: false,
     },
   });
@@ -92,7 +99,14 @@ export function setupPollyIgnoringBody(recordingName: string): PollyContext {
   // still matched so requests can't collide across endpoints.
   return setupPollyWithOptions(recordingName, {
     matchRequestsBy: {
-      headers: { exclude: ["authorization", "user-agent", "x-api-key", "x-dashscope-ossresourceresolve"] },
+      headers: {
+        exclude: [
+          "authorization",
+          "user-agent",
+          "x-api-key",
+          "x-dashscope-ossresourceresolve",
+        ],
+      },
       body: false,
     },
   });
@@ -121,7 +135,14 @@ function setupPollyWithOptions(
   const recordingsDir = path.resolve(import.meta.dirname, "recordings");
 
   const defaultMatchRequestsBy = {
-    headers: { exclude: ["authorization", "user-agent", "x-api-key", "x-dashscope-ossresourceresolve"] },
+    headers: {
+      exclude: [
+        "authorization",
+        "user-agent",
+        "x-api-key",
+        "x-dashscope-ossresourceresolve",
+      ],
+    },
   };
 
   const polly = new Polly(recordingName, {

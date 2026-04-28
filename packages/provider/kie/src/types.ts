@@ -26,9 +26,6 @@ export type {
   SeedreamTextToImageRequest,
   ElevenLabsVoice,
   DialogueLine,
-  ElevenLabsDialogueRequest,
-  ElevenLabsSfxRequest,
-  ElevenLabsSttRequest,
   Qwen2TextToImageRequest,
   Qwen2ImageEditRequest,
   Seedance2FastRequest,
@@ -217,6 +214,7 @@ export interface KieProvider {
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;
   suno: import("./suno").SunoProvider;
+  elevenlabs: import("./elevenlabs").ElevenLabsProvider;
   chat: import("./chat").KieChatProvider;
   claude: import("./claude").KieClaudeProvider["claude"];
 }

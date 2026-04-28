@@ -20,10 +20,9 @@ describe("kie suno record-info (not found)", () => {
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 
-    const result =
-      await provider.suno.get.api.v1.generate.recordInfo(
-        "apicity-test-nonexistent-task-id-do-not-record-real"
-      );
+    const result = await provider.suno.get.api.v1.generate.recordInfo(
+      "apicity-test-nonexistent-task-id-do-not-record-real"
+    );
 
     // Kie returns the success envelope with data:null rather than a 4xx code.
     expect(result.code).toBe(200);

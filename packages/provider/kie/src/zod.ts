@@ -18,12 +18,6 @@ export const KieMediaModelSchema = z.enum([
   "gpt-image-2-text-to-image",
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
-  "elevenlabs/text-to-dialogue-v3",
-  "elevenlabs/sound-effect-v2",
-  "elevenlabs/speech-to-text",
-  "elevenlabs/audio-isolation",
-  "elevenlabs/text-to-speech-multilingual-v2",
-  "elevenlabs/text-to-speech-turbo-2-5",
   "grok-imagine/extend",
   "grok-imagine/upscale",
   "qwen2/text-to-image",
@@ -114,29 +108,6 @@ export const Wan27ImageAspectRatioSchema = z.enum([
   "1:8",
 ]);
 
-export const ElevenLabsVoiceSchema = z.enum([
-  "Adam",
-  "Alice",
-  "Bill",
-  "Brian",
-  "Callum",
-  "Charlie",
-  "Chris",
-  "Daniel",
-  "Eric",
-  "George",
-  "Harry",
-  "Jessica",
-  "Laura",
-  "Liam",
-  "Lily",
-  "Matilda",
-  "River",
-  "Roger",
-  "Sarah",
-  "Will",
-]);
-
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
@@ -151,11 +122,6 @@ export const KlingElementSchema = z.object({
 export const MultiShotPromptSchema = z.object({
   prompt: z.string().min(1),
   duration: z.number(),
-});
-
-export const DialogueLineSchema = z.object({
-  text: z.string().min(1),
-  voice: ElevenLabsVoiceSchema,
 });
 
 export const Wan27ImageColorPaletteSchema = z.object({
@@ -478,86 +444,6 @@ export const SeedreamTextToImageRequestSchema = z.object({
       .optional(),
     quality: z.enum(["basic", "high"]),
     nsfw_checker: z.boolean().default(false),
-  }),
-});
-
-export const ElevenLabsDialogueRequestSchema = z.object({
-  model: z.literal("elevenlabs/text-to-dialogue-v3"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    dialogue: z.array(DialogueLineSchema),
-    stability: z
-      .union([z.literal(0), z.literal(0.5), z.literal(1.0)])
-      .optional(),
-    language_code: z.string().optional(),
-  }),
-});
-
-export const ElevenLabsSfxRequestSchema = z.object({
-  model: z.literal("elevenlabs/sound-effect-v2"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    text: z.string().min(1).max(5000),
-    output_format: z.string().optional(),
-    prompt_influence: z.number().min(0).max(1).default(0.3),
-    loop: z.boolean().optional(),
-    duration_seconds: z.number().min(0.5).max(22).optional(),
-  }),
-});
-
-export const ElevenLabsSttRequestSchema = z.object({
-  model: z.literal("elevenlabs/speech-to-text"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    audio_url: z.string().min(1),
-    tag_audio_events: z.boolean().optional(),
-    diarize: z.boolean().optional(),
-    language_code: z.string().optional(),
-  }),
-});
-
-export const ElevenLabsAudioIsolationRequestSchema = z.object({
-  model: z.literal("elevenlabs/audio-isolation"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    audio_url: z.string().min(1),
-    output_format: z.string().optional(),
-  }),
-});
-
-export const ElevenLabsTtsMultilingualRequestSchema = z.object({
-  model: z.literal("elevenlabs/text-to-speech-multilingual-v2"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    text: z.string().min(1).max(5000),
-    voice: ElevenLabsVoiceSchema,
-    output_format: z.string().optional(),
-    stability: z
-      .union([z.literal(0), z.literal(0.5), z.literal(1.0)])
-      .optional(),
-    similarity_boost: z.number().min(0).max(1).optional(),
-    style: z.number().min(0).max(1).optional(),
-    use_speaker_boost: z.boolean().optional(),
-    speed: z.number().min(0.5).max(2).optional(),
-    language_code: z.string().optional(),
-  }),
-});
-
-export const ElevenLabsTtsTurboRequestSchema = z.object({
-  model: z.literal("elevenlabs/text-to-speech-turbo-2-5"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    text: z.string().min(1).max(5000),
-    voice: ElevenLabsVoiceSchema,
-    output_format: z.string().optional(),
-    stability: z
-      .union([z.literal(0), z.literal(0.5), z.literal(1.0)])
-      .optional(),
-    similarity_boost: z.number().min(0).max(1).optional(),
-    style: z.number().min(0).max(1).optional(),
-    use_speaker_boost: z.boolean().optional(),
-    speed: z.number().min(0.5).max(2).optional(),
-    language_code: z.string().optional(),
   }),
 });
 
@@ -1012,12 +898,6 @@ export const MediaGenerationRequestSchema = z.union([
   GptImage2TextToImageRequestSchema,
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
-  ElevenLabsDialogueRequestSchema,
-  ElevenLabsSfxRequestSchema,
-  ElevenLabsSttRequestSchema,
-  ElevenLabsAudioIsolationRequestSchema,
-  ElevenLabsTtsMultilingualRequestSchema,
-  ElevenLabsTtsTurboRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
   Seedance2FastRequestSchema,
@@ -1059,11 +939,9 @@ export type Wan27AspectRatio = z.infer<typeof Wan27AspectRatioSchema>;
 export type Wan27AudioSetting = z.infer<typeof Wan27AudioSettingSchema>;
 export type Wan27ImageResolution = z.infer<typeof Wan27ImageResolutionSchema>;
 export type Wan27ImageAspectRatio = z.infer<typeof Wan27ImageAspectRatioSchema>;
-export type ElevenLabsVoice = z.infer<typeof ElevenLabsVoiceSchema>;
 
 export type KlingElement = z.infer<typeof KlingElementSchema>;
 export type MultiShotPrompt = z.infer<typeof MultiShotPromptSchema>;
-export type DialogueLine = z.infer<typeof DialogueLineSchema>;
 export type Wan27ImageColorPalette = z.infer<
   typeof Wan27ImageColorPaletteSchema
 >;
@@ -1118,20 +996,6 @@ export type SeedreamImageToImageRequest = z.infer<
 >;
 export type SeedreamTextToImageRequest = z.infer<
   typeof SeedreamTextToImageRequestSchema
->;
-export type ElevenLabsDialogueRequest = z.infer<
-  typeof ElevenLabsDialogueRequestSchema
->;
-export type ElevenLabsSfxRequest = z.infer<typeof ElevenLabsSfxRequestSchema>;
-export type ElevenLabsSttRequest = z.infer<typeof ElevenLabsSttRequestSchema>;
-export type ElevenLabsAudioIsolationRequest = z.infer<
-  typeof ElevenLabsAudioIsolationRequestSchema
->;
-export type ElevenLabsTtsMultilingualRequest = z.infer<
-  typeof ElevenLabsTtsMultilingualRequestSchema
->;
-export type ElevenLabsTtsTurboRequest = z.infer<
-  typeof ElevenLabsTtsTurboRequestSchema
 >;
 export type SoraWatermarkRequest = z.infer<typeof SoraWatermarkRequestSchema>;
 export type Wan27ImageToVideoRequest = z.infer<

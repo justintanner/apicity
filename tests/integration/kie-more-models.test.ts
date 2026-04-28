@@ -73,16 +73,6 @@ describe("kie additional models", () => {
           },
         });
       expect(seedanceResult.success).toBe(true);
-
-      // Validate elevenlabs schema
-      const elevenlabsResult =
-        provider.post.api.v1.jobs.createTask.schema.safeParse({
-          model: "elevenlabs/text-to-dialogue-v3",
-          input: {
-            prompt: "Test dialogue",
-          },
-        });
-      expect(elevenlabsResult.success).toBe(true);
     });
   });
 });

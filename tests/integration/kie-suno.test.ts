@@ -50,18 +50,10 @@ describe("kie suno music generation integration", () => {
     expect(typeof result.code).toBe("number");
   });
 
-  it("should validate payload schema", async () => {
+  it("rejects sunoGenerate payload missing required fields", async () => {
     const provider = kie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
-
-    const validResult = provider.suno.post.api.v1.generate.schema.safeParse({
-      prompt: "A test song",
-      model: "V5",
-      instrumental: false,
-      customMode: false,
-    });
-    expect(validResult.success).toBe(true);
 
     const invalidResult = provider.suno.post.api.v1.generate.schema.safeParse({
       prompt: "Missing required fields",

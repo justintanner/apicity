@@ -216,9 +216,7 @@ describe("KIE Suno provider", () => {
         data: { taskId: "t-2" },
       });
       await provider.post.api.v1.generate.extend(VALID_EXTEND);
-      expect(captured[0].url).toBe(
-        "https://api.kie.ai/api/v1/generate/extend"
-      );
+      expect(captured[0].url).toBe("https://api.kie.ai/api/v1/generate/extend");
       expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_EXTEND);
     });
 
@@ -396,9 +394,7 @@ describe("KIE Suno provider", () => {
     it("posts to /api/v1/style/generate with `content` field", async () => {
       const { provider, captured } = createProvider({ code: 200 });
       await provider.post.api.v1.style.generate({ content: "Pop, Mysterious" });
-      expect(captured[0].url).toBe(
-        "https://api.kie.ai/api/v1/style/generate"
-      );
+      expect(captured[0].url).toBe("https://api.kie.ai/api/v1/style/generate");
       expect(JSON.parse(String(captured[0].init?.body))).toEqual({
         content: "Pop, Mysterious",
       });
@@ -420,9 +416,7 @@ describe("KIE Suno provider", () => {
     it("posts to /api/v1/midi/generate with the body", async () => {
       const { provider, captured } = createProvider({ code: 200 });
       await provider.post.api.v1.midi.generate(VALID_MIDI);
-      expect(captured[0].url).toBe(
-        "https://api.kie.ai/api/v1/midi/generate"
-      );
+      expect(captured[0].url).toBe("https://api.kie.ai/api/v1/midi/generate");
       expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_MIDI);
     });
 

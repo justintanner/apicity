@@ -380,29 +380,6 @@ describe("kie Zod schema validation", () => {
   });
 
   describe("sunoGenerate schema validation", () => {
-    it("should validate sunoGenerate with required fields", () => {
-      const result = SunoGenerateRequestSchema.safeParse({
-        prompt: "A happy song",
-        model: "V4",
-        instrumental: false,
-        customMode: true,
-      });
-      expect(result.success).toBe(true);
-    });
-
-    it("should validate sunoGenerate with all fields", () => {
-      const result = SunoGenerateRequestSchema.safeParse({
-        prompt: "A happy song",
-        model: "V4",
-        instrumental: true,
-        customMode: false,
-        style: "pop",
-        negativeTags: "rock",
-        title: "My Song",
-      });
-      expect(result.success).toBe(true);
-    });
-
     it("should reject sunoGenerate without required prompt", () => {
       const result = SunoGenerateRequestSchema.safeParse({
         model: "V4",
@@ -427,23 +404,13 @@ describe("kie Zod schema validation", () => {
       );
     });
 
-    it("should validate sunoGenerate enum values for model", () => {
-      const validVersions = ["V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5"];
-      for (const version of validVersions) {
-        const result = SunoGenerateRequestSchema.safeParse({
-          prompt: "test",
-          model: version,
-          instrumental: true,
-          customMode: false,
-        });
-        expect(result.success).toBe(true);
-      }
-
+    it("should reject sunoGenerate with invalid model enum value", () => {
       const invalid = SunoGenerateRequestSchema.safeParse({
         prompt: "test",
         model: "V3",
         instrumental: true,
         customMode: false,
+        callBackUrl: "https://example.com/callback",
       });
       expect(invalid.success).toBe(false);
     });

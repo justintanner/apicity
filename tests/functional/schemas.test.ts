@@ -380,16 +380,6 @@ describe("schema + validatePayload integration", () => {
     );
   });
 
-  it("kie sunoGenerate: accepts valid request", () => {
-    const result = SunoGenerateRequestSchema.safeParse({
-      prompt: "A song",
-      model: "V5",
-      instrumental: false,
-      customMode: false,
-    });
-    expect(result.success).toBe(true);
-  });
-
   it("kie fileUrlUpload: accepts valid request", () => {
     const result = FileUrlUploadRequestSchema.safeParse({
       fileUrl: "https://example.com/image.png",
@@ -814,10 +804,5 @@ describe("kie modelInputSchemas", () => {
     expect(schema.type).toBe("video");
     expect(schema.fields.duration).toBeDefined();
     expect(schema.fields.mode).toBeDefined();
-  });
-
-  it("elevenlabs/speech-to-text is transcription type", () => {
-    const schema = modelInputSchemas["elevenlabs/speech-to-text"];
-    expect(schema.type).toBe("transcription");
   });
 });

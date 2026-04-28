@@ -972,6 +972,15 @@ export interface FalQueueStatusParams {
   logs?: boolean;
 }
 
+// Queue result parameters (fetches the completed response body)
+export interface FalQueueResultParams {
+  endpoint_id: string;
+  request_id: string;
+}
+
+// Queue result response — endpoint-specific, so untyped
+export type FalQueueResultResponse = Record<string, unknown>;
+
 // Queue log entry
 export interface FalQueueLog {
   message: string;
@@ -1091,6 +1100,10 @@ interface FalQueueNamespace {
     params: FalQueueStatusParams,
     signal?: AbortSignal
   ): Promise<FalQueueStatusResponse>;
+  result(
+    params: FalQueueResultParams,
+    signal?: AbortSignal
+  ): Promise<FalQueueResultResponse>;
 }
 
 // Serverless logs namespace types
@@ -1645,6 +1658,10 @@ interface FalGetV1QueueNamespace {
     params: FalQueueStatusParams,
     signal?: AbortSignal
   ): Promise<FalQueueStatusResponse>;
+  result(
+    params: FalQueueResultParams,
+    signal?: AbortSignal
+  ): Promise<FalQueueResultResponse>;
 }
 
 interface FalGetV1ServerlessFilesNamespace {

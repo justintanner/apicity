@@ -64,6 +64,8 @@ describe("fal queue validation", () => {
     });
     expect(typeof provider.v1.queue.submit).toBe("function");
     expect(typeof provider.v1.queue.status).toBe("function");
+    expect(typeof provider.v1.queue.result).toBe("function");
+    expect(typeof provider.get.v1.queue.result).toBe("function");
   });
 
   it("should accept custom queueBaseURL", () => {

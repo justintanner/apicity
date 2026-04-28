@@ -21,6 +21,8 @@ import {
   FalQueueSubmitResponse,
   FalQueueStatusParams,
   FalQueueStatusResponse,
+  FalQueueResultParams,
+  FalQueueResultResponse,
   FalLogsStreamParams,
   FalLabelFilter,
   FalLogEntry,
@@ -1894,6 +1896,20 @@ export function fal(opts: FalOptions): FalProvider {
         queueBaseURL
       );
     },
+
+    async result(
+      params: FalQueueResultParams,
+      signal?: AbortSignal
+    ): Promise<FalQueueResultResponse> {
+      return makeRequest<FalQueueResultResponse>(
+        "GET",
+        `/${params.endpoint_id}/requests/${params.request_id}`,
+        undefined,
+        signal,
+        undefined,
+        queueBaseURL
+      );
+    },
   };
 
   function buildLogsQueryParams(
@@ -2234,6 +2250,20 @@ export function fal(opts: FalOptions): FalProvider {
         "GET",
         `/${params.endpoint_id}/requests/${params.request_id}/status`,
         Object.keys(queryParams).length > 0 ? queryParams : undefined,
+        signal,
+        undefined,
+        queueBaseURL
+      );
+    },
+
+    async result(
+      params: FalQueueResultParams,
+      signal?: AbortSignal
+    ): Promise<FalQueueResultResponse> {
+      return makeRequest<FalQueueResultResponse>(
+        "GET",
+        `/${params.endpoint_id}/requests/${params.request_id}`,
+        undefined,
         signal,
         undefined,
         queueBaseURL

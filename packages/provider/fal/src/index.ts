@@ -54,6 +54,8 @@ export type {
   FalQueueSubmitParams,
   FalQueueSubmitResponse,
   FalQueueStatusParams,
+  FalQueueResultParams,
+  FalQueueResultResponse,
   FalQueueLog,
   FalQueueMetrics,
   FalQueueInQueueStatus,

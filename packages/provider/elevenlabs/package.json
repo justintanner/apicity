@@ -1,0 +1,52 @@
+{
+  "name": "@apicity/elevenlabs",
+  "version": "0.1.0",
+  "description": "ElevenLabs provider for sound effect generation, text-to-speech, and audio APIs.",
+  "license": "MIT",
+  "repository": "github:justintanner/apicity",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./zod": {
+      "import": "./dist/src/zod.js",
+      "types": "./dist/src/zod.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "zod": "^3.24.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "elevenlabs",
+    "sound-effects",
+    "sfx",
+    "text-to-speech",
+    "tts",
+    "audio",
+    "apicity"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  }
+}

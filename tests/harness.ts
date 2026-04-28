@@ -85,6 +85,7 @@ export function setupPollyForFileUploads(recordingName: string): PollyContext {
           "authorization",
           "user-agent",
           "x-api-key",
+          "xi-api-key",
           "x-dashscope-ossresourceresolve",
         ],
       },
@@ -104,6 +105,7 @@ export function setupPollyIgnoringBody(recordingName: string): PollyContext {
           "authorization",
           "user-agent",
           "x-api-key",
+          "xi-api-key",
           "x-dashscope-ossresourceresolve",
         ],
       },
@@ -140,6 +142,7 @@ function setupPollyWithOptions(
         "authorization",
         "user-agent",
         "x-api-key",
+        "xi-api-key",
         "x-dashscope-ossresourceresolve",
       ],
     },
@@ -167,6 +170,9 @@ function setupPollyWithOptions(
         header.value = "Bearer ***";
       }
       if (header.name?.toLowerCase() === "x-api-key") {
+        header.value = "***";
+      }
+      if (header.name?.toLowerCase() === "xi-api-key") {
         header.value = "***";
       }
     }

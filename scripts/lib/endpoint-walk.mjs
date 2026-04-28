@@ -72,6 +72,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/free/src/free.ts"],
     factoryNames: ["free"],
   },
+  {
+    name: "elevenlabs",
+    entryFiles: ["packages/provider/elevenlabs/src/elevenlabs.ts"],
+    factoryNames: ["elevenlabs"],
+  },
 ];
 
 const METHOD_KEYS = new Set([

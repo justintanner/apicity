@@ -45,6 +45,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
     "temp.sh",
     "tmpfile.link",
   ],
+  elevenlabs: ["elevenlabs.io"],
 };
 
 const METHOD_LINE_RE =

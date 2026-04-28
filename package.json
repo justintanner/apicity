@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @apicity/kimicoding, @apicity/kie, @apicity/xai, @apicity/openai, @apicity/fal, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, and @apicity/free",
+  "description": "Standalone AI provider packages - @apicity/kimicoding, @apicity/kie, @apicity/xai, @apicity/openai, @apicity/fal, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, and @apicity/free",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,7 +14,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:free && pnpm run doc-gen",
+    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:free && pnpm run doc-gen",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
     "build:kie": "pnpm --filter @apicity/kie run build",
@@ -23,6 +23,7 @@
     "build:fireworks": "pnpm --filter @apicity/fireworks run build",
     "build:anthropic": "pnpm --filter @apicity/anthropic run build",
     "build:alibaba": "pnpm --filter @apicity/alibaba run build",
+    "build:elevenlabs": "pnpm --filter @apicity/elevenlabs run build",
     "build:free": "pnpm --filter @apicity/free run build",
     "doc-gen": "node scripts/doc-gen.mjs",
     "doc-gen:openai": "node scripts/doc-gen.mjs openai",
@@ -32,6 +33,7 @@
     "doc-gen:fal": "node scripts/doc-gen.mjs fal",
     "doc-gen:kimicoding": "node scripts/doc-gen.mjs kimicoding",
     "doc-gen:alibaba": "node scripts/doc-gen.mjs alibaba",
+    "doc-gen:elevenlabs": "node scripts/doc-gen.mjs elevenlabs",
     "doc-gen:kie": "node scripts/doc-gen.mjs kie",
     "doc-gen:free": "node scripts/doc-gen.mjs free",
     "clean": "rm -rf packages/provider/*/dist",
@@ -59,7 +61,7 @@
     "dev:rerecord": "pnpm run test:integration:record",
     "dev:preflight": "pnpm run format && pnpm run lint && pnpm run test:run",
     "ci:local": "pnpm run build && pnpm run lint && pnpm run test:run",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
@@ -114,6 +116,8 @@
     "alibaba",
     "dashscope",
     "qwen",
+    "elevenlabs",
+    "sound-effects",
     "tmpfiles",
     "typescript"
   ],

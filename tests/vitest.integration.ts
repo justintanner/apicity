@@ -75,6 +75,14 @@ export default defineConfig({
         "../packages/provider/free/src/zod"
       ),
       "@apicity/free": path.resolve(__dirname, "../packages/provider/free/src"),
+      "@apicity/elevenlabs/zod": path.resolve(
+        __dirname,
+        "../packages/provider/elevenlabs/src/zod"
+      ),
+      "@apicity/elevenlabs": path.resolve(
+        __dirname,
+        "../packages/provider/elevenlabs/src"
+      ),
     },
     coverage: {
       provider: "v8",

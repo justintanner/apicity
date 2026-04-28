@@ -890,9 +890,15 @@ export const SunoGenerateRequestSchema = z.object({
   model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
   instrumental: z.boolean(),
   customMode: z.boolean(),
+  callBackUrl: z.string().min(1),
   style: z.string().optional(),
   negativeTags: z.string().optional(),
   title: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
 });
 
 export type SunoGenerateRequest = z.infer<typeof SunoGenerateRequestSchema>;

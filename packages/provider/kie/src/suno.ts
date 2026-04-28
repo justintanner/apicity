@@ -17,72 +17,152 @@ export interface SunoGenerateRequest {
   model: SunoModel;
   instrumental: boolean;
   customMode: boolean;
+  callBackUrl: string;
   style?: string;
   negativeTags?: string;
   title?: string;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
+  personaId?: string;
 }
 
 export interface SunoExtendRequest {
-  taskId: string;
+  defaultParamFlag: boolean;
+  audioId: string;
   prompt: string;
-  model?: SunoModel;
-  continueAt?: number;
+  model: SunoModel;
+  callBackUrl: string;
   style?: string;
   title?: string;
+  continueAt?: number;
+  negativeTags?: string;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
+  personaId?: string;
+}
+
+export type SunoTaskStatus =
+  | "PENDING"
+  | "TEXT_SUCCESS"
+  | "FIRST_SUCCESS"
+  | "SUCCESS"
+  | "CREATE_TASK_FAILED"
+  | "GENERATE_AUDIO_FAILED"
+  | "CALLBACK_EXCEPTION"
+  | "SENSITIVE_WORD_ERROR";
+
+export type SunoOperationType =
+  | "generate"
+  | "extend"
+  | "upload_cover"
+  | "upload_extend";
+
+export interface SunoTrack {
+  id: string;
+  audioUrl: string;
+  streamAudioUrl: string;
+  imageUrl: string;
+  prompt: string;
+  modelName: string;
+  title: string;
+  tags: string;
+  createTime: string;
+  duration: number;
 }
 
 export interface SunoRecordInfoResponse {
   code: number;
   msg?: string;
+  // Kie returns `data: null` (not a 4xx) when the taskId doesn't exist.
   data?: {
-    taskId?: string;
-    model?: string;
-    state?: string;
+    taskId: string;
+    parentMusicId?: string;
     param?: string;
-    resultJson?: string;
-    failCode?: string;
-    failMsg?: string;
-    costTime?: number;
-    completeTime?: number;
-    createTime?: number;
-    updateTime?: number;
-    progress?: number;
-  };
+    response?: {
+      taskId: string;
+      sunoData?: SunoTrack[];
+    };
+    status?: SunoTaskStatus;
+    type?: "chirp-v3-5" | "chirp-v4";
+    operationType?: SunoOperationType;
+    errorCode?: number | null;
+    errorMessage?: string | null;
+  } | null;
 }
 
 export interface SunoWavRequest {
+  taskId: string;
   audioId: string;
+  callBackUrl: string;
 }
 
 export interface SunoVocalRemovalRequest {
+  taskId: string;
   audioId: string;
+  callBackUrl: string;
+  type?: "separate_vocal" | "split_stem";
 }
 
 export interface SunoMp4Request {
+  taskId: string;
   audioId: string;
+  callBackUrl: string;
+  author?: string;
+  domainName?: string;
 }
 
 export interface SunoLyricsRequest {
   prompt: string;
+  callBackUrl: string;
 }
 
 export interface SunoBoostStyleRequest {
-  style: string;
-  audioId?: string;
+  content: string;
 }
 
 export interface SunoUploadCoverRequest {
-  audioId: string;
-  coverImageUrl: string;
+  uploadUrl: string;
+  prompt: string;
+  customMode: boolean;
+  instrumental: boolean;
+  model: SunoModel;
+  callBackUrl: string;
+  style?: string;
+  title?: string;
+  negativeTags?: string;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
+  personaId?: string;
 }
 
 export interface SunoUploadExtendRequest {
-  audioId: string;
-  extendAudioUrl: string;
+  uploadUrl: string;
+  defaultParamFlag: boolean;
+  instrumental: boolean;
+  continueAt: number;
+  model: SunoModel;
+  callBackUrl: string;
+  prompt?: string;
+  style?: string;
+  title?: string;
+  negativeTags?: string;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
+  personaId?: string;
 }
 
 export interface SunoMidiRequest {
-  audioId: string;
+  taskId: string;
+  callBackUrl: string;
+  audioId?: string;
 }
 
 interface SunoSubmitResponse {
@@ -197,48 +277,92 @@ export interface SunoProvider {
 }
 
 // Zod schemas for new request types (hardcoded inline for simplicity)
-const SunoExtendRequestSchema = SunoGenerateRequestSchema.omit({
-  instrumental: true,
-  customMode: true,
-  negativeTags: true,
-}).extend({
-  taskId: z.string().min(1),
+const SunoExtendRequestSchema = z.object({
+  defaultParamFlag: z.boolean(),
+  audioId: z.string().min(1),
+  prompt: z.string().min(1),
+  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  callBackUrl: z.string().min(1),
+  style: z.string().optional(),
+  title: z.string().optional(),
   continueAt: z.number().optional(),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
 });
 
 const SunoWavRequestSchema = z.object({
+  taskId: z.string().min(1),
   audioId: z.string().min(1),
+  callBackUrl: z.string().min(1),
 });
 
 const SunoVocalRemovalRequestSchema = z.object({
+  taskId: z.string().min(1),
   audioId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  type: z.enum(["separate_vocal", "split_stem"]).optional(),
 });
 
 const SunoMp4RequestSchema = z.object({
+  taskId: z.string().min(1),
   audioId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  author: z.string().max(50).optional(),
+  domainName: z.string().max(50).optional(),
 });
 
 const SunoLyricsRequestSchema = z.object({
-  prompt: z.string().min(1),
+  prompt: z.string().min(1).max(200),
+  callBackUrl: z.string().min(1),
 });
 
 const SunoBoostStyleRequestSchema = z.object({
-  style: z.string().min(1),
-  audioId: z.string().optional(),
+  content: z.string().min(1),
 });
 
 const SunoUploadCoverRequestSchema = z.object({
-  audioId: z.string().min(1),
-  coverImageUrl: z.string().min(1),
+  uploadUrl: z.string().min(1),
+  prompt: z.string().min(1),
+  customMode: z.boolean(),
+  instrumental: z.boolean(),
+  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  callBackUrl: z.string().min(1),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
 });
 
 const SunoUploadExtendRequestSchema = z.object({
-  audioId: z.string().min(1),
-  extendAudioUrl: z.string().min(1),
+  uploadUrl: z.string().min(1),
+  defaultParamFlag: z.boolean(),
+  instrumental: z.boolean(),
+  continueAt: z.number(),
+  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  callBackUrl: z.string().min(1),
+  prompt: z.string().optional(),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
+  personaId: z.string().optional(),
 });
 
 const SunoMidiRequestSchema = z.object({
-  audioId: z.string().min(1),
+  taskId: z.string().min(1),
+  callBackUrl: z.string().min(1),
+  audioId: z.string().optional(),
 });
 
 export function createSunoProvider(

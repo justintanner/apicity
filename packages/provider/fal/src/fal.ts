@@ -102,6 +102,7 @@ import {
   FalVeo3p1TextToVideoResponse,
   FalVeo3p1ImageToVideoParams,
   FalVeo3p1ImageToVideoResponse,
+  FalStorageLifecycle,
   FalStorageUploadInitiateParams,
   FalStorageUploadInitiateMultipartParams,
   FalStorageUploadCompleteMultipartParams,
@@ -2627,4 +2628,51 @@ export function fal(opts: FalOptions): FalProvider {
     post: { v1: postV1, run, stream: postStream },
     delete: { v1: deleteV1 },
   };
+}
+
+// Upload bytes to fal's CDN via the `storage.upload.initiate` + signed PUT
+// flow. Returns a stable `https://v3.fal.media/...` URL that fal model
+// endpoints can fetch directly — no third-party host dependency.
+export async function uploadFile(
+  provider: FalProvider,
+  args: {
+    data: Uint8Array | Buffer | Blob;
+    filename: string;
+    contentType: string;
+    storage_type?: "fal-cdn-v3";
+    lifecycle?: FalStorageLifecycle;
+  },
+  signal?: AbortSignal
+): Promise<string> {
+  const initiateParams: FalStorageUploadInitiateParams = {
+    file_name: args.filename,
+    content_type: args.contentType,
+    ...(args.storage_type ? { storage_type: args.storage_type } : {}),
+    ...(args.lifecycle ? { lifecycle: args.lifecycle } : {}),
+  };
+  const { file_url, upload_url } = await provider.storage.upload.initiate(
+    initiateParams,
+    signal
+  );
+
+  const body =
+    args.data instanceof Blob
+      ? args.data
+      : new Blob([new Uint8Array(args.data)], { type: args.contentType });
+
+  const res = await fetch(upload_url, {
+    method: "PUT",
+    headers: { "Content-Type": args.contentType },
+    body,
+    signal,
+  });
+  if (!res.ok) {
+    throw new FalError(
+      `Fal storage PUT failed: ${res.status} ${res.statusText}`,
+      res.status,
+      "server_error"
+    );
+  }
+
+  return file_url;
 }

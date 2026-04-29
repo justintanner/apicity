@@ -1,5 +1,8 @@
 export { free } from "./free";
 
+export { uploadToAnyHost } from "./uploadToAnyHost";
+export type { FreeHost, UploadToAnyHostRequest } from "./uploadToAnyHost";
+
 export { FreeError } from "./types";
 
 export {

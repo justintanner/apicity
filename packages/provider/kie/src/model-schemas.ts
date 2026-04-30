@@ -1088,4 +1088,139 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  "happyhorse/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description:
+          "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        description: "Output resolution (default 1080p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1", "4:3", "3:4"],
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: {
+        type: "number",
+        description: "Duration in seconds, 3-15 (default 5)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
+  "happyhorse/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        description:
+          "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        description: "First-frame image URL list (exactly 1 image required)",
+        items: { type: "string" },
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        description: "Output resolution (default 1080p)",
+      },
+      duration: {
+        type: "number",
+        description: "Duration in seconds, 3-15 (default 5)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
+  "happyhorse/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description:
+          "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      reference_image: {
+        type: "array",
+        required: true,
+        description:
+          "Reference image URLs (1-9 images; order defines character1, character2, ...)",
+        items: { type: "string" },
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        description: "Output resolution (default 1080p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16", "1:1", "4:3", "3:4"],
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: {
+        type: "number",
+        description: "Duration in seconds, 3-15 (default 5)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
+
+  "happyhorse/video-edit": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description:
+          "Edit instruction (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      video_url: {
+        type: "string",
+        required: true,
+        description:
+          "Source video URL (mp4/mov, 3-60s, max 100MB, longest side <=2160px)",
+      },
+      reference_image: {
+        type: "array",
+        description: "Optional reference image URLs (0-5)",
+        items: { type: "string" },
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        description: "Output resolution (default 1080p)",
+      },
+      audio_setting: {
+        type: "string",
+        enum: ["auto", "origin"],
+        description:
+          "Audio handling: auto (model decides) or origin (keep original) (default auto)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (0-2147483647)",
+      },
+    },
+  },
 };

@@ -30,6 +30,10 @@ export const KieMediaModelSchema = z.enum([
   "wan/2-7-videoedit",
   "wan/2-7-image",
   "wan/2-7-image-pro",
+  "happyhorse/text-to-video",
+  "happyhorse/image-to-video",
+  "happyhorse/reference-to-video",
+  "happyhorse/video-edit",
   "sora-watermark-remover",
 ]);
 
@@ -107,6 +111,18 @@ export const Wan27ImageAspectRatioSchema = z.enum([
   "8:1",
   "1:8",
 ]);
+
+export const HappyHorseResolutionSchema = z.enum(["720p", "1080p"]);
+
+export const HappyHorseAspectRatioSchema = z.enum([
+  "16:9",
+  "9:16",
+  "1:1",
+  "4:3",
+  "3:4",
+]);
+
+export const HappyHorseAudioSettingSchema = z.enum(["auto", "origin"]);
 
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
@@ -457,6 +473,56 @@ export const SoraWatermarkRequestSchema = z.object({
   input: z.object({
     video_url: z.string().min(1),
     upload_method: z.enum(["s3", "oss"]).optional(),
+  }),
+});
+
+export const HappyHorseTextToVideoRequestSchema = z.object({
+  model: z.literal("happyhorse/text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    resolution: HappyHorseResolutionSchema.optional(),
+    aspect_ratio: HappyHorseAspectRatioSchema.optional(),
+    duration: z.number().int().min(3).max(15).optional(),
+    seed: z.number().int().min(0).max(2147483647).optional(),
+  }),
+});
+
+export const HappyHorseImageToVideoRequestSchema = z.object({
+  model: z.literal("happyhorse/image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().max(5000).optional(),
+    image_urls: z.array(z.string()).min(1).max(1),
+    resolution: HappyHorseResolutionSchema.optional(),
+    duration: z.number().int().min(3).max(15).optional(),
+    seed: z.number().int().min(0).max(2147483647).optional(),
+  }),
+});
+
+export const HappyHorseReferenceToVideoRequestSchema = z.object({
+  model: z.literal("happyhorse/reference-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    reference_image: z.array(z.string()).min(1).max(9),
+    resolution: HappyHorseResolutionSchema.optional(),
+    aspect_ratio: HappyHorseAspectRatioSchema.optional(),
+    duration: z.number().int().min(3).max(15).optional(),
+    seed: z.number().int().min(0).max(2147483647).optional(),
+  }),
+});
+
+export const HappyHorseVideoEditRequestSchema = z.object({
+  model: z.literal("happyhorse/video-edit"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    video_url: z.string().min(1),
+    reference_image: z.array(z.string()).max(5).optional(),
+    resolution: HappyHorseResolutionSchema.optional(),
+    audio_setting: HappyHorseAudioSettingSchema.optional(),
+    seed: z.number().int().min(0).max(2147483647).optional(),
   }),
 });
 
@@ -912,6 +978,10 @@ export const MediaGenerationRequestSchema = z.union([
   Wan27VideoEditRequestSchema,
   Wan27ImageRequestSchema,
   Wan27ImageProRequestSchema,
+  HappyHorseTextToVideoRequestSchema,
+  HappyHorseImageToVideoRequestSchema,
+  HappyHorseReferenceToVideoRequestSchema,
+  HappyHorseVideoEditRequestSchema,
   SoraWatermarkRequestSchema,
 ]);
 
@@ -943,6 +1013,11 @@ export type Wan27AspectRatio = z.infer<typeof Wan27AspectRatioSchema>;
 export type Wan27AudioSetting = z.infer<typeof Wan27AudioSettingSchema>;
 export type Wan27ImageResolution = z.infer<typeof Wan27ImageResolutionSchema>;
 export type Wan27ImageAspectRatio = z.infer<typeof Wan27ImageAspectRatioSchema>;
+export type HappyHorseResolution = z.infer<typeof HappyHorseResolutionSchema>;
+export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
+export type HappyHorseAudioSetting = z.infer<
+  typeof HappyHorseAudioSettingSchema
+>;
 
 export type KlingElement = z.infer<typeof KlingElementSchema>;
 export type MultiShotPrompt = z.infer<typeof MultiShotPromptSchema>;
@@ -1014,6 +1089,18 @@ export type Wan27RefToVideoRequest = z.infer<
 export type Wan27VideoEditRequest = z.infer<typeof Wan27VideoEditRequestSchema>;
 export type Wan27ImageRequest = z.infer<typeof Wan27ImageRequestSchema>;
 export type Wan27ImageProRequest = z.infer<typeof Wan27ImageProRequestSchema>;
+export type HappyHorseTextToVideoRequest = z.infer<
+  typeof HappyHorseTextToVideoRequestSchema
+>;
+export type HappyHorseImageToVideoRequest = z.infer<
+  typeof HappyHorseImageToVideoRequestSchema
+>;
+export type HappyHorseReferenceToVideoRequest = z.infer<
+  typeof HappyHorseReferenceToVideoRequestSchema
+>;
+export type HappyHorseVideoEditRequest = z.infer<
+  typeof HappyHorseVideoEditRequestSchema
+>;
 export type Wan27TaskResultJson = z.infer<typeof Wan27TaskResultJsonSchema>;
 export type Wan27VideoResult = z.infer<typeof Wan27VideoResultSchema>;
 export type Wan27ImageResult = z.infer<typeof Wan27ImageResultSchema>;

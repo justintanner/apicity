@@ -97,6 +97,13 @@ export type {
   Wan27AudioSetting,
   Wan27ImageResolution,
   Wan27ImageAspectRatio,
+  HappyHorseResolution,
+  HappyHorseAspectRatio,
+  HappyHorseAudioSetting,
+  HappyHorseTextToVideoRequest,
+  HappyHorseImageToVideoRequest,
+  HappyHorseReferenceToVideoRequest,
+  HappyHorseVideoEditRequest,
 } from "./types";
 
 // Export sub-provider types

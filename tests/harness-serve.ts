@@ -14,6 +14,7 @@ const args = process.argv.slice(2);
 let htmlOutputPath: string | null = null;
 let gitApprove = false;
 let mediaOnly = false;
+let compareMode = false;
 let port = 3475;
 const paths: string[] = [];
 
@@ -24,6 +25,8 @@ for (let i = 0; i < args.length; i++) {
     gitApprove = true;
   } else if (args[i] === "--media-only") {
     mediaOnly = true;
+  } else if (args[i] === "--compare") {
+    compareMode = true;
   } else if (args[i] === "--port" && args[i + 1]) {
     port = parseInt(args[++i], 10);
   } else if (!args[i].startsWith("-")) {
@@ -33,14 +36,14 @@ for (let i = 0; i < args.length; i++) {
 
 if (paths.length === 0) {
   console.error(
-    "Usage: npx tsx tests/harness-serve.ts [--html out.html] [--media-only] [--git-approve] [--port N] <file.har|dir> ..."
+    "Usage: npx tsx tests/harness-serve.ts [--html out.html] [--media-only] [--compare] [--git-approve] [--port N] <file.har|dir> ..."
   );
   process.exit(1);
 }
 
-const recordings = parseHarPaths(paths.map((p) => path.resolve(p))).filter(
-  (rec) => !mediaOnly || recordingHasMedia(rec)
-);
+const recordings = parseHarPaths(paths.map((p) => path.resolve(p)))
+  .filter((rec) => !mediaOnly || recordingHasMedia(rec))
+  .filter((rec) => !compareMode || /reference-bakeoff/.test(rec.name));
 
 const commitMap = getHarCommits(recordings.map((r) => r.source));
 for (const rec of recordings) {
@@ -63,7 +66,10 @@ if (gitApprove) {
 }
 
 const VIEWER_HTML = fs.readFileSync(
-  path.resolve(import.meta.dirname, "har-viewer.html"),
+  path.resolve(
+    import.meta.dirname,
+    compareMode ? "har-compare.html" : "har-viewer.html"
+  ),
   "utf-8"
 );
 

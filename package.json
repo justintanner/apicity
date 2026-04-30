@@ -54,6 +54,7 @@
     "test:integration:record": "node tests/check-record-args.mjs",
     "test:coverage": "vitest run --config tests/vitest.integration.ts --coverage",
     "harness": "npx tsx tests/harness-serve.ts tests/recordings/",
+    "harness:compare": "npx tsx tests/harness-serve.ts --compare tests/recordings/",
     "harness:report": "npx tsx tests/harness-report.ts",
     "harness:screenshot": "mkdir -p tests/fixtures/harness-generated && npx tsx tests/harness-serve.ts --html tests/fixtures/harness-generated/harness-report.html tests/recordings/ && npx tsx tests/harness-screenshot.ts tests/fixtures/harness-generated/harness-report.html tests/fixtures/harness-generated/harness-report.png",
     "harness:screenshot:media": "mkdir -p tests/fixtures/harness-generated && npx tsx tests/harness-serve.ts --html tests/fixtures/harness-generated/harness-report-media.html --media-only tests/recordings/ && npx tsx tests/harness-screenshot.ts tests/fixtures/harness-generated/harness-report-media.html tests/fixtures/harness-generated/harness-report-media.png",

@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Apicity Reference-Video Bake-off</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥊</text></svg>"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      ::-webkit-scrollbar {
+        width: 12px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #45475a;
+        border-radius: 6px;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #585b70;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+        background: #1e1e2e;
+        color: #cdd6f4;
+        min-height: 100vh;
+      }
+      #topbar {
+        display: flex;
+        align-items: center;
+        padding: 10px 20px;
+        background: #181825;
+        border-bottom: 1px solid #313244;
+        gap: 12px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      #branding {
+        font-size: 16px;
+        font-weight: 700;
+        color: #f9e2af;
+        letter-spacing: 0.5px;
+      }
+      #subtitle {
+        font-size: 12px;
+        color: #a6adc8;
+      }
+      #pair-count {
+        font-size: 12px;
+        color: #6c7086;
+        margin-left: auto;
+      }
+      main {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+      }
+      .bakeoff-row {
+        background: #181825;
+        border: 1px solid #313244;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .row-header {
+        padding: 14px 18px;
+        background: #11111b;
+        border-bottom: 1px solid #313244;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .row-title {
+        font-weight: 700;
+        font-size: 14px;
+        color: #cdd6f4;
+      }
+      .row-commit {
+        font-size: 11px;
+        color: #6c7086;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .row-commit .sha {
+        color: #fab387;
+        font-weight: 600;
+      }
+      .references-strip {
+        display: flex;
+        gap: 12px;
+        padding: 14px 18px;
+        background: #1e1e2e;
+        border-bottom: 1px solid #313244;
+        flex-wrap: wrap;
+      }
+      .ref-thumb {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+      }
+      .ref-thumb img {
+        width: 140px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 6px;
+        border: 1px solid #313244;
+        background: #11111b;
+      }
+      .ref-label {
+        font-size: 11px;
+        color: #a6adc8;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: #313244;
+      }
+      .column {
+        background: #181825;
+        padding: 16px 18px;
+      }
+      .column-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #89b4fa;
+        margin-bottom: 4px;
+      }
+      .column-model {
+        display: inline-block;
+        background: #cba6f7;
+        color: #1e1e2e;
+        padding: 1px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        margin-bottom: 12px;
+      }
+      .column-prompt {
+        background: #11111b;
+        border: 1px solid #313244;
+        border-radius: 6px;
+        padding: 10px 12px;
+        font-size: 12px;
+        color: #cdd6f4;
+        white-space: pre-wrap;
+        line-height: 1.5;
+        margin-bottom: 12px;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+      .column-params {
+        font-size: 11px;
+        color: #a6adc8;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        margin-bottom: 12px;
+        padding: 8px 10px;
+        background: #1e1e2e;
+        border-radius: 4px;
+        border: 1px dashed #313244;
+      }
+      .column-params .pkey {
+        color: #6c7086;
+      }
+      .column-params .pval {
+        color: #a6e3a1;
+      }
+      .column-result video {
+        width: 100%;
+        max-height: 480px;
+        border-radius: 8px;
+        border: 1px solid #313244;
+        background: #11111b;
+      }
+      .column-result .no-result {
+        padding: 24px;
+        text-align: center;
+        color: #f38ba8;
+        background: #1e1e2e;
+        border: 1px dashed #f38ba8;
+        border-radius: 8px;
+        font-size: 13px;
+      }
+      .column-result a.raw-link {
+        display: inline-block;
+        margin-top: 8px;
+        font-size: 11px;
+        color: #74c7ec;
+        text-decoration: none;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      }
+      .column-result a.raw-link:hover {
+        text-decoration: underline;
+      }
+      .empty {
+        padding: 60px 24px;
+        text-align: center;
+        color: #6c7086;
+        font-size: 14px;
+      }
+      .empty code {
+        background: #11111b;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #fab387;
+      }
+    </style>
+  </head>
+  <body>
+    <header id="topbar">
+      <span id="branding">🥊 Reference-Video Bake-off</span>
+      <span id="subtitle"
+        >Grok Imagine vs Wan 2.7 — same scene, same references</span
+      >
+      <span id="pair-count"></span>
+    </header>
+    <main id="rows"></main>
+    <script>
+      var recordings = [];
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      // Find the createTask POST entry and parse its JSON body.
+      function extractCreateTask(rec) {
+        for (var i = 0; i < rec.entries.length; i++) {
+          var e = rec.entries[i];
+          if (e.request.method !== "POST") continue;
+          if (!/\/createTask$/.test(e.request.url)) continue;
+          var raw = e.request.postData && e.request.postData.text;
+          if (!raw) continue;
+          try {
+            return JSON.parse(raw);
+          } catch (err) {
+            return null;
+          }
+        }
+        return null;
+      }
+
+      // Walk recordInfo polls (in reverse) and find the last successful response
+      // whose resultJson parses to { resultUrls: [...] }.
+      function extractResultUrls(rec) {
+        for (var i = rec.entries.length - 1; i >= 0; i--) {
+          var e = rec.entries[i];
+          if (e.request.method !== "GET") continue;
+          if (!/\/recordInfo/.test(e.request.url)) continue;
+          var bodyText = e.response.content && e.response.content.text;
+          if (!bodyText) continue;
+          var body;
+          try {
+            body = JSON.parse(bodyText);
+          } catch (err) {
+            continue;
+          }
+          if (!body.data || body.data.state !== "success") continue;
+          if (!body.data.resultJson) continue;
+          try {
+            var parsed = JSON.parse(body.data.resultJson);
+            if (Array.isArray(parsed.resultUrls)) return parsed.resultUrls;
+          } catch (err) {
+            continue;
+          }
+        }
+        return [];
+      }
+
+      function modelLabel(model) {
+        if (!model) return "(unknown model)";
+        return model;
+      }
+
+      // Pair recordings by suffix `reference-bakeoff`. The first half of the
+      // name (kie/grok-imagine-... vs kie/wan-27-r2v-...) becomes the
+      // discriminator; we sort grok before wan. If only one half is present,
+      // render a single-column row with a placeholder for the other.
+      function pairRecordings(recs) {
+        var groups = {};
+        for (var i = 0; i < recs.length; i++) {
+          var rec = recs[i];
+          var name = rec.name || "";
+          if (!/reference-bakeoff/.test(name)) continue;
+          var key = "bakeoff"; // single global pair for now
+          groups[key] = groups[key] || { grok: null, wan: null };
+          if (/grok/i.test(name)) groups[key].grok = rec;
+          else if (/wan/i.test(name)) groups[key].wan = rec;
+        }
+        return Object.keys(groups).map(function (k) {
+          return groups[k];
+        });
+      }
+
+      function renderReferences(task) {
+        if (!task || !task.input) return "";
+        var refs = [];
+        if (Array.isArray(task.input.image_urls)) {
+          // Grok: image_urls positional → @Image1, @Image2, ...
+          task.input.image_urls.forEach(function (url, i) {
+            refs.push({ label: "@Image" + (i + 1), url: url });
+          });
+        } else {
+          if (Array.isArray(task.input.reference_image)) {
+            task.input.reference_image.forEach(function (url, i) {
+              refs.push({ label: "Image " + (i + 1), url: url });
+            });
+          }
+          if (task.input.first_frame) {
+            refs.push({ label: "first_frame", url: task.input.first_frame });
+          }
+        }
+        if (!refs.length) return "";
+        return (
+          '<div class="references-strip">' +
+          refs
+            .map(function (r) {
+              return (
+                '<div class="ref-thumb">' +
+                '<img src="' +
+                escapeHtml(r.url) +
+                '" alt="' +
+                escapeHtml(r.label) +
+                '" loading="lazy" onerror="this.style.opacity=0.2">' +
+                '<span class="ref-label">' +
+                escapeHtml(r.label) +
+                "</span>" +
+                "</div>"
+              );
+            })
+            .join("") +
+          "</div>"
+        );
+      }
+
+      function renderParams(input) {
+        if (!input) return "";
+        var keys = [
+          "duration",
+          "resolution",
+          "aspect_ratio",
+          "mode",
+          "watermark",
+          "nsfw_checker",
+          "seed",
+        ];
+        var parts = keys
+          .filter(function (k) {
+            return input[k] !== undefined;
+          })
+          .map(function (k) {
+            return (
+              '<span class="pkey">' +
+              k +
+              '</span>=<span class="pval">' +
+              JSON.stringify(input[k]) +
+              "</span>"
+            );
+          });
+        if (!parts.length) return "";
+        return '<div class="column-params">' + parts.join("  ") + "</div>";
+      }
+
+      function renderColumn(rec, sideTitle) {
+        if (!rec) {
+          return (
+            '<div class="column">' +
+            '<div class="column-title">' +
+            escapeHtml(sideTitle) +
+            "</div>" +
+            '<div class="no-result">No recording yet — run <code>pnpm run dev:record</code></div>' +
+            "</div>"
+          );
+        }
+        var task = extractCreateTask(rec);
+        var model = task && task.model;
+        var prompt = task && task.input && task.input.prompt;
+        var resultUrls = extractResultUrls(rec);
+
+        var html = '<div class="column">';
+        html += '<div class="column-title">' + escapeHtml(sideTitle) + "</div>";
+        html +=
+          '<div class="column-model">' +
+          escapeHtml(modelLabel(model)) +
+          "</div>";
+        if (prompt)
+          html += '<div class="column-prompt">' + escapeHtml(prompt) + "</div>";
+        html += renderParams(task && task.input);
+
+        html += '<div class="column-result">';
+        if (resultUrls.length) {
+          var url = resultUrls[0];
+          html +=
+            '<video controls preload="metadata" src="' +
+            escapeHtml(url) +
+            '"></video>';
+          html +=
+            '<a class="raw-link" href="' +
+            escapeHtml(url) +
+            '" target="_blank" rel="noopener">' +
+            escapeHtml(url) +
+            "</a>";
+        } else {
+          html +=
+            '<div class="no-result">No successful result in this recording.</div>';
+        }
+        html += "</div>";
+        html += "</div>";
+        return html;
+      }
+
+      function renderRow(pair) {
+        var anyRec = pair.grok || pair.wan;
+        var task = anyRec ? extractCreateTask(anyRec) : null;
+        var commit = anyRec && anyRec.commit;
+
+        var html = '<section class="bakeoff-row">';
+        html += '<div class="row-header">';
+        html +=
+          '<span class="row-title">Cat (Image 1+2) on Man (Image 3) at Beach (Image 4)</span>';
+        if (commit) {
+          html +=
+            '<span class="row-commit"><span class="sha">' +
+            escapeHtml(commit.shortSha) +
+            "</span> " +
+            escapeHtml(commit.subject) +
+            "</span>";
+        }
+        html += "</div>";
+
+        // Reference strip — prefer Grok's view (4 positional images) since
+        // it includes the beach. Fall back to Wan if Grok is missing.
+        var refTask = pair.grok ? extractCreateTask(pair.grok) : task;
+        html += renderReferences(refTask);
+
+        html += '<div class="columns">';
+        html += renderColumn(pair.grok, "Grok Imagine");
+        html += renderColumn(pair.wan, "Wan 2.7");
+        html += "</div>";
+        html += "</section>";
+        return html;
+      }
+
+      function render() {
+        var rowsEl = document.getElementById("rows");
+        var countEl = document.getElementById("pair-count");
+        var pairs = pairRecordings(recordings);
+        if (!pairs.length) {
+          rowsEl.innerHTML =
+            '<div class="empty">No bake-off recordings found.<br><br>Record them with:<br><code>pnpm run dev:record -- tests/integration/kie-grok-imagine-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-wan-27-r2v-reference-bakeoff.test.ts</code></div>';
+          countEl.textContent = "";
+          return;
+        }
+        countEl.textContent =
+          pairs.length + " pair" + (pairs.length === 1 ? "" : "s");
+        rowsEl.innerHTML = pairs.map(renderRow).join("");
+      }
+
+      if (typeof HAR_DATA !== "undefined") {
+        recordings = HAR_DATA.recordings || [];
+        render();
+      } else {
+        fetch("/api/data")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            recordings = data.recordings || [];
+            render();
+          });
+      }
+    </script>
+  </body>
+</html>

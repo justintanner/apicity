@@ -33,96 +33,140 @@ const durations = (args.durations ?? "5,8,10")
   .map((s) => Number(s.trim()))
   .filter((n) => Number.isFinite(n) && n > 0);
 
+// `audio` marks whether the model bakes synchronized audio into the output
+// at the listed price. "yes" = audio included, "no" = silent only,
+// "—" = unknown.
 const lineup = [
-  { provider: "kie", label: "kie · veo3 (4K)", model: "veo3" },
-  { provider: "kie", label: "kie · veo3-fast (720p)", model: "veo3_fast" },
-  { provider: "kie", label: "kie · kling 3.0 std", model: "kling-3.0" },
-  { provider: "kie", label: "kie · kling 3.0 4K", model: "kling-3.0-4k" },
-  { provider: "kie", label: "kie · kling 2.1", model: "kling-2.1" },
-  { provider: "kie", label: "kie · sora-2", model: "sora-2" },
+  { provider: "kie", label: "kie · veo3 (4K)", model: "veo3", audio: "yes" },
+  {
+    provider: "kie",
+    label: "kie · veo3-fast (720p)",
+    model: "veo3_fast",
+    audio: "yes",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 std",
+    model: "kling-3.0",
+    audio: "no",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 4K",
+    model: "kling-3.0-4k",
+    audio: "no",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 2.1",
+    model: "kling-2.1",
+    audio: "no",
+  },
+  { provider: "kie", label: "kie · sora-2", model: "sora-2", audio: "yes" },
   // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v).
   // Seedance 2 Fast supports only 480p and 720p (no 1080p).
   {
     provider: "kie",
     label: "kie · seedance 2 fast 480p i2v",
     model: "seedance-2-fast-480p-i2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 480p t2v",
     model: "seedance-2-fast-480p-t2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 720p i2v",
     model: "seedance-2-fast-720p-i2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 720p t2v",
     model: "seedance-2-fast-720p-t2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 480p i2v",
     model: "seedance-2-480p-i2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 480p t2v",
     model: "seedance-2-480p-t2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 720p i2v",
     model: "seedance-2-720p-i2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 720p t2v",
     model: "seedance-2-720p-t2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 1080p i2v",
     model: "seedance-2-1080p-i2v",
+    audio: "no",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 1080p t2v",
     model: "seedance-2-1080p-t2v",
+    audio: "no",
   },
-  { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7" },
-  { provider: "kie", label: "kie · grok-imagine", model: "grok-imagine" },
+  { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "no" },
+  {
+    provider: "kie",
+    label: "kie · grok-imagine",
+    model: "grok-imagine",
+    audio: "no",
+  },
   {
     provider: "kie",
     label: "kie · grok-imagine+audio",
     model: "grok-imagine-audio",
+    audio: "yes",
   },
   {
     provider: "fal",
     label: "fal · seedance 2.0 fast i2v",
     endpoint_id: "fal-ai/bytedance/seedance-2.0/fast/image-to-video",
+    audio: "no",
   },
   {
     provider: "fal",
     label: "fal · seedance 2.0 i2v",
     endpoint_id: "fal-ai/bytedance/seedance-2.0/image-to-video",
+    audio: "no",
   },
   {
     provider: "fal",
     label: "fal · kling 3.0 std i2v",
     endpoint_id: "fal-ai/kling-video/v3/standard/image-to-video",
+    audio: "no",
   },
   {
     provider: "fal",
     label: "fal · kling 3.0 4K i2v",
     endpoint_id: "fal-ai/kling-video/o3/4k/image-to-video",
+    audio: "no",
   },
   {
     provider: "fal",
     label: "fal · wan 2.7 i2v",
     endpoint_id: "fal-ai/wan/v2.7/image-to-video",
+    audio: "no",
   },
 ];
 
@@ -197,7 +241,13 @@ for (const entry of filtered) {
     source = est.source;
     for (const w of est.warnings) warnings.add(w);
   }
-  rows.push({ label: entry.label, source, cells, warnings: [...warnings] });
+  rows.push({
+    label: entry.label,
+    audio: entry.audio ?? "—",
+    source,
+    cells,
+    warnings: [...warnings],
+  });
 }
 
 const sortKey = durations[0];
@@ -217,11 +267,14 @@ renderTable({ rows, durations });
 function renderTable({ rows, durations }) {
   const labelWidth = Math.max(8, ...rows.map((r) => r.label.length));
   const colWidth = 10;
+  const audioWidth = 5;
   const head =
     "| " +
     "model".padEnd(labelWidth) +
     " | " +
     durations.map((d) => `${d}s`.padStart(colWidth)).join(" | ") +
+    " | " +
+    "audio".padEnd(audioWidth) +
     " | " +
     "source".padEnd(22) +
     " |";
@@ -230,6 +283,8 @@ function renderTable({ rows, durations }) {
     "-".repeat(labelWidth + 2) +
     "|" +
     durations.map(() => "-".repeat(colWidth + 2)).join("|") +
+    "|" +
+    "-".repeat(audioWidth + 2) +
     "|" +
     "-".repeat(24) +
     "|";
@@ -249,6 +304,8 @@ function renderTable({ rows, durations }) {
         r.label.padEnd(labelWidth) +
         " | " +
         cells +
+        " | " +
+        (r.audio ?? "—").padEnd(audioWidth) +
         " | " +
         (r.source ?? "—").padEnd(22) +
         " |"

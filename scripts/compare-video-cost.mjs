@@ -33,9 +33,10 @@ const durations = (args.durations ?? "5,8,10")
   .map((s) => Number(s.trim()))
   .filter((n) => Number.isFinite(n) && n > 0);
 
-// `audio` marks whether the model bakes synchronized audio into the output
-// at the listed price. "yes" = audio included, "no" = silent only,
-// "—" = unknown.
+// `audio` derived from each model's zod schema in @apicity/kie:
+//   - "yes" = no audio toggle in the schema → audio is on by default
+//   - "opt" = schema exposes an audio toggle (sound / generate_audio /
+//     audio_setting) → caller chooses on or off per request
 const lineup = [
   { provider: "kie", label: "kie · veo3 (4K)", model: "veo3", audio: "yes" },
   {
@@ -48,19 +49,19 @@ const lineup = [
     provider: "kie",
     label: "kie · kling 3.0 std",
     model: "kling-3.0",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · kling 3.0 4K",
     model: "kling-3.0-4k",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · kling 2.1",
     model: "kling-2.1",
-    audio: "no",
+    audio: "yes",
   },
   { provider: "kie", label: "kie · sora-2", model: "sora-2", audio: "yes" },
   // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v).
@@ -69,98 +70,98 @@ const lineup = [
     provider: "kie",
     label: "kie · seedance 2 fast 480p i2v",
     model: "seedance-2-fast-480p-i2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 480p t2v",
     model: "seedance-2-fast-480p-t2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 720p i2v",
     model: "seedance-2-fast-720p-i2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 720p t2v",
     model: "seedance-2-fast-720p-t2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 480p i2v",
     model: "seedance-2-480p-i2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 480p t2v",
     model: "seedance-2-480p-t2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 720p i2v",
     model: "seedance-2-720p-i2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 720p t2v",
     model: "seedance-2-720p-t2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 1080p i2v",
     model: "seedance-2-1080p-i2v",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 1080p t2v",
     model: "seedance-2-1080p-t2v",
-    audio: "no",
+    audio: "opt",
   },
-  { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "no" },
+  { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "yes" },
   {
     provider: "kie",
     label: "kie · grok-imagine",
     model: "grok-imagine",
-    audio: "no",
+    audio: "yes",
   },
   {
     provider: "fal",
     label: "fal · seedance 2.0 fast i2v",
     endpoint_id: "fal-ai/bytedance/seedance-2.0/fast/image-to-video",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "fal",
     label: "fal · seedance 2.0 i2v",
     endpoint_id: "fal-ai/bytedance/seedance-2.0/image-to-video",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "fal",
     label: "fal · kling 3.0 std i2v",
     endpoint_id: "fal-ai/kling-video/v3/standard/image-to-video",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "fal",
     label: "fal · kling 3.0 4K i2v",
     endpoint_id: "fal-ai/kling-video/o3/4k/image-to-video",
-    audio: "no",
+    audio: "opt",
   },
   {
     provider: "fal",
     label: "fal · wan 2.7 i2v",
     endpoint_id: "fal-ai/wan/v2.7/image-to-video",
-    audio: "no",
+    audio: "yes",
   },
 ];
 

@@ -125,19 +125,9 @@
       }
       .columns {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
         gap: 1px;
         background: #313244;
-      }
-      @media (max-width: 1500px) {
-        .columns {
-          grid-template-columns: 1fr 1fr;
-        }
-      }
-      @media (max-width: 800px) {
-        .columns {
-          grid-template-columns: 1fr;
-        }
       }
       .column {
         background: #181825;
@@ -274,8 +264,8 @@
     <header id="topbar">
       <span id="branding">🥊 Reference-Video Bake-off</span>
       <span id="subtitle"
-        >Grok Imagine vs Wan 2.7 vs Seedance 2 Fast vs Kling 3.0 — same scene,
-        same references</span
+        >Grok vs Wan vs Seedance vs Kling vs HappyHorse — same scene, same
+        references</span
       >
       <span id="pair-count"></span>
     </header>
@@ -355,12 +345,18 @@
             grok: null,
             wan: null,
             seedance: null,
+            seedance2: null,
             kling: null,
+            kling4k: null,
+            happyhorse: null,
           };
           if (/grok/i.test(name)) groups[key].grok = rec;
           else if (/wan/i.test(name)) groups[key].wan = rec;
-          else if (/seedance/i.test(name)) groups[key].seedance = rec;
+          else if (/seedance.*fast/i.test(name)) groups[key].seedance = rec;
+          else if (/seedance/i.test(name)) groups[key].seedance2 = rec;
+          else if (/kling.*4k/i.test(name)) groups[key].kling4k = rec;
           else if (/kling/i.test(name)) groups[key].kling = rec;
+          else if (/happyhorse/i.test(name)) groups[key].happyhorse = rec;
         }
         return Object.keys(groups).map(function (k) {
           return groups[k];
@@ -549,7 +545,10 @@
         html += renderColumn(pair.grok, "Grok Imagine");
         html += renderColumn(pair.wan, "Wan 2.7");
         html += renderColumn(pair.seedance, "Seedance 2 Fast");
-        html += renderColumn(pair.kling, "Kling 3.0");
+        html += renderColumn(pair.seedance2, "Seedance 2");
+        html += renderColumn(pair.kling, "Kling 3.0 (std)");
+        html += renderColumn(pair.kling4k, "Kling 3.0 (4K)");
+        html += renderColumn(pair.happyhorse, "HappyHorse");
         html += "</div>";
         html += "</section>";
         return html;
@@ -561,7 +560,7 @@
         var pairs = pairRecordings(recordings);
         if (!pairs.length) {
           rowsEl.innerHTML =
-            '<div class="empty">No bake-off recordings found.<br><br>Record them with:<br><code>pnpm run dev:record -- tests/integration/kie-grok-imagine-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-wan-27-r2v-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-bytedance-seedance-2-fast-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-kling-30-reference-bakeoff.test.ts</code></div>';
+            '<div class="empty">No bake-off recordings found.<br><br>Record them with:<br><code>pnpm run dev:record -- tests/integration/kie-grok-imagine-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-wan-27-r2v-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-bytedance-seedance-2-fast-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-kling-30-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-happyhorse-reference-bakeoff.test.ts</code></div>';
           countEl.textContent = "";
           return;
         }

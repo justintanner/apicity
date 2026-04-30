@@ -191,10 +191,12 @@
       }
       .column-result video {
         width: 100%;
-        max-height: 480px;
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
         border-radius: 8px;
         border: 1px solid #313244;
         background: #11111b;
+        display: block;
       }
       .column-result .no-result {
         padding: 24px;
@@ -215,6 +217,40 @@
       }
       .column-result a.raw-link:hover {
         text-decoration: underline;
+      }
+      .column-payload {
+        margin-top: 12px;
+        background: #1e1e2e;
+        border: 1px dashed #313244;
+        border-radius: 4px;
+      }
+      .column-payload > summary {
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 11px;
+        color: #6c7086;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .column-payload > summary:hover {
+        color: #a6adc8;
+      }
+      .column-payload[open] > summary {
+        border-bottom: 1px solid #313244;
+        color: #a6adc8;
+      }
+      .column-payload pre {
+        background: #11111b;
+        padding: 10px 12px;
+        margin: 0;
+        font-size: 11px;
+        line-height: 1.5;
+        color: #cdd6f4;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        max-height: 360px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
       }
       .empty {
         padding: 60px 24px;
@@ -468,6 +504,15 @@
             '<div class="no-result">No successful result in this recording.</div>';
         }
         html += "</div>";
+
+        if (task) {
+          html += '<details class="column-payload">';
+          html += "<summary>full createTask JSON</summary>";
+          html +=
+            "<pre>" + escapeHtml(JSON.stringify(task, null, 2)) + "</pre>";
+          html += "</details>";
+        }
+
         html += "</div>";
         return html;
       }

@@ -227,7 +227,11 @@ export const GrokTextToVideoRequestSchema = z.object({
   }),
 });
 
-export const GrokImageToVideoDurationSchema = z.number().int().min(6).max(30);
+// Spec types image-to-video duration as a string (e.g. "6"), even though the
+// underlying value is a 6–30 second integer. text-to-video uses a number.
+export const GrokImageToVideoDurationSchema = z
+  .string()
+  .regex(/^([6-9]|[12][0-9]|30)$/);
 
 export const GrokImageToVideoRequestSchema = z.object({
   model: z.literal("grok-imagine/image-to-video"),

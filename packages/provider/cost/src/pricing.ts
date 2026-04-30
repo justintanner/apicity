@@ -180,9 +180,9 @@ export const PER_UNIT_RATES: Record<
     "seedance-2-fast-480p-i2v": { unit: "seconds", perUnit: 0.045 },
     "seedance-2-fast-480p-t2v": { unit: "seconds", perUnit: 0.0775 },
     "wan-2.7": { unit: "seconds", perUnit: 0.1 }, // fal v2.7 (verified 2026-04-30)
-    // grok-imagine on kie has no audio toggle and no 1080p tier (only 480p
-    // and 720p per the kie API docs). Rate below is xAI's direct $/s; kie's
-    // passthrough markup and per-resolution tiers haven't been verified.
-    "grok-imagine": { unit: "seconds", perUnit: 0.05 },
+    // grok-imagine: row removed pending kie marketplace verification. The
+    // previous $0.05/s value was xAI's direct rate, which doesn't match kie's
+    // passthrough pricing (verified seedance ratios suggest kie's grok rate
+    // is closer to $0.005/s). Re-add with kie-page-confirmed numbers.
   },
 };

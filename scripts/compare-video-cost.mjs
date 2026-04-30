@@ -127,12 +127,7 @@ const lineup = [
     audio: "opt",
   },
   { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "yes" },
-  {
-    provider: "kie",
-    label: "kie · grok-imagine",
-    model: "grok-imagine",
-    audio: "yes",
-  },
+  // grok-imagine row removed pending verified kie marketplace pricing.
   {
     provider: "fal",
     label: "fal · seedance 2.0 fast i2v",

@@ -11,11 +11,15 @@ import type {
   FalCostNamespace,
   KimicodingCostNamespace,
   OpenAiCostNamespace,
+  UsdRequest,
   XaiCostNamespace,
 } from "./types";
+import { computeUsd } from "./usd";
 
 export function cost(opts: CostOptions): CostProvider {
-  const provider: CostProvider = {};
+  const provider: CostProvider = {
+    usd: (req: UsdRequest) => computeUsd(opts, req),
+  };
 
   if (opts.openai) {
     const client = openai(opts.openai);

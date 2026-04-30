@@ -1,0 +1,44 @@
+{
+  "name": "@apicity/cost",
+  "version": "0.1.0",
+  "description": "Cross-provider cost & token estimation — unifies the pre-execution estimate endpoints exposed by @apicity/openai, @apicity/anthropic, @apicity/xai, @apicity/kimicoding, and @apicity/fal.",
+  "license": "MIT",
+  "repository": "github:justintanner/apicity",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "dependencies": {
+    "@apicity/anthropic": "workspace:*",
+    "@apicity/fal": "workspace:*",
+    "@apicity/kimicoding": "workspace:*",
+    "@apicity/openai": "workspace:*",
+    "@apicity/xai": "workspace:*"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "cost",
+    "tokens",
+    "estimate",
+    "pricing",
+    "apicity"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  }
+}

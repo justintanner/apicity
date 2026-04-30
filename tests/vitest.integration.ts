@@ -83,6 +83,7 @@ export default defineConfig({
         __dirname,
         "../packages/provider/elevenlabs/src"
       ),
+      "@apicity/cost": path.resolve(__dirname, "../packages/provider/cost/src"),
     },
     coverage: {
       provider: "v8",

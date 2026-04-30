@@ -150,13 +150,22 @@ export const PER_UNIT_RATES: Record<
     eleven_multilingual_v2: { unit: "characters", perUnit: 0.00012 },
     eleven_multilingual_v3: { unit: "characters", perUnit: 0.00012 },
   },
+  // Per-output-second video rates. Where the upstream provider publishes a
+  // primary per-output-second figure (fal model pages, xAI announcement),
+  // that is used verbatim. For exact per-job USD on fal-hosted models prefer
+  // c.usd({ provider: "fal", endpoint_id, payload: { unit_quantity: seconds } })
+  // — the kie table is a hardcoded approximation; fal returns upstream USD.
   kie: {
-    veo3: { unit: "seconds", perUnit: 0.3 },
-    veo3_fast: { unit: "seconds", perUnit: 0.1 },
-    "kling-3.0": { unit: "seconds", perUnit: 0.1 },
+    veo3: { unit: "seconds", perUnit: 0.3 }, // veo3 4K rate (kie marketplace)
+    veo3_fast: { unit: "seconds", perUnit: 0.1 }, // veo3 720p rate
+    "kling-3.0": { unit: "seconds", perUnit: 0.14 }, // fal v3/standard (verified 2026-04-30)
+    "kling-3.0-4k": { unit: "seconds", perUnit: 0.42 }, // fal o3/4k (verified 2026-04-30)
     "kling-2.1": { unit: "seconds", perUnit: 0.07 },
     "sora-2": { unit: "seconds", perUnit: 0.15 },
-    "seedance-2-fast": { unit: "seconds", perUnit: 0.05 },
-    "seedance-2": { unit: "seconds", perUnit: 0.1 },
+    "seedance-2-fast": { unit: "seconds", perUnit: 0.2419 }, // fal 720p (verified 2026-04-30; was $0.05 — wrong)
+    "seedance-2": { unit: "seconds", perUnit: 0.3024 }, // fal 720p (verified 2026-04-30; was $0.10 — wrong)
+    "wan-2.7": { unit: "seconds", perUnit: 0.1 }, // fal v2.7 (verified 2026-04-30)
+    "grok-imagine": { unit: "seconds", perUnit: 0.05 }, // xAI direct, no audio
+    "grok-imagine-audio": { unit: "seconds", perUnit: 0.07 }, // xAI direct, with audio
   },
 };

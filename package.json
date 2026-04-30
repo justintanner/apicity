@@ -63,7 +63,9 @@
     "dev:rerecord": "pnpm run test:integration:record",
     "dev:preflight": "pnpm run format && pnpm run lint && pnpm run test:run",
     "ci:local": "pnpm run build && pnpm run lint && pnpm run test:run",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'"
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
+    "compare:video": "pnpm run build:cost --silent && op run --env-file=.env.tpl -- node scripts/compare-video-cost.mjs",
+    "compare:image": "pnpm run build:cost --silent && op run --env-file=.env.tpl -- node scripts/compare-image-cost.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

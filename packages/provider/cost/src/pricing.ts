@@ -162,18 +162,20 @@ export const PER_UNIT_RATES: Record<
     "kling-3.0-4k": { unit: "seconds", perUnit: 0.42 }, // fal o3/4k (verified 2026-04-30)
     "kling-2.1": { unit: "seconds", perUnit: 0.07 },
     "sora-2": { unit: "seconds", perUnit: 0.15 },
-    "seedance-2-fast": { unit: "seconds", perUnit: 0.2419 }, // fal 720p; kie per-tier rates not yet captured
-    // Seedance 2: kie publishes 6 rates (3 resolutions × i2v/t2v). The bare
-    // `seedance-2` alias matches kie's 1080p-i2v tier ($0.31/s) — typical for
-    // image-conditioned high-quality output. For an exact match, pick a
-    // named variant. Verified 2026-04-30 from kie marketplace seedance-2 page.
-    "seedance-2": { unit: "seconds", perUnit: 0.31 }, // alias for 1080p-i2v
+    // Seedance 2: kie publishes 6 rates (3 resolutions × i2v/t2v). Pick the
+    // tier you'll actually request — there is no bare `seedance-2` alias
+    // because kie does not publish a single canonical rate. Verified
+    // 2026-04-30 from the kie marketplace seedance-2 page.
     "seedance-2-1080p-i2v": { unit: "seconds", perUnit: 0.31 },
     "seedance-2-1080p-t2v": { unit: "seconds", perUnit: 0.51 },
     "seedance-2-720p-i2v": { unit: "seconds", perUnit: 0.125 },
     "seedance-2-720p-t2v": { unit: "seconds", perUnit: 0.205 },
     "seedance-2-480p-i2v": { unit: "seconds", perUnit: 0.0575 },
     "seedance-2-480p-t2v": { unit: "seconds", perUnit: 0.095 },
+    // seedance-2-fast: kie publishes per-tier rates for fast too, but they
+    // weren't captured in this round. Use the fal endpoint
+    // (`fal-ai/bytedance/seedance-2.0/fast/image-to-video`) via
+    // c.usd({ provider: "fal", ... }) for upstream USD until then.
     "wan-2.7": { unit: "seconds", perUnit: 0.1 }, // fal v2.7 (verified 2026-04-30)
     "grok-imagine": { unit: "seconds", perUnit: 0.05 }, // xAI direct, no audio
     "grok-imagine-audio": { unit: "seconds", perUnit: 0.07 }, // xAI direct, with audio

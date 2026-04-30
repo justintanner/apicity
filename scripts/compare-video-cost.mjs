@@ -41,36 +41,55 @@ const lineup = [
   { provider: "kie", label: "kie · kling 2.1", model: "kling-2.1" },
   { provider: "kie", label: "kie · sora-2", model: "sora-2" },
   // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v).
-  // The fast variant's per-tier kie rates aren't captured yet; query fal
-  // directly via `--provider=fal` if you need a fast estimate.
+  // Seedance 2 Fast supports only 480p and 720p (no 1080p).
   {
     provider: "kie",
-    label: "kie · seedance 2.0 480p i2v",
+    label: "kie · seedance 2 fast 480p i2v",
+    model: "seedance-2-fast-480p-i2v",
+  },
+  {
+    provider: "kie",
+    label: "kie · seedance 2 fast 480p t2v",
+    model: "seedance-2-fast-480p-t2v",
+  },
+  {
+    provider: "kie",
+    label: "kie · seedance 2 fast 720p i2v",
+    model: "seedance-2-fast-720p-i2v",
+  },
+  {
+    provider: "kie",
+    label: "kie · seedance 2 fast 720p t2v",
+    model: "seedance-2-fast-720p-t2v",
+  },
+  {
+    provider: "kie",
+    label: "kie · seedance 2 480p i2v",
     model: "seedance-2-480p-i2v",
   },
   {
     provider: "kie",
-    label: "kie · seedance 2.0 480p t2v",
+    label: "kie · seedance 2 480p t2v",
     model: "seedance-2-480p-t2v",
   },
   {
     provider: "kie",
-    label: "kie · seedance 2.0 720p i2v",
+    label: "kie · seedance 2 720p i2v",
     model: "seedance-2-720p-i2v",
   },
   {
     provider: "kie",
-    label: "kie · seedance 2.0 720p t2v",
+    label: "kie · seedance 2 720p t2v",
     model: "seedance-2-720p-t2v",
   },
   {
     provider: "kie",
-    label: "kie · seedance 2.0 1080p i2v",
+    label: "kie · seedance 2 1080p i2v",
     model: "seedance-2-1080p-i2v",
   },
   {
     provider: "kie",
-    label: "kie · seedance 2.0 1080p t2v",
+    label: "kie · seedance 2 1080p t2v",
     model: "seedance-2-1080p-t2v",
   },
   { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7" },

@@ -172,10 +172,13 @@ export const PER_UNIT_RATES: Record<
     "seedance-2-720p-t2v": { unit: "seconds", perUnit: 0.205 },
     "seedance-2-480p-i2v": { unit: "seconds", perUnit: 0.0575 },
     "seedance-2-480p-t2v": { unit: "seconds", perUnit: 0.095 },
-    // seedance-2-fast: kie publishes per-tier rates for fast too, but they
-    // weren't captured in this round. Use the fal endpoint
-    // (`fal-ai/bytedance/seedance-2.0/fast/image-to-video`) via
-    // c.usd({ provider: "fal", ... }) for upstream USD until then.
+    // Seedance 2 Fast: kie supports only 480p and 720p (no 1080p tier).
+    // Verified 2026-04-30 from the kie marketplace seedance-2 page,
+    // "Seedance 2 Fast" tab.
+    "seedance-2-fast-720p-i2v": { unit: "seconds", perUnit: 0.1 },
+    "seedance-2-fast-720p-t2v": { unit: "seconds", perUnit: 0.165 },
+    "seedance-2-fast-480p-i2v": { unit: "seconds", perUnit: 0.045 },
+    "seedance-2-fast-480p-t2v": { unit: "seconds", perUnit: 0.0775 },
     "wan-2.7": { unit: "seconds", perUnit: 0.1 }, // fal v2.7 (verified 2026-04-30)
     "grok-imagine": { unit: "seconds", perUnit: 0.05 }, // xAI direct, no audio
     "grok-imagine-audio": { unit: "seconds", perUnit: 0.07 }, // xAI direct, with audio

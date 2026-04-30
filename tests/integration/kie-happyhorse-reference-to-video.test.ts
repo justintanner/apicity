@@ -4,6 +4,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
@@ -16,8 +17,8 @@ describe("kie happyhorse/reference-to-video integration", () => {
   });
 
   it(
-    "should upload reference images, create a happyhorse reference-to-video task and poll status",
-    { timeout: 120_000 },
+    "should upload a reference image, create a happyhorse reference-to-video task and poll to completion",
+    { timeout: 1200_000 },
     async () => {
       ctx = setupPollyForFileUploads("kie/happyhorse-reference-to-video");
 
@@ -25,41 +26,28 @@ describe("kie happyhorse/reference-to-video integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const cat1Blob = new Blob(
+      const refBlob = new Blob(
         [readFileSync(resolve(__dirname, "../fixtures/cat1.jpg"))],
         { type: "image/jpeg" }
       );
-      const cat2Blob = new Blob(
-        [readFileSync(resolve(__dirname, "../fixtures/cat2.jpg"))],
-        { type: "image/jpeg" }
-      );
 
-      const cat1Upload = await provider.post.api.fileStreamUpload({
-        file: cat1Blob,
+      const refUpload = await provider.post.api.fileStreamUpload({
+        file: refBlob,
         filename: "cat1.jpg",
         uploadPath: "images/test-uploads",
       });
-      const cat2Upload = await provider.post.api.fileStreamUpload({
-        file: cat2Blob,
-        filename: "cat2.jpg",
-        uploadPath: "images/test-uploads",
-      });
 
-      expect(cat1Upload.data?.downloadUrl).toBeTruthy();
-      expect(cat2Upload.data?.downloadUrl).toBeTruthy();
+      expect(refUpload.data?.downloadUrl).toBeTruthy();
 
       const task = await provider.post.api.v1.jobs.createTask({
         model: "happyhorse/reference-to-video",
         input: {
           prompt:
-            "character1 and character2 sit side-by-side, gently turning toward each other and looking at the camera",
-          reference_image: [
-            cat1Upload.data!.downloadUrl,
-            cat2Upload.data!.downloadUrl,
-          ],
+            "character1 looks at the camera and slowly tilts its head to one side",
+          reference_image: [refUpload.data!.downloadUrl],
           resolution: "720p",
           aspect_ratio: "16:9",
-          duration: 5,
+          duration: 3,
           seed: 1308038620,
         },
       });
@@ -67,12 +55,23 @@ describe("kie happyhorse/reference-to-video integration", () => {
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();
 
-      const info = await provider.get.api.v1.jobs.recordInfo(task.data!.taskId);
+      const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+      const taskId = task.data!.taskId;
+      let state = "waiting";
+      for (let i = 0; i < 200; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          if (state === "success") {
+            expect(info.data?.resultJson).toBeTruthy();
+          }
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
 
-      expect(info.data?.taskId).toBe(task.data?.taskId);
-      expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(
-        info.data?.state
-      );
+      expect(state).toBe("success");
     }
   );
 });

@@ -4,6 +4,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
@@ -16,8 +17,8 @@ describe("kie happyhorse/image-to-video integration", () => {
   });
 
   it(
-    "should upload an image, create a happyhorse image-to-video task and poll status",
-    { timeout: 120_000 },
+    "should upload an image, create a happyhorse image-to-video task and poll to completion",
+    { timeout: 1200_000 },
     async () => {
       ctx = setupPollyForFileUploads("kie/happyhorse-image-to-video");
 
@@ -42,10 +43,10 @@ describe("kie happyhorse/image-to-video integration", () => {
       const task = await provider.post.api.v1.jobs.createTask({
         model: "happyhorse/image-to-video",
         input: {
-          prompt: "A cat stretches and yawns, then turns to look at the camera",
+          prompt: "The cat blinks slowly and turns its head toward the camera",
           image_urls: [upload.data!.downloadUrl],
           resolution: "720p",
-          duration: 5,
+          duration: 3,
           seed: 1546095068,
         },
       });
@@ -53,12 +54,23 @@ describe("kie happyhorse/image-to-video integration", () => {
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();
 
-      const info = await provider.get.api.v1.jobs.recordInfo(task.data!.taskId);
+      const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+      const taskId = task.data!.taskId;
+      let state = "waiting";
+      for (let i = 0; i < 200; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          if (state === "success") {
+            expect(info.data?.resultJson).toBeTruthy();
+          }
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
 
-      expect(info.data?.taskId).toBe(task.data?.taskId);
-      expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(
-        info.data?.state
-      );
+      expect(state).toBe("success");
     }
   );
 });

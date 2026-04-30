@@ -4,6 +4,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
@@ -16,8 +17,8 @@ describe("kie happyhorse/video-edit integration", () => {
   });
 
   it(
-    "should upload a video, create a happyhorse video-edit task and poll status",
-    { timeout: 120_000 },
+    "should upload a video, create a happyhorse video-edit task and poll to completion",
+    { timeout: 1200_000 },
     async () => {
       ctx = setupPollyForFileUploads("kie/happyhorse-video-edit");
 
@@ -29,31 +30,20 @@ describe("kie happyhorse/video-edit integration", () => {
         [readFileSync(resolve(__dirname, "../fixtures/jump.mp4"))],
         { type: "video/mp4" }
       );
-      const refBlob = new Blob(
-        [readFileSync(resolve(__dirname, "../fixtures/cat1.jpg"))],
-        { type: "image/jpeg" }
-      );
 
       const videoUpload = await provider.post.api.fileStreamUpload({
         file: videoBlob,
         filename: "jump.mp4",
         uploadPath: "videos/test-uploads",
       });
-      const refUpload = await provider.post.api.fileStreamUpload({
-        file: refBlob,
-        filename: "cat1.jpg",
-        uploadPath: "images/test-uploads",
-      });
 
       expect(videoUpload.data?.downloadUrl).toBeTruthy();
-      expect(refUpload.data?.downloadUrl).toBeTruthy();
 
       const task = await provider.post.api.v1.jobs.createTask({
         model: "happyhorse/video-edit",
         input: {
           prompt: "Restyle the scene to look like a watercolor painting",
           video_url: videoUpload.data!.downloadUrl,
-          reference_image: [refUpload.data!.downloadUrl],
           resolution: "720p",
           audio_setting: "auto",
           seed: 1764574909,
@@ -63,12 +53,23 @@ describe("kie happyhorse/video-edit integration", () => {
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();
 
-      const info = await provider.get.api.v1.jobs.recordInfo(task.data!.taskId);
+      const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+      const taskId = task.data!.taskId;
+      let state = "waiting";
+      for (let i = 0; i < 200; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          if (state === "success") {
+            expect(info.data?.resultJson).toBeTruthy();
+          }
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
 
-      expect(info.data?.taskId).toBe(task.data?.taskId);
-      expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(
-        info.data?.state
-      );
+      expect(state).toBe("success");
     }
   );
 });

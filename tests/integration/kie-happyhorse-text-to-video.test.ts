@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  getPollyMode,
+  type PollyContext,
+} from "../harness";
 import { kie } from "@apicity/kie";
 
 describe("kie happyhorse/text-to-video integration", () => {
@@ -9,33 +14,48 @@ describe("kie happyhorse/text-to-video integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should create a happyhorse text-to-video task and poll status", async () => {
-    ctx = setupPolly("kie/happyhorse-text-to-video");
+  it(
+    "should create a happyhorse text-to-video task and poll to completion",
+    { timeout: 1200_000 },
+    async () => {
+      ctx = setupPolly("kie/happyhorse-text-to-video");
 
-    const provider = kie({
-      apiKey: process.env.KIE_API_KEY ?? "test-key",
-    });
+      const provider = kie({
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
 
-    const task = await provider.post.api.v1.jobs.createTask({
-      model: "happyhorse/text-to-video",
-      input: {
-        prompt:
-          "A miniature city built from cardboard and bottle caps comes to life at night. A cardboard train slowly passes through, with small lights dotting the scene and illuminating the way ahead.",
-        resolution: "720p",
-        aspect_ratio: "16:9",
-        duration: 5,
-        seed: 1622429582,
-      },
-    });
+      const task = await provider.post.api.v1.jobs.createTask({
+        model: "happyhorse/text-to-video",
+        input: {
+          prompt:
+            "A miniature city built from cardboard and bottle caps comes to life at night. A cardboard train slowly passes through, with small lights dotting the scene and illuminating the way ahead.",
+          resolution: "720p",
+          aspect_ratio: "16:9",
+          duration: 3,
+          seed: 1622429582,
+        },
+      });
 
-    expect(task.code).toBe(200);
-    expect(task.data?.taskId).toBeTruthy();
+      expect(task.code).toBe(200);
+      expect(task.data?.taskId).toBeTruthy();
 
-    const info = await provider.get.api.v1.jobs.recordInfo(task.data!.taskId);
+      const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+      const taskId = task.data!.taskId;
+      let state = "waiting";
+      for (let i = 0; i < 200; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          if (state === "success") {
+            expect(info.data?.resultJson).toBeTruthy();
+          }
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
 
-    expect(info.data?.taskId).toBe(task.data?.taskId);
-    expect(["waiting", "queuing", "generating", "success", "fail"]).toContain(
-      info.data?.state
-    );
-  });
+      expect(state).toBe("success");
+    }
+  );
 });

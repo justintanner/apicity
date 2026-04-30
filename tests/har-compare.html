@@ -125,11 +125,16 @@
       }
       .columns {
         display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
         gap: 1px;
         background: #313244;
       }
-      @media (max-width: 1100px) {
+      @media (max-width: 1500px) {
+        .columns {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 800px) {
         .columns {
           grid-template-columns: 1fr;
         }
@@ -229,8 +234,8 @@
     <header id="topbar">
       <span id="branding">🥊 Reference-Video Bake-off</span>
       <span id="subtitle"
-        >Grok Imagine vs Wan 2.7 vs Seedance 2 Fast — same scene, same
-        references</span
+        >Grok Imagine vs Wan 2.7 vs Seedance 2 Fast vs Kling 3.0 — same scene,
+        same references</span
       >
       <span id="pair-count"></span>
     </header>
@@ -310,10 +315,12 @@
             grok: null,
             wan: null,
             seedance: null,
+            kling: null,
           };
           if (/grok/i.test(name)) groups[key].grok = rec;
           else if (/wan/i.test(name)) groups[key].wan = rec;
           else if (/seedance/i.test(name)) groups[key].seedance = rec;
+          else if (/kling/i.test(name)) groups[key].kling = rec;
         }
         return Object.keys(groups).map(function (k) {
           return groups[k];
@@ -323,7 +330,19 @@
       function renderReferences(task) {
         if (!task || !task.input) return "";
         var refs = [];
-        if (Array.isArray(task.input.image_urls)) {
+        if (Array.isArray(task.input.kling_elements)) {
+          // Kling: named kling_elements + image_urls (general refs / setting)
+          task.input.kling_elements.forEach(function (elem) {
+            (elem.element_input_urls || []).forEach(function (url) {
+              refs.push({ label: "[" + elem.name + "]", url: url });
+            });
+          });
+          if (Array.isArray(task.input.image_urls)) {
+            task.input.image_urls.forEach(function (url, i) {
+              refs.push({ label: "image " + (i + 1), url: url });
+            });
+          }
+        } else if (Array.isArray(task.input.image_urls)) {
           // Grok: image_urls positional → @Image1, @Image2, ...
           task.input.image_urls.forEach(function (url, i) {
             refs.push({ label: "@Image" + (i + 1), url: url });
@@ -383,6 +402,8 @@
           "watermark",
           "generate_audio",
           "web_search",
+          "sound",
+          "multi_shots",
           "nsfw_checker",
           "seed",
         ];
@@ -479,6 +500,7 @@
         html += renderColumn(pair.grok, "Grok Imagine");
         html += renderColumn(pair.wan, "Wan 2.7");
         html += renderColumn(pair.seedance, "Seedance 2 Fast");
+        html += renderColumn(pair.kling, "Kling 3.0");
         html += "</div>";
         html += "</section>";
         return html;
@@ -490,7 +512,7 @@
         var pairs = pairRecordings(recordings);
         if (!pairs.length) {
           rowsEl.innerHTML =
-            '<div class="empty">No bake-off recordings found.<br><br>Record them with:<br><code>pnpm run dev:record -- tests/integration/kie-grok-imagine-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-wan-27-r2v-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-bytedance-seedance-2-fast-reference-bakeoff.test.ts</code></div>';
+            '<div class="empty">No bake-off recordings found.<br><br>Record them with:<br><code>pnpm run dev:record -- tests/integration/kie-grok-imagine-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-wan-27-r2v-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-bytedance-seedance-2-fast-reference-bakeoff.test.ts</code><br><code>pnpm run dev:record -- tests/integration/kie-kling-30-reference-bakeoff.test.ts</code></div>';
           countEl.textContent = "";
           return;
         }

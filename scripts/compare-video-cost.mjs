@@ -133,12 +133,6 @@ const lineup = [
     audio: "no",
   },
   {
-    provider: "kie",
-    label: "kie · grok-imagine+audio",
-    model: "grok-imagine-audio",
-    audio: "yes",
-  },
-  {
     provider: "fal",
     label: "fal · seedance 2.0 fast i2v",
     endpoint_id: "fal-ai/bytedance/seedance-2.0/fast/image-to-video",

@@ -58,7 +58,7 @@ export const KlingDurationSchema = z.enum([
 
 export const KlingAspectRatioSchema = z.enum(["16:9", "9:16", "1:1"]);
 
-export const KlingModeSchema = z.enum(["std", "pro"]);
+export const KlingModeSchema = z.enum(["std", "pro", "4K"]);
 
 export const GrokImagineModeSchema = z.enum(["fun", "normal", "spicy"]);
 
@@ -120,8 +120,8 @@ export const KlingElementSchema = z.object({
 });
 
 export const MultiShotPromptSchema = z.object({
-  prompt: z.string().min(1),
-  duration: z.number(),
+  prompt: z.string().min(1).max(500),
+  duration: z.number().int().min(1).max(12),
 });
 
 export const Wan27ImageColorPaletteSchema = z.object({
@@ -145,7 +145,7 @@ export const KlingVideoRequestSchema = z.object({
     mode: KlingModeSchema,
     multi_shots: z.boolean(),
     multi_prompt: z.array(MultiShotPromptSchema).optional(),
-    kling_elements: z.array(KlingElementSchema).optional(),
+    kling_elements: z.array(KlingElementSchema).max(3).optional(),
   }),
 });
 

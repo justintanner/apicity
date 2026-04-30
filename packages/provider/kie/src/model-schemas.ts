@@ -42,7 +42,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       mode: {
         type: "string",
         required: true,
-        enum: ["std", "pro"],
+        enum: ["std", "pro", "4K"],
         description: "Quality mode",
       },
       multi_shots: {
@@ -97,15 +97,18 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       mode: {
         type: "string",
-        required: true,
         enum: ["720p", "1080p"],
         description: "Output resolution (default 720p)",
       },
       character_orientation: {
         type: "string",
-        required: true,
         enum: ["video", "image"],
         description: "Character orientation source (default video)",
+      },
+      background_source: {
+        type: "string",
+        enum: ["input_video", "input_image"],
+        description: "Background source (default input_video)",
       },
     },
   },

@@ -51,7 +51,6 @@ export type {
   FireworksOptions,
 } from "./zod";
 
-// Fireworks AI provider options (kept for backward compatibility -- canonical type is in zod.ts)
 // Re-import to use in local interface definitions
 import type {
   FireworksChatRequest,
@@ -1100,10 +1099,6 @@ interface FireworksChatCompletionsMethod {
   schema: z.ZodType;
 }
 
-interface FireworksChatNamespace {
-  completions: FireworksChatCompletionsMethod;
-}
-
 interface FireworksCompletionsStreamMethod {
   (
     req: FireworksCompletionRequest,
@@ -1159,6 +1154,50 @@ interface FireworksStreamingTranscriptionsMethod {
   schema: z.ZodType;
 }
 
+interface FireworksAudioBatchTranscriptionsMethod {
+  (
+    req: FireworksAudioBatchTranscriptionRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAudioBatchSubmitResponse>;
+  schema: z.ZodType;
+}
+
+interface FireworksAudioBatchTranslationsMethod {
+  (
+    req: FireworksAudioBatchTranslationRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAudioBatchSubmitResponse>;
+  schema: z.ZodType;
+}
+
+interface FireworksBatchJobCreateMethod {
+  (
+    accountId: string,
+    req: FireworksBatchJobCreateRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksBatchJob>;
+  schema: z.ZodType;
+}
+
+interface FireworksSFTCreateMethod {
+  (
+    req: FireworksSFTCreateRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksSFTJob>;
+  schema: z.ZodType;
+}
+
+interface FireworksSFTDeleteMethod {
+  (
+    req: FireworksSFTDeleteRequest,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksChatNamespace {
+  completions: FireworksChatCompletionsMethod;
+}
+
 interface FireworksTranscriptionsMethod {
   (
     req: FireworksTranscriptionRequest,
@@ -1176,28 +1215,6 @@ interface FireworksTranslationsMethod {
   schema: z.ZodType;
 }
 
-interface FireworksAudioNamespace {
-  transcriptions: FireworksTranscriptionsMethod;
-  translations: FireworksTranslationsMethod;
-  batch: FireworksAudioBatchNamespace;
-}
-
-interface FireworksAudioBatchTranscriptionsMethod {
-  (
-    req: FireworksAudioBatchTranscriptionRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksAudioBatchSubmitResponse>;
-  schema: z.ZodType;
-}
-
-interface FireworksAudioBatchTranslationsMethod {
-  (
-    req: FireworksAudioBatchTranslationRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksAudioBatchSubmitResponse>;
-  schema: z.ZodType;
-}
-
 interface FireworksAudioBatchNamespace {
   transcriptions: FireworksAudioBatchTranscriptionsMethod;
   translations: FireworksAudioBatchTranslationsMethod;
@@ -1208,13 +1225,16 @@ interface FireworksAudioBatchNamespace {
   ): Promise<FireworksAudioBatchJob>;
 }
 
-interface FireworksBatchJobCreateMethod {
-  (
-    accountId: string,
-    req: FireworksBatchJobCreateRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksBatchJob>;
-  schema: z.ZodType;
+interface FireworksAudioNamespace {
+  transcriptions: FireworksTranscriptionsMethod;
+  translations: FireworksTranslationsMethod;
+  batch: FireworksAudioBatchNamespace;
+}
+
+interface FireworksWorkflowsNamespace {
+  textToImage: FireworksTextToImageMethod;
+  kontext: FireworksKontextMethod;
+  getResult: FireworksGetResultMethod;
 }
 
 interface FireworksBatchInferenceJobsNamespace {
@@ -1236,14 +1256,6 @@ interface FireworksBatchInferenceJobsNamespace {
   ): Promise<Record<string, never>>;
 }
 
-interface FireworksSFTCreateMethod {
-  (
-    req: FireworksSFTCreateRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksSFTJob>;
-  schema: z.ZodType;
-}
-
 interface FireworksSFTListMethod {
   (
     req: FireworksSFTListRequest,
@@ -1253,13 +1265,6 @@ interface FireworksSFTListMethod {
 
 interface FireworksSFTGetMethod {
   (req: FireworksSFTGetRequest, signal?: AbortSignal): Promise<FireworksSFTJob>;
-}
-
-interface FireworksSFTDeleteMethod {
-  (
-    req: FireworksSFTDeleteRequest,
-    signal?: AbortSignal
-  ): Promise<Record<string, never>>;
 }
 
 interface FireworksSFTResumeMethod {
@@ -1277,9 +1282,344 @@ interface FireworksSFTNamespace {
   resume: FireworksSFTResumeMethod;
 }
 
+interface FireworksDeploymentsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDeploymentsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDeploymentsResponse>;
+  create: FireworksCreateDeploymentMethod;
+  get(
+    accountId: string,
+    deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+  update: FireworksUpdateDeploymentMethod;
+  delete(
+    accountId: string,
+    deploymentId: string,
+    options?: FireworksDeleteDeploymentOptions,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  scale: FireworksScaleDeploymentMethod;
+  undelete(
+    accountId: string,
+    deploymentId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+  // Verb accessor for POST on /accounts/:id/deployments
+  post(
+    accountId: string,
+    req: FireworksCreateDeploymentRequest,
+    options?: FireworksCreateDeploymentOptions,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployment>;
+}
+
+interface FireworksDeploymentShapesNamespace {
+  get(
+    accountId: string,
+    shapeId: string,
+    params?: FireworksGetDeploymentShapeRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeploymentShape>;
+  versions: {
+    list(
+      accountId: string,
+      shapeId: string,
+      params?: FireworksListDeploymentShapeVersionsRequest,
+      signal?: AbortSignal
+    ): Promise<FireworksListDeploymentShapeVersionsResponse>;
+    get(
+      accountId: string,
+      shapeId: string,
+      versionId: string,
+      params?: FireworksGetDeploymentShapeVersionRequest,
+      signal?: AbortSignal
+    ): Promise<FireworksDeploymentShapeVersion>;
+  };
+}
+
+interface FireworksDatasetGetDownloadEndpointMethod {
+  (
+    accountId: string,
+    datasetId: string,
+    req?: FireworksDatasetGetDownloadEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDatasetGetDownloadEndpointResponse>;
+  schema: z.ZodType;
+}
+
+interface FireworksDatasetsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDatasetsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDatasetsResponse>;
+  create: FireworksDatasetCreateMethod;
+  get(
+    accountId: string,
+    datasetId: string,
+    req?: FireworksGetDatasetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDataset>;
+  update: FireworksDatasetUpdateMethod;
+  delete(
+    accountId: string,
+    datasetId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getUploadEndpoint: FireworksDatasetGetUploadEndpointMethod;
+  getDownloadEndpoint: FireworksDatasetGetDownloadEndpointMethod;
+  validateUpload: FireworksDatasetValidateUploadMethod;
+}
+
+interface FireworksDeployedModelsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListDeployedModelsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListDeployedModelsResponse>;
+  create: FireworksCreateDeployedModelMethod;
+  get(
+    accountId: string,
+    deployedModelId: string,
+    params?: FireworksGetDeployedModelRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDeployedModel>;
+  update: FireworksUpdateDeployedModelMethod;
+  delete(
+    accountId: string,
+    deployedModelId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+interface FireworksDpoJobsNamespace {
+  create: FireworksDpoJobCreateMethod;
+  get(
+    accountId: string,
+    jobId: string,
+    req?: FireworksDpoJobGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDpoJob>;
+  list(
+    accountId: string,
+    req?: FireworksDpoJobListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksDpoJobListResponse>;
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+  resume(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksDpoJob>;
+  getMetricsFileEndpoint(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksMetricsFileEndpointResponse>;
+}
+
+interface FireworksUsersNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListUsersRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListUsersResponse>;
+  create: FireworksCreateUserMethod;
+  get(
+    accountId: string,
+    userId: string,
+    params?: FireworksGetUserRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
+  update: FireworksUpdateUserMethod;
+  // Verb accessor for POST on /accounts/:id/users
+  post(
+    accountId: string,
+    req: FireworksCreateUserRequest,
+    options?: FireworksCreateUserOptions,
+    signal?: AbortSignal
+  ): Promise<FireworksUser>;
+}
+
+interface FireworksApiKeysNamespace {
+  list(
+    accountId: string,
+    userId: string,
+    params?: FireworksListApiKeysRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListApiKeysResponse>;
+  create: FireworksCreateApiKeyMethod;
+  delete: FireworksDeleteApiKeyMethod;
+}
+
+interface FireworksSecretsNamespace {
+  list(
+    accountId: string,
+    params?: FireworksListSecretsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListSecretsResponse>;
+  create: FireworksCreateSecretMethod;
+  get(
+    accountId: string,
+    secretId: string,
+    params?: { readMask?: string },
+    signal?: AbortSignal
+  ): Promise<FireworksSecret>;
+  update: FireworksUpdateSecretMethod;
+  delete(
+    accountId: string,
+    secretId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+}
+
+interface FireworksEvaluatorsNamespace {
+  create: FireworksCreateEvaluatorMethod;
+  list(
+    accountId: string,
+    params?: FireworksListEvaluatorsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListEvaluatorsResponse>;
+  get(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetEvaluatorRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluator>;
+  update: FireworksUpdateEvaluatorMethod;
+  delete(
+    accountId: string,
+    evaluatorId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getUploadEndpoint: FireworksGetUploadEndpointEvaluatorMethod;
+  validateUpload(
+    accountId: string,
+    evaluatorId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getBuildLogEndpoint(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetBuildLogEndpointRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetBuildLogEndpointResponse>;
+  getSourceCodeSignedUrl(
+    accountId: string,
+    evaluatorId: string,
+    params?: FireworksGetSourceCodeSignedUrlRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksGetSourceCodeSignedUrlResponse>;
+}
+
+interface FireworksEvaluationJobsNamespace {
+  create: FireworksCreateEvaluationJobMethod;
+  list(
+    accountId: string,
+    params?: FireworksListEvaluationJobsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListEvaluationJobsResponse>;
+  get(
+    accountId: string,
+    evaluationJobId: string,
+    params?: FireworksGetEvaluationJobRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksEvaluationJob>;
+  delete(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+  getExecutionLogEndpoint(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksGetExecutionLogEndpointResponse>;
+}
+
+interface FireworksRFTNamespace {
+  create: FireworksRFTCreateMethod;
+  get(
+    accountId: string,
+    jobId: string,
+    req?: FireworksRFTGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRFTJob>;
+  list(
+    accountId: string,
+    req?: FireworksRFTListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRFTListResponse>;
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+  resume(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksRFTJob>;
+}
+
+interface FireworksRlorTrainerJobsNamespace {
+  create: FireworksRlorTrainerJobCreateMethod;
+  get(
+    accountId: string,
+    jobId: string,
+    req?: FireworksRlorTrainerJobGetRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRlorTrainerJob>;
+  list(
+    accountId: string,
+    req?: FireworksRlorTrainerJobListRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksRlorTrainerJobListResponse>;
+  delete(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<Record<string, never>>;
+  executeTrainStep: FireworksRlorTrainerJobExecuteStepMethod;
+  resume(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksRlorTrainerJob>;
+}
+
 interface FireworksAccountsNamespace {
+  list(
+    params?: FireworksListAccountsRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksListAccountsResponse>;
+  get(
+    accountId: string,
+    params?: FireworksGetAccountRequest,
+    signal?: AbortSignal
+  ): Promise<FireworksAccount>;
+  users: FireworksUsersNamespace;
+  apiKeys: FireworksApiKeysNamespace;
+  secrets: FireworksSecretsNamespace;
+  models: FireworksModelsNamespace;
+  datasets: FireworksDatasetsNamespace;
   batchInferenceJobs: FireworksBatchInferenceJobsNamespace;
   supervisedFineTuningJobs: FireworksSFTNamespace;
+  deployments: FireworksDeploymentsNamespace;
+  deployedModels: FireworksDeployedModelsNamespace;
+  deploymentShapes: FireworksDeploymentShapesNamespace;
+  dpoJobs: FireworksDpoJobsNamespace;
+  evaluators: FireworksEvaluatorsNamespace;
+  evaluationJobs: FireworksEvaluationJobsNamespace;
+  reinforcementFineTuningJobs: FireworksRFTNamespace;
+  rlorTrainerJobs: FireworksRlorTrainerJobsNamespace;
 }
 
 interface FireworksV1Namespace {
@@ -1363,12 +1703,6 @@ interface FireworksGetResultMethod {
     signal?: AbortSignal
   ): Promise<FireworksGetResultResponse>;
   schema: z.ZodType;
-}
-
-interface FireworksWorkflowsNamespace {
-  textToImage: FireworksTextToImageMethod;
-  kontext: FireworksKontextMethod;
-  getResult: FireworksGetResultMethod;
 }
 
 // Models CRUD types
@@ -1880,64 +2214,6 @@ interface FireworksScaleDeploymentMethod {
   schema: z.ZodType;
 }
 
-interface FireworksDeploymentsNamespace {
-  list(
-    accountId: string,
-    params?: FireworksListDeploymentsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListDeploymentsResponse>;
-  create: FireworksCreateDeploymentMethod;
-  get(
-    accountId: string,
-    deploymentId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksDeployment>;
-  update: FireworksUpdateDeploymentMethod;
-  delete(
-    accountId: string,
-    deploymentId: string,
-    options?: FireworksDeleteDeploymentOptions,
-    signal?: AbortSignal
-  ): Promise<Record<string, unknown>>;
-  scale: FireworksScaleDeploymentMethod;
-  undelete(
-    accountId: string,
-    deploymentId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksDeployment>;
-  // Verb accessor for POST on /accounts/:id/deployments
-  post(
-    accountId: string,
-    req: FireworksCreateDeploymentRequest,
-    options?: FireworksCreateDeploymentOptions,
-    signal?: AbortSignal
-  ): Promise<FireworksDeployment>;
-}
-
-interface FireworksDeploymentShapesNamespace {
-  get(
-    accountId: string,
-    shapeId: string,
-    params?: FireworksGetDeploymentShapeRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksDeploymentShape>;
-  versions: {
-    list(
-      accountId: string,
-      shapeId: string,
-      params?: FireworksListDeploymentShapeVersionsRequest,
-      signal?: AbortSignal
-    ): Promise<FireworksListDeploymentShapeVersionsResponse>;
-    get(
-      accountId: string,
-      shapeId: string,
-      versionId: string,
-      params?: FireworksGetDeploymentShapeVersionRequest,
-      signal?: AbortSignal
-    ): Promise<FireworksDeploymentShapeVersion>;
-  };
-}
-
 // Dataset types
 
 export type FireworksDatasetState = "STATE_UNSPECIFIED" | "UPLOADING" | "READY";
@@ -2048,16 +2324,6 @@ interface FireworksDatasetGetUploadEndpointMethod {
   schema: z.ZodType;
 }
 
-interface FireworksDatasetGetDownloadEndpointMethod {
-  (
-    accountId: string,
-    datasetId: string,
-    req?: FireworksDatasetGetDownloadEndpointRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksDatasetGetDownloadEndpointResponse>;
-  schema: z.ZodType;
-}
-
 interface FireworksDatasetValidateUploadMethod {
   (
     accountId: string,
@@ -2066,30 +2332,6 @@ interface FireworksDatasetValidateUploadMethod {
     signal?: AbortSignal
   ): Promise<Record<string, unknown>>;
   schema: z.ZodType;
-}
-
-interface FireworksDatasetsNamespace {
-  list(
-    accountId: string,
-    params?: FireworksListDatasetsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListDatasetsResponse>;
-  create: FireworksDatasetCreateMethod;
-  get(
-    accountId: string,
-    datasetId: string,
-    req?: FireworksGetDatasetRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksDataset>;
-  update: FireworksDatasetUpdateMethod;
-  delete(
-    accountId: string,
-    datasetId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, unknown>>;
-  getUploadEndpoint: FireworksDatasetGetUploadEndpointMethod;
-  getDownloadEndpoint: FireworksDatasetGetDownloadEndpointMethod;
-  validateUpload: FireworksDatasetValidateUploadMethod;
 }
 
 // Deployed Models namespace types
@@ -2113,27 +2355,6 @@ interface FireworksUpdateDeployedModelMethod {
   schema: z.ZodType;
 }
 
-interface FireworksDeployedModelsNamespace {
-  list(
-    accountId: string,
-    params?: FireworksListDeployedModelsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListDeployedModelsResponse>;
-  create: FireworksCreateDeployedModelMethod;
-  get(
-    accountId: string,
-    deployedModelId: string,
-    params?: FireworksGetDeployedModelRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksDeployedModel>;
-  update: FireworksUpdateDeployedModelMethod;
-  delete(
-    accountId: string,
-    deployedModelId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, unknown>>;
-}
-
 // DPO Jobs namespace types
 interface FireworksDpoJobCreateMethod {
   (
@@ -2142,36 +2363,6 @@ interface FireworksDpoJobCreateMethod {
     signal?: AbortSignal
   ): Promise<FireworksDpoJob>;
   schema: z.ZodType;
-}
-
-interface FireworksDpoJobsNamespace {
-  create: FireworksDpoJobCreateMethod;
-  get(
-    accountId: string,
-    jobId: string,
-    req?: FireworksDpoJobGetRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksDpoJob>;
-  list(
-    accountId: string,
-    req?: FireworksDpoJobListRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksDpoJobListResponse>;
-  delete(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, never>>;
-  resume(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksDpoJob>;
-  getMetricsFileEndpoint(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksMetricsFileEndpointResponse>;
 }
 
 // Account types
@@ -2309,29 +2500,6 @@ export interface FireworksListSecretsResponse {
 
 // Account management namespace types
 
-interface FireworksUsersNamespace {
-  list(
-    accountId: string,
-    params?: FireworksListUsersRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListUsersResponse>;
-  create: FireworksCreateUserMethod;
-  get(
-    accountId: string,
-    userId: string,
-    params?: FireworksGetUserRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksUser>;
-  update: FireworksUpdateUserMethod;
-  // Verb accessor for POST on /accounts/:id/users
-  post(
-    accountId: string,
-    req: FireworksCreateUserRequest,
-    options?: FireworksCreateUserOptions,
-    signal?: AbortSignal
-  ): Promise<FireworksUser>;
-}
-
 interface FireworksCreateUserMethod {
   (
     accountId: string,
@@ -2359,17 +2527,6 @@ interface FireworksUpdateUserMethod {
   ): Promise<FireworksUser>;
 }
 
-interface FireworksApiKeysNamespace {
-  list(
-    accountId: string,
-    userId: string,
-    params?: FireworksListApiKeysRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListApiKeysResponse>;
-  create: FireworksCreateApiKeyMethod;
-  delete: FireworksDeleteApiKeyMethod;
-}
-
 interface FireworksCreateApiKeyMethod {
   (
     accountId: string,
@@ -2388,27 +2545,6 @@ interface FireworksDeleteApiKeyMethod {
     signal?: AbortSignal
   ): Promise<Record<string, never>>;
   schema: z.ZodType;
-}
-
-interface FireworksSecretsNamespace {
-  list(
-    accountId: string,
-    params?: FireworksListSecretsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListSecretsResponse>;
-  create: FireworksCreateSecretMethod;
-  get(
-    accountId: string,
-    secretId: string,
-    params?: { readMask?: string },
-    signal?: AbortSignal
-  ): Promise<FireworksSecret>;
-  update: FireworksUpdateSecretMethod;
-  delete(
-    accountId: string,
-    secretId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, never>>;
 }
 
 interface FireworksCreateSecretMethod {
@@ -2451,45 +2587,6 @@ interface FireworksGetUploadEndpointEvaluatorMethod {
   schema: z.ZodType;
 }
 
-interface FireworksEvaluatorsNamespace {
-  create: FireworksCreateEvaluatorMethod;
-  list(
-    accountId: string,
-    params?: FireworksListEvaluatorsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListEvaluatorsResponse>;
-  get(
-    accountId: string,
-    evaluatorId: string,
-    params?: FireworksGetEvaluatorRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksEvaluator>;
-  update: FireworksUpdateEvaluatorMethod;
-  delete(
-    accountId: string,
-    evaluatorId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, unknown>>;
-  getUploadEndpoint: FireworksGetUploadEndpointEvaluatorMethod;
-  validateUpload(
-    accountId: string,
-    evaluatorId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, unknown>>;
-  getBuildLogEndpoint(
-    accountId: string,
-    evaluatorId: string,
-    params?: FireworksGetBuildLogEndpointRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksGetBuildLogEndpointResponse>;
-  getSourceCodeSignedUrl(
-    accountId: string,
-    evaluatorId: string,
-    params?: FireworksGetSourceCodeSignedUrlRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksGetSourceCodeSignedUrlResponse>;
-}
-
 // Evaluation Jobs namespace types
 interface FireworksCreateEvaluationJobMethod {
   (
@@ -2510,31 +2607,6 @@ interface FireworksUpdateSecretMethod {
   schema: z.ZodType;
 }
 
-interface FireworksEvaluationJobsNamespace {
-  create: FireworksCreateEvaluationJobMethod;
-  list(
-    accountId: string,
-    params?: FireworksListEvaluationJobsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListEvaluationJobsResponse>;
-  get(
-    accountId: string,
-    evaluationJobId: string,
-    params?: FireworksGetEvaluationJobRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksEvaluationJob>;
-  delete(
-    accountId: string,
-    evaluationJobId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, unknown>>;
-  getExecutionLogEndpoint(
-    accountId: string,
-    evaluationJobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksGetExecutionLogEndpointResponse>;
-}
-
 // RFT Jobs namespace types
 interface FireworksRFTCreateMethod {
   (
@@ -2543,31 +2615,6 @@ interface FireworksRFTCreateMethod {
     signal?: AbortSignal
   ): Promise<FireworksRFTJob>;
   schema: z.ZodType;
-}
-
-interface FireworksRFTNamespace {
-  create: FireworksRFTCreateMethod;
-  get(
-    accountId: string,
-    jobId: string,
-    req?: FireworksRFTGetRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksRFTJob>;
-  list(
-    accountId: string,
-    req?: FireworksRFTListRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksRFTListResponse>;
-  delete(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, never>>;
-  resume(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksRFTJob>;
 }
 
 // RLOR Trainer Jobs namespace types
@@ -2588,58 +2635,6 @@ interface FireworksRlorTrainerJobExecuteStepMethod {
     signal?: AbortSignal
   ): Promise<Record<string, unknown>>;
   schema: z.ZodType;
-}
-
-interface FireworksRlorTrainerJobsNamespace {
-  create: FireworksRlorTrainerJobCreateMethod;
-  get(
-    accountId: string,
-    jobId: string,
-    req?: FireworksRlorTrainerJobGetRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksRlorTrainerJob>;
-  list(
-    accountId: string,
-    req?: FireworksRlorTrainerJobListRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksRlorTrainerJobListResponse>;
-  delete(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<Record<string, never>>;
-  executeTrainStep: FireworksRlorTrainerJobExecuteStepMethod;
-  resume(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksRlorTrainerJob>;
-}
-
-interface FireworksAccountsNamespace {
-  models: FireworksModelsNamespace;
-  datasets: FireworksDatasetsNamespace;
-  supervisedFineTuningJobs: FireworksSFTNamespace;
-  deployments: FireworksDeploymentsNamespace;
-  deployedModels: FireworksDeployedModelsNamespace;
-  deploymentShapes: FireworksDeploymentShapesNamespace;
-  dpoJobs: FireworksDpoJobsNamespace;
-  list(
-    params?: FireworksListAccountsRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksListAccountsResponse>;
-  get(
-    accountId: string,
-    params?: FireworksGetAccountRequest,
-    signal?: AbortSignal
-  ): Promise<FireworksAccount>;
-  users: FireworksUsersNamespace;
-  apiKeys: FireworksApiKeysNamespace;
-  secrets: FireworksSecretsNamespace;
-  evaluators: FireworksEvaluatorsNamespace;
-  evaluationJobs: FireworksEvaluationJobsNamespace;
-  reinforcementFineTuningJobs: FireworksRFTNamespace;
-  rlorTrainerJobs: FireworksRlorTrainerJobsNamespace;
 }
 
 // Error class
@@ -2754,11 +2749,6 @@ interface FireworksPostV1AccountsDpoJobsNamespace {
     jobId: string,
     signal?: AbortSignal
   ): Promise<FireworksDpoJob>;
-  getMetricsFileEndpoint(
-    accountId: string,
-    jobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksMetricsFileEndpointResponse>;
 }
 
 interface FireworksPostV1AccountsEvaluatorsNamespace {
@@ -2773,11 +2763,6 @@ interface FireworksPostV1AccountsEvaluatorsNamespace {
 
 interface FireworksPostV1AccountsEvaluationJobsNamespace {
   create: FireworksCreateEvaluationJobMethod;
-  getExecutionLogEndpoint(
-    accountId: string,
-    evaluationJobId: string,
-    signal?: AbortSignal
-  ): Promise<FireworksGetExecutionLogEndpointResponse>;
 }
 
 interface FireworksPostV1AccountsRFTNamespace {
@@ -3015,6 +3000,11 @@ interface FireworksGetV1AccountsDpoJobsNamespace {
     req?: FireworksDpoJobGetRequest,
     signal?: AbortSignal
   ): Promise<FireworksDpoJob>;
+  getMetricsFileEndpoint(
+    accountId: string,
+    jobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksMetricsFileEndpointResponse>;
 }
 
 interface FireworksGetV1AccountsEvaluatorsNamespace {
@@ -3055,6 +3045,11 @@ interface FireworksGetV1AccountsEvaluationJobsNamespace {
     params?: FireworksGetEvaluationJobRequest,
     signal?: AbortSignal
   ): Promise<FireworksEvaluationJob>;
+  getExecutionLogEndpoint(
+    accountId: string,
+    evaluationJobId: string,
+    signal?: AbortSignal
+  ): Promise<FireworksGetExecutionLogEndpointResponse>;
 }
 
 interface FireworksGetV1AccountsRFTNamespace {

@@ -112,27 +112,4 @@ describe("kie helper functions", () => {
       expect(invalidResult.error?.issues.length).toBeGreaterThan(0);
     });
   });
-
-  describe("backward compatibility aliases", () => {
-    it("should export createTaskOrThrow as alias for submitMediaJob", async () => {
-      ctx = setupPolly("kie/helpers/alias-createTaskOrThrow");
-      const provider = kie({
-        apiKey: process.env.KIE_API_KEY ?? "test-key",
-      });
-
-      // Import the alias
-      const { createTaskOrThrow } = await import("@apicity/kie");
-
-      const taskId = await createTaskOrThrow(provider, {
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "A blue sky with clouds",
-          aspect_ratio: "16:9",
-        },
-      });
-
-      expect(taskId).toBeTruthy();
-      expect(typeof taskId).toBe("string");
-    });
-  });
 });

@@ -516,7 +516,6 @@ export interface AnthropicDeleteV1Namespace {
   };
 }
 
-// Legacy namespace types (backward compatibility)
 export interface AnthropicMessagesMethod {
   (
     req: AnthropicMessageRequest,
@@ -585,8 +584,6 @@ export interface AnthropicFilesUploadMethod {
   schema: z.ZodType;
 }
 
-// Skills namespaces
-
 export interface AnthropicSkillsCreateMethod {
   (
     displayTitle: string,
@@ -647,7 +644,6 @@ export interface AnthropicProvider {
   };
   get: { v1: AnthropicGetV1Namespace };
   delete: { v1: AnthropicDeleteV1Namespace };
-  // Legacy namespace (backward compatibility)
   v1: AnthropicV1Namespace;
 }
 

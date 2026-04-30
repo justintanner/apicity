@@ -1,11 +1,5 @@
 // Export main provider function and helpers
-export {
-  kie,
-  submitMediaJob,
-  uploadFile,
-  createTaskOrThrow,
-  uploadOrThrow,
-} from "./kie";
+export { kie, submitMediaJob, uploadFile } from "./kie";
 
 // Export error class
 export { KieError } from "./types";
@@ -40,7 +34,6 @@ export type {
   MediaType,
   KlingElement,
   MultiShotPrompt,
-  MediaRequest,
   KlingVideoRequest,
   KlingMotionControlRequest,
   GrokTextToImageRequest,

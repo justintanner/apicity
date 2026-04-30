@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { KieMediaModel } from "./zod";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -64,17 +65,6 @@ export type {
   Wan27ImageResolution,
   Wan27ImageAspectRatio,
 } from "./zod";
-
-// ---------------------------------------------------------------------------
-// Base type (kept for backward compat — consumers may reference it)
-// ---------------------------------------------------------------------------
-
-import type { KieMediaModel } from "./zod";
-
-export interface MediaRequest {
-  model: KieMediaModel;
-  callBackUrl?: string;
-}
 
 // ---------------------------------------------------------------------------
 // Response types (hand-written — not schema-ified yet)

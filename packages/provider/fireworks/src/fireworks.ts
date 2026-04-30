@@ -1476,22 +1476,6 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
-        // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint
-        // Docs: https://docs.fireworks.ai/api-reference
-        getMetricsFileEndpoint: async (
-          accountId: string,
-          jobId: string,
-          signal?: AbortSignal
-        ): Promise<FireworksMetricsFileEndpointResponse> => {
-          return await makeModelsRequest<FireworksMetricsFileEndpointResponse>(
-            "GET",
-            `/v1/accounts/${accountId}/dpoJobs/${jobId}:getMetricsFileEndpoint`,
-            undefined,
-            undefined,
-            signal
-          );
-        },
       },
       evaluators: {
         // sig-ok: walker can't see baseURL override / management subpath
@@ -1576,22 +1560,6 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             schema: FireworksCreateEvaluationJobRequestSchema,
           }
         ),
-        // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint
-        // Docs: https://docs.fireworks.ai/api-reference
-        getExecutionLogEndpoint: async (
-          accountId: string,
-          evaluationJobId: string,
-          signal?: AbortSignal
-        ): Promise<FireworksGetExecutionLogEndpointResponse> => {
-          return await makeModelsRequest<FireworksGetExecutionLogEndpointResponse>(
-            "GET",
-            `/v1/accounts/${accountId}/evaluationJobs/${evaluationJobId}:getExecutionLogEndpoint`,
-            undefined,
-            undefined,
-            signal
-          );
-        },
       },
       reinforcementFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
@@ -2241,6 +2209,22 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             signal
           );
         },
+        // sig-ok: walker can't see baseURL override / management subpath
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
+        getMetricsFileEndpoint: async (
+          accountId: string,
+          jobId: string,
+          signal?: AbortSignal
+        ): Promise<FireworksMetricsFileEndpointResponse> => {
+          return await makeModelsRequest<FireworksMetricsFileEndpointResponse>(
+            "GET",
+            `/v1/accounts/${accountId}/dpoJobs/${jobId}:getMetricsFileEndpoint`,
+            undefined,
+            undefined,
+            signal
+          );
+        },
       },
       evaluators: {
         // sig-ok: walker can't see baseURL override / management subpath
@@ -2342,6 +2326,22 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             `/v1/accounts/${accountId}/evaluationJobs/${evaluationJobId}`,
             undefined,
             params as Record<string, string | number | boolean | undefined>,
+            signal
+          );
+        },
+        // sig-ok: walker can't see baseURL override / management subpath
+        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint
+        // Docs: https://docs.fireworks.ai/api-reference
+        getExecutionLogEndpoint: async (
+          accountId: string,
+          evaluationJobId: string,
+          signal?: AbortSignal
+        ): Promise<FireworksGetExecutionLogEndpointResponse> => {
+          return await makeModelsRequest<FireworksGetExecutionLogEndpointResponse>(
+            "GET",
+            `/v1/accounts/${accountId}/evaluationJobs/${evaluationJobId}:getExecutionLogEndpoint`,
+            undefined,
+            undefined,
             signal
           );
         },
@@ -3099,10 +3099,6 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     },
   };
 
-  // ============================================================
-  // Original v1 namespace for backward compatibility
-  // ============================================================
-
   return {
     inference: {
       v1: {
@@ -3221,7 +3217,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             delete: deleteV1.accounts.dpoJobs.delete,
             resume: postV1.accounts.dpoJobs.resume,
             getMetricsFileEndpoint:
-              postV1.accounts.dpoJobs.getMetricsFileEndpoint,
+              getV1.accounts.dpoJobs.getMetricsFileEndpoint,
           },
           evaluators: {
             create: postV1.accounts.evaluators.create,
@@ -3241,7 +3237,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
             get: getV1.accounts.evaluationJobs.get,
             delete: deleteV1.accounts.evaluationJobs.delete,
             getExecutionLogEndpoint:
-              postV1.accounts.evaluationJobs.getExecutionLogEndpoint,
+              getV1.accounts.evaluationJobs.getExecutionLogEndpoint,
           },
           reinforcementFineTuningJobs: {
             create: postV1.accounts.reinforcementFineTuningJobs.create,

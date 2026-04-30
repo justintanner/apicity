@@ -770,7 +770,7 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
     },
   };
 
-  // --- Build legacy v1 namespace (backward compatibility) ---
+  // --- Build legacy v1 namespace (URL-mirroring; canonical user-facing) ---
 
   const legacyV1 = {
     // POST https://api.anthropic.com/v1/messages

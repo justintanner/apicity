@@ -126,10 +126,10 @@ export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   );
 
   const postV1 = { soundGeneration };
-  const legacyV1 = { soundGeneration };
+  const v1 = { soundGeneration };
 
   return {
-    v1: legacyV1,
+    v1,
     post: { v1: postV1 },
   };
 }

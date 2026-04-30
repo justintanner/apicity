@@ -471,7 +471,3 @@ export async function uploadFile(
   }
   return result.data.downloadUrl;
 }
-
-// Backward compatibility aliases
-export const createTaskOrThrow = submitMediaJob;
-export const uploadOrThrow = uploadFile;

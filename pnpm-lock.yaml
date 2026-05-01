@@ -94,23 +94,7 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
 
-  packages/provider/cost:
-    dependencies:
-      '@apicity/anthropic':
-        specifier: workspace:*
-        version: link:../anthropic
-      '@apicity/fal':
-        specifier: workspace:*
-        version: link:../fal
-      '@apicity/kimicoding':
-        specifier: workspace:*
-        version: link:../kimicoding
-      '@apicity/openai':
-        specifier: workspace:*
-        version: link:../openai
-      '@apicity/xai':
-        specifier: workspace:*
-        version: link:../xai
+  packages/provider/cost: {}
 
   packages/provider/elevenlabs:
     dependencies:

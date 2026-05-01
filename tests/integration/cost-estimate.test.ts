@@ -1,20 +1,19 @@
-import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { describe, it, expect } from "vitest";
 import { cost, PRICING_AS_OF } from "@apicity/cost";
 
-describe("cost.estimate — pure-math providers (no network)", () => {
-  it("free → $0", async () => {
-    const c = cost({});
-    const r = await c.estimate({ provider: "free" });
+describe("cost.estimate — pure-table (no network)", () => {
+  it("free → $0", () => {
+    const c = cost();
+    const r = c.estimate({ provider: "free" });
     expect(r.usd).toBe(0);
     expect(r.source).toBe("free");
     expect(r.warnings).toEqual([]);
     expect(r.rateAsOf).toBe(PRICING_AS_OF);
   });
 
-  it("elevenlabs flash v2.5 → 1000 chars × $0.00006", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("elevenlabs flash v2.5 → 1000 chars × $0.00006", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "elevenlabs",
       payload: {
         model_id: "eleven_flash_v2_5",
@@ -29,9 +28,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.warnings).toEqual([]);
   });
 
-  it("kie veo3_fast → 8 seconds × $0.10", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("kie veo3_fast → 8 seconds × $0.10", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kie",
       payload: { model: "veo3_fast", prompt: "a sunset", duration: 8 },
     });
@@ -41,9 +40,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.breakdown.units).toBe(8);
   });
 
-  it("kie seedance-2 i2v 720p resolves to seedance-2-720p-i2v rate", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("kie seedance-2 i2v 720p resolves to seedance-2-720p-i2v rate", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kie",
       payload: {
         model: "bytedance/seedance-2",
@@ -62,9 +61,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(0.125 * 8, 6);
   });
 
-  it("kie seedance-2 t2v (no first_frame) resolves to seedance-2-720p-t2v rate", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("kie seedance-2 t2v (no first_frame) resolves to seedance-2-720p-t2v rate", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kie",
       payload: {
         model: "bytedance/seedance-2",
@@ -80,9 +79,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(0.205 * 8, 6);
   });
 
-  it("kie kling-3.0/video coerces '5s' duration string", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("kie kling-3.0/video coerces '5s' duration string", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kie",
       payload: {
         model: "kling-3.0/video",
@@ -99,9 +98,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(0.07 * 5, 6);
   });
 
-  it("kie unknown model → warning + $0", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("kie unknown model → warning + $0", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kie",
       payload: { model: "totally-fake-model", duration: 4 },
     });
@@ -110,9 +109,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.warnings[0]).toMatch(/totally-fake-model/);
   });
 
-  it("kie video model with no duration → warning", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("kie video model with no duration → warning", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kie",
       payload: { model: "veo3_fast" },
     });
@@ -120,10 +119,10 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.warnings[0]).toMatch(/duration/);
   });
 
-  it("fireworks heuristic → chars/4 × deepseek-v3 rate", async () => {
-    const c = cost({});
+  it("fireworks heuristic → chars/4 × deepseek-v3 rate", () => {
+    const c = cost();
     const text = "x".repeat(400);
-    const r = await c.estimate({
+    const r = c.estimate({
       provider: "fireworks",
       payload: {
         model: "deepseek-v3",
@@ -138,9 +137,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
-  it("alibaba heuristic — unknown model emits warning, usd=0", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("alibaba heuristic — unknown model emits warning, usd=0", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "alibaba",
       payload: {
         model: "qwen-not-priced-yet",
@@ -155,17 +154,16 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     );
   });
 
-  it("openai heuristic mode skips network, uses chars/4", async () => {
-    const c = cost({ openai: { apiKey: "sk-test" } });
+  it("openai heuristic → chars/4 × gpt-5 rate", () => {
+    const c = cost();
     const text = "y".repeat(800);
-    const r = await c.estimate({
+    const r = c.estimate({
       provider: "openai",
       payload: {
         model: "gpt-5",
         messages: [{ role: "user", content: text }],
         max_completion_tokens: 1000,
       },
-      useHeuristic: true,
     });
     expect(r.source).toBe("tokens-heuristic+table");
     expect(r.breakdown.inputTokens).toBe(200);
@@ -173,16 +171,15 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
-  it("anthropic heuristic mode → chars/4 × claude-haiku-4-5 rate", async () => {
-    const c = cost({ anthropic: { apiKey: "sk-ant-test" } });
-    const r = await c.estimate({
+  it("anthropic heuristic → chars/4 × claude-haiku-4-5 rate", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "anthropic",
       payload: {
         model: "claude-haiku-4-5",
         messages: [{ role: "user", content: "x".repeat(400) }],
         max_tokens: 200,
       },
-      useHeuristic: true,
     });
     expect(r.source).toBe("tokens-heuristic+table");
     expect(r.breakdown.inputTokens).toBe(100);
@@ -190,9 +187,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
-  it("anthropic heuristic includes system prompt in token count", async () => {
-    const c = cost({ anthropic: { apiKey: "sk-ant-test" } });
-    const r = await c.estimate({
+  it("anthropic heuristic includes system prompt in token count", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "anthropic",
       payload: {
         model: "claude-haiku-4-5",
@@ -200,15 +197,30 @@ describe("cost.estimate — pure-math providers (no network)", () => {
         messages: [{ role: "user", content: "x".repeat(200) }],
         max_tokens: 100,
       },
-      useHeuristic: true,
     });
     // 200 system + 1 join newline + 200 user = 401 chars → ceil(401/4) = 101
     expect(r.breakdown.inputTokens).toBe(101);
   });
 
-  it("kimicoding routes to heuristic-only (upstream count-tokens not available)", async () => {
-    const c = cost({ kimicoding: { apiKey: "sk-test" } });
-    const r = await c.estimate({
+  it("xai grok-4-fast → chars/4 heuristic × bundled rate", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "xai",
+      payload: {
+        model: "grok-4-fast",
+        text: "What does this cost?",
+        max_tokens: 100,
+      },
+    });
+    expect(r.source).toBe("tokens-heuristic+table");
+    expect(r.breakdown.inputTokens).toBeGreaterThan(0);
+    expect(r.breakdown.inputUsdPerMillion).toBe(0.2);
+    expect(r.breakdown.outputUsdPerMillion).toBe(0.5);
+  });
+
+  it("kimicoding routes to heuristic-only", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "kimicoding",
       payload: {
         model: "kimi-k2.6",
@@ -222,9 +234,9 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
-  it("missing max_tokens emits warning", async () => {
-    const c = cost({});
-    const r = await c.estimate({
+  it("missing max_tokens emits warning", () => {
+    const c = cost();
+    const r = c.estimate({
       provider: "fireworks",
       payload: {
         model: "deepseek-v3",
@@ -233,77 +245,5 @@ describe("cost.estimate — pure-math providers (no network)", () => {
     });
     expect(r.warnings.some((w) => w.includes("maxOutputTokens"))).toBe(true);
     expect(r.breakdown.outputTokens).toBe(0);
-  });
-});
-
-describe("cost.estimate — upstream token APIs (replay)", () => {
-  let ctx: PollyContext;
-  afterEach(async () => {
-    await teardownPolly(ctx);
-  });
-
-  it("openai gpt-5 → input_tokens × $1.25 + max_tokens × $10", async () => {
-    ctx = setupPolly("cost/usd-openai-gpt-5");
-    const c = cost({
-      openai: { apiKey: process.env.OPENAI_API_KEY ?? "sk-test" },
-    });
-    const r = await c.estimate({
-      provider: "openai",
-      payload: {
-        model: "gpt-5",
-        input: "Estimate the cost of this short prompt.",
-        max_tokens: 200,
-      },
-    });
-    expect(r.source).toBe("tokens-api+table");
-    expect(r.breakdown.inputTokens).toBeGreaterThan(0);
-    expect(r.breakdown.inputUsdPerMillion).toBe(1.25);
-    expect(r.breakdown.outputUsdPerMillion).toBe(10);
-    expect(r.usd).toBeGreaterThan(0);
-  });
-
-  // Anthropic upstream-tokens path is supported by the dispatcher but not
-  // exercised here — the 1Password ANTHROPIC_API_KEY in this vault returns
-  // 401, so we cannot record a clean fixture. Heuristic path is covered above.
-
-  it("xai grok-4-fast → tokenize-text upstream → bundled rate", async () => {
-    ctx = setupPolly("cost/usd-xai-grok-4-fast");
-    const c = cost({
-      xai: { apiKey: process.env.XAI_API_KEY ?? "xai-test" },
-    });
-    const r = await c.estimate({
-      provider: "xai",
-      payload: {
-        model: "grok-4-fast",
-        text: "What does this cost?",
-        max_tokens: 100,
-      },
-    });
-    expect(r.source).toBe("tokens-api+table");
-    expect(r.breakdown.inputTokens).toBeGreaterThan(0);
-    expect(r.breakdown.inputUsdPerMillion).toBe(0.2);
-    expect(r.breakdown.outputUsdPerMillion).toBe(0.5);
-  });
-});
-
-describe("cost.estimate — fal upstream-usd (replay)", () => {
-  let ctx: PollyContext;
-  afterEach(async () => {
-    await teardownPolly(ctx);
-  });
-
-  it("fal returns upstream USD verbatim, source='upstream-usd'", async () => {
-    ctx = setupPolly("cost/usd-fal-flux-dev");
-    const c = cost({
-      fal: { apiKey: process.env.FAL_API_KEY ?? "fal-test-key" },
-    });
-    const r = await c.estimate({
-      provider: "fal",
-      endpoint_id: "fal-ai/flux/dev",
-      payload: { unit_quantity: 100 },
-    });
-    expect(r.source).toBe("upstream-usd");
-    expect(r.usd).toBeGreaterThanOrEqual(0);
-    expect(r.rateAsOf).toBeNull();
   });
 });

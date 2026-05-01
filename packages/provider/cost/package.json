@@ -1,7 +1,7 @@
 {
   "name": "@apicity/cost",
   "version": "0.1.0",
-  "description": "Cross-provider cost & token estimation — unifies the pre-execution estimate endpoints exposed by @apicity/openai, @apicity/anthropic, @apicity/xai, @apicity/kimicoding, and @apicity/fal.",
+  "description": "Pure-table cost & token estimation across @apicity providers — zero network calls, all rates bundled.",
   "license": "MIT",
   "repository": "github:justintanner/apicity",
   "type": "module",
@@ -12,13 +12,6 @@
       "import": "./dist/src/index.js",
       "types": "./dist/src/index.d.ts"
     }
-  },
-  "dependencies": {
-    "@apicity/anthropic": "workspace:*",
-    "@apicity/fal": "workspace:*",
-    "@apicity/kimicoding": "workspace:*",
-    "@apicity/openai": "workspace:*",
-    "@apicity/xai": "workspace:*"
   },
   "files": [
     "dist",

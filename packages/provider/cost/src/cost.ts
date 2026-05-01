@@ -1,8 +1,8 @@
 import { computeEstimate } from "./compute";
-import type { CostOptions, CostProvider, EstimateRequest } from "./types";
+import type { CostProvider, EstimateRequest } from "./types";
 
-export function cost(opts: CostOptions): CostProvider {
+export function cost(): CostProvider {
   return {
-    estimate: (req: EstimateRequest) => computeEstimate(opts, req),
+    estimate: (req: EstimateRequest) => computeEstimate(req),
   };
 }

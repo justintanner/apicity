@@ -14,11 +14,9 @@ export type {
 export type {
   CostBreakdown,
   CostEstimate,
-  CostOptions,
   CostProvider,
   CostSource,
   EstimateRequest,
-  ProviderClientOptions,
 } from "./types";
 
 export type { ExtractResult, TextExtract } from "./extract/types";

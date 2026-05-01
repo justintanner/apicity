@@ -1,7 +1,11 @@
 import type { z } from "zod";
-import type { IgMediaCreateRequest } from "./zod";
+import type { IgMediaCreateRequest, IgMediaPublishRequest } from "./zod";
 
-export type { IgOptions, IgMediaCreateRequest } from "./zod";
+export type {
+  IgOptions,
+  IgMediaCreateRequest,
+  IgMediaPublishRequest,
+} from "./zod";
 
 // -- Error -------------------------------------------------------------------
 
@@ -68,10 +72,24 @@ export interface IgContainerStatusMethod {
   ): Promise<IgContainerStatusResponse>;
 }
 
+export interface IgMediaPublishResponse {
+  id: string;
+}
+
+export interface IgMediaPublishMethod {
+  (
+    igUserId: string,
+    req: IgMediaPublishRequest,
+    signal?: AbortSignal
+  ): Promise<IgMediaPublishResponse>;
+  schema: z.ZodType<IgMediaPublishRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface IgPostV25Namespace {
   media: IgMediaCreateMethod;
+  mediaPublish: IgMediaPublishMethod;
 }
 
 export interface IgPostNamespace {

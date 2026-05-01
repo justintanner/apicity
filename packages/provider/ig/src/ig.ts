@@ -4,10 +4,12 @@ import {
   IgMediaCreateResponse,
   IgContainerStatusQuery,
   IgContainerStatusResponse,
+  IgMediaPublishRequest,
+  IgMediaPublishResponse,
   IgProvider,
   IgError,
 } from "./types";
-import { IgMediaCreateRequestSchema } from "./zod";
+import { IgMediaCreateRequestSchema, IgMediaPublishRequestSchema } from "./zod";
 
 export function ig(opts: IgOptions): IgProvider {
   const baseURL = opts.baseURL ?? "https://graph.instagram.com";
@@ -138,10 +140,30 @@ export function ig(opts: IgOptions): IgProvider {
     );
   }
 
+  // sig-ok: numeric URL segments (`/v25.0/`) become identifier-safe (`v25`)
+  // POST https://graph.instagram.com/v25.0/{igUserId}/media_publish
+  // Docs: https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/
+  const mediaPublish = Object.assign(
+    async (
+      igUserId: string,
+      req: IgMediaPublishRequest,
+      signal?: AbortSignal
+    ): Promise<IgMediaPublishResponse> => {
+      return makeJsonRequest<IgMediaPublishResponse>(
+        "POST",
+        `/v25.0/${encodeURIComponent(igUserId)}/media_publish`,
+        req,
+        signal
+      );
+    },
+    { schema: IgMediaPublishRequestSchema }
+  );
+
   return {
     post: {
       v25: {
         media: mediaCreate,
+        mediaPublish,
       },
     },
     get: {

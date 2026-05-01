@@ -24,7 +24,7 @@ const ig = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });
 
 ## API Reference
 
-2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+3 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### container
 
@@ -54,6 +54,23 @@ Source: [`packages/provider/ig/src/ig.ts`](src/ig.ts)
 
 ```typescript
 const res = await ig.v25.media({ /* ... */ });
+```
+
+Source: [`packages/provider/ig/src/ig.ts`](src/ig.ts)
+
+</details>
+
+### mediaPublish
+
+<details>
+<summary><code>POST</code> <b><code>ig.v25.mediaPublish</code></b></summary>
+
+<code>POST https://graph.instagram.com/v25.0/{igUserId}/media_publish</code>
+
+[Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/)
+
+```typescript
+const res = await ig.v25.mediaPublish({ /* ... */ });
 ```
 
 Source: [`packages/provider/ig/src/ig.ts`](src/ig.ts)

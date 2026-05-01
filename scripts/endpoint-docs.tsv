@@ -287,3 +287,4 @@ x	v2.media.upload	GET	https://api.x.com/2/media/upload{query}	https://docs.x.com
 x	v2.tweets	POST	https://api.x.com/2/tweets	https://docs.x.com/x-api/posts/create-post
 ig	v25.media	POST	https://graph.instagram.com/v25.0/{igUserId}/media	https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/
 ig	v25.container	GET	https://graph.instagram.com/v25.0/{containerId}{query}	https://developers.facebook.com/docs/instagram-platform/reference/ig-container/
+ig	v25.mediaPublish	POST	https://graph.instagram.com/v25.0/{igUserId}/media_publish	https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/

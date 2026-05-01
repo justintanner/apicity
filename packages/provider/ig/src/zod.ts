@@ -59,3 +59,16 @@ export const IgMediaCreateRequestSchema = z.object({
 });
 
 export type IgMediaCreateRequest = z.infer<typeof IgMediaCreateRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// POST /v25.0/{ig-user-id}/media_publish
+// ---------------------------------------------------------------------------
+
+// `creation_id` is the container ID returned from /media — must reach
+// status_code === "FINISHED" before this endpoint will accept it (server
+// returns 400 otherwise).
+export const IgMediaPublishRequestSchema = z.object({
+  creation_id: IgIdStringSchema,
+});
+
+export type IgMediaPublishRequest = z.infer<typeof IgMediaPublishRequestSchema>;

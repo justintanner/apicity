@@ -43,6 +43,17 @@ const flatImage = (perUnit: number, slug: string): ModelPricing => ({
   source: src(slug),
 });
 
+// Flat per-call rate for endpoints that bill once per request regardless
+// of input shape (Suno endpoints, sora-watermark-remover, etc.).
+const flatGen = (perUnit: number, slug: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "generations",
+  units: () => 1,
+  select: [],
+  rates: { "": perUnit },
+  source: src(slug),
+});
+
 // Image entry tiered by input.resolution (e.g. "1K"|"2K"|"4K").
 const tieredImage = (
   rates: Record<string, number>,
@@ -288,4 +299,35 @@ export const kie: Record<string, ModelPricing> = {
   "qwen2/image-edit": flatImage(0.028, "alibaba/qwen-image-2"),
   "seedream/5-lite-text-to-image": flatImage(0.0275, "bytedance/seedream-5"),
   "seedream/5-lite-image-to-image": flatImage(0.0275, "bytedance/seedream-5"),
+
+  // sora-watermark-remover: flat $0.05 per removal (only published rate
+  // on the marketplace). Schema has no tier selector.
+  "sora-watermark-remover": flatGen(0.05, "openai/sora-2"),
+
+  // Suno: keyed by endpoint, NOT by audio model version. The kie payload's
+  // `model` field is V3_5/.../V5_5 (audio version), but pricing is the
+  // same across versions and varies per endpoint. Callers pass the
+  // synthetic key via EstimateRequest.endpoint (e.g. "suno/generate"), and
+  // the upstream payload stays untouched. Flat rates unless noted.
+  "suno/generate": flatGen(0.06, "suno/suno"),
+  "suno/extend": flatGen(0.06, "suno/suno"),
+  "suno/upload-cover": flatGen(0.06, "suno/suno"),
+  "suno/upload-extend": flatGen(0.06, "suno/suno"),
+  "suno/wav-generate": flatGen(0.002, "suno/suno"),
+  "suno/mp4-generate": flatGen(0.01, "suno/suno"),
+  "suno/lyrics": flatGen(0.002, "suno/suno"),
+  "suno/style-generate": flatGen(0.002, "suno/suno"),
+
+  // suno/vocal-removal-generate: 2 rates by `payload.type`.
+  // "separate_vocal" → $0.05 (Vocal Separation)
+  // "split_stem"     → $0.25 (Multi-Stem Separation)
+  // Schema marks `type` optional; we don't assume a default.
+  "suno/vocal-removal-generate": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [{ name: "type", pick: (p) => asString(p.type) }],
+    rates: { separate_vocal: 0.05, split_stem: 0.25 },
+    source: src("suno/suno"),
+  },
 };

@@ -355,6 +355,107 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.155 * 5, 6);
   });
 
+  it("kie suno/generate via endpoint hint → $0.06/generation regardless of model version", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      endpoint: "suno/generate",
+      payload: {
+        model: "V5",
+        prompt: "epic synthwave",
+        instrumental: false,
+        customMode: true,
+        callBackUrl: "https://example.com/cb",
+      },
+    });
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.breakdown.perUnitUsd).toBe(0.06);
+    expect(r.usd).toBeCloseTo(0.06, 6);
+  });
+
+  it("kie suno endpoint pricing is independent of model version", () => {
+    const c = cost();
+    const v3 = c.estimate({
+      provider: "kie",
+      endpoint: "suno/generate",
+      payload: { model: "V3_5", prompt: "x", customMode: false },
+    });
+    const v55 = c.estimate({
+      provider: "kie",
+      endpoint: "suno/generate",
+      payload: { model: "V5_5", prompt: "x", customMode: false },
+    });
+    expect(v3.usd).toBe(v55.usd);
+  });
+
+  it("kie suno/vocal-removal-generate separate_vocal → $0.05", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      endpoint: "suno/vocal-removal-generate",
+      payload: {
+        taskId: "abc",
+        audioId: "xyz",
+        callBackUrl: "https://example.com/cb",
+        type: "separate_vocal",
+      },
+    });
+    expect(r.breakdown.perUnitUsd).toBe(0.05);
+    expect(r.usd).toBeCloseTo(0.05, 6);
+  });
+
+  it("kie suno/vocal-removal-generate split_stem → $0.25", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      endpoint: "suno/vocal-removal-generate",
+      payload: {
+        taskId: "abc",
+        audioId: "xyz",
+        callBackUrl: "https://example.com/cb",
+        type: "split_stem",
+      },
+    });
+    expect(r.breakdown.perUnitUsd).toBe(0.25);
+    expect(r.usd).toBeCloseTo(0.25, 6);
+  });
+
+  it("kie suno/lyrics → $0.002/generation", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      endpoint: "suno/lyrics",
+      payload: { prompt: "rain", callBackUrl: "https://example.com/cb" },
+    });
+    expect(r.usd).toBeCloseTo(0.002, 6);
+  });
+
+  it("kie sora-watermark-remover → $0.05/generation", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "sora-watermark-remover",
+        input: { video_url: "https://example.com/in.mp4" },
+      },
+    });
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.usd).toBeCloseTo(0.05, 6);
+  });
+
+  it("kie endpoint hint takes precedence over payload.model", () => {
+    const c = cost();
+    // payload.model would resolve to veo3_fast ($0.10/s × 8 = $0.80),
+    // but endpoint=suno/generate forces a flat $0.06 lookup.
+    const r = c.estimate({
+      provider: "kie",
+      endpoint: "suno/generate",
+      payload: { model: "veo3_fast", prompt: "...", duration: 8 },
+    });
+    expect(r.usd).toBeCloseTo(0.06, 6);
+  });
+
   it("kie nano-banana-pro 2K → $0.09/image", () => {
     const c = cost();
     const r = c.estimate({

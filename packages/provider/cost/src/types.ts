@@ -29,6 +29,12 @@ export interface CostEstimate {
 
 // All provider routes are pure-table lookups. Token-billed providers
 // approximate input tokens via chars/4 (no upstream tokenizer call).
+//
+// `endpoint` is an optional discriminator for per-unit providers whose
+// pricing is keyed by endpoint rather than by `payload.model` (e.g. Suno,
+// where the model field is the audio model version V3_5/.../V5_5 but
+// pricing varies per endpoint). When set, it takes precedence over
+// payload.model in the pricing lookup. Ignored for token-billed providers.
 export type EstimateRequest =
   | {
       provider:
@@ -41,6 +47,7 @@ export type EstimateRequest =
         | "kie"
         | "elevenlabs";
       payload: Record<string, unknown>;
+      endpoint?: string;
     }
   | { provider: "free" };
 

@@ -69,17 +69,23 @@ function applyTokenRate(
 }
 
 // Generic dispatcher for per-unit providers (kie, elevenlabs). Reads the
-// model id from payload.model (or payload.model_id for elevenlabs), looks
-// up the entry, runs `units(payload)` and the ordered selectors, and
-// returns the matching rate. All payload-shape knowledge lives in the
-// model entry's closures.
+// pricing key from the explicit `endpoint` discriminator first (used by
+// providers like Suno whose pricing is keyed by endpoint, not model
+// version), then falls back to payload.model / payload.model_id. Looks up
+// the entry, runs `units(payload)` and the ordered selectors, and returns
+// the matching rate. All payload-shape knowledge lives in the model
+// entry's closures.
 function evaluatePerUnit(
   provider: PricedProviderId,
-  payload: Record<string, unknown>
+  payload: Record<string, unknown>,
+  endpoint: string | undefined
 ): CostEstimate {
-  const model = asString(payload.model) ?? asString(payload.model_id);
+  const model =
+    endpoint ?? asString(payload.model) ?? asString(payload.model_id);
   if (!model) {
-    return failed("per-unit-table", [`${provider}: payload.model is required`]);
+    return failed("per-unit-table", [
+      `${provider}: endpoint or payload.model is required`,
+    ]);
   }
   const entry = PRICING[provider][model];
   if (!entry) {
@@ -153,9 +159,9 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       );
     }
     case "kie":
-      return evaluatePerUnit("kie", req.payload);
+      return evaluatePerUnit("kie", req.payload, req.endpoint);
     case "elevenlabs":
-      return evaluatePerUnit("elevenlabs", req.payload);
+      return evaluatePerUnit("elevenlabs", req.payload, req.endpoint);
     case "free":
       return {
         usd: 0,

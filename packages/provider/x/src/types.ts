@@ -2,12 +2,14 @@ import type { z } from "zod";
 import type {
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
+  XTweetCreateRequest,
 } from "./zod";
 
 export type {
   XOptions,
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
+  XTweetCreateRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -59,6 +61,14 @@ export type XMediaUploadFinalizeResponse = XMediaUploadInitializeResponse;
 // finalize; processing_info is the field callers poll on.
 export type XMediaUploadStatusResponse = XMediaUploadInitializeResponse;
 
+export interface XTweetCreateResponse {
+  data: {
+    id: string;
+    text: string;
+    edit_history_tweet_ids?: string[];
+  };
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface XMediaUploadInitializeMethod {
@@ -86,6 +96,14 @@ export interface XMediaUploadStatusMethod {
   (mediaId: string, signal?: AbortSignal): Promise<XMediaUploadStatusResponse>;
 }
 
+export interface XTweetCreateMethod {
+  (
+    req: XTweetCreateRequest,
+    signal?: AbortSignal
+  ): Promise<XTweetCreateResponse>;
+  schema: z.ZodType<XTweetCreateRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface XMediaUploadNamespace {
@@ -100,6 +118,7 @@ export interface XMediaNamespace {
 
 export interface XPostV2Namespace {
   media: XMediaNamespace;
+  tweets: XTweetCreateMethod;
 }
 
 export interface XPostNamespace {

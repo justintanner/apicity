@@ -52,3 +52,63 @@ export const XMediaUploadAppendRequestSchema = z.object({
 export type XMediaUploadAppendRequest = z.infer<
   typeof XMediaUploadAppendRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /2/tweets
+// ---------------------------------------------------------------------------
+
+// Either `text` or `media.media_ids` is required by the server. We don't pre-
+// validate that — leave it to the API so error messages match what callers
+// would get from the X API directly.
+const XReplySettingsSchema = z.enum([
+  "everyone",
+  "mentionedUsers",
+  "following",
+  "subscribers",
+  "verified",
+]);
+
+const XTweetMediaSchema = z.object({
+  media_ids: z
+    .array(z.string().regex(/^[0-9]+$/))
+    .min(1)
+    .max(4),
+  tagged_user_ids: z.array(z.string()).optional(),
+  title: z.string().optional(),
+  description: z.string().optional(),
+  preview_media_id: z.string().optional(),
+  embeddable: z.boolean().optional(),
+});
+
+const XTweetReplySchema = z.object({
+  in_reply_to_tweet_id: z.string().regex(/^[0-9]+$/),
+  exclude_reply_user_ids: z.array(z.string()).optional(),
+});
+
+const XTweetPollSchema = z.object({
+  options: z.array(z.string()).min(2).max(4),
+  duration_minutes: z.number().int().min(5).max(10080),
+  reply_settings: XReplySettingsSchema.optional(),
+});
+
+const XTweetGeoSchema = z.object({
+  place_id: z.string(),
+});
+
+export const XTweetCreateRequestSchema = z.object({
+  text: z.string().max(4000).optional(),
+  direct_message_deep_link: z.string().optional(),
+  for_super_followers_only: z.boolean().optional(),
+  geo: XTweetGeoSchema.optional(),
+  media: XTweetMediaSchema.optional(),
+  nullcast: z.boolean().optional(),
+  poll: XTweetPollSchema.optional(),
+  quote_tweet_id: z
+    .string()
+    .regex(/^[0-9]+$/)
+    .optional(),
+  reply: XTweetReplySchema.optional(),
+  reply_settings: XReplySettingsSchema.optional(),
+});
+
+export type XTweetCreateRequest = z.infer<typeof XTweetCreateRequestSchema>;

@@ -6,12 +6,15 @@ import {
   XMediaUploadAppendResponse,
   XMediaUploadFinalizeResponse,
   XMediaUploadStatusResponse,
+  XTweetCreateRequest,
+  XTweetCreateResponse,
   XProvider,
   XError,
 } from "./types";
 import {
   XMediaUploadInitializeRequestSchema,
   XMediaUploadAppendRequestSchema,
+  XTweetCreateRequestSchema,
 } from "./zod";
 
 export function x(opts: XOptions): XProvider {
@@ -221,6 +224,24 @@ export function x(opts: XOptions): XProvider {
     );
   }
 
+  // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
+  // POST https://api.x.com/2/tweets
+  // Docs: https://docs.x.com/x-api/posts/create-post
+  const tweetsCreate = Object.assign(
+    async (
+      req: XTweetCreateRequest,
+      signal?: AbortSignal
+    ): Promise<XTweetCreateResponse> => {
+      return makeJsonRequest<XTweetCreateResponse>(
+        "POST",
+        "/2/tweets",
+        req,
+        signal
+      );
+    },
+    { schema: XTweetCreateRequestSchema }
+  );
+
   return {
     post: {
       v2: {
@@ -231,6 +252,7 @@ export function x(opts: XOptions): XProvider {
             finalize: mediaUploadFinalize,
           },
         },
+        tweets: tweetsCreate,
       },
     },
     get: {

@@ -127,7 +127,20 @@ const lineup = [
     audio: "opt",
   },
   { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "yes" },
-  // grok-imagine row removed pending verified kie marketplace pricing.
+  // grok-imagine: kie charges by resolution only (no i2v/t2v split, no
+  // 1080p tier); audio always included.
+  {
+    provider: "kie",
+    label: "kie · grok-imagine 480p",
+    model: "grok-imagine-480p",
+    audio: "yes",
+  },
+  {
+    provider: "kie",
+    label: "kie · grok-imagine 720p",
+    model: "grok-imagine-720p",
+    audio: "yes",
+  },
   {
     provider: "fal",
     label: "fal · seedance 2.0 fast i2v",

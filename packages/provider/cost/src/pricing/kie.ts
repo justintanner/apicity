@@ -260,6 +260,12 @@ export const kie: Record<string, ModelPricing> = {
     { "1K": 0.04, "2K": 0.06, "4K": 0.09 },
     "google/nano-banana-2"
   ),
+  // nano-banana-pro: 1K and 2K share the $0.09 rate per the marketplace
+  // ("1/2K"), 4K is $0.12.
+  "nano-banana-pro": tieredImage(
+    { "1K": 0.09, "2K": 0.09, "4K": 0.12 },
+    "google/nano-banana-pro"
+  ),
   "gpt-image-2-text-to-image": tieredImage(
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
     "openai/gpt-image-2"

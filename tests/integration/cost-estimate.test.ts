@@ -317,6 +317,33 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.warnings.some((w) => w.includes("variant '6'"))).toBe(true);
   });
 
+  it("kie nano-banana-pro 2K → $0.09/image", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "nano-banana-pro",
+        input: { prompt: "a cat", resolution: "2K" },
+      },
+    });
+    expect(r.breakdown.unit).toBe("images");
+    expect(r.breakdown.perUnitUsd).toBe(0.09);
+    expect(r.usd).toBeCloseTo(0.09, 6);
+  });
+
+  it("kie nano-banana-pro 4K → $0.12/image", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "nano-banana-pro",
+        input: { prompt: "a cat", resolution: "4K" },
+      },
+    });
+    expect(r.breakdown.perUnitUsd).toBe(0.12);
+    expect(r.usd).toBeCloseTo(0.12, 6);
+  });
+
   it("kie grok-imagine/upscale → flat $0.05/generation", () => {
     const c = cost();
     const r = c.estimate({

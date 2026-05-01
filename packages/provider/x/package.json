@@ -1,0 +1,51 @@
+{
+  "name": "@apicity/x",
+  "version": "0.1.0",
+  "description": "X (formerly Twitter) social API provider for posting content (api.x.com).",
+  "license": "MIT",
+  "repository": "github:justintanner/apicity",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    },
+    "./zod": {
+      "import": "./dist/src/zod.js",
+      "types": "./dist/src/zod.d.ts"
+    }
+  },
+  "peerDependencies": {
+    "zod": "^3.24.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "x",
+    "twitter",
+    "social",
+    "post",
+    "tweet",
+    "media-upload",
+    "apicity"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  }
+}

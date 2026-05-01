@@ -236,11 +236,25 @@ function renderXaiRateLimiting() {
   ].join("\n");
 }
 
+// Providers whose options object uses a non-default auth field/env-var or
+// who don't re-export the shared middleware helpers. Anything not listed here
+// gets the default `apiKey` / `<PROVIDER>_API_KEY` / middleware-section.
+const PROVIDER_AUTH = {
+  x: {
+    field: "accessToken",
+    env: "X_ACCESS_TOKEN",
+    showMiddleware: false,
+  },
+};
+
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
   const pkgName = pkg.name || `@apicity/${providerName}`;
   const factory = `create${capitalize(providerName)}`;
-  const envKey = `${providerName.toUpperCase()}_API_KEY`;
+  const auth = PROVIDER_AUTH[providerName] ?? {};
+  const authField = auth.field ?? "apiKey";
+  const envKey = auth.env ?? `${providerName.toUpperCase()}_API_KEY`;
+  const showMiddleware = auth.showMiddleware ?? true;
 
   const sections = [];
 
@@ -274,28 +288,30 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push(`import { ${providerName} as ${factory} } from "${pkgName}";`);
   sections.push("");
   sections.push(
-    `const ${providerName} = ${factory}({ apiKey: process.env.${envKey}! });`
+    `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`
   );
   sections.push("```");
   sections.push("");
 
   sections.push(renderApiReference(providerName, endpoints));
 
-  sections.push("## Middleware");
-  sections.push("");
-  sections.push("```typescript");
-  sections.push(
-    `import { ${providerName} as ${factory}, withRetry } from "${pkgName}";`
-  );
-  sections.push("");
-  sections.push(
-    `const ${providerName} = ${factory}({ apiKey: process.env.${envKey}! });`
-  );
-  sections.push(
-    `const models = withRetry(${providerName}.get.v1.models, { retries: 3 });`
-  );
-  sections.push("```");
-  sections.push("");
+  if (showMiddleware) {
+    sections.push("## Middleware");
+    sections.push("");
+    sections.push("```typescript");
+    sections.push(
+      `import { ${providerName} as ${factory}, withRetry } from "${pkgName}";`
+    );
+    sections.push("");
+    sections.push(
+      `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`
+    );
+    sections.push(
+      `const models = withRetry(${providerName}.get.v1.models, { retries: 3 });`
+    );
+    sections.push("```");
+    sections.push("");
+  }
 
   if (providerName === "xai") {
     sections.push(renderXaiRateLimiting());

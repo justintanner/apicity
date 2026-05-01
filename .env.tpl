@@ -10,5 +10,6 @@ GEMINI_API_KEY=op://Apicity/GEMINI_API_KEY/password
 ANTHROPIC_API_KEY=op://Apicity/ANTHROPIC_API_KEY/password
 DASHSCOPE_API_KEY=op://Apicity/DASHSCOPE_API_KEY/password
 ELEVENLABS_API_KEY=op://Apicity/ELEVENLABS_API_KEY/password
+X_ACCESS_TOKEN=op://Apicity/X_ACCESS_TOKEN/credential
 DASHBOARD_USER=op://Apicity/DASHBOARD_USER/password
 DASHBOARD_PASS=op://Apicity/DASHBOARD_PASS/password

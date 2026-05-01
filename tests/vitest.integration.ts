@@ -83,6 +83,11 @@ export default defineConfig({
         __dirname,
         "../packages/provider/elevenlabs/src"
       ),
+      "@apicity/x/zod": path.resolve(
+        __dirname,
+        "../packages/provider/x/src/zod"
+      ),
+      "@apicity/x": path.resolve(__dirname, "../packages/provider/x/src"),
       "@apicity/cost": path.resolve(__dirname, "../packages/provider/cost/src"),
     },
     coverage: {

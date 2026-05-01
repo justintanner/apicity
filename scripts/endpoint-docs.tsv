@@ -280,3 +280,4 @@ xai	v1.videos	GET	https://api.x.ai/v1/videos/{requestId}	https://docs.x.ai/docs/
 xai	v1.videos.edits	POST	https://api.x.ai/v1/videos/edits	https://docs.x.ai/docs/api-reference
 xai	v1.videos.extensions	POST	https://api.x.ai/v1/videos/extensions	https://docs.x.ai/docs/api-reference
 xai	v1.videos.generations	POST	https://api.x.ai/v1/videos/generations	https://docs.x.ai/docs/api-reference
+x	v2.media.upload.initialize	POST	https://api.x.com/2/media/upload/initialize	https://docs.x.com/x-api/media/media-upload-initialize

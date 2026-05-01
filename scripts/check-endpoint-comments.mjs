@@ -46,6 +46,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
     "tmpfile.link",
   ],
   elevenlabs: ["elevenlabs.io"],
+  x: ["docs.x.com"],
 };
 
 const METHOD_LINE_RE =

@@ -111,7 +111,7 @@ Each provider has a small extractor in `src/extract/` that walks the payload loo
 
 For text providers (openai / anthropic / xai / kimicoding / fireworks / alibaba), the extractor flattens the chat `messages` array (or `input` / `prompt` / `text`) into a single string for token counting; non-text content parts (images, audio, tool calls) are dropped.
 
-For kie, the rate table keys are not 1:1 with the payload's `model` field — the extractor rebuilds them from the payload's `input.resolution`, `input.first_frame_url` (i2v vs t2v), and the marketplace model slug. See `src/extract/kie.ts` for the full mapping.
+For kie, the rate table keys are not 1:1 with the payload's `model` field — the extractor rebuilds them from the payload's `input.resolution`, `input.first_frame_url` (i2v vs t2v), and the marketplace model slug. See `src/extract/kie.ts` for the full mapping. Image models (nano-banana-2, gpt-image-2, qwen2, seedream/5-lite, wan/2-7-image) price per image; resolution-tiered families require `input.resolution`.
 
 ## Bundled pricing
 
@@ -137,7 +137,7 @@ Maintenance is manual: re-fetch each upstream's pricing page, edit `pricing.ts`,
 | `alibaba`    | `tokens-heuristic+table` | no upstream estimate endpoint                                         |
 | `fal`        | `upstream-usd`           | wraps `POST /v1/models/pricing/estimate`                              |
 | `elevenlabs` | `per-unit-table`         | priced per character                                                  |
-| `kie`        | `per-unit-table`         | priced per second of video                                            |
+| `kie`        | `per-unit-table`         | priced per second of video / per image                                |
 | `free`       | `free`                   | always $0                                                             |
 
 ## Out of scope

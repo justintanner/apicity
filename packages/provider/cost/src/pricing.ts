@@ -191,5 +191,25 @@ export const PER_UNIT_RATES: Record<
     // kie marketplace happyhorse/image-to-video page.
     "happyhorse-720p": { unit: "seconds", perUnit: 0.155 }, // 31 c/s
     "happyhorse-1080p": { unit: "seconds", perUnit: 0.265 }, // 53 c/s
+    // Image models — per-image USD verified 2026-04-30 from kie.ai/market.
+    // nano-banana-2 and gpt-image-2 are tiered by resolution (1K/2K/4K);
+    // gpt-image-2 splits text-to-image vs image-to-image with identical
+    // rates. wan-2.7-image has a separate `pro` tier. seedream/5-lite and
+    // qwen2 publish a single rate per direction (t2i vs image-edit/i2i).
+    "nano-banana-2-1K": { unit: "images", perUnit: 0.04 },
+    "nano-banana-2-2K": { unit: "images", perUnit: 0.06 },
+    "nano-banana-2-4K": { unit: "images", perUnit: 0.09 },
+    "gpt-image-2-text-to-image-1K": { unit: "images", perUnit: 0.03 },
+    "gpt-image-2-text-to-image-2K": { unit: "images", perUnit: 0.05 },
+    "gpt-image-2-text-to-image-4K": { unit: "images", perUnit: 0.08 },
+    "gpt-image-2-image-to-image-1K": { unit: "images", perUnit: 0.03 },
+    "gpt-image-2-image-to-image-2K": { unit: "images", perUnit: 0.05 },
+    "gpt-image-2-image-to-image-4K": { unit: "images", perUnit: 0.08 },
+    "wan-2.7-image": { unit: "images", perUnit: 0.024 },
+    "wan-2.7-image-pro": { unit: "images", perUnit: 0.06 },
+    "qwen2-text-to-image": { unit: "images", perUnit: 0.028 },
+    "qwen2-image-edit": { unit: "images", perUnit: 0.028 },
+    "seedream-5-lite-text-to-image": { unit: "images", perUnit: 0.0275 },
+    "seedream-5-lite-image-to-image": { unit: "images", perUnit: 0.0275 },
   },
 };

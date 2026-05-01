@@ -43,6 +43,11 @@ function missing(
 // (read `payload.duration` from the top level since the veo schema has no
 // duration field — server picks a default — callers needing an estimate
 // supply their own duration as a hint).
+//
+// Image models price per image (no duration). Resolution-tiered families
+// (nano-banana-2, gpt-image-2) require `input.resolution`; flat-rate
+// families (qwen2, seedream/5-lite) only need the model string.
+// wan/2-7-image accepts an `n` field for batch generation — units = n.
 export function extractKie(
   payload: Record<string, unknown>
 ): ExtractResult<KieRateExtract> {
@@ -114,6 +119,58 @@ export function extractKie(
     return {
       ok: true,
       data: { rateKey: `${slug}-${resolution}-${direction}`, units: seconds },
+    };
+  }
+
+  // Image models. The kie marketplace prices per generated image; nano-banana-2
+  // and gpt-image-2 expose 1K/2K/4K resolution tiers. wan/2-7-image accepts an
+  // `n` field to request multiple images per call; the rate is per image, so
+  // multiply by n.
+  if (model === "nano-banana-2") {
+    const resolution = asString(input.resolution);
+    if (!resolution) return missing(model, "resolution");
+    return {
+      ok: true,
+      data: { rateKey: `nano-banana-2-${resolution}`, units: 1 },
+    };
+  }
+
+  if (
+    model === "gpt-image-2-text-to-image" ||
+    model === "gpt-image-2-image-to-image"
+  ) {
+    const resolution = asString(input.resolution);
+    if (!resolution) return missing(model, "resolution");
+    return {
+      ok: true,
+      data: { rateKey: `${model}-${resolution}`, units: 1 },
+    };
+  }
+
+  if (model === "wan/2-7-image" || model === "wan/2-7-image-pro") {
+    const n = asNumber(input.n) ?? 1;
+    const slug =
+      model === "wan/2-7-image-pro" ? "wan-2.7-image-pro" : "wan-2.7-image";
+    return { ok: true, data: { rateKey: slug, units: n } };
+  }
+
+  if (model === "qwen2/text-to-image") {
+    return { ok: true, data: { rateKey: "qwen2-text-to-image", units: 1 } };
+  }
+  if (model === "qwen2/image-edit") {
+    return { ok: true, data: { rateKey: "qwen2-image-edit", units: 1 } };
+  }
+
+  if (model === "seedream/5-lite-text-to-image") {
+    return {
+      ok: true,
+      data: { rateKey: "seedream-5-lite-text-to-image", units: 1 },
+    };
+  }
+  if (model === "seedream/5-lite-image-to-image") {
+    return {
+      ok: true,
+      data: { rateKey: "seedream-5-lite-image-to-image", units: 1 },
     };
   }
 

@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 // Compare per-image USD across image generators.
 //
-//   pnpm run compare:image
-//   pnpm run compare:image -- --provider=fal
+//   pnpm run compare:image                   # fal + kie (kie offline; fal needs key)
+//   pnpm run compare:image -- --provider=kie # kie-only (instant, no key)
+//   pnpm run compare:image -- --provider=fal # fal-only (live API)
 //   pnpm run compare:image -- --counts=1,4,10
 //
-// All rows hit fal's pricing.estimate endpoint live (FAL_API_KEY required;
+// kie rows come from the bundled rate table in @apicity/cost (PRICING_AS_OF
+// in packages/provider/cost/src/pricing.ts) — instant, no API key required.
+// fal rows hit fal's pricing.estimate endpoint live (FAL_API_KEY required;
 // resolved automatically when launched via `op run --env-file=.env.tpl`).
-// The bundled rate table in @apicity/cost has no image rows yet, so there is
-// no offline path. To add a kie or openai-images row, extend `lineup` below
-// and route through `c.estimate({ provider, payload, ... })`.
+// fal rows are skipped with a warning if the key is absent.
 
 import { cost } from "../packages/provider/cost/dist/src/index.js";
 
@@ -29,6 +30,9 @@ const counts = (args.counts ?? "1,4,10")
   .map((s) => Number(s.trim()))
   .filter((n) => Number.isInteger(n) && n > 0);
 
+// kie rows carry the *exact* JSON body the caller would POST to kie's
+// /api/v1/jobs/createTask endpoint. The cost extractor reads model +
+// input.resolution (where applicable) and looks up the per-image rate.
 const lineup = [
   {
     provider: "fal",
@@ -72,6 +76,134 @@ const lineup = [
     label: "fal · seedream 3",
     endpoint_id: "fal-ai/bytedance/seedream-3",
   },
+  // kie image lineup — verified rates 2026-04-30 from kie.ai/market.
+  {
+    provider: "kie",
+    label: "kie · nano-banana-2 1K",
+    payload: {
+      model: "nano-banana-2",
+      input: { prompt: "x", resolution: "1K" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · nano-banana-2 2K",
+    payload: {
+      model: "nano-banana-2",
+      input: { prompt: "x", resolution: "2K" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · nano-banana-2 4K",
+    payload: {
+      model: "nano-banana-2",
+      input: { prompt: "x", resolution: "4K" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · gpt-image-2 t2i 1K",
+    payload: {
+      model: "gpt-image-2-text-to-image",
+      input: { prompt: "x", resolution: "1K" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · gpt-image-2 t2i 2K",
+    payload: {
+      model: "gpt-image-2-text-to-image",
+      input: { prompt: "x", resolution: "2K" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · gpt-image-2 t2i 4K",
+    payload: {
+      model: "gpt-image-2-text-to-image",
+      input: { prompt: "x", resolution: "4K" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · gpt-image-2 i2i 1K",
+    payload: {
+      model: "gpt-image-2-image-to-image",
+      input: {
+        prompt: "x",
+        input_urls: ["https://example.com/x.jpg"],
+        resolution: "1K",
+      },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · gpt-image-2 i2i 2K",
+    payload: {
+      model: "gpt-image-2-image-to-image",
+      input: {
+        prompt: "x",
+        input_urls: ["https://example.com/x.jpg"],
+        resolution: "2K",
+      },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · gpt-image-2 i2i 4K",
+    payload: {
+      model: "gpt-image-2-image-to-image",
+      input: {
+        prompt: "x",
+        input_urls: ["https://example.com/x.jpg"],
+        resolution: "4K",
+      },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · wan-2.7 image",
+    payload: { model: "wan/2-7-image", input: { prompt: "x" } },
+  },
+  {
+    provider: "kie",
+    label: "kie · wan-2.7 image pro",
+    payload: { model: "wan/2-7-image-pro", input: { prompt: "x" } },
+  },
+  {
+    provider: "kie",
+    label: "kie · qwen2 t2i",
+    payload: { model: "qwen2/text-to-image", input: { prompt: "x" } },
+  },
+  {
+    provider: "kie",
+    label: "kie · qwen2 image-edit",
+    payload: {
+      model: "qwen2/image-edit",
+      input: { prompt: "x", image_url: ["https://example.com/x.jpg"] },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · seedream/5-lite t2i",
+    payload: {
+      model: "seedream/5-lite-text-to-image",
+      input: { prompt: "xxx", quality: "basic" },
+    },
+  },
+  {
+    provider: "kie",
+    label: "kie · seedream/5-lite i2i",
+    payload: {
+      model: "seedream/5-lite-image-to-image",
+      input: {
+        prompt: "xxx",
+        image_urls: ["https://example.com/x.jpg"],
+        quality: "basic",
+      },
+    },
+  },
 ];
 
 const filtered = onlyProvider
@@ -80,20 +212,34 @@ const filtered = onlyProvider
 
 if (filtered.length === 0) {
   console.error(
-    `no rows match --provider=${onlyProvider}. Known providers: fal.`
+    `no rows match --provider=${onlyProvider}. Known providers: kie, fal.`
   );
   process.exit(1);
 }
 
 const apiKey = process.env.FAL_API_KEY;
-if (!apiKey) {
-  console.error(
-    "FAL_API_KEY missing. Run `op run --env-file=.env.tpl -- pnpm run compare:image`."
-  );
-  process.exit(1);
-}
-const c = cost({ fal: { apiKey } });
+const c = cost({ fal: apiKey ? { apiKey } : undefined });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const skipFal = !apiKey;
+if (skipFal && filtered.some((r) => r.provider === "fal")) {
+  console.error(
+    "warning: FAL_API_KEY missing — skipping fal rows. " +
+      "Run via `op run --env-file=.env.tpl -- pnpm run compare:image` " +
+      "(or pass --provider=kie) for full output."
+  );
+}
+
+// Patches `n` into a kie image payload when the upstream schema accepts it
+// (currently wan/2-7-image and wan/2-7-image-pro). Other kie image schemas
+// don't expose a batch field — for those we leave the payload alone and the
+// rate-table multiplier (units = 1 per call) is multiplied externally.
+function withKieN(payload, n) {
+  const supportsN =
+    payload.model === "wan/2-7-image" || payload.model === "wan/2-7-image-pro";
+  if (!supportsN) return payload;
+  return { ...payload, input: { ...payload.input, n } };
+}
 
 // Try unit_quantity first (matches fal's published unit-price contract for
 // most image endpoints); fall back to num_images if the estimate rejects.
@@ -141,22 +287,36 @@ async function estimate(endpoint_id, n) {
 
 const rows = [];
 for (const entry of filtered) {
+  if (entry.provider === "fal" && skipFal) continue;
   const cells = {};
   let source = null;
   const warnings = new Set();
   for (const n of counts) {
     let est;
     try {
-      est = await estimate(entry.endpoint_id, n);
+      if (entry.provider === "kie") {
+        const supportsN =
+          entry.payload.model === "wan/2-7-image" ||
+          entry.payload.model === "wan/2-7-image-pro";
+        est = await c.estimate({
+          provider: "kie",
+          payload: withKieN(entry.payload, n),
+        });
+        // kie schemas without an `n` field bill per call; multiply by n so
+        // the displayed cell reflects N images at the per-image rate.
+        if (!supportsN) est = { ...est, usd: est.usd * n };
+      } else {
+        est = await estimate(entry.endpoint_id, n);
+        await sleep(4000);
+      }
     } catch (err) {
       cells[n] = { error: err.message };
-      await sleep(2500);
+      if (entry.provider === "fal") await sleep(2500);
       continue;
     }
     cells[n] = { usd: est.usd };
     source = est.source;
     for (const w of est.warnings) warnings.add(w);
-    await sleep(4000);
   }
   rows.push({ label: entry.label, source, cells, warnings: [...warnings] });
 }

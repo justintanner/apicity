@@ -57,12 +57,6 @@ const lineup = [
     model: "kling-3.0-4k",
     audio: "opt",
   },
-  {
-    provider: "kie",
-    label: "kie · kling 2.1",
-    model: "kling-2.1",
-    audio: "yes",
-  },
   { provider: "kie", label: "kie · sora-2", model: "sora-2", audio: "yes" },
   // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v).
   // Seedance 2 Fast supports only 480p and 720p (no 1080p).

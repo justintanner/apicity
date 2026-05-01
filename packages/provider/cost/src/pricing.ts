@@ -160,7 +160,6 @@ export const PER_UNIT_RATES: Record<
     veo3_fast: { unit: "seconds", perUnit: 0.1 }, // veo3 720p rate
     "kling-3.0": { unit: "seconds", perUnit: 0.14 }, // fal v3/standard (verified 2026-04-30)
     "kling-3.0-4k": { unit: "seconds", perUnit: 0.42 }, // fal o3/4k (verified 2026-04-30)
-    "kling-2.1": { unit: "seconds", perUnit: 0.07 },
     "sora-2": { unit: "seconds", perUnit: 0.15 },
     // Seedance 2: kie publishes 6 rates (3 resolutions × i2v/t2v). Pick the
     // tier you'll actually request — there is no bare `seedance-2` alias

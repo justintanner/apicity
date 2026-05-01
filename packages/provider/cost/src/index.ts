@@ -1,12 +1,14 @@
 export { cost } from "./cost";
 export { computeEstimate } from "./compute";
-export { PER_UNIT_RATES, PRICING_AS_OF, TOKEN_RATES } from "./pricing";
+export { PRICING, PRICING_AS_OF } from "./pricing";
 
 export type {
-  PerUnitProviderId,
-  PerUnitRate,
-  TokenProviderId,
-  TokenRate,
+  CostUnit,
+  ModelPricing,
+  PerUnitPricing,
+  PricedProviderId,
+  RateSource,
+  TokenPricing,
 } from "./pricing";
 
 export type {
@@ -15,14 +17,8 @@ export type {
   CostOptions,
   CostProvider,
   CostSource,
-  CostUnit,
   EstimateRequest,
   ProviderClientOptions,
 } from "./types";
 
-export type {
-  ElevenLabsExtract,
-  ExtractResult,
-  KieRateExtract,
-  TextExtract,
-} from "./extract/types";
+export type { ExtractResult, TextExtract } from "./extract/types";

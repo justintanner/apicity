@@ -3,15 +3,8 @@ import { fal } from "@apicity/fal";
 import { openai } from "@apicity/openai";
 import { xai } from "@apicity/xai";
 
-import {
-  PER_UNIT_RATES,
-  PRICING_AS_OF,
-  type PerUnitProviderId,
-  type PerUnitRate,
-  type TokenProviderId,
-  type TokenRate,
-  TOKEN_RATES,
-} from "./pricing";
+import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing";
+import { asString } from "./pricing/helpers";
 
 import type {
   CostEstimate,
@@ -22,22 +15,10 @@ import type {
 
 import { extractAnthropic } from "./extract/anthropic";
 import { extractChat } from "./extract/chat";
-import { extractElevenLabs } from "./extract/elevenlabs";
-import { extractKie } from "./extract/kie";
 import { extractOpenAi } from "./extract/openai";
 import { extractXai } from "./extract/xai";
 
 const heuristicTokens = (text: string): number => Math.ceil(text.length / 4);
-
-const lookupTokenRate = (
-  provider: TokenProviderId,
-  model: string
-): TokenRate | undefined => TOKEN_RATES[provider][model];
-
-const lookupPerUnitRate = (
-  provider: PerUnitProviderId,
-  model: string
-): PerUnitRate | undefined => PER_UNIT_RATES[provider][model];
 
 function failed(source: CostSource, warnings: string[]): CostEstimate {
   return {
@@ -50,14 +31,14 @@ function failed(source: CostSource, warnings: string[]): CostEstimate {
   };
 }
 
-function tokensTimesTable(
-  provider: TokenProviderId,
+function applyTokenRate(
+  provider: PricedProviderId,
   model: string,
   inputTokens: number,
   maxOutputTokens: number | undefined,
   heuristic: boolean
 ): CostEstimate {
-  const rate = lookupTokenRate(provider, model);
+  const entry = PRICING[provider][model];
   const warnings: string[] = [];
   const outputTokens = maxOutputTokens ?? 0;
   if (maxOutputTokens === undefined) {
@@ -68,7 +49,7 @@ function tokensTimesTable(
   const source: CostSource = heuristic
     ? "tokens-heuristic+table"
     : "tokens-api+table";
-  if (!rate) {
+  if (!entry || entry.kind !== "tokens") {
     warnings.push(
       `model '${model}' not found in pricing table for provider '${provider}'`
     );
@@ -81,6 +62,7 @@ function tokensTimesTable(
       warnings,
     };
   }
+  const { rate } = entry;
   const usd =
     (inputTokens * rate.input + outputTokens * rate.output) / 1_000_000;
   return {
@@ -94,31 +76,59 @@ function tokensTimesTable(
       inputUsdPerMillion: rate.input,
       outputUsdPerMillion: rate.output,
     },
-    rateAsOf: PRICING_AS_OF,
+    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
     warnings,
   };
 }
 
-function perUnitTimesTable(
-  provider: PerUnitProviderId,
-  rateKey: string,
-  units: number
+// Generic dispatcher for per-unit providers (kie, elevenlabs). Reads the
+// model id from payload.model (or payload.model_id for elevenlabs), looks
+// up the entry, runs `units(payload)` and the ordered selectors, and
+// returns the matching rate. All payload-shape knowledge lives in the
+// model entry's closures.
+function evaluatePerUnit(
+  provider: PricedProviderId,
+  payload: Record<string, unknown>
 ): CostEstimate {
-  const rate = lookupPerUnitRate(provider, rateKey);
-  const warnings: string[] = [];
-  if (!rate) {
-    warnings.push(
-      `model '${rateKey}' not found in pricing table for provider '${provider}'`
-    );
-    return failed("per-unit-table", warnings);
+  const model = asString(payload.model) ?? asString(payload.model_id);
+  if (!model) {
+    return failed("per-unit-table", [`${provider}: payload.model is required`]);
+  }
+  const entry = PRICING[provider][model];
+  if (!entry) {
+    return failed("per-unit-table", [
+      `model '${model}' not found in pricing table for provider '${provider}'`,
+    ]);
+  }
+  if (entry.kind !== "perUnit") {
+    return failed("per-unit-table", [
+      `${provider} '${model}' is token-billed, not per-unit`,
+    ]);
+  }
+  const units = entry.units(payload);
+  if (units === undefined) {
+    return failed("per-unit-table", [
+      `${provider} '${model}': could not derive units from payload (check duration / text)`,
+    ]);
+  }
+  const variantKey = entry.select
+    .map((s) => s.pick(payload))
+    .filter((v): v is string => Boolean(v))
+    .join("|");
+  const perUnit = entry.rates[variantKey];
+  if (perUnit === undefined) {
+    const selectorNames = entry.select.map((s) => s.name).join(", ");
+    return failed("per-unit-table", [
+      `${provider} '${model}': no rate for variant '${variantKey}' (selectors: ${selectorNames})`,
+    ]);
   }
   return {
-    usd: units * rate.perUnit,
+    usd: units * perUnit,
     currency: "USD",
     source: "per-unit-table",
-    breakdown: { units, unit: rate.unit, perUnitUsd: rate.perUnit },
-    rateAsOf: PRICING_AS_OF,
-    warnings,
+    breakdown: { units, unit: entry.unit, perUnitUsd: perUnit },
+    rateAsOf: entry.source.asOf ?? PRICING_AS_OF,
+    warnings: [],
   };
 }
 
@@ -235,7 +245,7 @@ export async function computeEstimate(
                 ext.data.text,
                 req.signal
               );
-      return tokensTimesTable(
+      return applyTokenRate(
         req.provider,
         ext.data.model,
         inputTokens,
@@ -249,7 +259,7 @@ export async function computeEstimate(
       const ext = extractChat(req.provider, req.payload);
       if (!ext.ok) return failed("tokens-heuristic+table", ext.warnings);
       const inputTokens = heuristicTokens(ext.data.text);
-      return tokensTimesTable(
+      return applyTokenRate(
         req.provider,
         ext.data.model,
         inputTokens,
@@ -265,20 +275,10 @@ export async function computeEstimate(
         req.estimateType ?? "unit_price",
         req.signal
       );
-    case "kie": {
-      const ext = extractKie(req.payload);
-      if (!ext.ok) return failed("per-unit-table", ext.warnings);
-      return perUnitTimesTable("kie", ext.data.rateKey, ext.data.units);
-    }
-    case "elevenlabs": {
-      const ext = extractElevenLabs(req.payload);
-      if (!ext.ok) return failed("per-unit-table", ext.warnings);
-      return perUnitTimesTable(
-        "elevenlabs",
-        ext.data.model,
-        ext.data.characters
-      );
-    }
+    case "kie":
+      return evaluatePerUnit("kie", req.payload);
+    case "elevenlabs":
+      return evaluatePerUnit("elevenlabs", req.payload);
     case "free":
       return {
         usd: 0,

@@ -7,13 +7,3 @@ export interface TextExtract {
   text: string;
   maxOutputTokens?: number;
 }
-
-export interface KieRateExtract {
-  rateKey: string;
-  units: number;
-}
-
-export interface ElevenLabsExtract {
-  model: string;
-  characters: number;
-}

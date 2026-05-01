@@ -6,6 +6,13 @@
 //   pnpm run compare:video -- --provider=fal # fal upstream rows only
 //   pnpm run compare:video -- --durations=4,6,8
 //
+// Each lineup row carries the *exact* JSON payload a caller would POST to the
+// upstream provider — kie createTask body for kie rows, fal endpoint body for
+// fal rows. The duration is patched in per-iteration. This means the same
+// payload object is what you'd pass to the real generation API; the cost
+// extractor reads the pricing-relevant fields (model, resolution, direction,
+// duration) from it.
+//
 // kie rows come from the bundled rate table in @apicity/cost (PRICING_AS_OF
 // in packages/provider/cost/src/pricing.ts) — instant, no API key required.
 // fal rows hit fal's pricing.estimate endpoint live (FAL_API_KEY required;
@@ -24,8 +31,6 @@ const args = Object.fromEntries(
     })
 );
 
-// Default to kie (table-only, no key required). Pass --provider=all to include
-// fal upstream rows, or --provider=fal for fal-only.
 const providerArg = args.provider ?? "kie";
 const onlyProvider = providerArg === "all" ? undefined : providerArg;
 const durations = (args.durations ?? "5,8,10")
@@ -38,26 +43,32 @@ const durations = (args.durations ?? "5,8,10")
 //   - "opt" = schema exposes an audio toggle (sound / generate_audio /
 //     audio_setting) → caller chooses on or off per request
 const lineup = [
-  { provider: "kie", label: "kie · veo3 (4K)", model: "veo3", audio: "yes" },
+  {
+    provider: "kie",
+    label: "kie · veo3 (4K)",
+    payload: { model: "veo3", prompt: "x" },
+    audio: "yes",
+  },
   {
     provider: "kie",
     label: "kie · veo3-fast (720p)",
-    model: "veo3_fast",
+    payload: { model: "veo3_fast", prompt: "x" },
     audio: "yes",
   },
   {
     provider: "kie",
     label: "kie · kling 3.0 std",
-    model: "kling-3.0",
+    payload: {
+      model: "kling-3.0/video",
+      input: {
+        prompt: "x",
+        sound: false,
+        mode: "generate",
+        multi_shots: false,
+      },
+    },
     audio: "opt",
   },
-  {
-    provider: "kie",
-    label: "kie · kling 3.0 4K",
-    model: "kling-3.0-4k",
-    audio: "opt",
-  },
-  { provider: "kie", label: "kie · sora-2", model: "sora-2", audio: "yes" },
   // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v); only
   // i2v is shown here. The t2v rows are still in @apicity/cost's pricing
   // table for callers that need them. Seedance 2 Fast supports only 480p
@@ -65,46 +76,100 @@ const lineup = [
   {
     provider: "kie",
     label: "kie · seedance 2 fast 480p i2v",
-    model: "seedance-2-fast-480p-i2v",
+    payload: {
+      model: "bytedance/seedance-2-fast",
+      input: {
+        prompt: "x",
+        first_frame_url: "https://example.com/img.jpg",
+        resolution: "480p",
+        web_search: false,
+      },
+    },
     audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 fast 720p i2v",
-    model: "seedance-2-fast-720p-i2v",
+    payload: {
+      model: "bytedance/seedance-2-fast",
+      input: {
+        prompt: "x",
+        first_frame_url: "https://example.com/img.jpg",
+        resolution: "720p",
+        web_search: false,
+      },
+    },
     audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 480p i2v",
-    model: "seedance-2-480p-i2v",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "x",
+        first_frame_url: "https://example.com/img.jpg",
+        resolution: "480p",
+        web_search: false,
+      },
+    },
     audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 720p i2v",
-    model: "seedance-2-720p-i2v",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "x",
+        first_frame_url: "https://example.com/img.jpg",
+        resolution: "720p",
+        web_search: false,
+      },
+    },
     audio: "opt",
   },
   {
     provider: "kie",
     label: "kie · seedance 2 1080p i2v",
-    model: "seedance-2-1080p-i2v",
+    payload: {
+      model: "bytedance/seedance-2",
+      input: {
+        prompt: "x",
+        first_frame_url: "https://example.com/img.jpg",
+        resolution: "1080p",
+        web_search: false,
+      },
+    },
     audio: "opt",
   },
-  { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "yes" },
+  {
+    provider: "kie",
+    label: "kie · wan 2.7",
+    payload: {
+      model: "wan/2-7-text-to-video",
+      input: { prompt: "x" },
+    },
+    audio: "yes",
+  },
   // grok-imagine: kie charges by resolution only (no i2v/t2v split, no
   // 1080p tier); audio always included.
   {
     provider: "kie",
     label: "kie · grok-imagine 480p",
-    model: "grok-imagine-480p",
+    payload: {
+      model: "grok-imagine/text-to-video",
+      input: { prompt: "x", resolution: "480p" },
+    },
     audio: "yes",
   },
   {
     provider: "kie",
     label: "kie · grok-imagine 720p",
-    model: "grok-imagine-720p",
+    payload: {
+      model: "grok-imagine/text-to-video",
+      input: { prompt: "x", resolution: "720p" },
+    },
     audio: "yes",
   },
   // happyhorse: kie charges by resolution only (720p / 1080p; no i2v/t2v
@@ -112,13 +177,19 @@ const lineup = [
   {
     provider: "kie",
     label: "kie · happyhorse 720p",
-    model: "happyhorse-720p",
+    payload: {
+      model: "happyhorse/text-to-video",
+      input: { prompt: "x", resolution: "720p" },
+    },
     audio: "yes",
   },
   {
     provider: "kie",
     label: "kie · happyhorse 1080p",
-    model: "happyhorse-1080p",
+    payload: {
+      model: "happyhorse/text-to-video",
+      input: { prompt: "x", resolution: "1080p" },
+    },
     audio: "yes",
   },
   {
@@ -177,12 +248,22 @@ if (skipFal && filtered.some((r) => r.provider === "fal")) {
   );
 }
 
+// Patches `duration` into the kie payload at either the top level (veo) or
+// nested under `input` (marketplace shape). Returns a fresh object so the
+// per-iteration mutation doesn't leak back into the lineup.
+function withDuration(payload, sec) {
+  if (payload.input) {
+    return { ...payload, input: { ...payload.input, duration: sec } };
+  }
+  return { ...payload, duration: sec };
+}
+
 async function falWithBackoff(endpoint_id, sec) {
   const delays = [4000, 8000, 16000];
   let lastErr;
   for (let attempt = 0; attempt <= delays.length; attempt++) {
     try {
-      return await c.usd({
+      return await c.estimate({
         provider: "fal",
         endpoint_id,
         payload: { unit_quantity: sec },
@@ -207,10 +288,9 @@ for (const entry of filtered) {
     let est;
     try {
       if (entry.provider === "kie") {
-        est = await c.usd({
+        est = await c.estimate({
           provider: "kie",
-          model: entry.model,
-          seconds: sec,
+          payload: withDuration(entry.payload, sec),
         });
       } else {
         est = await falWithBackoff(entry.endpoint_id, sec);

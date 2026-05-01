@@ -9,7 +9,7 @@
 // resolved automatically when launched via `op run --env-file=.env.tpl`).
 // The bundled rate table in @apicity/cost has no image rows yet, so there is
 // no offline path. To add a kie or openai-images row, extend `lineup` below
-// and route through `c.usd({ provider, ... })`.
+// and route through `c.estimate({ provider, payload, ... })`.
 
 import { cost } from "../packages/provider/cost/dist/src/index.js";
 
@@ -117,7 +117,7 @@ async function withBackoff(fn) {
 async function estimate(endpoint_id, n) {
   try {
     return await withBackoff(() =>
-      c.usd({
+      c.estimate({
         provider: "fal",
         endpoint_id,
         payload: { unit_quantity: n },
@@ -126,7 +126,7 @@ async function estimate(endpoint_id, n) {
   } catch {
     try {
       return await withBackoff(() =>
-        c.usd({
+        c.estimate({
           provider: "fal",
           endpoint_id,
           payload: { num_images: n },

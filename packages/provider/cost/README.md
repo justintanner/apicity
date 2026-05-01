@@ -12,6 +12,8 @@ pnpm add @apicity/cost
 
 ## Usage
 
+`c.estimate(req)` accepts the **exact JSON body you would POST to upstream**. The package lightly parses the payload to extract the fields that affect price (model, resolution, duration, message contents, etc.) — so the same object you build for the real generation call doubles as the input to the cost estimate.
+
 ```ts
 import { cost } from "@apicity/cost";
 
@@ -19,45 +21,60 @@ const c = cost({
   openai: { apiKey: process.env.OPENAI_API_KEY! },
   anthropic: { apiKey: process.env.ANTHROPIC_API_KEY! },
   fal: { apiKey: process.env.FAL_API_KEY! },
-  // fireworks/alibaba/elevenlabs/kie/free need NO opts — pure local math
+  // fireworks / alibaba / elevenlabs / kie / free need NO opts — pure local math
 });
 
-// Token-counting providers — hits upstream count-tokens API, multiplies by bundled rate
-const a = await c.usd({
+// openai chat — same body you'd POST to /v1/chat/completions
+const a = await c.estimate({
   provider: "openai",
-  model: "gpt-5",
-  text: "Estimate this prompt's cost.",
-  maxOutputTokens: 1000,
+  payload: {
+    model: "gpt-5",
+    messages: [{ role: "user", content: "Estimate this prompt's cost." }],
+    max_tokens: 1000,
+  },
 });
 // → { usd: 0.01..., source: "tokens-api+table", breakdown: { inputTokens: 7, outputTokens: 1000, ... } }
 
 // Skip the network call — use chars/4 heuristic
-const a2 = await c.usd({
+const a2 = await c.estimate({
   provider: "openai",
-  model: "gpt-5",
-  text: "...",
-  maxOutputTokens: 1000,
+  payload: { model: "gpt-5", messages: [...], max_tokens: 1000 },
   useHeuristic: true,
 });
 
-// fal — defers to upstream USD endpoint, no rate table involved
-const f = await c.usd({
+// fal — payload is whatever the chosen endpoint expects; defers to upstream USD endpoint
+const f = await c.estimate({
   provider: "fal",
   endpoint_id: "fal-ai/flux/dev",
   payload: { unit_quantity: 100 },
 });
 // → { usd: ..., source: "upstream-usd", rateAsOf: null }
 
-// Per-unit media providers
-const e = await c.usd({
-  provider: "elevenlabs",
-  model: "eleven_flash_v2_5",
-  characters: 1500,
+// kie — the same body you'd POST to /api/v1/jobs/createTask
+const k = await c.estimate({
+  provider: "kie",
+  payload: {
+    model: "bytedance/seedance-2",
+    input: {
+      prompt: "...",
+      first_frame_url: "https://...",
+      resolution: "720p",
+      duration: 8,
+      web_search: false,
+    },
+  },
 });
-const k = await c.usd({ provider: "kie", model: "veo3_fast", seconds: 8 });
+// extractor reads model + input.resolution + first_frame_url presence (i2v)
+// + input.duration → seedance-2-720p-i2v rate × 8 seconds
+
+// elevenlabs TTS — payload is the /v1/text-to-speech body
+const e = await c.estimate({
+  provider: "elevenlabs",
+  payload: { model_id: "eleven_flash_v2_5", text: "Hello world" },
+});
 
 // free → always $0
-const z = await c.usd({ provider: "free" });
+const z = await c.estimate({ provider: "free" });
 ```
 
 ## Return shape
@@ -70,7 +87,7 @@ interface CostEstimate {
     | "upstream-usd" // fal — exact USD from upstream
     | "tokens-api+table" // openai/anthropic/xai — exact tokens × bundled rate
     | "tokens-heuristic+table" // useHeuristic:true, plus fireworks/alibaba/kimicoding (always heuristic)
-    | "per-unit-table" // elevenlabs/kie — caller-supplied units × bundled rate
+    | "per-unit-table" // elevenlabs/kie — payload-derived units × bundled rate
     | "free";
   breakdown: {
     inputTokens?: number;
@@ -82,15 +99,23 @@ interface CostEstimate {
     perUnitUsd?: number;
   };
   rateAsOf: string | null; // YYYY-MM-DD; null when source=upstream-usd
-  warnings: string[]; // non-empty when fallback fired (unknown model, missing maxOutputTokens, etc.)
+  warnings: string[]; // non-empty when fallback fired (unknown model, missing max_tokens, missing duration, etc.)
 }
 ```
 
 `source` is the load-bearing field: callers who want guarantees check `source === "upstream-usd"`. Callers who tolerate ±20% can accept `tokens-api+table` and `per-unit-table`. Heuristic mode (`tokens-heuristic+table`) is rougher — chars/4 ≈ tokens.
 
+## How payloads are parsed
+
+Each provider has a small extractor in `src/extract/` that walks the payload looking for the fields the rate table discriminates on. Unrecognized payloads return `usd: 0` plus a warning rather than throwing — so a missing `input.resolution` on a kie seedance payload, or a model not in the bundled table, produces a diagnosable `CostEstimate` rather than an exception.
+
+For text providers (openai / anthropic / xai / kimicoding / fireworks / alibaba), the extractor flattens the chat `messages` array (or `input` / `prompt` / `text`) into a single string for token counting; non-text content parts (images, audio, tool calls) are dropped.
+
+For kie, the rate table keys are not 1:1 with the payload's `model` field — the extractor rebuilds them from the payload's `input.resolution`, `input.first_frame_url` (i2v vs t2v), and the marketplace model slug. See `src/extract/kie.ts` for the full mapping.
+
 ## Bundled pricing
 
-Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`) and shipped in `src/pricing.ts`. They cover the most common model on each provider; calling `usd()` with an unknown model returns `usd: 0` plus a warning, never throws.
+Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`) and shipped in `src/pricing.ts`. They cover the most common model on each provider; calling `estimate()` with an unknown model returns `usd: 0` plus a warning, never throws.
 
 To inspect what's bundled:
 
@@ -99,15 +124,6 @@ import { TOKEN_RATES, PER_UNIT_RATES, PRICING_AS_OF } from "@apicity/cost";
 ```
 
 Maintenance is manual: re-fetch each upstream's pricing page, edit `pricing.ts`, bump `PRICING_AS_OF`.
-
-## Per-provider sub-namespaces (raw token counts)
-
-For power users who want raw upstream responses (e.g. exact `input_tokens` from anthropic's `count_tokens`), the original per-provider sub-namespaces are still available:
-
-```ts
-const tokens = await c.openai!.estimate({ model: "gpt-5", input: "..." });
-// → { input_tokens: 7 } (native upstream shape)
-```
 
 ## Coverage
 
@@ -126,7 +142,7 @@ const tokens = await c.openai!.estimate({ model: "gpt-5", input: "..." });
 
 ## Out of scope
 
-- Anthropic prompt-cache pricing (rates are in the table but `usd()` ignores them — assumes no caching)
+- Anthropic prompt-cache pricing (rates are in the table but `estimate()` ignores them — assumes no caching)
 - Batch API discount (50% off across providers)
 - Tier-based fallback for fireworks (parameter-count brackets)
 - Suno per-song pricing on kie (no stable published rate)

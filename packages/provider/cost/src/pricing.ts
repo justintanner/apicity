@@ -153,7 +153,7 @@ export const PER_UNIT_RATES: Record<
   // Per-output-second video rates. Where the upstream provider publishes a
   // primary per-output-second figure (fal model pages, xAI announcement),
   // that is used verbatim. For exact per-job USD on fal-hosted models prefer
-  // c.usd({ provider: "fal", endpoint_id, payload: { unit_quantity: seconds } })
+  // c.estimate({ provider: "fal", endpoint_id, payload: { unit_quantity: seconds } })
   // — the kie table is a hardcoded approximation; fal returns upstream USD.
   kie: {
     veo3: { unit: "seconds", perUnit: 0.3 }, // veo3 4K rate (kie marketplace)

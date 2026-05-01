@@ -317,6 +317,44 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.warnings.some((w) => w.includes("variant '6'"))).toBe(true);
   });
 
+  it("kie happyhorse/video-edit 1080p → $0.265/s with top-level duration hint", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "happyhorse/video-edit",
+        input: {
+          prompt: "make it sepia",
+          video_url: "https://example.com/in.mp4",
+          resolution: "1080p",
+        },
+        duration: 8,
+      },
+    });
+    expect(r.breakdown.unit).toBe("seconds");
+    expect(r.breakdown.units).toBe(8);
+    expect(r.breakdown.perUnitUsd).toBe(0.265);
+    expect(r.usd).toBeCloseTo(0.265 * 8, 6);
+  });
+
+  it("kie happyhorse/video-edit 720p → $0.155/s", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "happyhorse/video-edit",
+        input: {
+          prompt: "make it sepia",
+          video_url: "https://example.com/in.mp4",
+          resolution: "720p",
+        },
+        duration: 5,
+      },
+    });
+    expect(r.breakdown.perUnitUsd).toBe(0.155);
+    expect(r.usd).toBeCloseTo(0.155 * 5, 6);
+  });
+
   it("kie nano-banana-pro 2K → $0.09/image", () => {
     const c = cost();
     const r = c.estimate({

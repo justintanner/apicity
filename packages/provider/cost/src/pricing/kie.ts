@@ -206,6 +206,14 @@ export const kie: Record<string, ModelPricing> = {
     { "720p": 0.155, "1080p": 0.265 },
     "happyhorse/image-to-video"
   ),
+  // happyhorse/video-edit: same tiered rates as the other happyhorse video
+  // entries. Schema has no duration field — output duration matches the
+  // source video_url, so callers must pass a top-level `duration` hint
+  // (the seconds picker already falls back to p.duration).
+  "happyhorse/video-edit": tieredResolutionVideo(
+    { "720p": 0.155, "1080p": 0.265 },
+    "happyhorse/image-to-video"
+  ),
 
   // bytedance/seedance-2: 6 rates, resolution × videoInput (i2v when
   // input.first_frame_url is present, t2v otherwise).

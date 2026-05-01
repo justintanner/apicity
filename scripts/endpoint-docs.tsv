@@ -28,6 +28,7 @@ anthropic	v1.skills.versions.create	POST	https://api.anthropic.com/v1/skills/{sk
 anthropic	v1.skills.versions.del	DELETE	https://api.anthropic.com/v1/skills/{skillId}/versions/{version}	https://docs.anthropic.com/en/api
 anthropic	v1.skills.versions.list	GET	https://api.anthropic.com/v1/skills/{skillId}/versions	https://docs.anthropic.com/en/api
 elevenlabs	v1.soundGeneration	POST	https://api.elevenlabs.io/v1/sound-generation	https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert
+elevenlabs	v1.speechToText	POST	https://api.elevenlabs.io/v1/speech-to-text	https://elevenlabs.io/docs/api-reference/speech-to-text/convert
 fal	bytedance.seedance2p0.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai

@@ -1,10 +1,15 @@
 import {
   ElevenLabsOptions,
   ElevenLabsSoundGenerationRequest,
+  ElevenLabsSpeechToTextRequest,
+  ElevenLabsSpeechToTextResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
-import { ElevenLabsSoundGenerationRequestSchema } from "./zod";
+import {
+  ElevenLabsSoundGenerationRequestSchema,
+  ElevenLabsSpeechToTextRequestSchema,
+} from "./zod";
 
 export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const baseURL = opts.baseURL ?? "https://api.elevenlabs.io";
@@ -109,6 +114,73 @@ export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   }
 
+  async function makeMultipartJsonRequest<T>(
+    path: string,
+    form: FormData,
+    query: Record<string, string> | undefined,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    const qs = query ? `?${new URLSearchParams(query).toString()}` : "";
+
+    try {
+      const res = await doFetch(`${baseURL}${path}${qs}`, {
+        method: "POST",
+        headers: {
+          "xi-api-key": opts.apiKey,
+        },
+        body: form,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
+  function appendFormField(form: FormData, key: string, value: unknown): void {
+    if (value === undefined || value === null) return;
+    if (value instanceof Blob) {
+      form.append(key, value);
+      return;
+    }
+    if (typeof value === "string") {
+      form.append(key, value);
+      return;
+    }
+    if (typeof value === "boolean" || typeof value === "number") {
+      form.append(key, String(value));
+      return;
+    }
+    form.append(key, JSON.stringify(value));
+  }
+
   // -- Endpoints -------------------------------------------------------------
 
   // POST https://api.elevenlabs.io/v1/sound-generation
@@ -125,8 +197,36 @@ export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSoundGenerationRequestSchema }
   );
 
-  const postV1 = { soundGeneration };
-  const v1 = { soundGeneration };
+  // POST https://api.elevenlabs.io/v1/speech-to-text
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-to-text/convert
+  const speechToText = Object.assign(
+    async (
+      req: ElevenLabsSpeechToTextRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSpeechToTextResponse> => {
+      const { enable_logging, ...body } = req;
+      const query =
+        enable_logging !== undefined
+          ? { enable_logging: String(enable_logging) }
+          : undefined;
+
+      const form = new FormData();
+      for (const [key, value] of Object.entries(body)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsSpeechToTextResponse>(
+        "/v1/speech-to-text",
+        form,
+        query,
+        signal
+      );
+    },
+    { schema: ElevenLabsSpeechToTextRequestSchema }
+  );
+
+  const postV1 = { soundGeneration, speechToText };
+  const v1 = { soundGeneration, speechToText };
 
   return {
     v1,

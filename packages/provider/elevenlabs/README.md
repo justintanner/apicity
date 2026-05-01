@@ -24,7 +24,7 @@ const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! })
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### soundGeneration
 
@@ -37,6 +37,23 @@ const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! })
 
 ```typescript
 const res = await elevenlabs.v1.soundGeneration({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### speechToText
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.speechToText</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/speech-to-text</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-text/convert)
+
+```typescript
+const res = await elevenlabs.v1.speechToText({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

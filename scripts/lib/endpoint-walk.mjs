@@ -423,6 +423,7 @@ const HELPER_METHOD_HINTS = {
   jsonRequest: "POST",
   postRequest: "POST",
   makeMultipartRequest: "POST",
+  makeMultipartJsonRequest: "POST",
 };
 
 // Helpers whose first arg is always a full absolute URL (free only).

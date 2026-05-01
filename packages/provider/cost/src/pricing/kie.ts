@@ -127,6 +127,72 @@ export const kie: Record<string, ModelPricing> = {
     "xai/grok-imagine"
   ),
 
+  // grok-imagine images — kie returns a fixed bundle per call (6 default,
+  // 4 with input.enable_pro=true for t2i; 2 for i2i). The caller can't
+  // request n=1, so price is flat per generation.
+  "grok-imagine/text-to-image": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "enable_pro",
+        pick: (p) =>
+          asObject(p.input)?.enable_pro === true ? "pro" : undefined,
+      },
+    ],
+    rates: { "": 0.02, pro: 0.025 },
+    source: src("xai/grok-imagine"),
+  },
+  "grok-imagine/image-to-image": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.02 },
+    source: src("xai/grok-imagine"),
+  },
+
+  // grok-imagine/extend: flat per-generation, 4 rates indexed by
+  // (extend_times, resolution). The kie schema only carries extend_times
+  // and task_id — resolution is inherited from the source video. Callers
+  // must pass a top-level `resolution` hint (mirrors veo3's top-level
+  // `duration` hint), otherwise the lookup misses with a clear warning.
+  "grok-imagine/extend": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "extend_times",
+        pick: (p) => asString(asObject(p.input)?.extend_times),
+      },
+      {
+        name: "resolution",
+        pick: (p) =>
+          asString(asObject(p.input)?.resolution) ?? asString(p.resolution),
+      },
+    ],
+    rates: {
+      "6|480p": 0.05,
+      "6|720p": 0.1,
+      "10|480p": 0.1,
+      "10|720p": 0.15,
+    },
+    source: src("xai/grok-imagine"),
+  },
+
+  // grok-imagine/upscale: marketplace lists only the 360p→720p tier at
+  // $0.05 flat. Schema has no tier selector (only task_id).
+  "grok-imagine/upscale": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [],
+    rates: { "": 0.05 },
+    source: src("xai/grok-imagine"),
+  },
+
   // happyhorse: 2 tiers by resolution. Audio always on for t2v/i2v/r2v.
   "happyhorse/text-to-video": tieredResolutionVideo(
     { "720p": 0.155, "1080p": 0.265 },

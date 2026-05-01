@@ -6,7 +6,13 @@
 // per-unit rate keys mirror upstream payload values verbatim — no internal
 // translation layer between what the caller sends and what selects a rate.
 
-export type CostUnit = "tokens" | "characters" | "seconds" | "images" | "songs";
+export type CostUnit =
+  | "tokens"
+  | "characters"
+  | "seconds"
+  | "images"
+  | "songs"
+  | "generations";
 
 export interface RateSource {
   url: string;

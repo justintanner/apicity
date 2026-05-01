@@ -234,6 +234,102 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(expected, 9);
   });
 
+  it("kie grok-imagine/text-to-image (default) → flat $0.02/generation", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/text-to-image",
+        input: { prompt: "a sunset" },
+      },
+    });
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.breakdown.units).toBe(1);
+    expect(r.breakdown.perUnitUsd).toBe(0.02);
+    expect(r.usd).toBeCloseTo(0.02, 6);
+  });
+
+  it("kie grok-imagine/text-to-image (enable_pro) → flat $0.025/generation", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/text-to-image",
+        input: { prompt: "a sunset", enable_pro: true },
+      },
+    });
+    expect(r.breakdown.perUnitUsd).toBe(0.025);
+    expect(r.usd).toBeCloseTo(0.025, 6);
+  });
+
+  it("kie grok-imagine/image-to-image → flat $0.02/generation", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/image-to-image",
+        input: {
+          prompt: "make it red",
+          image_urls: ["https://example.com/in.jpg"],
+        },
+      },
+    });
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.usd).toBeCloseTo(0.02, 6);
+  });
+
+  it("kie grok-imagine/extend resolves (extend_times, resolution) variant", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/extend",
+        input: {
+          task_id: "abc",
+          prompt: "more",
+          extend_at: "5",
+          extend_times: "10",
+        },
+        resolution: "720p",
+      },
+    });
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.breakdown.perUnitUsd).toBe(0.15);
+    expect(r.usd).toBeCloseTo(0.15, 6);
+  });
+
+  it("kie grok-imagine/extend without resolution hint warns", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/extend",
+        input: {
+          task_id: "abc",
+          prompt: "more",
+          extend_at: "5",
+          extend_times: "6",
+        },
+      },
+    });
+    expect(r.usd).toBe(0);
+    expect(r.warnings.some((w) => w.includes("variant '6'"))).toBe(true);
+  });
+
+  it("kie grok-imagine/upscale → flat $0.05/generation", () => {
+    const c = cost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "grok-imagine/upscale",
+        input: { task_id: "abc" },
+      },
+    });
+    expect(r.breakdown.unit).toBe("generations");
+    expect(r.usd).toBeCloseTo(0.05, 6);
+  });
+
   it("missing max_tokens emits warning", () => {
     const c = cost();
     const r = c.estimate({

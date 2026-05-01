@@ -1,6 +1,12 @@
 export type CostSource = "tokens-heuristic+table" | "per-unit-table" | "free";
 
-export type CostUnit = "tokens" | "characters" | "seconds" | "images" | "songs";
+export type CostUnit =
+  | "tokens"
+  | "characters"
+  | "seconds"
+  | "images"
+  | "songs"
+  | "generations";
 
 export interface CostBreakdown {
   inputTokens?: number;

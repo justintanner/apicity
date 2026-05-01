@@ -170,8 +170,8 @@ export const KlingMotionControlRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().optional(),
-    input_urls: z.array(z.string()),
-    video_urls: z.array(z.string()),
+    input_urls: z.array(z.string()).min(1).max(1),
+    video_urls: z.array(z.string()).min(1),
     mode: z.enum(["720p", "1080p"]).optional(),
     character_orientation: z.enum(["video", "image"]).optional(),
     background_source: z.enum(["input_video", "input_image"]).optional(),

@@ -82,6 +82,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/x/src/x.ts"],
     factoryNames: ["x"],
   },
+  {
+    name: "ig",
+    entryFiles: ["packages/provider/ig/src/ig.ts"],
+    factoryNames: ["ig"],
+  },
 ];
 
 const METHOD_KEYS = new Set([

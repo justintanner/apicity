@@ -285,3 +285,4 @@ x	v2.media.upload.append	POST	https://api.x.com/2/media/upload/{id}/append	https
 x	v2.media.upload.finalize	POST	https://api.x.com/2/media/upload/{id}/finalize	https://docs.x.com/x-api/media/finalize-media-upload
 x	v2.media.upload	GET	https://api.x.com/2/media/upload{query}	https://docs.x.com/x-api/media/get-media-upload-status
 x	v2.tweets	POST	https://api.x.com/2/tweets	https://docs.x.com/x-api/posts/create-post
+ig	v25.media	POST	https://graph.instagram.com/v25.0/{igUserId}/media	https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/

@@ -14,7 +14,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:free && pnpm run build:cost && pnpm run doc-gen",
+    "build": "pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:ig && pnpm run build:free && pnpm run build:cost && pnpm run doc-gen",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
     "build:kie": "pnpm --filter @apicity/kie run build",
@@ -25,6 +25,7 @@
     "build:alibaba": "pnpm --filter @apicity/alibaba run build",
     "build:elevenlabs": "pnpm --filter @apicity/elevenlabs run build",
     "build:x": "pnpm --filter @apicity/x run build",
+    "build:ig": "pnpm --filter @apicity/ig run build",
     "build:free": "pnpm --filter @apicity/free run build",
     "build:cost": "pnpm --filter @apicity/cost run build",
     "doc-gen": "node scripts/doc-gen.mjs",

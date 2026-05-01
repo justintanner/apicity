@@ -387,6 +387,11 @@ const PROVIDER_AUTH = {
     env: "X_ACCESS_TOKEN",
     showMiddleware: false,
   },
+  ig: {
+    field: "accessToken",
+    env: "IG_ACCESS_TOKEN",
+    showMiddleware: false,
+  },
 };
 
 async function generateReadme(providerDir, providerName, endpoints) {

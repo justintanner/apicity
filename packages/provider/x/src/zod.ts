@@ -35,3 +35,20 @@ export const XMediaUploadInitializeRequestSchema = z.object({
 export type XMediaUploadInitializeRequest = z.infer<
   typeof XMediaUploadInitializeRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /2/media/upload/{id}/append
+// ---------------------------------------------------------------------------
+
+// Body is multipart form-data — `media` is a binary chunk (≤ 1 MB),
+// `segment_index` is the 0-based sequential chunk number (max 999). The
+// schema validates the *typed* request object the user passes; the factory
+// constructs the FormData from it and lets fetch set the boundary header.
+export const XMediaUploadAppendRequestSchema = z.object({
+  media: z.custom<Blob>(),
+  segment_index: z.number().int().min(0).max(999),
+});
+
+export type XMediaUploadAppendRequest = z.infer<
+  typeof XMediaUploadAppendRequestSchema
+>;

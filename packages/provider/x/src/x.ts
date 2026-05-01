@@ -2,10 +2,15 @@ import {
   XOptions,
   XMediaUploadInitializeRequest,
   XMediaUploadInitializeResponse,
+  XMediaUploadAppendRequest,
+  XMediaUploadAppendResponse,
   XProvider,
   XError,
 } from "./types";
-import { XMediaUploadInitializeRequestSchema } from "./zod";
+import {
+  XMediaUploadInitializeRequestSchema,
+  XMediaUploadAppendRequestSchema,
+} from "./zod";
 
 export function x(opts: XOptions): XProvider {
   const baseURL = opts.baseURL ?? "https://api.x.com";
@@ -100,6 +105,50 @@ export function x(opts: XOptions): XProvider {
     }
   }
 
+  async function makeFormRequest<T>(
+    path: string,
+    form: FormData,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${opts.accessToken}` },
+        body: form,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new XError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof XError) throw error;
+      throw new XError(`X request failed: ${error}`, 500);
+    }
+  }
+
   // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
   // POST https://api.x.com/2/media/upload/initialize
   // Docs: https://docs.x.com/x-api/media/media-upload-initialize
@@ -118,12 +167,34 @@ export function x(opts: XOptions): XProvider {
     { schema: XMediaUploadInitializeRequestSchema }
   );
 
+  // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
+  // POST https://api.x.com/2/media/upload/{id}/append
+  // Docs: https://docs.x.com/x-api/media/append-media-upload
+  const mediaUploadAppend = Object.assign(
+    async (
+      id: string,
+      req: XMediaUploadAppendRequest,
+      signal?: AbortSignal
+    ): Promise<XMediaUploadAppendResponse> => {
+      const form = new FormData();
+      form.append("media", req.media);
+      form.append("segment_index", String(req.segment_index));
+      return makeFormRequest<XMediaUploadAppendResponse>(
+        `/2/media/upload/${encodeURIComponent(id)}/append`,
+        form,
+        signal
+      );
+    },
+    { schema: XMediaUploadAppendRequestSchema }
+  );
+
   return {
     post: {
       v2: {
         media: {
           upload: {
             initialize: mediaUploadInitialize,
+            append: mediaUploadAppend,
           },
         },
       },

@@ -1,7 +1,14 @@
 import type { z } from "zod";
-import type { XMediaUploadInitializeRequest } from "./zod";
+import type {
+  XMediaUploadInitializeRequest,
+  XMediaUploadAppendRequest,
+} from "./zod";
 
-export type { XOptions, XMediaUploadInitializeRequest } from "./zod";
+export type {
+  XOptions,
+  XMediaUploadInitializeRequest,
+  XMediaUploadAppendRequest,
+} from "./zod";
 
 // -- Error -------------------------------------------------------------------
 
@@ -40,6 +47,10 @@ export interface XMediaUploadInitializeResponse {
   data: XMediaUploadInitializeData;
 }
 
+export interface XMediaUploadAppendResponse {
+  data: { expires_at: number };
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface XMediaUploadInitializeMethod {
@@ -50,10 +61,20 @@ export interface XMediaUploadInitializeMethod {
   schema: z.ZodType<XMediaUploadInitializeRequest>;
 }
 
+export interface XMediaUploadAppendMethod {
+  (
+    id: string,
+    req: XMediaUploadAppendRequest,
+    signal?: AbortSignal
+  ): Promise<XMediaUploadAppendResponse>;
+  schema: z.ZodType<XMediaUploadAppendRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface XMediaUploadNamespace {
   initialize: XMediaUploadInitializeMethod;
+  append: XMediaUploadAppendMethod;
 }
 
 export interface XMediaNamespace {

@@ -1,4 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
+import { Buffer } from "node:buffer";
 import {
   setupPollyForFileUploads,
   teardownPolly,
@@ -31,8 +32,8 @@ describe("x post.v2.media.upload.append", () => {
       accessToken: process.env.X_ACCESS_TOKEN ?? "x-test-token",
     });
 
-    const mediaId = process.env.X_TEST_MEDIA_ID ?? "1880028106020515840";
-    const chunk = new Blob([new Uint8Array(64)], { type: "video/mp4" });
+    const mediaId = process.env.X_TEST_MEDIA_ID ?? "2050120900222296064";
+    const chunk = new Blob([Buffer.alloc(64)], { type: "video/mp4" });
 
     const res = await provider.post.v2.media.upload.append(mediaId, {
       media: chunk,

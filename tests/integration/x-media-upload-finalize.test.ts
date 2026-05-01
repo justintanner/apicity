@@ -31,7 +31,7 @@ describe("x post.v2.media.upload.finalize", () => {
       accessToken: process.env.X_ACCESS_TOKEN ?? "x-test-token",
     });
 
-    const mediaId = process.env.X_TEST_MEDIA_ID ?? "1880028106020515840";
+    const mediaId = process.env.X_TEST_MEDIA_ID ?? "2050120900222296064";
     const res = await provider.post.v2.media.upload.finalize(mediaId);
 
     expect(res.data).toBeDefined();

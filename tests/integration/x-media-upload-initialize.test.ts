@@ -33,7 +33,7 @@ describe("x post.v2.media.upload.initialize", () => {
 
     const res = await provider.post.v2.media.upload.initialize({
       media_type: "video/mp4",
-      total_bytes: 524288,
+      total_bytes: 64,
       media_category: "tweet_video",
     });
 

@@ -2,6 +2,8 @@ import {
   IgOptions,
   IgMediaCreateRequest,
   IgMediaCreateResponse,
+  IgContainerStatusQuery,
+  IgContainerStatusResponse,
   IgProvider,
   IgError,
 } from "./types";
@@ -117,10 +119,34 @@ export function ig(opts: IgOptions): IgProvider {
     { schema: IgMediaCreateRequestSchema }
   );
 
+  // sig-ok: numeric URL segments (`/v25.0/`) become identifier-safe (`v25`)
+  // GET https://graph.instagram.com/v25.0/{containerId}{query}
+  // Docs: https://developers.facebook.com/docs/instagram-platform/reference/ig-container/
+  async function containerStatus(
+    containerId: string,
+    params?: IgContainerStatusQuery,
+    signal?: AbortSignal
+  ): Promise<IgContainerStatusResponse> {
+    const query = params?.fields
+      ? `?fields=${encodeURIComponent(params.fields)}`
+      : "";
+    return makeJsonRequest<IgContainerStatusResponse>(
+      "GET",
+      `/v25.0/${encodeURIComponent(containerId)}${query}`,
+      undefined,
+      signal
+    );
+  }
+
   return {
     post: {
       v25: {
         media: mediaCreate,
+      },
+    },
+    get: {
+      v25: {
+        container: containerStatus,
       },
     },
   };

@@ -27,6 +27,28 @@ export interface IgMediaCreateResponse {
   id: string;
 }
 
+export type IgContainerStatusCode =
+  | "EXPIRED"
+  | "ERROR"
+  | "FINISHED"
+  | "IN_PROGRESS"
+  | "PUBLISHED";
+
+// status_code is what callers poll on; status is a free-text human-readable
+// description of the current step. Both fields are only returned when
+// requested via the `fields` query param.
+export interface IgContainerStatusResponse {
+  id: string;
+  status_code?: IgContainerStatusCode;
+  status?: string;
+}
+
+export interface IgContainerStatusQuery {
+  /** Comma-separated field list. Default returns only `id`; pass
+   *  `"status_code,status"` to read processing state. */
+  fields?: string;
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface IgMediaCreateMethod {
@@ -36,6 +58,14 @@ export interface IgMediaCreateMethod {
     signal?: AbortSignal
   ): Promise<IgMediaCreateResponse>;
   schema: z.ZodType<IgMediaCreateRequest>;
+}
+
+export interface IgContainerStatusMethod {
+  (
+    containerId: string,
+    query?: IgContainerStatusQuery,
+    signal?: AbortSignal
+  ): Promise<IgContainerStatusResponse>;
 }
 
 // -- Namespace interfaces ----------------------------------------------------
@@ -48,6 +78,15 @@ export interface IgPostNamespace {
   v25: IgPostV25Namespace;
 }
 
+export interface IgGetV25Namespace {
+  container: IgContainerStatusMethod;
+}
+
+export interface IgGetNamespace {
+  v25: IgGetV25Namespace;
+}
+
 export interface IgProvider {
   post: IgPostNamespace;
+  get: IgGetNamespace;
 }

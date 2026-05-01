@@ -24,7 +24,24 @@ const ig = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+
+### container
+
+<details>
+<summary><code>GET</code> <b><code>ig.v25.container</code></b></summary>
+
+<code>GET https://graph.instagram.com/v25.0/{containerId}{query}</code>
+
+[Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/reference/ig-container/)
+
+```typescript
+const res = await ig.v25.container({ /* ... */ });
+```
+
+Source: [`packages/provider/ig/src/ig.ts`](src/ig.ts)
+
+</details>
 
 ### media
 

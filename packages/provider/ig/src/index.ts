@@ -7,7 +7,13 @@ export type {
   IgMediaCreateRequest,
   IgMediaCreateResponse,
   IgMediaCreateMethod,
+  IgContainerStatusCode,
+  IgContainerStatusQuery,
+  IgContainerStatusResponse,
+  IgContainerStatusMethod,
   IgPostV25Namespace,
   IgPostNamespace,
+  IgGetV25Namespace,
+  IgGetNamespace,
   IgProvider,
 } from "./types";

@@ -10,6 +10,7 @@ GEMINI_API_KEY=op://Apicity/GEMINI_API_KEY/password
 ANTHROPIC_API_KEY=op://Apicity/ANTHROPIC_API_KEY/password
 DASHSCOPE_API_KEY=op://Apicity/DASHSCOPE_API_KEY/password
 ELEVENLABS_API_KEY=op://Apicity/ELEVENLABS_API_KEY/password
-X_ACCESS_TOKEN=op://Apicity/X_ACCESS_TOKEN/credential
+# X social API credentials live in .env.x.tpl (separate file so missing
+# X_CLIENT_ID / X_ACCESS_TOKEN don't break `op run` for the rest of the suite).
 DASHBOARD_USER=op://Apicity/DASHBOARD_USER/password
 DASHBOARD_PASS=op://Apicity/DASHBOARD_PASS/password

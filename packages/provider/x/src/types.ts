@@ -51,6 +51,10 @@ export interface XMediaUploadAppendResponse {
   data: { expires_at: number };
 }
 
+// Finalize returns the same shape as initialize plus a populated
+// processing_info — the caller polls processing_info.state until succeeded.
+export type XMediaUploadFinalizeResponse = XMediaUploadInitializeResponse;
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface XMediaUploadInitializeMethod {
@@ -70,11 +74,16 @@ export interface XMediaUploadAppendMethod {
   schema: z.ZodType<XMediaUploadAppendRequest>;
 }
 
+export interface XMediaUploadFinalizeMethod {
+  (id: string, signal?: AbortSignal): Promise<XMediaUploadFinalizeResponse>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface XMediaUploadNamespace {
   initialize: XMediaUploadInitializeMethod;
   append: XMediaUploadAppendMethod;
+  finalize: XMediaUploadFinalizeMethod;
 }
 
 export interface XMediaNamespace {

@@ -11,6 +11,8 @@ export type {
   XMediaUploadAppendRequest,
   XMediaUploadAppendResponse,
   XMediaUploadAppendMethod,
+  XMediaUploadFinalizeResponse,
+  XMediaUploadFinalizeMethod,
   XMediaProcessingInfo,
   XMediaUploadNamespace,
   XMediaNamespace,

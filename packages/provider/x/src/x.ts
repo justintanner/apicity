@@ -4,6 +4,7 @@ import {
   XMediaUploadInitializeResponse,
   XMediaUploadAppendRequest,
   XMediaUploadAppendResponse,
+  XMediaUploadFinalizeResponse,
   XProvider,
   XError,
 } from "./types";
@@ -188,6 +189,21 @@ export function x(opts: XOptions): XProvider {
     { schema: XMediaUploadAppendRequestSchema }
   );
 
+  // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
+  // POST https://api.x.com/2/media/upload/{id}/finalize
+  // Docs: https://docs.x.com/x-api/media/finalize-media-upload
+  async function mediaUploadFinalize(
+    id: string,
+    signal?: AbortSignal
+  ): Promise<XMediaUploadFinalizeResponse> {
+    return makeJsonRequest<XMediaUploadFinalizeResponse>(
+      "POST",
+      `/2/media/upload/${encodeURIComponent(id)}/finalize`,
+      undefined,
+      signal
+    );
+  }
+
   return {
     post: {
       v2: {
@@ -195,6 +211,7 @@ export function x(opts: XOptions): XProvider {
           upload: {
             initialize: mediaUploadInitialize,
             append: mediaUploadAppend,
+            finalize: mediaUploadFinalize,
           },
         },
       },

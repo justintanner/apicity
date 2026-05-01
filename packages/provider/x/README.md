@@ -24,7 +24,7 @@ const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });
 
 ## API Reference
 
-2 endpoints across 1 group. Each method mirrors an upstream URL path.
+3 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### media
 
@@ -37,6 +37,21 @@ const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });
 
 ```typescript
 const res = await x.v2.media.upload.append({ /* ... */ });
+```
+
+Source: [`packages/provider/x/src/x.ts`](src/x.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>x.v2.media.upload.finalize</code></b></summary>
+
+<code>POST https://api.x.com/2/media/upload/{id}/finalize</code>
+
+[Upstream docs ↗](https://docs.x.com/x-api/media/finalize-media-upload)
+
+```typescript
+const res = await x.v2.media.upload.finalize({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)

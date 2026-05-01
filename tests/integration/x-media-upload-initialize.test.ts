@@ -56,13 +56,38 @@ describe("x post.v2.media.upload.initialize", () => {
     });
     expect(valid.success).toBe(true);
 
-    const missingTotal = endpoint.schema.safeParse({ media_type: "video/mp4" });
-    expect(missingTotal.success).toBe(false);
+    // Per docs, both media_type and total_bytes are technically optional —
+    // the empty body is structurally valid (server will reject if incomplete).
+    const empty = endpoint.schema.safeParse({});
+    expect(empty.success).toBe(true);
 
     const negative = endpoint.schema.safeParse({
       media_type: "video/mp4",
       total_bytes: -1,
     });
     expect(negative.success).toBe(false);
+
+    // media_type must be one of the documented MIME types
+    const badMediaType = endpoint.schema.safeParse({
+      media_type: "application/zip",
+      total_bytes: 1024,
+    });
+    expect(badMediaType.success).toBe(false);
+
+    // media_category is also a closed enum
+    const badCategory = endpoint.schema.safeParse({
+      media_type: "video/mp4",
+      total_bytes: 1024,
+      media_category: "post_video",
+    });
+    expect(badCategory.success).toBe(false);
+
+    // additional_owners must be numeric-id strings
+    const badOwner = endpoint.schema.safeParse({
+      media_type: "video/mp4",
+      total_bytes: 1024,
+      additional_owners: ["alice"],
+    });
+    expect(badOwner.success).toBe(false);
   });
 });

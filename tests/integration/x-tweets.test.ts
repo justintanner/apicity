@@ -74,5 +74,62 @@ describe("x post.v2.tweets", () => {
       reply: { in_reply_to_tweet_id: "not-a-number" },
     });
     expect(badReplyTarget.success).toBe(false);
+
+    // `everyone` is the implicit default and NOT an accepted enum value
+    // per docs.x.com/x-api/posts/create-post.
+    const replySettingsEveryone = endpoint.schema.safeParse({
+      text: "hi",
+      reply_settings: "everyone",
+    });
+    expect(replySettingsEveryone.success).toBe(false);
+
+    const replySettingsValid = endpoint.schema.safeParse({
+      text: "hi",
+      reply_settings: "following",
+    });
+    expect(replySettingsValid.success).toBe(true);
+
+    // tagged_user_ids is capped at 10 per docs
+    const tooManyTags = endpoint.schema.safeParse({
+      media: {
+        media_ids: ["1"],
+        tagged_user_ids: Array.from({ length: 11 }, (_, i) => String(i + 1)),
+      },
+    });
+    expect(tooManyTags.success).toBe(false);
+
+    // Poll option strings cap at 25 chars per docs
+    const longPollOption = endpoint.schema.safeParse({
+      text: "vote",
+      poll: {
+        options: ["ok", "x".repeat(26)],
+        duration_minutes: 60,
+      },
+    });
+    expect(longPollOption.success).toBe(false);
+
+    // call_to_actions accepts exactly one variant
+    const ctaTwoVariants = endpoint.schema.safeParse({
+      media: {
+        media_ids: ["1"],
+        call_to_actions: {
+          visit_site: { url: "https://example.com" },
+          watch_now: { url: "https://example.com" },
+        },
+      },
+    });
+    expect(ctaTwoVariants.success).toBe(false);
+
+    // Newly added top-level fields parse cleanly
+    const fullKitchenSink = endpoint.schema.safeParse({
+      text: "hi",
+      card_uri: "card://abc",
+      community_id: "1234567890",
+      made_with_ai: true,
+      paid_partnership: true,
+      share_with_followers: true,
+      edit_options: { previous_post_id: "1234567890" },
+    });
+    expect(fullKitchenSink.success).toBe(true);
   });
 });

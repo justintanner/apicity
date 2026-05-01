@@ -31,6 +31,7 @@ export class XError extends Error {
 // -- Shared response shapes --------------------------------------------------
 
 export interface XMediaProcessingInfo {
+  type: string;
   state: "pending" | "in_progress" | "succeeded" | "failed";
   progress_percent?: number;
   check_after_secs?: number;
@@ -65,7 +66,6 @@ export interface XTweetCreateResponse {
   data: {
     id: string;
     text: string;
-    edit_history_tweet_ids?: string[];
   };
 }
 

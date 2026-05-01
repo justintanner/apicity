@@ -24,9 +24,24 @@ const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });
 
 ## API Reference
 
-3 endpoints across 1 group. Each method mirrors an upstream URL path.
+4 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### media
+
+<details>
+<summary><code>GET</code> <b><code>x.v2.media.upload</code></b></summary>
+
+<code>GET https://api.x.com/2/media/upload{query}</code>
+
+[Upstream docs ↗](https://docs.x.com/x-api/media/get-media-upload-status)
+
+```typescript
+const res = await x.v2.media.upload({ /* ... */ });
+```
+
+Source: [`packages/provider/x/src/x.ts`](src/x.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>x.v2.media.upload.append</code></b></summary>

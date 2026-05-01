@@ -283,3 +283,4 @@ xai	v1.videos.generations	POST	https://api.x.ai/v1/videos/generations	https://do
 x	v2.media.upload.initialize	POST	https://api.x.com/2/media/upload/initialize	https://docs.x.com/x-api/media/media-upload-initialize
 x	v2.media.upload.append	POST	https://api.x.com/2/media/upload/{id}/append	https://docs.x.com/x-api/media/append-media-upload
 x	v2.media.upload.finalize	POST	https://api.x.com/2/media/upload/{id}/finalize	https://docs.x.com/x-api/media/finalize-media-upload
+x	v2.media.upload	GET	https://api.x.com/2/media/upload{query}	https://docs.x.com/x-api/media/get-media-upload-status

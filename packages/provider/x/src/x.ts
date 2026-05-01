@@ -5,6 +5,7 @@ import {
   XMediaUploadAppendRequest,
   XMediaUploadAppendResponse,
   XMediaUploadFinalizeResponse,
+  XMediaUploadStatusResponse,
   XProvider,
   XError,
 } from "./types";
@@ -204,6 +205,22 @@ export function x(opts: XOptions): XProvider {
     );
   }
 
+  // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
+  // GET https://api.x.com/2/media/upload{query}
+  // Docs: https://docs.x.com/x-api/media/get-media-upload-status
+  async function mediaUploadStatus(
+    mediaId: string,
+    signal?: AbortSignal
+  ): Promise<XMediaUploadStatusResponse> {
+    const query = `?media_id=${encodeURIComponent(mediaId)}&command=STATUS`;
+    return makeJsonRequest<XMediaUploadStatusResponse>(
+      "GET",
+      `/2/media/upload${query}`,
+      undefined,
+      signal
+    );
+  }
+
   return {
     post: {
       v2: {
@@ -213,6 +230,13 @@ export function x(opts: XOptions): XProvider {
             append: mediaUploadAppend,
             finalize: mediaUploadFinalize,
           },
+        },
+      },
+    },
+    get: {
+      v2: {
+        media: {
+          upload: mediaUploadStatus,
         },
       },
     },

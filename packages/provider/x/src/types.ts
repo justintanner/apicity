@@ -55,6 +55,10 @@ export interface XMediaUploadAppendResponse {
 // processing_info — the caller polls processing_info.state until succeeded.
 export type XMediaUploadFinalizeResponse = XMediaUploadInitializeResponse;
 
+// Status (GET /2/media/upload?media_id=...) returns the same envelope as
+// finalize; processing_info is the field callers poll on.
+export type XMediaUploadStatusResponse = XMediaUploadInitializeResponse;
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface XMediaUploadInitializeMethod {
@@ -78,6 +82,10 @@ export interface XMediaUploadFinalizeMethod {
   (id: string, signal?: AbortSignal): Promise<XMediaUploadFinalizeResponse>;
 }
 
+export interface XMediaUploadStatusMethod {
+  (mediaId: string, signal?: AbortSignal): Promise<XMediaUploadStatusResponse>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface XMediaUploadNamespace {
@@ -98,6 +106,19 @@ export interface XPostNamespace {
   v2: XPostV2Namespace;
 }
 
+export interface XGetMediaNamespace {
+  upload: XMediaUploadStatusMethod;
+}
+
+export interface XGetV2Namespace {
+  media: XGetMediaNamespace;
+}
+
+export interface XGetNamespace {
+  v2: XGetV2Namespace;
+}
+
 export interface XProvider {
   post: XPostNamespace;
+  get: XGetNamespace;
 }

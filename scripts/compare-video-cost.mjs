@@ -135,6 +135,20 @@ const lineup = [
     model: "grok-imagine-720p",
     audio: "yes",
   },
+  // happyhorse: kie charges by resolution only (720p / 1080p; no i2v/t2v
+  // split). Audio always on for the generation modes.
+  {
+    provider: "kie",
+    label: "kie · happyhorse 720p",
+    model: "happyhorse-720p",
+    audio: "yes",
+  },
+  {
+    provider: "kie",
+    label: "kie · happyhorse 1080p",
+    model: "happyhorse-1080p",
+    audio: "yes",
+  },
   {
     provider: "fal",
     label: "fal · seedance 2.0 fast i2v",

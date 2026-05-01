@@ -185,5 +185,11 @@ export const PER_UNIT_RATES: Record<
     // Verified from the kie marketplace grok-imagine page.
     "grok-imagine-480p": { unit: "seconds", perUnit: 0.008 }, // 1.6 c/s
     "grok-imagine-720p": { unit: "seconds", perUnit: 0.015 }, // 3 c/s
+    // happyhorse: kie publishes 2 rates (720p, 1080p only — no i2v/t2v
+    // split). Audio always on for t2v/i2v/r2v (no toggle in those zod
+    // schemas; only video-edit exposes audio_setting). Verified from the
+    // kie marketplace happyhorse/image-to-video page.
+    "happyhorse-720p": { unit: "seconds", perUnit: 0.155 }, // 31 c/s
+    "happyhorse-1080p": { unit: "seconds", perUnit: 0.265 }, // 53 c/s
   },
 };

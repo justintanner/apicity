@@ -3,7 +3,11 @@ import { fal } from "@apicity/fal";
 import { openai } from "@apicity/openai";
 import { xai } from "@apicity/xai";
 
-import { PRICING, PRICING_AS_OF, type PricedProviderId } from "./pricing";
+import {
+  PRICING,
+  PRICING_AS_OF,
+  type PricedProviderId,
+} from "./pricing/index";
 import { asString } from "./pricing/helpers";
 
 import type {

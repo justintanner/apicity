@@ -1,6 +1,6 @@
 export { cost } from "./cost";
 export { computeEstimate } from "./compute";
-export { PRICING, PRICING_AS_OF } from "./pricing";
+export { PRICING, PRICING_AS_OF } from "./pricing/index";
 
 export type {
   CostUnit,
@@ -9,7 +9,7 @@ export type {
   PricedProviderId,
   RateSource,
   TokenPricing,
-} from "./pricing";
+} from "./pricing/index";
 
 export type {
   CostBreakdown,

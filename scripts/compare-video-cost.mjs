@@ -58,18 +58,14 @@ const lineup = [
     audio: "opt",
   },
   { provider: "kie", label: "kie · sora-2", model: "sora-2", audio: "yes" },
-  // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v).
-  // Seedance 2 Fast supports only 480p and 720p (no 1080p).
+  // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v); only
+  // i2v is shown here. The t2v rows are still in @apicity/cost's pricing
+  // table for callers that need them. Seedance 2 Fast supports only 480p
+  // and 720p (no 1080p).
   {
     provider: "kie",
     label: "kie · seedance 2 fast 480p i2v",
     model: "seedance-2-fast-480p-i2v",
-    audio: "opt",
-  },
-  {
-    provider: "kie",
-    label: "kie · seedance 2 fast 480p t2v",
-    model: "seedance-2-fast-480p-t2v",
     audio: "opt",
   },
   {
@@ -80,20 +76,8 @@ const lineup = [
   },
   {
     provider: "kie",
-    label: "kie · seedance 2 fast 720p t2v",
-    model: "seedance-2-fast-720p-t2v",
-    audio: "opt",
-  },
-  {
-    provider: "kie",
     label: "kie · seedance 2 480p i2v",
     model: "seedance-2-480p-i2v",
-    audio: "opt",
-  },
-  {
-    provider: "kie",
-    label: "kie · seedance 2 480p t2v",
-    model: "seedance-2-480p-t2v",
     audio: "opt",
   },
   {
@@ -104,20 +88,8 @@ const lineup = [
   },
   {
     provider: "kie",
-    label: "kie · seedance 2 720p t2v",
-    model: "seedance-2-720p-t2v",
-    audio: "opt",
-  },
-  {
-    provider: "kie",
     label: "kie · seedance 2 1080p i2v",
     model: "seedance-2-1080p-i2v",
-    audio: "opt",
-  },
-  {
-    provider: "kie",
-    label: "kie · seedance 2 1080p t2v",
-    model: "seedance-2-1080p-t2v",
     audio: "opt",
   },
   { provider: "kie", label: "kie · wan 2.7", model: "wan-2.7", audio: "yes" },

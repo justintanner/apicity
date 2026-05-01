@@ -55,19 +55,85 @@ const lineup = [
     payload: { model: "veo3_fast", prompt: "x" },
     audio: "yes",
   },
+  // Kling 3.0 video — kie publishes 6 rates split by mode
+  // (std=720P / pro=1080P / 4K) × audio (sound on/off). 4K is the same
+  // with or without audio. The kie zod schema's `sound` field is the
+  // audio toggle; `mode` selects the resolution tier.
   {
     provider: "kie",
-    label: "kie · kling 3.0 std",
+    label: "kie · kling 3.0 std (720p) silent",
     payload: {
       model: "kling-3.0/video",
-      input: {
-        prompt: "x",
-        sound: false,
-        mode: "generate",
-        multi_shots: false,
-      },
+      input: { prompt: "x", sound: false, mode: "std", multi_shots: false },
     },
     audio: "opt",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 std (720p) audio",
+    payload: {
+      model: "kling-3.0/video",
+      input: { prompt: "x", sound: true, mode: "std", multi_shots: false },
+    },
+    audio: "opt",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 pro (1080p) silent",
+    payload: {
+      model: "kling-3.0/video",
+      input: { prompt: "x", sound: false, mode: "pro", multi_shots: false },
+    },
+    audio: "opt",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 pro (1080p) audio",
+    payload: {
+      model: "kling-3.0/video",
+      input: { prompt: "x", sound: true, mode: "pro", multi_shots: false },
+    },
+    audio: "opt",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 4K",
+    payload: {
+      model: "kling-3.0/video",
+      input: { prompt: "x", sound: false, mode: "4K", multi_shots: false },
+    },
+    audio: "opt",
+  },
+  // Kling 3.0 motion-control (video-to-video). Duration is derived from
+  // the input video length upstream; kie has no duration field in the
+  // schema, so we pass it as a top-level hint for the cost estimate.
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 motion-control 720p",
+    payload: {
+      model: "kling-3.0/motion-control",
+      input: {
+        prompt: "x",
+        input_urls: ["https://example.com/img.jpg"],
+        video_urls: ["https://example.com/v.mp4"],
+        mode: "720p",
+      },
+    },
+    audio: "—",
+  },
+  {
+    provider: "kie",
+    label: "kie · kling 3.0 motion-control 1080p",
+    payload: {
+      model: "kling-3.0/motion-control",
+      input: {
+        prompt: "x",
+        input_urls: ["https://example.com/img.jpg"],
+        video_urls: ["https://example.com/v.mp4"],
+        mode: "1080p",
+      },
+    },
+    audio: "—",
   },
   // Seedance 2 — kie publishes 6 rates (3 resolutions × i2v vs t2v); only
   // i2v is shown here. The t2v rows are still in @apicity/cost's pricing

@@ -90,13 +90,13 @@ describe("cost.estimate — pure-math providers (no network)", () => {
           prompt: "x",
           sound: false,
           duration: "5s",
-          mode: "generate",
+          mode: "std",
           multi_shots: false,
         },
       },
     });
     expect(r.breakdown.units).toBe(5);
-    expect(r.usd).toBeCloseTo(0.14 * 5, 6);
+    expect(r.usd).toBeCloseTo(0.07 * 5, 6);
   });
 
   it("kie unknown model → warning + $0", async () => {

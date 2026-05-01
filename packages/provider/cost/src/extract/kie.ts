@@ -66,7 +66,52 @@ export function extractKie(
 
   if (model === "kling-3.0/video") {
     if (seconds === undefined) return missing(model, "duration");
-    return { ok: true, data: { rateKey: "kling-3.0", units: seconds } };
+    const mode = asString(input.mode);
+    if (!mode) return missing(model, "mode");
+    // kie schema: mode ∈ {"std", "pro", "4K"} maps to resolution
+    // {"720p", "1080p", "4k"} respectively for the rate-table key.
+    const resolution =
+      mode === "std"
+        ? "720p"
+        : mode === "pro"
+          ? "1080p"
+          : mode === "4K"
+            ? "4k"
+            : undefined;
+    if (!resolution) {
+      return {
+        ok: false,
+        warnings: [
+          `kie '${model}': input.mode '${mode}' must be one of std/pro/4K`,
+        ],
+      };
+    }
+    const audio = input.sound === true ? "-audio" : "";
+    return {
+      ok: true,
+      data: { rateKey: `kling-3.0-${resolution}${audio}`, units: seconds },
+    };
+  }
+
+  if (model === "kling-3.0/motion-control") {
+    if (seconds === undefined) return missing(model, "duration");
+    const mode = asString(input.mode);
+    if (!mode) return missing(model, "mode");
+    if (mode !== "720p" && mode !== "1080p") {
+      return {
+        ok: false,
+        warnings: [
+          `kie '${model}': input.mode '${mode}' must be one of 720p/1080p`,
+        ],
+      };
+    }
+    return {
+      ok: true,
+      data: {
+        rateKey: `kling-3.0-motion-control-${mode}`,
+        units: seconds,
+      },
+    };
   }
 
   if (

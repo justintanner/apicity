@@ -158,8 +158,19 @@ export const PER_UNIT_RATES: Record<
   kie: {
     veo3: { unit: "seconds", perUnit: 0.3 }, // veo3 4K rate (kie marketplace)
     veo3_fast: { unit: "seconds", perUnit: 0.1 }, // veo3 720p rate
-    "kling-3.0": { unit: "seconds", perUnit: 0.14 }, // fal v3/standard (verified 2026-04-30)
-    "kling-3.0-4k": { unit: "seconds", perUnit: 0.42 }, // fal o3/4k (verified 2026-04-30)
+    // Kling 3.0 video: kie publishes 6 rates split by mode (std=720P /
+    // pro=1080P / 4K) × audio (sound on/off). 4K is the same with or
+    // without audio. Verified 2026-04-30 from kie.ai/market Kling 3.0 page.
+    "kling-3.0-720p": { unit: "seconds", perUnit: 0.07 },
+    "kling-3.0-720p-audio": { unit: "seconds", perUnit: 0.1 },
+    "kling-3.0-1080p": { unit: "seconds", perUnit: 0.09 },
+    "kling-3.0-1080p-audio": { unit: "seconds", perUnit: 0.135 },
+    "kling-3.0-4k": { unit: "seconds", perUnit: 0.335 },
+    "kling-3.0-4k-audio": { unit: "seconds", perUnit: 0.335 },
+    // Kling 3.0 motion-control (video-to-video): 2 tiers, 720p / 1080p.
+    // Audio not separately priced for motion-control. Verified 2026-04-30.
+    "kling-3.0-motion-control-720p": { unit: "seconds", perUnit: 0.1 },
+    "kling-3.0-motion-control-1080p": { unit: "seconds", perUnit: 0.135 },
     "sora-2": { unit: "seconds", perUnit: 0.15 },
     // Seedance 2: kie publishes 6 rates (3 resolutions × i2v/t2v). Pick the
     // tier you'll actually request — there is no bare `seedance-2` alias

@@ -183,7 +183,7 @@ export const GrokTextToImageRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().min(1).max(5000),
-    aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
+    aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).default("16:9"),
     nsfw_checker: z.boolean().default(false),
     enable_pro: z.boolean().optional(),
   }),
@@ -304,8 +304,8 @@ export const NanoBananaProRequestSchema = z.object({
         "21:9",
         "auto",
       ])
-      .optional(),
-    resolution: NanoBananaResolutionSchema.optional(),
+      .default("16:9"),
+    resolution: NanoBananaResolutionSchema.default("2K"),
     output_format: NanoBananaOutputFormatSchema.optional(),
   }),
 });
@@ -434,8 +434,8 @@ export const NanoBanana2RequestSchema = z.object({
         "8:1",
         "auto",
       ])
-      .optional(),
-    resolution: NanoBananaResolutionSchema.optional(),
+      .default("16:9"),
+    resolution: NanoBananaResolutionSchema.default("2K"),
     output_format: NanoBananaOutputFormatSchema.optional(),
     google_search: z.boolean().optional(),
   }),
@@ -469,9 +469,9 @@ export const GptImage2ImageToImageRequestSchema = z.object({
   input: z.object({
     prompt: z.string().min(1).max(20000),
     input_urls: z.array(z.string()).min(1).max(16),
-    aspect_ratio: GptImage2ImageToImageAspectRatioSchema.optional(),
-    resolution: GptImage2ImageToImageResolutionSchema.optional(),
-    nsfw_checker: z.boolean().optional(),
+    aspect_ratio: GptImage2ImageToImageAspectRatioSchema.default("16:9"),
+    resolution: GptImage2ImageToImageResolutionSchema.default("2K"),
+    nsfw_checker: z.boolean().default(false),
   }),
 });
 
@@ -491,9 +491,9 @@ export const GptImage2TextToImageRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().min(1).max(20000),
-    aspect_ratio: GptImage2TextToImageAspectRatioSchema.optional(),
-    resolution: GptImage2TextToImageResolutionSchema.optional(),
-    nsfw_checker: z.boolean().optional(),
+    aspect_ratio: GptImage2TextToImageAspectRatioSchema.default("16:9"),
+    resolution: GptImage2TextToImageResolutionSchema.default("2K"),
+    nsfw_checker: z.boolean().default(false),
   }),
 });
 
@@ -509,7 +509,7 @@ export const SeedreamImageToImageRequestSchema = z.object({
     prompt: z.string().min(3).max(3000),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
-      .optional(),
+      .default("16:9"),
     quality: z.enum(["basic", "high"]),
     nsfw_checker: z.boolean().default(false),
   }),
@@ -522,7 +522,7 @@ export const SeedreamTextToImageRequestSchema = z.object({
     prompt: z.string().min(3).max(3000),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2", "21:9"])
-      .optional(),
+      .default("16:9"),
     quality: z.enum(["basic", "high"]),
     nsfw_checker: z.boolean().default(false),
   }),
@@ -708,10 +708,10 @@ export const Wan27VideoEditRequestSchema = z
 const Wan27ImageInputShape = {
   prompt: z.string().min(1).max(5000),
   input_urls: z.array(z.string()).max(9).optional(),
-  aspect_ratio: Wan27ImageAspectRatioSchema.optional(),
+  aspect_ratio: Wan27ImageAspectRatioSchema.default("16:9"),
   enable_sequential: z.boolean().optional(),
   n: z.number().int().min(1).max(12).optional(),
-  resolution: Wan27ImageResolutionSchema.optional(),
+  resolution: Wan27ImageResolutionSchema.default("2K"),
   thinking_mode: z.boolean().optional(),
   color_palette: z
     .array(Wan27ImageColorPaletteSchema)

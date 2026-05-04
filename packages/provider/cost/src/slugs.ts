@@ -160,19 +160,22 @@ export const MODEL_SLUGS = {
 
 export type SlugProviderId = keyof typeof MODEL_SLUGS;
 
-export type SlugModelId<P extends SlugProviderId> = keyof (typeof MODEL_SLUGS)[P];
+export type SlugModelId<P extends SlugProviderId> =
+  keyof (typeof MODEL_SLUGS)[P];
 
 // Returns the compact slug for a given provider+model. Throws if unknown
 // — slugs are a write-time concern (asset naming, telemetry) where
 // silently falling back to a string would produce drift.
 export function modelSlug<P extends SlugProviderId>(
   provider: P,
-  model: SlugModelId<P>,
+  model: SlugModelId<P>
 ): string {
-  const slug = (MODEL_SLUGS[provider] as Record<string, string>)[model as string];
+  const slug = (MODEL_SLUGS[provider] as Record<string, string>)[
+    model as string
+  ];
   if (!slug) {
     throw new Error(
-      `No slug registered for ${String(provider)}/${String(model)} — add it to packages/provider/cost/src/slugs.ts`,
+      `No slug registered for ${String(provider)}/${String(model)} — add it to packages/provider/cost/src/slugs.ts`
     );
   }
   return slug;
@@ -313,12 +316,14 @@ export const MODEL_DISPLAY = {
 
 export function modelDisplay<P extends SlugProviderId>(
   provider: P,
-  model: SlugModelId<P>,
+  model: SlugModelId<P>
 ): string {
-  const display = (MODEL_DISPLAY[provider] as Record<string, string>)[model as string];
+  const display = (MODEL_DISPLAY[provider] as Record<string, string>)[
+    model as string
+  ];
   if (!display) {
     throw new Error(
-      `No display name registered for ${String(provider)}/${String(model)} — add it to packages/provider/cost/src/slugs.ts`,
+      `No display name registered for ${String(provider)}/${String(model)} — add it to packages/provider/cost/src/slugs.ts`
     );
   }
   return display;

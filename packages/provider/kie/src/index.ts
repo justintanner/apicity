@@ -93,6 +93,7 @@ export type {
   GptImage2ImageToImageAspectRatio,
   GptImage2ImageToImageResolution,
   GptImage2TextToImageAspectRatio,
+  GptImage2TextToImageResolution,
   Wan27Resolution,
   Wan27AspectRatio,
   Wan27AudioSetting,

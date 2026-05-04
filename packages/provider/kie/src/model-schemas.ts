@@ -570,8 +570,14 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       aspect_ratio: {
         type: "string",
-        enum: ["auto", "1:1", "16:9", "9:16", "3:2"],
+        enum: ["auto", "1:1", "9:16", "16:9", "4:3", "3:4"],
         description: "Output aspect ratio (default auto)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["1K", "2K", "4K"],
+        description:
+          "Output resolution. 1:1 cannot upscale to 4K; auto/unset aspect_ratio is 1K only — other combos fail at task creation.",
       },
       nsfw_checker: {
         type: "boolean",

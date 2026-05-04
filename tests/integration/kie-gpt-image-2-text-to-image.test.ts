@@ -65,9 +65,20 @@ describe("kie gpt-image-2-text-to-image integration", () => {
       input: {
         prompt: "A serene mountain lake at sunrise.",
         aspect_ratio: "1:1",
+        resolution: "2K",
       },
     });
     expect(ok.success).toBe(true);
+
+    const fourThree = provider.post.api.v1.jobs.createTask.schema.safeParse({
+      model: "gpt-image-2-text-to-image",
+      input: {
+        prompt: "A wide poster with bold typography.",
+        aspect_ratio: "4:3",
+        resolution: "4K",
+      },
+    });
+    expect(fourThree.success).toBe(true);
 
     const badModel = provider.post.api.v1.jobs.createTask.schema.safeParse({
       model: "not-a-real-model",

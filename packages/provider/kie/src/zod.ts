@@ -310,51 +310,105 @@ export const NanoBananaProRequestSchema = z.object({
   }),
 });
 
-export const Seedance2FastRequestSchema = z.object({
-  model: z.literal("bytedance/seedance-2-fast"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().min(3).max(20000),
-    first_frame_url: z.string().optional(),
-    last_frame_url: z.string().optional(),
-    reference_image_urls: z.array(z.string()).max(9).optional(),
-    reference_video_urls: z.array(z.string()).max(3).optional(),
-    reference_audio_urls: z.array(z.string()).max(3).optional(),
-    /** @deprecated */
-    return_last_frame: z.boolean().optional(),
-    generate_audio: z.boolean().optional(),
-    resolution: z.enum(["480p", "720p"]).optional(),
-    aspect_ratio: z
-      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
-      .optional(),
-    duration: z.number().int().min(4).max(15).default(5),
-    web_search: z.boolean(),
-    nsfw_checker: z.boolean().default(false),
-  }),
+// Inner input schema kept unrefined so callers can walk `.shape` for slot
+// introspection (see Seedance2InputSchema for full rationale).
+export const Seedance2FastInputSchema = z.object({
+  prompt: z.string().min(3).max(20000),
+  first_frame_url: z.string().optional(),
+  last_frame_url: z.string().optional(),
+  reference_image_urls: z.array(z.string()).max(9).optional(),
+  reference_video_urls: z.array(z.string()).max(3).optional(),
+  reference_audio_urls: z.array(z.string()).max(3).optional(),
+  /** @deprecated */
+  return_last_frame: z.boolean().optional(),
+  generate_audio: z.boolean().optional(),
+  resolution: z.enum(["480p", "720p"]).optional(),
+  aspect_ratio: z
+    .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
+    .optional(),
+  duration: z.number().int().min(4).max(15).default(5),
+  web_search: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
 });
 
-export const Seedance2RequestSchema = z.object({
+const Seedance2FastRequestObjectSchema = z.object({
+  model: z.literal("bytedance/seedance-2-fast"),
+  callBackUrl: z.string().optional(),
+  input: Seedance2FastInputSchema,
+});
+
+// Mirrors the bytedance/seedance-2 mutual-exclusion rule — fast variant
+// shares the input shape and the same documented constraint that
+// first/last frames and multimodal references are mutually exclusive.
+export const Seedance2FastRequestSchema =
+  Seedance2FastRequestObjectSchema.refine(
+    (v) => {
+      const hasReference =
+        (v.input.reference_image_urls?.length ?? 0) > 0 ||
+        (v.input.reference_video_urls?.length ?? 0) > 0 ||
+        (v.input.reference_audio_urls?.length ?? 0) > 0;
+      const hasFrame =
+        Boolean(v.input.first_frame_url) || Boolean(v.input.last_frame_url);
+      return !(hasReference && hasFrame);
+    },
+    {
+      message:
+        "bytedance/seedance-2-fast does not accept reference_image_urls, reference_video_urls, or reference_audio_urls combined with first_frame_url or last_frame_url (these scenarios are mutually exclusive)",
+      path: ["input", "reference_image_urls"],
+    }
+  );
+
+// Inner input schema kept unrefined so callers (e.g. clipfirst) can walk
+// `.shape` for slot-constraint introspection — wrapping the request in
+// `.refine()` below turns it into ZodEffects and hides `.shape`.
+export const Seedance2InputSchema = z.object({
+  prompt: z.string().min(3).max(20000),
+  first_frame_url: z.string().optional(),
+  last_frame_url: z.string().optional(),
+  reference_image_urls: z.array(z.string()).max(9).optional(),
+  reference_video_urls: z.array(z.string()).max(3).optional(),
+  reference_audio_urls: z.array(z.string()).max(3).optional(),
+  /** @deprecated */
+  return_last_frame: z.boolean().optional(),
+  generate_audio: z.boolean().optional(),
+  resolution: z.enum(["480p", "720p", "1080p"]).optional(),
+  aspect_ratio: z
+    .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
+    .optional(),
+  duration: z.number().int().min(4).max(15).default(5),
+  web_search: z.boolean().optional(),
+  nsfw_checker: z.boolean().default(false),
+});
+
+const Seedance2RequestObjectSchema = z.object({
   model: z.literal("bytedance/seedance-2"),
   callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().min(3).max(20000),
-    first_frame_url: z.string().optional(),
-    last_frame_url: z.string().optional(),
-    reference_image_urls: z.array(z.string()).max(9).optional(),
-    reference_video_urls: z.array(z.string()).max(3).optional(),
-    reference_audio_urls: z.array(z.string()).max(3).optional(),
-    /** @deprecated */
-    return_last_frame: z.boolean().optional(),
-    generate_audio: z.boolean().optional(),
-    resolution: z.enum(["480p", "720p", "1080p"]).optional(),
-    aspect_ratio: z
-      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "21:9", "adaptive"])
-      .optional(),
-    duration: z.number().int().min(4).max(15).default(5),
-    web_search: z.boolean(),
-    nsfw_checker: z.boolean().default(false),
-  }),
+  input: Seedance2InputSchema,
 });
+
+// Per Kie docs, bytedance/seedance-2 has three mutually exclusive scenarios:
+// Image-to-Video (first frame), Image-to-Video (first + last frames), and
+// Multimodal Reference-to-Video (any of reference_image_urls /
+// reference_video_urls / reference_audio_urls). Mixing first/last frames
+// with any reference_* field returns "The reference video and the first
+// and last frames are mutually exclusive, and only one scene can be
+// selected" from createTask. Enforce at the SDK boundary.
+export const Seedance2RequestSchema = Seedance2RequestObjectSchema.refine(
+  (v) => {
+    const hasReference =
+      (v.input.reference_image_urls?.length ?? 0) > 0 ||
+      (v.input.reference_video_urls?.length ?? 0) > 0 ||
+      (v.input.reference_audio_urls?.length ?? 0) > 0;
+    const hasFrame =
+      Boolean(v.input.first_frame_url) || Boolean(v.input.last_frame_url);
+    return !(hasReference && hasFrame);
+  },
+  {
+    message:
+      "bytedance/seedance-2 does not accept reference_image_urls, reference_video_urls, or reference_audio_urls combined with first_frame_url or last_frame_url (these scenarios are mutually exclusive)",
+    path: ["input", "reference_image_urls"],
+  }
+);
 
 export const NanoBanana2RequestSchema = z.object({
   model: z.literal("nano-banana-2"),
@@ -1052,7 +1106,9 @@ export type GrokVideoUpscaleRequest = z.infer<
   typeof GrokVideoUpscaleRequestSchema
 >;
 export type NanoBananaProRequest = z.infer<typeof NanoBananaProRequestSchema>;
+export type Seedance2FastInput = z.infer<typeof Seedance2FastInputSchema>;
 export type Seedance2FastRequest = z.infer<typeof Seedance2FastRequestSchema>;
+export type Seedance2Input = z.infer<typeof Seedance2InputSchema>;
 export type Seedance2Request = z.infer<typeof Seedance2RequestSchema>;
 export type NanoBanana2Request = z.infer<typeof NanoBanana2RequestSchema>;
 export type GptImageToImageRequest = z.infer<

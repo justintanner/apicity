@@ -69,9 +69,21 @@ describe("kie gpt-image-2-image-to-image integration", () => {
         prompt: "Recolor the dress to translucent water",
         input_urls: ["https://example.com/input.webp"],
         aspect_ratio: "16:9",
+        resolution: "2K",
       },
     });
     expect(ok.success).toBe(true);
+
+    const fourThree = provider.post.api.v1.jobs.createTask.schema.safeParse({
+      model: "gpt-image-2-image-to-image",
+      input: {
+        prompt: "Frame the subject in landscape",
+        input_urls: ["https://example.com/input.webp"],
+        aspect_ratio: "4:3",
+        resolution: "4K",
+      },
+    });
+    expect(fourThree.success).toBe(true);
 
     const badModel = provider.post.api.v1.jobs.createTask.schema.safeParse({
       model: "not-a-real-model",

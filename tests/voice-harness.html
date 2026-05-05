@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>xAI Voice Harness</title>
+    <style>
+      :root {
+        color-scheme: dark light;
+        --fg: #e8e8e8;
+        --bg: #111;
+        --muted: #888;
+        --accent: #4cafef;
+        --good: #5cd28a;
+        --bad: #ef5b5b;
+        --user: #c4a8ff;
+        --asst: #5cd28a;
+      }
+      body {
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+          monospace;
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        display: grid;
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 360px 1fr;
+        grid-template-areas: "controls header" "controls main";
+        height: 100vh;
+        gap: 1px;
+      }
+      header {
+        grid-area: header;
+        padding: 12px 16px;
+        background: #1a1a1a;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .status {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .status.connected {
+        color: var(--good);
+      }
+      .status.error {
+        color: var(--bad);
+      }
+      aside {
+        grid-area: controls;
+        padding: 16px;
+        background: #1a1a1a;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      aside label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      aside input,
+      aside select,
+      aside textarea {
+        background: #222;
+        color: var(--fg);
+        border: 1px solid #333;
+        border-radius: 4px;
+        padding: 8px;
+        font: inherit;
+        font-size: 13px;
+      }
+      aside textarea {
+        resize: vertical;
+        min-height: 80px;
+      }
+      aside .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 13px;
+        color: var(--fg);
+      }
+      aside button {
+        padding: 10px;
+        font: inherit;
+        font-weight: 600;
+        border: none;
+        border-radius: 4px;
+        background: var(--accent);
+        color: #000;
+        cursor: pointer;
+      }
+      aside button.stop {
+        background: var(--bad);
+        color: #fff;
+      }
+      aside button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      main {
+        grid-area: main;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        overflow: hidden;
+      }
+      .pane {
+        display: flex;
+        flex-direction: column;
+        background: #1a1a1a;
+        overflow: hidden;
+      }
+      .pane h2 {
+        margin: 0;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--muted);
+        background: #222;
+        border-bottom: 1px solid #333;
+      }
+      .pane .body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .turn {
+        margin-bottom: 12px;
+        padding-left: 8px;
+        border-left: 2px solid transparent;
+      }
+      .turn.user {
+        border-left-color: var(--user);
+      }
+      .turn.asst {
+        border-left-color: var(--asst);
+      }
+      .turn .who {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        opacity: 0.7;
+      }
+      .turn.user .who {
+        color: var(--user);
+      }
+      .turn.asst .who {
+        color: var(--asst);
+      }
+      .event {
+        font-family: inherit;
+        font-size: 11px;
+        margin-bottom: 4px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .event .type {
+        color: var(--accent);
+      }
+      .event.client .type {
+        color: var(--user);
+      }
+      .vu {
+        height: 4px;
+        background: #222;
+        border-radius: 2px;
+        overflow: hidden;
+      }
+      .vu .bar {
+        height: 100%;
+        background: var(--good);
+        width: 0%;
+        transition: width 0.05s linear;
+      }
+    </style>
+  </head>
+  <body>
+    <aside>
+      <label>
+        Model
+        <select id="model">
+          <option value="grok-voice-think-fast-1.0" selected>
+            grok-voice-think-fast-1.0
+          </option>
+          <option value="grok-voice-1.0">grok-voice-1.0</option>
+        </select>
+      </label>
+      <label>
+        Voice
+        <select id="voice">
+          <option value="eve" selected>eve (energetic)</option>
+          <option value="ara">ara (warm)</option>
+          <option value="rex">rex (confident)</option>
+          <option value="sal">sal (smooth)</option>
+          <option value="leo">leo (authoritative)</option>
+        </select>
+      </label>
+      <label>
+        Custom voice_id (overrides above)
+        <input id="custom-voice" type="text" placeholder="optional" />
+      </label>
+      <label>
+        Language
+        <input id="language" type="text" value="en" />
+      </label>
+      <label>
+        Instructions
+        <textarea id="instructions">
+You are a helpful assistant. Keep responses brief.</textarea
+        >
+      </label>
+      <div class="row">
+        <input id="tool-search" type="checkbox" />
+        <label for="tool-search" style="text-transform: none">
+          Enable web_search tool
+        </label>
+      </div>
+      <button id="start">Start session</button>
+      <button id="stop" class="stop" disabled>Stop session</button>
+      <div class="vu"><div class="bar" id="vu-bar"></div></div>
+    </aside>
+
+    <header>
+      <h1>xAI Voice Harness</h1>
+      <span id="status" class="status">disconnected</span>
+    </header>
+
+    <main>
+      <div class="pane">
+        <h2>Transcript</h2>
+        <div id="transcript" class="body"></div>
+      </div>
+      <div class="pane">
+        <h2>Event log</h2>
+        <div id="events" class="body"></div>
+      </div>
+    </main>
+
+    <script type="module">
+      const $ = (id) => document.getElementById(id);
+      const startBtn = $("start");
+      const stopBtn = $("stop");
+      const statusEl = $("status");
+      const transcriptEl = $("transcript");
+      const eventsEl = $("events");
+      const vuBar = $("vu-bar");
+
+      let ws = null;
+      let audioCtx = null;
+      let mediaStream = null;
+      let workletNode = null;
+      let playbackTime = 0;
+      const PLAYBACK_SAMPLE_RATE = 24000;
+      const CAPTURE_SAMPLE_RATE = 24000;
+
+      function setStatus(text, cls = "") {
+        statusEl.textContent = text;
+        statusEl.className = "status " + cls;
+      }
+
+      function logEvent(direction, type, raw) {
+        const div = document.createElement("div");
+        div.className = "event " + direction;
+        div.innerHTML =
+          `<span class="type">${direction === "client" ? "→" : "←"} ${type}</span>` +
+          (raw
+            ? `\n${JSON.stringify(raw, (k, v) => ((k === "delta" || k === "audio") && typeof v === "string" && v.length > 80 ? `<${v.length} bytes>` : v), 2)}`
+            : "");
+        eventsEl.appendChild(div);
+        eventsEl.scrollTop = eventsEl.scrollHeight;
+      }
+
+      const turns = new Map();
+      function appendTurn(who, id, text) {
+        let el = turns.get(id);
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "turn " + who;
+          el.innerHTML = `<div class="who">${who === "user" ? "you" : "grok"}</div><div class="text"></div>`;
+          transcriptEl.appendChild(el);
+          turns.set(id, el);
+        }
+        const t = el.querySelector(".text");
+        t.textContent += text;
+        transcriptEl.scrollTop = transcriptEl.scrollHeight;
+      }
+
+      function setTurn(who, id, text) {
+        let el = turns.get(id);
+        if (!el) {
+          el = document.createElement("div");
+          el.className = "turn " + who;
+          el.innerHTML = `<div class="who">${who === "user" ? "you" : "grok"}</div><div class="text"></div>`;
+          transcriptEl.appendChild(el);
+          turns.set(id, el);
+        }
+        el.querySelector(".text").textContent = text;
+        transcriptEl.scrollTop = transcriptEl.scrollHeight;
+      }
+
+      function base64ToInt16(b64) {
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return new Int16Array(
+          bytes.buffer,
+          bytes.byteOffset,
+          bytes.byteLength / 2
+        );
+      }
+
+      function int16ToBase64(i16) {
+        const bytes = new Uint8Array(
+          i16.buffer,
+          i16.byteOffset,
+          i16.byteLength
+        );
+        let bin = "";
+        for (let i = 0; i < bytes.length; i++)
+          bin += String.fromCharCode(bytes[i]);
+        return btoa(bin);
+      }
+
+      function schedulePlayback(int16) {
+        if (!audioCtx) return;
+        const f32 = new Float32Array(int16.length);
+        for (let i = 0; i < int16.length; i++) f32[i] = int16[i] / 0x8000;
+        const buf = audioCtx.createBuffer(1, f32.length, PLAYBACK_SAMPLE_RATE);
+        buf.copyToChannel(f32, 0);
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        src.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (playbackTime < now) playbackTime = now;
+        src.start(playbackTime);
+        playbackTime += buf.duration;
+      }
+
+      const WORKLET_SRC = `
+        class CaptureProcessor extends AudioWorkletProcessor {
+          constructor(opts) {
+            super();
+            this.targetRate = opts.processorOptions.targetRate;
+            this.inputRate = sampleRate;
+            this.ratio = this.inputRate / this.targetRate;
+            this.acc = 0;
+            this.buf = [];
+            this.frame = 2048;
+          }
+          process(inputs) {
+            const ch = inputs[0] && inputs[0][0];
+            if (!ch) return true;
+            // Naive linear-interpolation downsample to targetRate.
+            for (let i = 0; i < ch.length; i++) {
+              this.acc += 1;
+              if (this.acc >= this.ratio) {
+                this.acc -= this.ratio;
+                const v = Math.max(-1, Math.min(1, ch[i]));
+                this.buf.push(v < 0 ? v * 0x8000 : v * 0x7fff);
+              }
+            }
+            // VU level
+            let peak = 0;
+            for (let i = 0; i < ch.length; i++) {
+              const a = Math.abs(ch[i]);
+              if (a > peak) peak = a;
+            }
+            this.port.postMessage({ vu: peak });
+            while (this.buf.length >= this.frame) {
+              const out = new Int16Array(this.buf.splice(0, this.frame));
+              this.port.postMessage({ pcm: out }, [out.buffer]);
+            }
+            return true;
+          }
+        }
+        registerProcessor("capture", CaptureProcessor);
+      `;
+
+      async function start() {
+        startBtn.disabled = true;
+        try {
+          setStatus("requesting mic...");
+          mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              channelCount: 1,
+              echoCancellation: true,
+              noiseSuppression: true,
+            },
+          });
+
+          audioCtx = new AudioContext({ sampleRate: 48000 });
+          const blob = new Blob([WORKLET_SRC], {
+            type: "application/javascript",
+          });
+          const workletUrl = URL.createObjectURL(blob);
+          await audioCtx.audioWorklet.addModule(workletUrl);
+
+          setStatus("minting ephemeral token...");
+          const session = buildSession();
+          const tokRes = await fetch("/api/ephemeral", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ session }),
+          });
+          if (!tokRes.ok) {
+            const err = await tokRes.text();
+            throw new Error(`ephemeral mint failed: ${err}`);
+          }
+          const { value: ephemeral } = await tokRes.json();
+
+          setStatus("connecting...");
+          const model = $("model").value;
+          const url = `wss://api.x.ai/v1/realtime?model=${encodeURIComponent(model)}`;
+          ws = new WebSocket(url, [
+            "realtime",
+            `openai-insecure-api-key.${ephemeral}`,
+            "openai-beta.realtime-v1",
+          ]);
+          ws.binaryType = "arraybuffer";
+
+          ws.onopen = () => {
+            setStatus("connected", "connected");
+            const sessionUpdate = { type: "session.update", session };
+            ws.send(JSON.stringify(sessionUpdate));
+            logEvent("client", "session.update", sessionUpdate);
+            wireMic();
+            stopBtn.disabled = false;
+          };
+          ws.onmessage = (ev) => onServerEvent(ev);
+          ws.onerror = (ev) => {
+            console.error(ev);
+            setStatus("error", "error");
+          };
+          ws.onclose = () => {
+            setStatus("disconnected");
+            cleanup();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+          };
+        } catch (err) {
+          console.error(err);
+          setStatus("error: " + err.message, "error");
+          startBtn.disabled = false;
+          cleanup();
+        }
+      }
+
+      function buildSession() {
+        const customVoice = $("custom-voice").value.trim();
+        const voice = customVoice || $("voice").value;
+        const session = {
+          voice,
+          instructions: $("instructions").value,
+          turn_detection: { type: "server_vad" },
+        };
+        if ($("tool-search").checked) {
+          session.tools = [{ type: "web_search" }];
+        }
+        const lang = $("language").value.trim();
+        if (lang) session.language = lang;
+        return session;
+      }
+
+      function wireMic() {
+        const src = audioCtx.createMediaStreamSource(mediaStream);
+        workletNode = new AudioWorkletNode(audioCtx, "capture", {
+          processorOptions: { targetRate: CAPTURE_SAMPLE_RATE },
+        });
+        workletNode.port.onmessage = (e) => {
+          if (e.data.pcm && ws && ws.readyState === WebSocket.OPEN) {
+            const audio = int16ToBase64(e.data.pcm);
+            ws.send(
+              JSON.stringify({ type: "input_audio_buffer.append", audio })
+            );
+          }
+          if (typeof e.data.vu === "number") {
+            vuBar.style.width = Math.min(100, e.data.vu * 200) + "%";
+          }
+        };
+        src.connect(workletNode);
+        // Don't connect worklet → destination; we don't want the mic echoed.
+      }
+
+      function onServerEvent(ev) {
+        let evt;
+        try {
+          evt = JSON.parse(
+            typeof ev.data === "string"
+              ? ev.data
+              : new TextDecoder().decode(ev.data)
+          );
+        } catch (err) {
+          console.error("parse failed", err, ev.data);
+          return;
+        }
+        logEvent("server", evt.type, evt);
+
+        switch (evt.type) {
+          case "response.output_audio.delta":
+          case "response.audio.delta": {
+            schedulePlayback(base64ToInt16(evt.delta));
+            break;
+          }
+          case "response.audio_transcript.delta":
+          case "response.output_audio_transcript.delta": {
+            appendTurn("asst", evt.response_id ?? evt.item_id, evt.delta ?? "");
+            break;
+          }
+          case "response.audio_transcript.done":
+          case "response.output_audio_transcript.done": {
+            if (evt.transcript)
+              setTurn("asst", evt.response_id ?? evt.item_id, evt.transcript);
+            break;
+          }
+          case "conversation.item.input_audio_transcription.completed": {
+            setTurn("user", evt.item_id, evt.transcript ?? "");
+            break;
+          }
+          case "error": {
+            setStatus("error: " + (evt.error?.message ?? "unknown"), "error");
+            break;
+          }
+        }
+      }
+
+      function cleanup() {
+        if (workletNode) {
+          try {
+            workletNode.disconnect();
+          } catch {}
+          workletNode = null;
+        }
+        if (mediaStream) {
+          for (const track of mediaStream.getTracks()) track.stop();
+          mediaStream = null;
+        }
+        if (audioCtx) {
+          try {
+            audioCtx.close();
+          } catch {}
+          audioCtx = null;
+        }
+        playbackTime = 0;
+        vuBar.style.width = "0%";
+      }
+
+      function stop() {
+        if (ws) {
+          try {
+            ws.close();
+          } catch {}
+          ws = null;
+        }
+        cleanup();
+      }
+
+      startBtn.addEventListener("click", start);
+      stopBtn.addEventListener("click", stop);
+    </script>
+  </body>
+</html>

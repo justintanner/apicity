@@ -261,6 +261,7 @@ xai	v1.collections.documents	GET	https://api.x.ai/v1/collections/{collectionId}/
 xai	v1.collections.documents	PATCH	https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}	https://docs.x.ai/docs/api-reference
 xai	v1.collections.documents	POST	https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}	https://docs.x.ai/docs/api-reference
 xai	v1.collections.documents.batchGet	GET	https://api.x.ai/v1/collections/{collectionId}/documents:batchGet{query}	https://docs.x.ai/docs/api-reference
+xai	v1.customVoices	POST	https://api.x.ai/v1/custom-voices	https://docs.x.ai/docs/api-reference
 xai	v1.documents.search	POST	https://api.x.ai/v1/documents/search	https://docs.x.ai/docs/api-reference
 xai	v1.files	DELETE	https://api.x.ai/v1/files/{fileId}	https://docs.x.ai/docs/api-reference
 xai	v1.files	GET	https://api.x.ai/v1/files/{fileIdOrSignal}	https://docs.x.ai/docs/api-reference
@@ -274,7 +275,9 @@ xai	v1.realtime.clientSecrets	POST	https://api.x.ai/v1/realtime/client_secrets	h
 xai	v1.responses	DELETE	https://api.x.ai/v1/responses/{id}	https://docs.x.ai/docs/api-reference
 xai	v1.responses	GET	https://api.x.ai/v1/responses/{id}	https://docs.x.ai/docs/api-reference
 xai	v1.responses	POST	https://api.x.ai/v1/responses	https://docs.x.ai/docs/api-reference
+xai	v1.stt	POST	https://api.x.ai/v1/stt	https://docs.x.ai/docs/api-reference
 xai	v1.tokenizeText	POST	https://api.x.ai/v1/tokenize-text	https://docs.x.ai/docs/api-reference
+xai	v1.tts	POST	https://api.x.ai/v1/tts	https://docs.x.ai/docs/api-reference
 xai	v1.videoGenerationModels	GET	https://api.x.ai/v1/video-generation-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.videos	GET	https://api.x.ai/v1/videos/{requestId}	https://docs.x.ai/docs/api-reference
 xai	v1.videos.edits	POST	https://api.x.ai/v1/videos/edits	https://docs.x.ai/docs/api-reference

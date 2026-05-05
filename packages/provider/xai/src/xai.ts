@@ -52,6 +52,11 @@ import {
   XaiRealtimeConnection,
   XaiRealtimeClientEvent,
   XaiRealtimeServerEvent,
+  XaiTtsRequest,
+  XaiSttRequest,
+  XaiSttResponse,
+  XaiCustomVoiceCreateRequest,
+  XaiCustomVoice,
   XaiProvider,
   XaiError,
 } from "./types";
@@ -69,6 +74,9 @@ import {
   XaiResponseRequestSchema,
   XaiTokenizeTextRequestSchema,
   XaiRealtimeClientSecretRequestSchema,
+  XaiTtsRequestSchema,
+  XaiSttRequestSchema,
+  XaiCustomVoiceCreateRequestSchema,
 } from "./zod";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -243,6 +251,109 @@ export function xai(opts: XaiOptions): XaiProvider {
       }
     }
     return parts.length > 0 ? `?${parts.join("&")}` : "";
+  }
+
+  async function makeBinaryRequest(
+    path: string,
+    body: unknown,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `XAI API error: ${res.status}`;
+        let errBody: unknown = null;
+        try {
+          errBody = await res.json();
+          if (
+            typeof errBody === "object" &&
+            errBody !== null &&
+            "error" in errBody
+          ) {
+            const err = (errBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `XAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new XaiError(message, res.status, errBody);
+      }
+
+      return await res.arrayBuffer();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof XaiError) throw error;
+      throw new XaiError(`XAI request failed: ${error}`, 500);
+    }
+  }
+
+  async function makeMultipartRequest<T>(
+    path: string,
+    form: FormData,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${opts.apiKey}` },
+        body: form,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `XAI API error: ${res.status}`;
+        let errBody: unknown = null;
+        try {
+          errBody = await res.json();
+          if (
+            typeof errBody === "object" &&
+            errBody !== null &&
+            "error" in errBody
+          ) {
+            const err = (errBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `XAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new XaiError(message, res.status, errBody);
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof XaiError) throw error;
+      throw new XaiError(`XAI request failed: ${error}`, 500);
+    }
   }
 
   // POST https://api.x.ai/v1/batches
@@ -842,6 +953,62 @@ export function xai(opts: XaiOptions): XaiProvider {
             }
           ),
         },
+        // POST https://api.x.ai/v1/tts
+        // Docs: https://docs.x.ai/docs/api-reference
+        tts: Object.assign(
+          async function tts(
+            req: XaiTtsRequest,
+            signal?: AbortSignal
+          ): Promise<ArrayBuffer> {
+            return await makeBinaryRequest("/tts", req, signal);
+          },
+          {
+            schema: XaiTtsRequestSchema,
+          }
+        ),
+        // POST https://api.x.ai/v1/stt
+        // Docs: https://docs.x.ai/docs/api-reference
+        stt: Object.assign(
+          async function stt(
+            req: XaiSttRequest,
+            signal?: AbortSignal
+          ): Promise<XaiSttResponse> {
+            const form = new FormData();
+            form.append("file", req.file, req.filename ?? "audio");
+            if (req.language !== undefined) {
+              form.append("language", req.language);
+            }
+            return await makeMultipartRequest<XaiSttResponse>(
+              "/stt",
+              form,
+              signal
+            );
+          },
+          {
+            schema: XaiSttRequestSchema,
+          }
+        ),
+        // POST https://api.x.ai/v1/custom-voices
+        // Docs: https://docs.x.ai/docs/api-reference
+        customVoices: Object.assign(
+          async function customVoices(
+            req: XaiCustomVoiceCreateRequest,
+            signal?: AbortSignal
+          ): Promise<XaiCustomVoice> {
+            const form = new FormData();
+            form.append("file", req.file, req.filename ?? "reference");
+            form.append("name", req.name);
+            form.append("language", req.language);
+            return await makeMultipartRequest<XaiCustomVoice>(
+              "/custom-voices",
+              form,
+              signal
+            );
+          },
+          {
+            schema: XaiCustomVoiceCreateRequestSchema,
+          }
+        ),
       },
     },
     get: {
@@ -1033,12 +1200,29 @@ export function xai(opts: XaiOptions): XaiProvider {
         ): XaiRealtimeConnection {
           const wsBaseURL = baseURL.replace(/^http/, "ws");
           const token = connectOpts?.token ?? opts.apiKey;
+          const model = connectOpts?.model;
 
-          const ws = new WebSocket(`${wsBaseURL}/realtime`, [
-            "realtime",
-            `openai-insecure-api-key.${token}`,
-            "openai-beta.realtime-v1",
-          ]);
+          // Voice-agent connection: ?model= query string + Authorization
+          // header (no subprotocols). Otherwise, OpenAI-compat subprotocol auth.
+          let ws: WebSocket;
+          if (model) {
+            const url = `${wsBaseURL}/realtime?model=${encodeURIComponent(model)}`;
+            // Node `ws` accepts a third-arg options object with `headers`;
+            // browsers ignore it. Cast keeps TS happy across DOM/Node lib defs.
+            ws = new (WebSocket as unknown as new (
+              url: string,
+              protocols: string[] | undefined,
+              opts: { headers: Record<string, string> }
+            ) => WebSocket)(url, undefined, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+          } else {
+            ws = new WebSocket(`${wsBaseURL}/realtime`, [
+              "realtime",
+              `openai-insecure-api-key.${token}`,
+              "openai-beta.realtime-v1",
+            ]);
+          }
 
           let resolveNext:
             | ((value: IteratorResult<XaiRealtimeServerEvent>) => void)

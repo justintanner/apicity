@@ -24,7 +24,7 @@ const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
 
 ## API Reference
 
-36 endpoints across 14 groups. Each method mirrors an upstream URL path.
+39 endpoints across 17 groups. Each method mirrors an upstream URL path.
 
 ### batches
 
@@ -287,6 +287,23 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 </details>
 
+### customVoices
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.customVoices</code></b></summary>
+
+<code>POST https://api.x.ai/v1/custom-voices</code>
+
+[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+
+```typescript
+const res = await xai.v1.customVoices({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
 ### documents
 
 <details>
@@ -498,6 +515,23 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 </details>
 
+### stt
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.stt</code></b></summary>
+
+<code>POST https://api.x.ai/v1/stt</code>
+
+[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+
+```typescript
+const res = await xai.v1.stt({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
 ### tokenizeText
 
 <details>
@@ -509,6 +543,23 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 ```typescript
 const res = await xai.v1.tokenizeText({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+### tts
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.tts</code></b></summary>
+
+<code>POST https://api.x.ai/v1/tts</code>
+
+[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+
+```typescript
+const res = await xai.v1.tts({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)

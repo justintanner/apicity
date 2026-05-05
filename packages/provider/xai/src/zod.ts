@@ -443,6 +443,29 @@ export const XaiTokenizeTextRequestSchema = z.object({
 // Realtime
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Voice (TTS / STT / Custom Voices)
+// ---------------------------------------------------------------------------
+
+export const XaiTtsRequestSchema = z.object({
+  text: z.string().min(1),
+  voice_id: z.string(),
+  language: z.string().optional(),
+});
+
+export const XaiSttRequestSchema = z.object({
+  file: z.instanceof(Blob),
+  filename: z.string().optional(),
+  language: z.string().optional(),
+});
+
+export const XaiCustomVoiceCreateRequestSchema = z.object({
+  file: z.instanceof(Blob),
+  name: z.string().min(1),
+  language: z.string(),
+  filename: z.string().optional(),
+});
+
 export const XaiRealtimeClientSecretRequestSchema = z.object({
   expires_after: z
     .object({
@@ -548,4 +571,9 @@ export type XaiTokenizeTextRequest = z.infer<
 >;
 export type XaiRealtimeClientSecretRequest = z.infer<
   typeof XaiRealtimeClientSecretRequestSchema
+>;
+export type XaiTtsRequest = z.infer<typeof XaiTtsRequestSchema>;
+export type XaiSttRequest = z.infer<typeof XaiSttRequestSchema>;
+export type XaiCustomVoiceCreateRequest = z.infer<
+  typeof XaiCustomVoiceCreateRequestSchema
 >;

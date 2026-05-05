@@ -156,5 +156,11 @@ export type {
   XaiRealtimeError,
   XaiRealtimeConnectOptions,
   XaiRealtimeConnection,
+  XaiTtsRequest,
+  XaiSttRequest,
+  XaiSttWord,
+  XaiSttResponse,
+  XaiCustomVoiceCreateRequest,
+  XaiCustomVoice,
   XaiProvider,
 } from "./types";

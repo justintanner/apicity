@@ -42,6 +42,9 @@ export type {
   XaiResponseRequest,
   XaiTokenizeTextRequest,
   XaiRealtimeClientSecretRequest,
+  XaiTtsRequest,
+  XaiSttRequest,
+  XaiCustomVoiceCreateRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -799,9 +802,36 @@ export type XaiRealtimeServerEvent =
   | XaiRealtimeContentPartDone
   | XaiRealtimeError;
 
+// Speech-to-text word-level timestamp
+export interface XaiSttWord {
+  text: string;
+  start: number;
+  end: number;
+}
+
+// Speech-to-text response
+export interface XaiSttResponse {
+  text: string;
+  language?: string;
+  duration?: number;
+  words?: XaiSttWord[];
+}
+
+// Custom voice creation response
+export interface XaiCustomVoice {
+  voice_id: string;
+  name?: string;
+  language?: string;
+}
+
 // Realtime WebSocket connection options
 export interface XaiRealtimeConnectOptions {
   token?: string;
+  // When set, the model is sent as a ?model=<value> query parameter and the
+  // connection uses Authorization-header bearer auth instead of the
+  // OpenAI-compat subprotocols. Required for voice-agent models like
+  // "grok-voice-think-fast-1.0".
+  model?: string;
 }
 
 // Realtime WebSocket connection wrapper
@@ -830,6 +860,9 @@ import type {
   XaiDocumentSearchRequest,
   XaiTokenizeTextRequest,
   XaiRealtimeClientSecretRequest,
+  XaiTtsRequest,
+  XaiSttRequest,
+  XaiCustomVoiceCreateRequest,
 } from "./zod";
 
 interface XaiChatCompletionsMethod {
@@ -937,6 +970,24 @@ interface XaiRealtimeClientSecretsMethod {
   schema: z.ZodType<XaiRealtimeClientSecretRequest>;
 }
 
+interface XaiTtsMethod {
+  (req: XaiTtsRequest, signal?: AbortSignal): Promise<ArrayBuffer>;
+  schema: z.ZodType<XaiTtsRequest>;
+}
+
+interface XaiSttMethod {
+  (req: XaiSttRequest, signal?: AbortSignal): Promise<XaiSttResponse>;
+  schema: z.ZodType<XaiSttRequest>;
+}
+
+interface XaiCustomVoicesMethod {
+  (
+    req: XaiCustomVoiceCreateRequest,
+    signal?: AbortSignal
+  ): Promise<XaiCustomVoice>;
+  schema: z.ZodType<XaiCustomVoiceCreateRequest>;
+}
+
 // Generic list/get method type for models
 interface XaiGetModelsLikeMethod<ListResponse, Item> {
   (
@@ -964,6 +1015,9 @@ interface XaiPostV1 {
   documents: { search: XaiDocumentSearchMethod };
   tokenizeText: XaiTokenizeTextMethod;
   realtime: { clientSecrets: XaiRealtimeClientSecretsMethod };
+  tts: XaiTtsMethod;
+  stt: XaiSttMethod;
+  customVoices: XaiCustomVoicesMethod;
 }
 
 // GET v1 namespace

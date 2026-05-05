@@ -30,10 +30,15 @@ export interface Endpoint extends EndpointTsvRow {
 const PATH_PARAM_RE = /\{(\w+)\}/g;
 
 export async function loadTsv(): Promise<EndpointTsvRow[]> {
+  // Resolution order: cwd's monorepo (handy in dev), bundled copy in dist/
+  // (the only source for installed users), monorepo source upstream of dist/.
+  // packageDistDir() resolves to dist/src/ at runtime; the bundled tsv lives
+  // one level up at dist/endpoint-docs.tsv.
+  const here = packageDistDir();
   const tsv = await findAndRead([
     join(process.cwd(), "scripts/endpoint-docs.tsv"),
-    join(packageDistDir(), "endpoint-docs.tsv"),
-    join(packageDistDir(), "../../scripts/endpoint-docs.tsv"),
+    join(here, "..", "endpoint-docs.tsv"),
+    join(here, "..", "..", "..", "..", "scripts/endpoint-docs.tsv"),
   ]);
   const lines = tsv.split("\n").filter((l) => l.trim().length > 0);
   const [header, ...rows] = lines;

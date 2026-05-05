@@ -26,11 +26,11 @@ OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-... \
 
 ### Flags
 
-| Flag                  | Description                                                       |
-| --------------------- | ----------------------------------------------------------------- |
-| `--output-dir <path>` | Where binary results and downloaded media URLs land.              |
+| Flag                  | Description                                                        |
+| --------------------- | ------------------------------------------------------------------ |
+| `--output-dir <path>` | Where binary results and downloaded media URLs land.               |
 | `--providers <csv>`   | Allow-list of providers (default: every one with its env var set). |
-| `--help`              | Print usage.                                                      |
+| `--help`              | Print usage.                                                       |
 
 ### Credentials
 
@@ -100,7 +100,12 @@ embed the registry into your own MCP server.
   "mcpServers": {
     "apicity": {
       "command": "npx",
-      "args": ["-y", "@apicity/mcp-server", "--output-dir", "/Users/me/apicity-out"],
+      "args": [
+        "-y",
+        "@apicity/mcp-server",
+        "--output-dir",
+        "/Users/me/apicity-out"
+      ],
       "env": {
         "OPENAI_API_KEY": "sk-...",
         "ANTHROPIC_API_KEY": "sk-..."

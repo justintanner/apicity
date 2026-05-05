@@ -44,7 +44,7 @@ for (const name of [
   "openai_post_v1_chat_completions",
   "openai_post_v1_audio_speech",
   "anthropic_post_v1_messages",
-  "fal_post_bytedance_seedance2p0_textToVideo",
+  "fal_post_bytedance_seedance2p0_text_to_video",
   "free_post_tmpfiles_api_v1_upload",
   "kie_post_claude_v1_messages",
 ]) {

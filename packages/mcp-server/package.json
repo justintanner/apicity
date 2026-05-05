@@ -60,18 +60,42 @@
     "@apicity/xai": "workspace:*"
   },
   "peerDependenciesMeta": {
-    "@apicity/alibaba": { "optional": true },
-    "@apicity/anthropic": { "optional": true },
-    "@apicity/elevenlabs": { "optional": true },
-    "@apicity/fal": { "optional": true },
-    "@apicity/fireworks": { "optional": true },
-    "@apicity/free": { "optional": true },
-    "@apicity/ig": { "optional": true },
-    "@apicity/kie": { "optional": true },
-    "@apicity/kimicoding": { "optional": true },
-    "@apicity/openai": { "optional": true },
-    "@apicity/x": { "optional": true },
-    "@apicity/xai": { "optional": true }
+    "@apicity/alibaba": {
+      "optional": true
+    },
+    "@apicity/anthropic": {
+      "optional": true
+    },
+    "@apicity/elevenlabs": {
+      "optional": true
+    },
+    "@apicity/fal": {
+      "optional": true
+    },
+    "@apicity/fireworks": {
+      "optional": true
+    },
+    "@apicity/free": {
+      "optional": true
+    },
+    "@apicity/ig": {
+      "optional": true
+    },
+    "@apicity/kie": {
+      "optional": true
+    },
+    "@apicity/kimicoding": {
+      "optional": true
+    },
+    "@apicity/openai": {
+      "optional": true
+    },
+    "@apicity/x": {
+      "optional": true
+    },
+    "@apicity/xai": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@apicity/alibaba": "workspace:*",

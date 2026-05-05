@@ -188,5 +188,20 @@ export function makeToolName(
   method: string,
   dotPath: string
 ): string {
-  return `${provider}_${method.toLowerCase()}_${dotPath.replace(/\./g, "_")}`;
+  const segments = dotPath.split(".").map(toSnakeCase);
+  return `${provider}_${method.toLowerCase()}_${segments.join("_")}`;
+}
+
+// Inverse of `urlToDotPath`'s camelCase conversion (scripts/lib/url-to-dotpath.mjs):
+// the dotPath stores `apiKeys`, `imageToVideo`, `compatibleMode`, etc., but tool
+// names are flat snake_case for ergonomics in MCP clients.
+//   apiKeys           → api_keys
+//   imageToVideo      → image_to_video
+//   compatibleMode    → compatible_mode
+//   getHTTPRequest    → get_http_request    (consecutive caps held together)
+export function toSnakeCase(segment: string): string {
+  return segment
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1_$2")
+    .replace(/([a-z0-9])([A-Z])/g, "$1_$2")
+    .toLowerCase();
 }

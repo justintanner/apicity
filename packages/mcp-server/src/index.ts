@@ -3,6 +3,7 @@ export {
   buildRegistry,
   loadTsv,
   makeToolName,
+  toSnakeCase,
   type Endpoint,
   type EndpointTsvRow,
   type BuildRegistryOptions,

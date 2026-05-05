@@ -1,0 +1,90 @@
+{
+  "name": "@apicity/mcp-server",
+  "version": "0.1.0",
+  "description": "Optional MCP (Model Context Protocol) server that exposes every @apicity provider endpoint as a tool.",
+  "license": "MIT",
+  "repository": "github:justintanner/apicity",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "bin": {
+    "apicity-mcp": "dist/src/bin.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/src/index.js",
+      "types": "./dist/src/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "mcp",
+    "model-context-protocol",
+    "apicity",
+    "openai",
+    "anthropic",
+    "xai",
+    "fal",
+    "kie",
+    "fireworks"
+  ],
+  "author": "Justin Tanner",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
+    "prepublishOnly": "pnpm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "peerDependencies": {
+    "@apicity/alibaba": "workspace:*",
+    "@apicity/anthropic": "workspace:*",
+    "@apicity/elevenlabs": "workspace:*",
+    "@apicity/fal": "workspace:*",
+    "@apicity/fireworks": "workspace:*",
+    "@apicity/free": "workspace:*",
+    "@apicity/ig": "workspace:*",
+    "@apicity/kie": "workspace:*",
+    "@apicity/kimicoding": "workspace:*",
+    "@apicity/openai": "workspace:*",
+    "@apicity/x": "workspace:*",
+    "@apicity/xai": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@apicity/alibaba": { "optional": true },
+    "@apicity/anthropic": { "optional": true },
+    "@apicity/elevenlabs": { "optional": true },
+    "@apicity/fal": { "optional": true },
+    "@apicity/fireworks": { "optional": true },
+    "@apicity/free": { "optional": true },
+    "@apicity/ig": { "optional": true },
+    "@apicity/kie": { "optional": true },
+    "@apicity/kimicoding": { "optional": true },
+    "@apicity/openai": { "optional": true },
+    "@apicity/x": { "optional": true },
+    "@apicity/xai": { "optional": true }
+  },
+  "devDependencies": {
+    "@apicity/alibaba": "workspace:*",
+    "@apicity/anthropic": "workspace:*",
+    "@apicity/elevenlabs": "workspace:*",
+    "@apicity/fal": "workspace:*",
+    "@apicity/fireworks": "workspace:*",
+    "@apicity/free": "workspace:*",
+    "@apicity/ig": "workspace:*",
+    "@apicity/kie": "workspace:*",
+    "@apicity/kimicoding": "workspace:*",
+    "@apicity/openai": "workspace:*",
+    "@apicity/x": "workspace:*",
+    "@apicity/xai": "workspace:*"
+  }
+}

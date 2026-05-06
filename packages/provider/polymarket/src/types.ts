@@ -2,9 +2,21 @@
 // @apicity/polymarket — public Polymarket APIs (Gamma, Data, CLOB market-data)
 // ---------------------------------------------------------------------------
 
+import type { z } from "zod";
+import type {
+  PolymarketClobTokenBatchRequest,
+  PolymarketClobPricesBatchRequest,
+  PolymarketClobBatchPricesHistoryRequest,
+} from "./zod";
+
 // -- Request types — derived from Zod schemas (source of truth in zod.ts) ----
 
-export type { PolymarketOptions } from "./zod";
+export type {
+  PolymarketOptions,
+  PolymarketClobTokenBatchRequest,
+  PolymarketClobPricesBatchRequest,
+  PolymarketClobBatchPricesHistoryRequest,
+} from "./zod";
 
 // -- Shared scalars ---------------------------------------------------------
 
@@ -202,6 +214,40 @@ export interface PolymarketClobMarketCompact {
   fd: PolymarketClobMarketCompactFundingDetails;
 }
 
+// -- Batch POST responses (C5) ----------------------------------------------
+
+// /books returns an array of full Book objects, parallel to the request array
+// but ordered by the server (asset_id is the source of truth, not array index).
+export type PolymarketClobBooksBatchResponse = PolymarketClobBook[];
+
+// /prices returns a 2-level map: token_id → { BUY: price, SELL: price }. Only
+// the sides actually requested for that token are present.
+export type PolymarketClobPricesBatchResponse = Record<
+  string,
+  Partial<Record<PolymarketClobSide, string>>
+>;
+
+// /midpoints and /spreads return a flat map: token_id → decimal-string value.
+export type PolymarketClobMidpointsBatchResponse = Record<string, string>;
+export type PolymarketClobSpreadsBatchResponse = Record<string, string>;
+
+// /last-trades-prices returns an array of last-trade entries — same shape as
+// the singular /last-trade-price plus a token_id discriminator.
+export interface PolymarketClobLastTradesPricesEntry {
+  price: string;
+  side: PolymarketClobSide;
+  token_id: string;
+}
+
+export type PolymarketClobLastTradesPricesBatchResponse =
+  PolymarketClobLastTradesPricesEntry[];
+
+// /batch-prices-history returns a series-per-market map; series shape matches
+// the singular /prices-history endpoint.
+export interface PolymarketClobBatchPricesHistoryResponse {
+  history: Record<string, PolymarketClobPriceHistoryPoint[]>;
+}
+
 // -- Query types ------------------------------------------------------------
 
 export interface PolymarketClobTokenQuery {
@@ -382,10 +428,68 @@ export interface PolymarketGetNamespace {
   clob: PolymarketClobGetNamespace;
 }
 
-// PR 1 + C1 ship zero POST endpoints; the post namespace is reserved for the
-// CLOB batch market-data endpoints (POST /prices, /midpoints, /spreads,
-// /last-trades-prices, /books, /batch-prices-history) coming in C5.
-export type PolymarketPostNamespace = Record<string, never>;
+// -- POST method interfaces (C5) --------------------------------------------
+
+export interface PolymarketClobBooksBatchMethod {
+  (
+    req: PolymarketClobTokenBatchRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBooksBatchResponse>;
+  schema: z.ZodType<PolymarketClobTokenBatchRequest>;
+}
+
+export interface PolymarketClobPricesBatchMethod {
+  (
+    req: PolymarketClobPricesBatchRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPricesBatchResponse>;
+  schema: z.ZodType<PolymarketClobPricesBatchRequest>;
+}
+
+export interface PolymarketClobMidpointsBatchMethod {
+  (
+    req: PolymarketClobTokenBatchRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMidpointsBatchResponse>;
+  schema: z.ZodType<PolymarketClobTokenBatchRequest>;
+}
+
+export interface PolymarketClobSpreadsBatchMethod {
+  (
+    req: PolymarketClobTokenBatchRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobSpreadsBatchResponse>;
+  schema: z.ZodType<PolymarketClobTokenBatchRequest>;
+}
+
+export interface PolymarketClobLastTradesPricesBatchMethod {
+  (
+    req: PolymarketClobTokenBatchRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLastTradesPricesBatchResponse>;
+  schema: z.ZodType<PolymarketClobTokenBatchRequest>;
+}
+
+export interface PolymarketClobBatchPricesHistoryMethod {
+  (
+    req: PolymarketClobBatchPricesHistoryRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBatchPricesHistoryResponse>;
+  schema: z.ZodType<PolymarketClobBatchPricesHistoryRequest>;
+}
+
+export interface PolymarketClobPostNamespace {
+  books: PolymarketClobBooksBatchMethod;
+  prices: PolymarketClobPricesBatchMethod;
+  midpoints: PolymarketClobMidpointsBatchMethod;
+  spreads: PolymarketClobSpreadsBatchMethod;
+  lastTradesPrices: PolymarketClobLastTradesPricesBatchMethod;
+  batchPricesHistory: PolymarketClobBatchPricesHistoryMethod;
+}
+
+export interface PolymarketPostNamespace {
+  clob: PolymarketClobPostNamespace;
+}
 
 export interface PolymarketProvider {
   get: PolymarketGetNamespace;

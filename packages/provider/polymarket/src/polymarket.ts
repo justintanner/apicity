@@ -14,13 +14,27 @@ import {
   PolymarketClobSimplifiedMarketListResponse,
   PolymarketClobMarketsByTokenResponse,
   PolymarketClobMarketCompact,
+  PolymarketClobBooksBatchResponse,
+  PolymarketClobPricesBatchResponse,
+  PolymarketClobMidpointsBatchResponse,
+  PolymarketClobSpreadsBatchResponse,
+  PolymarketClobLastTradesPricesBatchResponse,
+  PolymarketClobBatchPricesHistoryResponse,
   PolymarketClobTokenQuery,
   PolymarketClobPriceQuery,
   PolymarketClobPriceHistoryQuery,
   PolymarketClobPaginationQuery,
+  PolymarketClobTokenBatchRequest,
+  PolymarketClobPricesBatchRequest,
+  PolymarketClobBatchPricesHistoryRequest,
   PolymarketProvider,
   PolymarketError,
 } from "./types";
+import {
+  PolymarketClobTokenBatchRequestSchema,
+  PolymarketClobPricesBatchRequestSchema,
+  PolymarketClobBatchPricesHistoryRequestSchema,
+} from "./zod";
 
 export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
   // PR 1 + C1 only ship CLOB endpoints, so a single `baseURL` covers the
@@ -90,6 +104,42 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     try {
       const res = await doFetch(url, {
         method: "GET",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) {
+        const resBody = await readErrorBody(res);
+        throw new PolymarketError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
+      }
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof PolymarketError) throw error;
+      throw new PolymarketError(`Polymarket request failed: ${error}`, 500);
+    }
+  }
+
+  // Walker hint: this function is named `makeJsonRequest` so the
+  // endpoint-walker resolves it as POST (per the HELPER_METHOD_HINTS map in
+  // scripts/lib/endpoint-walk.mjs).
+  async function makeJsonRequest<T>(
+    url: string,
+    body: unknown,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    if (signal) attachAbortHandler(signal, controller);
+
+    try {
+      const res = await doFetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
         signal: controller.signal,
       });
       clearTimeout(timeoutId);
@@ -370,6 +420,102 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     );
   }
 
+  // POST https://clob.polymarket.com/books
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-order-books
+  const clobBooksBatch = Object.assign(
+    async (
+      req: PolymarketClobTokenBatchRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobBooksBatchResponse> => {
+      return makeJsonRequest<PolymarketClobBooksBatchResponse>(
+        `${baseURL}/books`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobTokenBatchRequestSchema }
+  );
+
+  // POST https://clob.polymarket.com/prices
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-market-prices
+  const clobPricesBatch = Object.assign(
+    async (
+      req: PolymarketClobPricesBatchRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobPricesBatchResponse> => {
+      return makeJsonRequest<PolymarketClobPricesBatchResponse>(
+        `${baseURL}/prices`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobPricesBatchRequestSchema }
+  );
+
+  // POST https://clob.polymarket.com/midpoints
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-midpoints
+  const clobMidpointsBatch = Object.assign(
+    async (
+      req: PolymarketClobTokenBatchRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobMidpointsBatchResponse> => {
+      return makeJsonRequest<PolymarketClobMidpointsBatchResponse>(
+        `${baseURL}/midpoints`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobTokenBatchRequestSchema }
+  );
+
+  // POST https://clob.polymarket.com/spreads
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-spreads
+  const clobSpreadsBatch = Object.assign(
+    async (
+      req: PolymarketClobTokenBatchRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobSpreadsBatchResponse> => {
+      return makeJsonRequest<PolymarketClobSpreadsBatchResponse>(
+        `${baseURL}/spreads`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobTokenBatchRequestSchema }
+  );
+
+  // POST https://clob.polymarket.com/last-trades-prices
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-last-trades-prices
+  const clobLastTradesPricesBatch = Object.assign(
+    async (
+      req: PolymarketClobTokenBatchRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobLastTradesPricesBatchResponse> => {
+      return makeJsonRequest<PolymarketClobLastTradesPricesBatchResponse>(
+        `${baseURL}/last-trades-prices`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobTokenBatchRequestSchema }
+  );
+
+  // POST https://clob.polymarket.com/batch-prices-history
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-batch-prices-history
+  const clobBatchPricesHistory = Object.assign(
+    async (
+      req: PolymarketClobBatchPricesHistoryRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobBatchPricesHistoryResponse> => {
+      return makeJsonRequest<PolymarketClobBatchPricesHistoryResponse>(
+        `${baseURL}/batch-prices-history`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobBatchPricesHistoryRequestSchema }
+  );
+
   return {
     get: {
       clob: {
@@ -390,6 +536,15 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
         clobMarkets: clobMarketsCompact,
       },
     },
-    post: {},
+    post: {
+      clob: {
+        books: clobBooksBatch,
+        prices: clobPricesBatch,
+        midpoints: clobMidpointsBatch,
+        spreads: clobSpreadsBatch,
+        lastTradesPrices: clobLastTradesPricesBatch,
+        batchPricesHistory: clobBatchPricesHistory,
+      },
+    },
   };
 }

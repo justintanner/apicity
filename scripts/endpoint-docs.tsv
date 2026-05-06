@@ -306,3 +306,9 @@ polymarket	clob.simplifiedMarkets	GET	https://clob.polymarket.com/simplified-mar
 polymarket	clob.samplingSimplifiedMarkets	GET	https://clob.polymarket.com/sampling-simplified-markets{query}	https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets
 polymarket	clob.marketsByToken	GET	https://clob.polymarket.com/markets-by-token/{tokenId}	https://docs.polymarket.com/api-reference/clob/get-market-by-token
 polymarket	clob.clobMarkets	GET	https://clob.polymarket.com/clob-markets/{conditionId}	https://docs.polymarket.com/api-reference/clob/get-clob-market-info
+polymarket	clob.books	POST	https://clob.polymarket.com/books	https://docs.polymarket.com/api-reference/clob/get-order-books
+polymarket	clob.prices	POST	https://clob.polymarket.com/prices	https://docs.polymarket.com/api-reference/clob/get-market-prices
+polymarket	clob.midpoints	POST	https://clob.polymarket.com/midpoints	https://docs.polymarket.com/api-reference/clob/get-midpoints
+polymarket	clob.spreads	POST	https://clob.polymarket.com/spreads	https://docs.polymarket.com/api-reference/clob/get-spreads
+polymarket	clob.lastTradesPrices	POST	https://clob.polymarket.com/last-trades-prices	https://docs.polymarket.com/api-reference/clob/get-last-trades-prices
+polymarket	clob.batchPricesHistory	POST	https://clob.polymarket.com/batch-prices-history	https://docs.polymarket.com/api-reference/clob/get-batch-prices-history

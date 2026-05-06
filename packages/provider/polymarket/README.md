@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-15 endpoints across 1 group. Each method mirrors an upstream URL path.
+21 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -247,6 +247,96 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 
 ```typescript
 const res = await polymarket.clob.time({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.batchPricesHistory</code></b></summary>
+
+<code>POST https://clob.polymarket.com/batch-prices-history</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-batch-prices-history)
+
+```typescript
+const res = await polymarket.clob.batchPricesHistory({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.books</code></b></summary>
+
+<code>POST https://clob.polymarket.com/books</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-books)
+
+```typescript
+const res = await polymarket.clob.books({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.lastTradesPrices</code></b></summary>
+
+<code>POST https://clob.polymarket.com/last-trades-prices</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trades-prices)
+
+```typescript
+const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.midpoints</code></b></summary>
+
+<code>POST https://clob.polymarket.com/midpoints</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoints)
+
+```typescript
+const res = await polymarket.clob.midpoints({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.prices</code></b></summary>
+
+<code>POST https://clob.polymarket.com/prices</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-prices)
+
+```typescript
+const res = await polymarket.clob.prices({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.spreads</code></b></summary>
+
+<code>POST https://clob.polymarket.com/spreads</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-spreads)
+
+```typescript
+const res = await polymarket.clob.spreads({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)

@@ -22,6 +22,121 @@ import { xai as createXai } from "@apicity/xai";
 const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
 ```
 
+## Real-world example: structured vision analysis with Grok-4
+
+Hand Grok-4 a portrait, a system prompt that nails down the output schema,
+and `text.format.type: "json_object"` — get back a reproduction-ready
+JSON description with deterministic shot/pose vocabulary. The flow below
+is taken verbatim from
+[`tests/integration/xai-vision-json.test.ts`](../../../tests/integration/xai-vision-json.test.ts)
+and replays against
+[`tests/recordings/xai_3613880225/vision-analysis-json_243984103/recording.har`](../../../tests/recordings/xai_3613880225/vision-analysis-json_243984103/recording.har),
+so the response shapes match what xAI actually returns.
+
+```typescript
+import { readFile } from "node:fs/promises";
+import { xai as createXai } from "@apicity/xai";
+
+const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
+
+// 1. Load the image and inline it as a data URL. xAI also accepts
+//    https:// URLs, but inlining keeps the call self-contained and
+//    works against private hosts.
+const image = await readFile("./portrait.jpg");
+const base64 = image.toString("base64");
+
+// 2. The system prompt enumerates the legal vocabulary for `shot` and
+//    constrains `pose` to body geometry only. Combined with
+//    `text.format.type: "json_object"` this gives Grok no room to drift
+//    off-schema — temperature 0 keeps the result reproducible.
+const SYSTEM_PROMPT = [
+  "You are an expert image-to-prompt analyst.",
+  "Return only a JSON object with keys prompt, shot, and pose.",
+  "prompt: a single-paragraph reproduction-ready image prompt, 1900 characters or fewer, with no line breaks.",
+  'shot: exactly "<size>, <angle>" where size is one of extreme close-up, close-up, medium close-up, medium shot, medium long shot, long shot, or extreme long shot, and angle is one of eye-level, low-angle, high-angle, overhead, or dutch.',
+  "pose: only body geometry for human figures, with no clothing, hair, background, or lighting details.",
+].join(" ");
+
+// 3. Multimodal Responses request: system turn + a user turn whose
+//    content is an array of `input_image` + `input_text` parts.
+const result = await xai.post.v1.responses({
+  model: "grok-4",
+  input: [
+    { role: "system", content: SYSTEM_PROMPT },
+    {
+      role: "user",
+      content: [
+        {
+          type: "input_image",
+          image_url: `data:image/jpeg;base64,${base64}`,
+          detail: "high",
+        },
+        {
+          type: "input_text",
+          text: 'Analyze this image and produce a reproduction-ready JSON description with keys "prompt", "shot", and "pose".',
+        },
+      ],
+    },
+  ],
+  text: { format: { type: "json_object" } },
+  store: false,
+  temperature: 0,
+  max_output_tokens: 300,
+});
+
+// 4. The Responses API wraps output in a typed item array. Find the
+//    assistant message, then the first `output_text` part inside it.
+//    Discriminated unions narrow `item.type === "message"` so
+//    `item.content` is statically typed.
+const message = result.output.find((item) => item.type === "message");
+const outputText =
+  message?.type === "message"
+    ? message.content.find((part) => part.type === "output_text")?.text
+    : undefined;
+
+if (!outputText) throw new Error("Grok did not return output_text");
+
+const analysis = JSON.parse(outputText) as {
+  prompt: string;
+  shot: string;
+  pose: string;
+};
+
+console.log(analysis.shot);
+// → "medium close-up, eye-level"
+
+console.log(analysis.pose);
+// → "upright torso facing forward, head straight and centered, shoulders squared, arms relaxed downward (implied)"
+
+// 5. Reasoning-token accounting. Grok-4 spent 623 of its 728 output
+//    tokens reasoning before emitting the 105-token JSON answer —
+//    surfaced in `usage.output_tokens_details.reasoning_tokens`.
+console.log(result.usage);
+// → {
+//     input_tokens: 2684,
+//     input_tokens_details: { cached_tokens: 679 },
+//     output_tokens: 728,
+//     output_tokens_details: { reasoning_tokens: 623 },
+//     total_tokens: 3412,
+//   }
+```
+
+**Notes**
+
+- `store: false` keeps the response off xAI's history surface. Flip to
+  `true` to chain follow-ups via `previous_response_id` — useful for
+  multi-turn refinement ("now describe the wardrobe") without re-uploading
+  the image each time.
+- The Responses output array also carries reasoning items and tool calls
+  when present. Always discriminate on `item.type` before reading content;
+  TypeScript's narrowing keeps you honest.
+- For raw chat-style usage without the Responses wrapping, use
+  `xai.post.v1.chat.completions` instead — same auth, same model catalog,
+  just OpenAI-compatible request/response shapes.
+- Errors surface as `XaiError` with `status` and the parsed body attached,
+  so `try { ... } catch (e) { if (e instanceof XaiError) ... }` gives you
+  the upstream error directly.
+
 ## API Reference
 
 39 endpoints across 17 groups. Each method mirrors an upstream URL path.

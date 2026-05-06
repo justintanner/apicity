@@ -332,3 +332,8 @@ polymarket	gamma.sports	GET	https://gamma-api.polymarket.com/sports	https://docs
 polymarket	gamma.sports.marketTypes	GET	https://gamma-api.polymarket.com/sports/market-types	https://docs.polymarket.com/api-reference/gamma/get-sports-market-types
 polymarket	data.positions	GET	https://data-api.polymarket.com/positions{query}	https://docs.polymarket.com/api-reference/data/get-positions
 polymarket	data.value	GET	https://data-api.polymarket.com/value{query}	https://docs.polymarket.com/api-reference/data/get-positions-value
+polymarket	data.holders	GET	https://data-api.polymarket.com/holders{query}	https://docs.polymarket.com/api-reference/data/get-holders
+polymarket	data.activity	GET	https://data-api.polymarket.com/activity{query}	https://docs.polymarket.com/api-reference/data/get-activity
+polymarket	data.trades	GET	https://data-api.polymarket.com/trades{query}	https://docs.polymarket.com/api-reference/data/get-trades
+polymarket	data.oi	GET	https://data-api.polymarket.com/oi{query}	https://docs.polymarket.com/api-reference/data/get-open-interest
+polymarket	data.liveVolume	GET	https://data-api.polymarket.com/live-volume{query}	https://docs.polymarket.com/api-reference/data/get-live-volume

@@ -946,9 +946,174 @@ export interface PolymarketDataValueMethod {
   ): Promise<PolymarketDataValueResponse>;
 }
 
+// /holders is keyed by token (not condition), returning per-token leaderboard
+// rows. The wire shape groups holders into a wrapping `{ token, holders }`
+// object — when a query includes multiple tokens, you get multiple groups.
+export interface PolymarketDataHolderEntry {
+  proxyWallet: string;
+  asset: string;
+  amount: number;
+  outcomeIndex?: number;
+  bio?: string;
+  pseudonym?: string;
+  name?: string;
+  displayUsernamePublic?: boolean;
+  profileImage?: string;
+  profileImageOptimized?: string;
+  verified?: boolean;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataHoldersGroup {
+  token: string;
+  holders: PolymarketDataHolderEntry[];
+}
+
+export interface PolymarketDataHoldersQuery {
+  market: string | string[];
+  limit?: number;
+}
+
+// /activity returns the user's recent on-chain actions (trades, redemptions,
+// merges, splits). `type` discriminates the action kind; the rest of the
+// fields apply contextually.
+export type PolymarketDataActivityType =
+  | "TRADE"
+  | "REDEEM"
+  | "MERGE"
+  | "SPLIT"
+  | "REWARD"
+  | string;
+
+export interface PolymarketDataActivityEntry {
+  proxyWallet: string;
+  timestamp: number;
+  conditionId: string;
+  type: PolymarketDataActivityType;
+  size: number;
+  usdcSize?: number;
+  transactionHash: string;
+  asset?: string;
+  price?: number;
+  side?: "BUY" | "SELL";
+  outcomeIndex?: number;
+  title?: string;
+  slug?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataActivityQuery {
+  user: string;
+  limit?: number;
+  offset?: number;
+  market?: string | string[];
+  type?: PolymarketDataActivityType | PolymarketDataActivityType[];
+  start?: number;
+  end?: number;
+  side?: "BUY" | "SELL";
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+}
+
+export interface PolymarketDataTradeEntry {
+  proxyWallet: string;
+  side: "BUY" | "SELL";
+  asset: string;
+  conditionId: string;
+  size: number;
+  price: number;
+  timestamp: number;
+  title?: string;
+  slug?: string;
+  icon?: string;
+  eventSlug?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataTradesQuery {
+  user?: string;
+  market?: string | string[];
+  limit?: number;
+  offset?: number;
+  takerOnly?: boolean;
+  filterType?: string;
+}
+
+// /oi returns a flat list of open-interest entries; default response is a
+// single-row "GLOBAL" aggregate, but per-market filtering is possible.
+export interface PolymarketDataOpenInterestEntry {
+  market: string;
+  value: number;
+}
+
+export type PolymarketDataOpenInterestResponse =
+  PolymarketDataOpenInterestEntry[];
+
+export interface PolymarketDataOpenInterestQuery {
+  market?: string | string[];
+}
+
+// /live-volume returns a per-event volume rollup; markets[] enumerates
+// per-market contribution to the total.
+export interface PolymarketDataLiveVolumeMarket {
+  market: string;
+  value: number;
+}
+
+export interface PolymarketDataLiveVolumeEntry {
+  total: number;
+  markets: PolymarketDataLiveVolumeMarket[];
+}
+
+export type PolymarketDataLiveVolumeResponse = PolymarketDataLiveVolumeEntry[];
+
+export interface PolymarketDataLiveVolumeQuery {
+  id: string | number;
+}
+
+export interface PolymarketDataHoldersMethod {
+  (
+    params: PolymarketDataHoldersQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataHoldersGroup[]>;
+}
+
+export interface PolymarketDataActivityMethod {
+  (
+    params: PolymarketDataActivityQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataActivityEntry[]>;
+}
+
+export interface PolymarketDataTradesMethod {
+  (
+    params: PolymarketDataTradesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataTradeEntry[]>;
+}
+
+export interface PolymarketDataOpenInterestMethod {
+  (
+    params?: PolymarketDataOpenInterestQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataOpenInterestResponse>;
+}
+
+export interface PolymarketDataLiveVolumeMethod {
+  (
+    params: PolymarketDataLiveVolumeQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataLiveVolumeResponse>;
+}
+
 export interface PolymarketDataGetNamespace {
   positions: PolymarketDataPositionsMethod;
   value: PolymarketDataValueMethod;
+  holders: PolymarketDataHoldersMethod;
+  activity: PolymarketDataActivityMethod;
+  trades: PolymarketDataTradesMethod;
+  oi: PolymarketDataOpenInterestMethod;
+  liveVolume: PolymarketDataLiveVolumeMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

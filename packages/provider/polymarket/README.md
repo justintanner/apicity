@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-41 endpoints across 3 groups. Each method mirrors an upstream URL path.
+46 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -346,6 +346,66 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 ### data
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.data.activity</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/activity{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-activity)
+
+```typescript
+const res = await polymarket.data.activity({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.holders</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/holders{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-holders)
+
+```typescript
+const res = await polymarket.data.holders({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.liveVolume</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/live-volume{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-live-volume)
+
+```typescript
+const res = await polymarket.data.liveVolume({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.oi</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/oi{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-open-interest)
+
+```typescript
+const res = await polymarket.data.oi({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.data.positions</code></b></summary>
 
 <code>GET https://data-api.polymarket.com/positions{query}</code>
@@ -354,6 +414,21 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.data.positions({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.trades</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/trades{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-trades)
+
+```typescript
+const res = await polymarket.data.trades({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)

@@ -300,3 +300,9 @@ polymarket	clob.lastTradePrice	GET	https://clob.polymarket.com/last-trade-price{
 polymarket	clob.tickSize	GET	https://clob.polymarket.com/tick-size/{tokenId}	https://docs.polymarket.com/api-reference/clob/get-tick-size
 polymarket	clob.feeRate	GET	https://clob.polymarket.com/fee-rate/{tokenId}	https://docs.polymarket.com/api-reference/clob/get-fee-rate
 polymarket	clob.pricesHistory	GET	https://clob.polymarket.com/prices-history{query}	https://docs.polymarket.com/api-reference/clob/get-prices-history
+polymarket	clob.markets	GET	https://clob.polymarket.com/markets/{paramsOrConditionIdOrSignal}	https://docs.polymarket.com/api-reference/clob/get-markets
+polymarket	clob.samplingMarkets	GET	https://clob.polymarket.com/sampling-markets{query}	https://docs.polymarket.com/api-reference/clob/get-sampling-markets
+polymarket	clob.simplifiedMarkets	GET	https://clob.polymarket.com/simplified-markets{query}	https://docs.polymarket.com/api-reference/clob/get-simplified-markets
+polymarket	clob.samplingSimplifiedMarkets	GET	https://clob.polymarket.com/sampling-simplified-markets{query}	https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets
+polymarket	clob.marketsByToken	GET	https://clob.polymarket.com/markets-by-token/{tokenId}	https://docs.polymarket.com/api-reference/clob/get-market-by-token
+polymarket	clob.clobMarkets	GET	https://clob.polymarket.com/clob-markets/{conditionId}	https://docs.polymarket.com/api-reference/clob/get-clob-market-info

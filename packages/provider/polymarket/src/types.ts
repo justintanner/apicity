@@ -73,6 +73,135 @@ export interface PolymarketClobPriceHistoryResponse {
   history: PolymarketClobPriceHistoryPoint[];
 }
 
+// -- Market metadata (C3) ---------------------------------------------------
+
+export interface PolymarketClobMarketToken {
+  token_id: string;
+  outcome: string;
+  price: number;
+  winner: boolean;
+}
+
+export interface PolymarketClobMarketRewardRate {
+  asset_address: string;
+  rewards_daily_rate: number;
+}
+
+export interface PolymarketClobMarketRewards {
+  rates: PolymarketClobMarketRewardRate[] | null;
+  min_size: number;
+  max_spread: number;
+}
+
+export interface PolymarketClobMarket {
+  enable_order_book: boolean;
+  active: boolean;
+  closed: boolean;
+  archived: boolean;
+  accepting_orders: boolean;
+  accepting_order_timestamp: string | null;
+  minimum_order_size: number;
+  minimum_tick_size: number;
+  condition_id: string;
+  question_id: string;
+  question: string;
+  description: string;
+  market_slug: string;
+  end_date_iso: string | null;
+  game_start_time: string | null;
+  seconds_delay: number;
+  fpmm: string;
+  maker_base_fee: number;
+  taker_base_fee: number;
+  notifications_enabled: boolean;
+  neg_risk: boolean;
+  neg_risk_market_id: string;
+  neg_risk_request_id: string;
+  icon: string;
+  image: string;
+  rewards: PolymarketClobMarketRewards;
+  is_50_50_outcome: boolean;
+  tokens: PolymarketClobMarketToken[];
+  tags: string[];
+}
+
+// /simplified-markets and /sampling-simplified-markets return a leaner shape
+// without question text or pricing metadata — useful when you only need
+// condition_id + token_ids in bulk.
+export interface PolymarketClobSimplifiedMarket {
+  condition_id: string;
+  rewards: PolymarketClobMarketRewards;
+  tokens: PolymarketClobMarketToken[];
+  active: boolean;
+  closed: boolean;
+  archived: boolean;
+  accepting_orders: boolean;
+}
+
+// Cursor-based pagination envelope shared by /markets, /sampling-markets,
+// /simplified-markets, /sampling-simplified-markets.
+export interface PolymarketClobPaginationQuery {
+  next_cursor?: string;
+}
+
+export interface PolymarketClobPaginatedResponse<T> {
+  data: T[];
+  next_cursor: string;
+  limit: number;
+  count: number;
+}
+
+export type PolymarketClobMarketListResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobMarket>;
+
+export type PolymarketClobSimplifiedMarketListResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobSimplifiedMarket>;
+
+export interface PolymarketClobMarketsByTokenResponse {
+  condition_id: string;
+  primary_token_id: string;
+  secondary_token_id: string;
+}
+
+// /clob-markets/{condition_id} returns a single-letter-keyed compact form
+// optimized for hot-path market discovery: c=condition_id, t=tokens, r=rewards,
+// mos=minimum_order_size, mts=minimum_tick_size, mbf=maker_base_fee,
+// tbf=taker_base_fee, ao=accepting_orders, aot=accepting_order_timestamp.
+// Field semantics for `cbos`, `ibce`, and the nested `fd` object are not
+// documented upstream — preserved as-is for callers that need them.
+export interface PolymarketClobMarketCompactToken {
+  t: string;
+  o: string;
+}
+
+export interface PolymarketClobMarketCompactRewards {
+  mi: number;
+  ma: number;
+  e: boolean;
+  moas: number;
+}
+
+export interface PolymarketClobMarketCompactFundingDetails {
+  r: number;
+  e: number;
+  to: boolean;
+}
+
+export interface PolymarketClobMarketCompact {
+  c: string;
+  t: PolymarketClobMarketCompactToken[];
+  r: PolymarketClobMarketCompactRewards;
+  mos: number;
+  mts: number;
+  mbf: number;
+  tbf: number;
+  ao: boolean;
+  cbos: boolean;
+  aot: string;
+  ibce: boolean;
+  fd: PolymarketClobMarketCompactFundingDetails;
+}
+
 // -- Query types ------------------------------------------------------------
 
 export interface PolymarketClobTokenQuery {
@@ -182,6 +311,53 @@ export interface PolymarketClobPricesHistoryMethod {
   ): Promise<PolymarketClobPriceHistoryResponse>;
 }
 
+// `markets` is overloaded — pass a string condition_id to retrieve a single
+// market, or no args / a pagination query to list. Mirrors openai's
+// `v1.models(id?)` callable pattern.
+export interface PolymarketClobMarketsMethod {
+  (signal?: AbortSignal): Promise<PolymarketClobMarketListResponse>;
+  (
+    params: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketListResponse>;
+  (conditionId: string, signal?: AbortSignal): Promise<PolymarketClobMarket>;
+}
+
+export interface PolymarketClobSamplingMarketsMethod {
+  (
+    params?: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketListResponse>;
+}
+
+export interface PolymarketClobSimplifiedMarketsMethod {
+  (
+    params?: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobSimplifiedMarketListResponse>;
+}
+
+export interface PolymarketClobSamplingSimplifiedMarketsMethod {
+  (
+    params?: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobSimplifiedMarketListResponse>;
+}
+
+export interface PolymarketClobMarketsByTokenMethod {
+  (
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketsByTokenResponse>;
+}
+
+export interface PolymarketClobMarketsCompactMethod {
+  (
+    conditionId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketCompact>;
+}
+
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface PolymarketClobGetNamespace {
@@ -194,6 +370,12 @@ export interface PolymarketClobGetNamespace {
   tickSize: PolymarketClobTickSizeMethod;
   feeRate: PolymarketClobFeeRateMethod;
   pricesHistory: PolymarketClobPricesHistoryMethod;
+  markets: PolymarketClobMarketsMethod;
+  samplingMarkets: PolymarketClobSamplingMarketsMethod;
+  simplifiedMarkets: PolymarketClobSimplifiedMarketsMethod;
+  samplingSimplifiedMarkets: PolymarketClobSamplingSimplifiedMarketsMethod;
+  marketsByToken: PolymarketClobMarketsByTokenMethod;
+  clobMarkets: PolymarketClobMarketsCompactMethod;
 }
 
 export interface PolymarketGetNamespace {

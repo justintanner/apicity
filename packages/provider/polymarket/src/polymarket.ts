@@ -9,9 +9,15 @@ import {
   PolymarketClobTickSizeResponse,
   PolymarketClobFeeRateResponse,
   PolymarketClobPriceHistoryResponse,
+  PolymarketClobMarket,
+  PolymarketClobMarketListResponse,
+  PolymarketClobSimplifiedMarketListResponse,
+  PolymarketClobMarketsByTokenResponse,
+  PolymarketClobMarketCompact,
   PolymarketClobTokenQuery,
   PolymarketClobPriceQuery,
   PolymarketClobPriceHistoryQuery,
+  PolymarketClobPaginationQuery,
   PolymarketProvider,
   PolymarketError,
 } from "./types";
@@ -239,6 +245,110 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     );
   }
 
+  function paginationQuery(params?: PolymarketClobPaginationQuery): string {
+    if (!params?.next_cursor) return "";
+    return `?next_cursor=${encodeURIComponent(params.next_cursor)}`;
+  }
+
+  // GET https://clob.polymarket.com/markets/{paramsOrConditionIdOrSignal}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-markets
+  async function clobMarkets(
+    paramsOrConditionIdOrSignal?:
+      | PolymarketClobPaginationQuery
+      | string
+      | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarket | PolymarketClobMarketListResponse> {
+    if (typeof paramsOrConditionIdOrSignal === "string") {
+      return makeGetRequest<PolymarketClobMarket>(
+        `${baseURL}/markets/${encodeURIComponent(paramsOrConditionIdOrSignal)}`,
+        signal
+      );
+    }
+    // The first arg may also be an AbortSignal when the caller passes a
+    // signal directly to list-form (`clob.markets(signal)`); treat anything
+    // that isn't a plain object as the signal.
+    const isPagination =
+      paramsOrConditionIdOrSignal !== undefined &&
+      paramsOrConditionIdOrSignal !== null &&
+      typeof paramsOrConditionIdOrSignal === "object" &&
+      !(paramsOrConditionIdOrSignal instanceof AbortSignal);
+    const params = isPagination
+      ? (paramsOrConditionIdOrSignal as PolymarketClobPaginationQuery)
+      : undefined;
+    const effectiveSignal = isPagination
+      ? signal
+      : (paramsOrConditionIdOrSignal as AbortSignal | undefined);
+    const query = paginationQuery(params);
+    return makeGetRequest<PolymarketClobMarketListResponse>(
+      `${baseURL}/markets${query}`,
+      effectiveSignal
+    );
+  }
+
+  // GET https://clob.polymarket.com/sampling-markets{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-sampling-markets
+  async function clobSamplingMarkets(
+    params?: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketListResponse> {
+    const query = paginationQuery(params);
+    return makeGetRequest<PolymarketClobMarketListResponse>(
+      `${baseURL}/sampling-markets${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/simplified-markets{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-simplified-markets
+  async function clobSimplifiedMarkets(
+    params?: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobSimplifiedMarketListResponse> {
+    const query = paginationQuery(params);
+    return makeGetRequest<PolymarketClobSimplifiedMarketListResponse>(
+      `${baseURL}/simplified-markets${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/sampling-simplified-markets{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets
+  async function clobSamplingSimplifiedMarkets(
+    params?: PolymarketClobPaginationQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobSimplifiedMarketListResponse> {
+    const query = paginationQuery(params);
+    return makeGetRequest<PolymarketClobSimplifiedMarketListResponse>(
+      `${baseURL}/sampling-simplified-markets${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/markets-by-token/{tokenId}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-market-by-token
+  async function clobMarketsByToken(
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketsByTokenResponse> {
+    return makeGetRequest<PolymarketClobMarketsByTokenResponse>(
+      `${baseURL}/markets-by-token/${encodeURIComponent(tokenId)}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/clob-markets/{conditionId}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-clob-market-info
+  async function clobMarketsCompact(
+    conditionId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMarketCompact> {
+    return makeGetRequest<PolymarketClobMarketCompact>(
+      `${baseURL}/clob-markets/${encodeURIComponent(conditionId)}`,
+      signal
+    );
+  }
+
   // GET https://clob.polymarket.com/prices-history{query}
   // Docs: https://docs.polymarket.com/api-reference/clob/get-prices-history
   async function clobPricesHistory(
@@ -272,6 +382,12 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
         tickSize: clobTickSize,
         feeRate: clobFeeRate,
         pricesHistory: clobPricesHistory,
+        markets: clobMarkets as PolymarketProvider["get"]["clob"]["markets"],
+        samplingMarkets: clobSamplingMarkets,
+        simplifiedMarkets: clobSimplifiedMarkets,
+        samplingSimplifiedMarkets: clobSamplingSimplifiedMarkets,
+        marketsByToken: clobMarketsByToken,
+        clobMarkets: clobMarketsCompact,
       },
     },
     post: {},

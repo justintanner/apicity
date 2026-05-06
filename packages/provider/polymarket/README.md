@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-9 endpoints across 1 group. Each method mirrors an upstream URL path.
+15 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -37,6 +37,21 @@ const polymarket = createPolymarket();
 
 ```typescript
 const res = await polymarket.clob.book({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.clobMarkets</code></b></summary>
+
+<code>GET https://clob.polymarket.com/clob-markets/{conditionId}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-clob-market-info)
+
+```typescript
+const res = await polymarket.clob.clobMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
@@ -67,6 +82,36 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 
 ```typescript
 const res = await polymarket.clob.lastTradePrice({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.markets</code></b></summary>
+
+<code>GET https://clob.polymarket.com/markets/{paramsOrConditionIdOrSignal}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-markets)
+
+```typescript
+const res = await polymarket.clob.markets({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.marketsByToken</code></b></summary>
+
+<code>GET https://clob.polymarket.com/markets-by-token/{tokenId}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-by-token)
+
+```typescript
+const res = await polymarket.clob.marketsByToken({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
@@ -112,6 +157,51 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 
 ```typescript
 const res = await polymarket.clob.pricesHistory({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.samplingMarkets</code></b></summary>
+
+<code>GET https://clob.polymarket.com/sampling-markets{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-sampling-markets)
+
+```typescript
+const res = await polymarket.clob.samplingMarkets({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.samplingSimplifiedMarkets</code></b></summary>
+
+<code>GET https://clob.polymarket.com/sampling-simplified-markets{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets)
+
+```typescript
+const res = await polymarket.clob.samplingSimplifiedMarkets({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.simplifiedMarkets</code></b></summary>
+
+<code>GET https://clob.polymarket.com/simplified-markets{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-simplified-markets)
+
+```typescript
+const res = await polymarket.clob.simplifiedMarkets({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)

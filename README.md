@@ -4,200 +4,240 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.base.json)
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](package.json)
-[![Zero Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![Zero Dependencies](https://img.shields.io/badge/provider_deps-0-brightgreen)](package.json)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/justintanner/apicity/pulls)
 
-Standalone-first TypeScript AI provider packages. Each is self-contained with zero external dependencies.
+Zero-dependency TypeScript AI provider clients built for composable code,
+LLM-readable endpoint shapes, MCP tools, and preflight video/image generation
+cost estimates.
 
-## Features
+Apicity is a monorepo of small standalone packages. Each provider package
+ships as plain TypeScript compiled to ESM, uses the runtime `fetch`, and mirrors
+upstream API URL paths directly in code:
 
-- **Standalone** — each provider is independent, no shared runtime
-- **Streaming** — real-time token streaming via AsyncIterable
-- **Middleware** — [retry with backoff](#withretry--exponential-backoff), [multi-provider fallback](#withfallback--multi-function-failover)
-- **Edge Compatible** — Node.js, Cloudflare Workers, Deno
-- **Strict TypeScript** — 100% typed, zero `any`
-- **Payload Validation** — [per-endpoint schema and runtime validation](#payload-validation)
-- **Polly.js Harness** — record/replay integration tests with review UI
+```ts
+/v1/chat/completions        -> openai.v1.chat.completions()
+/v1/images/generations      -> xai.v1.images.generations()
+/api/v1/common/download-url -> kie.post.api.v1.common.downloadUrl()
+```
 
-## Providers
+## Why Apicity
 
-| Package                                             | Version                                                                                                                           | Description                                                           | Docs                                                           |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------- |
-| [@apicity/openai](packages/provider/openai)         | [![npm](https://img.shields.io/npm/v/@apicity/openai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/openai)         | Chat, embeddings, images, responses, audio                            | [README](packages/provider/openai/README.md#api-reference)     |
-| [@apicity/xai](packages/provider/xai)               | [![npm](https://img.shields.io/npm/v/@apicity/xai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/xai)               | Grok chat, images, video, files, batches, collections, search         | [README](packages/provider/xai/README.md#api-reference)        |
-| [@apicity/fal](packages/provider/fal)               | [![npm](https://img.shields.io/npm/v/@apicity/fal?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fal)               | Model registry, pricing, usage, analytics                             | [README](packages/provider/fal/README.md#api-reference)        |
-| [@apicity/kimicoding](packages/provider/kimicoding) | [![npm](https://img.shields.io/npm/v/@apicity/kimicoding?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kimicoding) | Messages, models, embeddings                                          | [README](packages/provider/kimicoding/README.md#api-reference) |
-| [@apicity/kie](packages/provider/kie)               | [![npm](https://img.shields.io/npm/v/@apicity/kie?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kie)               | Media generation (video/image/audio), sub-providers                   | [README](packages/provider/kie/README.md#api-reference)        |
-| [@apicity/anthropic](packages/provider/anthropic)   | [![npm](https://img.shields.io/npm/v/@apicity/anthropic?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/anthropic)   | Messages, streaming, batches, files, models, admin APIs               | [README](packages/provider/anthropic/README.md#api-reference)  |
-| [@apicity/fireworks](packages/provider/fireworks)   | [![npm](https://img.shields.io/npm/v/@apicity/fireworks?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fireworks)   | Chat, completions, embeddings, audio, deployments, fine-tuning        | [README](packages/provider/fireworks/README.md#api-reference)  |
-| [@apicity/alibaba](packages/provider/alibaba)       | [![npm](https://img.shields.io/npm/v/@apicity/alibaba?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/alibaba)       | Qwen chat/streaming, Wan image & video generation (async)             | [README](packages/provider/alibaba/README.md#api-reference)    |
-| [@apicity/free](packages/provider/free)             | [![npm](https://img.shields.io/npm/v/@apicity/free?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/free)             | File upload/hosting to free services (catbox, gofile, tmpfiles, etc.) | [README](packages/provider/free/README.md#api-reference)       |
-| [@apicity/elevenlabs](packages/provider/elevenlabs) | [![npm](https://img.shields.io/npm/v/@apicity/elevenlabs?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/elevenlabs) | Sound-effect generation, text-to-speech, audio APIs                   | [README](packages/provider/elevenlabs/README.md#api-reference) |
-| [@apicity/x](packages/provider/x)                   | [![npm](https://img.shields.io/npm/v/@apicity/x?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/x)                   | X (Twitter) social API — posting content via api.x.com                | [README](packages/provider/x/README.md#api-reference)          |
-| [@apicity/ig](packages/provider/ig)                 | [![npm](https://img.shields.io/npm/v/@apicity/ig?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/ig)                 | Instagram Graph API — reel posting via the public-URL flow            | [README](packages/provider/ig/README.md#api-reference)         |
-| [@apicity/polymarket](packages/provider/polymarket) | [![npm](https://img.shields.io/npm/v/@apicity/polymarket?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/polymarket) | Polymarket public-data — Gamma, Data, and CLOB market-data endpoints  | [README](packages/provider/polymarket/README.md#api-reference) |
-| [@apicity/cost](packages/provider/cost)             | [![npm](https://img.shields.io/npm/v/@apicity/cost?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/cost)             | Pure-table cost & token estimation across providers (zero network)    | [README](packages/provider/cost/README.md#api-reference)       |
-| [@apicity/mcp-server](packages/mcp-server)          | [![npm](https://img.shields.io/npm/v/@apicity/mcp-server?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/mcp-server) | MCP server exposing every @apicity provider endpoint as a tool        | [README](packages/mcp-server/README.md)                        |
+- **No direct provider dependencies** — every `@apicity/<provider>` package,
+  plus `@apicity/cost`, declares zero direct runtime dependencies.
+- **Composable by default** — endpoint functions are just functions. Wrap them
+  with retry, fallback, metrics, queues, or your own orchestration without
+  adopting a framework.
+- **LLM ready** — method names mirror upstream paths, endpoint functions expose
+  request schemas, and generated docs keep URLs, examples, and source links
+  close to the code.
+- **MCP out of the box** — `@apicity/mcp-server` exposes provider endpoints as
+  Model Context Protocol tools with the same names and payloads.
+- **Cost estimates before generation** — `@apicity/cost` estimates token,
+  image, and video generation spend from the same payloads you plan to send.
+
+## Packages
+
+| Package                                             | Version                                                                                                                           | Focus                                                              |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [@apicity/openai](packages/provider/openai)         | [![npm](https://img.shields.io/npm/v/@apicity/openai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/openai)         | OpenAI chat, responses, images, audio, embeddings, files           |
+| [@apicity/anthropic](packages/provider/anthropic)   | [![npm](https://img.shields.io/npm/v/@apicity/anthropic?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/anthropic)   | Anthropic messages, streams, batches, files, models, admin APIs    |
+| [@apicity/xai](packages/provider/xai)               | [![npm](https://img.shields.io/npm/v/@apicity/xai?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/xai)               | xAI chat, responses, Grok images/video, files, collections, search |
+| [@apicity/fal](packages/provider/fal)               | [![npm](https://img.shields.io/npm/v/@apicity/fal?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fal)               | fal model registry, generation, pricing, usage, analytics          |
+| [@apicity/kie](packages/provider/kie)               | [![npm](https://img.shields.io/npm/v/@apicity/kie?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kie)               | KIE media generation for video, image, audio, Claude, Suno         |
+| [@apicity/alibaba](packages/provider/alibaba)       | [![npm](https://img.shields.io/npm/v/@apicity/alibaba?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/alibaba)       | Alibaba DashScope/Qwen chat, image, and video workflows            |
+| [@apicity/fireworks](packages/provider/fireworks)   | [![npm](https://img.shields.io/npm/v/@apicity/fireworks?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/fireworks)   | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
+| [@apicity/kimicoding](packages/provider/kimicoding) | [![npm](https://img.shields.io/npm/v/@apicity/kimicoding?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/kimicoding) | Kimi Coding messages, streaming, models, embeddings                |
+| [@apicity/elevenlabs](packages/provider/elevenlabs) | [![npm](https://img.shields.io/npm/v/@apicity/elevenlabs?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/elevenlabs) | ElevenLabs text-to-speech, sound effects, audio APIs               |
+| [@apicity/free](packages/provider/free)             | [![npm](https://img.shields.io/npm/v/@apicity/free?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/free)             | Public file upload/hosting services                                |
+| [@apicity/x](packages/provider/x)                   | [![npm](https://img.shields.io/npm/v/@apicity/x?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/x)                   | X API posting and media upload                                     |
+| [@apicity/ig](packages/provider/ig)                 | [![npm](https://img.shields.io/npm/v/@apicity/ig?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/ig)                 | Instagram Graph API reel publishing                                |
+| [@apicity/polymarket](packages/provider/polymarket) | [![npm](https://img.shields.io/npm/v/@apicity/polymarket?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/polymarket) | Polymarket Gamma, Data, and CLOB public market data                |
+| [@apicity/cost](packages/provider/cost)             | [![npm](https://img.shields.io/npm/v/@apicity/cost?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/cost)             | Pure local cost/token estimates across providers                   |
+| [@apicity/mcp-server](packages/mcp-server)          | [![npm](https://img.shields.io/npm/v/@apicity/mcp-server?color=cb0000&label=)](https://www.npmjs.com/package/@apicity/mcp-server) | MCP server exposing provider endpoints as tools                    |
 
 ## Quick Start
 
+Install one provider package. You do not need a shared SDK package.
+
 ```bash
-npm install @apicity/xai
+npm install @apicity/openai
 ```
 
-```typescript
-import { xai as createXai } from "@apicity/xai";
-
-const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
-
-// Generate an image with Grok
-const image = await xai.v1.images.generations({
-  prompt: "A mass of thousands of rubber ducks spilling out of a warehouse",
-  model: "grok-2-image",
-  n: 1,
-});
-
-console.log(image.data[0].url);
-```
-
-Every provider works the same way: a factory function that takes `{ apiKey }` and returns an object whose method paths mirror the upstream API URL paths. See [Endpoint Naming](#endpoint-naming) below.
-
-> **More examples:** [OpenAI](packages/provider/openai/README.md#quick-start) | [xAI](packages/provider/xai/README.md#quick-start) | [Fal](packages/provider/fal/README.md#quick-start) | [KimiCoding](packages/provider/kimicoding/README.md#quick-start) | [KIE](packages/provider/kie/README.md#quick-start) | [Anthropic](packages/provider/anthropic/README.md#quick-start) | [Fireworks](packages/provider/fireworks/README.md#quick-start) | [Alibaba](packages/provider/alibaba/README.md#quick-start) | [Free](packages/provider/free/README.md#quick-start) | [ElevenLabs](packages/provider/elevenlabs/README.md#quick-start) | [X](packages/provider/x/README.md#quick-start) | [IG](packages/provider/ig/README.md#quick-start) | [Polymarket](packages/provider/polymarket/README.md#quick-start) | [Cost](packages/provider/cost/README.md#quick-start)
-
-## Endpoint Naming
-
-Method paths mirror upstream API URL paths segment-by-segment. Kebab-case segments become camelCase.
-
-```
-URL path:     /v1/chat/completions       →  openai.v1.chat.completions()
-URL path:     /v1/language-models        →  xai.v1.languageModels()
-URL path:     /api/v1/common/download-url →  kie.api.v1.common.downloadUrl()
-```
-
-Full endpoint tables are in each provider's README: [OpenAI](packages/provider/openai/README.md#api-reference) | [xAI](packages/provider/xai/README.md#api-reference) | [Fal](packages/provider/fal/README.md#api-reference) | [KimiCoding](packages/provider/kimicoding/README.md#api-reference) | [KIE](packages/provider/kie/README.md#api-reference) | [Anthropic](packages/provider/anthropic/README.md#api-reference) | [Fireworks](packages/provider/fireworks/README.md#api-reference) | [Alibaba](packages/provider/alibaba/README.md#api-reference) | [Free](packages/provider/free/README.md#api-reference)
-
-## Middleware
-
-Every package exports `withRetry` and `withFallback` — generic function-level wrappers that work with any `(req, signal?) => Promise<T>` call. `@apicity/kimicoding` additionally exports `withStreamRetry` and `withStreamFallback` for async iterables.
-
-### `withRetry` — Exponential Backoff
-
-Retries on transient errors (HTTP 429 and 5xx) with configurable backoff.
-
-```typescript
+```ts
 import { openai as createOpenai, withRetry } from "@apicity/openai";
 
 const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
+const responses = withRetry(openai.v1.responses, { retries: 2 });
 
-const chat = withRetry(openai.v1.chat.completions, {
-  retries: 3, // max retry attempts (default: 2)
-  baseMs: 500, // initial delay in ms (default: 300)
-  factor: 2, // exponential multiplier (default: 2)
-  jitter: true, // randomize delay ±20% (default: true)
+const result = await responses({
+  model: "gpt-5",
+  input: "Write a compact status update.",
+});
+
+console.log(result.output);
+```
+
+The object you call looks like the API URL you are calling. This makes provider
+code easy for people and LLM agents to inspect, generate, diff, and verify.
+
+## Composition
+
+Every endpoint is a plain async function with the provider's request and
+response types. Middleware is function-level, so composition stays explicit:
+
+```ts
+import { xai as createXai, withFallback, withRetry } from "@apicity/xai";
+
+const primary = createXai({ apiKey: process.env.XAI_API_KEY_PRIMARY! });
+const backup = createXai({ apiKey: process.env.XAI_API_KEY_BACKUP! });
+
+const image = withFallback([
+  withRetry(primary.v1.images.generations, { retries: 2 }),
+  withRetry(backup.v1.images.generations, { retries: 1 }),
+]);
+
+const result = await image({
+  model: "grok-2-image",
+  prompt: "A product photo of a small brass desk lamp",
+  n: 1,
 });
 ```
 
-### `withFallback` — Multi-Function Failover
+Use the wrappers that ship with each provider, or pass endpoint functions into
+your own orchestration layer.
 
-Tries each function in order. If one fails, the next picks up.
+## LLM-Ready Endpoints
 
-```typescript
-import { openai as createOpenai, withFallback } from "@apicity/openai";
+Apicity keeps the representation close to upstream APIs:
 
-const primary = createOpenai({ apiKey: process.env.OPENAI_KEY_PRIMARY! });
-const backup = createOpenai({ apiKey: process.env.OPENAI_KEY_BACKUP! });
+- URL segments become property paths.
+- Kebab-case URL segments become camelCase properties.
+- Callable namespaces support overloaded upstream routes.
+- POST endpoints expose `.schema` for payload validation.
+- Provider READMEs are generated from source comments and
+  `scripts/endpoint-docs.tsv`.
 
-const chat = withFallback([
-  primary.v1.chat.completions,
-  backup.v1.chat.completions,
-]);
-```
-
-### Composing Middleware
-
-Wrappers return plain functions with the same signature, so they compose naturally:
-
-```typescript
-import {
-  kimicoding as createKimicoding,
-  withRetry,
-  withFallback,
-} from "@apicity/kimicoding";
-
-const kimi1 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_1! });
-const kimi2 = createKimicoding({ apiKey: process.env.KIMI_CODING_API_KEY_2! });
-
-const chat = withFallback([
-  withRetry(kimi1.coding.v1.messages, { retries: 2 }),
-  withRetry(kimi2.coding.v1.messages, { retries: 2 }),
-]);
-```
-
-## Payload Validation
-
-Every POST endpoint exposes `.payloadSchema` and `.validatePayload(data)` directly on the endpoint function.
-
-```typescript
-const schema = xai.v1.chat.completions.payloadSchema;
-
-const result = xai.v1.chat.completions.validatePayload({
-  messages: [{ role: "user", content: "Hello!" }],
+```ts
+const validation = openai.v1.chat.completions.schema.safeParse({
+  model: "gpt-5",
+  messages: [{ role: "user", content: "Hello" }],
 });
-// => { valid: true, errors: [] }
+
+if (!validation.success) {
+  console.error(validation.error.issues);
+}
 ```
 
-Validation checks: required fields, type checking, enum values, nested objects, and array items. GET-only endpoints do not carry schema or validation since they have no request body.
+This is intentionally useful for coding agents: the path, schema, docs URL, and
+implementation live in predictable places.
 
-Each package exports `PayloadSchema`, `PayloadFieldSchema`, and `ValidationResult` types.
+## MCP Tools
 
-## Testing
-
-Every dev-loop phase is one named pnpm script:
-
-| Command                             | When to run it                                                 |
-| ----------------------------------- | -------------------------------------------------------------- |
-| `pnpm run test:run`                 | Replay all tests from disk (no network, no keys)               |
-| `pnpm run test:run <file>`          | Replay a single test file                                      |
-| `pnpm run dev:record -- <file>`     | Record fixtures for a _new_ test (1Password, safe)             |
-| `pnpm run dev:rerecord -- <file>`   | Overwrite an existing HAR (destructive, file-filter required)  |
-| `pnpm run dev:preflight`            | Format + lint + replay tests — run this before `git push`      |
-| `pnpm run ci:local`                 | Exact CI mirror: build + lint + replay tests                   |
-| `pnpm run harness`                  | Review recordings in a local viewer (localhost:3475)           |
-| `pnpm run harness:screenshot`       | Generate the full harness-report PNG locally                   |
-| `pnpm run harness:screenshot:media` | Generate the media-only harness-report PNG locally             |
-| `pnpm run check:op`                 | Verify 1Password is resolving every provider key in `.env.tpl` |
-
-### Secrets Management
-
-API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run`). The `.env.tpl` file contains `op://` secret references — no plaintext secrets are stored on disk. Both `dev:record` and `dev:rerecord` invoke `op run` automatically.
+Install the MCP server and whichever providers you want exposed:
 
 ```bash
-# Record fixtures for a single new test:
-pnpm run dev:record -- tests/integration/<file>.test.ts
-
-# Verify the recording replays cleanly (no network):
-pnpm run test:run tests/integration/<file>.test.ts
+npm install @apicity/mcp-server @apicity/openai @apicity/anthropic @apicity/xai
 ```
 
-`dev:rerecord` refuses to run without a test-file filter (guarded by `tests/check-record-args.mjs`) so you can't accidentally overwrite every HAR in the repo. Override with `POLLY_FORCE_ALL=1` if you really do mean to re-record everything.
-
-Alternatively, copy `.env.template` to `.env`, fill in your keys manually, and run:
+Run the stdio server:
 
 ```bash
-source .env
-POLLY_MODE=record pnpm run test:run tests/integration/<file>.test.ts
+OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-... \
+  npx apicity-mcp --output-dir ./apicity-out
 ```
+
+Each MCP tool maps 1:1 to a provider endpoint:
+
+```text
+openai_v1_chat_completions  -> POST https://api.openai.com/v1/chat/completions
+xai_v1_images_generations   -> POST https://api.x.ai/v1/images/generations
+kie_api_v1_jobs_createTask  -> POST https://api.kie.ai/api/v1/jobs/createTask
+```
+
+Providers without credentials are skipped. Binary responses and generated media
+URLs can be saved automatically with `--output-dir`.
+
+See [@apicity/mcp-server](packages/mcp-server/README.md) for flags, env vars,
+and Claude Desktop config.
+
+## Cost Estimates
+
+Use `@apicity/cost` to estimate spend before you send a request. It accepts the
+same payload shape you plan to pass to the real provider call and returns USD,
+source metadata, units, and warnings.
+
+```bash
+npm install @apicity/cost
+```
+
+```ts
+import { cost } from "@apicity/cost";
+
+const c = cost();
+
+const estimate = c.estimate({
+  provider: "kie",
+  payload: {
+    model: "grok-imagine/text-to-video",
+    input: {
+      prompt: "A slow dolly shot through a neon arcade",
+      resolution: "720p",
+      duration: 8,
+    },
+  },
+});
+
+console.log(estimate.usd, estimate.breakdown, estimate.warnings);
+```
+
+The cost package is pure local math: no keys, no network calls. Token-billed
+models use bundled rates with a text heuristic; media models such as KIE video
+and image generation use payload-derived units like seconds or images.
+
+For quick comparisons:
+
+```bash
+pnpm run compare:video
+pnpm run compare:image
+```
+
+## Runtime Support
+
+Provider packages target modern runtimes with `fetch` and ESM:
+
+- Node.js 18+
+- Cloudflare Workers
+- Deno and Bun-style runtimes with standard `fetch`
+- Browser-like environments when your API key handling is appropriate
+
+No provider package pulls in a transport, retry, or streaming dependency. Zod
+is an optional peer for endpoint schemas, and the MCP server intentionally ships
+an MCP runtime.
 
 ## Development
 
 ```bash
-pnpm install   # Install dependencies
-pnpm run build # Build all packages
-pnpm run lint  # Lint
+pnpm install
+pnpm run build
+pnpm run lint
+pnpm run test:run
 ```
+
+Integration tests use Polly.js record/replay. Replaying tests requires no API
+keys and no network.
+
+```bash
+pnpm run dev:record -- tests/integration/<file>.test.ts
+pnpm run test:run tests/integration/<file>.test.ts
+pnpm run ci:local
+```
+
+API keys for recording are resolved through the 1Password CLI via `.env.tpl`;
+plaintext secrets are not committed.
 
 ## License
 
-MIT — See [LICENSE](LICENSE)
+MIT — see [LICENSE](LICENSE).
 
 Based on [TetherAI](https://github.com/nbursa/TetherAI) by Nenad Bursac.

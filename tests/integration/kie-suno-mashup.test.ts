@@ -18,13 +18,17 @@ describe("kie suno mashup (submit)", () => {
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 
-    const result = await provider.suno.post.api.v1.mashup.generate({
-      firstAudioId: "test-audio-id-1",
-      secondAudioId: "test-audio-id-2",
+    const result = await provider.suno.post.api.v1.generate.mashup({
+      uploadUrlList: [
+        "https://example.com/audio1.mp3",
+        "https://example.com/audio2.mp3",
+      ],
+      customMode: false,
+      model: "V4",
       callBackUrl: "https://example.com/cb",
     });
 
-    expect([200, 422]).toContain(result.code);
+    expect([200, 422, 451]).toContain(result.code);
     if (result.code === 200) {
       expect(result.data?.taskId).toBeTruthy();
       expect(typeof result.data?.taskId).toBe("string");

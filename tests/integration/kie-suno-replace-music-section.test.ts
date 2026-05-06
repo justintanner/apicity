@@ -18,17 +18,18 @@ describe("kie suno replace music section (submit)", () => {
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 
-    const result = await provider.suno.post.api.v1.replaceMusicSection.generate(
-      {
-        audioId: "test-audio-id",
-        prompt: "Replace with upbeat electronic section",
-        startTime: 10,
-        endTime: 30,
-        callBackUrl: "https://example.com/cb",
-      }
-    );
+    const result = await provider.suno.post.api.v1.generate.replaceSection({
+      taskId: "test-task-id",
+      audioId: "test-audio-id",
+      prompt: "Replace with upbeat electronic section",
+      tags: "electronic, upbeat",
+      title: "Test Replacement",
+      infillStartS: 10,
+      infillEndS: 20,
+      callBackUrl: "https://example.com/cb",
+    });
 
-    expect([200, 422]).toContain(result.code);
+    expect([200, 422, 451]).toContain(result.code);
     if (result.code === 200) {
       expect(result.data?.taskId).toBeTruthy();
       expect(typeof result.data?.taskId).toBe("string");

@@ -24,49 +24,19 @@ const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 
 ## API Reference
 
-26 endpoints across 20 groups. Each method mirrors an upstream URL path.
-
-### addInstrumental
-
-<details>
-<summary><code>POST</code> <b><code>kie.api.v1.addInstrumental.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/add-instrumental/generate</code>
-
-```typescript
-const res = await kie.api.v1.addInstrumental.generate({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
-
-### addVocals
-
-<details>
-<summary><code>POST</code> <b><code>kie.api.v1.addVocals.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/add-vocals/generate</code>
-
-```typescript
-const res = await kie.api.v1.addVocals.generate({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
+26 endpoints across 15 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
 <details>
-<summary><code>GET</code> <b><code>kie.api.v1.chat.credit</code></b></summary>
+<summary><code>GET</code> <b><code>kie.get.api.v1.chat.credit</code></b></summary>
 
 <code>GET https://api.kie.ai/api/v1/chat/credit</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.chat.credit({ /* ... */ });
+const res = await kie.get.api.v1.chat.credit({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -76,14 +46,14 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### claude
 
 <details>
-<summary><code>POST</code> <b><code>kie.claude.v1.messages</code></b></summary>
+<summary><code>POST</code> <b><code>kie.claude.post.v1.messages</code></b></summary>
 
 <code>POST https://api.kie.ai/claude/v1/messages</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.claude.v1.messages({ /* ... */ });
+const res = await kie.claude.post.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
@@ -93,14 +63,14 @@ Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
 ### common
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.common.downloadUrl</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.api.v1.common.downloadUrl</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/common/download-url</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.common.downloadUrl({ /* ... */ });
+const res = await kie.post.api.v1.common.downloadUrl({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -110,14 +80,14 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### fileBase64Upload
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.fileBase64Upload</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.api.fileBase64Upload</code></b></summary>
 
 <code>POST https://api.kie.ai/api/file-base64-upload</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.fileBase64Upload({ /* ... */ });
+const res = await kie.post.api.fileBase64Upload({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -127,14 +97,14 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### fileStreamUpload
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.fileStreamUpload</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.api.fileStreamUpload</code></b></summary>
 
 <code>POST https://api.kie.ai/api/file-stream-upload</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.fileStreamUpload({ /* ... */ });
+const res = await kie.post.api.fileStreamUpload({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -144,14 +114,14 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### fileUrlUpload
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.fileUrlUpload</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.api.fileUrlUpload</code></b></summary>
 
 <code>POST https://api.kie.ai/api/file-url-upload</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.fileUrlUpload({ /* ... */ });
+const res = await kie.post.api.fileUrlUpload({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -161,12 +131,12 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### generate
 
 <details>
-<summary><code>GET</code> <b><code>kie.api.v1.generate.recordInfo</code></b></summary>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.generate.recordInfo</code></b></summary>
 
 <code>GET https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}</code>
 
 ```typescript
-const res = await kie.api.v1.generate.recordInfo({ /* ... */ });
+const res = await kie.suno.get.api.v1.generate.recordInfo({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -174,14 +144,14 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -189,12 +159,42 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.generate.extend</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.addInstrumental</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/add-instrumental</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/add-instrumental)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.addInstrumental({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.addVocals</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/add-vocals</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/add-vocals)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.addVocals({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.extend</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/extend</code>
 
 ```typescript
-const res = await kie.api.v1.generate.extend({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.extend({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -202,12 +202,57 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.generate.uploadCover</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.mashup</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/mashup</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/generate-mashup)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.mashup({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.replaceSection</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/replace-section</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/replace-section)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.replaceSection({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.sounds</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/generate/sounds</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/generate-sounds)
+
+```typescript
+const res = await kie.suno.post.api.v1.generate.sounds({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.uploadCover</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/upload-cover</code>
 
 ```typescript
-const res = await kie.api.v1.generate.uploadCover({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.uploadCover({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -215,12 +260,12 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.generate.uploadExtend</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.generate.uploadExtend</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/generate/upload-extend</code>
 
 ```typescript
-const res = await kie.api.v1.generate.uploadExtend({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.uploadExtend({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -230,14 +275,14 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### jobs
 
 <details>
-<summary><code>GET</code> <b><code>kie.api.v1.jobs.recordInfo</code></b></summary>
+<summary><code>GET</code> <b><code>kie.get.api.v1.jobs.recordInfo</code></b></summary>
 
 <code>GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.jobs.recordInfo({ /* ... */ });
+const res = await kie.get.api.v1.jobs.recordInfo({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -245,14 +290,14 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.jobs.createTask</code></b></summary>
+<summary><code>POST</code> <b><code>kie.post.api.v1.jobs.createTask</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.jobs.createTask({ /* ... */ });
+const res = await kie.post.api.v1.jobs.createTask({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -262,27 +307,12 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### lyrics
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.lyrics</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.lyrics</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/lyrics</code>
 
 ```typescript
-const res = await kie.api.v1.lyrics({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
-
-### mashup
-
-<details>
-<summary><code>POST</code> <b><code>kie.api.v1.mashup.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/mashup/generate</code>
-
-```typescript
-const res = await kie.api.v1.mashup.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.lyrics({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -292,12 +322,12 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### midi
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.midi.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.midi.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/midi/generate</code>
 
 ```typescript
-const res = await kie.api.v1.midi.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.midi.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -307,42 +337,12 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### mp4
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.mp4.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.mp4.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/mp4/generate</code>
 
 ```typescript
-const res = await kie.api.v1.mp4.generate({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
-
-### replaceMusicSection
-
-<details>
-<summary><code>POST</code> <b><code>kie.api.v1.replaceMusicSection.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/replace-music-section/generate</code>
-
-```typescript
-const res = await kie.api.v1.replaceMusicSection.generate({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
-
-### sounds
-
-<details>
-<summary><code>POST</code> <b><code>kie.api.v1.sounds.generate</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/generate/sounds</code>
-
-```typescript
-const res = await kie.api.v1.sounds.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.mp4.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -352,12 +352,12 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### style
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.style.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.style.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/style/generate</code>
 
 ```typescript
-const res = await kie.api.v1.style.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.style.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -367,14 +367,14 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### veo
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.veo.extend</code></b></summary>
+<summary><code>POST</code> <b><code>kie.veo.post.api.v1.veo.extend</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/veo/extend</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.veo.extend({ /* ... */ });
+const res = await kie.veo.post.api.v1.veo.extend({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
@@ -382,14 +382,14 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.veo.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.veo.post.api.v1.veo.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/veo/generate</code>
 
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.api.v1.veo.generate({ /* ... */ });
+const res = await kie.veo.post.api.v1.veo.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
@@ -399,12 +399,12 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 ### vocalRemoval
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.vocalRemoval.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.vocalRemoval.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/vocal-removal/generate</code>
 
 ```typescript
-const res = await kie.api.v1.vocalRemoval.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.vocalRemoval.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -414,12 +414,12 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ### wav
 
 <details>
-<summary><code>POST</code> <b><code>kie.api.v1.wav.generate</code></b></summary>
+<summary><code>POST</code> <b><code>kie.suno.post.api.v1.wav.generate</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/wav/generate</code>
 
 ```typescript
-const res = await kie.api.v1.wav.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.wav.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

@@ -165,18 +165,40 @@ export interface SunoMidiRequest {
   audioId?: string;
 }
 
+export type SunoMashupModel =
+  | "V4"
+  | "V4_5"
+  | "V4_5PLUS"
+  | "V4_5ALL"
+  | "V5"
+  | "V5_5";
+
 export interface SunoMashupRequest {
-  firstAudioId: string;
-  secondAudioId: string;
+  uploadUrlList: [string, string];
+  customMode: boolean;
+  model: SunoMashupModel;
   callBackUrl: string;
+  prompt?: string;
+  style?: string;
+  title?: string;
+  instrumental?: boolean;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
 }
 
-export interface SunoReplaceMusicSectionRequest {
+export interface SunoReplaceSectionRequest {
+  taskId: string;
   audioId: string;
   prompt: string;
-  startTime: number;
-  endTime: number;
-  callBackUrl: string;
+  tags: string;
+  title: string;
+  infillStartS: number;
+  infillEndS: number;
+  negativeTags?: string;
+  fullLyrics?: string;
+  callBackUrl?: string;
 }
 
 export type SunoSoundsModel = "V5" | "V5_5";
@@ -218,15 +240,30 @@ export interface SunoSoundsRequest {
 }
 
 export interface SunoAddInstrumentalRequest {
-  audioId: string;
-  prompt: string;
+  uploadUrl: string;
+  title: string;
+  tags: string;
   callBackUrl: string;
+  model: SunoModel;
+  negativeTags?: string;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
 }
 
 export interface SunoAddVocalsRequest {
-  audioId: string;
+  uploadUrl: string;
   prompt: string;
+  title: string;
+  style: string;
   callBackUrl: string;
+  model: SunoModel;
+  negativeTags?: string;
+  vocalGender?: "m" | "f";
+  styleWeight?: number;
+  weirdnessConstraint?: number;
+  audioWeight?: number;
 }
 
 interface SunoSubmitResponse {
@@ -244,6 +281,11 @@ interface SunoGenerateCallable {
   extend: SunoExtendMethod;
   uploadCover: SunoUploadCoverMethod;
   uploadExtend: SunoUploadExtendMethod;
+  mashup: SunoMashupMethod;
+  replaceSection: SunoReplaceSectionMethod;
+  sounds: SunoSoundsMethod;
+  addInstrumental: SunoAddInstrumentalMethod;
+  addVocals: SunoAddVocalsMethod;
 }
 
 interface SunoExtendMethod {
@@ -296,9 +338,9 @@ interface SunoMashupMethod {
   schema: ZodType<SunoMashupRequest>;
 }
 
-interface SunoReplaceMusicSectionMethod {
-  (req: SunoReplaceMusicSectionRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoReplaceMusicSectionRequest>;
+interface SunoReplaceSectionMethod {
+  (req: SunoReplaceSectionRequest): Promise<SunoSubmitResponse>;
+  schema: ZodType<SunoReplaceSectionRequest>;
 }
 
 interface SunoSoundsMethod {
@@ -336,26 +378,6 @@ interface SunoMidiNamespace {
   generate: SunoMidiMethod;
 }
 
-interface SunoMashupNamespace {
-  generate: SunoMashupMethod;
-}
-
-interface SunoReplaceMusicSectionNamespace {
-  generate: SunoReplaceMusicSectionMethod;
-}
-
-interface SunoSoundsNamespace {
-  generate: SunoSoundsMethod;
-}
-
-interface SunoAddInstrumentalNamespace {
-  generate: SunoAddInstrumentalMethod;
-}
-
-interface SunoAddVocalsNamespace {
-  generate: SunoAddVocalsMethod;
-}
-
 interface SunoV1PostNamespace {
   generate: SunoGenerateCallable;
   wav: SunoWavNamespace;
@@ -364,11 +386,6 @@ interface SunoV1PostNamespace {
   lyrics: SunoLyricsMethod;
   style: SunoStyleNamespace;
   midi: SunoMidiNamespace;
-  mashup: SunoMashupNamespace;
-  replaceMusicSection: SunoReplaceMusicSectionNamespace;
-  sounds: SunoSoundsNamespace;
-  addInstrumental: SunoAddInstrumentalNamespace;
-  addVocals: SunoAddVocalsNamespace;
 }
 
 interface SunoV1GetNamespace {
@@ -480,17 +497,31 @@ const SunoMidiRequestSchema = z.object({
 });
 
 const SunoMashupRequestSchema = z.object({
-  firstAudioId: z.string().min(1),
-  secondAudioId: z.string().min(1),
+  uploadUrlList: z.tuple([z.string().min(1), z.string().min(1)]),
+  customMode: z.boolean(),
+  model: z.enum(["V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
   callBackUrl: z.string().min(1),
+  prompt: z.string().optional(),
+  style: z.string().optional(),
+  title: z.string().optional(),
+  instrumental: z.boolean().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
 });
 
-const SunoReplaceMusicSectionRequestSchema = z.object({
+const SunoReplaceSectionRequestSchema = z.object({
+  taskId: z.string().min(1),
   audioId: z.string().min(1),
   prompt: z.string().min(1),
-  startTime: z.number().min(0),
-  endTime: z.number().min(0),
-  callBackUrl: z.string().min(1),
+  tags: z.string().min(1),
+  title: z.string().min(1),
+  infillStartS: z.number().min(0),
+  infillEndS: z.number().min(0),
+  negativeTags: z.string().optional(),
+  fullLyrics: z.string().optional(),
+  callBackUrl: z.string().optional(),
 });
 
 const SunoSoundsRequestSchema = z.object({
@@ -531,15 +562,30 @@ const SunoSoundsRequestSchema = z.object({
 });
 
 const SunoAddInstrumentalRequestSchema = z.object({
-  audioId: z.string().min(1),
-  prompt: z.string().min(1),
+  uploadUrl: z.string().min(1),
+  title: z.string().min(1),
+  tags: z.string().min(1),
   callBackUrl: z.string().min(1),
+  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
 });
 
 const SunoAddVocalsRequestSchema = z.object({
-  audioId: z.string().min(1),
+  uploadUrl: z.string().min(1),
   prompt: z.string().min(1),
+  title: z.string().min(1),
+  style: z.string().min(1),
   callBackUrl: z.string().min(1),
+  model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
+  negativeTags: z.string().optional(),
+  vocalGender: z.enum(["m", "f"]).optional(),
+  styleWeight: z.number().min(0).max(1).optional(),
+  weirdnessConstraint: z.number().min(0).max(1).optional(),
+  audioWeight: z.number().min(0).max(1).optional(),
 });
 
 export function createSunoProvider(
@@ -687,25 +733,25 @@ export function createSunoProvider(
     });
   }
 
-  // POST https://api.kie.ai/api/v1/mashup/generate
-  // Docs: https://docs.kie.ai
+  // POST https://api.kie.ai/api/v1/generate/mashup
+  // Docs: https://docs.kie.ai/suno-api/generate-mashup
   async function mashupGenerate(
     req: SunoMashupRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/mashup/generate`, {
+    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/generate/mashup`, {
       method: "POST",
       body: req,
       ...requestOpts,
     });
   }
 
-  // POST https://api.kie.ai/api/v1/replace-music-section/generate
-  // Docs: https://docs.kie.ai
-  async function replaceMusicSectionGenerate(
-    req: SunoReplaceMusicSectionRequest
+  // POST https://api.kie.ai/api/v1/generate/replace-section
+  // Docs: https://docs.kie.ai/suno-api/replace-section
+  async function replaceSectionGenerate(
+    req: SunoReplaceSectionRequest
   ): Promise<SunoSubmitResponse> {
     return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/replace-music-section/generate`,
+      `${baseURL}/api/v1/generate/replace-section`,
       {
         method: "POST",
         body: req,
@@ -715,7 +761,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/generate/sounds
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/generate-sounds
   async function soundsGenerate(
     req: SunoSoundsRequest
   ): Promise<SunoSubmitResponse> {
@@ -726,13 +772,13 @@ export function createSunoProvider(
     });
   }
 
-  // POST https://api.kie.ai/api/v1/add-instrumental/generate
-  // Docs: https://docs.kie.ai
+  // POST https://api.kie.ai/api/v1/generate/add-instrumental
+  // Docs: https://docs.kie.ai/suno-api/add-instrumental
   async function addInstrumentalGenerate(
     req: SunoAddInstrumentalRequest
   ): Promise<SunoSubmitResponse> {
     return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/add-instrumental/generate`,
+      `${baseURL}/api/v1/generate/add-instrumental`,
       {
         method: "POST",
         body: req,
@@ -741,13 +787,13 @@ export function createSunoProvider(
     );
   }
 
-  // POST https://api.kie.ai/api/v1/add-vocals/generate
-  // Docs: https://docs.kie.ai
+  // POST https://api.kie.ai/api/v1/generate/add-vocals
+  // Docs: https://docs.kie.ai/suno-api/add-vocals
   async function addVocalsGenerate(
     req: SunoAddVocalsRequest
   ): Promise<SunoSubmitResponse> {
     return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/add-vocals/generate`,
+      `${baseURL}/api/v1/generate/add-vocals`,
       {
         method: "POST",
         body: req,
@@ -768,6 +814,21 @@ export function createSunoProvider(
     }),
     uploadExtend: Object.assign(uploadExtend, {
       schema: SunoUploadExtendRequestSchema,
+    }),
+    mashup: Object.assign(mashupGenerate, {
+      schema: SunoMashupRequestSchema,
+    }),
+    replaceSection: Object.assign(replaceSectionGenerate, {
+      schema: SunoReplaceSectionRequestSchema,
+    }),
+    sounds: Object.assign(soundsGenerate, {
+      schema: SunoSoundsRequestSchema,
+    }),
+    addInstrumental: Object.assign(addInstrumentalGenerate, {
+      schema: SunoAddInstrumentalRequestSchema,
+    }),
+    addVocals: Object.assign(addVocalsGenerate, {
+      schema: SunoAddVocalsRequestSchema,
     }),
   });
 
@@ -802,31 +863,6 @@ export function createSunoProvider(
           midi: {
             generate: Object.assign(midiGenerate, {
               schema: SunoMidiRequestSchema,
-            }),
-          },
-          mashup: {
-            generate: Object.assign(mashupGenerate, {
-              schema: SunoMashupRequestSchema,
-            }),
-          },
-          replaceMusicSection: {
-            generate: Object.assign(replaceMusicSectionGenerate, {
-              schema: SunoReplaceMusicSectionRequestSchema,
-            }),
-          },
-          sounds: {
-            generate: Object.assign(soundsGenerate, {
-              schema: SunoSoundsRequestSchema,
-            }),
-          },
-          addInstrumental: {
-            generate: Object.assign(addInstrumentalGenerate, {
-              schema: SunoAddInstrumentalRequestSchema,
-            }),
-          },
-          addVocals: {
-            generate: Object.assign(addVocalsGenerate, {
-              schema: SunoAddVocalsRequestSchema,
             }),
           },
         },

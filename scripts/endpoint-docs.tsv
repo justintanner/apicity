@@ -198,6 +198,11 @@ kie	api.fileUrlUpload	POST	https://api.kie.ai/api/file-url-upload	https://docs.k
 kie	api.v1.chat.credit	GET	https://api.kie.ai/api/v1/chat/credit	https://docs.kie.ai
 kie	api.v1.common.downloadUrl	POST	https://api.kie.ai/api/v1/common/download-url	https://docs.kie.ai
 kie	api.v1.generate	POST	https://api.kie.ai/api/v1/generate	https://docs.kie.ai
+kie	api.v1.generate.addInstrumental	POST	https://api.kie.ai/api/v1/generate/add-instrumental	https://docs.kie.ai/suno-api/add-instrumental
+kie	api.v1.generate.addVocals	POST	https://api.kie.ai/api/v1/generate/add-vocals	https://docs.kie.ai/suno-api/add-vocals
+kie	api.v1.generate.mashup	POST	https://api.kie.ai/api/v1/generate/mashup	https://docs.kie.ai/suno-api/generate-mashup
+kie	api.v1.generate.replaceSection	POST	https://api.kie.ai/api/v1/generate/replace-section	https://docs.kie.ai/suno-api/replace-section
+kie	api.v1.generate.sounds	POST	https://api.kie.ai/api/v1/generate/sounds	https://docs.kie.ai/suno-api/generate-sounds
 kie	api.v1.jobs.createTask	POST	https://api.kie.ai/api/v1/jobs/createTask	https://docs.kie.ai
 kie	api.v1.jobs.recordInfo	GET	https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}	https://docs.kie.ai
 kie	api.v1.veo.extend	POST	https://api.kie.ai/api/v1/veo/extend	https://docs.kie.ai

@@ -84,6 +84,11 @@ export const MODEL_SLUGS = {
     "suno/lyrics": "suno",
     "suno/style-generate": "suno",
     "suno/vocal-removal-generate": "suno",
+    "suno/mashup-generate": "suno",
+    "suno/replace-music-section-generate": "suno",
+    "suno/sounds-generate": "suno",
+    "suno/add-instrumental-generate": "suno",
+    "suno/add-vocals-generate": "suno",
   },
 
   kimicoding: {
@@ -243,6 +248,11 @@ export const MODEL_DISPLAY = {
     "suno/lyrics": "Suno Lyrics",
     "suno/style-generate": "Suno Style",
     "suno/vocal-removal-generate": "Suno Vocal Removal",
+    "suno/mashup-generate": "Suno Mashup",
+    "suno/replace-music-section-generate": "Suno Replace Section",
+    "suno/sounds-generate": "Suno Sounds",
+    "suno/add-instrumental-generate": "Suno Add Instrumental",
+    "suno/add-vocals-generate": "Suno Add Vocals",
   },
 
   kimicoding: {

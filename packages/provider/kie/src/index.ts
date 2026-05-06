@@ -129,6 +129,14 @@ export type {
   SunoUploadCoverRequest,
   SunoUploadExtendRequest,
   SunoMidiRequest,
+  SunoMashupModel,
+  SunoMashupRequest,
+  SunoReplaceSectionRequest,
+  SunoSoundsModel,
+  SunoSoundsKey,
+  SunoSoundsRequest,
+  SunoAddInstrumentalRequest,
+  SunoAddVocalsRequest,
   SunoProvider,
 } from "./suno";
 

@@ -183,7 +183,7 @@ const PKGS = [
 for (const p of PKGS) {
   const pkg = JSON.parse(fs.readFileSync(p, "utf8"));
   pkg.version = "{{version}}";
-  fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + "\n");
+  fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + "\\n");
 }
 const wrong = PKGS.filter(p => JSON.parse(fs.readFileSync(p, "utf8")).version !== "{{version}}");
 if (wrong.length) { console.log("WRONG:", wrong); process.exit(1); }

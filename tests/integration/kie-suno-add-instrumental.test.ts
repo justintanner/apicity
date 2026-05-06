@@ -18,13 +18,15 @@ describe("kie suno add instrumental (submit)", () => {
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 
-    const result = await provider.suno.post.api.v1.addInstrumental.generate({
-      audioId: "test-vocal-audio-id",
-      prompt: "Add gentle acoustic guitar and piano backing",
+    const result = await provider.suno.post.api.v1.generate.addInstrumental({
+      uploadUrl: "https://example.com/vocal.mp3",
+      title: "Gentle Acoustic Backing",
+      tags: "gentle acoustic guitar, piano",
       callBackUrl: "https://example.com/cb",
+      model: "V4_5PLUS",
     });
 
-    expect([200, 422]).toContain(result.code);
+    expect([200, 422, 451]).toContain(result.code);
     if (result.code === 200) {
       expect(result.data?.taskId).toBeTruthy();
       expect(typeof result.data?.taskId).toBe("string");

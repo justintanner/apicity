@@ -18,7 +18,7 @@ describe("kie suno sounds generate (submit)", () => {
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 
-    const result = await provider.suno.post.api.v1.sounds.generate({
+    const result = await provider.suno.post.api.v1.generate.sounds({
       prompt: "Rain falling on a tin roof, gentle thunder in distance",
       model: "V5",
       soundLoop: true,

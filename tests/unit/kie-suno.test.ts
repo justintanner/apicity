@@ -70,6 +70,11 @@ describe("KIE Suno provider", () => {
       expect(typeof v1.lyrics).toBe("function");
       expect(typeof v1.style.generate).toBe("function");
       expect(typeof v1.midi.generate).toBe("function");
+      expect(typeof v1.generate.mashup).toBe("function");
+      expect(typeof v1.generate.replaceSection).toBe("function");
+      expect(typeof v1.generate.sounds).toBe("function");
+      expect(typeof v1.generate.addInstrumental).toBe("function");
+      expect(typeof v1.generate.addVocals).toBe("function");
     });
 
     it("exposes the get.api.v1.generate.recordInfo endpoint", () => {
@@ -90,6 +95,15 @@ describe("KIE Suno provider", () => {
       expect(typeof v1.lyrics.schema.safeParse).toBe("function");
       expect(typeof v1.style.generate.schema.safeParse).toBe("function");
       expect(typeof v1.midi.generate.schema.safeParse).toBe("function");
+      expect(typeof v1.generate.mashup.schema.safeParse).toBe("function");
+      expect(typeof v1.generate.replaceSection.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof v1.generate.sounds.schema.safeParse).toBe("function");
+      expect(typeof v1.generate.addInstrumental.schema.safeParse).toBe(
+        "function"
+      );
+      expect(typeof v1.generate.addVocals.schema.safeParse).toBe("function");
     });
   });
 
@@ -512,6 +526,180 @@ describe("KIE Suno provider", () => {
       delete partial[field];
       const result =
         provider.post.api.v1.generate.uploadExtend.schema.safeParse(partial);
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe("POST /api/v1/generate/mashup", () => {
+    const VALID_MASHUP = {
+      uploadUrlList: [
+        "https://example.com/audio1.mp3",
+        "https://example.com/audio2.mp3",
+      ] as [string, string],
+      customMode: false,
+      model: "V4" as const,
+      callBackUrl: "https://example.com/cb",
+    };
+
+    it("posts to /api/v1/generate/mashup with the body", async () => {
+      const { provider, captured } = createProvider({ code: 200 });
+      await provider.post.api.v1.generate.mashup(VALID_MASHUP);
+      expect(captured[0].url).toBe("https://api.kie.ai/api/v1/generate/mashup");
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_MASHUP);
+    });
+
+    it.each(["uploadUrlList", "customMode", "model", "callBackUrl"] as const)(
+      "requires %s",
+      (field) => {
+        const { provider } = createProvider();
+        const partial: Record<string, unknown> = { ...VALID_MASHUP };
+        delete partial[field];
+        const result =
+          provider.post.api.v1.generate.mashup.schema.safeParse(partial);
+        expect(result.success).toBe(false);
+      }
+    );
+  });
+
+  describe("POST /api/v1/generate/replace-section", () => {
+    const VALID_REPLACE = {
+      taskId: "task-1",
+      audioId: "audio-1",
+      prompt: "Replace this section with a brighter bridge",
+      tags: "pop, upbeat",
+      title: "Replacement",
+      infillStartS: 10.5,
+      infillEndS: 20.75,
+      callBackUrl: "https://example.com/cb",
+    };
+
+    it("posts to /api/v1/generate/replace-section with the body", async () => {
+      const { provider, captured } = createProvider({ code: 200 });
+      await provider.post.api.v1.generate.replaceSection(VALID_REPLACE);
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/generate/replace-section"
+      );
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_REPLACE);
+    });
+
+    it.each([
+      "taskId",
+      "audioId",
+      "prompt",
+      "tags",
+      "title",
+      "infillStartS",
+      "infillEndS",
+    ] as const)("requires %s", (field) => {
+      const { provider } = createProvider();
+      const partial: Record<string, unknown> = { ...VALID_REPLACE };
+      delete partial[field];
+      const result =
+        provider.post.api.v1.generate.replaceSection.schema.safeParse(partial);
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe("POST /api/v1/generate/sounds", () => {
+    const VALID_SOUNDS = {
+      prompt: "Rain on a tin roof",
+      model: "V5" as const,
+      soundLoop: true,
+    };
+
+    it("posts to /api/v1/generate/sounds with the body", async () => {
+      const { provider, captured } = createProvider({ code: 200 });
+      await provider.post.api.v1.generate.sounds(VALID_SOUNDS);
+      expect(captured[0].url).toBe("https://api.kie.ai/api/v1/generate/sounds");
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(VALID_SOUNDS);
+    });
+
+    it("accepts optional sound controls", () => {
+      const { provider } = createProvider();
+      const result = provider.post.api.v1.generate.sounds.schema.safeParse({
+        ...VALID_SOUNDS,
+        soundTempo: 166,
+        soundKey: "D#m",
+        grabLyrics: true,
+        callBackUrl: "https://example.com/cb",
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe("POST /api/v1/generate/add-instrumental", () => {
+    const VALID_ADD_INSTRUMENTAL = {
+      uploadUrl: "https://example.com/vocal.mp3",
+      title: "Backing Track",
+      tags: "acoustic, piano",
+      callBackUrl: "https://example.com/cb",
+      model: "V4_5PLUS" as const,
+    };
+
+    it("posts to /api/v1/generate/add-instrumental with the body", async () => {
+      const { provider, captured } = createProvider({ code: 200 });
+      await provider.post.api.v1.generate.addInstrumental(
+        VALID_ADD_INSTRUMENTAL
+      );
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/generate/add-instrumental"
+      );
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(
+        VALID_ADD_INSTRUMENTAL
+      );
+    });
+
+    it.each(["uploadUrl", "title", "tags", "callBackUrl", "model"] as const)(
+      "requires %s",
+      (field) => {
+        const { provider } = createProvider();
+        const partial: Record<string, unknown> = {
+          ...VALID_ADD_INSTRUMENTAL,
+        };
+        delete partial[field];
+        const result =
+          provider.post.api.v1.generate.addInstrumental.schema.safeParse(
+            partial
+          );
+        expect(result.success).toBe(false);
+      }
+    );
+  });
+
+  describe("POST /api/v1/generate/add-vocals", () => {
+    const VALID_ADD_VOCALS = {
+      uploadUrl: "https://example.com/instrumental.mp3",
+      prompt: "A calm vocal about summer dreams",
+      title: "Summer Dreams",
+      style: "soft pop",
+      callBackUrl: "https://example.com/cb",
+      model: "V4_5PLUS" as const,
+    };
+
+    it("posts to /api/v1/generate/add-vocals with the body", async () => {
+      const { provider, captured } = createProvider({ code: 200 });
+      await provider.post.api.v1.generate.addVocals(VALID_ADD_VOCALS);
+      expect(captured[0].url).toBe(
+        "https://api.kie.ai/api/v1/generate/add-vocals"
+      );
+      expect(JSON.parse(String(captured[0].init?.body))).toEqual(
+        VALID_ADD_VOCALS
+      );
+    });
+
+    it.each([
+      "uploadUrl",
+      "prompt",
+      "title",
+      "style",
+      "callBackUrl",
+      "model",
+    ] as const)("requires %s", (field) => {
+      const { provider } = createProvider();
+      const partial: Record<string, unknown> = { ...VALID_ADD_VOCALS };
+      delete partial[field];
+      const result =
+        provider.post.api.v1.generate.addVocals.schema.safeParse(partial);
       expect(result.success).toBe(false);
     });
   });

@@ -60,10 +60,21 @@ function formatUsageSnippet(providerName, dotPath) {
   return `const res = await ${call}({ /* ... */ });`;
 }
 
+function displayDotPath(providerName, ep) {
+  if (providerName !== "kie") return ep.dotPath;
+
+  if (ep.file.endsWith("/suno.ts")) return `suno.${ep.fullDotPath}`;
+  if (ep.file.endsWith("/veo.ts")) return `veo.${ep.fullDotPath}`;
+  if (ep.file.endsWith("/chat.ts")) return `chat.${ep.fullDotPath}`;
+  if (ep.file.endsWith("/claude.ts")) return ep.fullDotPath;
+  return ep.fullDotPath ?? ep.dotPath;
+}
+
 function renderEndpointDetails(ep, providerName, docsUrl) {
   const method = ep.method ?? "";
+  const dotPath = displayDotPath(providerName, ep);
   const headerCode = method ? `<code>${method}</code> ` : "";
-  const summary = `${headerCode}<b><code>${providerName}${ep.dotPath ? "." + ep.dotPath : ""}</code></b>`;
+  const summary = `${headerCode}<b><code>${providerName}${dotPath ? "." + dotPath : ""}</code></b>`;
 
   const urlLine = ep.fullUrl
     ? `<code>${method ? method + " " : ""}${ep.fullUrl}</code>`
@@ -71,7 +82,7 @@ function renderEndpointDetails(ep, providerName, docsUrl) {
   const docsLine =
     docsUrl && docsUrl.length > 0 ? `[Upstream docs ↗](${docsUrl})` : "";
 
-  const usage = formatUsageSnippet(providerName, ep.dotPath);
+  const usage = formatUsageSnippet(providerName, dotPath);
   const relSrc = ep.file.replace(
     new RegExp(`^packages/provider/${providerName}/`),
     ""

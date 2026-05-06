@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-37 endpoints across 2 groups. Each method mirrors an upstream URL path.
+39 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -519,6 +519,36 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 ```typescript
 const res = await polymarket.gamma.series({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.sports</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/sports</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-sports)
+
+```typescript
+const res = await polymarket.gamma.sports({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.sports.marketTypes</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/sports/market-types</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-sports-market-types)
+
+```typescript
+const res = await polymarket.gamma.sports.marketTypes({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)

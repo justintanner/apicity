@@ -18,6 +18,8 @@ import {
   PolymarketGammaCommentByUserQuery,
   PolymarketGammaSearchQuery,
   PolymarketGammaSearchResponse,
+  PolymarketGammaSport,
+  PolymarketGammaSportsMarketTypesResponse,
   PolymarketGammaGetNamespace,
 } from "./types";
 import { createRequestHelpers } from "./_helpers";
@@ -475,6 +477,31 @@ export function createGammaProvider(
     );
   }
 
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/sports
+  // Docs: https://docs.polymarket.com/api-reference/gamma/get-sports
+  async function gammaSports(
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaSport[]> {
+    return makeGetRequest<PolymarketGammaSport[]>(`${baseURL}/sports`, signal);
+  }
+
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/sports/market-types
+  // Docs: https://docs.polymarket.com/api-reference/gamma/get-sports-market-types
+  async function gammaSportsMarketTypes(
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaSportsMarketTypesResponse> {
+    return makeGetRequest<PolymarketGammaSportsMarketTypesResponse>(
+      `${baseURL}/sports/market-types`,
+      signal
+    );
+  }
+
+  const sports = Object.assign(gammaSports, {
+    marketTypes: gammaSportsMarketTypes,
+  }) as PolymarketGammaGetNamespace["sports"];
+
   return {
     get: {
       gamma: {
@@ -484,6 +511,7 @@ export function createGammaProvider(
         tags,
         comments,
         search: gammaSearch,
+        sports,
       },
     },
   };

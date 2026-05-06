@@ -677,6 +677,26 @@ export interface PolymarketGammaSearchQuery {
   events_status?: string;
 }
 
+// /sports returns a flat list of supported sports; the schema is light
+// (id, sport name, image, resolution URL, ordering hint, tag IDs as a
+// comma-separated string).
+export interface PolymarketGammaSport {
+  id: number;
+  sport: string;
+  image?: string;
+  resolution?: string;
+  ordering?: string;
+  tags?: string;
+  [key: string]: unknown;
+}
+
+// /sports/market-types returns just the catalog of supported market-type
+// identifiers — these are stable string constants used elsewhere in
+// sports-market metadata.
+export interface PolymarketGammaSportsMarketTypesResponse {
+  marketTypes: string[];
+}
+
 // /events returns a bare JSON array (no envelope) — we represent the list
 // shape directly.
 export type PolymarketGammaEventListResponse = PolymarketGammaEvent[];
@@ -826,6 +846,15 @@ export interface PolymarketGammaSearchMethod {
   ): Promise<PolymarketGammaSearchResponse>;
 }
 
+export interface PolymarketGammaSportsMarketTypesMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaSportsMarketTypesResponse>;
+}
+
+export interface PolymarketGammaSportsMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaSport[]>;
+  marketTypes: PolymarketGammaSportsMarketTypesMethod;
+}
+
 export interface PolymarketGammaGetNamespace {
   events: PolymarketGammaEventsMethod;
   markets: PolymarketGammaMarketsMethod;
@@ -833,6 +862,7 @@ export interface PolymarketGammaGetNamespace {
   tags: PolymarketGammaTagsMethod;
   comments: PolymarketGammaCommentsMethod;
   search: PolymarketGammaSearchMethod;
+  sports: PolymarketGammaSportsMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

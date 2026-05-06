@@ -65,17 +65,21 @@ npm install @apicity/openai
 ```
 
 ```ts
-import { openai as createOpenai, withRetry } from "@apicity/openai";
+import { openai as createOpenai } from "@apicity/openai";
+import { writeFile } from "node:fs/promises";
 
 const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
-const responses = withRetry(openai.v1.responses, { retries: 2 });
 
-const result = await responses({
-  model: "gpt-5",
-  input: "Write a compact status update.",
+const result = await openai.post.v1.images.generations({
+  model: "gpt-image-2-2026-04-21",
+  prompt:
+    "A photorealistic side-profile portrait of a fluffy white cat with " +
+    "one blue eye and one amber eye, sitting on grass in natural daylight.",
+  n: 1,
+  size: "1024x1024",
 });
 
-console.log(result.output);
+await writeFile("cat.png", Buffer.from(result.data[0].b64_json!, "base64"));
 ```
 
 The object you call looks like the API URL you are calling. This makes provider

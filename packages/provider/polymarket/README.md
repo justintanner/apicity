@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-29 endpoints across 2 groups. Each method mirrors an upstream URL path.
+34 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -459,6 +459,81 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 ```typescript
 const res = await polymarket.gamma.markets.tags({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.series</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/series/{paramsOrIdOrSignal}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-series)
+
+```typescript
+const res = await polymarket.gamma.series({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.tags</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/tags/{paramsOrIdOrSignal}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-tags)
+
+```typescript
+const res = await polymarket.gamma.tags({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/tags/{id}/related-tags</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-id)
+
+```typescript
+const res = await polymarket.gamma.tags.relatedTags({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags.slug</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-slug)
+
+```typescript
+const res = await polymarket.gamma.tags.relatedTags.slug({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.tags.slug</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/tags/slug/{slug}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-tag-by-slug)
+
+```typescript
+const res = await polymarket.gamma.tags.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)

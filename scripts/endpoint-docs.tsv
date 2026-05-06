@@ -320,3 +320,8 @@ polymarket	gamma.markets	GET	https://gamma-api.polymarket.com/markets/{paramsOrI
 polymarket	gamma.markets.keyset	GET	https://gamma-api.polymarket.com/markets/keyset{query}	https://docs.polymarket.com/api-reference/gamma/get-markets-keyset
 polymarket	gamma.markets.slug	GET	https://gamma-api.polymarket.com/markets/slug/{slug}	https://docs.polymarket.com/api-reference/gamma/get-market-by-slug
 polymarket	gamma.markets.tags	GET	https://gamma-api.polymarket.com/markets/{id}/tags	https://docs.polymarket.com/api-reference/gamma/get-market-tags
+polymarket	gamma.series	GET	https://gamma-api.polymarket.com/series/{paramsOrIdOrSignal}	https://docs.polymarket.com/api-reference/gamma/get-series
+polymarket	gamma.tags	GET	https://gamma-api.polymarket.com/tags/{paramsOrIdOrSignal}	https://docs.polymarket.com/api-reference/gamma/get-tags
+polymarket	gamma.tags.slug	GET	https://gamma-api.polymarket.com/tags/slug/{slug}	https://docs.polymarket.com/api-reference/gamma/get-tag-by-slug
+polymarket	gamma.tags.relatedTags	GET	https://gamma-api.polymarket.com/tags/{id}/related-tags	https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-id
+polymarket	gamma.tags.relatedTags.slug	GET	https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags	https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-slug

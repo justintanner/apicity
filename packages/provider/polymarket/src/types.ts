@@ -570,6 +570,46 @@ export interface PolymarketGammaTag {
   [key: string]: unknown;
 }
 
+// Series wrap a recurring/related set of events (e.g. monthly economic data
+// releases, weekly NFL games). Fields parallel Event but add seriesType +
+// recurrence; markets/events lists are nested.
+export interface PolymarketGammaSeries {
+  id: string;
+  ticker?: string;
+  slug: string;
+  title: string;
+  seriesType?: string;
+  recurrence?: string;
+  description?: string;
+  image?: string;
+  icon?: string;
+  layout?: string;
+  active?: boolean;
+  closed?: boolean;
+  archived?: boolean;
+  new?: boolean;
+  featured?: boolean;
+  restricted?: boolean;
+  commentsEnabled?: boolean;
+  publishedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  events?: PolymarketGammaEvent[];
+  [key: string]: unknown;
+}
+
+// /tags/{id}/related-tags returns relationship rows, not full Tag objects —
+// each row links a parent tag (tagID) to a related tag (relatedTagID) with
+// a numeric `rank` for display ordering.
+export interface PolymarketGammaRelatedTag {
+  id: string;
+  tagID: number;
+  relatedTagID: number;
+  rank: number;
+}
+
 // /events returns a bare JSON array (no envelope) — we represent the list
 // shape directly.
 export type PolymarketGammaEventListResponse = PolymarketGammaEvent[];
@@ -667,9 +707,39 @@ export interface PolymarketGammaMarketsMethod {
   tags(id: string, signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
 }
 
+export interface PolymarketGammaSeriesMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaSeries[]>;
+  (
+    params: PolymarketGammaEventListQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaSeries[]>;
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaSeries>;
+}
+
+export interface PolymarketGammaTagsMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
+  (
+    params: PolymarketGammaEventListQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTag[]>;
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaTag>;
+  slug(slug: string, signal?: AbortSignal): Promise<PolymarketGammaTag>;
+  relatedTags: PolymarketGammaTagsRelatedMethod;
+}
+
+export interface PolymarketGammaTagsRelatedMethod {
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaRelatedTag[]>;
+  slug(
+    slug: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaRelatedTag[]>;
+}
+
 export interface PolymarketGammaGetNamespace {
   events: PolymarketGammaEventsMethod;
   markets: PolymarketGammaMarketsMethod;
+  series: PolymarketGammaSeriesMethod;
+  tags: PolymarketGammaTagsMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

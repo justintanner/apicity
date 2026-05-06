@@ -651,10 +651,10 @@ export interface PolymarketGammaCommentByUserQuery {
   offset?: number;
 }
 
-// /public-search returns a 3-bucket response: events that match (full Event
-// objects), markets that match, and user profiles that match. Note that
-// the protected /search endpoint returns a richer shape but requires session
-// cookies — we surface the public variant only.
+// /public-search returns events plus a pagination envelope. Narrow text
+// queries may omit markets and profiles entirely. Note that the protected
+// /search endpoint returns a richer shape but requires session cookies — we
+// surface the public variant only.
 export interface PolymarketGammaSearchProfile {
   proxyWallet?: string;
   name?: string;
@@ -665,10 +665,17 @@ export interface PolymarketGammaSearchProfile {
   [key: string]: unknown;
 }
 
+export interface PolymarketGammaSearchPagination {
+  hasMore: boolean;
+  totalResults: number;
+  [key: string]: unknown;
+}
+
 export interface PolymarketGammaSearchResponse {
   events: PolymarketGammaEvent[];
-  markets: PolymarketGammaMarket[];
-  profiles: PolymarketGammaSearchProfile[];
+  markets?: PolymarketGammaMarket[];
+  profiles?: PolymarketGammaSearchProfile[];
+  pagination: PolymarketGammaSearchPagination;
 }
 
 export interface PolymarketGammaSearchQuery {

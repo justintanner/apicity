@@ -68,6 +68,8 @@ describe("polymarket gamma comments + search surface", () => {
     // markets and profiles buckets may be omitted entirely. Verify each bucket
     // is either an array or undefined.
     expect(Array.isArray(res.events)).toBe(true);
+    expect(typeof res.pagination.hasMore).toBe("boolean");
+    expect(typeof res.pagination.totalResults).toBe("number");
     expect(res.markets === undefined || Array.isArray(res.markets)).toBe(true);
     expect(res.profiles === undefined || Array.isArray(res.profiles)).toBe(
       true

@@ -236,6 +236,52 @@ pnpm run ci:local
 API keys for recording are resolved through the 1Password CLI via `.env.tpl`;
 plaintext secrets are not committed.
 
+## Using from JavaScript
+
+TypeScript is optional. Every package compiles to plain ESM JavaScript with
+`.d.ts` files alongside, so you can consume it from a `.js` or `.mjs` file
+without a build step:
+
+```js
+// index.mjs
+import { openai as createOpenai, withRetry } from "@apicity/openai";
+
+const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY });
+const responses = withRetry(openai.v1.responses, { retries: 2 });
+
+const result = await responses({
+  model: "gpt-5",
+  input: "Write a compact status update.",
+});
+
+console.log(result.output);
+```
+
+```bash
+node index.mjs
+```
+
+In a `package.json` with `"type": "module"`, plain `.js` files work the same
+way. Editor autocomplete and inline docs still work because TypeScript and
+modern editors read the bundled `.d.ts` files automatically.
+
+Payload validation works without TypeScript too:
+
+```js
+const validation = openai.v1.chat.completions.schema.safeParse({
+  model: "gpt-5",
+  messages: [{ role: "user", content: "Hello" }],
+});
+
+if (!validation.success) {
+  console.error(validation.error.issues);
+}
+```
+
+Packages are ESM-only, so `require("@apicity/openai")` from CommonJS will not
+work — use `import` or dynamic `await import("@apicity/openai")` from a CJS
+module.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

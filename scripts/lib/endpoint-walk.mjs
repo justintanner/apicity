@@ -92,8 +92,13 @@ const PROVIDERS = [
     entryFiles: [
       "packages/provider/polymarket/src/clob.ts",
       "packages/provider/polymarket/src/gamma.ts",
+      "packages/provider/polymarket/src/data.ts",
     ],
-    factoryNames: ["createClobProvider", "createGammaProvider"],
+    factoryNames: [
+      "createClobProvider",
+      "createGammaProvider",
+      "createDataProvider",
+    ],
   },
 ];
 

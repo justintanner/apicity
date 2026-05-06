@@ -867,9 +867,96 @@ export interface PolymarketGammaGetNamespace {
 
 // -- Top-level provider shape (multi-host) ----------------------------------
 
+// ===========================================================================
+// Data API (https://data-api.polymarket.com) — public positions/value/...
+// ===========================================================================
+
+// Position rows are wallet+asset-keyed snapshots: a user's holding in a
+// specific outcome token, plus the derived PnL / size fields the dashboards
+// surface. Fully-typed for the load-bearing fields, [k]: unknown for the
+// rest (the wire format adds product-specific extras like `eventCategory`,
+// `negativeRiskMarketId`, etc.).
+export interface PolymarketDataPosition {
+  proxyWallet: string;
+  asset: string;
+  conditionId: string;
+  size: number;
+  avgPrice: number;
+  initialValue: number;
+  currentValue: number;
+  cashPnl: number;
+  percentPnl: number;
+  totalBought: number;
+  realizedPnl: number;
+  percentRealizedPnl: number;
+  curPrice: number;
+  redeemable: boolean;
+  mergeable?: boolean;
+  title?: string;
+  slug?: string;
+  icon?: string;
+  eventId?: string;
+  eventSlug?: string;
+  outcome?: string;
+  outcomeIndex?: number;
+  endDate?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataPositionsQuery {
+  user: string;
+  market?: string | string[];
+  eventId?: string;
+  sizeThreshold?: number;
+  redeemable?: boolean;
+  mergeable?: boolean;
+  title?: string;
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+  limit?: number;
+  offset?: number;
+}
+
+// /value returns one row per user (or the user's wallet sums collapsed) with
+// just `{ user, value }` — net portfolio value as a Number.
+export interface PolymarketDataValueEntry {
+  user: string;
+  value: number;
+}
+
+export type PolymarketDataValueResponse = PolymarketDataValueEntry[];
+
+export interface PolymarketDataValueQuery {
+  user: string;
+}
+
+// -- Data method interfaces -------------------------------------------------
+
+export interface PolymarketDataPositionsMethod {
+  (
+    params: PolymarketDataPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataPosition[]>;
+}
+
+export interface PolymarketDataValueMethod {
+  (
+    params: PolymarketDataValueQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataValueResponse>;
+}
+
+export interface PolymarketDataGetNamespace {
+  positions: PolymarketDataPositionsMethod;
+  value: PolymarketDataValueMethod;
+}
+
+// -- Top-level provider shape (multi-host) ----------------------------------
+
 export interface PolymarketGetNamespace {
   clob: PolymarketClobGetNamespace;
   gamma: PolymarketGammaGetNamespace;
+  data: PolymarketDataGetNamespace;
 }
 
 export interface PolymarketProvider {

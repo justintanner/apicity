@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-39 endpoints across 2 groups. Each method mirrors an upstream URL path.
+41 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -340,6 +340,38 @@ const res = await polymarket.clob.spreads({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+### data
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.positions</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/positions{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-positions)
+
+```typescript
+const res = await polymarket.data.positions({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.value</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/value{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-positions-value)
+
+```typescript
+const res = await polymarket.data.value({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 </details>
 

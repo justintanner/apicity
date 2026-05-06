@@ -330,3 +330,5 @@ polymarket	gamma.comments.byUser	GET	https://gamma-api.polymarket.com/comments/u
 polymarket	gamma.search	GET	https://gamma-api.polymarket.com/public-search{query}	https://docs.polymarket.com/api-reference/gamma/search
 polymarket	gamma.sports	GET	https://gamma-api.polymarket.com/sports	https://docs.polymarket.com/api-reference/gamma/get-sports
 polymarket	gamma.sports.marketTypes	GET	https://gamma-api.polymarket.com/sports/market-types	https://docs.polymarket.com/api-reference/gamma/get-sports-market-types
+polymarket	data.positions	GET	https://data-api.polymarket.com/positions{query}	https://docs.polymarket.com/api-reference/data/get-positions
+polymarket	data.value	GET	https://data-api.polymarket.com/value{query}	https://docs.polymarket.com/api-reference/data/get-positions-value

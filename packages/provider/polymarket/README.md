@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-34 endpoints across 2 groups. Each method mirrors an upstream URL path.
+37 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -346,6 +346,36 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 ### gamma
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.gamma.comments</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/comments/{paramsOrIdOrSignal}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-comments)
+
+```typescript
+const res = await polymarket.gamma.comments({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.comments.byUser</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/comments/user_address/{address}{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-comments-by-user)
+
+```typescript
+const res = await polymarket.gamma.comments.byUser({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.gamma.events</code></b></summary>
 
 <code>GET https://gamma-api.polymarket.com/events/{paramsOrIdOrSignal}</code>
@@ -459,6 +489,21 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 ```typescript
 const res = await polymarket.gamma.markets.tags({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.search</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/public-search{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/search)
+
+```typescript
+const res = await polymarket.gamma.search({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)

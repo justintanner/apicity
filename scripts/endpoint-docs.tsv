@@ -325,3 +325,6 @@ polymarket	gamma.tags	GET	https://gamma-api.polymarket.com/tags/{paramsOrIdOrSig
 polymarket	gamma.tags.slug	GET	https://gamma-api.polymarket.com/tags/slug/{slug}	https://docs.polymarket.com/api-reference/gamma/get-tag-by-slug
 polymarket	gamma.tags.relatedTags	GET	https://gamma-api.polymarket.com/tags/{id}/related-tags	https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-id
 polymarket	gamma.tags.relatedTags.slug	GET	https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags	https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-slug
+polymarket	gamma.comments	GET	https://gamma-api.polymarket.com/comments/{paramsOrIdOrSignal}	https://docs.polymarket.com/api-reference/gamma/get-comments
+polymarket	gamma.comments.byUser	GET	https://gamma-api.polymarket.com/comments/user_address/{address}{query}	https://docs.polymarket.com/api-reference/gamma/get-comments-by-user
+polymarket	gamma.search	GET	https://gamma-api.polymarket.com/public-search{query}	https://docs.polymarket.com/api-reference/gamma/search

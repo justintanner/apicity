@@ -13,6 +13,11 @@ import {
   PolymarketGammaMarketKeysetQuery,
   PolymarketGammaSeries,
   PolymarketGammaRelatedTag,
+  PolymarketGammaComment,
+  PolymarketGammaCommentListQuery,
+  PolymarketGammaCommentByUserQuery,
+  PolymarketGammaSearchQuery,
+  PolymarketGammaSearchResponse,
   PolymarketGammaGetNamespace,
 } from "./types";
 import { createRequestHelpers } from "./_helpers";
@@ -387,6 +392,89 @@ export function createGammaProvider(
     relatedTags,
   }) as PolymarketGammaGetNamespace["tags"];
 
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/comments/{paramsOrIdOrSignal}
+  // Docs: https://docs.polymarket.com/api-reference/gamma/get-comments
+  async function gammaComments(
+    paramsOrIdOrSignal: PolymarketGammaCommentListQuery | string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaComment[]> {
+    if (typeof paramsOrIdOrSignal === "string") {
+      return makeGetRequest<PolymarketGammaComment[]>(
+        `${baseURL}/comments/${encodeURIComponent(paramsOrIdOrSignal)}`,
+        signal
+      );
+    }
+    const isQuery =
+      paramsOrIdOrSignal !== null &&
+      typeof paramsOrIdOrSignal === "object" &&
+      !(paramsOrIdOrSignal instanceof AbortSignal);
+    const params = isQuery
+      ? (paramsOrIdOrSignal as PolymarketGammaCommentListQuery)
+      : undefined;
+    const effectiveSignal = isQuery
+      ? signal
+      : (paramsOrIdOrSignal as AbortSignal);
+    const usp = new URLSearchParams();
+    if (params) {
+      usp.set("parent_entity_type", params.parent_entity_type);
+      usp.set("parent_entity_id", String(params.parent_entity_id));
+      if (params.limit !== undefined) usp.set("limit", String(params.limit));
+      if (params.offset !== undefined) usp.set("offset", String(params.offset));
+      if (params.order !== undefined) usp.set("order", params.order);
+      if (params.ascending !== undefined)
+        usp.set("ascending", String(params.ascending));
+    }
+    const query = usp.toString().length > 0 ? `?${usp.toString()}` : "";
+    return makeGetRequest<PolymarketGammaComment[]>(
+      `${baseURL}/comments${query}`,
+      effectiveSignal
+    );
+  }
+
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/comments/user_address/{address}{query}
+  // Docs: https://docs.polymarket.com/api-reference/gamma/get-comments-by-user
+  async function gammaCommentsByUser(
+    address: string,
+    params?: PolymarketGammaCommentByUserQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaComment[]> {
+    const usp = new URLSearchParams();
+    if (params?.limit !== undefined) usp.set("limit", String(params.limit));
+    if (params?.offset !== undefined) usp.set("offset", String(params.offset));
+    const query = usp.toString().length > 0 ? `?${usp.toString()}` : "";
+    return makeGetRequest<PolymarketGammaComment[]>(
+      `${baseURL}/comments/user_address/${encodeURIComponent(address)}${query}`,
+      signal
+    );
+  }
+
+  const comments = Object.assign(gammaComments, {
+    byUser: gammaCommentsByUser,
+  }) as PolymarketGammaGetNamespace["comments"];
+
+  // sig-ok: maps `gamma.search` to /public-search (the protected /search needs
+  // session cookies — out of scope for the public SDK)
+  // GET https://gamma-api.polymarket.com/public-search{query}
+  // Docs: https://docs.polymarket.com/api-reference/gamma/search
+  async function gammaSearch(
+    params: PolymarketGammaSearchQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaSearchResponse> {
+    const usp = new URLSearchParams();
+    usp.set("q", params.q);
+    if (params.limit_per_type !== undefined)
+      usp.set("limit_per_type", String(params.limit_per_type));
+    if (params.events_status !== undefined)
+      usp.set("events_status", params.events_status);
+    const query = `?${usp.toString()}`;
+    return makeGetRequest<PolymarketGammaSearchResponse>(
+      `${baseURL}/public-search${query}`,
+      signal
+    );
+  }
+
   return {
     get: {
       gamma: {
@@ -394,6 +482,8 @@ export function createGammaProvider(
         markets,
         series,
         tags,
+        comments,
+        search: gammaSearch,
       },
     },
   };

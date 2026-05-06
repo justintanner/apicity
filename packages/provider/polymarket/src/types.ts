@@ -610,6 +610,73 @@ export interface PolymarketGammaRelatedTag {
   rank: number;
 }
 
+// Comments anchor to either an Event or a Market via parentEntityType +
+// parentEntityID. The wire format is verbose (nested profile, reactions,
+// replies, attachments); we type the load-bearing fields and let callers
+// drop into [k]: unknown for the rest.
+export interface PolymarketGammaCommentProfile {
+  name?: string;
+  pseudonym?: string;
+  displayUsernamePublic?: boolean;
+  bio?: string;
+  proxyWallet?: string;
+  baseAddress?: string;
+  profileImage?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaComment {
+  id: string;
+  body: string;
+  parentEntityType: "Event" | "Market" | string;
+  parentEntityID: number;
+  userAddress: string;
+  createdAt: string;
+  updatedAt?: string;
+  profile?: PolymarketGammaCommentProfile;
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaCommentListQuery {
+  parent_entity_type: "Event" | "Market";
+  parent_entity_id: number | string;
+  limit?: number;
+  offset?: number;
+  order?: string;
+  ascending?: boolean;
+}
+
+export interface PolymarketGammaCommentByUserQuery {
+  limit?: number;
+  offset?: number;
+}
+
+// /public-search returns a 3-bucket response: events that match (full Event
+// objects), markets that match, and user profiles that match. Note that
+// the protected /search endpoint returns a richer shape but requires session
+// cookies — we surface the public variant only.
+export interface PolymarketGammaSearchProfile {
+  proxyWallet?: string;
+  name?: string;
+  pseudonym?: string;
+  bio?: string;
+  profileImage?: string;
+  baseAddress?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaSearchResponse {
+  events: PolymarketGammaEvent[];
+  markets: PolymarketGammaMarket[];
+  profiles: PolymarketGammaSearchProfile[];
+}
+
+export interface PolymarketGammaSearchQuery {
+  q: string;
+  limit_per_type?: number;
+  events_status?: string;
+}
+
 // /events returns a bare JSON array (no envelope) — we represent the list
 // shape directly.
 export type PolymarketGammaEventListResponse = PolymarketGammaEvent[];
@@ -735,11 +802,37 @@ export interface PolymarketGammaTagsRelatedMethod {
   ): Promise<PolymarketGammaRelatedTag[]>;
 }
 
+export interface PolymarketGammaCommentsByUserMethod {
+  (
+    address: string,
+    params?: PolymarketGammaCommentByUserQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaComment[]>;
+}
+
+export interface PolymarketGammaCommentsMethod {
+  (
+    params: PolymarketGammaCommentListQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaComment[]>;
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaComment[]>;
+  byUser: PolymarketGammaCommentsByUserMethod;
+}
+
+export interface PolymarketGammaSearchMethod {
+  (
+    params: PolymarketGammaSearchQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaSearchResponse>;
+}
+
 export interface PolymarketGammaGetNamespace {
   events: PolymarketGammaEventsMethod;
   markets: PolymarketGammaMarketsMethod;
   series: PolymarketGammaSeriesMethod;
   tags: PolymarketGammaTagsMethod;
+  comments: PolymarketGammaCommentsMethod;
+  search: PolymarketGammaSearchMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

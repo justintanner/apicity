@@ -63,10 +63,12 @@ cat /Users/jwt/apicity/RELEASE.md   # release process doc (if present)
 **3. Verify clean working tree:**
 ```bash
 git fetch --all --prune
-git status   # MUST be clean
+# bd commands auto-stage .beads/issues.jsonl — commit any pending bead delta first:
+git diff --quiet --cached .beads/issues.jsonl || git commit -m "chore(beads): pre-release sync" -- .beads/issues.jsonl
+git status --porcelain   # MUST be empty
 ```
 
-If `git status` shows uncommitted changes, STOP and mail Witness — do not
+If `git status --porcelain` is non-empty, STOP and mail Witness — do not
 release on top of unstaged work.
 
 **4. Confirm intent:**
@@ -130,31 +132,28 @@ needs = ["preflight-gates"]
 description = """
 Confirm every publishable package has the metadata it needs to ship cleanly.
 
-**1. publishConfig.access = public (15 packages):**
-```bash
-PKGS=$(ls -d packages/mcp-server packages/provider/*)
-MISSING=()
-for p in $PKGS; do
-  grep -q '"access"[[:space:]]*:[[:space:]]*"public"' "$p/package.json" || MISSING+=("$p")
-done
-[ ${#MISSING[@]} -eq 0 ] || { echo "Missing publishConfig.access=public in:"; printf '  %s\\n' "${MISSING[@]}"; exit 1; }
-echo "✓ all 15 packages have publishConfig.access=public"
-```
+Use `command grep` (not the alias — many shells alias `grep` to `ugrep` which has different flags) and explicit paths via `find` (not `ls -d`, which is aliased to `eza`/`lsd` in many environments and prints columns, not paths).
 
-**2. LICENSE file colocated (15 packages):**
 ```bash
-PKGS=$(ls -d packages/mcp-server packages/provider/*)
-MISSING=()
-for p in $PKGS; do
-  test -f "$p/LICENSE" || MISSING+=("$p")
-done
-[ ${#MISSING[@]} -eq 0 ] || { echo "Missing LICENSE in:"; printf '  %s\\n' "${MISSING[@]}"; exit 1; }
-echo "✓ all 15 packages have LICENSE"
-```
-
-**3. No package marked private:true:**
-```bash
-! grep -l '"private"[[:space:]]*:[[:space:]]*true' packages/mcp-server/package.json packages/provider/*/package.json 2>/dev/null || { echo "Found private:true in a publishable package"; exit 1; }
+node -e '
+const fs = require("fs");
+const PKGS = [
+  "packages/mcp-server",
+  ...["alibaba","anthropic","cost","elevenlabs","fal","fireworks","free","ig","kie","kimicoding","openai","polymarket","x","xai"]
+    .map(p => "packages/provider/" + p),
+];
+let bad = 0;
+for (const p of PKGS) {
+  const pkg = JSON.parse(fs.readFileSync(p + "/package.json", "utf8"));
+  if (pkg.private === true) { console.log("✗ private:true in", p); bad++; }
+  if (!(pkg.publishConfig && pkg.publishConfig.access === "public"))
+    { console.log("✗ missing publishConfig.access=public in", p); bad++; }
+  if (!fs.existsSync(p + "/LICENSE"))
+    { console.log("✗ missing LICENSE in", p); bad++; }
+}
+if (bad === 0) console.log("✓ all 15 packages publish-ready");
+process.exit(bad === 0 ? 0 : 1);
+'
 ```
 
 If any of these fail, the prep work was not completed. STOP. File a bug
@@ -168,24 +167,33 @@ id = "bump-versions"
 title = "Bump every @apicity/* package to {{version}}"
 needs = ["verify-publish-config"]
 description = """
-Bump in lockstep — all 15 packages ship under one version.
+Bump in lockstep — all 15 packages ship under one version. Don't use
+`pnpm -r exec npm version` here — it implicitly runs `npm install`, which
+trips on the optional zod peer dep. Direct JSON write is simpler and
+deterministic:
 
 ```bash
-pnpm -r --filter "@apicity/*" exec npm version {{version}} --no-git-tag-version
-```
-
-`--no-git-tag-version` keeps `npm version` from creating its own `vX.Y.Z`
-tag — we tag once, after publish, in the `tag-and-push` step.
-
-**Verify:**
-```bash
-node -e 'const fs=require("fs"),g=require("glob");const ps=g.sync("packages/{mcp-server,provider/*}/package.json");for(const p of ps){const v=JSON.parse(fs.readFileSync(p)).version;if(v!=="{{version}}")console.log("WRONG",p,v);}'
-# silent output = all on {{version}}
+node -e '
+const fs = require("fs");
+const PKGS = [
+  "packages/mcp-server/package.json",
+  ...["alibaba","anthropic","cost","elevenlabs","fal","fireworks","free","ig","kie","kimicoding","openai","polymarket","x","xai"]
+    .map(p => "packages/provider/" + p + "/package.json"),
+];
+for (const p of PKGS) {
+  const pkg = JSON.parse(fs.readFileSync(p, "utf8"));
+  pkg.version = "{{version}}";
+  fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + "\n");
+}
+const wrong = PKGS.filter(p => JSON.parse(fs.readFileSync(p, "utf8")).version !== "{{version}}");
+if (wrong.length) { console.log("WRONG:", wrong); process.exit(1); }
+console.log("✓ all 15 at {{version}}");
+'
 ```
 
 **Commit the bump:**
 ```bash
-git add packages/mcp-server/package.json packages/provider/*/package.json pnpm-lock.yaml
+git add packages/mcp-server/package.json packages/provider/*/package.json
 git commit -m "chore(release): @apicity/* → {{version}}"
 ```
 

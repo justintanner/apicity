@@ -1,0 +1,56 @@
+{
+  "POST v1.audio.speech": {
+    "source": "openai/speech-hello",
+    "payload": {
+      "model": "tts-1",
+      "input": "Hello, world!",
+      "voice": "alloy",
+      "response_format": "mp3"
+    }
+  },
+  "POST v1.chat.completions": {
+    "source": "openai/chat-hello",
+    "payload": {
+      "model": "gpt-5.4-2026-03-05",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "temperature": 0
+    }
+  },
+  "POST v1.embeddings": {
+    "source": "openai/embeddings-hello",
+    "payload": {
+      "model": "text-embedding-3-small",
+      "input": "Hello world"
+    }
+  },
+  "POST v1.images.generations": {
+    "source": "openai/images-generations",
+    "payload": {
+      "prompt": "A white siamese cat",
+      "model": "dall-e-2",
+      "n": 1,
+      "size": "256x256"
+    }
+  },
+  "POST v1.moderations": {
+    "source": "openai/moderations-hello",
+    "payload": {
+      "input": "The weather is nice today.",
+      "model": "omni-moderation-latest"
+    }
+  },
+  "POST v1.responses": {
+    "source": "openai/responses-hello",
+    "payload": {
+      "model": "gpt-4o-mini",
+      "input": "Say hello in one sentence.",
+      "temperature": 0,
+      "max_output_tokens": 100
+    }
+  }
+}

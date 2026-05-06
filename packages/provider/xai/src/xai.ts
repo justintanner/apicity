@@ -78,6 +78,7 @@ import {
   XaiSttRequestSchema,
   XaiCustomVoiceCreateRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -712,7 +713,7 @@ export function xai(opts: XaiOptions): XaiProvider {
     }
   );
 
-  return {
+  return attachExamples({
     post: {
       v1: {
         // POST https://api.x.ai/v1/responses
@@ -1297,5 +1298,5 @@ export function xai(opts: XaiOptions): XaiProvider {
         },
       },
     },
-  };
+  });
 }

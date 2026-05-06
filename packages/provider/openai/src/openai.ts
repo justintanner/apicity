@@ -78,6 +78,7 @@ import {
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 export function textPart(text: string): OpenAiTextPart {
   return { type: "text", text };
@@ -1162,9 +1163,9 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
     },
   };
 
-  return {
+  return attachExamples({
     post: { v1: postV1 },
     get: { v1: getV1 },
     delete: { v1: deleteV1 },
-  };
+  });
 }

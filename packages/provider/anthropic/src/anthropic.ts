@@ -36,6 +36,7 @@ import {
   AnthropicSkillVersionsCreateRequestSchema,
 } from "./zod";
 import { parseAnthropicStream } from "./sse";
+import { attachExamples } from "./example";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -847,10 +848,10 @@ export function anthropic(opts: AnthropicOptions): AnthropicProvider {
 
   // --- Build provider ---
 
-  return {
+  return attachExamples({
     post: { v1: postV1, stream: { v1: postStreamV1 } },
     get: { v1: getV1 },
     delete: { v1: deleteV1 },
     v1: legacyV1,
-  };
+  });
 }

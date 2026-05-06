@@ -1,0 +1,57 @@
+{
+  "POST api.v1.services.aigc.multimodalGeneration.generation": {
+    "source": "alibaba/qwen-image-edit-single",
+    "payload": {
+      "model": "qwen-image-edit",
+      "input": {
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "image": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20250925/fpakfo/image36.webp"
+              },
+              {
+                "text": "Add a small red bird perched on the bicycle seat."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "POST api.v1.services.aigc.videoGeneration.videoSynthesis": {
+    "source": "alibaba/wan-videoedit",
+    "payload": {
+      "model": "wan2.7-videoedit",
+      "input": {
+        "prompt": "Convert the entire scene to a claymation style",
+        "media": [
+          {
+            "type": "video",
+            "url": "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20260402/ldnfdf/wan2.7-videoedit-style-change.mp4"
+          }
+        ]
+      },
+      "parameters": {
+        "resolution": "720P",
+        "prompt_extend": true,
+        "watermark": true
+      }
+    }
+  },
+  "POST compatibleMode.v1.chat.completions": {
+    "source": "alibaba/chat-hello",
+    "payload": {
+      "model": "qwen3-max",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "temperature": 0,
+      "max_tokens": 64
+    }
+  }
+}

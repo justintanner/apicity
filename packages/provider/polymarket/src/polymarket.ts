@@ -2,6 +2,7 @@ import { PolymarketOptions, PolymarketProvider } from "./types";
 import { createClobProvider } from "./clob";
 import { createGammaProvider } from "./gamma";
 import { createDataProvider } from "./data";
+import { attachExamples } from "./example";
 
 // Top-level orchestrator. Each sub-factory owns its own host and request
 // helpers — see clob.ts, gamma.ts, data.ts. The endpoint-walker traverses
@@ -11,7 +12,7 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
   const gamma = createGammaProvider(opts);
   const data = createDataProvider(opts);
 
-  return {
+  return attachExamples({
     get: {
       ...clob.get,
       ...gamma.get,
@@ -20,5 +21,5 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     post: {
       ...clob.post,
     },
-  };
+  });
 }

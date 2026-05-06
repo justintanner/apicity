@@ -6,10 +6,10 @@ one npm dist-tag per release.
 
 ## Branch model
 
-| Branch  | Role                                                                |
-| ------- | ------------------------------------------------------------------- |
-| `main`  | Where agents and humans land work. CI runs here on every PR.        |
-| `stable`| Release branch. Releases cut from `stable`; `vX.Y.Z` tags pushed here.|
+| Branch   | Role                                                                   |
+| -------- | ---------------------------------------------------------------------- |
+| `main`   | Where agents and humans land work. CI runs here on every PR.           |
+| `stable` | Release branch. Releases cut from `stable`; `vX.Y.Z` tags pushed here. |
 
 The release flow is: feature work → `main` → fast-forward `stable` → publish.
 

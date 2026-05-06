@@ -10,6 +10,7 @@ import {
   ElevenLabsSoundGenerationRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const baseURL = opts.baseURL ?? "https://api.elevenlabs.io";
@@ -228,8 +229,8 @@ export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const postV1 = { soundGeneration, speechToText };
   const v1 = { soundGeneration, speechToText };
 
-  return {
+  return attachExamples({
     v1,
     post: { v1: postV1 },
-  };
+  });
 }

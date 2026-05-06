@@ -1,0 +1,102 @@
+{
+  "POST api.fileBase64Upload": {
+    "source": "kie/file-base64-upload",
+    "payload": {
+      "base64Data": "SGVsbG8gV29ybGQ=",
+      "uploadPath": "documents/test-uploads",
+      "fileName": "test.txt"
+    }
+  },
+  "POST api.v1.common.downloadUrl": {
+    "source": "kie/download-url/convert",
+    "payload": {
+      "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
+    }
+  },
+  "POST api.v1.generate": {
+    "source": "kie/suno-generate-vocal",
+    "payload": {
+      "prompt": "A cheerful indie pop song about summer adventures",
+      "model": "V5",
+      "instrumental": false,
+      "customMode": false
+    }
+  },
+  "POST api.v1.generate.addInstrumental": {
+    "source": "kie/suno/add-instrumental-submit",
+    "payload": {
+      "uploadUrl": "https://example.com/vocal.mp3",
+      "title": "Gentle Acoustic Backing",
+      "tags": "gentle acoustic guitar, piano",
+      "callBackUrl": "https://example.com/cb",
+      "model": "V4_5PLUS"
+    }
+  },
+  "POST api.v1.generate.addVocals": {
+    "source": "kie/suno/add-vocals-submit",
+    "payload": {
+      "uploadUrl": "https://example.com/instrumental.mp3",
+      "prompt": "Add soft female vocals about summer dreams",
+      "title": "Summer Dreams",
+      "style": "soft pop",
+      "callBackUrl": "https://example.com/cb",
+      "model": "V4_5PLUS"
+    }
+  },
+  "POST api.v1.generate.mashup": {
+    "source": "kie/suno/mashup-submit",
+    "payload": {
+      "uploadUrlList": [
+        "https://example.com/audio1.mp3",
+        "https://example.com/audio2.mp3"
+      ],
+      "customMode": false,
+      "model": "V4",
+      "callBackUrl": "https://example.com/cb"
+    }
+  },
+  "POST api.v1.generate.replaceSection": {
+    "source": "kie/suno/replace-music-section-submit",
+    "payload": {
+      "taskId": "test-task-id",
+      "audioId": "test-audio-id",
+      "prompt": "Replace with upbeat electronic section",
+      "tags": "electronic, upbeat",
+      "title": "Test Replacement",
+      "infillStartS": 10,
+      "infillEndS": 20,
+      "callBackUrl": "https://example.com/cb"
+    }
+  },
+  "POST api.v1.generate.sounds": {
+    "source": "kie/suno/sounds-generate-submit",
+    "payload": {
+      "prompt": "Rain falling on a tin roof, gentle thunder in distance",
+      "model": "V5",
+      "soundLoop": true,
+      "callBackUrl": "https://example.com/cb"
+    }
+  },
+  "POST api.v1.jobs.createTask": {
+    "source": "kie/grok-video-upscale",
+    "payload": {
+      "model": "grok-imagine/upscale",
+      "input": {
+        "task_id": "d43f0d0ab29f28fdfcf68a9dccbd7a42"
+      }
+    }
+  },
+  "POST claude.v1.messages": {
+    "source": "kie/claude-chat-hello",
+    "payload": {
+      "model": "claude-sonnet-4-6",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "stream": false
+    }
+  }
+}

@@ -193,6 +193,7 @@ import {
   FireworksRlorTrainerJobExecuteStepRequestSchema,
   FireworksEmptySchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -3099,7 +3100,7 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     },
   };
 
-  return {
+  return attachExamples({
     inference: {
       v1: {
         chat: {
@@ -3275,5 +3276,5 @@ export function fireworks(opts: FireworksOptions): FireworksProvider {
     ws: {
       inference: { v1: wsV1 },
     },
-  };
+  });
 }

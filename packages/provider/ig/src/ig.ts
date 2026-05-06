@@ -10,6 +10,7 @@ import {
   IgError,
 } from "./types";
 import { IgMediaCreateRequestSchema, IgMediaPublishRequestSchema } from "./zod";
+import { attachExamples } from "./example";
 
 export function ig(opts: IgOptions): IgProvider {
   const baseURL = opts.baseURL ?? "https://graph.instagram.com";
@@ -159,7 +160,7 @@ export function ig(opts: IgOptions): IgProvider {
     { schema: IgMediaPublishRequestSchema }
   );
 
-  return {
+  return attachExamples({
     post: {
       v25: {
         media: mediaCreate,
@@ -171,5 +172,5 @@ export function ig(opts: IgOptions): IgProvider {
         container: containerStatus,
       },
     },
-  };
+  });
 }

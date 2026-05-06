@@ -307,6 +307,16 @@ function resolveNode(node, visited = new Set()) {
       }
       return merged;
     }
+    // attachExamples(provider) — generated wrapper that hangs HAR-derived
+    // examples off endpoint functions and returns the same provider object.
+    // Unwrap it so the walker sees the underlying object literal.
+    if (
+      expr.getKind() === SyntaxKind.Identifier &&
+      expr.getText() === "attachExamples"
+    ) {
+      const args = node.getArguments();
+      if (args.length > 0) return resolveNode(args[0], visited);
+    }
     // Spread factory call like `...createClaudeProvider(...)` — handled by caller
     // via spread expression resolution; here we treat as opaque.
     return [node];

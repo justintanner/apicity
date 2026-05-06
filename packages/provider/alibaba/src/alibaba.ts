@@ -23,6 +23,7 @@ import {
   AlibabaMultimodalGenerationRequestSchema,
 } from "./zod";
 import { sseToIterable } from "./sse";
+import { attachExamples } from "./example";
 
 export function alibaba(opts: AlibabaOptions): AlibabaProvider {
   const baseURL =
@@ -392,7 +393,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
     },
   };
 
-  return {
+  return attachExamples({
     post: {
       compatibleMode: { v1: postV1 },
       stream: { compatibleMode: { v1: postStreamV1 } },
@@ -402,7 +403,7 @@ export function alibaba(opts: AlibabaOptions): AlibabaProvider {
       compatibleMode: { v1: getV1 },
       api: { v1: getApiV1 },
     },
-  };
+  });
 }
 
 // Upload a file to DashScope's model-scoped OSS bucket via the

@@ -26,6 +26,7 @@ import {
   TempshUploadRequestSchema,
   TflinkUploadRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 export function free(opts?: FreeOptions): FreeProvider {
   const doFetch = opts?.fetch ?? fetch;
@@ -372,7 +373,7 @@ export function free(opts?: FreeOptions): FreeProvider {
 
   // -- Provider ---------------------------------------------------------------
 
-  return {
+  return attachExamples({
     tmpfiles: { api: { v1: tmpfilesApiV1 } },
     uguu,
     catbox,
@@ -381,5 +382,5 @@ export function free(opts?: FreeOptions): FreeProvider {
     filebin,
     tempsh,
     tflink,
-  };
+  });
 }

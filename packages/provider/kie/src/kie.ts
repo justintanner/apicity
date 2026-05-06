@@ -25,6 +25,7 @@ import { createVeoProvider } from "./veo";
 import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
+import { attachExamples } from "./example";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -396,7 +397,7 @@ export function kie(opts: KieOptions): KieProvider {
     return (await res.json()) as KieCreditsResponse;
   }
 
-  return {
+  return attachExamples({
     veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
     suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
     chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
@@ -435,7 +436,7 @@ export function kie(opts: KieOptions): KieProvider {
         },
       },
     },
-  };
+  });
 }
 
 export async function submitMediaJob(

@@ -70,6 +70,12 @@ function describe(ep: Endpoint, outputDir?: string): string {
   if (outputDir && isMediaEndpoint(ep)) {
     lines.push(`Returned binary or media URLs are saved to: ${outputDir}`);
   }
+  if (ep.example) {
+    const body = JSON.stringify(ep.example.payload, null, 2);
+    const truncated =
+      body.length > 400 ? `${body.slice(0, 400).trimEnd()}\n…` : body;
+    lines.push("", `Example (${ep.example.source}):`, truncated);
+  }
   return lines.join("\n");
 }
 

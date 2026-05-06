@@ -1,0 +1,146 @@
+{
+  "POST v1.batches": {
+    "source": "xai/batch-get",
+    "payload": {
+      "name": "Get Test Batch"
+    }
+  },
+  "POST v1.batches.cancel": {
+    "source": "xai/batch-cancel",
+    "payload": {}
+  },
+  "POST v1.batches.requests": {
+    "source": "xai/batch-requests",
+    "payload": {
+      "batch_requests": [
+        {
+          "batch_request_id": "test_req_0",
+          "batch_request": {
+            "chat_get_completion": {
+              "messages": [
+                {
+                  "role": "user",
+                  "content": "What is 2+2?"
+                }
+              ],
+              "model": "grok-3"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "POST v1.chat.completions": {
+    "source": "xai/chat-hello",
+    "payload": {
+      "model": "grok-3-fast",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "temperature": 0
+    }
+  },
+  "POST v1.collections": {
+    "source": "xai/collections-documents-add",
+    "payload": {}
+  },
+  "POST v1.collections.documents": {
+    "source": "xai/collections-docs",
+    "payload": {
+      "name": "test-delete-doc-1775143467493"
+    }
+  },
+  "POST v1.documents.search": {
+    "source": "xai/documents-search",
+    "payload": {
+      "query": "test",
+      "limit": 10,
+      "filters": {
+        "collection_id": "test-collection"
+      }
+    }
+  },
+  "POST v1.images.edits": {
+    "source": "xai/image-edits",
+    "payload": {
+      "model": "grok-2-image-1212",
+      "image": {},
+      "prompt": "Add a sunset background",
+      "n": 1
+    }
+  },
+  "POST v1.images.generations": {
+    "source": "xai/image-generate-basic",
+    "payload": {
+      "prompt": "A simple red apple on a white background",
+      "model": "grok-imagine-image",
+      "n": 1
+    }
+  },
+  "POST v1.realtime.clientSecrets": {
+    "source": "xai/realtime-client-secrets",
+    "payload": {
+      "model": "grok-2",
+      "voice": "echo"
+    }
+  },
+  "POST v1.responses": {
+    "source": "xai/responses-crud",
+    "payload": {
+      "model": "grok-2",
+      "input": "Delete this"
+    }
+  },
+  "POST v1.tokenizeText": {
+    "source": "xai/tokenize-text",
+    "payload": {
+      "model": "grok-3",
+      "text": "Hello world!"
+    }
+  },
+  "POST v1.tts": {
+    "source": "xai/tts-welcome",
+    "payload": {
+      "text": "Welcome to xAI. How can I help you today?",
+      "voice_id": "eve",
+      "language": "en"
+    }
+  },
+  "POST v1.videos.edits": {
+    "source": "xai/video-edit",
+    "payload": {
+      "model": "grok-imagine-video",
+      "prompt": "Give the woman a silver necklace",
+      "video": {
+        "url": "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4"
+      }
+    }
+  },
+  "POST v1.videos.extensions": {
+    "source": "xai/video-extensions-basic",
+    "payload": {
+      "model": "grok-imagine-video",
+      "prompt": "The scene continues with the character walking into a magical forest",
+      "video": {
+        "url": "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4"
+      },
+      "duration": 5
+    }
+  },
+  "POST v1.videos.generations": {
+    "source": "xai/video-get",
+    "payload": {
+      "model": "grok-video",
+      "prompt": "A cat playing with a ball"
+    }
+  },
+  "PUT v1.collections": {
+    "source": "xai/collections-put-update",
+    "payload": {
+      "collection_name": "updated-collection-name"
+    }
+  }
+}

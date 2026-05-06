@@ -1,0 +1,16 @@
+{
+  "POST v2.media.upload.initialize": {
+    "source": "x/media-upload-initialize",
+    "payload": {
+      "media_type": "video/mp4",
+      "total_bytes": 64,
+      "media_category": "tweet_video"
+    }
+  },
+  "POST v2.tweets": {
+    "source": "x/tweets-create",
+    "payload": {
+      "text": "hello from @apicity/x"
+    }
+  }
+}

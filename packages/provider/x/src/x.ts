@@ -16,6 +16,7 @@ import {
   XMediaUploadAppendRequestSchema,
   XTweetCreateRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 export function x(opts: XOptions): XProvider {
   const baseURL = opts.baseURL ?? "https://api.x.com";
@@ -242,7 +243,7 @@ export function x(opts: XOptions): XProvider {
     { schema: XTweetCreateRequestSchema }
   );
 
-  return {
+  return attachExamples({
     post: {
       v2: {
         media: {
@@ -262,5 +263,5 @@ export function x(opts: XOptions): XProvider {
         },
       },
     },
-  };
+  });
 }

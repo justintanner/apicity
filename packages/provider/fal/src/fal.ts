@@ -184,6 +184,7 @@ import {
   FalSora2ImageToVideoRequestSchema,
   FalHunyuanImageV3InstructEditRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -2616,7 +2617,7 @@ export function fal(opts: FalOptions): FalProvider {
     workflows,
   };
 
-  return {
+  return attachExamples({
     // api.fal.ai/v1/* — management API
     v1: aiV1,
     // fal.run/* — synchronous inference
@@ -2627,7 +2628,7 @@ export function fal(opts: FalOptions): FalProvider {
     get: { v1: getV1 },
     post: { v1: postV1, run, stream: postStream },
     delete: { v1: deleteV1 },
-  };
+  });
 }
 
 // Upload bytes to fal's CDN via the `storage.upload.initiate` + signed PUT

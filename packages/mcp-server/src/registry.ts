@@ -15,15 +15,22 @@ export interface EndpointTsvRow {
   docsUrl: string;
 }
 
+export interface EndpointExample {
+  source: string;
+  payload: unknown;
+}
+
 export interface EndpointFn {
   (...args: unknown[]): Promise<unknown> | unknown;
   schema?: unknown;
+  example?: EndpointExample;
 }
 
 export interface Endpoint extends EndpointTsvRow {
   toolName: string;
   fn: EndpointFn;
   schema: unknown;
+  example?: EndpointExample;
   pathParams: string[];
 }
 
@@ -106,6 +113,7 @@ export async function buildRegistry(
       toolName: makeToolName(row.provider, row.method, row.dotPath),
       fn: resolved,
       schema: (resolved as EndpointFn).schema,
+      example: (resolved as EndpointFn).example,
       pathParams,
     });
   }

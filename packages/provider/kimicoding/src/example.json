@@ -1,0 +1,23 @@
+{
+  "POST coding.v1.embeddings": {
+    "source": "kimicoding/embeddings-hello",
+    "payload": {
+      "model": "k2p5",
+      "input": "Hello world"
+    }
+  },
+  "POST coding.v1.messages": {
+    "source": "kimicoding/chat-hi",
+    "payload": {
+      "model": "k2p5",
+      "max_tokens": 32768,
+      "messages": [
+        {
+          "role": "user",
+          "content": "hi"
+        }
+      ],
+      "temperature": 0
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "POST v1.soundGeneration": {
+    "source": "elevenlabs/sound-generation",
+    "payload": {
+      "text": "soft ui click",
+      "duration_seconds": 0.5,
+      "prompt_influence": 0.3
+    }
+  }
+}

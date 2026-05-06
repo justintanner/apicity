@@ -1,0 +1,59 @@
+{
+  "POST inference.v1.chat.completions": {
+    "source": "fireworks/chat-hello",
+    "payload": {
+      "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "temperature": 0,
+      "max_tokens": 64
+    }
+  },
+  "POST inference.v1.completions": {
+    "source": "fireworks/completions-hello",
+    "payload": {
+      "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+      "prompt": "The capital of France is",
+      "max_tokens": 32,
+      "temperature": 0
+    }
+  },
+  "POST inference.v1.embeddings": {
+    "source": "fireworks/embeddings-hello",
+    "payload": {
+      "model": "nomic-ai/nomic-embed-text-v1.5",
+      "input": "Hello world"
+    }
+  },
+  "POST inference.v1.messages": {
+    "source": "fireworks/messages-hello",
+    "payload": {
+      "model": "accounts/fireworks/models/llama-v3p3-70b-instruct",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello in one sentence."
+        }
+      ],
+      "max_tokens": 64
+    }
+  },
+  "POST inference.v1.rerank": {
+    "source": "fireworks/rerank-basic",
+    "payload": {
+      "model": "fireworks/qwen3-reranker-8b",
+      "query": "What is the capital of France?",
+      "documents": [
+        "Berlin is the capital of Germany.",
+        "Paris is the capital and largest city of France.",
+        "Madrid is the capital of Spain."
+      ],
+      "top_n": 2,
+      "return_documents": true
+    }
+  }
+}

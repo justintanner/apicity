@@ -19,6 +19,7 @@ import {
   EmbeddingRequestSchema,
   CountTokensRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -335,11 +336,11 @@ export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
     );
   }
 
-  return {
+  return attachExamples({
     post: {
       coding: { v1: { messages, embeddings, countTokens } },
       stream: { coding: { v1: { messages: streamMessages } } },
     },
     get: { coding: { v1: { models: listModelsFn } } },
-  };
+  });
 }

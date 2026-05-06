@@ -424,10 +424,6 @@ export interface PolymarketClobGetNamespace {
   clobMarkets: PolymarketClobMarketsCompactMethod;
 }
 
-export interface PolymarketGetNamespace {
-  clob: PolymarketClobGetNamespace;
-}
-
 // -- POST method interfaces (C5) --------------------------------------------
 
 export interface PolymarketClobBooksBatchMethod {
@@ -489,6 +485,165 @@ export interface PolymarketClobPostNamespace {
 
 export interface PolymarketPostNamespace {
   clob: PolymarketClobPostNamespace;
+}
+
+// ===========================================================================
+// Gamma API (https://gamma-api.polymarket.com) — public events/markets/tags/...
+// ===========================================================================
+
+// Event markets are nested inside Event objects with the same shape as the
+// CLOB Market — but Gamma adds extra display/derivation fields (price arrays,
+// 24h/7d/30d volume) that aren't on the CLOB shape. We treat the Gamma
+// market as a loose superset, indexed only by the fields callers reliably
+// reference; unknown keys come through via the `[k]: unknown` index sig.
+export interface PolymarketGammaMarket {
+  id: string;
+  conditionId?: string;
+  questionID?: string;
+  question: string;
+  description: string;
+  slug: string;
+  endDate?: string;
+  startDate?: string;
+  outcomes?: string;
+  outcomePrices?: string;
+  volume?: string;
+  liquidity?: string;
+  active?: boolean;
+  closed?: boolean;
+  archived?: boolean;
+  acceptingOrders?: boolean;
+  enableOrderBook?: boolean;
+  negRisk?: boolean;
+  clobTokenIds?: string;
+  [key: string]: unknown;
+}
+
+// Gamma's Event envelope wraps a list of related Markets that all settle
+// together (e.g. an election with a market per candidate). The full shape
+// has 50+ fields; we surface the most-referenced ones explicitly and let
+// callers drop into [key: string]: unknown for the rest.
+export interface PolymarketGammaEvent {
+  id: string;
+  ticker?: string;
+  slug: string;
+  title: string;
+  description: string;
+  startDate?: string;
+  creationDate?: string;
+  endDate?: string;
+  image?: string;
+  icon?: string;
+  active?: boolean;
+  closed?: boolean;
+  archived?: boolean;
+  new?: boolean;
+  featured?: boolean;
+  restricted?: boolean;
+  liquidity?: number;
+  volume?: number;
+  openInterest?: number;
+  competitive?: number;
+  volume24hr?: number;
+  volume1wk?: number;
+  volume1mo?: number;
+  volume1yr?: number;
+  enableOrderBook?: boolean;
+  liquidityClob?: number;
+  negRisk?: boolean;
+  commentCount?: number;
+  markets: PolymarketGammaMarket[];
+  tags?: PolymarketGammaTag[];
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaTag {
+  id: string;
+  label: string;
+  slug: string;
+  forceShow?: boolean;
+  publishedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  isCarousel?: boolean;
+  requiresTranslation?: boolean;
+  [key: string]: unknown;
+}
+
+// /events returns a bare JSON array (no envelope) — we represent the list
+// shape directly.
+export type PolymarketGammaEventListResponse = PolymarketGammaEvent[];
+
+// /events/keyset uses a different envelope: { events, next_cursor }. The
+// pagination cursor is a base64-encoded offset string, opaque to callers.
+export interface PolymarketGammaEventKeysetResponse {
+  events: PolymarketGammaEvent[];
+  next_cursor: string;
+}
+
+// /events query parameters — Gamma accepts a deep set of filters (limit,
+// offset, order, ascending, ID lists, tag filters, time-window filters,
+// boolean state filters). Fully enumerated for type safety; all optional.
+export interface PolymarketGammaEventListQuery {
+  limit?: number;
+  offset?: number;
+  order?: string;
+  ascending?: boolean;
+  id?: number | number[];
+  slug?: string | string[];
+  archived?: boolean;
+  active?: boolean;
+  closed?: boolean;
+  liquidity_min?: number;
+  liquidity_max?: number;
+  volume_min?: number;
+  volume_max?: number;
+  start_date_min?: string;
+  start_date_max?: string;
+  end_date_min?: string;
+  end_date_max?: string;
+  tag?: string;
+  tag_id?: number;
+  related_tags?: boolean;
+  tag_slug?: string;
+  featured?: boolean;
+  restricted?: boolean;
+  cyom?: boolean;
+  recurrence?: string;
+}
+
+// Cursor pagination uses opaque next_cursor strings — pass undefined / empty
+// for the first page.
+export interface PolymarketGammaKeysetQuery extends PolymarketGammaEventListQuery {
+  next_cursor?: string;
+}
+
+// -- Gamma method interfaces ------------------------------------------------
+
+export interface PolymarketGammaEventsMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaEventListResponse>;
+  (
+    params: PolymarketGammaEventListQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaEventListResponse>;
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaEvent>;
+  keyset(
+    params?: PolymarketGammaKeysetQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaEventKeysetResponse>;
+  slug(slug: string, signal?: AbortSignal): Promise<PolymarketGammaEvent>;
+  tags(id: string, signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
+}
+
+export interface PolymarketGammaGetNamespace {
+  events: PolymarketGammaEventsMethod;
+}
+
+// -- Top-level provider shape (multi-host) ----------------------------------
+
+export interface PolymarketGetNamespace {
+  clob: PolymarketClobGetNamespace;
+  gamma: PolymarketGammaGetNamespace;
 }
 
 export interface PolymarketProvider {

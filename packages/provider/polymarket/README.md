@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-21 endpoints across 1 group. Each method mirrors an upstream URL path.
+25 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -36,10 +36,12 @@ const polymarket = createPolymarket();
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-book)
 
 ```typescript
-const res = await polymarket.clob.book({ /* ... */ });
+const res = await polymarket.clob.book({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -51,10 +53,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-clob-market-info)
 
 ```typescript
-const res = await polymarket.clob.clobMarkets({ /* ... */ });
+const res = await polymarket.clob.clobMarkets({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -66,10 +70,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-fee-rate)
 
 ```typescript
-const res = await polymarket.clob.feeRate({ /* ... */ });
+const res = await polymarket.clob.feeRate({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -81,10 +87,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trade-price)
 
 ```typescript
-const res = await polymarket.clob.lastTradePrice({ /* ... */ });
+const res = await polymarket.clob.lastTradePrice({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -96,10 +104,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-markets)
 
 ```typescript
-const res = await polymarket.clob.markets({ /* ... */ });
+const res = await polymarket.clob.markets({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -111,10 +121,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-by-token)
 
 ```typescript
-const res = await polymarket.clob.marketsByToken({ /* ... */ });
+const res = await polymarket.clob.marketsByToken({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -126,10 +138,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoint)
 
 ```typescript
-const res = await polymarket.clob.midpoint({ /* ... */ });
+const res = await polymarket.clob.midpoint({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -141,10 +155,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-price)
 
 ```typescript
-const res = await polymarket.clob.price({ /* ... */ });
+const res = await polymarket.clob.price({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -156,10 +172,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-prices-history)
 
 ```typescript
-const res = await polymarket.clob.pricesHistory({ /* ... */ });
+const res = await polymarket.clob.pricesHistory({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -171,10 +189,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-sampling-markets)
 
 ```typescript
-const res = await polymarket.clob.samplingMarkets({ /* ... */ });
+const res = await polymarket.clob.samplingMarkets({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -186,10 +206,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets)
 
 ```typescript
-const res = await polymarket.clob.samplingSimplifiedMarkets({ /* ... */ });
+const res = await polymarket.clob.samplingSimplifiedMarkets({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -201,10 +223,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-simplified-markets)
 
 ```typescript
-const res = await polymarket.clob.simplifiedMarkets({ /* ... */ });
+const res = await polymarket.clob.simplifiedMarkets({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -216,10 +240,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-spread)
 
 ```typescript
-const res = await polymarket.clob.spread({ /* ... */ });
+const res = await polymarket.clob.spread({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -231,10 +257,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-tick-size)
 
 ```typescript
-const res = await polymarket.clob.tickSize({ /* ... */ });
+const res = await polymarket.clob.tickSize({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -246,10 +274,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-server-time)
 
 ```typescript
-const res = await polymarket.clob.time({ /* ... */ });
+const res = await polymarket.clob.time({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -261,10 +291,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-batch-prices-history)
 
 ```typescript
-const res = await polymarket.clob.batchPricesHistory({ /* ... */ });
+const res = await polymarket.clob.batchPricesHistory({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -276,10 +308,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-books)
 
 ```typescript
-const res = await polymarket.clob.books({ /* ... */ });
+const res = await polymarket.clob.books({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -291,10 +325,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trades-prices)
 
 ```typescript
-const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
+const res = await polymarket.clob.lastTradesPrices({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -306,10 +342,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoints)
 
 ```typescript
-const res = await polymarket.clob.midpoints({ /* ... */ });
+const res = await polymarket.clob.midpoints({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -321,10 +359,12 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-prices)
 
 ```typescript
-const res = await polymarket.clob.prices({ /* ... */ });
+const res = await polymarket.clob.prices({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 </details>
 
@@ -336,10 +376,82 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-spreads)
 
 ```typescript
-const res = await polymarket.clob.spreads({ /* ... */ });
+const res = await polymarket.clob.spreads({
+  /* ... */
+});
 ```
 
-Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+### gamma
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.events</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/events/{paramsOrIdOrSignal}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-events)
+
+```typescript
+const res = await polymarket.gamma.events({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.events.keyset</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/events/keyset{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-events-keyset)
+
+```typescript
+const res = await polymarket.gamma.events.keyset({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.events.slug</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/events/slug/{slug}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-event-by-slug)
+
+```typescript
+const res = await polymarket.gamma.events.slug({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.events.tags</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/events/{id}/tags</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-event-tags)
+
+```typescript
+const res = await polymarket.gamma.events.tags({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 </details>
 

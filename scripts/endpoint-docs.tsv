@@ -312,3 +312,7 @@ polymarket	clob.midpoints	POST	https://clob.polymarket.com/midpoints	https://doc
 polymarket	clob.spreads	POST	https://clob.polymarket.com/spreads	https://docs.polymarket.com/api-reference/clob/get-spreads
 polymarket	clob.lastTradesPrices	POST	https://clob.polymarket.com/last-trades-prices	https://docs.polymarket.com/api-reference/clob/get-last-trades-prices
 polymarket	clob.batchPricesHistory	POST	https://clob.polymarket.com/batch-prices-history	https://docs.polymarket.com/api-reference/clob/get-batch-prices-history
+polymarket	gamma.events	GET	https://gamma-api.polymarket.com/events/{paramsOrIdOrSignal}	https://docs.polymarket.com/api-reference/gamma/get-events
+polymarket	gamma.events.keyset	GET	https://gamma-api.polymarket.com/events/keyset{query}	https://docs.polymarket.com/api-reference/gamma/get-events-keyset
+polymarket	gamma.events.slug	GET	https://gamma-api.polymarket.com/events/slug/{slug}	https://docs.polymarket.com/api-reference/gamma/get-event-by-slug
+polymarket	gamma.events.tags	GET	https://gamma-api.polymarket.com/events/{id}/tags	https://docs.polymarket.com/api-reference/gamma/get-event-tags

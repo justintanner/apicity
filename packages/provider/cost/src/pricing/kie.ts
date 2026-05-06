@@ -330,4 +330,11 @@ export const kie: Record<string, ModelPricing> = {
     rates: { separate_vocal: 0.05, split_stem: 0.25 },
     source: src("suno/suno"),
   },
+
+  // New Suno endpoints (5 missing from marketplace)
+  "suno/mashup-generate": flatGen(0.06, "suno/suno"),
+  "suno/replace-music-section-generate": flatGen(0.025, "suno/suno"),
+  "suno/sounds-generate": flatGen(0.0125, "suno/suno"),
+  "suno/add-instrumental-generate": flatGen(0.06, "suno/suno"),
+  "suno/add-vocals-generate": flatGen(0.06, "suno/suno"),
 };

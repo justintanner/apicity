@@ -552,6 +552,10 @@ const PROVIDER_AUTH = {
     env: "IG_ACCESS_TOKEN",
     showMiddleware: false,
   },
+  polymarket: {
+    noAuth: true,
+    showMiddleware: false,
+  },
 };
 
 async function generateReadme(providerDir, providerName, endpoints) {
@@ -562,6 +566,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
   const authField = auth.field ?? "apiKey";
   const envKey = auth.env ?? `${providerName.toUpperCase()}_API_KEY`;
   const showMiddleware = auth.showMiddleware ?? true;
+  const noAuth = auth.noAuth ?? false;
 
   const sections = [];
 
@@ -594,9 +599,13 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("```typescript");
   sections.push(`import { ${providerName} as ${factory} } from "${pkgName}";`);
   sections.push("");
-  sections.push(
-    `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`
-  );
+  if (noAuth) {
+    sections.push(`const ${providerName} = ${factory}();`);
+  } else {
+    sections.push(
+      `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`
+    );
+  }
   sections.push("```");
   sections.push("");
 

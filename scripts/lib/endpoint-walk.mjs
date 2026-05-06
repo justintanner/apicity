@@ -87,6 +87,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/ig/src/ig.ts"],
     factoryNames: ["ig"],
   },
+  {
+    name: "polymarket",
+    entryFiles: ["packages/provider/polymarket/src/polymarket.ts"],
+    factoryNames: ["polymarket"],
+  },
 ];
 
 const METHOD_KEYS = new Set([

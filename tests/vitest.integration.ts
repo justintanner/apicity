@@ -93,6 +93,14 @@ export default defineConfig({
         "../packages/provider/ig/src/zod"
       ),
       "@apicity/ig": path.resolve(__dirname, "../packages/provider/ig/src"),
+      "@apicity/polymarket/zod": path.resolve(
+        __dirname,
+        "../packages/provider/polymarket/src/zod"
+      ),
+      "@apicity/polymarket": path.resolve(
+        __dirname,
+        "../packages/provider/polymarket/src"
+      ),
       "@apicity/cost": path.resolve(__dirname, "../packages/provider/cost/src"),
     },
     coverage: {

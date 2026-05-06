@@ -291,3 +291,4 @@ x	v2.tweets	POST	https://api.x.com/2/tweets	https://docs.x.com/x-api/posts/creat
 ig	v25.media	POST	https://graph.instagram.com/v25.0/{igUserId}/media	https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/
 ig	v25.container	GET	https://graph.instagram.com/v25.0/{containerId}{query}	https://developers.facebook.com/docs/instagram-platform/reference/ig-container/
 ig	v25.mediaPublish	POST	https://graph.instagram.com/v25.0/{igUserId}/media_publish	https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/
+polymarket	clob.time	GET	https://clob.polymarket.com/time	https://docs.polymarket.com/api-reference/clob/get-server-time

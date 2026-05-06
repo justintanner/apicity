@@ -48,6 +48,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   elevenlabs: ["elevenlabs.io"],
   x: ["docs.x.com"],
   ig: ["developers.facebook.com"],
+  polymarket: ["docs.polymarket.com"],
 };
 
 const METHOD_LINE_RE =

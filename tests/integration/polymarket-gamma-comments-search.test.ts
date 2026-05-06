@@ -69,8 +69,8 @@ describe("polymarket gamma comments + search surface", () => {
     // is either an array or undefined.
     expect(Array.isArray(res.events)).toBe(true);
     expect(res.markets === undefined || Array.isArray(res.markets)).toBe(true);
-    expect(
-      res.profiles === undefined || Array.isArray(res.profiles)
-    ).toBe(true);
+    expect(res.profiles === undefined || Array.isArray(res.profiles)).toBe(
+      true
+    );
   });
 });

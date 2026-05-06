@@ -56,8 +56,8 @@ export const MODEL_SLUGS = {
     "nano-banana-pro": "nbp",
 
     // Image — GPT Image 2
-    "gpt-image-2-text-to-image": "gpti2",
-    "gpt-image-2-image-to-image": "gpti2",
+    "gpt-image-2-text-to-image": "gi2",
+    "gpt-image-2-image-to-image": "gi2",
 
     // Image — Wan 2.7
     "wan/2-7-image": "wan2p7",

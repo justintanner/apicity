@@ -1,9 +1,12 @@
 {
   "name": "@apicity/mcp-server",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "Optional MCP (Model Context Protocol) server that exposes every @apicity provider endpoint as a tool.",
   "license": "MIT",
   "repository": "github:justintanner/apicity",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

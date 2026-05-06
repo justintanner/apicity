@@ -1,9 +1,12 @@
 {
   "name": "@apicity/polymarket",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "Polymarket public-data API provider — Gamma, Data, and CLOB market-data endpoints (no auth).",
   "license": "MIT",
   "repository": "github:justintanner/apicity",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

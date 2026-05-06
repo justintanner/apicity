@@ -1,9 +1,12 @@
 {
   "name": "@apicity/fireworks",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "Fireworks AI provider for chat completions, completions, and embeddings.",
   "license": "MIT",
   "repository": "github:justintanner/apicity",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",

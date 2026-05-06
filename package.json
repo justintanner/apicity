@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages - @apicity/kimicoding, @apicity/kie, @apicity/xai, @apicity/openai, @apicity/fal, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, and @apicity/free",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free, @apicity/x, @apicity/ig, @apicity/polymarket, @apicity/cost, and @apicity/mcp-server",
   "private": true,
   "type": "module",
   "engines": {

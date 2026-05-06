@@ -299,3 +299,4 @@ polymarket	clob.spread	GET	https://clob.polymarket.com/spread{query}	https://doc
 polymarket	clob.lastTradePrice	GET	https://clob.polymarket.com/last-trade-price{query}	https://docs.polymarket.com/api-reference/clob/get-last-trade-price
 polymarket	clob.tickSize	GET	https://clob.polymarket.com/tick-size/{tokenId}	https://docs.polymarket.com/api-reference/clob/get-tick-size
 polymarket	clob.feeRate	GET	https://clob.polymarket.com/fee-rate/{tokenId}	https://docs.polymarket.com/api-reference/clob/get-fee-rate
+polymarket	clob.pricesHistory	GET	https://clob.polymarket.com/prices-history{query}	https://docs.polymarket.com/api-reference/clob/get-prices-history

@@ -8,8 +8,10 @@ import {
   PolymarketClobLastTradePriceResponse,
   PolymarketClobTickSizeResponse,
   PolymarketClobFeeRateResponse,
+  PolymarketClobPriceHistoryResponse,
   PolymarketClobTokenQuery,
   PolymarketClobPriceQuery,
+  PolymarketClobPriceHistoryQuery,
   PolymarketProvider,
   PolymarketError,
 } from "./types";
@@ -237,6 +239,27 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     );
   }
 
+  // GET https://clob.polymarket.com/prices-history{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-prices-history
+  async function clobPricesHistory(
+    params: PolymarketClobPriceHistoryQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPriceHistoryResponse> {
+    const usp = new URLSearchParams();
+    usp.set("market", params.market);
+    if (params.interval !== undefined) usp.set("interval", params.interval);
+    if (params.startTs !== undefined)
+      usp.set("startTs", String(params.startTs));
+    if (params.endTs !== undefined) usp.set("endTs", String(params.endTs));
+    if (params.fidelity !== undefined)
+      usp.set("fidelity", String(params.fidelity));
+    const query = `?${usp.toString()}`;
+    return makeGetRequest<PolymarketClobPriceHistoryResponse>(
+      `${baseURL}/prices-history${query}`,
+      signal
+    );
+  }
+
   return {
     get: {
       clob: {
@@ -248,6 +271,7 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
         lastTradePrice: clobLastTradePrice,
         tickSize: clobTickSize,
         feeRate: clobFeeRate,
+        pricesHistory: clobPricesHistory,
       },
     },
     post: {},

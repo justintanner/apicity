@@ -61,6 +61,18 @@ export interface PolymarketClobFeeRateResponse {
   base_fee: number;
 }
 
+// Each history point is { t: unix-seconds, p: decimal-price-as-number }. The
+// server returns numeric primitives here, not decimal strings — series shape
+// differs from the singular price endpoints.
+export interface PolymarketClobPriceHistoryPoint {
+  t: number;
+  p: number;
+}
+
+export interface PolymarketClobPriceHistoryResponse {
+  history: PolymarketClobPriceHistoryPoint[];
+}
+
 // -- Query types ------------------------------------------------------------
 
 export interface PolymarketClobTokenQuery {
@@ -69,6 +81,26 @@ export interface PolymarketClobTokenQuery {
 
 export interface PolymarketClobPriceQuery extends PolymarketClobTokenQuery {
   side: PolymarketClobSide;
+}
+
+// Polymarket accepts either an `interval` shorthand ("1m", "1h", "1d", "max")
+// OR an explicit `startTs` / `endTs` Unix-seconds window. `fidelity` controls
+// the sampling rate; the server enforces a per-range minimum (e.g. 5 for
+// `1w`). `market` is the token_id, despite the field name.
+export type PolymarketClobPriceHistoryInterval =
+  | "1m"
+  | "1h"
+  | "6h"
+  | "1d"
+  | "1w"
+  | "max";
+
+export interface PolymarketClobPriceHistoryQuery {
+  market: string;
+  interval?: PolymarketClobPriceHistoryInterval;
+  startTs?: number;
+  endTs?: number;
+  fidelity?: number;
 }
 
 // -- Error ------------------------------------------------------------------
@@ -143,6 +175,13 @@ export interface PolymarketClobFeeRateMethod {
   ): Promise<PolymarketClobFeeRateResponse>;
 }
 
+export interface PolymarketClobPricesHistoryMethod {
+  (
+    params: PolymarketClobPriceHistoryQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPriceHistoryResponse>;
+}
+
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface PolymarketClobGetNamespace {
@@ -154,6 +193,7 @@ export interface PolymarketClobGetNamespace {
   lastTradePrice: PolymarketClobLastTradePriceMethod;
   tickSize: PolymarketClobTickSizeMethod;
   feeRate: PolymarketClobFeeRateMethod;
+  pricesHistory: PolymarketClobPricesHistoryMethod;
 }
 
 export interface PolymarketGetNamespace {

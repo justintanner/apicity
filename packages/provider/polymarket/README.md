@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-8 endpoints across 1 group. Each method mirrors an upstream URL path.
+9 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -97,6 +97,21 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 
 ```typescript
 const res = await polymarket.clob.price({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.pricesHistory</code></b></summary>
+
+<code>GET https://clob.polymarket.com/prices-history{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-prices-history)
+
+```typescript
+const res = await polymarket.clob.pricesHistory({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)

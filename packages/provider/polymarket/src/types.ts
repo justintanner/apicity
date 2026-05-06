@@ -618,6 +618,23 @@ export interface PolymarketGammaKeysetQuery extends PolymarketGammaEventListQuer
   next_cursor?: string;
 }
 
+// /markets uses the same query DSL as /events with a market-specific filter
+// added (clob_token_ids for direct token lookup).
+export interface PolymarketGammaMarketListQuery extends PolymarketGammaEventListQuery {
+  clob_token_ids?: string | string[];
+}
+
+export interface PolymarketGammaMarketKeysetQuery extends PolymarketGammaMarketListQuery {
+  next_cursor?: string;
+}
+
+export type PolymarketGammaMarketListResponse = PolymarketGammaMarket[];
+
+export interface PolymarketGammaMarketKeysetResponse {
+  markets: PolymarketGammaMarket[];
+  next_cursor: string;
+}
+
 // -- Gamma method interfaces ------------------------------------------------
 
 export interface PolymarketGammaEventsMethod {
@@ -635,8 +652,24 @@ export interface PolymarketGammaEventsMethod {
   tags(id: string, signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
 }
 
+export interface PolymarketGammaMarketsMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaMarketListResponse>;
+  (
+    params: PolymarketGammaMarketListQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaMarketListResponse>;
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaMarket>;
+  keyset(
+    params?: PolymarketGammaMarketKeysetQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaMarketKeysetResponse>;
+  slug(slug: string, signal?: AbortSignal): Promise<PolymarketGammaMarket>;
+  tags(id: string, signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
+}
+
 export interface PolymarketGammaGetNamespace {
   events: PolymarketGammaEventsMethod;
+  markets: PolymarketGammaMarketsMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

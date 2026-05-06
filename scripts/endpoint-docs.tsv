@@ -316,3 +316,7 @@ polymarket	gamma.events	GET	https://gamma-api.polymarket.com/events/{paramsOrIdO
 polymarket	gamma.events.keyset	GET	https://gamma-api.polymarket.com/events/keyset{query}	https://docs.polymarket.com/api-reference/gamma/get-events-keyset
 polymarket	gamma.events.slug	GET	https://gamma-api.polymarket.com/events/slug/{slug}	https://docs.polymarket.com/api-reference/gamma/get-event-by-slug
 polymarket	gamma.events.tags	GET	https://gamma-api.polymarket.com/events/{id}/tags	https://docs.polymarket.com/api-reference/gamma/get-event-tags
+polymarket	gamma.markets	GET	https://gamma-api.polymarket.com/markets/{paramsOrIdOrSignal}	https://docs.polymarket.com/api-reference/gamma/get-markets
+polymarket	gamma.markets.keyset	GET	https://gamma-api.polymarket.com/markets/keyset{query}	https://docs.polymarket.com/api-reference/gamma/get-markets-keyset
+polymarket	gamma.markets.slug	GET	https://gamma-api.polymarket.com/markets/slug/{slug}	https://docs.polymarket.com/api-reference/gamma/get-market-by-slug
+polymarket	gamma.markets.tags	GET	https://gamma-api.polymarket.com/markets/{id}/tags	https://docs.polymarket.com/api-reference/gamma/get-market-tags

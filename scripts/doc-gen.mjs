@@ -389,6 +389,91 @@ function renderXSetup() {
   ].join("\n");
 }
 
+// Mined from tests/recordings/x_*/post-video_*/recording.har — the same
+// flow that tests/integration/x-post-video.test.ts replays end-to-end.
+function renderXExample() {
+  return [
+    "## Real-world example: post a video",
+    "",
+    "Posting a video on X is a four-call dance — initialize a chunked",
+    "media upload, append the bytes, finalize to kick off transcoding,",
+    "poll until the media is ready, then attach the resulting `media_id`",
+    "to the tweet. The flow below is taken verbatim from",
+    "[`tests/integration/x-post-video.test.ts`](../../../tests/integration/x-post-video.test.ts)",
+    "and replays against",
+    "[`tests/recordings/x_*/post-video_*/recording.har`](../../../tests/recordings/),",
+    "so the response shapes match what X actually returns.",
+    "",
+    "```typescript",
+    'import { readFileSync } from "node:fs";',
+    'import { x as createX } from "@apicity/x";',
+    "",
+    "const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });",
+    "",
+    "// 1. Initialize a chunked upload — declare the media type, total",
+    "//    byte length, and category up-front. X reserves a media_id we'll",
+    "//    thread through every later call.",
+    'const bytes = readFileSync("./jump.mp4"); // 1,318,021 bytes in the recording',
+    "const init = await x.post.v2.media.upload.initialize({",
+    '  media_type: "video/mp4",',
+    "  total_bytes: bytes.length,",
+    '  media_category: "tweet_video",',
+    "});",
+    "const mediaId = init.data.id;",
+    '// → "2050123807214718976"',
+    "",
+    "// 2. Append the bytes. For files >5MB slice the buffer into",
+    "//    segments and call append once per chunk with segment_index 0..n.",
+    "await x.post.v2.media.upload.append(mediaId, {",
+    '  media: new Blob([bytes], { type: "video/mp4" }),',
+    "  segment_index: 0,",
+    "});",
+    "",
+    "// 3. Finalize. X queues server-side transcoding and returns",
+    '//    processing_info.state = "pending" while the worker is busy.',
+    "const fin = await x.post.v2.media.upload.finalize(mediaId);",
+    '// fin.data.processing_info → { state: "pending", check_after_secs: 1 }',
+    "",
+    "// 4. Poll status until the media is ready. Honor",
+    "//    `check_after_secs` so the loop respects X's pacing hint.",
+    'let state = fin.data.processing_info?.state ?? "succeeded";',
+    "let wait = fin.data.processing_info?.check_after_secs ?? 1;",
+    'while (state === "pending" || state === "in_progress") {',
+    "  await new Promise((r) => setTimeout(r, wait * 1000));",
+    "  const status = await x.get.v2.media.upload(mediaId);",
+    '  state = status.data.processing_info?.state ?? "succeeded";',
+    "  wait = status.data.processing_info?.check_after_secs ?? 1;",
+    "}",
+    '// status.data.processing_info → { state: "succeeded", progress_percent: 100 }',
+    "",
+    "// 5. Post the tweet, attaching the now-ready media id.",
+    "const tweet = await x.post.v2.tweets({",
+    '  text: "jump",',
+    "  media: { media_ids: [mediaId] },",
+    "});",
+    "",
+    "console.log(tweet.data.id);",
+    '// → "2050123819986378933"',
+    "console.log(tweet.data.text);",
+    '// → "jump https://t.co/X8cTIpcy3s"',
+    "//   X auto-appends the attached media's t.co URL to the returned",
+    '//   text — the literal request body just had "jump".',
+    "```",
+    "",
+    "**Notes**",
+    "",
+    "- `media_category` must match the asset: `tweet_video`, `tweet_image`,",
+    "  `tweet_gif`, or `amplify_video` for long-form. Mismatches are rejected",
+    "  at finalize, not initialize.",
+    "- Uploads expire after `data.expires_after_secs` (24h). If you finalize",
+    "  but never reference the `media_id` in a tweet, it is garbage-collected.",
+    "- Errors from any step throw `XError` with `status` and the parsed body",
+    "  attached, so `try { ... } catch (e) { if (e instanceof XError) ... }`",
+    "  gives you the upstream `errors[0].message` or `detail` directly.",
+    "",
+  ].join("\n");
+}
+
 function renderIgSetup() {
   return [
     "## Setup",
@@ -622,6 +707,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "x") {
     sections.push(renderXSetup());
+    sections.push(renderXExample());
   }
 
   if (providerName === "ig") {

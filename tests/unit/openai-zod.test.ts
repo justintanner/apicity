@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
+  z,
   OpenAiChatRequestSchema,
   OpenAiSpeechRequestSchema,
   OpenAiEmbeddingRequestSchema,
@@ -398,8 +399,7 @@ describe("OpenAI Zod schemas", () => {
       expect(result.success).toBe(true);
     });
 
-    it("schemas support .extend()", async () => {
-      const { z } = await import("zod");
+    it("schemas support .extend()", () => {
       const ExtendedSchema = OpenAiChatRequestSchema.extend({
         custom_field: z.string(),
       });

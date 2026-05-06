@@ -6,6 +6,8 @@ import {
   PolymarketClobMidpointResponse,
   PolymarketClobSpreadResponse,
   PolymarketClobLastTradePriceResponse,
+  PolymarketClobTickSizeResponse,
+  PolymarketClobFeeRateResponse,
   PolymarketClobTokenQuery,
   PolymarketClobPriceQuery,
   PolymarketProvider,
@@ -211,6 +213,30 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     );
   }
 
+  // GET https://clob.polymarket.com/tick-size/{tokenId}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-tick-size
+  async function clobTickSize(
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobTickSizeResponse> {
+    return makeGetRequest<PolymarketClobTickSizeResponse>(
+      `${baseURL}/tick-size/${encodeURIComponent(tokenId)}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/fee-rate/{tokenId}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-fee-rate
+  async function clobFeeRate(
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobFeeRateResponse> {
+    return makeGetRequest<PolymarketClobFeeRateResponse>(
+      `${baseURL}/fee-rate/${encodeURIComponent(tokenId)}`,
+      signal
+    );
+  }
+
   return {
     get: {
       clob: {
@@ -220,6 +246,8 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
         midpoint: clobMidpoint,
         spread: clobSpread,
         lastTradePrice: clobLastTradePrice,
+        tickSize: clobTickSize,
+        feeRate: clobFeeRate,
       },
     },
     post: {},

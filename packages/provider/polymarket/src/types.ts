@@ -51,6 +51,16 @@ export interface PolymarketClobLastTradePriceResponse {
   side: PolymarketClobSide;
 }
 
+// CLOB tick-size and fee-rate return numeric primitives, not decimal strings —
+// the server represents these as JSON numbers because they fit float64 cleanly.
+export interface PolymarketClobTickSizeResponse {
+  minimum_tick_size: number;
+}
+
+export interface PolymarketClobFeeRateResponse {
+  base_fee: number;
+}
+
 // -- Query types ------------------------------------------------------------
 
 export interface PolymarketClobTokenQuery {
@@ -116,6 +126,23 @@ export interface PolymarketClobLastTradePriceMethod {
   ): Promise<PolymarketClobLastTradePriceResponse>;
 }
 
+// Polymarket exposes both /tick-size?token_id=X and /tick-size/{token_id} for
+// the same operation. We surface the path-var form only — the query form
+// returns identical data and would just clutter the namespace.
+export interface PolymarketClobTickSizeMethod {
+  (
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobTickSizeResponse>;
+}
+
+export interface PolymarketClobFeeRateMethod {
+  (
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobFeeRateResponse>;
+}
+
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface PolymarketClobGetNamespace {
@@ -125,6 +152,8 @@ export interface PolymarketClobGetNamespace {
   midpoint: PolymarketClobMidpointMethod;
   spread: PolymarketClobSpreadMethod;
   lastTradePrice: PolymarketClobLastTradePriceMethod;
+  tickSize: PolymarketClobTickSizeMethod;
+  feeRate: PolymarketClobFeeRateMethod;
 }
 
 export interface PolymarketGetNamespace {

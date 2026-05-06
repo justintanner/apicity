@@ -24,7 +24,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-6 endpoints across 1 group. Each method mirrors an upstream URL path.
+8 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -37,6 +37,21 @@ const polymarket = createPolymarket();
 
 ```typescript
 const res = await polymarket.clob.book({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.feeRate</code></b></summary>
+
+<code>GET https://clob.polymarket.com/fee-rate/{tokenId}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-fee-rate)
+
+```typescript
+const res = await polymarket.clob.feeRate({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
@@ -97,6 +112,21 @@ Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
 
 ```typescript
 const res = await polymarket.clob.spread({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.tickSize</code></b></summary>
+
+<code>GET https://clob.polymarket.com/tick-size/{tokenId}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-tick-size)
+
+```typescript
+const res = await polymarket.clob.tickSize({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)

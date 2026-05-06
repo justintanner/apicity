@@ -292,3 +292,8 @@ ig	v25.media	POST	https://graph.instagram.com/v25.0/{igUserId}/media	https://dev
 ig	v25.container	GET	https://graph.instagram.com/v25.0/{containerId}{query}	https://developers.facebook.com/docs/instagram-platform/reference/ig-container/
 ig	v25.mediaPublish	POST	https://graph.instagram.com/v25.0/{igUserId}/media_publish	https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/
 polymarket	clob.time	GET	https://clob.polymarket.com/time	https://docs.polymarket.com/api-reference/clob/get-server-time
+polymarket	clob.book	GET	https://clob.polymarket.com/book{query}	https://docs.polymarket.com/api-reference/clob/get-order-book
+polymarket	clob.price	GET	https://clob.polymarket.com/price{query}	https://docs.polymarket.com/api-reference/clob/get-market-price
+polymarket	clob.midpoint	GET	https://clob.polymarket.com/midpoint{query}	https://docs.polymarket.com/api-reference/clob/get-midpoint
+polymarket	clob.spread	GET	https://clob.polymarket.com/spread{query}	https://docs.polymarket.com/api-reference/clob/get-spread
+polymarket	clob.lastTradePrice	GET	https://clob.polymarket.com/last-trade-price{query}	https://docs.polymarket.com/api-reference/clob/get-last-trade-price

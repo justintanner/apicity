@@ -24,9 +24,84 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+6 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### clob
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.book</code></b></summary>
+
+<code>GET https://clob.polymarket.com/book{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-book)
+
+```typescript
+const res = await polymarket.clob.book({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.lastTradePrice</code></b></summary>
+
+<code>GET https://clob.polymarket.com/last-trade-price{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trade-price)
+
+```typescript
+const res = await polymarket.clob.lastTradePrice({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.midpoint</code></b></summary>
+
+<code>GET https://clob.polymarket.com/midpoint{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoint)
+
+```typescript
+const res = await polymarket.clob.midpoint({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.price</code></b></summary>
+
+<code>GET https://clob.polymarket.com/price{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-price)
+
+```typescript
+const res = await polymarket.clob.price({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.spread</code></b></summary>
+
+<code>GET https://clob.polymarket.com/spread{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-spread)
+
+```typescript
+const res = await polymarket.clob.spread({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/polymarket.ts`](src/polymarket.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>polymarket.clob.time</code></b></summary>

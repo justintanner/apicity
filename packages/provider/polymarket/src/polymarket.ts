@@ -1,12 +1,19 @@
 import {
   PolymarketOptions,
   PolymarketServerTime,
+  PolymarketClobBook,
+  PolymarketClobPriceResponse,
+  PolymarketClobMidpointResponse,
+  PolymarketClobSpreadResponse,
+  PolymarketClobLastTradePriceResponse,
+  PolymarketClobTokenQuery,
+  PolymarketClobPriceQuery,
   PolymarketProvider,
   PolymarketError,
 } from "./types";
 
 export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
-  // PR 1 only ships CLOB endpoints, so a single `baseURL` covers the
+  // PR 1 + C1 only ship CLOB endpoints, so a single `baseURL` covers the
   // factory's needs and lets the endpoint-walker resolve full URLs against
   // it. When subsequent PRs add Gamma and Data endpoints, this factory will
   // be split into sub-factories (one per host) following the pattern in
@@ -62,15 +69,16 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     }
   }
 
-  // GET https://clob.polymarket.com/time
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-server-time
-  async function clobTime(signal?: AbortSignal): Promise<PolymarketServerTime> {
+  async function makeGetRequest<T>(
+    url: string,
+    signal?: AbortSignal
+  ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     if (signal) attachAbortHandler(signal, controller);
 
     try {
-      const res = await doFetch(`${baseURL}/time`, {
+      const res = await doFetch(url, {
         method: "GET",
         signal: controller.signal,
       });
@@ -83,16 +91,7 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
           resBody
         );
       }
-      const text = (await res.text()).trim();
-      const n = Number(text);
-      if (!Number.isFinite(n)) {
-        throw new PolymarketError(
-          `Polymarket /time response was not a finite number: ${text}`,
-          200,
-          text
-        );
-      }
-      return n;
+      return (await res.json()) as T;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof PolymarketError) throw error;
@@ -100,10 +99,127 @@ export function polymarket(opts: PolymarketOptions = {}): PolymarketProvider {
     }
   }
 
+  async function makeGetTextRequest(
+    url: string,
+    signal?: AbortSignal
+  ): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    if (signal) attachAbortHandler(signal, controller);
+
+    try {
+      const res = await doFetch(url, {
+        method: "GET",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) {
+        const resBody = await readErrorBody(res);
+        throw new PolymarketError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
+      }
+      return await res.text();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof PolymarketError) throw error;
+      throw new PolymarketError(`Polymarket request failed: ${error}`, 500);
+    }
+  }
+
+  // GET https://clob.polymarket.com/time
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-server-time
+  async function clobTime(signal?: AbortSignal): Promise<PolymarketServerTime> {
+    const text = (await makeGetTextRequest(`${baseURL}/time`, signal)).trim();
+    const n = Number(text);
+    if (!Number.isFinite(n)) {
+      throw new PolymarketError(
+        `Polymarket /time response was not a finite number: ${text}`,
+        200,
+        text
+      );
+    }
+    return n;
+  }
+
+  // GET https://clob.polymarket.com/book{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-order-book
+  async function clobBook(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBook> {
+    const query = `?token_id=${encodeURIComponent(params.token_id)}`;
+    return makeGetRequest<PolymarketClobBook>(
+      `${baseURL}/book${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/price{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-market-price
+  async function clobPrice(
+    params: PolymarketClobPriceQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPriceResponse> {
+    const query =
+      `?token_id=${encodeURIComponent(params.token_id)}` +
+      `&side=${encodeURIComponent(params.side)}`;
+    return makeGetRequest<PolymarketClobPriceResponse>(
+      `${baseURL}/price${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/midpoint{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-midpoint
+  async function clobMidpoint(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMidpointResponse> {
+    const query = `?token_id=${encodeURIComponent(params.token_id)}`;
+    return makeGetRequest<PolymarketClobMidpointResponse>(
+      `${baseURL}/midpoint${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/spread{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-spread
+  async function clobSpread(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobSpreadResponse> {
+    const query = `?token_id=${encodeURIComponent(params.token_id)}`;
+    return makeGetRequest<PolymarketClobSpreadResponse>(
+      `${baseURL}/spread${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/last-trade-price{query}
+  // Docs: https://docs.polymarket.com/api-reference/clob/get-last-trade-price
+  async function clobLastTradePrice(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLastTradePriceResponse> {
+    const query = `?token_id=${encodeURIComponent(params.token_id)}`;
+    return makeGetRequest<PolymarketClobLastTradePriceResponse>(
+      `${baseURL}/last-trade-price${query}`,
+      signal
+    );
+  }
+
   return {
     get: {
       clob: {
         time: clobTime,
+        book: clobBook,
+        price: clobPrice,
+        midpoint: clobMidpoint,
+        spread: clobSpread,
+        lastTradePrice: clobLastTradePrice,
       },
     },
     post: {},

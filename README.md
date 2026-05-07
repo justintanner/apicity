@@ -58,7 +58,53 @@ upstream API URL paths directly in code:
 
 ## Quick Start
 
-Install one provider package. You do not need a shared SDK package.
+Generation calls cost real money. `@apicity/cost` previews the spend from the
+same payload you would POST to the provider, so a single object doubles as the
+preview input and the generation body — preview, budget-gate, then commit.
+
+```bash
+npm install @apicity/cost @apicity/kie
+```
+
+```ts
+import { cost } from "@apicity/cost";
+import { kie as createKie } from "@apicity/kie";
+
+const c = cost();
+const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
+
+// Build the same JSON body you'd POST to /api/v1/jobs/createTask.
+const payload = {
+  model: "gpt-image-2-text-to-image",
+  input: {
+    prompt: "A cinematic night-city poster with neon reflections.",
+    aspect_ratio: "16:9",
+    resolution: "4K",
+  },
+};
+
+// Preview the cost — no keys, no network, sync.
+const estimate = c.estimate({ provider: "kie", payload });
+// estimate.usd === 0.08
+// estimate.source === "per-unit-table"
+// estimate.breakdown === { units: 1, unit: "images", perUnitUsd: 0.08 }
+
+// Budget-gate before committing to the generation.
+if (estimate.usd > 0.1) {
+  throw new Error(`Estimate $${estimate.usd.toFixed(4)} exceeds $0.10 cap`);
+}
+
+// Same payload — now actually run the generation.
+const task = await kie.post.api.v1.jobs.createTask(payload);
+```
+
+The object you call looks like the API URL you are calling. This makes provider
+code easy for people and LLM agents to inspect, generate, diff, and verify.
+
+## Direct generation
+
+If you do not need a cost preview, install just the provider package — no
+shared SDK is required:
 
 ```bash
 npm install @apicity/openai
@@ -81,9 +127,6 @@ const result = await openai.post.v1.images.generations({
 
 await writeFile("cat.png", Buffer.from(result.data[0].b64_json!, "base64"));
 ```
-
-The object you call looks like the API URL you are calling. This makes provider
-code easy for people and LLM agents to inspect, generate, diff, and verify.
 
 ## Composition
 
@@ -167,57 +210,20 @@ and Claude Desktop config.
 
 ## Cost Estimates
 
-Use `@apicity/cost` to estimate spend before you send a request. It accepts the
-same payload shape you plan to pass to the real provider call, so the same
-object doubles as the preview input and the actual generation body — preview,
-budget-gate, then commit.
-
-```bash
-npm install @apicity/cost @apicity/kie
-```
-
-```ts
-import { cost } from "@apicity/cost";
-import { kie as createKie } from "@apicity/kie";
-
-const c = cost();
-const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
-
-// Build the same JSON body you'd POST to /api/v1/jobs/createTask.
-const payload = {
-  model: "gpt-image-2-text-to-image",
-  input: {
-    prompt: "A cinematic night-city poster with neon reflections.",
-    aspect_ratio: "16:9",
-    resolution: "4K",
-  },
-};
-
-// Preview the cost — no keys, no network, sync.
-const estimate = c.estimate({ provider: "kie", payload });
-// estimate.usd === 0.08
-// estimate.source === "per-unit-table"
-// estimate.breakdown === { units: 1, unit: "images", perUnitUsd: 0.08 }
-
-// Budget-gate before committing to the generation.
-if (estimate.usd > 0.1) {
-  throw new Error(`Estimate $${estimate.usd.toFixed(4)} exceeds $0.10 cap`);
-}
-
-// Same payload — now actually run the generation.
-const task = await kie.post.api.v1.jobs.createTask(payload);
-```
-
-The cost package is pure local math: no keys, no network calls. Token-billed
+The Quick Start above shows the preview-then-commit pattern. Under the hood,
+`@apicity/cost` is pure local math: no keys, no network calls. Token-billed
 models use bundled rates with a text heuristic; media models such as KIE video
 and image generation use payload-derived units like seconds or images.
 
-For quick comparisons:
+For quick cross-provider comparisons:
 
 ```bash
 pnpm run compare:video
 pnpm run compare:image
 ```
+
+See [@apicity/cost](packages/provider/cost) for the full rate tables, sources,
+and per-provider coverage.
 
 ## Runtime Support
 

@@ -68,9 +68,34 @@ const task = await kie.post.api.v1.jobs.createTask(payload);
 | [@apicity/cost](packages/provider/cost)                                       | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)                                    | MCP server exposing provider endpoints as tools                    |
 
+## Composition
+
+Every endpoint is a plain async function with the provider's request and
+response types. Middleware is function-level, so composition stays explicit:
+
+```ts
+import { xai as createXai, withFallback, withRetry } from "@apicity/xai";
+
+const primary = createXai({ apiKey: process.env.XAI_API_KEY_PRIMARY! });
+const backup = createXai({ apiKey: process.env.XAI_API_KEY_BACKUP! });
+
+const image = withFallback([
+  withRetry(primary.v1.images.generations, { retries: 2 }),
+  withRetry(backup.v1.images.generations, { retries: 1 }),
+]);
+
+const result = await image({
+  model: "grok-2-image",
+  prompt: "A product photo of a small brass desk lamp",
+  n: 1,
+});
+```
+
+Use the wrappers that ship with each provider, or pass endpoint functions into
+your own orchestration layer.
+
 ## More
 
-- **Composition** — endpoint functions are just functions; each provider ships `withRetry` / `withFallback`, or wrap with your own.
 - **Schemas for agents** — `openai.v1.chat.completions.schema.safeParse(payload)` validates before POST; useful when an LLM generates the call.
 - **MCP server** — [@apicity/mcp-server](packages/mcp-server) maps each endpoint 1:1 to a tool name like `openai_v1_chat_completions`.
 - **Cost coverage** — [@apicity/cost](packages/provider/cost) covers tokens, images, and video; pure local math, no keys, no network.

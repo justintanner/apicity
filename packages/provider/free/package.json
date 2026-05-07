@@ -1,7 +1,7 @@
 {
   "name": "@apicity/free",
   "version": "0.1.0-alpha.0",
-  "description": "Free file hosting providers — tmpfiles.org and file.io.",
+  "description": "Zero-auth file hosting wrapper for catbox, gofile, uguu, filebin, litterbox, tempsh, tflink, and tmpfiles — eight providers behind one typed surface.",
   "license": "MIT",
   "repository": "github:justintanner/apicity",
   "publishConfig": {

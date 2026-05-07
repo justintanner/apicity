@@ -28,7 +28,9 @@ import {
 } from "./zod";
 import { attachExamples } from "./example";
 
-export function freeMediaUpload(opts?: FreeMediaUploadOptions): FreeMediaUploadProvider {
+export function freeMediaUpload(
+  opts?: FreeMediaUploadOptions
+): FreeMediaUploadProvider {
   const doFetch = opts?.fetch ?? fetch;
   const timeout = opts?.timeout ?? 30000;
 

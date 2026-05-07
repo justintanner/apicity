@@ -58,7 +58,9 @@ export const MetaMediaCreateRequestSchema = z.object({
   collaborators: z.array(z.string().min(1)).max(3).optional(),
 });
 
-export type MetaMediaCreateRequest = z.infer<typeof MetaMediaCreateRequestSchema>;
+export type MetaMediaCreateRequest = z.infer<
+  typeof MetaMediaCreateRequestSchema
+>;
 
 // ---------------------------------------------------------------------------
 // POST /v25.0/{ig-user-id}/media_publish
@@ -71,4 +73,6 @@ export const MetaMediaPublishRequestSchema = z.object({
   creation_id: MetaIdStringSchema,
 });
 
-export type MetaMediaPublishRequest = z.infer<typeof MetaMediaPublishRequestSchema>;
+export type MetaMediaPublishRequest = z.infer<
+  typeof MetaMediaPublishRequestSchema
+>;

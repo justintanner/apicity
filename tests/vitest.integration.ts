@@ -74,7 +74,10 @@ export default defineConfig({
         __dirname,
         "../packages/provider/free-media-upload/src/zod"
       ),
-      "@apicity/free-media-upload": path.resolve(__dirname, "../packages/provider/free-media-upload/src"),
+      "@apicity/free-media-upload": path.resolve(
+        __dirname,
+        "../packages/provider/free-media-upload/src"
+      ),
       "@apicity/elevenlabs/zod": path.resolve(
         __dirname,
         "../packages/provider/elevenlabs/src/zod"

@@ -15,7 +15,10 @@ export async function uploadToAnyHost(
   signal?: AbortSignal
 ): Promise<string> {
   if (req.hosts.length === 0) {
-    throw new FreeMediaUploadError("uploadToAnyHost requires at least one host", 400);
+    throw new FreeMediaUploadError(
+      "uploadToAnyHost requires at least one host",
+      400
+    );
   }
 
   const order = shuffle(req.hosts);

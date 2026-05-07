@@ -9,7 +9,10 @@ import {
   MetaProvider,
   MetaError,
 } from "./types";
-import { MetaMediaCreateRequestSchema, MetaMediaPublishRequestSchema } from "./zod";
+import {
+  MetaMediaCreateRequestSchema,
+  MetaMediaPublishRequestSchema,
+} from "./zod";
 import { attachExamples } from "./example";
 
 export function meta(opts: MetaOptions): MetaProvider {

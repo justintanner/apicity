@@ -1,7 +1,10 @@
 export { freeMediaUpload } from "./freeMediaUpload";
 
 export { uploadToAnyHost } from "./uploadToAnyHost";
-export type { FreeMediaUploadHost, UploadToAnyHostRequest } from "./uploadToAnyHost";
+export type {
+  FreeMediaUploadHost,
+  UploadToAnyHostRequest,
+} from "./uploadToAnyHost";
 
 export { FreeMediaUploadError } from "./types";
 

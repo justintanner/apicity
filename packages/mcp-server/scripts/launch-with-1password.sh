@@ -11,14 +11,41 @@ REPO_ROOT="$(cd "$PKG_DIR/../.." && pwd)"
 ENV_FILE="${APICITY_ENV_FILE:-$REPO_ROOT/.env.tpl}"
 BIN="$PKG_DIR/dist/src/bin.js"
 
-while IFS= read -r line; do
-  case "$line" in
-    OPENAI_API_KEY=*|XAI_API_KEY=*|ANTHROPIC_API_KEY=*|\
+REQUIRED_KEYS=(
+  OPENAI_API_KEY
+  XAI_API_KEY
+  ANTHROPIC_API_KEY
+  FIREWORKS_API_KEY
+  FAL_API_KEY
+  KIE_API_KEY
+  KIMI_CODING_API_KEY
+  DASHSCOPE_API_KEY
+  ELEVENLABS_API_KEY
+)
+
+# Short-circuit: when every required key is already exported with a real
+# (non-op://) value, skip `op run` entirely. Lets a parent prefetch once
+# and have many child sessions inherit, instead of each session firing its
+# own Touch ID prompt.
+all_set=1
+for key in "${REQUIRED_KEYS[@]}"; do
+  val="${!key:-}"
+  if [[ -z "$val" || "$val" == op://* ]]; then
+    all_set=0
+    break
+  fi
+done
+
+if [[ "$all_set" -eq 0 ]]; then
+  while IFS= read -r line; do
+    case "$line" in
+      OPENAI_API_KEY=*|XAI_API_KEY=*|ANTHROPIC_API_KEY=*|\
 FIREWORKS_API_KEY=*|FAL_API_KEY=*|KIE_API_KEY=*|\
 KIMI_CODING_API_KEY=*|DASHSCOPE_API_KEY=*|ELEVENLABS_API_KEY=*)
-      export "$line"
-      ;;
-  esac
-done < <(op run --no-masking --env-file="$ENV_FILE" -- env)
+        export "$line"
+        ;;
+    esac
+  done < <(op run --no-masking --env-file="$ENV_FILE" -- env)
+fi
 
 exec node "$BIN" "$@"

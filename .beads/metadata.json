@@ -1,7 +1,7 @@
 {
-  "backend": "dolt",
   "database": "dolt",
-  "dolt_database": "jwt",
+  "backend": "dolt",
   "dolt_mode": "server",
-  "project_id": "9e8ce50a-f0ba-4120-9d91-ef078891643f"
+  "dolt_database": "jwt",
+  "project_id": "gc-local-3e596d734c2d14965b11b499c2cfbea2"
 }

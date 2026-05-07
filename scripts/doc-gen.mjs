@@ -597,6 +597,107 @@ function renderXaiExample() {
   ].join("\n");
 }
 
+// Mined from tests/recordings/fal_2801268556/storage-upload-initiate_29504192/
+// (POST initiate → PUT bytes) and
+// tests/recordings/fal_2801268556/sora-2-image-to-video_1672301295/
+// (POST sora-2 image-to-video) — the same calls that
+// fal-storage-upload-initiate.test.ts and fal-sora-2-image-to-video.test.ts
+// replay end-to-end.
+function renderFalExample() {
+  return [
+    "## Real-world example: upload a portrait, render a Sora 2 video",
+    "",
+    "fal's signature flow is upload-once, reuse-everywhere — drop bytes onto",
+    "fal's CDN via a presigned PUT, then thread the resulting",
+    "`https://*.fal.media/` URL through any model endpoint. The two-step",
+    "snippet below combines",
+    "[`tests/integration/fal-storage-upload-initiate.test.ts`](../../../tests/integration/fal-storage-upload-initiate.test.ts)",
+    "(POST initiate → PUT bytes) with",
+    "[`tests/integration/fal-sora-2-image-to-video.test.ts`](../../../tests/integration/fal-sora-2-image-to-video.test.ts)",
+    "(image-to-video generation), so every URL, byte count, and asset id",
+    "below comes from real recorded HARs.",
+    "",
+    "```typescript",
+    'import { readFile } from "node:fs/promises";',
+    'import { fal as createFal } from "@apicity/fal";',
+    "",
+    "const fal = createFal({ apiKey: process.env.FAL_API_KEY! });",
+    "",
+    "// 1. Reserve a signed upload slot. `initiate` returns two URLs: a",
+    "//    permanent `file_url` you'll feed to downstream models, and a",
+    "//    presigned `upload_url` you PUT the bytes to. Both point at the",
+    "//    same fal CDN — no third-party hosting needed.",
+    "const slot = await fal.storage.upload.initiate({",
+    '  file_name: "man.jpg",',
+    '  content_type: "image/jpeg",',
+    "});",
+    "console.log(slot.file_url);",
+    '// → "https://v3b.fal.media/files/b/0a96d564/QR9a1l-E0UuoR6zOHUMlX_man.jpg"',
+    "//   (the `cat1.jpg` recording shows the same URL shape with a",
+    "//    cat1 suffix; the suffix tracks `file_name` you passed in.)",
+    "",
+    "// 2. PUT the bytes to the presigned URL. fal storage is plain HTTP —",
+    "//    no SDK call needed, just `fetch` with a matching Content-Type.",
+    "//    The signature on `upload_url` expires after a short window;",
+    "//    upload promptly. The resulting `file_url` is durable and",
+    "//    fetchable by every fal model endpoint.",
+    'const bytes = await readFile("./man.jpg");',
+    "const put = await fetch(slot.upload_url, {",
+    '  method: "PUT",',
+    '  headers: { "Content-Type": "image/jpeg" },',
+    "  body: bytes,",
+    "});",
+    "if (!put.ok) throw new Error(`upload failed: ${put.status}`);",
+    "",
+    "// 3. Hand the now-permanent `file_url` to OpenAI's Sora 2 image-to-",
+    "//    video model. fal returns a typed bundle: the MP4, a webp",
+    "//    thumbnail, and a horizontal spritesheet — all hosted on the",
+    "//    same fal CDN. `duration` accepts 4 | 8 | 12 | 16 | 20 (seconds);",
+    '//    `aspect_ratio` is "auto" | "9:16" | "16:9".',
+    "const result = await fal.sora2.imageToVideo({",
+    '  prompt: "the man waves at the camera as the wind blows his hair",',
+    "  image_url: slot.file_url,",
+    '  aspect_ratio: "16:9",',
+    "  duration: 4,",
+    "});",
+    "",
+    "console.log(result.video.url);",
+    '// → "https://v3b.fal.media/files/b/0a96bf3c/8U5wwkg9EC_eK0Jr3XyiR_Vgq1ZZPm.mp4"',
+    "console.log(result.video.file_size);",
+    "// → 2009236   // ~2 MB MP4 for a 4-second 720p clip",
+    "console.log(result.video_id);",
+    '// → "video_69e37804033c8191959194ea8aa8fc6e08bf9f3eb453b1b1"',
+    "console.log(result.thumbnail?.url);",
+    '// → "https://v3b.fal.media/files/b/0a96bf3c/bsgsaBd5IqdwOuufu_qSx_2yOP4u34.webp"',
+    "console.log(result.spritesheet?.url);",
+    '// → "https://v3b.fal.media/files/b/0a96bf3c/_9tqG1dEuRCEeegOulGrk_pWsHbiNB.bin"',
+    "```",
+    "",
+    "**Notes**",
+    "",
+    "- The recorded sora-2 HAR inlines the image as a",
+    "  `data:image/jpeg;base64,…` URL — fal accepts both inline data URLs",
+    "  and any `https://` URL it can reach. Uploading via fal storage",
+    "  first keeps request bodies tiny (350 KB → <1 KB) and lets you reuse",
+    "  the asset across multiple model calls without re-encoding.",
+    "- The package re-exports a one-call `uploadFile(provider, { data,",
+    "  filename, contentType })` helper that wraps the initiate-then-PUT",
+    "  dance and returns the `file_url` directly — use it when you don't",
+    "  need granular control over the lifecycle or signed URL.",
+    "- Every POST endpoint exposes a Zod schema: call",
+    "  `fal.sora2.imageToVideo.schema.safeParse(input)` to validate a",
+    "  payload before paying for inference.",
+    "- Long-running calls accept an `AbortSignal` second argument and",
+    "  compose with the package's middleware, e.g.",
+    "  `withRetry(fal.sora2.imageToVideo, { retries: 3 })` from",
+    "  `@apicity/fal` to ride out transient queue / 429s.",
+    "- Errors throw `FalError` with `status`, `type`, `request_id`, and the",
+    "  parsed `body` attached:",
+    "  `try { ... } catch (e) { if (e instanceof FalError) console.error(e.status, e.body); }`.",
+    "",
+  ].join("\n");
+}
+
 // Mined from tests/recordings/kie_2079838932/kling-30-reference-bakeoff_875607413/
 // recording.har — the same flow that
 // tests/integration/kie-kling-30-reference-bakeoff.test.ts replays end-to-end.
@@ -1217,6 +1318,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "elevenlabs") {
     sections.push(renderElevenlabsExample());
+  }
+
+  if (providerName === "fal") {
+    sections.push(renderFalExample());
   }
 
   if (providerName === "kie") {

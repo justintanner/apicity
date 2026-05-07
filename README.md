@@ -7,7 +7,7 @@
 [![Zero Dependencies](https://img.shields.io/badge/provider_deps-0-brightgreen)](package.json)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/justintanner/apicity/pulls)
 
-Apicity is a TypeScript monorepo of zero-dependency AI provider clients
+A TypeScript monorepo of zero-dependency AI provider clients
 designed to be read by LLMs as much as by humans. Methods mirror upstream URL
 paths (`/v1/chat/completions` → `openai.v1.chat.completions()`), POST endpoints
 expose a Zod `.schema` for validation, generated reference docs link back to

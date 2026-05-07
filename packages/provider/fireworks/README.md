@@ -22,6 +22,147 @@ import { fireworks as createFireworks } from "@apicity/fireworks";
 const fireworks = createFireworks({ apiKey: process.env.FIREWORKS_API_KEY! });
 ```
 
+## Real-world example: rerank candidate passages, then stream a Llama 3.3 70B answer
+
+Fireworks ships two inference surfaces that compose cleanly into a
+lightweight RAG pipeline: a hosted cross-encoder reranker (`qwen3-reranker-8b`)
+that scores a query against N candidate documents, and OpenAI-compatible
+streaming chat completions on Llama 3.3 70B Instruct. The rerank is the
+hard part — most providers only sell embeddings — and the streaming chat
+is the cheap, fast tail. The two-step flow below mirrors
+[`tests/integration/fireworks-rerank.test.ts`](../../../tests/integration/fireworks-rerank.test.ts)
+and
+[`tests/integration/fireworks-stream.test.ts`](../../../tests/integration/fireworks-stream.test.ts),
+which replay against
+[`tests/recordings/fireworks_626462085/rerank-basic_678261817/`](../../../tests/recordings/fireworks_626462085/rerank-basic_678261817/)
+and
+[`tests/recordings/fireworks_626462085/chat-stream-hello_2801342443/`](../../../tests/recordings/fireworks_626462085/chat-stream-hello_2801342443/),
+so every score, token count, and SSE shape below comes straight from
+the recorded HARs.
+
+```typescript
+import { fireworks as createFireworks } from "@apicity/fireworks";
+import type {
+  FireworksRerankResponse,
+  FireworksChatStreamChunk,
+} from "@apicity/fireworks";
+
+const fireworks = createFireworks({ apiKey: process.env.FIREWORKS_API_KEY! });
+
+// 1. Cross-encoder rerank. The model sees the query and each document
+//    jointly (unlike embedding-based retrieval, which scores them
+//    independently), so it picks up phrasing-level signal that ANN
+//    search misses. `top_n` caps the response length; `return_documents:
+//    true` echoes the document text back inline so you can hand the
+//    top hit straight to a chat model without keeping a parallel
+//    id→text map.
+const ranked: FireworksRerankResponse =
+  await fireworks.inference.v1.rerank({
+    model: "fireworks/qwen3-reranker-8b",
+    query: "What is the capital of France?",
+    documents: [
+      "Berlin is the capital of Germany.",
+      "Paris is the capital and largest city of France.",
+      "Madrid is the capital of Spain.",
+    ],
+    top_n: 2,
+    return_documents: true,
+  });
+
+// 2. The response is sorted descending by relevance_score. The score
+//    spread is huge — Paris ~0.96, Berlin ~0.0001, Madrid dropped — a
+//    near-four-orders-of-magnitude gap that a cosine-similarity
+//    retriever could never produce. `index` points back into the
+//    original `documents` array.
+const top = ranked.data[0];
+console.log(`#1: index=${top.index}, score=${top.relevance_score.toFixed(4)}`);
+console.log(`    "${top.document}"`);
+// → "#1: index=1, score=0.9579"
+// →     "Paris is the capital and largest city of France."
+
+console.log(`model=${ranked.model}, tokens=${ranked.usage.prompt_tokens}`);
+// → "model=accounts/fireworks/models/qwen3-reranker-8b, tokens=261"
+
+// 3. Stream a chat answer through Llama 3.3 70B Instruct. The recorded
+//    call below is a generic 'say hello' smoke test — independent from
+//    the rerank above — but the request shape is exactly what you'd
+//    send in production: drop `top.document` into a system message and
+//    the user's original question into the user turn.
+//    `temperature: 0` makes the output deterministic; `max_tokens: 64`
+//    caps the response. The streaming surface lives under
+//    `post.stream.*` and yields OpenAI-shaped
+//    `chat.completion.chunk` objects.
+let answer = "";
+let finish: string | null = null;
+let totals = { prompt: 0, completion: 0 };
+
+const stream = fireworks.post.stream.inference.v1.chat.completions({
+  model: "accounts/fireworks/models/llama-v3p3-70b-instruct",
+  messages: [{ role: "user", content: "Say hello in one sentence." }],
+  temperature: 0,
+  max_tokens: 64,
+});
+
+for await (const chunk of stream) {
+  // 4. Each delta carries one or two tokens of `content`. The FIRST
+  //    delta carries `delta.role` and no content; the LAST delta has
+  //    no content but `finish_reason: "stop"` and final `usage`.
+  //    Read defensively — both fields are optional on every chunk.
+  const choice: FireworksChatStreamChunk["choices"][number] | undefined =
+    chunk.choices[0];
+  if (choice?.delta?.content) answer += choice.delta.content;
+  if (choice?.finish_reason) finish = choice.finish_reason;
+  if (chunk.usage) {
+    totals = {
+      prompt: chunk.usage.prompt_tokens,
+      completion: chunk.usage.completion_tokens,
+    };
+  }
+}
+
+console.log(answer);
+// → "Hello, it's nice to meet you and I'm here to help with any questions or topics you'd like to discuss."
+console.log(
+  `finish=${finish}, prompt=${totals.prompt}, completion=${totals.completion}`,
+);
+// → "finish=stop, prompt=41, completion=26"
+```
+
+**Notes**
+
+- The reranker is a cross-encoder, not an embedding model — it
+  computes query-document interaction directly, so it's substantially
+  more accurate than cosine similarity over independent embeddings,
+  but it doesn't scale to millions of candidates. The standard hybrid
+  is embedding-based ANN to fetch a top-100, then `qwen3-reranker-8b`
+  to refine to a top-3. Fireworks hosts both halves on the same
+  domain (`/v1/embeddings` for the first stage, `/v1/rerank` for the
+  second).
+- Streaming chat chunks are OpenAI-compatible: `chat.completion.chunk`
+  with `choices[].delta` carrying incremental content. Watch
+  `finish_reason` to know whether you hit `"stop"`, `"length"`, or
+  `"content_filter"`. Only the **final** chunk has `usage` populated;
+  intermediate chunks have `usage: null`. Fireworks also surfaces a
+  per-call `fireworks-cached-prompt-tokens` response header — at 40
+  of 41 cached above, the prefix paid for itself almost entirely,
+  visible without parsing the body.
+- For Anthropic-shaped responses against the same Llama catalog, swap
+  to `fireworks.inference.v1.messages({...})`. The model id and pricing
+  match, but the response is `{ role, content: [{ type: "text", text }], ... }`
+  instead of `{ choices: [{ message: { content }}] }` — useful when
+  porting code already written against `@apicity/anthropic`.
+- For non-streaming completions, drop the `post.stream.` prefix:
+  `fireworks.inference.v1.chat.completions({...})` returns a single
+  `FireworksChatResponse` with `choices[0].message.content` populated
+  and full `usage` in one shot. Same payload schema, exposed at
+  `fireworks.inference.v1.chat.completions.schema` for runtime
+  validation before the call.
+- Errors throw `FireworksError` with `status` and the parsed body
+  attached. `400` from rerank usually means an empty/missing
+  `documents` array; `429` is rate-limit; `503` is a deployment cold
+  start. Wrap with `withRetry({ retries: 3 })` from `@apicity/fireworks`
+  to ride out cold deployments without bespoke retry code.
+
 ## API Reference
 
 101 endpoints across 1 group. Each method mirrors an upstream URL path.

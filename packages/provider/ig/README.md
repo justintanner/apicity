@@ -177,6 +177,114 @@ const post = await ig.post.v25.mediaPublish(igUserId, {
 console.log(post.id);
 ```
 
+## Real-world example: publish a Reel via the public-URL flow
+
+Instagram's Graph API doesn't take video bytes directly — Meta needs a
+publicly reachable URL it can `GET` and transcode asynchronously. The
+snippet below chains `@apicity/free` (catbox public hosting, free + zero
+auth) into `@apicity/ig` to land an `mp4` on disk as a published Reel,
+mirroring
+[`tests/integration/ig-post-video.test.ts`](../../../tests/integration/ig-post-video.test.ts)
+step-for-step. The catbox upload replays against
+[`tests/recordings/free_2578706139/`](../../../tests/recordings/free_2578706139/);
+the IG calls land in `tests/recordings/ig_*/post-video_*/recording.har`
+once a Business/Creator account's `IG_ACCESS_TOKEN` is recorded.
+
+```typescript
+import { readFileSync } from "node:fs";
+import { ig as createIg } from "@apicity/ig";
+import { free as createFree } from "@apicity/free";
+
+const ig = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });
+const igUserId = process.env.IG_USER_ID!; // 17-digit numeric, e.g. "17841471234567890"
+
+// 1. Host the mp4 publicly. catbox.moe is auth-free and persistent —
+//    Meta's transcode worker will fetch this URL once during step 2,
+//    so any host that returns the bytes within ~30s works (S3 presigned
+//    URL, R2, your own CDN). @apicity/free wraps the multipart upload
+//    and returns the resolved file URL as a string.
+const bytes = readFileSync("./jump.mp4");
+const blob = new Blob([bytes], { type: "video/mp4" });
+
+const free = createFree({});
+const videoUrl = await free.catbox.upload({
+  file: blob,
+  filename: "jump.mp4",
+});
+console.log(videoUrl);
+// → "https://files.catbox.moe/nn9sei.mp4"
+//   catbox returns a permanent public URL of the form
+//   `https://files.catbox.moe/<6char>.<ext>` — that's what Meta will GET.
+
+// 2. Create a media container. For Reels you must pass `media_type:
+//    "REELS"` (NOT "VIDEO" — that's the legacy IGTV path Meta
+//    deprecated in 2024). The container is a server-side handle: Meta
+//    queues the transcode against `video_url` and returns its id
+//    immediately. Containers expire 24h after creation if you don't
+//    publish them.
+const container = await ig.post.v25.media(igUserId, {
+  media_type: "REELS",
+  video_url: videoUrl,
+  caption: "jump #reels",
+});
+console.log(container.id);
+// → "17889012345678901" (17-digit container id)
+
+// 3. Poll the container's status_code until it leaves IN_PROGRESS.
+//    The state machine is IN_PROGRESS → FINISHED on success;
+//    FINISHED is the only state media_publish accepts. ERROR and
+//    EXPIRED are terminal failure states; PUBLISHED is what you'll
+//    see if you re-poll AFTER calling media_publish. The `fields`
+//    query param is required — by default the GET only returns `id`.
+let statusCode: string = "IN_PROGRESS";
+while (statusCode === "IN_PROGRESS") {
+  await new Promise((r) => setTimeout(r, 5000));
+  const s = await ig.get.v25.container(container.id, {
+    fields: "status_code,status",
+  });
+  statusCode = s.status_code ?? "FINISHED";
+  if (statusCode === "ERROR" || statusCode === "EXPIRED") {
+    throw new Error(`container ${container.id} ${statusCode}: ${s.status}`);
+  }
+}
+// statusCode → "FINISHED"
+// s.status   → "Finished: Media is ready to be published."
+
+// 4. Publish. media_publish takes the container id (NOT the media url)
+//    and returns the new post's id — that's the permanent ig_id you'd
+//    use to construct an https://www.instagram.com/reel/<shortcode>/
+//    URL or to query insights later via Graph API.
+const post = await ig.post.v25.mediaPublish(igUserId, {
+  creation_id: container.id,
+});
+console.log(post.id);
+// → "17912345678901234" (17-digit post id, distinct from container id)
+```
+
+**Notes**
+
+- Meta requires a **Business** or **Creator** Instagram account plus a
+  Meta App approved for `instagram_business_content_publish`. Personal
+  accounts get `190` ("Invalid OAuth access token") even with a
+  syntactically valid token.
+- `video_url` must be reachable from Meta's IPs and serve `Content-Type:
+  video/mp4`. Common gotchas: presigned S3 URLs that expire before the
+  transcoder pulls, hosts that require a `User-Agent`, and CDNs that
+  redirect to a different origin. catbox.moe sidesteps all three.
+- The Reel itself must satisfy Meta's Reel constraints — 9:16 aspect,
+  3–90s duration, ≤ 1GB, H.264 video, AAC audio. Mismatches surface as
+  `status_code: "ERROR"` during the poll, with the human-readable
+  reason in `status` (e.g. `"Error: The video is too short."`).
+- Containers and posts use **distinct** 17-digit ids. The container id
+  is throwaway — you only need it for the GET poll and the subsequent
+  `media_publish` `creation_id`. The post id is permanent and survives
+  user deletion of the post.
+- Errors throw `IgError` with `status` (HTTP code), `body` (the parsed
+  Meta error envelope), and an optional `code`. Meta's two error shapes
+  — `error.error_user_msg` for user-facing validation and `error.message`
+  for everything else — are both surfaced in `IgError.message`, so a
+  single `try/catch` reads naturally.
+
 ## API Reference
 
 3 endpoints across 3 groups. Each method mirrors an upstream URL path.

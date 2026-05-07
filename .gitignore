@@ -181,3 +181,5 @@ test-branch-protection.txt
 !.beads/config.yaml
 !.beads/metadata.json
 !.beads/issues.jsonl
+!.beads/formulas/
+!.beads/formulas/**

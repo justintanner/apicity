@@ -168,31 +168,44 @@ and Claude Desktop config.
 ## Cost Estimates
 
 Use `@apicity/cost` to estimate spend before you send a request. It accepts the
-same payload shape you plan to pass to the real provider call and returns USD,
-source metadata, units, and warnings.
+same payload shape you plan to pass to the real provider call, so the same
+object doubles as the preview input and the actual generation body — preview,
+budget-gate, then commit.
 
 ```bash
-npm install @apicity/cost
+npm install @apicity/cost @apicity/kie
 ```
 
 ```ts
 import { cost } from "@apicity/cost";
+import { kie as createKie } from "@apicity/kie";
 
 const c = cost();
+const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 
-const estimate = c.estimate({
-  provider: "kie",
-  payload: {
-    model: "grok-imagine/text-to-video",
-    input: {
-      prompt: "A slow dolly shot through a neon arcade",
-      resolution: "720p",
-      duration: 8,
-    },
+// Build the same JSON body you'd POST to /api/v1/jobs/createTask.
+const payload = {
+  model: "gpt-image-2-text-to-image",
+  input: {
+    prompt: "A cinematic night-city poster with neon reflections.",
+    aspect_ratio: "16:9",
+    resolution: "4K",
   },
-});
+};
 
-console.log(estimate.usd, estimate.breakdown, estimate.warnings);
+// Preview the cost — no keys, no network, sync.
+const estimate = c.estimate({ provider: "kie", payload });
+// estimate.usd === 0.08
+// estimate.source === "per-unit-table"
+// estimate.breakdown === { units: 1, unit: "images", perUnitUsd: 0.08 }
+
+// Budget-gate before committing to the generation.
+if (estimate.usd > 0.1) {
+  throw new Error(`Estimate $${estimate.usd.toFixed(4)} exceeds $0.10 cap`);
+}
+
+// Same payload — now actually run the generation.
+const task = await kie.post.api.v1.jobs.createTask(payload);
 ```
 
 The cost package is pure local math: no keys, no network calls. Token-billed

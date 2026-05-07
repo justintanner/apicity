@@ -49,7 +49,7 @@ export type EstimateRequest =
       payload: Record<string, unknown>;
       endpoint?: string;
     }
-  | { provider: "free" };
+  | { provider: "free-media-upload" };
 
 export interface CostProvider {
   estimate: (req: EstimateRequest) => CostEstimate;

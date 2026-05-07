@@ -54,8 +54,8 @@
     "@apicity/elevenlabs": "workspace:*",
     "@apicity/fal": "workspace:*",
     "@apicity/fireworks": "workspace:*",
-    "@apicity/free": "workspace:*",
-    "@apicity/ig": "workspace:*",
+    "@apicity/free-media-upload": "workspace:*",
+    "@apicity/meta": "workspace:*",
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
     "@apicity/openai": "workspace:*",
@@ -78,10 +78,10 @@
     "@apicity/fireworks": {
       "optional": true
     },
-    "@apicity/free": {
+    "@apicity/free-media-upload": {
       "optional": true
     },
-    "@apicity/ig": {
+    "@apicity/meta": {
       "optional": true
     },
     "@apicity/kie": {
@@ -106,8 +106,8 @@
     "@apicity/elevenlabs": "workspace:*",
     "@apicity/fal": "workspace:*",
     "@apicity/fireworks": "workspace:*",
-    "@apicity/free": "workspace:*",
-    "@apicity/ig": "workspace:*",
+    "@apicity/free-media-upload": "workspace:*",
+    "@apicity/meta": "workspace:*",
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
     "@apicity/openai": "workspace:*",

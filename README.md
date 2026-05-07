@@ -19,6 +19,7 @@ upstream API URL paths directly in code:
 /v1/chat/completions        -> openai.v1.chat.completions()
 /v1/images/generations      -> xai.v1.images.generations()
 /api/v1/common/download-url -> kie.post.api.v1.common.downloadUrl()
+/v1/models/pricing/estimate -> cost.estimate()
 ```
 
 ## Why Apicity
@@ -49,9 +50,9 @@ upstream API URL paths directly in code:
 | [@apicity/fireworks](packages/provider/fireworks)   | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
 | [@apicity/kimicoding](packages/provider/kimicoding) | Kimi Coding messages, streaming, models, embeddings                |
 | [@apicity/elevenlabs](packages/provider/elevenlabs) | ElevenLabs text-to-speech, sound effects, audio APIs               |
-| [@apicity/free](packages/provider/free)             | Public file upload/hosting services                                |
+| [@apicity/free-media-upload](packages/provider/free-media-upload)             | Public file upload/hosting services                                |
 | [@apicity/x](packages/provider/x)                   | X API posting and media upload                                     |
-| [@apicity/ig](packages/provider/ig)                 | Instagram Graph API reel publishing                                |
+| [@apicity/meta](packages/provider/meta)                 | Instagram Graph API reel publishing                                |
 | [@apicity/polymarket](packages/provider/polymarket) | Polymarket Gamma, Data, and CLOB public market data                |
 | [@apicity/cost](packages/provider/cost)             | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)          | MCP server exposing provider endpoints as tools                    |

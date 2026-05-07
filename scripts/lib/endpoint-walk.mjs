@@ -68,9 +68,9 @@ const PROVIDERS = [
     ],
   },
   {
-    name: "free",
-    entryFiles: ["packages/provider/free/src/free.ts"],
-    factoryNames: ["free"],
+    name: "free-media-upload",
+    entryFiles: ["packages/provider/free-media-upload/src/freeMediaUpload.ts"],
+    factoryNames: ["freeMediaUpload"],
   },
   {
     name: "elevenlabs",
@@ -83,9 +83,9 @@ const PROVIDERS = [
     factoryNames: ["x"],
   },
   {
-    name: "ig",
-    entryFiles: ["packages/provider/ig/src/ig.ts"],
-    factoryNames: ["ig"],
+    name: "meta",
+    entryFiles: ["packages/provider/meta/src/meta.ts"],
+    factoryNames: ["meta"],
   },
   {
     name: "polymarket",

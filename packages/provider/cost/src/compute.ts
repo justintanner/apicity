@@ -162,11 +162,11 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       return evaluatePerUnit("kie", req.payload, req.endpoint);
     case "elevenlabs":
       return evaluatePerUnit("elevenlabs", req.payload, req.endpoint);
-    case "free":
+    case "free-media-upload":
       return {
         usd: 0,
         currency: "USD",
-        source: "free",
+        source: "free-media-upload",
         breakdown: {},
         rateAsOf: PRICING_AS_OF,
         warnings: [],

@@ -74,7 +74,7 @@ const e = await c.estimate({
 });
 
 // free → always $0
-const z = await c.estimate({ provider: "free" });
+const z = await c.estimate({ provider: "free-media-upload" });
 ```
 
 ## Return shape

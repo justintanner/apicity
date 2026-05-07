@@ -46,7 +46,7 @@ function matches(actual, expected) {
 
 function reasonFor(provider) {
   switch (provider) {
-    case "free":
+    case "free-media-upload":
       return "service-name grouping (multi-host wrapper)";
     case "fireworks":
       return "walker can't see baseURL override / management subpath";
@@ -75,7 +75,7 @@ async function main() {
   for await (const ep of walkAllEndpoints(project)) {
     if (!ep.fullUrl || ep.fullUrl === "?" || !ep.dotPath) continue;
     const expected = urlToDotPath(ep.fullUrl, {
-      keepFullHostname: ep.provider === "free",
+      keepFullHostname: ep.provider === "free-media-upload",
     });
     if (!expected) continue;
     const actual = ep.dotPath.split(".").filter(Boolean);

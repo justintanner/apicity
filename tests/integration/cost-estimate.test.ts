@@ -4,9 +4,9 @@ import { cost, PRICING_AS_OF } from "@apicity/cost";
 describe("cost.estimate — pure-table (no network)", () => {
   it("free → $0", () => {
     const c = cost();
-    const r = c.estimate({ provider: "free" });
+    const r = c.estimate({ provider: "free-media-upload" });
     expect(r.usd).toBe(0);
-    expect(r.source).toBe("free");
+    expect(r.source).toBe("free-media-upload");
     expect(r.warnings).toEqual([]);
     expect(r.rateAsOf).toBe(PRICING_AS_OF);
   });

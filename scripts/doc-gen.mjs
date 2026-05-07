@@ -960,7 +960,7 @@ function renderElevenlabsExample() {
 // will record into tests/recordings/ig_*/post-video_*/recording.har once
 // an IG_ACCESS_TOKEN + IG_USER_ID land in 1Password. The catbox upload
 // step IS already recorded under tests/recordings/free_2578706139/, so
-// the public-URL handoff between @apicity/free and @apicity/ig is real.
+// the public-URL handoff between @apicity/free-media-upload and @apicity/meta is real.
 // IG container/post ids below use Meta's 17-digit format as illustrative
 // values — the exact ids vary per call.
 function renderIgExample() {
@@ -969,8 +969,8 @@ function renderIgExample() {
     "",
     "Instagram's Graph API doesn't take video bytes directly — Meta needs a",
     "publicly reachable URL it can `GET` and transcode asynchronously. The",
-    "snippet below chains `@apicity/free` (catbox public hosting, free + zero",
-    "auth) into `@apicity/ig` to land an `mp4` on disk as a published Reel,",
+    "snippet below chains `@apicity/free-media-upload` (catbox public hosting, free + zero",
+    "auth) into `@apicity/meta` to land an `mp4` on disk as a published Reel,",
     "mirroring",
     "[`tests/integration/ig-post-video.test.ts`](../../../tests/integration/ig-post-video.test.ts)",
     "step-for-step. The catbox upload replays against",
@@ -980,21 +980,21 @@ function renderIgExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { ig as createIg } from "@apicity/ig";',
-    'import { free as createFree } from "@apicity/free";',
+    'import { meta as createMeta } from "@apicity/meta";',
+    'import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";',
     "",
-    "const ig = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });",
+    "const meta = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });",
     'const igUserId = process.env.IG_USER_ID!; // 17-digit numeric, e.g. "17841471234567890"',
     "",
     "// 1. Host the mp4 publicly. catbox.moe is auth-free and persistent —",
     "//    Meta's transcode worker will fetch this URL once during step 2,",
     "//    so any host that returns the bytes within ~30s works (S3 presigned",
-    "//    URL, R2, your own CDN). @apicity/free wraps the multipart upload",
+    "//    URL, R2, your own CDN). @apicity/free-media-upload wraps the multipart upload",
     "//    and returns the resolved file URL as a string.",
     'const bytes = readFileSync("./jump.mp4");',
     'const blob = new Blob([bytes], { type: "video/mp4" });',
     "",
-    "const free = createFree({});",
+    "const freeMediaUpload = createFree({});",
     "const videoUrl = await free.catbox.upload({",
     "  file: blob,",
     '  filename: "jump.mp4",',
@@ -1067,10 +1067,10 @@ function renderIgExample() {
     "  is throwaway — you only need it for the GET poll and the subsequent",
     "  `media_publish` `creation_id`. The post id is permanent and survives",
     "  user deletion of the post.",
-    "- Errors throw `IgError` with `status` (HTTP code), `body` (the parsed",
+    "- Errors throw `MetaError` with `status` (HTTP code), `body` (the parsed",
     "  Meta error envelope), and an optional `code`. Meta's two error shapes",
     "  — `error.error_user_msg` for user-facing validation and `error.message`",
-    "  for everything else — are both surfaced in `IgError.message`, so a",
+    "  for everything else — are both surfaced in `MetaError.message`, so a",
     "  single `try/catch` reads naturally.",
     "",
   ].join("\n");
@@ -1203,17 +1203,17 @@ function renderIgSetup() {
     "### 4. Use the token",
     "",
     "```typescript",
-    'import { ig as createIg } from "@apicity/ig";',
+    'import { meta as createMeta } from "@apicity/meta";',
     "",
-    "const ig = createIg({ accessToken: process.env.IG_ACCESS_TOKEN });",
+    "const meta = createIg({ accessToken: process.env.IG_ACCESS_TOKEN });",
     "const igUserId = process.env.IG_USER_ID;",
     "",
-    "// Public-URL flow: host the mp4 somewhere (e.g. via @apicity/free) and",
+    "// Public-URL flow: host the mp4 somewhere (e.g. via @apicity/free-media-upload) and",
     "// pass its URL. Meta GETs the video and processes it asynchronously.",
     "const container = await ig.post.v25.media(igUserId, {",
     '  media_type: "REELS",',
     '  video_url: "https://example.com/clip.mp4",',
-    '  caption: "hello from @apicity/ig",',
+    '  caption: "hello from @apicity/meta",',
     "});",
     "",
     "// Poll until the container is ready.",
@@ -1725,7 +1725,7 @@ function renderFreeExample() {
   return [
     "## Real-world example: race a portrait across four free hosts",
     "",
-    "`@apicity/free` wraps eight zero-auth, no-account file-hosting endpoints",
+    "`@apicity/free-media-upload` wraps eight zero-auth, no-account file-hosting endpoints",
     "behind one typed surface — the win is being able to fan the same `Blob`",
     "out to multiple hosts in parallel, then pick whichever URL came back",
     "first (or any survivor) without rewriting four different multipart",
@@ -1745,13 +1745,13 @@ function renderFreeExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { free as createFree } from "@apicity/free";',
-    'import type { GofileUploadResponse, UguuUploadResponse, FilebinUploadResponse } from "@apicity/free";',
+    'import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";',
+    'import type { GofileUploadResponse, UguuUploadResponse, FilebinUploadResponse } from "@apicity/free-media-upload";',
     "",
     "// 1. The factory takes no api key — every host below is genuinely",
     "//    auth-free and account-free. Pass `{ timeout: 60_000 }` or a",
     "//    custom `fetch` if you need to override the defaults.",
-    "const free = createFree();",
+    "const freeMediaUpload = createFreeMediaUpload();",
     "",
     'const bytes = readFileSync("./cat1.jpg"); // 83,558 bytes',
     'const file = new Blob([bytes], { type: "image/jpeg" });',
@@ -1789,7 +1789,7 @@ function renderFreeExample() {
     "//    enumeration, and tells you whether your bytes were already on",
     "//    the host (`dupe: true`) so you can skip a re-upload next time.",
     "//    Note the `files[]` array — uguu accepts batched uploads via the",
-    "//    same endpoint, even though @apicity/free only ships single-file.",
+    "//    same endpoint, even though @apicity/free-media-upload only ships single-file.",
     "console.log(uguu.files[0].url, uguu.files[0].dupe);",
     '// → "https://n.uguu.se/GeNMsbBp.jpg" false',
     "",
@@ -1834,16 +1834,16 @@ function renderFreeExample() {
     "### Failover across ephemeral hosts",
     "",
     "When you only need a URL to live for a few hours — typically because a",
-    "downstream model is about to GET it once and then forget — `@apicity/free`",
+    "downstream model is about to GET it once and then forget — `@apicity/free-media-upload`",
     "ships a `uploadToAnyHost` helper that walks a randomised host list and",
-    "returns the first successful URL, raising a single `FreeError` only if",
+    "returns the first successful URL, raising a single `FreeMediaUploadError` only if",
     "every host fails. Useful when one provider is flaky (uguu's CDN can 502",
     "during traffic spikes) but you don't care which one wins.",
     "",
     "```typescript",
-    'import { free as createFree, uploadToAnyHost, FreeError } from "@apicity/free";',
+    'import { free as createFree, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";',
     "",
-    "const free = createFree();",
+    "const freeMediaUpload = createFreeMediaUpload();",
     'const file = new Blob([bytes], { type: "image/jpeg" });',
     "",
     "// litterbox accepts a TTL; uguu and tflink are best-effort permanent.",
@@ -1861,7 +1861,7 @@ function renderFreeExample() {
     "  console.log(url);",
     '  // → "https://litter.catbox.moe/04obtk.jpg"  // example: litterbox won',
     "} catch (err) {",
-    "  if (err instanceof FreeError) {",
+    "  if (err instanceof FreeMediaUploadError) {",
     "    // err.body.failures is a string[] of `<host>: <message>` lines —",
     "    // useful for surfacing exactly which hosts misbehaved.",
     "    console.error(err.status, err.body);",
@@ -1892,11 +1892,11 @@ function renderFreeExample() {
     "  before the network call, which catches the most common mistake",
     "  (passing a `Buffer` or `string` instead of a `Blob`).",
     "- All endpoints accept an `AbortSignal` second argument and compose",
-    "  with `withRetry` / `withFallback` from `@apicity/free`'s middleware",
+    "  with `withRetry` / `withFallback` from `@apicity/free-media-upload`'s middleware",
     "  re-exports — useful for ride-out 429s on uguu or chaining gofile →",
     "  catbox as a fallback pair.",
-    "- Errors throw `FreeError` with `status` and the parsed body attached:",
-    "  `try { ... } catch (e) { if (e instanceof FreeError) console.error(e.status, e.body); }`.",
+    "- Errors throw `FreeMediaUploadError` with `status` and the parsed body attached:",
+    "  `try { ... } catch (e) { if (e instanceof FreeMediaUploadError) console.error(e.status, e.body); }`.",
     "",
   ].join("\n");
 }
@@ -2005,7 +2005,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push(renderFireworksExample());
   }
 
-  if (providerName === "free") {
+  if (providerName === "free-media-upload") {
     sections.push(renderFreeExample());
   }
 
@@ -2013,7 +2013,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push(renderKieExample());
   }
 
-  if (providerName === "ig") {
+  if (providerName === "meta") {
     sections.push(renderIgSetup());
     sections.push(renderIgExample());
   }

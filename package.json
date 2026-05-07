@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "1.0.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free, @apicity/x, @apicity/ig, @apicity/polymarket, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/cost, and @apicity/mcp-server",
   "private": true,
   "type": "module",
   "engines": {
@@ -14,7 +14,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run gen:examples && pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:ig && pnpm run build:polymarket && pnpm run build:free && pnpm run build:cost && pnpm run build:mcp-server && pnpm run doc-gen",
+    "build": "pnpm run gen:examples && pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:cost && pnpm run build:mcp-server && pnpm run doc-gen",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
     "build:kie": "pnpm --filter @apicity/kie run build",
@@ -25,9 +25,9 @@
     "build:alibaba": "pnpm --filter @apicity/alibaba run build",
     "build:elevenlabs": "pnpm --filter @apicity/elevenlabs run build",
     "build:x": "pnpm --filter @apicity/x run build",
-    "build:ig": "pnpm --filter @apicity/ig run build",
+    "build:meta": "pnpm --filter @apicity/meta run build",
     "build:polymarket": "pnpm --filter @apicity/polymarket run build",
-    "build:free": "pnpm --filter @apicity/free run build",
+    "build:free-media-upload": "pnpm --filter @apicity/free-media-upload run build",
     "build:cost": "pnpm --filter @apicity/cost run build",
     "build:mcp-server": "pnpm --filter @apicity/mcp-server run build",
     "gen:examples": "node scripts/extract-har-examples.mjs",
@@ -44,7 +44,7 @@
     "doc-gen:elevenlabs": "node scripts/doc-gen.mjs elevenlabs",
     "doc-gen:kie": "node scripts/doc-gen.mjs kie",
     "doc-gen:polymarket": "node scripts/doc-gen.mjs polymarket",
-    "doc-gen:free": "node scripts/doc-gen.mjs free",
+    "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "lint": "eslint . && node scripts/check-endpoint-comments.mjs && node scripts/check-endpoint-signatures.mjs",

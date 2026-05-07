@@ -94,7 +94,7 @@ async function main() {
       continue;
     }
     const expected = urlToDotPath(ep.fullUrl, {
-      keepFullHostname: ep.provider === "free",
+      keepFullHostname: ep.provider === "free-media-upload",
     });
     if (!expected) {
       skipped++;

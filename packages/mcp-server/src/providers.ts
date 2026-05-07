@@ -73,18 +73,18 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/x",
     factoryName: "x",
   },
-  ig: {
+  meta: {
     envVar: "IG_ACCESS_TOKEN",
     optionKey: "accessToken",
-    importPath: "@apicity/ig",
-    factoryName: "ig",
+    importPath: "@apicity/meta",
+    factoryName: "meta",
   },
   // free needs no credential — handled specially in registry.ts
-  free: {
+  "free-media-upload": {
     envVar: "",
     optionKey: "apiKey",
-    importPath: "@apicity/free",
-    factoryName: "free",
+    importPath: "@apicity/free-media-upload",
+    factoryName: "freeMediaUpload",
   },
 };
 
@@ -101,7 +101,7 @@ export async function instantiateProvider(
       `Expected ${spec.importPath} to export function "${spec.factoryName}"`
     );
   }
-  if (name === "free") {
+  if (name === "free-media-upload") {
     return (factory as () => InstantiatedProvider)();
   }
   const credential = process.env[spec.envVar];

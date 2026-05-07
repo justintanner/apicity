@@ -9,7 +9,7 @@ describe("cost wiring", () => {
 
   it("estimate() works without any opts (pure-table)", () => {
     const c = cost();
-    const r = c.estimate({ provider: "free" });
+    const r = c.estimate({ provider: "free-media-upload" });
     expect(r.usd).toBe(0);
   });
 });

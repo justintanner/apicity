@@ -70,11 +70,11 @@ export default defineConfig({
         __dirname,
         "../packages/provider/alibaba/src"
       ),
-      "@apicity/free/zod": path.resolve(
+      "@apicity/free-media-upload/zod": path.resolve(
         __dirname,
-        "../packages/provider/free/src/zod"
+        "../packages/provider/free-media-upload/src/zod"
       ),
-      "@apicity/free": path.resolve(__dirname, "../packages/provider/free/src"),
+      "@apicity/free-media-upload": path.resolve(__dirname, "../packages/provider/free-media-upload/src"),
       "@apicity/elevenlabs/zod": path.resolve(
         __dirname,
         "../packages/provider/elevenlabs/src/zod"
@@ -88,11 +88,11 @@ export default defineConfig({
         "../packages/provider/x/src/zod"
       ),
       "@apicity/x": path.resolve(__dirname, "../packages/provider/x/src"),
-      "@apicity/ig/zod": path.resolve(
+      "@apicity/meta/zod": path.resolve(
         __dirname,
-        "../packages/provider/ig/src/zod"
+        "../packages/provider/meta/src/zod"
       ),
-      "@apicity/ig": path.resolve(__dirname, "../packages/provider/ig/src"),
+      "@apicity/meta": path.resolve(__dirname, "../packages/provider/meta/src"),
       "@apicity/polymarket/zod": path.resolve(
         __dirname,
         "../packages/provider/polymarket/src/zod"

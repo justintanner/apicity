@@ -6,7 +6,7 @@ describe("cost.estimate — pure-table (no network)", () => {
     const c = cost();
     const r = c.estimate({ provider: "free-media-upload" });
     expect(r.usd).toBe(0);
-    expect(r.source).toBe("free-media-upload");
+    expect(r.source).toBe("free");
     expect(r.warnings).toEqual([]);
     expect(r.rateAsOf).toBe(PRICING_AS_OF);
   });

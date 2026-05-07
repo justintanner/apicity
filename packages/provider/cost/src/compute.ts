@@ -166,7 +166,7 @@ export function computeEstimate(req: EstimateRequest): CostEstimate {
       return {
         usd: 0,
         currency: "USD",
-        source: "free-media-upload",
+        source: "free",
         breakdown: {},
         rateAsOf: PRICING_AS_OF,
         warnings: [],

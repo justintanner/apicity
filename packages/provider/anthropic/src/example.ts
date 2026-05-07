@@ -10,7 +10,30 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.messages": {
+    "source": "anthropic/messages-code-review",
+    "payload": {
+      "model": "claude-sonnet-4-6",
+      "max_tokens": 256,
+      "system": "You are a senior TypeScript reviewer. Reply with exactly one line in the form: 'BUG: <one-sentence summary>'. No preamble, no code, no Markdown.",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Review this:\n```ts\nfunction firstNonEmpty(xs: string[]): string {\n  for (let i = 0; i <= xs.length; i++) {\n    if (xs[i]) return xs[i];\n  }\n  return '';\n}\n```"
+        },
+        {
+          "role": "assistant",
+          "content": "BUG: The loop condition `i <= xs.length` reads one past the last index, so `xs[xs.length]` is dereferenced as undefined."
+        },
+        {
+          "role": "user",
+          "content": "Now review this one the same way:\n```ts\nasync function readA… <truncated 346 chars>"
+        }
+      ]
+    }
+  }
+};
 
 export default EXAMPLES;
 

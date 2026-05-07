@@ -6,7 +6,7 @@ ephemeral pool workers commit beads bookkeeping, pull --rebase, and push
 their work to the remote before exiting. Without this step, work commits
 end up stranded on the worker's local clone.
 
-Use this for short-lived pool workers (e.g. ac/k2p5fast) that don't need
+Use this for short-lived pool workers (e.g. ac/kimi2p6) that don't need
 branch isolation but DO need to publish their commits.
 
 ## Variables

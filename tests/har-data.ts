@@ -296,6 +296,93 @@ export interface ChangedRecording {
   entries: HarEntry[];
 }
 
+export interface CommitMeta {
+  sha: string;
+  shortSha: string;
+  subject: string;
+  author: string;
+  date: string;
+}
+
+export type CommitChangeset = Map<string, ChangedRecording[]>;
+
+export function getCommitsOnBranch(baseBranch: string): CommitMeta[] {
+  let out: string;
+  try {
+    out = execSync(`git log --format="%H|%h|%s|%an|%aI" ${baseBranch}..HEAD`, {
+      encoding: "utf-8",
+    }).trim();
+  } catch {
+    return [];
+  }
+
+  if (!out) return [];
+
+  const commits: CommitMeta[] = [];
+  for (const line of out.split("\n")) {
+    const [sha, shortSha, subject, author, date] = line.split("|");
+    if (!sha) continue;
+    commits.push({ sha, shortSha, subject, author, date });
+  }
+  return commits;
+}
+
+export function getChangedRecordingsByCommit(
+  baseBranch: string
+): CommitChangeset {
+  const commits = getCommitsOnBranch(baseBranch);
+  const result = new Map<string, ChangedRecording[]>();
+
+  for (const commit of commits) {
+    let diff: string;
+    try {
+      diff = execSync(
+        `git diff --name-status --diff-filter=ACMR ${commit.sha}^..${commit.sha} -- tests/recordings/`,
+        { encoding: "utf-8" }
+      ).trim();
+    } catch {
+      continue;
+    }
+
+    if (!diff) {
+      result.set(commit.sha, []);
+      continue;
+    }
+
+    const recordings: ChangedRecording[] = [];
+    for (const line of diff.split("\n")) {
+      const [status, filePath] = line.split("\t");
+      if (!filePath || !filePath.endsWith("recording.har")) continue;
+
+      const fullPath = path.resolve(filePath);
+      if (!fs.existsSync(fullPath)) continue;
+
+      let har: { log?: { _recordingName?: string; entries?: HarEntry[] } };
+      try {
+        har = JSON.parse(fs.readFileSync(fullPath, "utf-8"));
+      } catch {
+        continue;
+      }
+
+      const provider = extractProvider(filePath);
+      const recordingName =
+        har.log?._recordingName ?? path.basename(path.dirname(filePath));
+
+      recordings.push({
+        filePath,
+        changeType: status === "A" ? "new" : "modified",
+        provider,
+        recordingName,
+        entries: har.log?.entries ?? [],
+      });
+    }
+
+    result.set(commit.sha, recordings);
+  }
+
+  return result;
+}
+
 export function getBaseBranch(): string {
   const base = process.env.GITHUB_BASE_REF;
   return base ? `origin/${base}` : "origin/main";

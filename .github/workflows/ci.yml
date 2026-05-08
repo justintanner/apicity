@@ -107,7 +107,7 @@ jobs:
         run: mkdir -p tests/fixtures/harness-generated
 
       - name: Generate harness report
-        run: npx tsx tests/harness-report.ts > tests/fixtures/harness-generated/harness-report.html
+        run: npx tsx tests/harness-report.ts --out-dir tests/fixtures/harness-generated
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
@@ -118,7 +118,7 @@ jobs:
           output: tests/fixtures/harness-generated/harness-report.png
 
       - name: Generate media-only harness report
-        run: npx tsx tests/harness-report.ts --media-only > tests/fixtures/harness-generated/harness-report-media.html
+        run: npx tsx tests/harness-report.ts --media-only --out-dir tests/fixtures/harness-generated
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
@@ -127,7 +127,6 @@ jobs:
         with:
           html-source: tests/fixtures/harness-generated/harness-report-media.html
           output: tests/fixtures/harness-generated/harness-report-media.png
-
       - name: Generate harness summary
         id: summary
         run: npx tsx tests/harness-summary.ts
@@ -164,6 +163,7 @@ jobs:
           path: |
             tests/fixtures/harness-generated/harness-report.html
             tests/fixtures/harness-generated/harness-report.png
+            tests/fixtures/harness-generated/har-data-*.json
             tests/fixtures/harness-generated/harness-report-media.html
             tests/fixtures/harness-generated/harness-report-media.png
           retention-days: 30

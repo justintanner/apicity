@@ -1394,8 +1394,68 @@
         });
       });
 
+      /* === Manifest Mode === */
+
+      function initManifest(manifest) {
+        var topbarRight = document.getElementById("topbar-right");
+        var select = document.createElement("select");
+        select.id = "commit-select";
+        select.style.cssText =
+          "background:#313244;color:#cdd6f4;border:1px solid #45475a;border-radius:4px;padding:4px 8px;font-family:inherit;font-size:12px;cursor:pointer;max-width:280px;";
+
+        for (var i = 0; i < manifest.length; i++) {
+          var opt = document.createElement("option");
+          opt.value = String(i);
+          opt.textContent =
+            manifest[i].shortSha +
+            " " +
+            manifest[i].subject +
+            " (" +
+            manifest[i].recordingCount +
+            ")";
+          select.appendChild(opt);
+        }
+
+        topbarRight.appendChild(select);
+
+        select.addEventListener("change", function () {
+          loadCommit(manifest[parseInt(select.value, 10)]);
+        });
+
+        for (var j = 0; j < manifest.length; j++) {
+          if (manifest[j].recordingCount > 0) {
+            loadCommit(manifest[j]);
+            select.value = String(j);
+            break;
+          }
+        }
+      }
+
+      function loadCommit(entry) {
+        if (!entry.dataUrl) {
+          recordings = [];
+          render();
+          return;
+        }
+        fetch(entry.dataUrl)
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            recordings = data || [];
+            render();
+          })
+          .catch(function (err) {
+            console.error("Failed to load commit data:", err);
+            recordings = [];
+            render();
+          });
+      }
+
       /* === Init === */
-      if (typeof HAR_DATA !== "undefined") {
+      if (typeof HAR_MANIFEST !== "undefined") {
+        initManifest(HAR_MANIFEST);
+      } else if (typeof HAR_DATA !== "undefined") {
         recordings = HAR_DATA.recordings || [];
         if (HAR_DATA.features) VIEWER_CONFIG.features = HAR_DATA.features;
         render();

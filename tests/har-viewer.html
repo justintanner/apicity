@@ -1555,24 +1555,20 @@
             }
           });
       }
-      /* === Init === */
-      if (typeof HAR_MANIFEST !== "undefined") {
-        initManifest(HAR_MANIFEST);
-      } else if (typeof HAR_DATA !== "undefined") {
-        recordings = HAR_DATA.recordings || [];
-        if (HAR_DATA.features) VIEWER_CONFIG.features = HAR_DATA.features;
-        render();
-      } else {
-        fetch("/api/data")
-          .then(function (r) {
-            return r.json();
-          })
-          .then(function (data) {
-            recordings = data.recordings || [];
-            if (data.features) VIEWER_CONFIG.features = data.features;
-            render();
-          });
-      }
+		/* === Init === */
+		if (typeof HAR_MANIFEST !== "undefined") {
+			initManifest(HAR_MANIFEST);
+		} else {
+			fetch("/api/data")
+				.then(function (r) {
+					return r.json();
+				})
+				.then(function (data) {
+					recordings = data.recordings || [];
+					if (data.features) VIEWER_CONFIG.features = data.features;
+					render();
+				});
+		}
     </script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 /**
- * Generates a self-contained HTML report of changed HAR recordings.
+ * Generates a SPA shell HTML report of changed HAR recordings.
  * Emits a directory containing:
  *   - harness-report.html : SPA shell with manifest
  *   - har-data-<shortSha>.json : per-commit recording data

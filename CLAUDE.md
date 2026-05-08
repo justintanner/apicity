@@ -52,7 +52,7 @@ pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
-pnpm run harness:report          # Generate PR-diff harness report HTML (stdout)
+pnpm run harness:report          # Generate PR-diff harness report directory (SPA shell + per-commit JSON)
 pnpm run harness:screenshot      # Generate + screenshot the full harness report locally
 pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing recordings
 
@@ -141,7 +141,7 @@ The recording system uses two modes, chosen based on whether you're adding new t
    pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
 
-Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility, and uploads both an interactive HAR viewer and a full-page screenshot of the viewer as artifacts.
+Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility, and uploads both a paginated interactive HAR viewer (directory with SPA shell + per-commit JSON files) and a full-page screenshot of the viewer index as artifacts.
 
 **Secrets management:**
 
@@ -151,7 +151,7 @@ Alternatively, copy `.env.template` to `.env` and fill in your keys manually. Us
 
 ### CI
 
-GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, integration tests via Polly.js replay), harness-report (PR-only, posts Markdown summary of changed recordings as a PR comment + uploads interactive HTML viewer as artifact). Runs on push/PR to main.
+GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, integration tests via Polly.js replay), harness-report (PR-only, posts Markdown summary of changed recordings as a PR comment + uploads paginated interactive HAR viewer directory as artifact). Runs on push/PR to main.
 
 ## Code Conventions
 
@@ -227,12 +227,13 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 
 - **build** — compile + verify artifacts
 - **test** — `ci:local` line-for-line: `pnpm run build && pnpm run lint && pnpm run test:run`
-- **harness-report** — generates two screenshots via the reusable
+- **harness-report** — generates a paginated interactive viewer (SPA shell
+  with per-commit JSON files) and two screenshots via the reusable
   `.github/actions/screenshot-harness` composite action: a full report
   (`harness-report.png`) and a media-only report (`harness-report-media.png`)
-  filtered to recordings that contain embedded images, video, or audio. Both
-  PNGs + HTMLs are uploaded as artifacts and a Markdown summary is posted as a
-  PR comment.
+  filtered to recordings that contain embedded images, video, or audio. The
+  viewer directory + PNGs are uploaded as artifacts and a Markdown summary is
+  posted as a PR comment.
 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:ca08a54f -->

@@ -10,7 +10,16 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v25.media": {
+    "source": "meta/media-create",
+    "payload": {
+      "media_type": "REELS",
+      "video_url": "https://files.catbox.moe/example-reel.mp4",
+      "caption": "hello from @apicity/meta"
+    }
+  }
+};
 
 export default EXAMPLES;
 

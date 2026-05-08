@@ -11,7 +11,6 @@ import {
 
 const args = process.argv.slice(2);
 
-let htmlOutputPath: string | null = null;
 let gitApprove = false;
 let mediaOnly = false;
 let compareMode = false;
@@ -19,9 +18,7 @@ let port = 3475;
 const paths: string[] = [];
 
 for (let i = 0; i < args.length; i++) {
-  if (args[i] === "--html" && args[i + 1]) {
-    htmlOutputPath = args[++i];
-  } else if (args[i] === "--git-approve") {
+  if (args[i] === "--git-approve") {
     gitApprove = true;
   } else if (args[i] === "--media-only") {
     mediaOnly = true;
@@ -36,7 +33,7 @@ for (let i = 0; i < args.length; i++) {
 
 if (paths.length === 0) {
   console.error(
-    "Usage: npx tsx tests/harness-serve.ts [--html out.html] [--media-only] [--compare] [--git-approve] [--port N] <file.har|dir> ..."
+    "Usage: npx tsx tests/harness-serve.ts [--media-only] [--compare] [--git-approve] [--port N] <file.har|dir> ..."
   );
   process.exit(1);
 }
@@ -72,16 +69,6 @@ const VIEWER_HTML = fs.readFileSync(
   ),
   "utf-8"
 );
-
-// Static HTML export
-if (htmlOutputPath) {
-  const data = { recordings, features: { gitApprove: false } };
-  const dataScript = `<script>var HAR_DATA = ${JSON.stringify(data)};</script>`;
-  const output = VIEWER_HTML.replace("</head>", dataScript + "\n</head>");
-  fs.writeFileSync(htmlOutputPath, output);
-  console.log(`Wrote ${htmlOutputPath} (${recordings.length} recording(s))`);
-  process.exit(0);
-}
 
 // Server mode
 const features = { gitApprove };
@@ -141,6 +128,6 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(port, () => {
   console.log(
-    `HAR Viewer \u2192 http://localhost:${port} (${recordings.length} recording(s))`
+    `HAR Viewer → http://localhost:${port} (${recordings.length} recording(s))`
   );
 });

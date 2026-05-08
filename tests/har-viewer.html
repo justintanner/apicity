@@ -378,14 +378,55 @@
         padding: 8px 12px;
       }
 
-      /* Empty state */
-      .empty {
-        padding: 40px;
-        text-align: center;
-        color: #6c7086;
-        font-size: 14px;
-      }
-    </style>
+    /* Empty state */
+    .empty {
+      padding: 40px;
+      text-align: center;
+      color: #6c7086;
+      font-size: 14px;
+    }
+
+    /* Commit nav */
+    #commit-nav {
+      display: flex;
+      gap: 8px;
+      padding: 8px 16px;
+      background: #181825;
+      border-bottom: 1px solid #313244;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .commit-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #313244;
+      border: 1px solid #45475a;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+      color: #cdd6f4;
+      transition: background 0.15s;
+    }
+    .commit-nav-item:hover {
+      background: #45475a;
+    }
+    .commit-nav-item.active {
+      background: #89b4fa;
+      color: #1e1e2e;
+      border-color: #89b4fa;
+    }
+    .commit-nav-item .sha {
+      font-weight: 600;
+    }
+    .commit-nav-item.no-recordings {
+      opacity: 0.5;
+      cursor: default;
+    }
+  </style>
   </head>
   <body>
     <header id="topbar">
@@ -395,6 +436,7 @@
       </div>
       <div id="topbar-right"></div>
     </header>
+    <nav id="commit-nav"></nav>
     <main id="sections"></main>
     <script>
       /* === Config === */
@@ -405,6 +447,8 @@
       /* === State === */
       var recordings = [];
       var renderGeneration = 0;
+      var commitCache = {};
+      var currentCommitSha = null;
 
       /* === HAR Parsing Utilities === */
       function displayName(recName) {
@@ -1397,61 +1441,120 @@
       /* === Manifest Mode === */
 
       function initManifest(manifest) {
-        var topbarRight = document.getElementById("topbar-right");
-        var select = document.createElement("select");
-        select.id = "commit-select";
-        select.style.cssText =
-          "background:#313244;color:#cdd6f4;border:1px solid #45475a;border-radius:4px;padding:4px 8px;font-family:inherit;font-size:12px;cursor:pointer;max-width:280px;";
+        var nav = document.getElementById("commit-nav");
+        if (!nav) return;
 
-        for (var i = 0; i < manifest.length; i++) {
-          var opt = document.createElement("option");
-          opt.value = String(i);
-          opt.textContent =
-            manifest[i].shortSha +
-            " " +
-            manifest[i].subject +
-            " (" +
-            manifest[i].recordingCount +
-            ")";
-          select.appendChild(opt);
+        function makeItem(entry, idx) {
+          var item = document.createElement("div");
+          item.className = "commit-nav-item" + (entry.recordingCount === 0 ? " no-recordings" : "");
+          item.dataset.sha = entry.sha;
+          item.dataset.idx = String(idx);
+
+          var shaSpan = document.createElement("span");
+          shaSpan.className = "sha";
+          shaSpan.textContent = entry.shortSha;
+          item.appendChild(shaSpan);
+
+          var subj = document.createElement("span");
+          subj.textContent = entry.subject;
+          item.appendChild(subj);
+
+          if (entry.recordingCount > 0) {
+            var count = document.createElement("span");
+            count.textContent = "(" + entry.recordingCount + ")";
+            item.appendChild(count);
+          }
+
+          if (entry.recordingCount > 0) {
+            item.addEventListener("click", function () {
+              loadCommit(entry, item);
+            });
+          }
+
+          return item;
         }
 
-        topbarRight.appendChild(select);
-
-        select.addEventListener("change", function () {
-          loadCommit(manifest[parseInt(select.value, 10)]);
-        });
+        for (var i = 0; i < manifest.length; i++) {
+          nav.appendChild(makeItem(manifest[i], i));
+        }
 
         for (var j = 0; j < manifest.length; j++) {
           if (manifest[j].recordingCount > 0) {
-            loadCommit(manifest[j]);
-            select.value = String(j);
+            var firstItem = nav.querySelector('[data-sha="' + manifest[j].sha + '"]');
+            if (firstItem) loadCommit(manifest[j], firstItem);
             break;
           }
         }
       }
 
-      function loadCommit(entry) {
+      function setActiveCommit(sha) {
+        var nav = document.getElementById("commit-nav");
+        if (!nav) return;
+        var items = nav.querySelectorAll(".commit-nav-item");
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].dataset.sha === sha) {
+            items[i].classList.add("active");
+          } else {
+            items[i].classList.remove("active");
+          }
+        }
+        currentCommitSha = sha;
+      }
+
+      function renderLoading() {
+        var sectionsEl = document.getElementById("sections");
+        var countEl = document.getElementById("rec-count");
+        sectionsEl.innerHTML = '<div class="empty">Loading recordings...</div>';
+        if (countEl) countEl.textContent = "";
+      }
+
+      function renderError(message) {
+        var sectionsEl = document.getElementById("sections");
+        var countEl = document.getElementById("rec-count");
+        sectionsEl.innerHTML =
+          '<div class="empty">' +
+          escapeHtml(message || "Failed to load recordings.") +
+          "</div>";
+        if (countEl) countEl.textContent = "";
+      }
+
+      function loadCommit(entry, navItem) {
         if (!entry.dataUrl) {
           recordings = [];
+          setActiveCommit(entry.sha);
           render();
           return;
         }
+
+        if (commitCache[entry.sha] !== undefined) {
+          recordings = commitCache[entry.sha];
+          setActiveCommit(entry.sha);
+          render();
+          return;
+        }
+
+        renderLoading();
+        if (navItem) setActiveCommit(entry.sha);
+
         fetch(entry.dataUrl)
           .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status + " " + r.statusText);
             return r.json();
           })
           .then(function (data) {
             recordings = data || [];
+            commitCache[entry.sha] = recordings;
+            setActiveCommit(entry.sha);
             render();
           })
           .catch(function (err) {
             console.error("Failed to load commit data:", err);
-            recordings = [];
-            render();
+            renderError("Failed to load " + entry.shortSha + ": " + (err.message || err));
+            if (currentCommitSha === entry.sha) {
+              currentCommitSha = null;
+            }
           });
       }
-
       /* === Init === */
       if (typeof HAR_MANIFEST !== "undefined") {
         initManifest(HAR_MANIFEST);

@@ -37,15 +37,17 @@ describe("meta post video end-to-end", () => {
     });
     const igUserId = process.env.IG_USER_ID ?? "17841400000000000";
 
-    // Step 1: upload jump.mp4 to a public URL via @apicity/free-media-upload (catbox).
+    // Step 1: upload jump.mp4 to a public URL via @apicity/free-media-upload
+    // (litterbox/uguu/tflink fallback).
     const videoPath = resolve(__dirname, "../fixtures/jump.mp4");
     const bytes = readFileSync(videoPath);
     const blob = new Blob([bytes], { type: "video/mp4" });
 
     const host = freeMediaUpload({});
-    const videoUrl = await host.catbox.upload({
+    const videoUrl = await host.uploadToAnyHost({
       file: blob,
       filename: "jump.mp4",
+      hosts: ["litterbox", "uguu", "tflink"],
     });
     expect(videoUrl).toMatch(/^https?:\/\//);
 

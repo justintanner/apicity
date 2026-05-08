@@ -111,22 +111,18 @@ jobs:
         env:
           GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
 
-      - name: Screenshot harness viewer (full)
+      - name: Start static server for harness
+        run: |
+          python3 -m http.server 8080 --directory tests/fixtures/harness-generated &
+          echo "SERVER_PID=$!" >> $GITHUB_ENV
+          sleep 2
+
+      - name: Screenshot harness viewer (index)
         uses: ./.github/actions/screenshot-harness
         with:
-          html-source: tests/fixtures/harness-generated/harness-report.html
+          html-source: http://localhost:8080/harness-report.html
           output: tests/fixtures/harness-generated/harness-report.png
 
-      - name: Generate media-only harness report
-        run: npx tsx tests/harness-report.ts --media-only --out-dir tests/fixtures/harness-generated
-        env:
-          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
-
-      - name: Screenshot harness viewer (media)
-        uses: ./.github/actions/screenshot-harness
-        with:
-          html-source: tests/fixtures/harness-generated/harness-report-media.html
-          output: tests/fixtures/harness-generated/harness-report-media.png
       - name: Generate harness summary
         id: summary
         run: npx tsx tests/harness-summary.ts
@@ -160,10 +156,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: harness-report
-          path: |
-            tests/fixtures/harness-generated/harness-report.html
-            tests/fixtures/harness-generated/harness-report.png
-            tests/fixtures/harness-generated/har-data-*.json
-            tests/fixtures/harness-generated/harness-report-media.html
-            tests/fixtures/harness-generated/harness-report-media.png
+          path: tests/fixtures/harness-generated
           retention-days: 30

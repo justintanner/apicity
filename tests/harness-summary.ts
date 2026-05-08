@@ -822,32 +822,18 @@ function generateSummary(recordings: ChangedRecording[]): string {
   ];
 
   const screenshotPath = `${ASSETS_DIR}/harness-report.png`;
-  const mediaScreenshotPath = `${ASSETS_DIR}/harness-report-media.png`;
   const hasScreenshot = fs.existsSync(screenshotPath);
-  const hasMediaScreenshot = fs.existsSync(mediaScreenshotPath);
 
-  if (hasScreenshot || hasMediaScreenshot) {
-    lines.push("### 📸 Harness Preview", "");
-    if (hasScreenshot) {
-      lines.push(
-        `<img src="${buildRepoUrl(screenshotPath)}" alt="harness report (full)" width="900">`,
-        ""
-      );
-    }
-    if (hasMediaScreenshot) {
-      lines.push(
-        "<details><summary><strong>Media-only screenshot</strong></summary>",
-        "",
-        `<img src="${buildRepoUrl(mediaScreenshotPath)}" alt="harness report (media-only)" width="900">`,
-        "",
-        "</details>",
-        ""
-      );
-    }
+  if (hasScreenshot) {
+    lines.push("### Harness Preview", "");
+    lines.push(
+      `<img src="${buildRepoUrl(screenshotPath)}" alt="harness report" width="900">`,
+      ""
+    );
     const artifactLink = buildArtifactLink();
     if (artifactLink) {
       lines.push(
-        `*Interactive HAR viewer and HTML sources in the [\`harness-report\` workflow artifact](${artifactLink}).*`,
+        `*Interactive HAR viewer: open \`harness-report.html\` in the [\`harness-report\` workflow artifact](${artifactLink}).*`,
         ""
       );
     }

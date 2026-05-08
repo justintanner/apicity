@@ -60,7 +60,10 @@ async function captureScreenshot(opts: ScreenshotOptions): Promise<void> {
       deviceScaleFactor: 1,
     });
     const page = await context.newPage();
-    await page.goto("file://" + opts.htmlPath);
+    const url = opts.htmlPath.match(/^https?:\/\//)
+      ? opts.htmlPath
+      : "file://" + opts.htmlPath;
+    await page.goto(url);
     await page.waitForLoadState("networkidle").catch(() => {
       // Some media URLs may 404 — that's fine, we still capture what loaded.
     });

@@ -6,9 +6,9 @@ describe("openai image variations endpoint", () => {
   it("should expose .schema on post.v1.images.variations", () => {
     const provider = openai({ apiKey: "test-key" });
     expect(provider.post.v1.images.variations.schema).toBeDefined();
-    expect(
-      typeof provider.post.v1.images.variations.schema.safeParse
-    ).toBe("function");
+    expect(typeof provider.post.v1.images.variations.schema.safeParse).toBe(
+      "function"
+    );
   });
 
   it("should use OpenAiImageVariationRequestSchema", () => {

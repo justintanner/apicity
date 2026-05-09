@@ -56,3 +56,4 @@ gc.endpoint_status: verified
 # - linear.api-key
 # - github.org
 # - github.repo
+types.custom: molecule,convoy,message,event,gate,merge-request,agent,role,rig,session,spec,convergence

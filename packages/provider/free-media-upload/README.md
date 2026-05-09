@@ -17,9 +17,9 @@ pnpm add @apicity/free-media-upload
 ## Quick Start
 
 ```typescript
-import { free-media-upload as createFree-media-upload } from "@apicity/free-media-upload";
+import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";
 
-const free-media-upload = createFree-media-upload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
+const freeMediaUpload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
 ```
 
 ## Real-world example: race a portrait across four free hosts
@@ -140,7 +140,7 @@ every host fails. Useful when one provider is flaky (uguu's CDN can 502
 during traffic spikes) but you don't care which one wins.
 
 ```typescript
-import { free as createFree, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";
+import { freeMediaUpload as createFreeMediaUpload, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";
 
 const freeMediaUpload = createFreeMediaUpload();
 const file = new Blob([bytes], { type: "image/jpeg" });
@@ -340,12 +340,14 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 ## Middleware
 
 ```typescript
-import { free-media-upload as createFree-media-upload, withRetry } from "@apicity/free-media-upload";
+import { freeMediaUpload as createFreeMediaUpload, withRetry } from "@apicity/free-media-upload";
 
-const free-media-upload = createFree-media-upload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
-const models = withRetry(free-media-upload.get.v1.models, { retries: 3 });
+const freeMediaUpload = createFreeMediaUpload({ apiKey: process.env.FREE-MEDIA-UPLOAD_API_KEY! });
+const models = withRetry(freeMediaUpload.get.v1.models, { retries: 3 });
 ```
+
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

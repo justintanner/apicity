@@ -309,6 +309,8 @@ const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
 const models = withRetry(alibaba.get.v1.models, { retries: 3 });
 ```
 
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

@@ -11,6 +11,8 @@ in lockstep with the providers.
 ## Install
 
 ```bash
+npm install @apicity/mcp-server
+# or
 pnpm add @apicity/mcp-server
 # plus whichever providers you want exposed:
 pnpm add @apicity/openai @apicity/anthropic @apicity/xai @apicity/fal
@@ -114,3 +116,9 @@ embed the registry into your own MCP server.
   }
 }
 ```
+
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
+## License
+
+MIT — see [LICENSE](LICENSE).

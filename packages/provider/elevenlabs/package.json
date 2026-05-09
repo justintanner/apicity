@@ -3,7 +3,11 @@
   "version": "0.1.0-alpha.0",
   "description": "ElevenLabs provider for sound effect generation, text-to-speech, and audio APIs.",
   "license": "MIT",
-  "repository": "github:justintanner/apicity",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justintanner/apicity.git",
+    "directory": "provider/elevenlabs"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -51,5 +55,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
     "prepublishOnly": "pnpm run build"
+  },
+  "homepage": "https://github.com/justintanner/apicity#readme",
+  "bugs": {
+    "url": "https://github.com/justintanner/apicity/issues"
   }
 }

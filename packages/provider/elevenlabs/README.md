@@ -183,6 +183,8 @@ const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! })
 const models = withRetry(elevenlabs.get.v1.models, { retries: 3 });
 ```
 
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

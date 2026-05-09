@@ -7,6 +7,8 @@ This is the only `@apicity/*` package that depends on other workspace packages â
 ## Install
 
 ```bash
+npm install @apicity/cost
+# or
 pnpm add @apicity/cost
 ```
 
@@ -147,3 +149,9 @@ Maintenance is manual: re-fetch each upstream's pricing page, edit `pricing.ts`,
 - Tier-based fallback for fireworks (parameter-count brackets)
 - Suno per-song pricing on kie (no stable published rate)
 - Caller-side `pricingOverrides`
+
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
+## License
+
+MIT â€” see [LICENSE](LICENSE).

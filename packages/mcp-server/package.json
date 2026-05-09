@@ -3,7 +3,11 @@
   "version": "0.1.0-alpha.0",
   "description": "Optional MCP (Model Context Protocol) server that exposes every @apicity provider endpoint as a tool.",
   "license": "MIT",
-  "repository": "github:justintanner/apicity",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justintanner/apicity.git",
+    "directory": "mcp-server"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -113,5 +117,9 @@
     "@apicity/openai": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*"
+  },
+  "homepage": "https://github.com/justintanner/apicity#readme",
+  "bugs": {
+    "url": "https://github.com/justintanner/apicity/issues"
   }
 }

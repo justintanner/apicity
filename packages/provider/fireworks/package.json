@@ -3,7 +3,11 @@
   "version": "0.1.0-alpha.0",
   "description": "Fireworks AI provider for chat completions, completions, and embeddings.",
   "license": "MIT",
-  "repository": "github:justintanner/apicity",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justintanner/apicity.git",
+    "directory": "provider/fireworks"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -49,5 +53,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json && node scripts/dist.mjs",
     "prepublishOnly": "pnpm run build"
+  },
+  "homepage": "https://github.com/justintanner/apicity#readme",
+  "bugs": {
+    "url": "https://github.com/justintanner/apicity/issues"
   }
 }

@@ -722,6 +722,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 </details>
 
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

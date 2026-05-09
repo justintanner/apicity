@@ -855,6 +855,8 @@ const results = await Promise.all(
 | `tier3` | 500 | 50 | $500+ |
 | `tier4` | 1000 | 100 | $1,000+ |
 
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

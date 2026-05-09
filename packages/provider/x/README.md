@@ -320,6 +320,8 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 </details>
 
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

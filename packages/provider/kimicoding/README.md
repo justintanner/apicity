@@ -112,6 +112,8 @@ const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! })
 const models = withRetry(kimicoding.get.v1.models, { retries: 3 });
 ```
 
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

@@ -24,7 +24,7 @@ const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-37 endpoints across 10 groups. Each method mirrors an upstream URL path.
+38 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -439,6 +439,21 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 ```typescript
 const res = await openai.v1.images.generations({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.images.variations</code></b></summary>
+
+<code>POST https://api.openai.com/v1/images/variations</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference)
+
+```typescript
+const res = await openai.v1.images.variations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

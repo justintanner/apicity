@@ -129,6 +129,14 @@ export const OpenAiImageGenerationRequestSchema = z.object({
   output_compression: z.number().min(0).max(100).optional(),
   user: z.string().optional(),
 });
+export const OpenAiImageVariationRequestSchema = z.object({
+  image: blobSchema,
+  model: z.string().optional(),
+  n: z.number().int().min(1).max(10).optional(),
+  response_format: z.enum(["url", "b64_json"]).optional(),
+  size: z.enum(["1024x1024", "1024x1536", "1536x1024"]).optional(),
+  user: z.string().optional(),
+});
 
 // ---------------------------------------------------------------------------
 // Audio
@@ -589,6 +597,9 @@ export type OpenAiImageEditRequest = z.infer<
 >;
 export type OpenAiImageGenerationRequest = z.infer<
   typeof OpenAiImageGenerationRequestSchema
+>;
+export type OpenAiImageVariationRequest = z.infer<
+  typeof OpenAiImageVariationRequestSchema
 >;
 export type OpenAiSpeechRequest = z.infer<typeof OpenAiSpeechRequestSchema>;
 export type OpenAiTranscribeRequest = z.infer<

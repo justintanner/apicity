@@ -13,6 +13,7 @@ import {
   OpenAiImageEditResponse,
   OpenAiImageGenerationRequest,
   OpenAiImageGenerationResponse,
+  OpenAiImageVariationRequest,
   OpenAiFileListRequest,
   OpenAiFileListResponse,
   OpenAiFile,
@@ -67,6 +68,7 @@ import {
   OpenAiFileUploadRequestSchema,
   OpenAiImageEditRequestSchema,
   OpenAiImageGenerationRequestSchema,
+  OpenAiImageVariationRequestSchema,
   OpenAiModerationRequestSchema,
   OpenAiSpeechRequestSchema,
   OpenAiTranscribeRequestSchema,
@@ -606,6 +608,32 @@ export function openai(opts: OpenAiOptions): OpenAiProvider {
         },
         {
           schema: OpenAiImageEditRequestSchema,
+        }
+      ),
+      // POST https://api.openai.com/v1/images/variations
+      // Docs: https://platform.openai.com/docs/api-reference
+      variations: Object.assign(
+        async (
+          req: OpenAiImageVariationRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiImageGenerationResponse> => {
+          const form = new FormData();
+          form.append("image", req.image);
+          if (req.model !== undefined) form.append("model", req.model);
+          if (req.n !== undefined) form.append("n", String(req.n));
+          if (req.response_format !== undefined)
+            form.append("response_format", req.response_format);
+          if (req.size !== undefined) form.append("size", req.size);
+          if (req.user !== undefined) form.append("user", req.user);
+
+          return makeRequest<OpenAiImageGenerationResponse>(
+            "/images/variations",
+            { headers: {}, body: form },
+            signal
+          );
+        },
+        {
+          schema: OpenAiImageVariationRequestSchema,
         }
       ),
     },

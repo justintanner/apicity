@@ -53,6 +53,7 @@ export type {
   OpenAiImageEditUsage,
   OpenAiImageEditResponse,
   OpenAiImageGenerationRequest,
+  OpenAiImageVariationRequest,
   OpenAiGeneratedImage,
   OpenAiImageGenerationUsage,
   OpenAiImageGenerationResponse,

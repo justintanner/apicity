@@ -239,6 +239,7 @@ openai	v1.fineTuning.jobs.pause	POST	https://api.openai.com/v1/fine_tuning/jobs/
 openai	v1.fineTuning.jobs.resume	POST	https://api.openai.com/v1/fine_tuning/jobs/{id}/resume	https://platform.openai.com/docs/api-reference
 openai	v1.images.edits	POST	https://api.openai.com/v1/images/edits	https://platform.openai.com/docs/api-reference
 openai	v1.images.generations	POST	https://api.openai.com/v1/images/generations	https://platform.openai.com/docs/api-reference
+openai	v1.images.variations	POST	https://api.openai.com/v1/images/variations	https://platform.openai.com/docs/api-reference
 openai	v1.models	DELETE	https://api.openai.com/v1/models/{id}	https://platform.openai.com/docs/api-reference
 openai	v1.models	GET	https://api.openai.com/v1/models/{id}	https://platform.openai.com/docs/api-reference
 openai	v1.moderations	POST	https://api.openai.com/v1/moderations	https://platform.openai.com/docs/api-reference

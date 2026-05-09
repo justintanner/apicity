@@ -5,6 +5,7 @@ import {
   OpenAiSpeechRequestSchema,
   OpenAiEmbeddingRequestSchema,
   OpenAiImageGenerationRequestSchema,
+  OpenAiImageVariationRequestSchema,
   OpenAiModerationRequestSchema,
   OpenAiBatchCreateRequestSchema,
   OpenAiResponseRequestSchema,
@@ -205,6 +206,64 @@ describe("OpenAI Zod schemas", () => {
         output_compression: 150,
       });
       expect(result.success).toBe(false);
+    });
+  });
+
+  describe("OpenAiImageVariationRequestSchema", () => {
+    it("accepts a valid variation request", () => {
+      const result = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects missing image", () => {
+      const result = OpenAiImageVariationRequestSchema.safeParse({
+        n: 2,
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("validates size enum", () => {
+      const valid = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        size: "1024x1024",
+      });
+      expect(valid.success).toBe(true);
+
+      const invalid = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        size: "256x256",
+      });
+      expect(invalid.success).toBe(false);
+    });
+
+    it("validates n range 1-10", () => {
+      const tooHigh = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        n: 11,
+      });
+      expect(tooHigh.success).toBe(false);
+
+      const valid = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        n: 1,
+      });
+      expect(valid.success).toBe(true);
+    });
+
+    it("validates response_format enum", () => {
+      const valid = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        response_format: "url",
+      });
+      expect(valid.success).toBe(true);
+
+      const invalid = OpenAiImageVariationRequestSchema.safeParse({
+        image: new Blob(["fake-image"]),
+        response_format: "json",
+      });
+      expect(invalid.success).toBe(false);
     });
   });
 

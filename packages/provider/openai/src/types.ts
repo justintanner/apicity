@@ -20,6 +20,7 @@ export type {
   OpenAiEmbeddingRequest,
   OpenAiImageEditRequest,
   OpenAiImageGenerationRequest,
+  OpenAiImageVariationRequest,
   OpenAiModerationTextInput,
   OpenAiModerationImageUrlInput,
   OpenAiModerationMultiModalInput,
@@ -734,6 +735,7 @@ import type {
   OpenAiEmbeddingRequest,
   OpenAiImageEditRequest,
   OpenAiImageGenerationRequest,
+  OpenAiImageVariationRequest,
   OpenAiModerationRequest,
   OpenAiFileUploadRequest,
   OpenAiBatchCreateRequest,
@@ -800,6 +802,14 @@ export interface OpenAiPostV1ImagesEdits {
     signal?: AbortSignal
   ): Promise<OpenAiImageEditResponse>;
   schema: z.ZodType<OpenAiImageEditRequest>;
+}
+
+export interface OpenAiPostV1ImagesVariations {
+  (
+    req: OpenAiImageVariationRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiImageGenerationResponse>;
+  schema: z.ZodType<OpenAiImageVariationRequest>;
 }
 
 export interface OpenAiPostV1Files {
@@ -897,6 +907,7 @@ export interface OpenAiPostV1ChatNamespace {
 export interface OpenAiPostV1ImagesNamespace {
   generations: OpenAiPostV1ImagesGenerations;
   edits: OpenAiPostV1ImagesEdits;
+  variations: OpenAiPostV1ImagesVariations;
 }
 
 // Responses namespace for POST v1

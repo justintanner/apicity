@@ -4,7 +4,10 @@ import path from "path";
 const packagesDir = "packages/provider";
 const mcpDir = "packages/mcp-server";
 
-const packages = fs.readdirSync(packagesDir).sort().map((p) => [p, path.join(packagesDir, p)]);
+const packages = fs
+  .readdirSync(packagesDir)
+  .sort()
+  .map((p) => [p, path.join(packagesDir, p)]);
 const allPkgs = [...packages, ["mcp-server", mcpDir]];
 
 const MONOREPO_URL = "https://github.com/justintanner/apicity";
@@ -63,8 +66,10 @@ function fixReadme(name, pkgPath) {
     if (installMatch) {
       const idx = installMatch.index + installMatch[0].length;
       let insert = "";
-      if (!hasNpm) insert += "\n\n\`\`\`bash\nnpm install @apicity/" + name + "\n\`\`\`";
-      if (!hasPnpm) insert += "\n\n\`\`\`bash\npnpm add @apicity/" + name + "\n\`\`\`";
+      if (!hasNpm)
+        insert += "\n\n```bash\nnpm install @apicity/" + name + "\n```";
+      if (!hasPnpm)
+        insert += "\n\n```bash\npnpm add @apicity/" + name + "\n```";
       readme = readme.slice(0, idx) + insert + "\n" + readme.slice(idx);
       changed = true;
     }
@@ -74,7 +79,12 @@ function fixReadme(name, pkgPath) {
     const licenseMatch = readme.match(/##\s+License\s*\n/i);
     if (licenseMatch) {
       const idx = licenseMatch.index;
-      readme = readme.slice(0, idx) + "Part of the [apicity](" + MONOREPO_URL + ") monorepo.\n\n" + readme.slice(idx);
+      readme =
+        readme.slice(0, idx) +
+        "Part of the [apicity](" +
+        MONOREPO_URL +
+        ") monorepo.\n\n" +
+        readme.slice(idx);
       changed = true;
     }
   }
@@ -88,10 +98,19 @@ function fixReadme(name, pkgPath) {
   }
 
   if (name === "free-media-upload") {
-    readme = readme.replace(/createFree-media-upload/g, "createFreeMediaUpload");
-    readme = readme.replace(/free-media-upload = createFreeMediaUpload/g, "freeMediaUpload = createFreeMediaUpload");
+    readme = readme.replace(
+      /createFree-media-upload/g,
+      "createFreeMediaUpload"
+    );
+    readme = readme.replace(
+      /free-media-upload = createFreeMediaUpload/g,
+      "freeMediaUpload = createFreeMediaUpload"
+    );
     readme = readme.replace(/free-media-upload\.get/g, "freeMediaUpload.get");
-    readme = readme.replace(/free-media-upload, withRetry/g, "freeMediaUpload, withRetry");
+    readme = readme.replace(
+      /free-media-upload, withRetry/g,
+      "freeMediaUpload, withRetry"
+    );
     changed = true;
   }
 

@@ -139,7 +139,7 @@ node -e '
 const fs = require("fs");
 const PKGS = [
   "packages/mcp-server",
-  ...["alibaba","anthropic","cost","elevenlabs","fal","fireworks","free","ig","kie","kimicoding","openai","polymarket","x","xai"]
+  ...["alibaba","anthropic","cost","elevenlabs","fal","fireworks","free-media-upload","meta","kie","kimicoding","openai","polymarket","x","xai"]
     .map(p => "packages/provider/" + p),
 ];
 let bad = 0;
@@ -177,7 +177,7 @@ node -e '
 const fs = require("fs");
 const PKGS = [
   "packages/mcp-server/package.json",
-  ...["alibaba","anthropic","cost","elevenlabs","fal","fireworks","free","ig","kie","kimicoding","openai","polymarket","x","xai"]
+  ...["alibaba","anthropic","cost","elevenlabs","fal","fireworks","free-media-upload","meta","kie","kimicoding","openai","polymarket","x","xai"]
     .map(p => "packages/provider/" + p + "/package.json"),
 ];
 for (const p of PKGS) {

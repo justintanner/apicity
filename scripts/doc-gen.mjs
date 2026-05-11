@@ -2042,9 +2042,13 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push(renderXaiRateLimiting());
   }
 
+  sections.push(
+    "Part of the [apicity](https://github.com/justintanner/apicity) monorepo."
+  );
+  sections.push("");
   sections.push("## License");
   sections.push("");
-  sections.push(pkg.license || "MIT");
+  sections.push("MIT — see [LICENSE](LICENSE).");
   sections.push("");
 
   return sections.join("\n");

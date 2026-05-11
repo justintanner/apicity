@@ -37,8 +37,9 @@ function parseArgs(argv: string[]): ScreenshotOptions {
     );
   }
 
+  const isUrl = /^https?:\/\//.test(htmlPath);
   return {
-    htmlPath: path.resolve(htmlPath),
+    htmlPath: isUrl ? htmlPath : path.resolve(htmlPath),
     outPath: path.resolve(outPath),
     width,
   };
@@ -49,7 +50,8 @@ function parseArgs(argv: string[]): ScreenshotOptions {
 const MAX_SCREENSHOT_HEIGHT = 14000;
 
 async function captureScreenshot(opts: ScreenshotOptions): Promise<void> {
-  if (!fs.existsSync(opts.htmlPath)) {
+  const isUrl = /^https?:\/\//.test(opts.htmlPath);
+  if (!isUrl && !fs.existsSync(opts.htmlPath)) {
     throw new Error(`Input HTML not found: ${opts.htmlPath}`);
   }
 
@@ -60,9 +62,7 @@ async function captureScreenshot(opts: ScreenshotOptions): Promise<void> {
       deviceScaleFactor: 1,
     });
     const page = await context.newPage();
-    const url = opts.htmlPath.match(/^https?:\/\//)
-      ? opts.htmlPath
-      : "file://" + opts.htmlPath;
+    const url = isUrl ? opts.htmlPath : "file://" + opts.htmlPath;
     await page.goto(url);
     await page.waitForLoadState("networkidle").catch(() => {
       // Some media URLs may 404 — that's fine, we still capture what loaded.

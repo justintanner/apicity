@@ -2,6 +2,7 @@ name: screenshot-harness
 description: Render a harness-report HTML file to a full-page PNG via headless Chromium.
 
 inputs:
+  html-source:
     description: Path to the generated harness-report HTML file, or a URL to serve it from.
     required: true
   output:

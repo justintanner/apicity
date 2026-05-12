@@ -206,6 +206,12 @@ importers:
         specifier: ^3.24.0
         version: 3.25.76
 
+  packages/provider/youtube:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
 packages:
 
   '@ampproject/remapping@2.3.0':

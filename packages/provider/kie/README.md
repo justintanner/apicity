@@ -58,9 +58,9 @@ async function upload(filename: string, mimeType: string): Promise<string> {
 
 // Two angles of the cat satisfy Kling's "2-4 images per element"
 // minimum. The man only has one fixture, so we pass it twice.
-const cat1  = await upload("cat1.jpg",  "image/jpeg");
-const cat2  = await upload("cat2.jpg",  "image/jpeg");
-const man   = await upload("man.jpg",   "image/jpeg");
+const cat1 = await upload("cat1.jpg", "image/jpeg");
+const cat2 = await upload("cat2.jpg", "image/jpeg");
+const man = await upload("man.jpg", "image/jpeg");
 const beach = await upload("beach.png", "image/png");
 
 // 2. Submit the job. Each `kling_elements` entry binds a `name` to a
@@ -163,7 +163,9 @@ console.log(result.resultUrls[0]);
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.get.api.v1.chat.credit({ /* ... */ });
+const res = await kie.get.api.v1.chat.credit({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -180,7 +182,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.claude.post.v1.messages({ /* ... */ });
+const res = await kie.claude.post.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
@@ -197,7 +201,9 @@ Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.post.api.v1.common.downloadUrl({ /* ... */ });
+const res = await kie.post.api.v1.common.downloadUrl({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -214,7 +220,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.post.api.fileBase64Upload({ /* ... */ });
+const res = await kie.post.api.fileBase64Upload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -231,7 +239,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.post.api.fileStreamUpload({ /* ... */ });
+const res = await kie.post.api.fileStreamUpload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -248,7 +258,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.post.api.fileUrlUpload({ /* ... */ });
+const res = await kie.post.api.fileUrlUpload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -263,7 +275,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <code>GET https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}</code>
 
 ```typescript
-const res = await kie.suno.get.api.v1.generate.recordInfo({ /* ... */ });
+const res = await kie.suno.get.api.v1.generate.recordInfo({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -278,7 +292,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -293,7 +309,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai/suno-api/add-instrumental)
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.addInstrumental({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.addInstrumental({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -308,7 +326,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai/suno-api/add-vocals)
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.addVocals({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.addVocals({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -321,7 +341,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/generate/extend</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.extend({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.extend({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -336,7 +358,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai/suno-api/generate-mashup)
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.mashup({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.mashup({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -351,7 +375,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai/suno-api/replace-section)
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.replaceSection({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.replaceSection({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -366,7 +392,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai/suno-api/generate-sounds)
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.sounds({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.sounds({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -379,7 +407,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/generate/upload-cover</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.uploadCover({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.uploadCover({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -392,7 +422,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/generate/upload-extend</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.generate.uploadExtend({ /* ... */ });
+const res = await kie.suno.post.api.v1.generate.uploadExtend({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -409,7 +441,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.get.api.v1.jobs.recordInfo({ /* ... */ });
+const res = await kie.get.api.v1.jobs.recordInfo({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -424,7 +458,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.post.api.v1.jobs.createTask({ /* ... */ });
+const res = await kie.post.api.v1.jobs.createTask({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -439,7 +475,9 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <code>POST https://api.kie.ai/api/v1/lyrics</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.lyrics({ /* ... */ });
+const res = await kie.suno.post.api.v1.lyrics({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -454,7 +492,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/midi/generate</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.midi.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.midi.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -469,7 +509,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/mp4/generate</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.mp4.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.mp4.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -484,7 +526,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/style/generate</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.style.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.style.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -501,7 +545,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.veo.post.api.v1.veo.extend({ /* ... */ });
+const res = await kie.veo.post.api.v1.veo.extend({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
@@ -516,7 +562,9 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 [Upstream docs ↗](https://docs.kie.ai)
 
 ```typescript
-const res = await kie.veo.post.api.v1.veo.generate({ /* ... */ });
+const res = await kie.veo.post.api.v1.veo.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
@@ -531,7 +579,9 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 <code>POST https://api.kie.ai/api/v1/vocal-removal/generate</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.vocalRemoval.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.vocalRemoval.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
@@ -546,7 +596,9 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 <code>POST https://api.kie.ai/api/v1/wav/generate</code>
 
 ```typescript
-const res = await kie.suno.post.api.v1.wav.generate({ /* ... */ });
+const res = await kie.suno.post.api.v1.wav.generate({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)

@@ -100,6 +100,11 @@ const PROVIDERS = [
       "createDataProvider",
     ],
   },
+  {
+    name: "youtube",
+    entryFiles: ["packages/provider/youtube/src/youtube.ts"],
+    factoryNames: ["youtube"],
+  },
 ];
 
 const METHOD_KEYS = new Set([

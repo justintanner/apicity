@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0-alpha.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/cost, and @apicity/mcp-server",
   "private": true,
   "type": "module",
   "engines": {
@@ -30,6 +30,7 @@
     "build:polymarket": "pnpm --filter @apicity/polymarket run build",
     "build:free-media-upload": "pnpm --filter @apicity/free-media-upload run build",
     "build:cost": "pnpm --filter @apicity/cost run build",
+    "build:youtube": "pnpm --filter @apicity/youtube run build",
     "build:mcp-server": "pnpm --filter @apicity/mcp-server run build",
     "gen:examples": "node scripts/extract-har-examples.mjs",
     "gen:examples:check": "node scripts/extract-har-examples.mjs --check",
@@ -46,6 +47,7 @@
     "doc-gen:kie": "node scripts/doc-gen.mjs kie",
     "doc-gen:polymarket": "node scripts/doc-gen.mjs polymarket",
     "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free",
+    "doc-gen:youtube": "node scripts/doc-gen.mjs youtube",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "lint": "eslint . && node scripts/check-endpoint-comments.mjs && node scripts/check-endpoint-signatures.mjs",
@@ -73,7 +75,7 @@
     "dev:rerecord": "pnpm run test:integration:record",
     "dev:preflight": "pnpm run format && pnpm run lint && pnpm run test:run",
     "ci:local": "pnpm run build && pnpm run lint && pnpm run test:run",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\",\"YOUTUBE_ACCESS_TOKEN\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs"
   },

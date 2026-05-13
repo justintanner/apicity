@@ -378,55 +378,55 @@
         padding: 8px 12px;
       }
 
-    /* Empty state */
-    .empty {
-      padding: 40px;
-      text-align: center;
-      color: #6c7086;
-      font-size: 14px;
-    }
+      /* Empty state */
+      .empty {
+        padding: 40px;
+        text-align: center;
+        color: #6c7086;
+        font-size: 14px;
+      }
 
-    /* Commit nav */
-    #commit-nav {
-      display: flex;
-      gap: 8px;
-      padding: 8px 16px;
-      background: #181825;
-      border-bottom: 1px solid #313244;
-      overflow-x: auto;
-      flex-shrink: 0;
-    }
-    .commit-nav-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      background: #313244;
-      border: 1px solid #45475a;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      white-space: nowrap;
-      color: #cdd6f4;
-      transition: background 0.15s;
-    }
-    .commit-nav-item:hover {
-      background: #45475a;
-    }
-    .commit-nav-item.active {
-      background: #89b4fa;
-      color: #1e1e2e;
-      border-color: #89b4fa;
-    }
-    .commit-nav-item .sha {
-      font-weight: 600;
-    }
-    .commit-nav-item.no-recordings {
-      opacity: 0.5;
-      cursor: default;
-    }
-  </style>
+      /* Commit nav */
+      #commit-nav {
+        display: flex;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #181825;
+        border-bottom: 1px solid #313244;
+        overflow-x: auto;
+        flex-shrink: 0;
+      }
+      .commit-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: #313244;
+        border: 1px solid #45475a;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        white-space: nowrap;
+        color: #cdd6f4;
+        transition: background 0.15s;
+      }
+      .commit-nav-item:hover {
+        background: #45475a;
+      }
+      .commit-nav-item.active {
+        background: #89b4fa;
+        color: #1e1e2e;
+        border-color: #89b4fa;
+      }
+      .commit-nav-item .sha {
+        font-weight: 600;
+      }
+      .commit-nav-item.no-recordings {
+        opacity: 0.5;
+        cursor: default;
+      }
+    </style>
   </head>
   <body>
     <header id="topbar">
@@ -1446,7 +1446,9 @@
 
         function makeItem(entry, idx) {
           var item = document.createElement("div");
-          item.className = "commit-nav-item" + (entry.recordingCount === 0 ? " no-recordings" : "");
+          item.className =
+            "commit-nav-item" +
+            (entry.recordingCount === 0 ? " no-recordings" : "");
           item.dataset.sha = entry.sha;
           item.dataset.idx = String(idx);
 
@@ -1480,7 +1482,9 @@
 
         for (var j = 0; j < manifest.length; j++) {
           if (manifest[j].recordingCount > 0) {
-            var firstItem = nav.querySelector('[data-sha="' + manifest[j].sha + '"]');
+            var firstItem = nav.querySelector(
+              '[data-sha="' + manifest[j].sha + '"]'
+            );
             if (firstItem) loadCommit(manifest[j], firstItem);
             break;
           }
@@ -1549,26 +1553,28 @@
           })
           .catch(function (err) {
             console.error("Failed to load commit data:", err);
-            renderError("Failed to load " + entry.shortSha + ": " + (err.message || err));
+            renderError(
+              "Failed to load " + entry.shortSha + ": " + (err.message || err)
+            );
             if (currentCommitSha === entry.sha) {
               currentCommitSha = null;
             }
           });
       }
-		/* === Init === */
-		if (typeof HAR_MANIFEST !== "undefined") {
-			initManifest(HAR_MANIFEST);
-		} else {
-			fetch("/api/data")
-				.then(function (r) {
-					return r.json();
-				})
-				.then(function (data) {
-					recordings = data.recordings || [];
-					if (data.features) VIEWER_CONFIG.features = data.features;
-					render();
-				});
-		}
+      /* === Init === */
+      if (typeof HAR_MANIFEST !== "undefined") {
+        initManifest(HAR_MANIFEST);
+      } else {
+        fetch("/api/data")
+          .then(function (r) {
+            return r.json();
+          })
+          .then(function (data) {
+            recordings = data.recordings || [];
+            if (data.features) VIEWER_CONFIG.features = data.features;
+            render();
+          });
+      }
     </script>
   </body>
 </html>

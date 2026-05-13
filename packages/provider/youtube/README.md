@@ -1,31 +1,59 @@
 # @apicity/youtube
 
+[![npm](https://img.shields.io/npm/v/@apicity/youtube?color=cb0000)](https://www.npmjs.com/package/@apicity/youtube)
+[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
+
 YouTube Data API v3 provider for posting content.
 
 ## Installation
 
 ```bash
 npm install @apicity/youtube
+# or
+pnpm add @apicity/youtube
 ```
 
-## Usage
+## Quick Start
 
 ```typescript
-import { youtube } from "@apicity/youtube";
+import { youtube as createYoutube } from "@apicity/youtube";
 
-const yt = youtube({ accessToken: "YOUR_OAUTH_TOKEN" });
+const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 ```
 
-## Authentication
+## API Reference
 
-YouTube Data API v3 requires an OAuth 2.0 access token with the appropriate
-scopes. Obtain a token via the Google OAuth 2.0 flow and pass it as
-`accessToken`.
+1 endpoint across 1 group. Each method mirrors an upstream URL path.
 
-Required scopes for write operations:
-- `https://www.googleapis.com/auth/youtube.upload`
-- `https://www.googleapis.com/auth/youtube.force-ssl`
+### channels
+
+<details>
+<summary><code>GET</code> <b><code>youtube.v3.channels</code></b></summary>
+
+<code>GET https://www.googleapis.com/youtube/v3/channels{query}</code>
+
+```typescript
+const res = await youtube.v3.channels({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
+
+</details>
+
+## Middleware
+
+```typescript
+import { youtube as createYoutube, withRetry } from "@apicity/youtube";
+
+const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
+const models = withRetry(youtube.get.v1.models, { retries: 3 });
+```
+
+Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).

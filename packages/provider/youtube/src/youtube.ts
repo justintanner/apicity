@@ -5,6 +5,7 @@ import {
   YouTubeVideosListRequest,
   YouTubeVideosListResponse,
 } from "./types";
+import { YouTubeChannelsListRequestSchema } from "./zod";
 
 export function youtube(opts: YouTubeOptions): YouTubeProvider {
   const baseURL = opts.baseURL ?? "https://www.googleapis.com/youtube/v3";
@@ -112,7 +113,8 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     return query ? `?${query}` : "";
   }
 
-  // GET https://www.googleapis.com/youtube/v3/videos
+  // sig-ok: namespace follows YouTube API method naming (`videos.list`)
+  // GET https://www.googleapis.com/youtube/v3/videos{query}
   // Docs: https://developers.google.com/youtube/v3/docs/videos/list
   async function videosList(
     req: YouTubeVideosListRequest,
@@ -133,9 +135,38 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     );
   }
 
+  // sig-ok: namespace follows YouTube API method naming (`channels.list`)
+  // GET https://www.googleapis.com/youtube/v3/channels{query}
+  // Docs: https://developers.google.com/youtube/v3/docs/channels/list
+  const channelsList = Object.assign(
+    async (
+      req: import("./zod").YouTubeChannelsListRequest,
+      signal?: AbortSignal
+    ): Promise<import("./types").YouTubeChannelsListResponse> => {
+      const query = buildQuery({
+        part: req.part,
+        id: req.id,
+        mine: req.mine,
+        forUsername: req.forUsername,
+        maxResults: req.maxResults,
+        pageToken: req.pageToken,
+      });
+      return makeJsonRequest<import("./types").YouTubeChannelsListResponse>(
+        "GET",
+        `/channels${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: YouTubeChannelsListRequestSchema }
+  );
+
   return {
     videos: {
       list: videosList,
+    },
+    channels: {
+      list: channelsList,
     },
   };
 }

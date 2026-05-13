@@ -45,7 +45,11 @@ and [`tests/integration/free-litterbox.test.ts`](../../../tests/integration/free
 ```typescript
 import { readFileSync } from "node:fs";
 import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";
-import type { GofileUploadResponse, UguuUploadResponse, FilebinUploadResponse } from "@apicity/free-media-upload";
+import type {
+  GofileUploadResponse,
+  UguuUploadResponse,
+  FilebinUploadResponse,
+} from "@apicity/free-media-upload";
 
 // 1. The factory takes no api key — every host below is genuinely
 //    auth-free and account-free. Pass `{ timeout: 60_000 }` or a
@@ -66,7 +70,12 @@ const [catboxUrl, gofile, uguu, filebin] = (await Promise.all([
   free.gofile.upload({ file, filename: "cat1.jpg" }),
   free.uguu.upload({ file, filename: "cat1.jpg" }),
   free.filebin.upload({ file, filename: "cat1.jpg", bin: "apicity-test-img" }),
-])) as [string, GofileUploadResponse, UguuUploadResponse, FilebinUploadResponse];
+])) as [
+  string,
+  GofileUploadResponse,
+  UguuUploadResponse,
+  FilebinUploadResponse,
+];
 
 // 3. catbox is the simplest UX: text/plain response, just the URL,
 //    permanent until the operator deletes it. Good for a 'host once,
@@ -106,14 +115,18 @@ console.log(`bin "${filebin.bin.id}" expires ${filebin.bin.expired_at}`);
 //    return JSON bury it under different keys. A tiny normaliser lets
 //    downstream code stop caring which host won the race.
 function toUrl(
-  res: string | GofileUploadResponse | UguuUploadResponse | FilebinUploadResponse,
+  res:
+    | string
+    | GofileUploadResponse
+    | UguuUploadResponse
+    | FilebinUploadResponse,
   bin?: string,
-  filename?: string,
+  filename?: string
 ): string {
   if (typeof res === "string") return res;
-  if ("data" in res) return res.data.downloadPage;       // gofile
-  if ("files" in res) return res.files[0].url;           // uguu
-  return `https://filebin.net/${bin}/${filename}`;       // filebin
+  if ("data" in res) return res.data.downloadPage; // gofile
+  if ("files" in res) return res.files[0].url; // uguu
+  return `https://filebin.net/${bin}/${filename}`; // filebin
 }
 
 console.log([
@@ -140,7 +153,11 @@ every host fails. Useful when one provider is flaky (uguu's CDN can 502
 during traffic spikes) but you don't care which one wins.
 
 ```typescript
-import { free as createFree, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";
+import {
+  free as createFree,
+  uploadToAnyHost,
+  FreeMediaUploadError,
+} from "@apicity/free-media-upload";
 
 const freeMediaUpload = createFreeMediaUpload();
 const file = new Blob([bytes], { type: "image/jpeg" });
@@ -211,7 +228,12 @@ try {
 [Upstream docs ↗](https://catbox.moe/tools.php)
 
 ```typescript
-const res = await free-media-upload.catbox.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.catbox.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -228,7 +250,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://filebin.net/)
 
 ```typescript
-const res = await free-media-upload.filebin.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.filebin.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -245,7 +272,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://gofile.io/api)
 
 ```typescript
-const res = await free-media-upload.gofile.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.gofile.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -262,7 +294,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://litterbox.catbox.moe/)
 
 ```typescript
-const res = await free-media-upload.litterbox.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.litterbox.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -279,7 +316,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://temp.sh/)
 
 ```typescript
-const res = await free-media-upload.tempsh.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.tempsh.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -296,7 +338,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://tmpfile.link/)
 
 ```typescript
-const res = await free-media-upload.tflink.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.tflink.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -313,7 +360,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://tmpfiles.org/)
 
 ```typescript
-const res = await free-media-upload.tmpfiles.api.v1.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.tmpfiles.api.v1.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)
@@ -330,7 +382,12 @@ Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeM
 [Upstream docs ↗](https://uguu.se/)
 
 ```typescript
-const res = await free-media-upload.uguu.upload({ /* ... */ });
+const res =
+  (await free) -
+  media -
+  upload.uguu.upload({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/free-media-upload/src/freeMediaUpload.ts`](src/freeMediaUpload.ts)

@@ -31,7 +31,7 @@ and tweets endpoints.
 ### 1. Configure your X app
 
 Open [console.x.com](https://console.x.com) and make sure your app lives
-in a **Pay Per Use** project — the legacy *Free* project is deprecated
+in a **Pay Per Use** project — the legacy _Free_ project is deprecated
 and v2 endpoints reject its tokens with `client-not-enrolled`. Move the
 app from the Apps list if needed.
 
@@ -106,7 +106,7 @@ authURL.searchParams.set("state", state);
 authURL.searchParams.set("code_challenge", challenge);
 authURL.searchParams.set("code_challenge_method", "S256");
 
-console.log("Open this URL and click \"Authorize app\":\n" + authURL.toString());
+console.log('Open this URL and click "Authorize app":\n' + authURL.toString());
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, REDIRECT);
@@ -120,9 +120,7 @@ const server = http.createServer(async (req, res) => {
     server.close();
     process.exit(1);
   }
-  const basic = Buffer.from(
-    `${CLIENT_ID}:${CLIENT_SECRET}`
-  ).toString("base64");
+  const basic = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
   const tokenRes = await fetch("https://api.x.com/2/oauth2/token", {
     method: "POST",
     headers: {
@@ -251,7 +249,9 @@ console.log(tweet.data.text);
 [Upstream docs ↗](https://docs.x.com/x-api/media/get-media-upload-status)
 
 ```typescript
-const res = await x.v2.media.upload({ /* ... */ });
+const res = await x.v2.media.upload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -266,7 +266,9 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 [Upstream docs ↗](https://docs.x.com/x-api/media/append-media-upload)
 
 ```typescript
-const res = await x.v2.media.upload.append({ /* ... */ });
+const res = await x.v2.media.upload.append({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -281,7 +283,9 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 [Upstream docs ↗](https://docs.x.com/x-api/media/finalize-media-upload)
 
 ```typescript
-const res = await x.v2.media.upload.finalize({ /* ... */ });
+const res = await x.v2.media.upload.finalize({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -296,7 +300,9 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 [Upstream docs ↗](https://docs.x.com/x-api/media/media-upload-initialize)
 
 ```typescript
-const res = await x.v2.media.upload.initialize({ /* ... */ });
+const res = await x.v2.media.upload.initialize({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)
@@ -313,7 +319,9 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 [Upstream docs ↗](https://docs.x.com/x-api/posts/create-post)
 
 ```typescript
-const res = await x.v2.tweets({ /* ... */ });
+const res = await x.v2.tweets({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)

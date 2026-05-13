@@ -115,7 +115,7 @@ console.log(text);
 
 console.log(
   `model=${result.model} stop=${result.stop_reason} ` +
-    `in=${result.usage.input_tokens} out=${result.usage.output_tokens}`,
+    `in=${result.usage.input_tokens} out=${result.usage.output_tokens}`
 );
 // → "model=claude-sonnet-4-6 stop=end_turn in=268 out=33"
 ````
@@ -127,28 +127,28 @@ console.log(
   conversation lengthens, so the format won't drift after 10 turns
   the way a single user-message instruction will. Pass it as a string
   for short rules; pass it as `[{ type: "text", text, cache_control:
-  { type: "ephemeral" } }]` to mark it as cacheable when you reuse
+{ type: "ephemeral" } }]` to mark it as cacheable when you reuse
   the same long system prompt across many requests.
 - Few-shot priming via a fake `assistant` turn is the cheapest
   reliable way to lock output formatting without `tools` or
   structured-output APIs. Claude does not distinguish between turns
   it actually generated and turns you wrote — both are equally
-  authoritative context. Keep priming turns *short and exact*; if
+  authoritative context. Keep priming turns _short and exact_; if
   yours doesn't match the system rule character-for-character (e.g. a
   trailing period the system says shouldn't be there), the model
   will hedge.
 - `result.content` is a `(AnthropicTextBlock | AnthropicToolUseBlock |
-  AnthropicThinkingBlock | …)[]` discriminated union. Filter on
+AnthropicThinkingBlock | …)[]` discriminated union. Filter on
   `b.type === "text"` before reading `.text`; on `b.type ===
-  "tool_use"` before reading `.input`; on `b.type === "thinking"`
+"tool_use"` before reading `.input`; on `b.type === "thinking"`
   before reading `.thinking`. Claude can interleave them in one
   response — e.g. a leading text block, then a thinking block, then
   a tool_use — so always iterate, never assume `content[0]`.
-- `usage.input_tokens` includes the *entire* transcript on every
+- `usage.input_tokens` includes the _entire_ transcript on every
   turn, so a 10-turn conversation pays for the system prompt + 10
   turns of history every time. To amortize a long system prompt
   (>1024 tokens) across many calls, mark it `cache_control:
-  ephemeral` and watch `usage.cache_read_input_tokens` rise on calls
+ephemeral` and watch `usage.cache_read_input_tokens` rise on calls
   2–N.
 - Errors throw `AnthropicError` with `status`, the parsed `body`, and
   the upstream `errorType` ("authentication_error",
@@ -177,7 +177,9 @@ console.log(
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.del({ /* ... */ });
+const res = await anthropic.v1.files.del({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -192,7 +194,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.content({ /* ... */ });
+const res = await anthropic.v1.files.content({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -207,7 +211,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.list({ /* ... */ });
+const res = await anthropic.v1.files.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -222,7 +228,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files.retrieve({ /* ... */ });
+const res = await anthropic.v1.files.retrieve({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -237,7 +245,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.files({ /* ... */ });
+const res = await anthropic.v1.files({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -254,7 +264,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.del({ /* ... */ });
+const res = await anthropic.v1.messages.batches.del({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -269,7 +281,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.list({ /* ... */ });
+const res = await anthropic.v1.messages.batches.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -284,7 +298,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.results({ /* ... */ });
+const res = await anthropic.v1.messages.batches.results({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -299,7 +315,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.retrieve({ /* ... */ });
+const res = await anthropic.v1.messages.batches.retrieve({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -314,7 +332,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages({ /* ... */ });
+const res = await anthropic.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -329,7 +349,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages({ /* ... */ });
+const res = await anthropic.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -344,7 +366,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches({ /* ... */ });
+const res = await anthropic.v1.messages.batches({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -359,7 +383,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches.cancel({ /* ... */ });
+const res = await anthropic.v1.messages.batches.cancel({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -374,7 +400,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.countTokens({ /* ... */ });
+const res = await anthropic.v1.messages.countTokens({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -389,7 +417,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages({ /* ... */ });
+const res = await anthropic.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -404,7 +434,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.batches({ /* ... */ });
+const res = await anthropic.v1.messages.batches({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -419,7 +451,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.messages.countTokens({ /* ... */ });
+const res = await anthropic.v1.messages.countTokens({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -436,7 +470,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.models.list({ /* ... */ });
+const res = await anthropic.v1.models.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -451,7 +487,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.models.retrieve({ /* ... */ });
+const res = await anthropic.v1.models.retrieve({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -468,7 +506,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.del({ /* ... */ });
+const res = await anthropic.v1.skills.del({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -483,7 +523,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.versions.del({ /* ... */ });
+const res = await anthropic.v1.skills.versions.del({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -498,7 +540,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.list({ /* ... */ });
+const res = await anthropic.v1.skills.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -513,7 +557,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.retrieve({ /* ... */ });
+const res = await anthropic.v1.skills.retrieve({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -528,7 +574,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.versions.list({ /* ... */ });
+const res = await anthropic.v1.skills.versions.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -543,7 +591,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.create({ /* ... */ });
+const res = await anthropic.v1.skills.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
@@ -558,7 +608,9 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 [Upstream docs ↗](https://docs.anthropic.com/en/api)
 
 ```typescript
-const res = await anthropic.v1.skills.versions.create({ /* ... */ });
+const res = await anthropic.v1.skills.versions.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)

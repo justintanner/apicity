@@ -568,14 +568,14 @@
           pairs.length + " pair" + (pairs.length === 1 ? "" : "s");
         rowsEl.innerHTML = pairs.map(renderRow).join("");
       }
-		fetch("/api/data")
-			.then(function (r) {
-				return r.json();
-			})
-			.then(function (data) {
-				recordings = data.recordings || [];
-				render();
-			});
+      fetch("/api/data")
+        .then(function (r) {
+          return r.json();
+        })
+        .then(function (data) {
+          recordings = data.recordings || [];
+          render();
+        });
     </script>
   </body>
 </html>

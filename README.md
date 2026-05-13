@@ -50,23 +50,23 @@ const task = await kie.post.api.v1.jobs.createTask(payload);
 
 ## Packages
 
-| Package                                                                       | Focus                                                              |
-| ----------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| [@apicity/openai](packages/provider/openai)                                   | OpenAI chat, responses, images, audio, embeddings, files           |
-| [@apicity/anthropic](packages/provider/anthropic)                             | Anthropic messages, streams, batches, files, models, admin APIs    |
-| [@apicity/xai](packages/provider/xai)                                         | xAI chat, responses, Grok images/video, files, collections, search |
-| [@apicity/fal](packages/provider/fal)                                         | fal model registry, generation, pricing, usage, analytics          |
-| [@apicity/kie](packages/provider/kie)                                         | KIE media generation for video, image, audio, Claude, Suno         |
-| [@apicity/alibaba](packages/provider/alibaba)                                 | Alibaba DashScope/Qwen chat, image, and video workflows            |
-| [@apicity/fireworks](packages/provider/fireworks)                             | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
-| [@apicity/kimicoding](packages/provider/kimicoding)                           | Kimi Coding messages, streaming, models, embeddings                |
-| [@apicity/elevenlabs](packages/provider/elevenlabs)                           | ElevenLabs text-to-speech, sound effects, audio APIs               |
-| [@apicity/free-media-upload](packages/provider/free-media-upload)             | Public file upload/hosting services                                |
-| [@apicity/x](packages/provider/x)                                             | X API posting and media upload                                     |
-| [@apicity/meta](packages/provider/meta)                                       | Instagram Graph API reel publishing                                |
-| [@apicity/polymarket](packages/provider/polymarket)                           | Polymarket Gamma, Data, and CLOB public market data                |
-| [@apicity/cost](packages/provider/cost)                                       | Pure local cost/token estimates across providers                   |
-| [@apicity/mcp-server](packages/mcp-server)                                    | MCP server exposing provider endpoints as tools                    |
+| Package                                                           | Focus                                                              |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------ |
+| [@apicity/openai](packages/provider/openai)                       | OpenAI chat, responses, images, audio, embeddings, files           |
+| [@apicity/anthropic](packages/provider/anthropic)                 | Anthropic messages, streams, batches, files, models, admin APIs    |
+| [@apicity/xai](packages/provider/xai)                             | xAI chat, responses, Grok images/video, files, collections, search |
+| [@apicity/fal](packages/provider/fal)                             | fal model registry, generation, pricing, usage, analytics          |
+| [@apicity/kie](packages/provider/kie)                             | KIE media generation for video, image, audio, Claude, Suno         |
+| [@apicity/alibaba](packages/provider/alibaba)                     | Alibaba DashScope/Qwen chat, image, and video workflows            |
+| [@apicity/fireworks](packages/provider/fireworks)                 | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
+| [@apicity/kimicoding](packages/provider/kimicoding)               | Kimi Coding messages, streaming, models, embeddings                |
+| [@apicity/elevenlabs](packages/provider/elevenlabs)               | ElevenLabs text-to-speech, sound effects, audio APIs               |
+| [@apicity/free-media-upload](packages/provider/free-media-upload) | Public file upload/hosting services                                |
+| [@apicity/x](packages/provider/x)                                 | X API posting and media upload                                     |
+| [@apicity/meta](packages/provider/meta)                           | Instagram Graph API reel publishing                                |
+| [@apicity/polymarket](packages/provider/polymarket)               | Polymarket Gamma, Data, and CLOB public market data                |
+| [@apicity/cost](packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
+| [@apicity/mcp-server](packages/mcp-server)                        | MCP server exposing provider endpoints as tools                    |
 
 ## Composition
 

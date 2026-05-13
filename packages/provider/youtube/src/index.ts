@@ -11,4 +11,12 @@ export type {
   YouTubeVideosListResponse,
   YouTubeVideosListMethod,
   YouTubeVideosNamespace,
+  YouTubeChannelsListResponse,
+  YouTubeChannel,
+  YouTubeChannelSnippet,
+  YouTubePageInfo,
 } from "./types";
+
+export type { YouTubeChannelsListRequest } from "./zod";
+
+export { YouTubeOptionsSchema, YouTubeChannelsListRequestSchema } from "./zod";

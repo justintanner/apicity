@@ -97,7 +97,7 @@ const submit: AlibabaVideoSynthesisSubmitResponse =
   });
 
 console.log(
-  `task=${submit.output.task_id} status=${submit.output.task_status}`,
+  `task=${submit.output.task_id} status=${submit.output.task_status}`
 );
 // → "task=5a674d6b-6a42-4b07-98bb-147ba79879ea status=PENDING"
 
@@ -114,7 +114,7 @@ const TERMINAL: ReadonlyArray<AlibabaTaskStatus> = [
   "CANCELED",
 ];
 let status: AlibabaTaskStatusResponse = await alibaba.get.api.v1.tasks(
-  submit.output.task_id,
+  submit.output.task_id
 );
 while (!TERMINAL.includes(status.output.task_status)) {
   await new Promise((r) => setTimeout(r, 5000));
@@ -133,7 +133,7 @@ if (status.output.task_status !== "SUCCEEDED") {
       `${status.output.code ?? "?"}: ${status.output.message ?? "?"}`,
     500,
     status.output,
-    status.output.code,
+    status.output.code
   );
 }
 
@@ -145,7 +145,7 @@ const elapsed =
   new Date(status.output.submit_time!).getTime();
 console.log(
   `model=wan2.7-i2v ${status.usage!.SR}p×${status.usage!.output_video_duration}s ` +
-    `elapsed=${(elapsed / 1000).toFixed(1)}s videos=${status.usage!.video_count}`,
+    `elapsed=${(elapsed / 1000).toFixed(1)}s videos=${status.usage!.video_count}`
 );
 // → "model=wan2.7-i2v 720p×5s elapsed=47.4s videos=1"
 ```
@@ -158,10 +158,10 @@ console.log(
   hosted on `oss-accelerate.aliyuncs.com`, which fronts an Alibaba CDN
   that resolves close to the caller; no auth header is required for the
   GET.
-- The submit call is *cheap* even when the task later FAILS — billing
+- The submit call is _cheap_ even when the task later FAILS — billing
   is only charged on SUCCEEDED tasks per `usage.duration` (seconds of
   output video). A failed content-safety screen (`code:
-  "DataInspectionFailed"`) on the input frame returns a SUCCEEDED-shape
+"DataInspectionFailed"`) on the input frame returns a SUCCEEDED-shape
   HTTP 200 with `task_status: "FAILED"`, not a 4xx — this is why the
   example above always reads `task_status` rather than relying on
   exception flow for content-related rejects.
@@ -169,7 +169,7 @@ console.log(
   2.7 family by changing `model`: `wan2.7-i2v` for image→video,
   `wan2.7-t2v` for text→video (drop the `media` array), and
   `wan2.7-videoedit` for video-style transfer (use `media[].type:
-  "video"`). The Zod schema enforces the per-model media-type
+"video"`). The Zod schema enforces the per-model media-type
   combinations — `videoedit` requires a `video` entry, `i2v` requires
   `first_frame` or `first_clip`, etc.
 - For payloads where the input frame exceeds DashScope's 10MB
@@ -178,7 +178,7 @@ console.log(
   exported helper does the `getPolicy` + multipart OSS PostObject
   dance and returns the URI ready to drop into `media[].url`. The
   `X-DashScope-OssResourceResolve` header is set automatically on
-  every aigc/* call so the URI resolves server-side.
+  every aigc/\* call so the URI resolves server-side.
 - Errors throw `AlibabaError` with `status` and the parsed `body`. The
   native aigc error shape (`{code, message, request_id}`) is surfaced
   in `error.code` — wrap with `withRetry` from `@apicity/alibaba` for
@@ -199,7 +199,9 @@ console.log(
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.compatibleMode.v1.models({ /* ... */ });
+const res = await alibaba.compatibleMode.v1.models({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -214,7 +216,9 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.compatibleMode.v1.chat.completions({ /* ... */ });
+const res = await alibaba.compatibleMode.v1.chat.completions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -229,7 +233,9 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 <code>POST https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation</code>
 
 ```typescript
-const res = await alibaba.api.v1.services.aigc.imageGeneration.generation({ /* ... */ });
+const res = await alibaba.api.v1.services.aigc.imageGeneration.generation({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -244,7 +250,9 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 [Upstream docs ↗](https://www.alibabacloud.com/help/en/model-studio/qwen-image-edit)
 
 ```typescript
-const res = await alibaba.api.v1.services.aigc.multimodalGeneration.generation({ /* ... */ });
+const res = await alibaba.api.v1.services.aigc.multimodalGeneration.generation({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -259,7 +267,9 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis({ /* ... */ });
+const res = await alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -276,7 +286,9 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.api.v1.tasks({ /* ... */ });
+const res = await alibaba.api.v1.tasks({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
@@ -293,7 +305,9 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 [Upstream docs ↗](https://help.aliyun.com/zh/model-studio)
 
 ```typescript
-const res = await alibaba.api.v1.uploads({ /* ... */ });
+const res = await alibaba.api.v1.uploads({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)

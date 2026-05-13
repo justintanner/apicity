@@ -56,18 +56,17 @@ const fireworks = createFireworks({ apiKey: process.env.FIREWORKS_API_KEY! });
 //    true` echoes the document text back inline so you can hand the
 //    top hit straight to a chat model without keeping a parallel
 //    id→text map.
-const ranked: FireworksRerankResponse =
-  await fireworks.inference.v1.rerank({
-    model: "fireworks/qwen3-reranker-8b",
-    query: "What is the capital of France?",
-    documents: [
-      "Berlin is the capital of Germany.",
-      "Paris is the capital and largest city of France.",
-      "Madrid is the capital of Spain.",
-    ],
-    top_n: 2,
-    return_documents: true,
-  });
+const ranked: FireworksRerankResponse = await fireworks.inference.v1.rerank({
+  model: "fireworks/qwen3-reranker-8b",
+  query: "What is the capital of France?",
+  documents: [
+    "Berlin is the capital of Germany.",
+    "Paris is the capital and largest city of France.",
+    "Madrid is the capital of Spain.",
+  ],
+  top_n: 2,
+  return_documents: true,
+});
 
 // 2. The response is sorted descending by relevance_score. The score
 //    spread is huge — Paris ~0.96, Berlin ~0.0001, Madrid dropped — a
@@ -123,7 +122,7 @@ for await (const chunk of stream) {
 console.log(answer);
 // → "Hello, it's nice to meet you and I'm here to help with any questions or topics you'd like to discuss."
 console.log(
-  `finish=${finish}, prompt=${totals.prompt}, completion=${totals.completion}`,
+  `finish=${finish}, prompt=${totals.prompt}, completion=${totals.completion}`
 );
 // → "finish=stop, prompt=41, completion=26"
 ```
@@ -177,7 +176,9 @@ console.log(
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.apiKeys.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.apiKeys.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -192,7 +193,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.apiKeys({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.apiKeys({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -207,7 +210,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.apiKeys.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.apiKeys.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -222,7 +227,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.batchInferenceJobs.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.batchInferenceJobs.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -237,7 +244,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.batchInferenceJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.batchInferenceJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -252,7 +261,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.batchInferenceJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.batchInferenceJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -267,7 +278,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.batchInferenceJobs.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.batchInferenceJobs.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -282,7 +295,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -297,7 +312,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -312,7 +329,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -327,7 +346,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets.getDownloadEndpoint({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.getDownloadEndpoint({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -342,7 +363,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets.getUploadEndpoint({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.getUploadEndpoint({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -357,7 +380,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -372,7 +397,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -387,7 +414,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.datasets.validateUpload({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.datasets.validateUpload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -402,7 +431,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -417,7 +448,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -432,7 +465,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -447,7 +482,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -462,7 +499,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployedModels.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployedModels.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -477,7 +516,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deploymentShapes({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deploymentShapes({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -492,7 +533,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deploymentShapes.versions({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deploymentShapes.versions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -507,7 +550,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deploymentShapes.versions.list({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.deploymentShapes.versions.list({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -522,7 +568,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -537,7 +585,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -552,7 +602,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -567,7 +619,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -582,7 +636,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments.scale({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.scale({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -597,7 +653,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments.undelete({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.undelete({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -612,7 +670,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.deployments.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.deployments.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -627,7 +687,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -642,7 +704,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -657,7 +721,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -672,7 +738,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs.getMetricsFileEndpoint({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.dpoJobs.getMetricsFileEndpoint({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -687,7 +756,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -702,7 +773,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.dpoJobs.resume({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.dpoJobs.resume({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -717,7 +790,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluationJobs.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -732,7 +807,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluationJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -747,7 +824,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluationJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -762,7 +841,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs.getExecutionLogEndpoint({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.evaluationJobs.getExecutionLogEndpoint({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -777,7 +859,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluationJobs.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluationJobs.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -792,7 +876,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -807,7 +893,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -822,7 +910,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -837,7 +927,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.getBuildLogEndpoint({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.evaluators.getBuildLogEndpoint({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -852,7 +945,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.getSourceCodeSignedUrl({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.evaluators.getSourceCodeSignedUrl({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -867,7 +963,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.getUploadEndpoint({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.getUploadEndpoint({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -882,7 +980,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -897,7 +997,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -912,7 +1014,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.evaluators.validateUpload({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.evaluators.validateUpload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -927,7 +1031,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts({ /* ... */ });
+const res = await fireworks.inference.v1.accounts({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -942,7 +1048,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -957,7 +1065,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -972,7 +1082,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -987,7 +1099,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1002,7 +1116,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.getDownloadEndpoint({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.getDownloadEndpoint({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1017,7 +1133,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.getUploadEndpoint({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.getUploadEndpoint({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1032,7 +1150,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1047,7 +1167,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.prepare({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.prepare({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1062,7 +1184,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1077,7 +1201,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.models.validateUpload({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.models.validateUpload({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1092,7 +1218,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.create({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.create({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1107,7 +1236,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1122,7 +1253,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1137,7 +1270,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.list({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.list({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1152,7 +1288,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.resume({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.reinforcementFineTuningJobs.resume({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1167,7 +1306,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1182,7 +1323,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1197,7 +1340,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.executeTrainStep({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.rlorTrainerJobs.executeTrainStep({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1212,7 +1358,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1227,7 +1375,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1242,7 +1392,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.resume({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.rlorTrainerJobs.resume({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1257,7 +1409,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1272,7 +1426,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1287,7 +1443,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1302,7 +1460,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1317,7 +1477,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.secrets.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.secrets.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1332,7 +1494,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs.create({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.supervisedFineTuningJobs.create({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1347,7 +1512,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1362,7 +1529,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1377,7 +1546,11 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs.list(
+  {
+    /* ... */
+  }
+);
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1392,7 +1565,10 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.supervisedFineTuningJobs.resume({ /* ... */ });
+const res =
+  await fireworks.inference.v1.accounts.supervisedFineTuningJobs.resume({
+    /* ... */
+  });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1407,7 +1583,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users.create({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.users.create({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1422,7 +1600,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.users({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1437,7 +1617,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users.list({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.users.list({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1452,7 +1634,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.users.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1467,7 +1651,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.audio.batch({ /* ... */ });
+const res = await fireworks.inference.v1.audio.batch({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1482,7 +1668,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.audio.batch.transcriptions({ /* ... */ });
+const res = await fireworks.inference.v1.audio.batch.transcriptions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1497,7 +1685,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.audio.batch.translations({ /* ... */ });
+const res = await fireworks.inference.v1.audio.batch.translations({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1512,7 +1702,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.audio.transcriptions({ /* ... */ });
+const res = await fireworks.inference.v1.audio.transcriptions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1527,7 +1719,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.audio.translations({ /* ... */ });
+const res = await fireworks.inference.v1.audio.translations({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1542,7 +1736,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.chat.completions({ /* ... */ });
+const res = await fireworks.inference.v1.chat.completions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1557,7 +1753,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.completions({ /* ... */ });
+const res = await fireworks.inference.v1.completions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1572,7 +1770,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.embeddings({ /* ... */ });
+const res = await fireworks.inference.v1.embeddings({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1587,7 +1787,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.messages({ /* ... */ });
+const res = await fireworks.inference.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1602,7 +1804,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.rerank({ /* ... */ });
+const res = await fireworks.inference.v1.rerank({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1617,7 +1821,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.accounts.users.update({ /* ... */ });
+const res = await fireworks.inference.v1.accounts.users.update({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1630,7 +1836,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.workflows.getResult({ /* ... */ });
+const res = await fireworks.inference.v1.workflows.getResult({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1643,7 +1851,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.workflows.kontext({ /* ... */ });
+const res = await fireworks.inference.v1.workflows.kontext({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1656,7 +1866,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.workflows.textToImage({ /* ... */ });
+const res = await fireworks.inference.v1.workflows.textToImage({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
@@ -1671,7 +1883,9 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
-const res = await fireworks.inference.v1.messages({ /* ... */ });
+const res = await fireworks.inference.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)

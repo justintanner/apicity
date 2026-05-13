@@ -151,7 +151,9 @@ console.log(result.usage);
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches({ /* ... */ });
+const res = await xai.v1.batches({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -166,7 +168,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.requests({ /* ... */ });
+const res = await xai.v1.batches.requests({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -181,7 +185,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.results({ /* ... */ });
+const res = await xai.v1.batches.results({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -196,7 +202,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches({ /* ... */ });
+const res = await xai.v1.batches({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -211,7 +219,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.cancel({ /* ... */ });
+const res = await xai.v1.batches.cancel({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -226,7 +236,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.batches.requests({ /* ... */ });
+const res = await xai.v1.batches.requests({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -243,7 +255,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.chat.deferredCompletion({ /* ... */ });
+const res = await xai.v1.chat.deferredCompletion({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -258,7 +272,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.chat.completions({ /* ... */ });
+const res = await xai.v1.chat.completions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -275,7 +291,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections({ /* ... */ });
+const res = await xai.v1.collections({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -290,7 +308,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections.documents({ /* ... */ });
+const res = await xai.v1.collections.documents({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -305,7 +325,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections({ /* ... */ });
+const res = await xai.v1.collections({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -320,7 +342,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections.documents({ /* ... */ });
+const res = await xai.v1.collections.documents({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -335,7 +359,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections.documents.batchGet({ /* ... */ });
+const res = await xai.v1.collections.documents.batchGet({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -350,7 +376,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections.documents({ /* ... */ });
+const res = await xai.v1.collections.documents({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -365,7 +393,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections({ /* ... */ });
+const res = await xai.v1.collections({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -380,7 +410,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections.documents({ /* ... */ });
+const res = await xai.v1.collections.documents({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -395,7 +427,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.collections({ /* ... */ });
+const res = await xai.v1.collections({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -412,7 +446,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.customVoices({ /* ... */ });
+const res = await xai.v1.customVoices({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -429,7 +465,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.documents.search({ /* ... */ });
+const res = await xai.v1.documents.search({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -446,7 +484,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files({ /* ... */ });
+const res = await xai.v1.files({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -461,7 +501,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files({ /* ... */ });
+const res = await xai.v1.files({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -476,7 +518,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.files({ /* ... */ });
+const res = await xai.v1.files({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -493,7 +537,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.imageGenerationModels({ /* ... */ });
+const res = await xai.v1.imageGenerationModels({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -510,7 +556,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.images.edits({ /* ... */ });
+const res = await xai.v1.images.edits({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -525,7 +573,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.images.generations({ /* ... */ });
+const res = await xai.v1.images.generations({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -542,7 +592,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.languageModels({ /* ... */ });
+const res = await xai.v1.languageModels({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -559,7 +611,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.models({ /* ... */ });
+const res = await xai.v1.models({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -576,7 +630,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.realtime.clientSecrets({ /* ... */ });
+const res = await xai.v1.realtime.clientSecrets({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -593,7 +649,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses({ /* ... */ });
+const res = await xai.v1.responses({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -608,7 +666,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses({ /* ... */ });
+const res = await xai.v1.responses({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -623,7 +683,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.responses({ /* ... */ });
+const res = await xai.v1.responses({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -640,7 +702,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.stt({ /* ... */ });
+const res = await xai.v1.stt({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -657,7 +721,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.tokenizeText({ /* ... */ });
+const res = await xai.v1.tokenizeText({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -674,7 +740,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.tts({ /* ... */ });
+const res = await xai.v1.tts({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -691,7 +759,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videoGenerationModels({ /* ... */ });
+const res = await xai.v1.videoGenerationModels({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -708,7 +778,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos({ /* ... */ });
+const res = await xai.v1.videos({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -723,7 +795,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos.edits({ /* ... */ });
+const res = await xai.v1.videos.edits({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -738,7 +812,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos.extensions({ /* ... */ });
+const res = await xai.v1.videos.extensions({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -753,7 +829,9 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
 ```typescript
-const res = await xai.v1.videos.generations({ /* ... */ });
+const res = await xai.v1.videos.generations({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
@@ -821,10 +899,9 @@ Place `withRateLimit` innermost so retries count against the limit:
 ```typescript
 const limiter = createRateLimiter(XAI_RATE_LIMITS.tier1);
 
-const chat = withRetry(
-  withRateLimit(xai.post.v1.chat.completions, limiter),
-  { retries: 2 }
-);
+const chat = withRetry(withRateLimit(xai.post.v1.chat.completions, limiter), {
+  retries: 2,
+});
 ```
 
 ### Batch processing
@@ -847,13 +924,13 @@ const results = await Promise.all(
 
 ### xAI rate limit tiers
 
-| Preset | RPM | Concurrent | Spend threshold |
-|--------|-----|------------|-----------------|
-| `free` | 5 | 2 | $0 |
-| `tier1` | 60 | 10 | $0+ |
-| `tier2` | 200 | 25 | $100+ |
-| `tier3` | 500 | 50 | $500+ |
-| `tier4` | 1000 | 100 | $1,000+ |
+| Preset  | RPM  | Concurrent | Spend threshold |
+| ------- | ---- | ---------- | --------------- |
+| `free`  | 5    | 2          | $0              |
+| `tier1` | 60   | 10         | $0+             |
+| `tier2` | 200  | 25         | $100+           |
+| `tier3` | 500  | 50         | $500+           |
+| `tier4` | 1000 | 100        | $1,000+         |
 
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 

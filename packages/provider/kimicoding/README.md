@@ -19,7 +19,9 @@ pnpm add @apicity/kimicoding
 ```typescript
 import { kimicoding as createKimicoding } from "@apicity/kimicoding";
 
-const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! });
+const kimicoding = createKimicoding({
+  apiKey: process.env.KIMICODING_API_KEY!,
+});
 ```
 
 ## API Reference
@@ -36,7 +38,9 @@ const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! })
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.models({ /* ... */ });
+const res = await kimicoding.coding.v1.models({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -51,7 +55,9 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.countTokens({ /* ... */ });
+const res = await kimicoding.coding.v1.countTokens({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -66,7 +72,9 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.embeddings({ /* ... */ });
+const res = await kimicoding.coding.v1.embeddings({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -81,7 +89,9 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.messages({ /* ... */ });
+const res = await kimicoding.coding.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -96,7 +106,9 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 [Upstream docs ↗](https://platform.moonshot.ai/docs)
 
 ```typescript
-const res = await kimicoding.coding.v1.messages({ /* ... */ });
+const res = await kimicoding.coding.v1.messages({
+  /* ... */
+});
 ```
 
 Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
@@ -108,7 +120,9 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 ```typescript
 import { kimicoding as createKimicoding, withRetry } from "@apicity/kimicoding";
 
-const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! });
+const kimicoding = createKimicoding({
+  apiKey: process.env.KIMICODING_API_KEY!,
+});
 const models = withRetry(kimicoding.get.v1.models, { retries: 3 });
 ```
 

@@ -1,3 +1,6 @@
+import type { z } from "zod";
+import type { YouTubeChannelsListRequest } from "./zod";
+
 export class YouTubeError extends Error {
   readonly status: number;
   readonly body: unknown;
@@ -11,6 +14,8 @@ export class YouTubeError extends Error {
     this.code = code;
   }
 }
+
+// -- videos.list -----------------------------------------------------------
 
 export interface YouTubeVideoSnippet {
   publishedAt: string;
@@ -56,8 +61,53 @@ export interface YouTubeVideosNamespace {
   list: YouTubeVideosListMethod;
 }
 
+// -- channels.list ---------------------------------------------------------
+
+export interface YouTubePageInfo {
+  totalResults: number;
+  resultsPerPage: number;
+}
+
+export interface YouTubeChannelSnippet {
+  title: string;
+  description: string;
+  publishedAt: string;
+  customUrl?: string;
+  thumbnails?: Record<string, { url: string; width?: number; height?: number }>;
+}
+
+export interface YouTubeChannel {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet?: YouTubeChannelSnippet;
+}
+
+export interface YouTubeChannelsListResponse {
+  kind: string;
+  etag: string;
+  nextPageToken?: string;
+  pageInfo: YouTubePageInfo;
+  items: YouTubeChannel[];
+}
+
+export interface YouTubeChannelsListMethod {
+  (
+    req: YouTubeChannelsListRequest,
+    signal?: AbortSignal
+  ): Promise<YouTubeChannelsListResponse>;
+  schema: z.ZodType<YouTubeChannelsListRequest>;
+}
+
+export interface YouTubeChannelsNamespace {
+  list: YouTubeChannelsListMethod;
+}
+
+// -- Provider --------------------------------------------------------------
+
 export interface YouTubeProvider {
   videos: YouTubeVideosNamespace;
+  channels: YouTubeChannelsNamespace;
 }
 
 export type { YouTubeOptions } from "./zod";

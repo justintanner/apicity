@@ -13,10 +13,11 @@ First alpha release of the `@apicity/*` monorepo to npm (dist-tag `alpha`).
 Tag: `v0.1.0-alpha.0`. 15 scoped packages published in lockstep.
 
 ### Added
+
 - 15 scoped provider packages with zero runtime dependencies:
   `@apicity/{alibaba, anthropic, cost, elevenlabs, fal, fireworks,
-  free-media-upload, kie, kimicoding, meta, openai, polymarket, x, xai,
-  mcp-server}`.
+free-media-upload, kie, kimicoding, meta, openai, polymarket, x, xai,
+mcp-server}`.
 - Type-safe factories mirroring upstream API URL paths.
 - Zod schema validation on every POST endpoint.
 - Middleware composition (retry, fallback, rate-limit).

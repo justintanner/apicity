@@ -17,8 +17,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
-const PATH_PREFIX =
-  `${process.env.HOME}/go/bin:${process.env.HOME}/.local/bin:`;
+const PATH_PREFIX = `${process.env.HOME}/go/bin:${process.env.HOME}/.local/bin:`;
 
 async function run(directory, ...args) {
   try {

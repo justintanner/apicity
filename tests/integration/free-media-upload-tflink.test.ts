@@ -45,6 +45,22 @@ describe("free-media-upload tflink upload", () => {
     expect(result.size).toBe(imgBuffer.length);
   });
 
+  it("should upload a video", async () => {
+    ctx = setupPollyForFileUploads("free-media-upload/tflink-upload-video");
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const result = await provider.tflink.upload({
+      file,
+      filename: "jump.mp4",
+    });
+
+    expect(result.downloadLink).toContain("tmpfile.link");
+    expect(result.fileName).toBe("jump.mp4");
+    expect(result.size).toBe(vidBuffer.length);
+  });
+
   it("should validate payload - missing file", () => {
     ctx = setupPollyForFileUploads("free-media-upload/tflink-validate");
     const provider = freeMediaUpload();

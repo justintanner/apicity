@@ -36,6 +36,17 @@ describe("free-media-upload temp.sh upload", () => {
     expect(url).toContain("temp.sh");
   });
 
+  it("should upload a video", async () => {
+    ctx = setupPollyForFileUploads("free-media-upload/tempsh-upload-video");
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const url = await provider.tempsh.upload({ file, filename: "jump.mp4" });
+
+    expect(url).toContain("temp.sh");
+  });
+
   it("should validate payload - missing file", () => {
     ctx = setupPollyForFileUploads("free-media-upload/tempsh-validate");
     const provider = freeMediaUpload();

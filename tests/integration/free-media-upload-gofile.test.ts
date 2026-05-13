@@ -45,6 +45,22 @@ describe("free-media-upload gofile upload", () => {
     expect(result.data.size).toBe(imgBuffer.length);
   });
 
+  it("should upload a video", async () => {
+    ctx = setupPollyForFileUploads("free-media-upload/gofile-upload-video");
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const result = await provider.gofile.upload({
+      file,
+      filename: "jump.mp4",
+    });
+
+    expect(result.status).toBe("ok");
+    expect(result.data.downloadPage).toContain("gofile.io");
+    expect(result.data.size).toBe(vidBuffer.length);
+  });
+
   it("should validate payload - missing file", () => {
     ctx = setupPollyForFileUploads("free-media-upload/gofile-validate");
     const provider = freeMediaUpload();

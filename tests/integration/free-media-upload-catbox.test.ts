@@ -36,6 +36,17 @@ describe("free-media-upload catbox upload", () => {
     expect(url).toContain("catbox.moe");
   });
 
+  it.skip("should upload a video (skipped: catbox.moe unreachable)", async () => {
+    ctx = setupPollyForFileUploads("free-media-upload/catbox-upload-video");
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const url = await provider.catbox.upload({ file, filename: "jump.mp4" });
+
+    expect(url).toContain("catbox.moe");
+  });
+
   it("should validate payload - missing file", () => {
     ctx = setupPollyForFileUploads("free-media-upload/catbox-validate");
     const provider = freeMediaUpload();

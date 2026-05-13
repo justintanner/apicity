@@ -48,6 +48,24 @@ describe("free-media-upload filebin upload", () => {
     expect(result.file.md5).toBeTruthy();
   });
 
+  it("should upload a video", async () => {
+    ctx = setupPollyForFileUploads("free-media-upload/filebin-upload-video");
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const result = await provider.filebin.upload({
+      file,
+      filename: "jump.mp4",
+      bin: "apicity-test-video",
+    });
+
+    expect(result.bin.id).toBe("apicity-test-video");
+    expect(result.file.filename).toBe("jump.mp4");
+    expect(result.file.bytes).toBe(vidBuffer.length);
+    expect(result.file.sha256).toBeTruthy();
+  });
+
   it("should validate payload - missing file", () => {
     ctx = setupPollyForFileUploads("free-media-upload/filebin-validate");
     const provider = freeMediaUpload();

@@ -10,7 +10,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { meta as createMeta } from "@apicity/meta";
-import { freeMediaUpload } from "@apicity/free-media-upload";
+import { freeMediaUpload, uploadToAnyHost } from "@apicity/free-media-upload";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const recordingName = "meta/post-video";
@@ -44,7 +44,7 @@ describe("meta post video end-to-end", () => {
     const blob = new Blob([bytes], { type: "video/mp4" });
 
     const host = freeMediaUpload({});
-    const videoUrl = await host.uploadToAnyHost({
+    const videoUrl = await uploadToAnyHost(host, {
       file: blob,
       filename: "jump.mp4",
       hosts: ["litterbox", "uguu", "tflink"],

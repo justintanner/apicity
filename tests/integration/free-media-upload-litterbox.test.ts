@@ -43,6 +43,74 @@ describe("free-media-upload litterbox upload", () => {
     expect(url).toContain("litter.catbox.moe");
   });
 
+  it("should upload a video with 1h expiry", async () => {
+    ctx = setupPollyForFileUploads(
+      "free-media-upload/litterbox-upload-video-1h"
+    );
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const url = await provider.litterbox.upload({
+      file,
+      filename: "jump.mp4",
+      time: "1h",
+    });
+
+    expect(url).toContain("litter.catbox.moe");
+  });
+
+  it("should upload a video with 12h expiry", async () => {
+    ctx = setupPollyForFileUploads(
+      "free-media-upload/litterbox-upload-video-12h"
+    );
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const url = await provider.litterbox.upload({
+      file,
+      filename: "jump.mp4",
+      time: "12h",
+    });
+
+    expect(url).toContain("litter.catbox.moe");
+  });
+
+  it("should upload a video with 24h expiry", async () => {
+    ctx = setupPollyForFileUploads(
+      "free-media-upload/litterbox-upload-video-24h"
+    );
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const url = await provider.litterbox.upload({
+      file,
+      filename: "jump.mp4",
+      time: "24h",
+    });
+
+    expect(url).toContain("litter.catbox.moe");
+  });
+
+  it("should upload a video with 72h expiry", async () => {
+    ctx = setupPollyForFileUploads(
+      "free-media-upload/litterbox-upload-video-72h"
+    );
+    const provider = freeMediaUpload();
+    const vidBuffer = readFileSync(resolve(__dirname, "../fixtures/jump.mp4"));
+    const file = new Blob([vidBuffer], { type: "video/mp4" });
+
+    const url = await provider.litterbox.upload({
+      file,
+      filename: "jump.mp4",
+      time: "72h",
+    });
+
+    expect(url).toContain("litter.catbox.moe");
+  });
+
   it("should validate payload - missing file", () => {
     ctx = setupPollyForFileUploads("free-media-upload/litterbox-validate");
     const provider = freeMediaUpload();

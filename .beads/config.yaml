@@ -57,3 +57,5 @@ gc.endpoint_status: verified
 # - github.org
 # - github.repo
 types.custom: molecule,convoy,message,event,gate,merge-request,agent,role,rig,session,spec,convergence
+
+sync.remote: "git+ssh://git@github.com/justintanner/apicity.git"

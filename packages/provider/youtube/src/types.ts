@@ -12,14 +12,52 @@ export class YouTubeError extends Error {
   }
 }
 
-// Endpoints will be added by subsequent tasks.
-// See parent epic for planned endpoints:
-//   videos.insert (resumable upload)
-//   commentThreads.insert
-//   comments.insert
-//   playlists.insert
-//   playlistItems.insert
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface YouTubeProvider {}
+export interface YouTubeVideoSnippet {
+  publishedAt: string;
+  channelId: string;
+  title: string;
+  description: string;
+  channelTitle: string;
+}
+
+export interface YouTubeVideo {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet?: YouTubeVideoSnippet;
+}
+
+export interface YouTubeVideosListResponse {
+  kind: string;
+  etag: string;
+  items: YouTubeVideo[];
+  pageInfo?: {
+    totalResults: number;
+    resultsPerPage: number;
+  };
+}
+
+export interface YouTubeVideosListRequest {
+  part: string;
+  id?: string;
+  chart?: string;
+  maxResults?: number;
+  pageToken?: string;
+}
+
+export interface YouTubeVideosListMethod {
+  (
+    req: YouTubeVideosListRequest,
+    signal?: AbortSignal
+  ): Promise<YouTubeVideosListResponse>;
+}
+
+export interface YouTubeVideosNamespace {
+  list: YouTubeVideosListMethod;
+}
+
+export interface YouTubeProvider {
+  videos: YouTubeVideosNamespace;
+}
 
 export type { YouTubeOptions } from "./zod";

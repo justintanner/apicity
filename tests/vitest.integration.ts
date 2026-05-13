@@ -105,6 +105,10 @@ export default defineConfig({
         "../packages/provider/polymarket/src"
       ),
       "@apicity/cost": path.resolve(__dirname, "../packages/provider/cost/src"),
+      "@apicity/youtube": path.resolve(
+        __dirname,
+        "../packages/provider/youtube/src"
+      ),
     },
     coverage: {
       provider: "v8",

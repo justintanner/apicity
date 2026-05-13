@@ -1,4 +1,10 @@
-import { YouTubeOptions, YouTubeProvider, YouTubeError } from "./types";
+import {
+  YouTubeOptions,
+  YouTubeProvider,
+  YouTubeError,
+  YouTubeVideosListRequest,
+  YouTubeVideosListResponse,
+} from "./types";
 
 export function youtube(opts: YouTubeOptions): YouTubeProvider {
   const baseURL = opts.baseURL ?? "https://www.googleapis.com/youtube/v3";
@@ -39,7 +45,6 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     return `YouTube API error: ${status}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function makeJsonRequest<T>(
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH",
     path: string,
@@ -94,13 +99,43 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     }
   }
 
-  // Endpoints will be added by subsequent tasks.
-  // See parent epic for planned endpoints:
-  //   videos.insert (resumable upload)
-  //   commentThreads.insert
-  //   comments.insert
-  //   playlists.insert
-  //   playlistItems.insert
+  function buildQuery(
+    params: Record<string, string | number | undefined>
+  ): string {
+    const qs = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        qs.append(key, String(value));
+      }
+    }
+    const query = qs.toString();
+    return query ? `?${query}` : "";
+  }
 
-  return {} as YouTubeProvider;
+  // GET https://www.googleapis.com/youtube/v3/videos
+  // Docs: https://developers.google.com/youtube/v3/docs/videos/list
+  async function videosList(
+    req: YouTubeVideosListRequest,
+    signal?: AbortSignal
+  ): Promise<YouTubeVideosListResponse> {
+    const query = buildQuery({
+      part: req.part,
+      id: req.id,
+      chart: req.chart,
+      maxResults: req.maxResults,
+      pageToken: req.pageToken,
+    });
+    return makeJsonRequest<YouTubeVideosListResponse>(
+      "GET",
+      `/videos${query}`,
+      undefined,
+      signal
+    );
+  }
+
+  return {
+    videos: {
+      list: videosList,
+    },
+  };
 }

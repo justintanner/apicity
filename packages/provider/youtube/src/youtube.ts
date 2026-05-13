@@ -146,7 +146,7 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
       const query = buildQuery({
         part: req.part,
         id: req.id,
-        mine: req.mine,
+        mine: req.mine === undefined ? undefined : String(req.mine),
         forUsername: req.forUsername,
         maxResults: req.maxResults,
         pageToken: req.pageToken,

@@ -105,13 +105,10 @@ export default defineConfig({
         "../packages/provider/polymarket/src"
       ),
       "@apicity/cost": path.resolve(__dirname, "../packages/provider/cost/src"),
-<<<<<<< HEAD
-=======
       "@apicity/youtube/zod": path.resolve(
         __dirname,
         "../packages/provider/youtube/src/zod"
       ),
->>>>>>> 5d05c31 (feat(youtube): add GET /youtube/v3/channels endpoint and integration test)
       "@apicity/youtube": path.resolve(
         __dirname,
         "../packages/provider/youtube/src"

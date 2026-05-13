@@ -24,17 +24,38 @@ const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### channels
 
 <details>
-<summary><code>GET</code> <b><code>youtube.v3.channels</code></b></summary>
+<summary><code>GET</code> <b><code>youtube.channels.list</code></b></summary>
 
 <code>GET https://www.googleapis.com/youtube/v3/channels{query}</code>
 
+[Upstream docs ↗](https://developers.google.com/youtube/v3/docs/channels/list)
+
 ```typescript
-const res = await youtube.v3.channels({
+const res = await youtube.channels.list({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
+
+</details>
+
+### videos
+
+<details>
+<summary><code>GET</code> <b><code>youtube.videos.list</code></b></summary>
+
+<code>GET https://www.googleapis.com/youtube/v3/videos{query}</code>
+
+[Upstream docs ↗](https://developers.google.com/youtube/v3/docs/videos/list)
+
+```typescript
+const res = await youtube.videos.list({
   /* ... */
 });
 ```

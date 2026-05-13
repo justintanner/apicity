@@ -30,7 +30,6 @@
     "build:polymarket": "pnpm --filter @apicity/polymarket run build",
     "build:free-media-upload": "pnpm --filter @apicity/free-media-upload run build",
     "build:cost": "pnpm --filter @apicity/cost run build",
-    "build:youtube": "pnpm --filter @apicity/youtube run build",
     "build:mcp-server": "pnpm --filter @apicity/mcp-server run build",
     "gen:examples": "node scripts/extract-har-examples.mjs",
     "gen:examples:check": "node scripts/extract-har-examples.mjs --check",

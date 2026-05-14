@@ -48,7 +48,7 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 <details>
 <summary><code>POST</code> <b><code>youtube.videos.insert</code></b></summary>
 
-<code>POST https://www.googleapis.com/youtube/v3/videos{query}</code>
+<code>POST https://www.googleapis.com/upload/youtube/v3/videos{query}</code>
 
 ```typescript
 const res = await youtube.videos.insert({ /* ... */ });

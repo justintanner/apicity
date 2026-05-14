@@ -49,6 +49,7 @@
     "doc-gen:youtube": "node scripts/doc-gen.mjs youtube",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
+    "pretest:run": "pnpm run build",
     "lint": "eslint . && node scripts/check-endpoint-comments.mjs && node scripts/check-endpoint-signatures.mjs",
     "lint:fix": "eslint . --fix",
     "lint:endpoints": "node scripts/check-endpoint-comments.mjs",

@@ -4,8 +4,13 @@ import {
   YouTubeError,
   YouTubeVideosListRequest,
   YouTubeVideosListResponse,
+  YouTubeVideosInsertResponse,
 } from "./types";
-import { YouTubeChannelsListRequestSchema } from "./zod";
+import {
+  YouTubeChannelsListRequestSchema,
+  YouTubeVideosInsertRequestSchema,
+  YouTubeVideosInsertRequest,
+} from "./zod";
 
 export function youtube(opts: YouTubeOptions): YouTubeProvider {
   const baseURL = opts.baseURL ?? "https://www.googleapis.com/youtube/v3";
@@ -113,6 +118,78 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     return query ? `?${query}` : "";
   }
 
+  function buildMultipartRelated(
+    metadata: unknown,
+    media: Blob,
+    mediaType: string
+  ): { body: Blob; boundary: string } {
+    const boundary =
+      "----apicityboundary" + Math.random().toString(36).slice(2);
+    const parts = [
+      `--${boundary}\r\n`,
+      `Content-Type: application/json\r\n\r\n`,
+      JSON.stringify(metadata),
+      `\r\n--${boundary}\r\n`,
+      `Content-Type: ${mediaType}\r\n\r\n`,
+      media,
+      `\r\n--${boundary}--\r\n`,
+    ];
+    const body = new Blob(parts, {
+      type: `multipart/related; boundary="${boundary}"`,
+    });
+    return { body, boundary };
+  }
+
+  async function makeUploadRequest<T>(
+    path: string,
+    body: Blob,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(
+        `${baseURL.replace("/youtube/v3", "/upload/youtube/v3")}${path}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${opts.accessToken}`,
+            "Content-Type": body.type || "application/octet-stream",
+          },
+          body,
+          signal: controller.signal,
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new YouTubeError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof YouTubeError) throw error;
+      throw new YouTubeError(`YouTube request failed: ${error}`, 500);
+    }
+  }
+
   // sig-ok: namespace follows YouTube API method naming (`videos.list`)
   // GET https://www.googleapis.com/youtube/v3/videos{query}
   // Docs: https://developers.google.com/youtube/v3/docs/videos/list
@@ -134,6 +211,38 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
       signal
     );
   }
+
+  // sig-ok: namespace follows YouTube API method naming (`videos.insert`)
+  // POST https://www.googleapis.com/upload/youtube/v3/videos{query}
+  // Docs: https://developers.google.com/youtube/v3/docs/videos/insert
+  const videosInsert = Object.assign(
+    async (
+      req: YouTubeVideosInsertRequest,
+      media: Blob,
+      signal?: AbortSignal
+    ): Promise<YouTubeVideosInsertResponse> => {
+      const query = buildQuery({
+        part: req.part,
+        notifySubscribers:
+          req.notifySubscribers === undefined
+            ? undefined
+            : String(req.notifySubscribers),
+        onBehalfOfContentOwner: req.onBehalfOfContentOwner,
+        onBehalfOfContentOwnerChannel: req.onBehalfOfContentOwnerChannel,
+      });
+      const { body } = buildMultipartRelated(
+        { snippet: req.snippet, status: req.status },
+        media,
+        media.type || "application/octet-stream"
+      );
+      return makeUploadRequest<YouTubeVideosInsertResponse>(
+        `/videos${query}`,
+        body,
+        signal
+      );
+    },
+    { schema: YouTubeVideosInsertRequestSchema }
+  );
 
   // sig-ok: namespace follows YouTube API method naming (`channels.list`)
   // GET https://www.googleapis.com/youtube/v3/channels{query}
@@ -164,6 +273,7 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
   return {
     videos: {
       list: videosList,
+      insert: videosInsert,
     },
     channels: {
       list: channelsList,

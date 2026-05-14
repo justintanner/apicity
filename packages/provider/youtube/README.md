@@ -24,7 +24,7 @@ const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 
 ## API Reference
 
-2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+3 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### channels
 
@@ -46,6 +46,21 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 </details>
 
 ### videos
+
+<details>
+<summary><code>POST</code> <b><code>youtube.videos.insert</code></b></summary>
+
+<code>POST https://www.googleapis.com/youtube/v3/videos{query}</code>
+
+```typescript
+const res = await youtube.videos.insert({
+  /* ... */
+});
+```
+
+Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>youtube.videos.list</code></b></summary>

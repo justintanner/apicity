@@ -33,3 +33,38 @@ export const YouTubeChannelsListRequestSchema = z.object({
 export type YouTubeChannelsListRequest = z.infer<
   typeof YouTubeChannelsListRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /upload/youtube/v3/videos
+// ---------------------------------------------------------------------------
+
+export const YouTubeVideosInsertRequestSchema = z.object({
+  part: z.string().min(1),
+  snippet: z
+    .object({
+      title: z.string().optional(),
+      description: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+      categoryId: z.string().optional(),
+      defaultLanguage: z.string().optional(),
+    })
+    .optional(),
+  status: z
+    .object({
+      privacyStatus: z.enum(["private", "public", "unlisted"]).optional(),
+      publishAt: z.string().optional(),
+      license: z.string().optional(),
+      embeddable: z.boolean().optional(),
+      publicStatsViewable: z.boolean().optional(),
+      selfDeclaredMadeForKids: z.boolean().optional(),
+      containsSyntheticMedia: z.boolean().optional(),
+    })
+    .optional(),
+  notifySubscribers: z.boolean().optional(),
+  onBehalfOfContentOwner: z.string().optional(),
+  onBehalfOfContentOwnerChannel: z.string().optional(),
+});
+
+export type YouTubeVideosInsertRequest = z.infer<
+  typeof YouTubeVideosInsertRequestSchema
+>;

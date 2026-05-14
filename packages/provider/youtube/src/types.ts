@@ -1,5 +1,8 @@
 import type { z } from "zod";
-import type { YouTubeChannelsListRequest } from "./zod";
+import type {
+  YouTubeChannelsListRequest,
+  YouTubeVideosInsertRequest,
+} from "./zod";
 
 export class YouTubeError extends Error {
   readonly status: number;
@@ -57,8 +60,54 @@ export interface YouTubeVideosListMethod {
   ): Promise<YouTubeVideosListResponse>;
 }
 
+export interface YouTubeVideoSnippetInput {
+  title?: string;
+  description?: string;
+  tags?: string[];
+  categoryId?: string;
+  defaultLanguage?: string;
+}
+
+export interface YouTubeVideoStatusInput {
+  privacyStatus?: "private" | "public" | "unlisted";
+  publishAt?: string;
+  license?: string;
+  embeddable?: boolean;
+  publicStatsViewable?: boolean;
+  selfDeclaredMadeForKids?: boolean;
+  containsSyntheticMedia?: boolean;
+}
+
+export interface YouTubeVideoStatus {
+  uploadStatus?: string;
+  privacyStatus?: string;
+  license?: string;
+  embeddable?: boolean;
+  publicStatsViewable?: boolean;
+  selfDeclaredMadeForKids?: boolean;
+  containsSyntheticMedia?: boolean;
+}
+
+export interface YouTubeVideosInsertResponse {
+  kind: string;
+  etag: string;
+  id: string;
+  snippet?: YouTubeVideoSnippet;
+  status?: YouTubeVideoStatus;
+}
+
+export interface YouTubeVideosInsertMethod {
+  (
+    req: YouTubeVideosInsertRequest,
+    media: Blob,
+    signal?: AbortSignal
+  ): Promise<YouTubeVideosInsertResponse>;
+  schema: z.ZodType<YouTubeVideosInsertRequest>;
+}
+
 export interface YouTubeVideosNamespace {
   list: YouTubeVideosListMethod;
+  insert: YouTubeVideosInsertMethod;
 }
 
 // -- channels.list ---------------------------------------------------------

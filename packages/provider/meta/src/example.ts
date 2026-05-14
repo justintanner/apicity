@@ -12,11 +12,17 @@ export interface EndpointExample {
 
 const EXAMPLES: Record<string, EndpointExample> = {
   "POST v25.media": {
-    "source": "meta/media-create",
+    "source": "meta/post-video",
     "payload": {
       "media_type": "REELS",
-      "video_url": "https://files.catbox.moe/example-reel.mp4",
-      "caption": "hello from @apicity/meta"
+      "video_url": "https://o.uguu.se/VVVMQJbN.mp4",
+      "caption": "jump"
+    }
+  },
+  "POST v25.mediaPublish": {
+    "source": "meta/post-video",
+    "payload": {
+      "creation_id": "17927213565288548"
     }
   }
 };

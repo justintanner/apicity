@@ -33,3 +33,53 @@ export const YouTubeChannelsListRequestSchema = z.object({
 export type YouTubeChannelsListRequest = z.infer<
   typeof YouTubeChannelsListRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /upload/youtube/v3/videos
+// ---------------------------------------------------------------------------
+
+const blobSchema = z.instanceof(Blob);
+
+export const YouTubeVideoSnippetInputSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  categoryId: z.string().optional(),
+  defaultLanguage: z.string().optional(),
+});
+
+export const YouTubeVideoStatusInputSchema = z.object({
+  embeddable: z.boolean().optional(),
+  license: z.enum(["youtube", "creativeCommon"]).optional(),
+  privacyStatus: z.enum(["public", "unlisted", "private"]).optional(),
+  publicStatsViewable: z.boolean().optional(),
+  publishAt: z.string().optional(),
+  selfDeclaredMadeForKids: z.boolean().optional(),
+  containsSyntheticMedia: z.boolean().optional(),
+});
+
+export const YouTubeRecordingDetailsInputSchema = z.object({
+  recordingDate: z.string().optional(),
+});
+
+export const YouTubeLocalizationsInputSchema = z.record(
+  z.object({
+    title: z.string(),
+    description: z.string().optional(),
+  })
+);
+
+export const YouTubeVideosInsertRequestSchema = z.object({
+  snippet: YouTubeVideoSnippetInputSchema.optional(),
+  status: YouTubeVideoStatusInputSchema.optional(),
+  recordingDetails: YouTubeRecordingDetailsInputSchema.optional(),
+  localizations: YouTubeLocalizationsInputSchema.optional(),
+  video: blobSchema,
+  notifySubscribers: z.boolean().optional(),
+  onBehalfOfContentOwner: z.string().optional(),
+  onBehalfOfContentOwnerChannel: z.string().optional(),
+});
+
+export type YouTubeVideosInsertRequest = z.infer<
+  typeof YouTubeVideosInsertRequestSchema
+>;

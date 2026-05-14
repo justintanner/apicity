@@ -24,7 +24,7 @@ const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 
 ## API Reference
 
-2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+3 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### channels
 
@@ -36,9 +36,7 @@ const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 [Upstream docs ↗](https://developers.google.com/youtube/v3/docs/channels/list)
 
 ```typescript
-const res = await youtube.channels.list({
-  /* ... */
-});
+const res = await youtube.channels.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
@@ -48,6 +46,21 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 ### videos
 
 <details>
+<summary><code>POST</code> <b><code>youtube.videos.insert</code></b></summary>
+
+<code>POST https://www.googleapis.com/youtube/v3/videos{query}</code>
+
+[Upstream docs ↗](https://developers.google.com/youtube/v3/docs/videos/insert)
+
+```typescript
+const res = await youtube.videos.insert({ /* ... */ });
+```
+
+Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>youtube.videos.list</code></b></summary>
 
 <code>GET https://www.googleapis.com/youtube/v3/videos{query}</code>
@@ -55,9 +68,7 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 [Upstream docs ↗](https://developers.google.com/youtube/v3/docs/videos/list)
 
 ```typescript
-const res = await youtube.videos.list({
-  /* ... */
-});
+const res = await youtube.videos.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)

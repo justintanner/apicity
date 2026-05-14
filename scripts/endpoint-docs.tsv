@@ -344,4 +344,5 @@ polymarket	data.trades	GET	https://data-api.polymarket.com/trades{query}	https:/
 polymarket	data.oi	GET	https://data-api.polymarket.com/oi{query}	https://docs.polymarket.com/api-reference/data/get-open-interest
 polymarket	data.liveVolume	GET	https://data-api.polymarket.com/live-volume{query}	https://docs.polymarket.com/api-reference/data/get-live-volume
 youtube	videos.list	GET	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/list
+youtube	videos.insert	POST	https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart	https://developers.google.com/youtube/v3/docs/videos/insert
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list

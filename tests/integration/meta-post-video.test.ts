@@ -35,7 +35,7 @@ describe("meta post video end-to-end", () => {
     const provider = createMeta({
       accessToken: process.env.IG_ACCESS_TOKEN ?? "ig-test-token",
     });
-    const igUserId = process.env.IG_USER_ID ?? "17841400000000000";
+    const igUserId = process.env.IG_USER_ID ?? "17841468656422628";
 
     // Step 1: upload jump.mp4 to a public URL via @apicity/free-media-upload
     // (litterbox/uguu/tflink fallback).
@@ -47,7 +47,7 @@ describe("meta post video end-to-end", () => {
     const videoUrl = await uploadToAnyHost(host, {
       file: blob,
       filename: "jump.mp4",
-      hosts: ["litterbox", "uguu", "tflink"],
+      hosts: ["tflink"],
     });
     expect(videoUrl).toMatch(/^https?:\/\//);
 

@@ -31,7 +31,7 @@ describe("meta post.v25.media", () => {
       accessToken: process.env.IG_ACCESS_TOKEN ?? "ig-test-token",
     });
 
-    const igUserId = process.env.IG_USER_ID ?? "17841400000000000";
+    const igUserId = process.env.IG_USER_ID ?? "17841468656422628";
     const videoUrl =
       process.env.IG_TEST_VIDEO_URL ??
       "https://files.catbox.moe/example-reel.mp4";

@@ -57,8 +57,81 @@ export interface YouTubeVideosListMethod {
   ): Promise<YouTubeVideosListResponse>;
 }
 
+// -- videos.insert ---------------------------------------------------------
+
+export interface YouTubeVideoSnippetInput {
+  title: string;
+  description?: string;
+  tags?: string[];
+  categoryId?: string;
+  defaultLanguage?: string;
+}
+
+export interface YouTubeVideoStatusInput {
+  embeddable?: boolean;
+  license?: "youtube" | "creativeCommon";
+  privacyStatus?: "public" | "unlisted" | "private";
+  publicStatsViewable?: boolean;
+  publishAt?: string;
+  selfDeclaredMadeForKids?: boolean;
+  containsSyntheticMedia?: boolean;
+}
+
+export interface YouTubeRecordingDetailsInput {
+  recordingDate?: string;
+}
+
+export interface YouTubeLocalizationsInput {
+  [key: string]: {
+    title: string;
+    description?: string;
+  };
+}
+
+export interface YouTubeVideosInsertRequest {
+  snippet?: YouTubeVideoSnippetInput;
+  status?: YouTubeVideoStatusInput;
+  recordingDetails?: YouTubeRecordingDetailsInput;
+  localizations?: YouTubeLocalizationsInput;
+  video: Blob;
+  notifySubscribers?: boolean;
+  onBehalfOfContentOwner?: string;
+  onBehalfOfContentOwnerChannel?: string;
+}
+
+export interface YouTubeVideoStatusResponse {
+  uploadStatus?: string;
+  failureReason?: string;
+  rejectionReason?: string;
+  privacyStatus?: string;
+  publishAt?: string;
+  license?: string;
+  embeddable?: boolean;
+  publicStatsViewable?: boolean;
+  madeForKids?: boolean;
+  selfDeclaredMadeForKids?: boolean;
+  containsSyntheticMedia?: boolean;
+}
+
+export interface YouTubeVideoResource extends YouTubeVideo {
+  status?: YouTubeVideoStatusResponse;
+  contentDetails?: unknown;
+  recordingDetails?: { recordingDate?: string };
+  localizations?: Record<string, { title: string; description?: string }>;
+}
+
+export type YouTubeVideosInsertResponse = YouTubeVideoResource;
+
+export interface YouTubeVideosInsertMethod {
+  (
+    req: YouTubeVideosInsertRequest,
+    signal?: AbortSignal
+  ): Promise<YouTubeVideosInsertResponse>;
+}
+
 export interface YouTubeVideosNamespace {
   list: YouTubeVideosListMethod;
+  insert: YouTubeVideosInsertMethod;
 }
 
 // -- channels.list ---------------------------------------------------------

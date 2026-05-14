@@ -31,8 +31,8 @@ describe("meta post.v25.mediaPublish", () => {
       accessToken: process.env.IG_ACCESS_TOKEN ?? "ig-test-token",
     });
 
-    const igUserId = process.env.IG_USER_ID ?? "17841400000000000";
-    const containerId = process.env.IG_TEST_CONTAINER_ID ?? "17841400000000000";
+    const igUserId = process.env.IG_USER_ID ?? "17841468656422628";
+    const containerId = process.env.IG_TEST_CONTAINER_ID ?? "17927223327288548";
 
     const res = await provider.post.v25.mediaPublish(igUserId, {
       creation_id: containerId,

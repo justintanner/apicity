@@ -636,6 +636,7 @@ const BASE_URL_IDENTIFIERS = new Set([
   "apiBase",
   "apiBaseURL",
   "uploadBaseURL",
+  "uploadBaseURL",
   "uploadBase",
   "nativeBaseURL", // alibaba uses this for /api/v1 vs /compatible-mode/v1
 ]);

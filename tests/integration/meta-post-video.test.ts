@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
-  setupPolly,
+  setupPollyForFileUploads,
   teardownPolly,
   getPollyMode,
   recordingExists,
@@ -30,7 +30,7 @@ describe("meta post video end-to-end", () => {
       return;
     }
 
-    ctx = setupPolly(recordingName);
+    ctx = setupPollyForFileUploads(recordingName);
 
     const provider = createMeta({
       accessToken: process.env.IG_ACCESS_TOKEN ?? "ig-test-token",
@@ -63,7 +63,7 @@ describe("meta post video end-to-end", () => {
     // in replay mode so the test runs in milliseconds offline.
     let statusCode: string = "IN_PROGRESS";
     let attempts = 0;
-    const maxAttempts = 60;
+    const maxAttempts = 120;
     while (
       (statusCode === "IN_PROGRESS" ||
         statusCode === "EXPIRED" ||
@@ -87,5 +87,5 @@ describe("meta post video end-to-end", () => {
       creation_id: container.id,
     });
     expect(post.id).toMatch(/^[0-9]+$/);
-  });
+  }, 600000);
 });

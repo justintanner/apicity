@@ -10,7 +10,12 @@ export type {
   YouTubeVideosListRequest,
   YouTubeVideosListResponse,
   YouTubeVideosListMethod,
+  YouTubeVideosInsertResponse,
+  YouTubeVideosInsertMethod,
   YouTubeVideosNamespace,
+  YouTubeVideoSnippetInput,
+  YouTubeVideoStatusInput,
+  YouTubeVideoStatus,
   YouTubeChannelsListResponse,
   YouTubeChannel,
   YouTubeChannelSnippet,
@@ -26,7 +31,10 @@ export type {
   YouTubeVideosInsertMethod,
 } from "./types";
 
-export type { YouTubeChannelsListRequest } from "./zod";
+export type {
+  YouTubeChannelsListRequest,
+  YouTubeVideosInsertRequest,
+} from "./zod";
 
 export {
   YouTubeOptionsSchema,

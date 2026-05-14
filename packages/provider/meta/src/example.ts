@@ -20,9 +20,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST v25.mediaPublish": {
-    "source": "meta/post-video",
+    "source": "meta/media-publish",
     "payload": {
-      "creation_id": "17927213565288548"
+      "creation_id": "17927223327288548"
     }
   }
 };

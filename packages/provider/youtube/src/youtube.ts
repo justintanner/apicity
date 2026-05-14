@@ -143,7 +143,8 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
   async function makeUploadRequest<T>(
     path: string,
     body: Blob,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    options?: { baseOverride?: string }
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -153,18 +154,18 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     }
 
     try {
-      const res = await doFetch(
-        `${baseURL.replace("/youtube/v3", "/upload/youtube/v3")}${path}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${opts.accessToken}`,
-            "Content-Type": body.type || "application/octet-stream",
-          },
-          body,
-          signal: controller.signal,
-        }
-      );
+      const uploadBaseURL =
+        options?.baseOverride ??
+        baseURL.replace("/youtube/v3", "/upload/youtube/v3");
+      const res = await doFetch(`${uploadBaseURL}${path}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${opts.accessToken}`,
+          "Content-Type": body.type || "application/octet-stream",
+        },
+        body,
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
 

@@ -106,17 +106,20 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 1. short-lived
-  const shortRes = await fetch("https://api.instagram.com/oauth/access_token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({
-      client_id: CLIENT_ID,
-      client_secret: CLIENT_SECRET,
-      grant_type: "authorization_code",
-      redirect_uri: REDIRECT,
-      code,
-    }),
-  });
+  const shortRes = await fetch(
+    "https://api.instagram.com/oauth/access_token",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: "authorization_code",
+        redirect_uri: REDIRECT,
+        code,
+      }),
+    }
+  );
   const short = await shortRes.json();
 
   // 2. long-lived (60-day)
@@ -127,17 +130,11 @@ const server = http.createServer(async (req, res) => {
   const longRes = await fetch(longURL);
   const long = await longRes.json();
 
-  console.log(
-    JSON.stringify(
-      {
-        access_token: long.access_token,
-        expires_in: long.expires_in,
-        user_id: short.user_id,
-      },
-      null,
-      2
-    )
-  );
+  console.log(JSON.stringify({
+    access_token: long.access_token,
+    expires_in: long.expires_in,
+    user_id: short.user_id,
+  }, null, 2));
   res.writeHead(200).end("Authorized — check your terminal.");
   server.close();
 });
@@ -271,7 +268,7 @@ console.log(post.id);
   accounts get `190` ("Invalid OAuth access token") even with a
   syntactically valid token.
 - `video_url` must be reachable from Meta's IPs and serve `Content-Type:
-video/mp4`. Common gotchas: presigned S3 URLs that expire before the
+  video/mp4`. Common gotchas: presigned S3 URLs that expire before the
   transcoder pulls, hosts that require a `User-Agent`, and CDNs that
   redirect to a different origin. catbox.moe sidesteps all three.
 - The Reel itself must satisfy Meta's Reel constraints — 9:16 aspect,
@@ -302,9 +299,7 @@ video/mp4`. Common gotchas: presigned S3 URLs that expire before the
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/reference/ig-container/)
 
 ```typescript
-const res = await meta.v25.container({
-  /* ... */
-});
+const res = await meta.v25.container({ /* ... */ });
 ```
 
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
@@ -321,9 +316,7 @@ Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media/)
 
 ```typescript
-const res = await meta.v25.media({
-  /* ... */
-});
+const res = await meta.v25.media({ /* ... */ });
 ```
 
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
@@ -340,9 +333,7 @@ Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
 [Upstream docs ↗](https://developers.facebook.com/docs/instagram-platform/instagram-graph-api/reference/ig-user/media_publish/)
 
 ```typescript
-const res = await meta.v25.mediaPublish({
-  /* ... */
-});
+const res = await meta.v25.mediaPublish({ /* ... */ });
 ```
 
 Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)

@@ -471,6 +471,14 @@ const HELPER_METHOD_HINTS = {
 // instead inspect the argument: if it starts with `http(s)://`, it's absolute.
 const ABSOLUTE_URL_HELPERS = new Set([]);
 
+// Helper-function name → base URL override when the helper constructs its own
+// full URL internally (e.g. YouTube upload endpoints that swap /youtube/v3 for
+// /upload/youtube/v3). Used only when the call site does not pass an explicit
+// baseOverride option.
+const HELPER_BASE_URLS = {
+  makeUploadRequest: "https://www.googleapis.com/upload/youtube/v3",
+};
+
 /**
  * Extract (method, path) from an async function body by scanning call
  * expressions. Returns the first confident match.
@@ -518,6 +526,9 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
             baseOverride = bo;
             break;
           }
+        }
+        if (!baseOverride && HELPER_BASE_URLS[name]) {
+          baseOverride = HELPER_BASE_URLS[name];
         }
         return {
           method: HELPER_METHOD_HINTS[name],

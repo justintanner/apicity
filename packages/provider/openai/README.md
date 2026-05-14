@@ -36,9 +36,7 @@ const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.audio.speech({
-  /* ... */
-});
+const res = await openai.v1.audio.speech({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -53,9 +51,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.audio.transcriptions({
-  /* ... */
-});
+const res = await openai.v1.audio.transcriptions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -70,9 +66,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.audio.translations({
-  /* ... */
-});
+const res = await openai.v1.audio.translations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -89,9 +83,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.batches({
-  /* ... */
-});
+const res = await openai.v1.batches({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -106,9 +98,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.batches({
-  /* ... */
-});
+const res = await openai.v1.batches({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -123,9 +113,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.batches.cancel({
-  /* ... */
-});
+const res = await openai.v1.batches.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -142,9 +130,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions({
-  /* ... */
-});
+const res = await openai.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -159,9 +145,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions({
-  /* ... */
-});
+const res = await openai.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -176,9 +160,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions.messages({
-  /* ... */
-});
+const res = await openai.v1.chat.completions.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -193,9 +175,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.chat.completions({
-  /* ... */
-});
+const res = await openai.v1.chat.completions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -212,9 +192,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.embeddings({
-  /* ... */
-});
+const res = await openai.v1.embeddings({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -231,9 +209,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files({
-  /* ... */
-});
+const res = await openai.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -248,9 +224,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files({
-  /* ... */
-});
+const res = await openai.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -265,9 +239,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files.content({
-  /* ... */
-});
+const res = await openai.v1.files.content({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -282,9 +254,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.files({
-  /* ... */
-});
+const res = await openai.v1.files({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -301,9 +271,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.checkpoints.permissions({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -318,9 +286,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.checkpoints.permissions({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -335,9 +301,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -352,9 +316,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.checkpoints({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs.checkpoints({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -369,9 +331,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.events({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs.events({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -386,9 +346,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.checkpoints.permissions({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.checkpoints.permissions({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -403,9 +361,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -420,9 +376,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.cancel({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -437,9 +391,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.pause({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs.pause({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -454,9 +406,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.fineTuning.jobs.resume({
-  /* ... */
-});
+const res = await openai.v1.fineTuning.jobs.resume({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -473,9 +423,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.images.edits({
-  /* ... */
-});
+const res = await openai.v1.images.edits({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -490,9 +438,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.images.generations({
-  /* ... */
-});
+const res = await openai.v1.images.generations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -507,9 +453,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.images.variations({
-  /* ... */
-});
+const res = await openai.v1.images.variations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -526,9 +470,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.models({
-  /* ... */
-});
+const res = await openai.v1.models({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -543,9 +485,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.models({
-  /* ... */
-});
+const res = await openai.v1.models({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -562,9 +502,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.moderations({
-  /* ... */
-});
+const res = await openai.v1.moderations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -581,9 +519,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses({
-  /* ... */
-});
+const res = await openai.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -598,9 +534,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses({
-  /* ... */
-});
+const res = await openai.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -615,9 +549,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.inputItems({
-  /* ... */
-});
+const res = await openai.v1.responses.inputItems({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -632,9 +564,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses({
-  /* ... */
-});
+const res = await openai.v1.responses({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -649,9 +579,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.cancel({
-  /* ... */
-});
+const res = await openai.v1.responses.cancel({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -666,9 +594,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.compact({
-  /* ... */
-});
+const res = await openai.v1.responses.compact({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -683,9 +609,7 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 [Upstream docs ↗](https://platform.openai.com/docs/api-reference)
 
 ```typescript
-const res = await openai.v1.responses.inputTokens({
-  /* ... */
-});
+const res = await openai.v1.responses.inputTokens({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

@@ -1,6 +1,6 @@
 {
   "name": "@apicity/alibaba",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "description": "Alibaba Cloud Model Studio provider for chat completions, image generation, and streaming.",
   "license": "MIT",
   "repository": {

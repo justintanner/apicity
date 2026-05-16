@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main, stable]
+    branches: '**'
   pull_request:
-    branches: [main, stable]
+    branches: '**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -65,6 +65,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=moderate
 
       - name: Build packages
         run: pnpm run build

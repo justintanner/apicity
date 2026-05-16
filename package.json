@@ -1,6 +1,6 @@
 {
   "name": "apicity",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/cost, and @apicity/mcp-server",
   "private": true,
   "type": "module",

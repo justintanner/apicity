@@ -13,5 +13,5 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:major"]
-    vulnerability-alerts:
-      enabled: true
+vulnerability-alerts:
+  enabled: true

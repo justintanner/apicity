@@ -17,3 +17,7 @@ IG_USER_ID=op://Apicity/IG_USER_ID/password
 # X_CLIENT_ID / X_ACCESS_TOKEN don't break `op run` for the rest of the suite).
 DASHBOARD_USER=op://Apicity/DASHBOARD_USER/password
 DASHBOARD_PASS=op://Apicity/DASHBOARD_PASS/password
+# DoltHub credentials keypair (private JWK) for beads -> DoltHub
+# (justintanner/superlzy) push. Public key registered on the
+# justintanner DoltHub account. See ~/superlzy/scripts/install-dolt-creds.sh.
+DOLT_CREDS_JWK=op://Apicity/DOLT_CREDS_JWK/password

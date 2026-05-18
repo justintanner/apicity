@@ -24,7 +24,7 @@ const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 
 ## API Reference
 
-3 endpoints across 2 groups. Each method mirrors an upstream URL path.
+4 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### channels
 
@@ -37,6 +37,21 @@ const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
 
 ```typescript
 const res = await youtube.channels.list({ /* ... */ });
+```
+
+Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
+
+</details>
+
+### transcripts
+
+<details>
+<summary><code>GET</code> <b><code>youtube.transcripts</code></b></summary>
+
+<code>GET https://www.youtube.com/watch?v={videoId}</code>
+
+```typescript
+const res = await youtube.transcripts({ /* ... */ });
 ```
 
 Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)

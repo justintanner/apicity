@@ -49,7 +49,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   x: ["docs.x.com"],
   ig: ["developers.facebook.com"],
   polymarket: ["docs.polymarket.com"],
-  youtube: ["developers.google.com"],
+  youtube: ["developers.google.com", "github.com"],
 };
 
 const METHOD_LINE_RE =

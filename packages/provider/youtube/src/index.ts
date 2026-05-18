@@ -21,16 +21,22 @@ export type {
   YouTubeChannel,
   YouTubeChannelSnippet,
   YouTubePageInfo,
+  YouTubeTranscriptSegment,
+  YouTubeGetTranscriptResponse,
+  YouTubeGetTranscriptMethod,
+  YouTubeTranscriptsNamespace,
 } from "./types";
 
 export type {
   YouTubeOptions,
   YouTubeChannelsListRequest,
   YouTubeVideosInsertRequest,
+  YouTubeGetTranscriptRequest,
 } from "./zod";
 
 export {
   YouTubeOptionsSchema,
   YouTubeChannelsListRequestSchema,
   YouTubeVideosInsertRequestSchema,
+  YouTubeGetTranscriptRequestSchema,
 } from "./zod";

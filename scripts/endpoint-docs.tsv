@@ -346,3 +346,4 @@ polymarket	data.liveVolume	GET	https://data-api.polymarket.com/live-volume{query
 youtube	videos.list	GET	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/list
 youtube	videos.insert	POST	https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart	https://developers.google.com/youtube/v3/docs/videos/insert
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list
+youtube	transcripts.get	GET	https://www.youtube.com/watch?v={videoId}	https://github.com/jdepoix/youtube-transcript-api

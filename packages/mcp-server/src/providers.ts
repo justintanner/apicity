@@ -86,6 +86,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/free-media-upload",
     factoryName: "freeMediaUpload",
   },
+  youtube: {
+    envVar: "YOUTUBE_ACCESS_TOKEN",
+    optionKey: "accessToken",
+    importPath: "@apicity/youtube",
+    factoryName: "youtube",
+  },
 };
 
 export type InstantiatedProvider = Record<string, unknown>;
@@ -105,8 +111,10 @@ export async function instantiateProvider(
     return (factory as () => InstantiatedProvider)();
   }
   const credential = process.env[spec.envVar];
-  if (!credential) return null;
-  return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)({
-    [spec.optionKey]: credential,
-  });
+  if (!credential && name !== "youtube") return null;
+  const opts: Record<string, unknown> = {};
+  if (credential) opts[spec.optionKey] = credential;
+  return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
+    opts
+  );
 }

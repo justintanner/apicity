@@ -9,7 +9,7 @@ import { z } from "zod";
 // obtains the token externally and supplies it here; this package does not
 // implement the OAuth dance.
 export const YouTubeOptionsSchema = z.object({
-  accessToken: z.string().min(1),
+  accessToken: z.string().optional(),
   baseURL: z.string().optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
@@ -82,4 +82,17 @@ export const YouTubeVideosInsertRequestSchema = z.object({
 
 export type YouTubeVideosInsertRequest = z.infer<
   typeof YouTubeVideosInsertRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /api/timedtext (keyless transcript)
+// ---------------------------------------------------------------------------
+
+export const YouTubeGetTranscriptRequestSchema = z.object({
+  videoId: z.string().min(1),
+  lang: z.string().optional(),
+});
+
+export type YouTubeGetTranscriptRequest = z.infer<
+  typeof YouTubeGetTranscriptRequestSchema
 >;

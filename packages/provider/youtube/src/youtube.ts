@@ -8,12 +8,13 @@ import {
 import {
   YouTubeChannelsListRequestSchema,
   YouTubeVideosInsertRequestSchema,
+  YouTubeGetTranscriptRequestSchema,
 } from "./zod";
 
-export function youtube(opts: YouTubeOptions): YouTubeProvider {
-  const baseURL = opts.baseURL ?? "https://www.googleapis.com/youtube/v3";
-  const doFetch = opts.fetch ?? fetch;
-  const timeout = opts.timeout ?? 30000;
+export function youtube(opts?: YouTubeOptions): YouTubeProvider {
+  const baseURL = opts?.baseURL ?? "https://www.googleapis.com/youtube/v3";
+  const doFetch = opts?.fetch ?? fetch;
+  const timeout = opts?.timeout ?? 30000;
 
   function attachAbortHandler(
     signal: AbortSignal,
@@ -63,9 +64,10 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     }
 
     try {
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${opts.accessToken}`,
-      };
+      const headers: Record<string, string> = {};
+      if (opts?.accessToken) {
+        headers.Authorization = `Bearer ${opts.accessToken}`;
+      }
       const init: RequestInit = {
         method,
         headers,
@@ -210,7 +212,7 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
         const res = await doFetch(`${uploadBaseURL}/videos${query}`, {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${opts.accessToken}`,
+            Authorization: `Bearer ${opts?.accessToken ?? ""}`,
             "Content-Type": `multipart/related; boundary=${boundary}`,
           },
           body,
@@ -269,6 +271,196 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     { schema: YouTubeChannelsListRequestSchema }
   );
 
+  // -- transcripts.get (keyless) -------------------------------------------
+
+  function extractVideoId(input: string): string | null {
+    if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
+    const match = input.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/
+    );
+    return match?.[1] ?? null;
+  }
+
+  function extractPlayerResponse(html: string): unknown | null {
+    // Find the assignment manually and count braces. Regex approaches fail on
+    // nested JSON because lazy quantifiers stop at the first '}' they see.
+    const marker = "ytInitialPlayerResponse";
+    const idx = html.indexOf(marker);
+    if (idx === -1) return null;
+    const start = html.indexOf("{", idx);
+    if (start === -1) return null;
+    let depth = 0;
+    let end = start;
+    while (end < html.length) {
+      const ch = html[end];
+      if (ch === "{") depth++;
+      else if (ch === "}") depth--;
+      if (depth === 0) break;
+      end++;
+    }
+    if (depth !== 0) return null;
+    try {
+      return JSON.parse(html.slice(start, end + 1));
+    } catch {
+      return null;
+    }
+  }
+
+  function decodeHtmlEntities(text: string): string {
+    return text
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&#39;/g, "'")
+      .replace(/&#x27;/g, "'")
+      .replace(/&apos;/g, "'");
+  }
+
+  function parseTranscriptXml(
+    xml: string
+  ): import("./types").YouTubeTranscriptSegment[] {
+    const segments: import("./types").YouTubeTranscriptSegment[] = [];
+    const regex =
+      /<text[^>]*start="([0-9.]+)"[^>]*dur="([0-9.]+)"[^>]*>([^<]*)<\/text>/g;
+    let match;
+    while ((match = regex.exec(xml)) !== null) {
+      segments.push({
+        start: parseFloat(match[1]),
+        duration: parseFloat(match[2]),
+        text: decodeHtmlEntities(match[3]),
+      });
+    }
+    return segments;
+  }
+
+  // GET https://www.youtube.com/watch?v={videoId}
+  // Docs: https://github.com/jdepoix/youtube-transcript-api
+  const getTranscript = Object.assign(
+    async (
+      req: import("./zod").YouTubeGetTranscriptRequest,
+      signal?: AbortSignal
+    ): Promise<import("./types").YouTubeGetTranscriptResponse> => {
+      const videoId = extractVideoId(req.videoId);
+      if (!videoId) {
+        throw new YouTubeError(
+          "Invalid videoId: must be an 11-character YouTube video ID or a full URL",
+          400
+        );
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      if (signal) {
+        attachAbortHandler(signal, controller);
+      }
+
+      let watchHtml: string;
+      try {
+        const watchRes = await doFetch(
+          `https://www.youtube.com/watch?v=${videoId}`,
+          {
+            method: "GET",
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            },
+            signal: controller.signal,
+          }
+        );
+        if (!watchRes.ok) {
+          throw new YouTubeError(
+            `Failed to fetch watch page: ${watchRes.status}`,
+            watchRes.status
+          );
+        }
+        watchHtml = await watchRes.text();
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof YouTubeError) throw error;
+        throw new YouTubeError(
+          `YouTube watch page request failed: ${error}`,
+          500
+        );
+      }
+
+      let playerResponse: unknown;
+      try {
+        playerResponse = extractPlayerResponse(watchHtml);
+      } catch {
+        clearTimeout(timeoutId);
+        throw new YouTubeError(
+          "Could not extract player response from watch page. The video may be private, unavailable, or age-restricted.",
+          404
+        );
+      }
+      if (!playerResponse) {
+        clearTimeout(timeoutId);
+        throw new YouTubeError(
+          "Could not extract player response from watch page. The video may be private, unavailable, or age-restricted.",
+          404
+        );
+      }
+
+      const captions = (
+        playerResponse as {
+          captions?: {
+            playerCaptionsTracklistRenderer?: {
+              captionTracks?: Array<{
+                baseUrl: string;
+                name?: { simpleText?: string };
+                languageCode?: string;
+                kind?: string;
+              }>;
+            };
+          };
+        }
+      )?.captions?.playerCaptionsTracklistRenderer?.captionTracks;
+
+      if (!captions || captions.length === 0) {
+        clearTimeout(timeoutId);
+        throw new YouTubeError(
+          "No captions available for this video. Captions may be disabled or the video may not have any.",
+          404
+        );
+      }
+
+      let track = captions[0];
+      if (req.lang) {
+        const preferred = captions.find((c) => c.languageCode === req.lang);
+        if (preferred) track = preferred;
+      }
+
+      let xmlText: string;
+      try {
+        const captionRes = await doFetch(track.baseUrl, {
+          method: "GET",
+          signal: controller.signal,
+        });
+        if (!captionRes.ok) {
+          throw new YouTubeError(
+            `Failed to fetch captions: ${captionRes.status}`,
+            captionRes.status
+          );
+        }
+        xmlText = await captionRes.text();
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof YouTubeError) throw error;
+        throw new YouTubeError(`YouTube caption request failed: ${error}`, 500);
+      }
+
+      clearTimeout(timeoutId);
+
+      const segments = parseTranscriptXml(xmlText);
+      const plainText = segments.map((s) => s.text).join(" ");
+
+      return { segments, plainText };
+    },
+    { schema: YouTubeGetTranscriptRequestSchema }
+  );
+
   return {
     videos: {
       list: videosList,
@@ -276,6 +468,9 @@ export function youtube(opts: YouTubeOptions): YouTubeProvider {
     },
     channels: {
       list: channelsList,
+    },
+    transcripts: {
+      get: getTranscript,
     },
   };
 }

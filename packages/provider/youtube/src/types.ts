@@ -176,11 +176,36 @@ export interface YouTubeChannelsNamespace {
   list: YouTubeChannelsListMethod;
 }
 
+// -- transcripts.get -------------------------------------------------------
+
+export interface YouTubeTranscriptSegment {
+  text: string;
+  start: number;
+  duration: number;
+}
+
+export interface YouTubeGetTranscriptResponse {
+  segments: YouTubeTranscriptSegment[];
+  plainText: string;
+}
+
+export interface YouTubeGetTranscriptMethod {
+  (
+    req: import("./zod").YouTubeGetTranscriptRequest,
+    signal?: AbortSignal
+  ): Promise<YouTubeGetTranscriptResponse>;
+}
+
+export interface YouTubeTranscriptsNamespace {
+  get: YouTubeGetTranscriptMethod;
+}
+
 // -- Provider --------------------------------------------------------------
 
 export interface YouTubeProvider {
   videos: YouTubeVideosNamespace;
   channels: YouTubeChannelsNamespace;
+  transcripts: YouTubeTranscriptsNamespace;
 }
 
 export type { YouTubeOptions } from "./zod";

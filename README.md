@@ -5,16 +5,10 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.base.json)
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](package.json)
 [![Zero Dependencies](https://img.shields.io/badge/provider_deps-0-brightgreen)](package.json)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/justintanner/apicity/pulls)
 
-A TypeScript monorepo of zero-dependency AI provider clients
-designed to be read by LLMs as much as by humans. Methods mirror upstream URL
-paths (`/v1/chat/completions` → `openai.v1.chat.completions()`), POST endpoints
-expose a Zod `.schema` for validation, generated reference docs link back to
-source, and `@apicity/cost` previews token/image/video spend from the same
-payload you'd send for the real call — preview, budget-gate, then commit.
-`@apicity/mcp-server` exposes the same endpoints as Model Context Protocol
-tools.
+A thin wrapper for many APIs covering AI image generation, video generation, all major social media APIs, and more.
+
+## Example
 
 ```ts
 import { cost } from "@apicity/cost";
@@ -47,6 +41,15 @@ if (estimate.usd > 0.1) {
 // Same payload — now actually run the generation.
 const task = await kie.post.api.v1.jobs.createTask(payload);
 ```
+
+## Motivation
+
+Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
+
+- Hallicinating JSON payloads or URLs
+- Calling APIs from weird locations and times
+- Wasting your expensive video and image gen tokens
+- And more
 
 ## Packages
 

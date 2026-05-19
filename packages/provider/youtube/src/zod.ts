@@ -96,3 +96,15 @@ export const YouTubeGetTranscriptRequestSchema = z.object({
 export type YouTubeGetTranscriptRequest = z.infer<
   typeof YouTubeGetTranscriptRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// GET /oembed (keyless video metadata)
+// ---------------------------------------------------------------------------
+
+export const YouTubeGetVideoMetadataRequestSchema = z.object({
+  videoId: z.string().min(1),
+});
+
+export type YouTubeGetVideoMetadataRequest = z.infer<
+  typeof YouTubeGetVideoMetadataRequestSchema
+>;

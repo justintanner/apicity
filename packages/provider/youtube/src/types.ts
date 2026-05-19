@@ -200,12 +200,41 @@ export interface YouTubeTranscriptsNamespace {
   get: YouTubeGetTranscriptMethod;
 }
 
+// -- videoMetadata (keyless oEmbed) --------------------------------------
+
+export interface YouTubeGetVideoMetadataRequest {
+  videoId: string;
+}
+
+export interface YouTubeGetVideoMetadataResponse {
+  title: string;
+  authorName: string;
+  authorUrl: string;
+  type: string;
+  html: string;
+  width: number;
+  height: number;
+  thumbnailUrl: string;
+  thumbnailWidth: number;
+  thumbnailHeight: number;
+  providerName: string;
+  providerUrl: string;
+}
+
+export interface YouTubeGetVideoMetadataMethod {
+  (
+    req: YouTubeGetVideoMetadataRequest,
+    signal?: AbortSignal
+  ): Promise<YouTubeGetVideoMetadataResponse>;
+}
+
 // -- Provider --------------------------------------------------------------
 
 export interface YouTubeProvider {
   videos: YouTubeVideosNamespace;
   channels: YouTubeChannelsNamespace;
   transcripts: YouTubeTranscriptsNamespace;
+  videoMetadata: YouTubeGetVideoMetadataMethod;
 }
 
 export type { YouTubeOptions } from "./zod";

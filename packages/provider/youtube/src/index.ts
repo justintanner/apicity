@@ -25,6 +25,8 @@ export type {
   YouTubeGetTranscriptResponse,
   YouTubeGetTranscriptMethod,
   YouTubeTranscriptsNamespace,
+  YouTubeGetVideoMetadataResponse,
+  YouTubeGetVideoMetadataMethod,
 } from "./types";
 
 export type {
@@ -32,6 +34,7 @@ export type {
   YouTubeChannelsListRequest,
   YouTubeVideosInsertRequest,
   YouTubeGetTranscriptRequest,
+  YouTubeGetVideoMetadataRequest,
 } from "./zod";
 
 export {
@@ -39,4 +42,5 @@ export {
   YouTubeChannelsListRequestSchema,
   YouTubeVideosInsertRequestSchema,
   YouTubeGetTranscriptRequestSchema,
+  YouTubeGetVideoMetadataRequestSchema,
 } from "./zod";

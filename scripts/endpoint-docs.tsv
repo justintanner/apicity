@@ -347,3 +347,4 @@ youtube	videos.list	GET	https://www.googleapis.com/youtube/v3/videos{query}	http
 youtube	videos.insert	POST	https://www.googleapis.com/upload/youtube/v3/videos?uploadType=multipart	https://developers.google.com/youtube/v3/docs/videos/insert
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list
 youtube	transcripts.get	GET	https://www.youtube.com/watch?v={videoId}	https://github.com/jdepoix/youtube-transcript-api
+youtube	videoMetadata	GET	https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={videoId}&format=json	https://developers.google.com/youtube/player_parameters

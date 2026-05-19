@@ -9,6 +9,7 @@ import {
   YouTubeChannelsListRequestSchema,
   YouTubeVideosInsertRequestSchema,
   YouTubeGetTranscriptRequestSchema,
+  YouTubeGetVideoMetadataRequestSchema,
 } from "./zod";
 
 export function youtube(opts?: YouTubeOptions): YouTubeProvider {
@@ -461,6 +462,83 @@ export function youtube(opts?: YouTubeOptions): YouTubeProvider {
     { schema: YouTubeGetTranscriptRequestSchema }
   );
 
+  // GET https://www.youtube.com/oembed?url={videoUrl}&format=json
+  // Docs: https://developers.google.com/youtube/player_parameters
+  const getVideoMetadata = Object.assign(
+    async (
+      req: import("./zod").YouTubeGetVideoMetadataRequest,
+      signal?: AbortSignal
+    ): Promise<import("./types").YouTubeGetVideoMetadataResponse> => {
+      const videoId = extractVideoId(req.videoId);
+      if (!videoId) {
+        throw new YouTubeError(
+          "Invalid videoId: must be an 11-character YouTube video ID or a full URL",
+          400
+        );
+      }
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+      if (signal) {
+        attachAbortHandler(signal, controller);
+      }
+
+      try {
+        const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+        const res = await doFetch(oembedUrl, {
+          method: "GET",
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          },
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          let resBody: unknown = null;
+          try {
+            resBody = await res.json();
+          } catch {
+            // ignore parse errors
+          }
+          throw new YouTubeError(
+            `oEmbed request failed: ${res.status}`,
+            res.status,
+            resBody
+          );
+        }
+
+        const data = (await res.json()) as Record<string, unknown>;
+
+        return {
+          title: String(data.title ?? ""),
+          authorName: String(data.author_name ?? ""),
+          authorUrl: String(data.author_url ?? ""),
+          type: String(data.type ?? ""),
+          html: String(data.html ?? ""),
+          width: Number(data.width ?? 0),
+          height: Number(data.height ?? 0),
+          thumbnailUrl: String(data.thumbnail_url ?? ""),
+          thumbnailWidth: Number(data.thumbnail_width ?? 0),
+          thumbnailHeight: Number(data.thumbnail_height ?? 0),
+          providerName: String(data.provider_name ?? ""),
+          providerUrl: String(data.provider_url ?? ""),
+        };
+      } catch (error) {
+        clearTimeout(timeoutId);
+        if (error instanceof YouTubeError) throw error;
+        throw new YouTubeError(
+          `YouTube metadata request failed: ${error}`,
+          500
+        );
+      }
+    },
+    { schema: YouTubeGetVideoMetadataRequestSchema }
+  );
+
   return {
     videos: {
       list: videosList,
@@ -472,5 +550,6 @@ export function youtube(opts?: YouTubeOptions): YouTubeProvider {
     transcripts: {
       get: getTranscript,
     },
+    videoMetadata: getVideoMetadata,
   };
 }

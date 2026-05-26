@@ -323,7 +323,7 @@ export const AlibabaImageGenerationRequestSchema = z.object({
 // reference images embedded in `input.messages[0].content` alongside the text
 // prompt. That messages-shape makes a direct `.max()` impossible on the
 // request schema, so this sibling array schema exists purely for Zod
-// introspection by UI layers (e.g. clipfirst's readSlotConstraints). It is
+// introspection by UI layers (e.g. videocity's readSlotConstraints). It is
 // not used to validate outgoing requests — enforcement of the 9-slot cap
 // happens in callers that pack the messages payload.
 export const AlibabaImageReferenceSlotsSchema = z.array(z.string()).max(9);

@@ -358,7 +358,7 @@ export const Seedance2FastRequestSchema =
     }
   );
 
-// Inner input schema kept unrefined so callers (e.g. clipfirst) can walk
+// Inner input schema kept unrefined so callers (e.g. videocity) can walk
 // `.shape` for slot-constraint introspection — wrapping the request in
 // `.refine()` below turns it into ZodEffects and hides `.shape`.
 export const Seedance2InputSchema = z.object({
@@ -589,7 +589,7 @@ export const HappyHorseVideoEditRequestSchema = z.object({
 
 // Refines live on the outer request object (not the `input` sub-object) so
 // that `input.*` fields remain introspectable by downstream tools that walk
-// ZodArray/ZodObject defs (e.g. clipfirst's readSlotConstraints).
+// ZodArray/ZodObject defs (e.g. videocity's readSlotConstraints).
 export const Wan27ImageToVideoRequestSchema = z
   .object({
     model: z.literal("wan/2-7-image-to-video"),
@@ -653,7 +653,7 @@ export const Wan27TextToVideoRequestSchema = z.object({
 // Per-field max(5) on reference_image/reference_video; the combined-≤5 cap is
 // enforced by callers (would require a wrapper-level refine, which would
 // turn this into ZodEffects and break `.shape` introspection used by
-// clipfirst's slot-constraint readers).
+// videocity's slot-constraint readers).
 export const Wan27RefToVideoRequestSchema = z.object({
   model: z.literal("wan/2-7-r2v"),
   callBackUrl: z.string().optional(),

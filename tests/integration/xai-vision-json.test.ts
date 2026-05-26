@@ -7,7 +7,7 @@ import { createXaiProvider } from "../xai-provider";
 const SHOT_PATTERN =
   /^(extreme close-up|close-up|medium close-up|medium shot|medium long shot|long shot|extreme long shot), (eye-level|low-angle|high-angle|overhead|dutch)$/;
 
-const CLIPFIRST_STYLE_SYSTEM_PROMPT = [
+const VIDEOCITY_STYLE_SYSTEM_PROMPT = [
   "You are an expert image-to-prompt analyst.",
   "Return only a JSON object with keys prompt, shot, and pose.",
   "prompt: a single-paragraph reproduction-ready image prompt, 1900 characters or fewer, with no line breaks.",
@@ -61,7 +61,7 @@ describe("xai vision JSON integration", () => {
     expect(parsed.success).toBe(true);
   });
 
-  it("should analyze an image as clipfirst-style structured JSON", async () => {
+  it("should analyze an image as videocity-style structured JSON", async () => {
     ctx = setupPolly("xai/vision-analysis-json");
 
     const imagePath = resolve(__dirname, "../fixtures/man.jpg");
@@ -74,7 +74,7 @@ describe("xai vision JSON integration", () => {
       input: [
         {
           role: "system",
-          content: CLIPFIRST_STYLE_SYSTEM_PROMPT,
+          content: VIDEOCITY_STYLE_SYSTEM_PROMPT,
         },
         {
           role: "user",

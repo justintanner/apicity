@@ -9,6 +9,7 @@
 issue-prefix: "ac"
 issue_prefix: ac
 dolt.auto-start: false
+dolt.server-port: 43107
 gc.endpoint_origin: inherited_city
 gc.endpoint_status: verified
 

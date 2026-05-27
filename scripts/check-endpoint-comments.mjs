@@ -50,6 +50,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   ig: ["developers.facebook.com"],
   polymarket: ["docs.polymarket.com"],
   youtube: ["developers.google.com", "github.com"],
+  dolthub: ["www.dolthub.com", "dolthub.com"],
 };
 
 const METHOD_LINE_RE =

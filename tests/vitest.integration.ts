@@ -113,6 +113,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/youtube/src"
       ),
+      "@apicity/dolthub/zod": path.resolve(
+        __dirname,
+        "../packages/provider/dolthub/src/zod"
+      ),
+      "@apicity/dolthub": path.resolve(
+        __dirname,
+        "../packages/provider/dolthub/src"
+      ),
     },
     coverage: {
       provider: "v8",

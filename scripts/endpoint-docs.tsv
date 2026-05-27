@@ -348,3 +348,14 @@ youtube	videos.insert	POST	https://www.googleapis.com/upload/youtube/v3/videos?u
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list
 youtube	transcripts.get	GET	https://www.youtube.com/watch?v={videoId}	https://github.com/jdepoix/youtube-transcript-api
 youtube	videoMetadata	GET	https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={videoId}&format=json	https://developers.google.com/youtube/player_parameters
+dolthub	v1alpha1.sql.read	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/{ref}	https://www.dolthub.com/docs/products/dolthub/api/sql
+dolthub	v1alpha1.sql.write	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write/{from_branch}/{to_branch}	https://www.dolthub.com/docs/products/dolthub/api/sql
+dolthub	v1alpha1.sql.writePoll	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write	https://www.dolthub.com/docs/products/dolthub/api/sql
+dolthub	v1alpha1.database.create	POST	https://www.dolthub.com/api/v1alpha1/database	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.branches.list	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.branches.create	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.pulls.list	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.pulls.create	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.pulls.get	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls/{pull_id}	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.pulls.merge	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls/{pull_id}/merge	https://www.dolthub.com/docs/products/dolthub/api/database
+dolthub	v1alpha1.user.get	GET	https://www.dolthub.com/api/v1alpha1/user	https://www.dolthub.com/docs/products/dolthub/api/user

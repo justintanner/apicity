@@ -1,8 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages \u2014 @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/cost, and @apicity/mcp-server",
-  "private": true,
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {
     "node": ">=18.12.0",
@@ -14,7 +13,8 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:cost && pnpm run build:mcp-server && pnpm run doc-gen",
+    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:cost && pnpm run build:mcp-server && pnpm run doc-gen",
+    "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
     "build:kie": "pnpm --filter @apicity/kie run build",
@@ -37,6 +37,7 @@
     "doc-gen": "node scripts/doc-gen.mjs",
     "doc-gen:openai": "node scripts/doc-gen.mjs openai",
     "doc-gen:xai": "node scripts/doc-gen.mjs xai",
+    "doc-gen:dolthub": "node scripts/doc-gen.mjs dolthub",
     "doc-gen:anthropic": "node scripts/doc-gen.mjs anthropic",
     "doc-gen:fireworks": "node scripts/doc-gen.mjs fireworks",
     "doc-gen:fal": "node scripts/doc-gen.mjs fal",

@@ -105,6 +105,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/youtube/src/youtube.ts"],
     factoryNames: ["youtube"],
   },
+  {
+    name: "dolthub",
+    entryFiles: ["packages/provider/dolthub/src/dolthub.ts"],
+    factoryNames: ["dolthub"],
+  },
 ];
 
 const METHOD_KEYS = new Set([

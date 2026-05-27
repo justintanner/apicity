@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages \u2014 @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/cost, and @apicity/mcp-server",
   "private": true,
   "type": "module",
   "engines": {
@@ -76,7 +76,7 @@
     "dev:preflight": "pnpm run format && pnpm run lint && pnpm run test:run",
     "ci:local": "pnpm run build && pnpm run lint && pnpm run test:run",
     "audit": "pnpm audit --audit-level=moderate",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\",\"YOUTUBE_ACCESS_TOKEN\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK \u2014 %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\",\"YOUTUBE_ACCESS_TOKEN\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs"
   },
@@ -120,7 +120,8 @@
       "ip-address@<10.1.1": "10.1.1",
       "fast-uri": "3.1.2",
       "hono": "4.12.18",
-      "brace-expansion@>=5.0.0 <5.0.6": ">=5.0.6"
+      "brace-expansion@>=5.0.0 <5.0.6": ">=5.0.6",
+      "qs@<6.15.2": "6.15.2"
     }
   },
   "keywords": [

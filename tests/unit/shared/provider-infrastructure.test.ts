@@ -1,15 +1,22 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { alibaba } from "../../../packages/provider/alibaba/src/index";
 import { anthropic } from "../../../packages/provider/anthropic/src/index";
+import { dolthub } from "../../../packages/provider/dolthub/src/index";
+import { elevenlabs } from "../../../packages/provider/elevenlabs/src/index";
 import { fal } from "../../../packages/provider/fal/src/index";
 import { fireworks } from "../../../packages/provider/fireworks/src/index";
 import { kie } from "../../../packages/provider/kie/src/index";
 import { kimicoding } from "../../../packages/provider/kimicoding/src/index";
+import { meta } from "../../../packages/provider/meta/src/index";
 import { openai } from "../../../packages/provider/openai/src/index";
+import { polymarket } from "../../../packages/provider/polymarket/src/index";
 import {
   withFallback,
   withRetry,
 } from "../../../packages/provider/openai/src/middleware";
+import { x } from "../../../packages/provider/x/src/index";
 import { xai } from "../../../packages/provider/xai/src/index";
+import { youtube } from "../../../packages/provider/youtube/src/index";
 
 interface SharedRequestOptions {
   baseURL?: string;
@@ -127,6 +134,105 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
       code: 200,
       msg: "ok",
       data: { downloadUrl: "https://files.example/task_123.mp4" },
+    },
+  },
+  {
+    name: "Alibaba",
+    customBaseURL: "https://custom.example/alibaba",
+    expectedUrl: "https://custom.example/alibaba/models",
+    invoke: (opts) =>
+      alibaba({
+        apiKey: "sk-alibaba-test",
+        baseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).get.compatibleMode.v1.models(),
+    successBody: { data: [] },
+  },
+  {
+    name: "DoltHub",
+    customBaseURL: "https://custom.example/dolthub",
+    expectedUrl: "https://custom.example/dolthub/api/v1alpha1/user",
+    invoke: (opts) =>
+      dolthub({
+        apiToken: "dolt-test",
+        baseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).v1alpha1.user.get(),
+    successBody: { name: "test-user" },
+  },
+  {
+    name: "ElevenLabs",
+    customBaseURL: "https://custom.example/elevenlabs",
+    expectedUrl: "https://custom.example/elevenlabs/v1/sound-generation",
+    invoke: (opts) =>
+      elevenlabs({
+        apiKey: "el-test",
+        baseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).post.v1.soundGeneration({
+        text: "test",
+      }),
+    successBody: new ArrayBuffer(0),
+  },
+  {
+    name: "Meta",
+    customBaseURL: "https://custom.example/meta",
+    expectedUrl: "https://custom.example/meta/v25.0/1234567890",
+    invoke: (opts) =>
+      meta({
+        accessToken: "meta-test",
+        baseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).get.v25.container("1234567890"),
+    successBody: { status_code: "FINISHED" },
+  },
+  {
+    name: "Polymarket",
+    customBaseURL: "https://custom.example/clob",
+    expectedUrl: "https://custom.example/clob/time",
+    invoke: (opts) =>
+      polymarket({
+        clobBaseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).get.clob.time(),
+    successBody: 1234567890,
+  },
+  {
+    name: "X",
+    customBaseURL: "https://custom.example/x",
+    expectedUrl:
+      "https://custom.example/x/2/media/upload?media_id=1234567890&command=STATUS",
+    invoke: (opts) =>
+      x({
+        accessToken: "x-test",
+        baseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).get.v2.media.upload("1234567890"),
+    successBody: {
+      media_id: "1234567890",
+      processing_info: { state: "succeeded" },
+    },
+  },
+  {
+    name: "YouTube",
+    customBaseURL: "https://custom.example/youtube/v3",
+    expectedUrl: "https://custom.example/youtube/v3/channels?part=snippet",
+    invoke: (opts) =>
+      youtube({
+        accessToken: "yt-test",
+        baseURL: opts.baseURL,
+        fetch: opts.fetch,
+        timeout: opts.timeout,
+      }).channels.list({ part: "snippet" }),
+    successBody: {
+      items: [],
+      pageInfo: { totalResults: 0, resultsPerPage: 0 },
     },
   },
 ];

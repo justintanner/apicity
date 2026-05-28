@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { alibaba } from "../../packages/provider/alibaba/src/alibaba";
+import { AlibabaError } from "../../packages/provider/alibaba/src/types";
 import { anthropic } from "../../packages/provider/anthropic/src/anthropic";
 import { AnthropicError } from "../../packages/provider/anthropic/src/types";
+import { dolthub } from "../../packages/provider/dolthub/src/dolthub";
+import { DoltHubError } from "../../packages/provider/dolthub/src/types";
+import { elevenlabs } from "../../packages/provider/elevenlabs/src/elevenlabs";
+import { ElevenLabsError } from "../../packages/provider/elevenlabs/src/types";
 import { fal } from "../../packages/provider/fal/src/fal";
 import { FalError } from "../../packages/provider/fal/src/types";
 import { fireworks } from "../../packages/provider/fireworks/src/fireworks";
@@ -10,10 +16,18 @@ import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
 import { kimicoding } from "../../packages/provider/kimicoding/src/kimicoding";
 import { KimiCodingError } from "../../packages/provider/kimicoding/src/types";
+import { meta } from "../../packages/provider/meta/src/meta";
+import { MetaError } from "../../packages/provider/meta/src/types";
 import { openai } from "../../packages/provider/openai/src/openai";
 import { OpenAiError } from "../../packages/provider/openai/src/types";
+import { polymarket } from "../../packages/provider/polymarket/src/polymarket";
+import { PolymarketError } from "../../packages/provider/polymarket/src/types";
+import { x } from "../../packages/provider/x/src/x";
+import { XError } from "../../packages/provider/x/src/types";
 import { xai } from "../../packages/provider/xai/src/xai";
 import { XaiError } from "../../packages/provider/xai/src/types";
+import { youtube } from "../../packages/provider/youtube/src/youtube";
+import { YouTubeError } from "../../packages/provider/youtube/src/types";
 
 type ErrorConstructor<T extends Error> = new (...args: never[]) => T;
 
@@ -207,6 +221,126 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     assertError(error, context) {
       const kieError = error as KieError;
       expect(kieError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "Alibaba",
+    errorClass: AlibabaError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return alibaba({
+        apiKey: "sk-alibaba-test",
+        fetch: fetchImpl,
+        timeout,
+      }).get.compatibleMode.v1.models();
+    },
+    rateLimitBody: { error: { message: "Slow down" } },
+    expectedRateLimitMessage: "Alibaba API error 429: Slow down",
+    assertError(error, context) {
+      const alibabaError = error as AlibabaError;
+      expect(alibabaError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "DoltHub",
+    errorClass: DoltHubError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return dolthub({
+        apiToken: "dolt-test",
+        fetch: fetchImpl,
+        timeout,
+      }).v1alpha1.user.get();
+    },
+    rateLimitBody: { message: "Slow down" },
+    expectedRateLimitMessage: "DoltHub API error 429: Slow down",
+    assertError(error, context) {
+      const dolthubError = error as DoltHubError;
+      expect(dolthubError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "ElevenLabs",
+    errorClass: ElevenLabsError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return elevenlabs({
+        apiKey: "el-test",
+        fetch: fetchImpl,
+        timeout,
+      }).post.v1.speechToText({
+        file: new Blob(["test"]),
+      });
+    },
+    rateLimitBody: { detail: { message: "Slow down" } },
+    expectedRateLimitMessage: "ElevenLabs API error 429: Slow down",
+    assertError(error, context) {
+      const elevenlabsError = error as ElevenLabsError;
+      expect(elevenlabsError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "Meta",
+    errorClass: MetaError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return meta({
+        accessToken: "meta-test",
+        fetch: fetchImpl,
+        timeout,
+      }).get.v25.container("1234567890");
+    },
+    rateLimitBody: { error: { message: "Slow down" } },
+    expectedRateLimitMessage: "IG API error 429: Slow down",
+    assertError(error, context) {
+      const metaError = error as MetaError;
+      expect(metaError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "Polymarket",
+    errorClass: PolymarketError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return polymarket({
+        fetch: fetchImpl,
+        timeout,
+      }).get.clob.book({ token_id: "123" });
+    },
+    rateLimitBody: { message: "Slow down" },
+    expectedRateLimitMessage: "Polymarket API error 429: Slow down",
+    assertError(error, context) {
+      const polymarketError = error as PolymarketError;
+      expect(polymarketError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "X",
+    errorClass: XError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return x({
+        accessToken: "x-test",
+        fetch: fetchImpl,
+        timeout,
+      }).get.v2.media.upload("1234567890");
+    },
+    rateLimitBody: { errors: [{ message: "Slow down" }] },
+    expectedRateLimitMessage: "X API error 429: Slow down",
+    assertError(error, context) {
+      const xError = error as XError;
+      expect(xError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "YouTube",
+    errorClass: YouTubeError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return youtube({
+        accessToken: "yt-test",
+        fetch: fetchImpl,
+        timeout,
+      }).channels.list({ part: "snippet" });
+    },
+    rateLimitBody: { error: { message: "Slow down" } },
+    expectedRateLimitMessage: "YouTube API error 429: Slow down",
+    assertError(error, context) {
+      const youtubeError = error as YouTubeError;
+      expect(youtubeError.status).toBe(context === "rateLimit" ? 429 : 500);
     },
   },
 ];

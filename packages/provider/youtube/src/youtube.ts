@@ -12,6 +12,55 @@ import {
   YouTubeGetVideoMetadataRequestSchema,
 } from "./zod";
 
+export function buildQuery(
+  params: Record<string, string | number | undefined>
+): string {
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined) {
+      qs.append(key, String(value));
+    }
+  }
+  const query = qs.toString();
+  return query ? `?${query}` : "";
+}
+
+export function extractVideoId(input: string): string | null {
+  if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
+  const match = input.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/
+  );
+  return match?.[1] ?? null;
+}
+
+export function decodeHtmlEntities(text: string): string {
+  return text
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#39;/g, "'")
+    .replace(/&#x27;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
+export function parseTranscriptXml(
+  xml: string
+): import("./types").YouTubeTranscriptSegment[] {
+  const segments: import("./types").YouTubeTranscriptSegment[] = [];
+  const regex =
+    /<text[^>]*start="([0-9.]+)"[^>]*dur="([0-9.]+)"[^>]*>([^<]*)<\/text>/g;
+  let match;
+  while ((match = regex.exec(xml)) !== null) {
+    segments.push({
+      start: parseFloat(match[1]),
+      duration: parseFloat(match[2]),
+      text: decodeHtmlEntities(match[3]),
+    });
+  }
+  return segments;
+}
+
 export function youtube(opts?: YouTubeOptions): YouTubeProvider {
   const baseURL = opts?.baseURL ?? "https://www.googleapis.com/youtube/v3";
   const doFetch = opts?.fetch ?? fetch;
@@ -104,19 +153,6 @@ export function youtube(opts?: YouTubeOptions): YouTubeProvider {
       if (error instanceof YouTubeError) throw error;
       throw new YouTubeError(`YouTube request failed: ${error}`, 500);
     }
-  }
-
-  function buildQuery(
-    params: Record<string, string | number | undefined>
-  ): string {
-    const qs = new URLSearchParams();
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined) {
-        qs.append(key, String(value));
-      }
-    }
-    const query = qs.toString();
-    return query ? `?${query}` : "";
   }
 
   // sig-ok: namespace follows YouTube API method naming (`videos.list`)
@@ -274,14 +310,6 @@ export function youtube(opts?: YouTubeOptions): YouTubeProvider {
 
   // -- transcripts.get (keyless) -------------------------------------------
 
-  function extractVideoId(input: string): string | null {
-    if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
-    const match = input.match(
-      /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/
-    );
-    return match?.[1] ?? null;
-  }
-
   function extractPlayerResponse(html: string): unknown | null {
     // Find the assignment manually and count braces. Regex approaches fail on
     // nested JSON because lazy quantifiers stop at the first '}' they see.
@@ -305,34 +333,6 @@ export function youtube(opts?: YouTubeOptions): YouTubeProvider {
     } catch {
       return null;
     }
-  }
-
-  function decodeHtmlEntities(text: string): string {
-    return text
-      .replace(/&quot;/g, '"')
-      .replace(/&amp;/g, "&")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&#39;/g, "'")
-      .replace(/&#x27;/g, "'")
-      .replace(/&apos;/g, "'");
-  }
-
-  function parseTranscriptXml(
-    xml: string
-  ): import("./types").YouTubeTranscriptSegment[] {
-    const segments: import("./types").YouTubeTranscriptSegment[] = [];
-    const regex =
-      /<text[^>]*start="([0-9.]+)"[^>]*dur="([0-9.]+)"[^>]*>([^<]*)<\/text>/g;
-    let match;
-    while ((match = regex.exec(xml)) !== null) {
-      segments.push({
-        start: parseFloat(match[1]),
-        duration: parseFloat(match[2]),
-        text: decodeHtmlEntities(match[3]),
-      });
-    }
-    return segments;
   }
 
   // GET https://www.youtube.com/watch?v={videoId}

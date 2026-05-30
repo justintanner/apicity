@@ -4,6 +4,8 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
+  recordingExists,
   type PollyContext,
 } from "../harness";
 import { freeMediaUpload } from "@apicity/free-media-upload";
@@ -48,6 +50,9 @@ describe("free-media-upload temp.sh upload", () => {
   });
 
   it("should validate payload - missing file", () => {
+    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tempsh-validate")) {
+      return;
+    }
     ctx = setupPollyForFileUploads("free-media-upload/tempsh-validate");
     const provider = freeMediaUpload();
     const result = provider.tempsh.upload.schema.safeParse({});

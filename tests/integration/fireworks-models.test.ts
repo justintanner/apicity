@@ -1,5 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  getPollyMode,
+  recordingExists,
+  type PollyContext,
+} from "../harness";
 import { fireworks } from "@apicity/fireworks";
 
 describe("fireworks models CRUD integration", () => {
@@ -53,8 +59,13 @@ describe("fireworks models CRUD integration", () => {
   });
 
   describe("schema validation", () => {
+    const recordingName = "fireworks/models-schema";
+
     beforeEach(() => {
-      ctx = setupPolly("fireworks/models-schema");
+      if (getPollyMode() === "replay" && !recordingExists(recordingName)) {
+        return;
+      }
+      ctx = setupPolly(recordingName);
     });
 
     afterEach(async () => {

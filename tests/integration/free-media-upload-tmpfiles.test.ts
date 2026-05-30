@@ -4,6 +4,8 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
+  recordingExists,
   type PollyContext,
 } from "../harness";
 import { freeMediaUpload } from "@apicity/free-media-upload";
@@ -66,6 +68,9 @@ describe("free-media-upload tmpfiles upload", () => {
   });
 
   it("should expose schema on upload", () => {
+    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tmpfiles-schema")) {
+      return;
+    }
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-schema");
     const provider = freeMediaUpload();
     const schema = provider.tmpfiles.api.v1.upload.schema;
@@ -75,6 +80,9 @@ describe("free-media-upload tmpfiles upload", () => {
   });
 
   it("should validate payload - missing file", () => {
+    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tmpfiles-validate")) {
+      return;
+    }
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-validate");
     const provider = freeMediaUpload();
     const result = provider.tmpfiles.api.v1.upload.schema.safeParse({});

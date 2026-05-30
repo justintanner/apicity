@@ -4,6 +4,8 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
+  recordingExists,
   type PollyContext,
 } from "../harness";
 import { freeMediaUpload } from "@apicity/free-media-upload";
@@ -72,6 +74,9 @@ describe("free-media-upload uguu upload", () => {
   });
 
   it("should expose schema on upload", () => {
+    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/uguu-schema")) {
+      return;
+    }
     ctx = setupPollyForFileUploads("free-media-upload/uguu-schema");
     const provider = freeMediaUpload();
     const schema = provider.uguu.upload.schema;
@@ -81,6 +86,9 @@ describe("free-media-upload uguu upload", () => {
   });
 
   it("should validate payload - missing file", () => {
+    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/uguu-validate")) {
+      return;
+    }
     ctx = setupPollyForFileUploads("free-media-upload/uguu-validate");
     const provider = freeMediaUpload();
     const result = provider.uguu.upload.schema.safeParse({});

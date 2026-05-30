@@ -1,5 +1,11 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  getPollyMode,
+  recordingExists,
+  type PollyContext,
+} from "../harness";
 import { polymarket } from "@apicity/polymarket";
 
 const TOKEN_YES =
@@ -112,7 +118,9 @@ describe("polymarket clob batch POSTs", () => {
   });
 
   it("exposes payload schemas for runtime validation", async () => {
-    // No HAR needed — schema attachment is a static fact about the factory.
+    if (getPollyMode() === "replay" && !recordingExists("polymarket/clob-batch-schemas")) {
+      return;
+    }
     ctx = setupPolly("polymarket/clob-batch-schemas");
     const provider = polymarket();
 

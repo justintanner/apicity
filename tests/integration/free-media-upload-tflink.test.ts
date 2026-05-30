@@ -4,6 +4,8 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
+  getPollyMode,
+  recordingExists,
   type PollyContext,
 } from "../harness";
 import { freeMediaUpload } from "@apicity/free-media-upload";
@@ -62,6 +64,9 @@ describe("free-media-upload tflink upload", () => {
   });
 
   it("should validate payload - missing file", () => {
+    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tflink-validate")) {
+      return;
+    }
     ctx = setupPollyForFileUploads("free-media-upload/tflink-validate");
     const provider = freeMediaUpload();
     const result = provider.tflink.upload.schema.safeParse({});

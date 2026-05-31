@@ -26,7 +26,6 @@ export type { ExtractResult, TextExtract } from "./extract/types";
 export {
   ENDPOINT_COSTS,
   getEndpointCost,
-  getTier,
   isExpensiveOrWorse,
   isProhibitive,
   listByTier,
@@ -34,4 +33,29 @@ export {
   countByTier,
 } from "./endpoint-costs";
 
-export type { CostTier, EndpointCostInfo } from "./endpoint-costs";
+export type { EndpointCostInfo } from "./endpoint-costs";
+
+// Cost tier and gate system
+export {
+  gateCheck,
+  gateCheckBatch,
+  getTier,
+  TIERED_ENDPOINTS,
+  lookupTier,
+  providerTiers,
+  DEFAULT_POLICY,
+  STRICT_POLICY,
+  PERMISSIVE_POLICY,
+  createTokenBucket,
+  GateError,
+  resolveAction,
+} from "./tokens";
+export type {
+  CostTier,
+  TieredEndpoint,
+  CostPolicy,
+  PolicyAction,
+  GateResult,
+  TokenBucket,
+  BatchGateRequest,
+} from "./tokens";

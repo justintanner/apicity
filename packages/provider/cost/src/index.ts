@@ -22,3 +22,16 @@ export type {
 } from "./types";
 
 export type { ExtractResult, TextExtract } from "./extract/types";
+
+export {
+  ENDPOINT_COSTS,
+  getEndpointCost,
+  getTier,
+  isExpensiveOrWorse,
+  isProhibitive,
+  listByTier,
+  listByProvider,
+  countByTier,
+} from "./endpoint-costs";
+
+export type { CostTier, EndpointCostInfo } from "./endpoint-costs";

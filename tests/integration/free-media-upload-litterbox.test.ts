@@ -114,7 +114,10 @@ describe("free-media-upload litterbox upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/litterbox-validate")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/litterbox-validate")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/litterbox-validate");

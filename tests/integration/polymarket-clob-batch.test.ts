@@ -118,7 +118,10 @@ describe("polymarket clob batch POSTs", () => {
   });
 
   it("exposes payload schemas for runtime validation", async () => {
-    if (getPollyMode() === "replay" && !recordingExists("polymarket/clob-batch-schemas")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("polymarket/clob-batch-schemas")
+    ) {
       return;
     }
     ctx = setupPolly("polymarket/clob-batch-schemas");

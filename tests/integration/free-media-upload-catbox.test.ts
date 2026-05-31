@@ -50,7 +50,10 @@ describe("free-media-upload catbox upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/catbox-validate")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/catbox-validate")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/catbox-validate");

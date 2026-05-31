@@ -68,7 +68,10 @@ describe("free-media-upload tmpfiles upload", () => {
   });
 
   it("should expose schema on upload", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tmpfiles-schema")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/tmpfiles-schema")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-schema");
@@ -80,7 +83,10 @@ describe("free-media-upload tmpfiles upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tmpfiles-validate")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/tmpfiles-validate")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-validate");

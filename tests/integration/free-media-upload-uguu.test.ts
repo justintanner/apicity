@@ -74,7 +74,10 @@ describe("free-media-upload uguu upload", () => {
   });
 
   it("should expose schema on upload", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/uguu-schema")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/uguu-schema")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/uguu-schema");
@@ -86,7 +89,10 @@ describe("free-media-upload uguu upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/uguu-validate")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/uguu-validate")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/uguu-validate");

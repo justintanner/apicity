@@ -50,7 +50,10 @@ describe("free-media-upload temp.sh upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tempsh-validate")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/tempsh-validate")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/tempsh-validate");

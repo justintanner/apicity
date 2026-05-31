@@ -1,20 +1,22 @@
 import {
   checkGate,
   DEFAULT_POLICY,
-  GateError,
-  PERMISSIVE_POLICY,
-  STRICT_POLICY,
-  createTokenBucket,
-  resolveAction,
   type CostPolicy,
   type GateResult,
   type TokenBucket,
 } from "./gate";
-import { lookupTier, TIERED_ENDPOINTS, providerTiers, type CostTier, type TieredEndpoint } from "./tiers";
+import { lookupTier, type CostTier } from "./tiers";
 
 // Re-export core types for consumers.
 export type { CostPolicy, PolicyAction, GateResult, TokenBucket } from "./gate";
-export { GateError, DEFAULT_POLICY, STRICT_POLICY, PERMISSIVE_POLICY, createTokenBucket, resolveAction } from "./gate";
+export {
+  GateError,
+  DEFAULT_POLICY,
+  STRICT_POLICY,
+  PERMISSIVE_POLICY,
+  createTokenBucket,
+  resolveAction,
+} from "./gate";
 export type { CostTier, TieredEndpoint } from "./tiers";
 export { TIERED_ENDPOINTS, lookupTier, providerTiers } from "./tiers";
 
@@ -54,7 +56,9 @@ export function gateCheckBatch(
 ): GateResult[] {
   const results: GateResult[] = [];
   for (const req of requests) {
-    results.push(gateCheck(req.provider, req.dotPath, req.method, policy, bucket));
+    results.push(
+      gateCheck(req.provider, req.dotPath, req.method, policy, bucket)
+    );
   }
   return results;
 }

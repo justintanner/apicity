@@ -89,7 +89,9 @@ const files = fs.readdirSync(testsDir).filter((f) => {
   return expensivePatterns.some((p) => p.test(f));
 });
 
-console.log(`Found ${files.length} expensive tests without recordingExists guards:`);
+console.log(
+  `Found ${files.length} expensive tests without recordingExists guards:`
+);
 files.forEach((f) => console.log(`  ${f}`));
 
 for (const file of files) {
@@ -128,7 +130,7 @@ for (const file of files) {
   // Add guard pattern to each it() that makes an API call
   // This is a simple heuristic: add guard after the first await or provider call
   // Actually, we need to be more careful. Let's add the guard at the start of the test function.
-  
+
   // Find the recording name from setupPolly calls
   const setupPollyMatch = content.match(/setupPolly\("([^"]+)"\)/);
   const recordingName = setupPollyMatch ? setupPollyMatch[1] : null;
@@ -145,15 +147,12 @@ for (const file of files) {
   );
 
   // Also handle the case where setupPolly is called directly without ctx =
-  content = content.replace(
-    /setupPolly\(/g,
-    (match, offset, string) => {
-      // Check if this match is already guarded
-      const before = string.slice(Math.max(0, offset - 100), offset);
-      if (before.includes("recordingExists")) return match;
-      return match;
-    }
-  );
+  content = content.replace(/setupPolly\(/g, (match, offset, string) => {
+    // Check if this match is already guarded
+    const before = string.slice(Math.max(0, offset - 100), offset);
+    if (before.includes("recordingExists")) return match;
+    return match;
+  });
 
   fs.writeFileSync(filePath, content);
   console.log(`  UPDATED ${file}`);

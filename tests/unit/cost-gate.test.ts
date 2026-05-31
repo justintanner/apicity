@@ -113,9 +113,27 @@ describe("cost gate system", () => {
 
     it("consumes tokens for each expensive call", () => {
       const bucket = createTokenBucket(3);
-      gateCheck("openai", "v1.chat.completions", "POST", DEFAULT_POLICY, bucket);
-      gateCheck("openai", "v1.chat.completions", "POST", DEFAULT_POLICY, bucket);
-      gateCheck("openai", "v1.chat.completions", "POST", DEFAULT_POLICY, bucket);
+      gateCheck(
+        "openai",
+        "v1.chat.completions",
+        "POST",
+        DEFAULT_POLICY,
+        bucket
+      );
+      gateCheck(
+        "openai",
+        "v1.chat.completions",
+        "POST",
+        DEFAULT_POLICY,
+        bucket
+      );
+      gateCheck(
+        "openai",
+        "v1.chat.completions",
+        "POST",
+        DEFAULT_POLICY,
+        bucket
+      );
       expect(bucket.balance()).toBe(0);
 
       const blocked = gateCheck(

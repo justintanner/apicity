@@ -1925,6 +1925,12 @@ const PROVIDER_AUTH = {
   },
 };
 
+// Per-provider upstream documentation URLs. When set, a docs badge is
+// rendered in the README header.
+const PROVIDER_DOCS = {
+  polymarket: "https://docs.polymarket.com/api-reference/introduction",
+};
+
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
   const pkgName = pkg.name || `@apicity/${providerName}`;
@@ -1948,6 +1954,13 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push(
     "[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)"
   );
+  const docsUrl = PROVIDER_DOCS[providerName];
+  if (docsUrl) {
+    const docsHost = new URL(docsUrl).hostname.replace(/^www\./, "");
+    sections.push(
+      `[![docs](https://img.shields.io/badge/docs-${encodeURIComponent(docsHost)}-blue)](${docsUrl})`
+    );
+  }
   sections.push("");
   sections.push(pkg.description || `${providerName} provider for apicity.`);
   sections.push("");

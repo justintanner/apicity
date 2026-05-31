@@ -3,6 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@apicity/polymarket?color=cb0000)](https://www.npmjs.com/package/@apicity/polymarket)
 [![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
+[![docs](https://img.shields.io/badge/docs-docs.polymarket.com-blue)](https://docs.polymarket.com/api-reference/introduction)
 
 Polymarket public-data API provider — Gamma, Data, and CLOB market-data endpoints (no auth).
 

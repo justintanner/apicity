@@ -64,7 +64,10 @@ describe("free-media-upload tflink upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (getPollyMode() === "replay" && !recordingExists("free-media-upload/tflink-validate")) {
+    if (
+      getPollyMode() === "replay" &&
+      !recordingExists("free-media-upload/tflink-validate")
+    ) {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/tflink-validate");

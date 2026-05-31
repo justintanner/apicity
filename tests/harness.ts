@@ -210,10 +210,7 @@ export function recordingExists(recordingName: string): boolean {
     }
     const entries = fs.readdirSync(dir, { withFileTypes: true });
     for (const entry of entries) {
-      if (
-        entry.isDirectory() &&
-        entry.name.startsWith(parts[depth] + "_")
-      ) {
+      if (entry.isDirectory() && entry.name.startsWith(parts[depth] + "_")) {
         if (walk(path.join(dir, entry.name), depth + 1)) {
           return true;
         }

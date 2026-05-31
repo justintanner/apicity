@@ -22,3 +22,27 @@ export type {
 } from "./types";
 
 export type { ExtractResult, TextExtract } from "./extract/types";
+// Cost tier and gate system
+export {
+  gateCheck,
+  gateCheckBatch,
+  getTier,
+  TIERED_ENDPOINTS,
+  lookupTier,
+  providerTiers,
+  DEFAULT_POLICY,
+  STRICT_POLICY,
+  PERMISSIVE_POLICY,
+  createTokenBucket,
+  GateError,
+  resolveAction,
+} from "./tokens";
+export type {
+  CostTier,
+  TieredEndpoint,
+  CostPolicy,
+  PolicyAction,
+  GateResult,
+  TokenBucket,
+  BatchGateRequest,
+} from "./tokens";

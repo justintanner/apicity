@@ -6,13 +6,9 @@
 # Issue prefix for this repository (used by bd init)
 # If not set, bd init will auto-detect from directory name
 # Example: issue-prefix: "myproject" creates issues like "myproject-1", "myproject-2", etc.
-issue-prefix: "ac"
-issue_prefix: ac
 dolt.auto-start: false
-dolt.server-port: 43107
-gc.endpoint_origin: inherited_city
-gc.endpoint_status: verified
-
+gc.endpoint_origin: explicit
+gc.endpoint_status: unverified
 # Use no-db mode: JSONL-only, no Dolt database
 # When true, bd will use .beads/issues.jsonl as the source of truth
 # no-db: false
@@ -57,5 +53,9 @@ gc.endpoint_status: verified
 # - linear.api-key
 # - github.org
 # - github.repo
-types.custom: molecule,convoy,message,event,gate,merge-request,agent,role,rig,session,spec,convergence
-
+export.auto: false
+issue_prefix: ac
+issue-prefix: ac
+dolt.host: dolt.superlzy.com
+dolt.port: 3306
+types.custom: molecule,convoy,message,event,gate,merge-request,agent,role,rig,session,spec,convergence,step

@@ -24,18 +24,21 @@ describe("kie gpt-image-2-image-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "gpt-image-2-image-to-image",
-        input: {
-          prompt:
-            "Transform this product image into a premium e-commerce poster style.",
-          input_urls: [
-            "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
-          ],
-          aspect_ratio: "1:1",
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "gpt-image-2-image-to-image",
+          input: {
+            prompt:
+              "Transform this product image into a premium e-commerce poster style.",
+            input_urls: [
+              "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
+            ],
+            aspect_ratio: "1:1",
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

@@ -29,13 +29,16 @@ describe("kie grok-imagine full lifecycle", () => {
       expect(typeof credits.data).toBe("number");
 
       // Submit text-to-image task
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "A red panda sitting on a mossy log in a bamboo forest",
-          aspect_ratio: "1:1",
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "grok-imagine/text-to-image",
+          input: {
+            prompt: "A red panda sitting on a mossy log in a bamboo forest",
+            aspect_ratio: "1:1",
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();
@@ -81,15 +84,18 @@ describe("kie grok-imagine full lifecycle", () => {
       expect(typeof credits.data).toBe("number");
 
       // Submit image-to-image task using a public reference image
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "grok-imagine/image-to-image",
-        input: {
-          prompt: "Transform into a watercolor painting style",
-          image_urls: [
-            "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
-          ],
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "grok-imagine/image-to-image",
+          input: {
+            prompt: "Transform into a watercolor painting style",
+            image_urls: [
+              "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
+            ],
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

@@ -24,18 +24,21 @@ describe("kie bytedance/seedance-2 integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "bytedance/seedance-2",
-        input: {
-          prompt: "A calm lake at dawn with mist rising over the water",
-          resolution: "480p",
-          aspect_ratio: "16:9",
-          duration: 4,
-          generate_audio: false,
-          web_search: false,
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "bytedance/seedance-2",
+          input: {
+            prompt: "A calm lake at dawn with mist rising over the water",
+            resolution: "480p",
+            aspect_ratio: "16:9",
+            duration: 4,
+            generate_audio: false,
+            web_search: false,
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

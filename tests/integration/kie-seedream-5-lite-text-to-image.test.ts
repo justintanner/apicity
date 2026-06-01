@@ -24,15 +24,18 @@ describe("kie seedream/5-lite-text-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "seedream/5-lite-text-to-image",
-        input: {
-          prompt: "A serene mountain landscape at sunrise, photorealistic",
-          aspect_ratio: "16:9",
-          quality: "basic",
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "seedream/5-lite-text-to-image",
+          input: {
+            prompt: "A serene mountain landscape at sunrise, photorealistic",
+            aspect_ratio: "16:9",
+            quality: "basic",
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

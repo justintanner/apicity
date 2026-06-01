@@ -24,21 +24,24 @@ describe("kie wan/2-7-image-pro integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "wan/2-7-image-pro",
-        input: {
-          prompt:
-            "A futuristic cityscape at night with neon lights reflecting off wet streets.",
-          n: 1,
-          resolution: "2K",
-          aspect_ratio: "16:9",
-          enable_sequential: false,
-          thinking_mode: false,
-          watermark: false,
-          seed: 0,
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "wan/2-7-image-pro",
+          input: {
+            prompt:
+              "A futuristic cityscape at night with neon lights reflecting off wet streets.",
+            n: 1,
+            resolution: "2K",
+            aspect_ratio: "16:9",
+            enable_sequential: false,
+            thinking_mode: false,
+            watermark: false,
+            seed: 0,
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

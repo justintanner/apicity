@@ -19,21 +19,24 @@ describe("kie kling-3.0 motion-control integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "kling-3.0/motion-control",
-        input: {
-          input_urls: [
-            "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
-          ],
-          video_urls: [
-            "https://static.aiquickdraw.com/tools/example/1767525918769_QyvTNib2.mp4",
-          ],
-          prompt: "The cartoon character is dancing.",
-          mode: "720p",
-          character_orientation: "video",
-          background_source: "input_video",
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "kling-3.0/motion-control",
+          input: {
+            input_urls: [
+              "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
+            ],
+            video_urls: [
+              "https://static.aiquickdraw.com/tools/example/1767525918769_QyvTNib2.mp4",
+            ],
+            prompt: "The cartoon character is dancing.",
+            mode: "720p",
+            character_orientation: "video",
+            background_source: "input_video",
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.data?.taskId).toBeTruthy();
       expect(typeof task.data?.taskId).toBe("string");

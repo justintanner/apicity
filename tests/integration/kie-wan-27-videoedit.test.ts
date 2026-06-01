@@ -40,21 +40,24 @@ describe("kie wan/2-7-videoedit integration", () => {
       expect(upload.code).toBe(200);
       expect(upload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "wan/2-7-videoedit",
-        input: {
-          prompt: "Make the scene look like a watercolor painting.",
-          negative_prompt:
-            "low resolution, errors, worst quality, low quality, malformed",
-          video_url: upload.data!.downloadUrl,
-          resolution: "720p",
-          duration: 0,
-          audio_setting: "auto",
-          prompt_extend: true,
-          watermark: false,
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "wan/2-7-videoedit",
+          input: {
+            prompt: "Make the scene look like a watercolor painting.",
+            negative_prompt:
+              "low resolution, errors, worst quality, low quality, malformed",
+            video_url: upload.data!.downloadUrl,
+            resolution: "720p",
+            duration: 0,
+            audio_setting: "auto",
+            prompt_extend: true,
+            watermark: false,
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

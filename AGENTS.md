@@ -123,6 +123,7 @@ API keys resolve at runtime via the 1Password CLI (`op run --env-file=.env.tpl`)
 Some `bd` issues are owned by `jwt-gascity[bot]@users.noreply.github.com`. Do not reassign those unless you are the bot. Use `bd search gascity` to surface interop-related work.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:full hash:0a1bbe8a -->
+
 ## Issue Tracking with bd (beads)
 
 **IMPORTANT**: This project uses **bd (beads)** for ALL issue tracking. Do NOT use markdown TODOs, task lists, or other tracking methods.
@@ -188,10 +189,12 @@ bd close bd-42 --reason "Completed" --json
 5. **Complete**: `bd close <id> --reason "Done"`
 
 ### Quality
+
 - Use `--acceptance` and `--design` fields when creating issues
 - Use `--validate` to check description completeness
 
 ### Lifecycle
+
 - `bd defer <id>` / `bd supersede <id>` for issue management
 - `bd stale` / `bd orphans` / `bd lint` for hygiene
 - `bd human <id>` to flag for human decisions
@@ -238,6 +241,7 @@ For more details, see README.md and docs/QUICKSTART.md.
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push

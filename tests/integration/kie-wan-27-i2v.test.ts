@@ -16,21 +16,24 @@ describe("kie wan/2-7-image-to-video integration", () => {
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
-    const task = await provider.post.api.v1.jobs.createTask({
-      model: "wan/2-7-image-to-video",
-      input: {
-        prompt:
-          "A cat stretches lazily then turns to look at the camera with curious eyes",
-        negative_prompt: "blurry, low quality, distorted",
-        first_frame_url:
-          "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
-        resolution: "720p",
-        duration: 5,
-        prompt_extend: true,
-        watermark: false,
-        nsfw_checker: false,
+    const task = await provider.post.api.v1.jobs.createTask(
+      {
+        model: "wan/2-7-image-to-video",
+        input: {
+          prompt:
+            "A cat stretches lazily then turns to look at the camera with curious eyes",
+          negative_prompt: "blurry, low quality, distorted",
+          first_frame_url:
+            "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
+          resolution: "720p",
+          duration: 5,
+          prompt_extend: true,
+          watermark: false,
+          nsfw_checker: false,
+        },
       },
-    }, 10);
+      10
+    );
 
     expect(task.code).toBe(200);
     expect(task.data?.taskId).toBeTruthy();

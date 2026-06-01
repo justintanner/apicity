@@ -39,16 +39,19 @@ describe("kie happyhorse/video-edit integration", () => {
 
       expect(videoUpload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "happyhorse/video-edit",
-        input: {
-          prompt: "Restyle the scene to look like a watercolor painting",
-          video_url: videoUpload.data!.downloadUrl,
-          resolution: "720p",
-          audio_setting: "auto",
-          seed: 1764574909,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "happyhorse/video-edit",
+          input: {
+            prompt: "Restyle the scene to look like a watercolor painting",
+            video_url: videoUpload.data!.downloadUrl,
+            resolution: "720p",
+            audio_setting: "auto",
+            seed: 1764574909,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

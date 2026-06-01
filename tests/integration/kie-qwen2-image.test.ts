@@ -18,13 +18,16 @@ describe("kie qwen2/text-to-image integration", () => {
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
-    const task = await provider.post.api.v1.jobs.createTask({
-      model: "qwen2/text-to-image",
-      input: {
-        prompt: "A serene mountain landscape at sunrise",
-        image_size: "16:9",
+    const task = await provider.post.api.v1.jobs.createTask(
+      {
+        model: "qwen2/text-to-image",
+        input: {
+          prompt: "A serene mountain landscape at sunrise",
+          image_size: "16:9",
+        },
       },
-    }, 10);
+      10
+    );
 
     expect(task.data?.taskId).toBeTruthy();
     expect(typeof task.data?.taskId).toBe("string");

@@ -65,20 +65,23 @@ describe("kie wan/2-7-r2v reference bake-off", () => {
       const manUrl = await uploadFixture(provider, "man.jpg", "image/jpeg");
       const beachUrl = await uploadFixture(provider, "beach.png", "image/png");
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "wan/2-7-r2v",
-        input: {
-          prompt: PROMPT,
-          reference_image: [cat1Url, cat2Url, manUrl],
-          first_frame: beachUrl,
-          resolution: "720p",
-          aspect_ratio: "16:9",
-          duration: 2,
-          watermark: false,
-          nsfw_checker: false,
-          seed: 1308038620,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "wan/2-7-r2v",
+          input: {
+            prompt: PROMPT,
+            reference_image: [cat1Url, cat2Url, manUrl],
+            first_frame: beachUrl,
+            resolution: "720p",
+            aspect_ratio: "16:9",
+            duration: 2,
+            watermark: false,
+            nsfw_checker: false,
+            seed: 1308038620,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

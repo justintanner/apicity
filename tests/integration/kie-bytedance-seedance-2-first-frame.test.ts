@@ -40,20 +40,23 @@ describe("kie bytedance/seedance-2 first-frame integration", () => {
       expect(upload.code).toBe(200);
       expect(upload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "bytedance/seedance-2",
-        input: {
-          prompt:
-            "The cat blinks slowly and turns its head, gentle breeze through fur",
-          first_frame_url: upload.data!.downloadUrl,
-          resolution: "480p",
-          aspect_ratio: "16:9",
-          duration: 4,
-          generate_audio: false,
-          web_search: false,
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "bytedance/seedance-2",
+          input: {
+            prompt:
+              "The cat blinks slowly and turns its head, gentle breeze through fur",
+            first_frame_url: upload.data!.downloadUrl,
+            resolution: "480p",
+            aspect_ratio: "16:9",
+            duration: 4,
+            generate_audio: false,
+            web_search: false,
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

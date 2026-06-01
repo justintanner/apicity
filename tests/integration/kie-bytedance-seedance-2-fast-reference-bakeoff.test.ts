@@ -65,19 +65,22 @@ describe("kie bytedance/seedance-2-fast reference bake-off", () => {
       const manUrl = await uploadFixture(provider, "man.jpg", "image/jpeg");
       const beachUrl = await uploadFixture(provider, "beach.png", "image/png");
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "bytedance/seedance-2-fast",
-        input: {
-          prompt: PROMPT,
-          reference_image_urls: [cat1Url, cat2Url, manUrl, beachUrl],
-          resolution: "480p",
-          aspect_ratio: "16:9",
-          duration: 4,
-          generate_audio: false,
-          web_search: false,
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "bytedance/seedance-2-fast",
+          input: {
+            prompt: PROMPT,
+            reference_image_urls: [cat1Url, cat2Url, manUrl, beachUrl],
+            resolution: "480p",
+            aspect_ratio: "16:9",
+            duration: 4,
+            generate_audio: false,
+            web_search: false,
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

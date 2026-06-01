@@ -56,7 +56,6 @@ describe("kie maxSpend preflight", () => {
   });
 
   it("does not make a network request when maxSpend is omitted", async () => {
-    const provider = kie({ apiKey: "test-key" });
     // Use a non-existent baseURL to prove no network call is made
     const providerNoNetwork = kie({
       apiKey: "test-key",

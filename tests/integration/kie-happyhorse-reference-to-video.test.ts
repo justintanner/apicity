@@ -39,18 +39,21 @@ describe("kie happyhorse/reference-to-video integration", () => {
 
       expect(refUpload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "happyhorse/reference-to-video",
-        input: {
-          prompt:
-            "character1 looks at the camera and slowly tilts its head to one side",
-          reference_image: [refUpload.data!.downloadUrl],
-          resolution: "720p",
-          aspect_ratio: "16:9",
-          duration: 3,
-          seed: 1308038620,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "happyhorse/reference-to-video",
+          input: {
+            prompt:
+              "character1 looks at the camera and slowly tilts its head to one side",
+            reference_image: [refUpload.data!.downloadUrl],
+            resolution: "720p",
+            aspect_ratio: "16:9",
+            duration: 3,
+            seed: 1308038620,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

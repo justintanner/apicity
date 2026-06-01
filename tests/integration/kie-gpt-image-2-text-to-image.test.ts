@@ -24,15 +24,18 @@ describe("kie gpt-image-2-text-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "gpt-image-2-text-to-image",
-        input: {
-          prompt:
-            "A cinematic night city poster with neon reflections on a rainy street.",
-          aspect_ratio: "16:9",
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "gpt-image-2-text-to-image",
+          input: {
+            prompt:
+              "A cinematic night city poster with neon reflections on a rainy street.",
+            aspect_ratio: "16:9",
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

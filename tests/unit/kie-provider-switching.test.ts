@@ -116,7 +116,7 @@ describe("KIE provider switching", () => {
       provider.post.api.v1.jobs.createTask.schema.safeParse(payload);
     expect(validationResult.success).toBe(true);
 
-    await provider.post.api.v1.jobs.createTask(payload);
+    await provider.post.api.v1.jobs.createTask(payload, 1);
 
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");

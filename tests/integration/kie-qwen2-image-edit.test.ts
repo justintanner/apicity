@@ -16,17 +16,20 @@ describe("kie qwen2/image-edit integration", () => {
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
-    const task = await provider.post.api.v1.jobs.createTask({
-      model: "qwen2/image-edit",
-      input: {
-        prompt: "Add sunglasses to the subject",
-        image_url: [
-          "https://static.aiquickdraw.com/tools/example/1773473208660_6EO8TFjh.webp",
-        ],
-        image_size: "1:1",
-        output_format: "png",
+    const task = await provider.post.api.v1.jobs.createTask(
+      {
+        model: "qwen2/image-edit",
+        input: {
+          prompt: "Add sunglasses to the subject",
+          image_url: [
+            "https://static.aiquickdraw.com/tools/example/1773473208660_6EO8TFjh.webp",
+          ],
+          image_size: "1:1",
+          output_format: "png",
+        },
       },
-    }, 10);
+      10
+    );
 
     expect(task.code).toBe(200);
     expect(task.data?.taskId).toBeTruthy();

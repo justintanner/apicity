@@ -24,19 +24,22 @@ describe("kie seedream/5-lite-image-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask({
-        model: "seedream/5-lite-image-to-image",
-        input: {
-          prompt:
-            "Transform the scene into a vibrant cyberpunk cityscape at night, neon lighting, photorealistic",
-          image_urls: [
-            "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
-          ],
-          aspect_ratio: "1:1",
-          quality: "basic",
-          nsfw_checker: false,
+      const task = await provider.post.api.v1.jobs.createTask(
+        {
+          model: "seedream/5-lite-image-to-image",
+          input: {
+            prompt:
+              "Transform the scene into a vibrant cyberpunk cityscape at night, neon lighting, photorealistic",
+            image_urls: [
+              "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
+            ],
+            aspect_ratio: "1:1",
+            quality: "basic",
+            nsfw_checker: false,
+          },
         },
-      }, 10);
+        10
+      );
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

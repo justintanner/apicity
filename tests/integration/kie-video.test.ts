@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPollyIgnoringBody, setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyIgnoringBody,
+  setupPolly,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { kie } from "@apicity/kie";
 
 describe("kie grok-imagine video integration", () => {

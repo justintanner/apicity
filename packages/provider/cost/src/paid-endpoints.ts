@@ -1,3 +1,4 @@
+import { computeEstimate } from "./compute";
 /**
  * Exact paid-endpoint registry.
  *
@@ -206,4 +207,44 @@ export function spendBoundCheck(
       estimate.usd
     );
   }
+}
+/**
+ * Wrap a provider network dispatch with the paid-endpoint guard.
+ *
+ * This is the canonical boundary enforcement: it runs the preflight check
+ * and spend-bound check before the actual HTTP request, and only calls the
+ * supplied `dispatch` function when the checks pass.
+ *
+ * Free/unlisted endpoints return `dispatch()` immediately without guard
+ * overhead, so callers that omit `maxSpend` on free endpoints see no change.
+ *
+ * @param provider - Provider identifier (e.g. "kie", "openai")
+ * @param method - HTTP method (e.g. "POST", "GET")
+ * @param dotPath - Exact endpoint dot-path (e.g. "api.v1.jobs.createTask")
+ * @param payload - Request payload for cost estimation
+ * @param maxSpend - Maximum spend authorization in USD (undefined for free endpoints)
+ * @param dispatch - The actual network dispatch to wrap
+ * @returns The result of `dispatch()`
+ */
+export async function dispatchWithPaidGuard<T>(
+  provider: string,
+  method: string,
+  dotPath: string,
+  payload: Record<string, unknown>,
+  maxSpend: number | undefined,
+  dispatch: () => Promise<T>
+): Promise<T> {
+  maxSpendPreflight(provider, method, dotPath, maxSpend);
+  if (
+    isPaidEndpoint(provider, method, dotPath) &&
+    maxSpend !== undefined &&
+    maxSpend > 0
+  ) {
+    const estimate = computeEstimate({
+      provider: provider as import("./types").EstimateRequest["provider"],
+      payload,
+    });
+    spendBoundCheck(provider, method, dotPath, maxSpend, estimate);
+  }
+  return dispatch();
 }

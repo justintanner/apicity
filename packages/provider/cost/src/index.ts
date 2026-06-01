@@ -68,6 +68,7 @@ export {
   MaxSpendError,
   SpendBoundError,
   spendBoundCheck,
+  dispatchWithPaidGuard,
 } from "./paid-endpoints";
 export type {
   PaidEndpointKey,

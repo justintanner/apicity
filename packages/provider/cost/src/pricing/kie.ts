@@ -95,7 +95,6 @@ const tieredResolutionVideo = (
   source: src(slug),
 });
 
-
 export const kie: Record<string, ModelPricing> = {
   // veo3 / veo3_fast — flat per-second rate. Veo schema has no duration
   // field, so callers must pass duration as a top-level hint.

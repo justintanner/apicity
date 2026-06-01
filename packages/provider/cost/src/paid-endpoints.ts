@@ -113,6 +113,37 @@ export class MaxSpendError extends Error {
   }
 }
 /**
+ * Error thrown when the estimated cost of a paid endpoint exceeds the
+ * caller's maxSpend or when the cost cannot be safely estimated.
+ */
+export class SpendBoundError extends Error {
+  readonly provider: string;
+  readonly method: string;
+  readonly dotPath: string;
+  readonly maxSpend: number;
+  readonly estimatedUsd: number;
+  constructor(
+    provider: string,
+    method: string,
+    dotPath: string,
+    maxSpend: number,
+    estimatedUsd: number,
+    message?: string
+  ) {
+    super(
+      message ??
+        `Endpoint ${provider} ${method} ${dotPath} estimated cost ` +
+          `(${estimatedUsd} USD) exceeds maxSpend (${maxSpend} USD).`
+    );
+    this.name = "SpendBoundError";
+    this.provider = provider;
+    this.method = method;
+    this.dotPath = dotPath;
+    this.maxSpend = maxSpend;
+    this.estimatedUsd = estimatedUsd;
+  }
+}
+/**
  * Preflight check for paid endpoints.
  *
  * For paid endpoints, maxSpend defaults to 0 when omitted. maxSpend=0 blocks
@@ -132,5 +163,47 @@ export function maxSpendPreflight(
   }
   if (maxSpend <= 0) {
     throw new MaxSpendError(provider, method, dotPath, maxSpend);
+  }
+}
+/**
+ * Verify that a cost estimate is within the caller's maxSpend.
+ *
+ * If the estimate has warnings (could not be computed safely), the spend
+ * cannot be bounded and the call is blocked. If the estimated USD exceeds
+ * maxSpend, the call is blocked. Otherwise the call proceeds.
+ *
+ * This must run AFTER maxSpendPreflight, so maxSpend is known to be > 0.
+ */
+export function spendBoundCheck(
+  provider: string,
+  method: string,
+  dotPath: string,
+  maxSpend: number | undefined,
+  estimate: { usd: number; warnings: string[] }
+): void {
+  if (maxSpend === undefined || maxSpend <= 0) {
+    return;
+  }
+  if (estimate.warnings.length > 0) {
+    throw new SpendBoundError(
+      provider,
+      method,
+      dotPath,
+      maxSpend,
+      estimate.usd,
+      `Endpoint ${provider} ${method} ${dotPath} spend cannot be bounded ` +
+        `from the payload: ${estimate.warnings.join("; ")}. ` +
+        `Pass an explicit maxSpend that covers the worst-case cost, ` +
+        `or adjust the payload so the cost can be estimated.`
+    );
+  }
+  if (estimate.usd > maxSpend) {
+    throw new SpendBoundError(
+      provider,
+      method,
+      dotPath,
+      maxSpend,
+      estimate.usd
+    );
   }
 }

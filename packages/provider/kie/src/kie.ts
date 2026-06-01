@@ -26,7 +26,7 @@ import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { attachExamples } from "./example";
-import { maxSpendPreflight } from "@apicity/cost";
+import { maxSpendPreflight, computeEstimate, spendBoundCheck } from "@apicity/cost";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -64,11 +64,23 @@ export function kie(opts: KieOptions): KieProvider {
     req: MediaGenerationRequest,
     maxSpend?: number
   ): Promise<TaskResponse> {
+    const effectiveMaxSpend = maxSpend ?? opts.maxSpend;
     maxSpendPreflight(
       "kie",
       "POST",
       "api.v1.jobs.createTask",
-      maxSpend ?? opts.maxSpend
+      effectiveMaxSpend
+    );
+    const estimate = computeEstimate({
+      provider: "kie",
+      payload: req as unknown as Record<string, unknown>,
+    });
+    spendBoundCheck(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      effectiveMaxSpend,
+      estimate
     );
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);

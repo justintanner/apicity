@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { setupPollyIgnoringBody, teardownPolly, type PollyContext } from "../harness";
 import { kie } from "@apicity/kie";
 
 describe("kie kling-3.0 motion-control integration", () => {
@@ -7,7 +7,7 @@ describe("kie kling-3.0 motion-control integration", () => {
 
   describe("motionControl", () => {
     beforeEach(() => {
-      ctx = setupPolly("kie/kling-motion-control");
+      ctx = setupPollyIgnoringBody("kie/kling-motion-control");
     });
 
     afterEach(async () => {
@@ -33,6 +33,7 @@ describe("kie kling-3.0 motion-control integration", () => {
             mode: "720p",
             character_orientation: "video",
             background_source: "input_video",
+            duration: "5s",
           },
         },
         10

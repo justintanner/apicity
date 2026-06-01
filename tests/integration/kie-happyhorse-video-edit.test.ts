@@ -42,6 +42,7 @@ describe("kie happyhorse/video-edit integration", () => {
       const task = await provider.post.api.v1.jobs.createTask(
         {
           model: "happyhorse/video-edit",
+          duration: 5,
           input: {
             prompt: "Restyle the scene to look like a watercolor painting",
             video_url: videoUpload.data!.downloadUrl,

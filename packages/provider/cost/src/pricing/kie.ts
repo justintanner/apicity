@@ -55,30 +55,46 @@ const flatGen = (perUnit: number, slug: string): ModelPricing => ({
 });
 
 // Image entry tiered by input.resolution (e.g. "1K"|"2K"|"4K").
+// Optional `defaultResolution` is applied when the payload omits
+// input.resolution (matches the upstream schema default).
 const tieredImage = (
   rates: Record<string, number>,
-  slug: string
+  slug: string,
+  defaultResolution?: string
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "images",
   units: imageCount,
-  select: [{ name: "resolution", pick: inputResolution }],
+  select: [
+    {
+      name: "resolution",
+      pick: (p) => asString(asObject(p.input)?.resolution) ?? defaultResolution,
+    },
+  ],
   rates,
   source: src(slug),
 });
-
 // Video entry tiered by input.resolution (grok-imagine, happyhorse).
+// Optional `defaultResolution` is applied when the payload omits
+// input.resolution (matches the upstream schema default).
 const tieredResolutionVideo = (
   rates: Record<string, number>,
-  slug: string
+  slug: string,
+  defaultResolution?: string
 ): ModelPricing => ({
   kind: "perUnit",
   unit: "seconds",
   units: seconds,
-  select: [{ name: "resolution", pick: inputResolution }],
+  select: [
+    {
+      name: "resolution",
+      pick: (p) => asString(asObject(p.input)?.resolution) ?? defaultResolution,
+    },
+  ],
   rates,
   source: src(slug),
 });
+
 
 export const kie: Record<string, ModelPricing> = {
   // veo3 / veo3_fast — flat per-second rate. Veo schema has no duration
@@ -277,21 +293,25 @@ export const kie: Record<string, ModelPricing> = {
   // wan/2-7-image accepts an `n` field for batch generation.
   "nano-banana-2": tieredImage(
     { "1K": 0.04, "2K": 0.06, "4K": 0.09 },
-    "google/nano-banana-2"
+    "google/nano-banana-2",
+    "2K"
   ),
   // nano-banana-pro: 1K and 2K share the $0.09 rate per the marketplace
   // ("1/2K"), 4K is $0.12.
   "nano-banana-pro": tieredImage(
     { "1K": 0.09, "2K": 0.09, "4K": 0.12 },
-    "google/nano-banana-pro"
+    "google/nano-banana-pro",
+    "2K"
   ),
   "gpt-image-2-text-to-image": tieredImage(
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
-    "openai/gpt-image-2"
+    "openai/gpt-image-2",
+    "2K"
   ),
   "gpt-image-2-image-to-image": tieredImage(
     { "1K": 0.03, "2K": 0.05, "4K": 0.08 },
-    "openai/gpt-image-2"
+    "openai/gpt-image-2",
+    "2K"
   ),
   "wan/2-7-image": flatImage(0.024, "alibaba/wan-2.7"),
   "wan/2-7-image-pro": flatImage(0.06, "alibaba/wan-2.7"),

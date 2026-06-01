@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { setupPollyIgnoringBody, setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { kie } from "@apicity/kie";
 
 describe("kie grok-imagine video integration", () => {
@@ -7,7 +7,7 @@ describe("kie grok-imagine video integration", () => {
 
   describe("textToVideo", () => {
     beforeEach(() => {
-      ctx = setupPolly("kie/grok-text-to-video");
+      ctx = setupPollyIgnoringBody("kie/grok-text-to-video");
     });
 
     afterEach(async () => {
@@ -25,6 +25,7 @@ describe("kie grok-imagine video integration", () => {
           input: {
             prompt: "A golden sunset over calm ocean waves",
             duration: "6",
+            resolution: "480p",
           },
         },
         10
@@ -44,7 +45,7 @@ describe("kie grok-imagine video integration", () => {
 
   describe("videoExtend", () => {
     beforeEach(() => {
-      ctx = setupPolly("kie/grok-video-extend");
+      ctx = setupPollyIgnoringBody("kie/grok-video-extend");
     });
 
     afterEach(async () => {
@@ -61,6 +62,7 @@ describe("kie grok-imagine video integration", () => {
       const extend = await provider.post.api.v1.jobs.createTask(
         {
           model: "grok-imagine/extend",
+          resolution: "480p",
           input: {
             task_id: "c13f22cfc68d83c319043ade1c1fd401",
             prompt: "The bird lands gracefully on a tree branch",

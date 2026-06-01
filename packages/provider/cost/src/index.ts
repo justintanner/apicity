@@ -66,6 +66,8 @@ export {
   isPaidEndpoint,
   maxSpendPreflight,
   MaxSpendError,
+  SpendBoundError,
+  spendBoundCheck,
 } from "./paid-endpoints";
 export type {
   PaidEndpointKey,

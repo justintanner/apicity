@@ -13,7 +13,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:kimicoding && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:cost && pnpm run build:mcp-server && pnpm run doc-gen",
+    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:kimicoding && pnpm run build:cost && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:mcp-server && pnpm run doc-gen",
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",

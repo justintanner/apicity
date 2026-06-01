@@ -34,7 +34,7 @@ describe("kie happyhorse/text-to-video integration", () => {
           duration: 3,
           seed: 1622429582,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

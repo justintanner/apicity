@@ -24,7 +24,7 @@ describe("kie qwen2/text-to-image integration", () => {
         prompt: "A serene mountain landscape at sunrise",
         image_size: "16:9",
       },
-    });
+    }, 10);
 
     expect(task.data?.taskId).toBeTruthy();
     expect(typeof task.data?.taskId).toBe("string");

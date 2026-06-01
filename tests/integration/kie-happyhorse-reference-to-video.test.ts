@@ -50,7 +50,7 @@ describe("kie happyhorse/reference-to-video integration", () => {
           duration: 3,
           seed: 1308038620,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

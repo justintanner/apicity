@@ -76,7 +76,7 @@ describe("kie grok-imagine reference bake-off", () => {
           mode: "fun",
           nsfw_checker: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

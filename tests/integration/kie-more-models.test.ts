@@ -21,7 +21,7 @@ describe("kie additional models", () => {
         input: {
           prompt: "A futuristic city with flying vehicles at night",
         },
-      });
+      }, 10);
 
       // API may return 402 (insufficient credits) or other non-200 codes
       // depending on account state — assert the envelope parsed correctly.
@@ -45,7 +45,7 @@ describe("kie additional models", () => {
         input: {
           prompt: "A beautiful garden with roses and a fountain",
         },
-      });
+      }, 10);
 
       // API may return 402 (insufficient credits) or other non-200 codes
       // depending on account state — assert the envelope parsed correctly.

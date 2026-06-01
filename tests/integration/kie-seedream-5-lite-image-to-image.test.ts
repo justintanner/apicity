@@ -36,7 +36,7 @@ describe("kie seedream/5-lite-image-to-image integration", () => {
           quality: "basic",
           nsfw_checker: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

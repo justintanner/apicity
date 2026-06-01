@@ -83,7 +83,7 @@ describe("kie kling-3.0 4K reference bake-off", () => {
           mode: "4K",
           multi_shots: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

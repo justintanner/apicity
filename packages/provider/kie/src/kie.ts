@@ -26,6 +26,7 @@ import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { attachExamples } from "./example";
+import { maxSpendPreflight } from "@apicity/cost";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -60,8 +61,15 @@ export function kie(opts: KieOptions): KieProvider {
   // POST https://api.kie.ai/api/v1/jobs/createTask
   // Docs: https://docs.kie.ai
   async function createTask(
-    req: MediaGenerationRequest
+    req: MediaGenerationRequest,
+    maxSpend?: number
   ): Promise<TaskResponse> {
+    maxSpendPreflight(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      maxSpend ?? opts.maxSpend
+    );
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -441,9 +449,10 @@ export function kie(opts: KieOptions): KieProvider {
 
 export async function submitMediaJob(
   provider: KieProvider,
-  request: MediaGenerationRequest
+  request: MediaGenerationRequest,
+  maxSpend?: number
 ): Promise<string> {
-  const result = await provider.post.api.v1.jobs.createTask(request);
+  const result = await provider.post.api.v1.jobs.createTask(request, maxSpend);
   if (!result.data?.taskId) {
     throw new KieError(
       `createTask failed: ${result.msg ?? "no taskId in response"}`,

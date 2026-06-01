@@ -33,7 +33,7 @@ describe("kie wan/2-7-r2v integration", () => {
         watermark: false,
         nsfw_checker: false,
       },
-    });
+    }, 10);
 
     expect(task.code).toBe(200);
     expect(task.data?.taskId).toBeTruthy();

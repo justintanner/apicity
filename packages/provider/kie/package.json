@@ -32,6 +32,9 @@
       "optional": true
     }
   },
+  "dependencies": {
+    "@apicity/cost": "workspace:*"
+  },
   "files": [
     "dist",
     "README.md",

@@ -25,7 +25,7 @@ describe("kie grok-imagine video integration", () => {
           prompt: "A golden sunset over calm ocean waves",
           duration: "6",
         },
-      });
+      }, 10);
 
       expect(task.data?.taskId).toBeTruthy();
       expect(typeof task.data?.taskId).toBe("string");
@@ -63,7 +63,7 @@ describe("kie grok-imagine video integration", () => {
           extend_at: 0,
           extend_times: "6",
         },
-      });
+      }, 10);
 
       expect(extend.data?.taskId).toBeTruthy();
       expect(typeof extend.data?.taskId).toBe("string");
@@ -91,7 +91,7 @@ describe("kie grok-imagine video integration", () => {
         input: {
           task_id: "d43f0d0ab29f28fdfcf68a9dccbd7a42",
         },
-      });
+      }, 10);
 
       expect(upscale.data?.taskId).toBeTruthy();
       expect(typeof upscale.data?.taskId).toBe("string");

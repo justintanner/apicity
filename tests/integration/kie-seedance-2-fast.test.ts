@@ -26,7 +26,7 @@ describe("kie bytedance/seedance-2-fast integration", () => {
         generate_audio: false,
         web_search: false,
       },
-    });
+    }, 10);
 
     expect(task.code).toBe(200);
     expect(task.data?.taskId).toBeTruthy();

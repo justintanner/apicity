@@ -848,6 +848,7 @@ export const KieOptionsSchema = z.object({
       (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
     >()
     .optional(),
+  maxSpend: z.number().nonnegative().optional(),
 });
 
 // ---------------------------------------------------------------------------

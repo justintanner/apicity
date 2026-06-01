@@ -161,7 +161,7 @@ import type {
 } from "./zod";
 
 interface KieCreateTaskMethod {
-  (req: MediaGenerationRequest): Promise<TaskResponse>;
+  (req: MediaGenerationRequest, maxSpend?: number): Promise<TaskResponse>;
   schema: z.ZodType;
 }
 

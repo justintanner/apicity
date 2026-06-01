@@ -176,6 +176,9 @@ importers:
 
   packages/provider/kie:
     dependencies:
+      '@apicity/cost':
+        specifier: workspace:*
+        version: link:../cost
       zod:
         specifier: ^4.0.0
         version: 4.4.2

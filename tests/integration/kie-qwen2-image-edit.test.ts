@@ -26,7 +26,7 @@ describe("kie qwen2/image-edit integration", () => {
         image_size: "1:1",
         output_format: "png",
       },
-    });
+    }, 10);
 
     expect(task.code).toBe(200);
     expect(task.data?.taskId).toBeTruthy();

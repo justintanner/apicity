@@ -21,13 +21,17 @@ describe("kie helper functions", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const taskId = await submitMediaJob(provider, {
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "A red apple on a wooden table",
-          aspect_ratio: "1:1",
+      const taskId = await submitMediaJob(
+        provider,
+        {
+          model: "grok-imagine/text-to-image",
+          input: {
+            prompt: "A red apple on a wooden table",
+            aspect_ratio: "1:1",
+          },
         },
-      });
+        10
+      );
 
       expect(taskId).toBeTruthy();
       expect(typeof taskId).toBe("string");

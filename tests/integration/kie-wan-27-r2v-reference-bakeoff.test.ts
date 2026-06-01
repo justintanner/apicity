@@ -78,7 +78,7 @@ describe("kie wan/2-7-r2v reference bake-off", () => {
           nsfw_checker: false,
           seed: 1308038620,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

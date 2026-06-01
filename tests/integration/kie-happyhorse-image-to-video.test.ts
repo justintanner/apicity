@@ -49,7 +49,7 @@ describe("kie happyhorse/image-to-video integration", () => {
           duration: 3,
           seed: 1546095068,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

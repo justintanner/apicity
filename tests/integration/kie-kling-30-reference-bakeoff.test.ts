@@ -91,7 +91,7 @@ describe("kie kling-3.0 reference bake-off", () => {
           mode: "std",
           multi_shots: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();
@@ -121,4 +121,4 @@ describe("kie kling-3.0 reference bake-off", () => {
       expect(result.resultUrls![0]).toMatch(/^https?:\/\//);
     }
   );
-});
+}, 10);

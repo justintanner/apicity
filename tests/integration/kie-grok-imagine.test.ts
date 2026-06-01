@@ -35,7 +35,7 @@ describe("kie grok-imagine full lifecycle", () => {
           prompt: "A red panda sitting on a mossy log in a bamboo forest",
           aspect_ratio: "1:1",
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();
@@ -89,7 +89,7 @@ describe("kie grok-imagine full lifecycle", () => {
             "https://static.aiquickdraw.com/tools/example/1767694885407_pObJoMcy.png",
           ],
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

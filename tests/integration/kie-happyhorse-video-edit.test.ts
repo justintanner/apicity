@@ -48,7 +48,7 @@ describe("kie happyhorse/video-edit integration", () => {
           audio_setting: "auto",
           seed: 1764574909,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

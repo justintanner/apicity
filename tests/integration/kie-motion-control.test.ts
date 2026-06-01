@@ -33,7 +33,7 @@ describe("kie kling-3.0 motion-control integration", () => {
           character_orientation: "video",
           background_source: "input_video",
         },
-      });
+      }, 10);
 
       expect(task.data?.taskId).toBeTruthy();
       expect(typeof task.data?.taskId).toBe("string");

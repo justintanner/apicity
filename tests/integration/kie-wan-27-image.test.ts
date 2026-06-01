@@ -38,7 +38,7 @@ describe("kie wan/2-7-image integration", () => {
           seed: 0,
           nsfw_checker: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

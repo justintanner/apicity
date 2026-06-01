@@ -35,7 +35,7 @@ describe("kie gpt-image-2-image-to-image integration", () => {
           aspect_ratio: "1:1",
           nsfw_checker: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

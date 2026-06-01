@@ -85,3 +85,52 @@ export function isPaidEndpoint(
 ): boolean {
   return lookupPaidEndpoint(provider, method, dotPath) !== undefined;
 }
+
+/**
+ * Error thrown when a paid endpoint is called without an explicit maxSpend.
+ */
+export class MaxSpendError extends Error {
+  readonly provider: string;
+  readonly method: string;
+  readonly dotPath: string;
+  readonly maxSpend: number;
+  constructor(
+    provider: string,
+    method: string,
+    dotPath: string,
+    maxSpend: number
+  ) {
+    super(
+      `Endpoint ${provider} ${method} ${dotPath} may spend money. ` +
+        `maxSpend is ${maxSpend} USD. ` +
+        `Pass an explicit maxSpend to proceed.`
+    );
+    this.name = "MaxSpendError";
+    this.provider = provider;
+    this.method = method;
+    this.dotPath = dotPath;
+    this.maxSpend = maxSpend;
+  }
+}
+/**
+ * Preflight check for paid endpoints.
+ *
+ * For paid endpoints, maxSpend defaults to 0 when omitted. maxSpend=0 blocks
+ * before the network request with a MaxSpendError. maxSpend>0 authorizes the
+ * call to proceed.
+ *
+ * Free/unlisted endpoints are always allowed regardless of maxSpend.
+ */
+export function maxSpendPreflight(
+  provider: string,
+  method: string,
+  dotPath: string,
+  maxSpend: number = 0
+): void {
+  if (!isPaidEndpoint(provider, method, dotPath)) {
+    return;
+  }
+  if (maxSpend <= 0) {
+    throw new MaxSpendError(provider, method, dotPath, maxSpend);
+  }
+}

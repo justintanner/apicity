@@ -74,7 +74,7 @@ describe("kie bytedance/seedance-2 multimodal reference integration", () => {
           web_search: false,
           nsfw_checker: false,
         },
-      });
+      }, 10);
 
       expect(task.code).toBe(200);
       expect(task.data?.taskId).toBeTruthy();

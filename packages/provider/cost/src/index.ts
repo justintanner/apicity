@@ -59,3 +59,14 @@ export type {
   TokenBucket,
   BatchGateRequest,
 } from "./tokens";
+
+export {
+  PAID_ENDPOINTS,
+  lookupPaidEndpoint,
+  isPaidEndpoint,
+} from "./paid-endpoints";
+export type {
+  PaidEndpointKey,
+  PaidEndpointInfo,
+  PaidEndpointEntry,
+} from "./paid-endpoints";

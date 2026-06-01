@@ -142,6 +142,74 @@ Maintenance is manual: re-fetch each upstream's pricing page, edit `pricing.ts`,
 | `kie`        | `per-unit-table`         | priced per second of video / per image                                |
 | `free`       | `free`                   | always $0                                                             |
 
+## Paid endpoint guard
+
+Some endpoints have a direct marginal compute cost (e.g. video generation).
+The cost package maintains a small, explicit **paid-endpoint registry**.
+Endpoints that are **not** in the registry are assumed free and require no
+caller changes.
+
+### Registry model
+
+- `PAID_ENDPOINTS` is the canonical list. Every entry is an exact triple of
+  `(provider, method, dotPath)` — there is no regex, prefix, wildcard, or
+  inferred matching.
+- Unlisted endpoints are free. Free endpoints never require `maxSpend`.
+- Listed endpoints default to `maxSpend = 0` USD. A default of 0 means the
+  call is blocked unless the caller explicitly passes a positive `maxSpend`.
+
+### Per-call opt-in
+
+Pass `maxSpend` as the last argument to a paid endpoint, or set it once in
+the provider factory:
+
+```ts
+import { kie } from "@apicity/kie";
+
+const provider = kie({ apiKey: process.env.KIE_API_KEY!, maxSpend: 10 });
+
+// Uses the factory maxSpend (10 USD)
+const task = await provider.post.api.v1.jobs.createTask({
+  model: "kling-3.0/video",
+  input: { prompt: "...", duration: "5", aspect_ratio: "16:9" },
+});
+
+// Override per-call
+const task2 = await provider.post.api.v1.jobs.createTask(
+  { model: "veo3", prompt: "...", duration: 5 },
+  5 // this call is capped at 5 USD
+);
+```
+
+### Guard behavior
+
+1. **Preflight** — before any network dispatch, `maxSpendPreflight` checks
+   whether the endpoint is paid and whether `maxSpend` is explicitly positive.
+   If `maxSpend` is omitted or `0`, the call throws `MaxSpendError` immediately.
+2. **Estimate** — for paid endpoints with a positive `maxSpend`, the package
+   computes a local cost estimate from the payload.
+3. **Bound check** — `spendBoundCheck` compares the estimate to `maxSpend`.
+   If the estimate exceeds the bound, or if the cost cannot be estimated
+   (unknown model, missing fields), the call throws `SpendBoundError` before
+   the network request.
+4. **Dispatch** — only when the estimate is within the bound does the actual
+   HTTP request fire.
+
+```ts
+import { MaxSpendError, SpendBoundError } from "@apicity/cost";
+
+try {
+  await provider.post.api.v1.jobs.createTask({ ... }, 5);
+} catch (e) {
+  if (e instanceof MaxSpendError) {
+    // maxSpend was omitted or 0
+  }
+  if (e instanceof SpendBoundError) {
+    // estimated cost > maxSpend, or cost could not be computed
+  }
+}
+```
+
 ## Out of scope
 
 - Anthropic prompt-cache pricing (rates are in the table but `estimate()` ignores them — assumes no caching)

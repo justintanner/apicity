@@ -129,8 +129,7 @@ function parseMintArgs(argv: string[]): MintArgs {
     else if (a === "--dot-path") out.dotPath = argv[++i];
     else if (a.startsWith("--dot-path=")) out.dotPath = a.slice(11);
     else if (a === "--payload-file") out.payloadFile = argv[++i];
-    else if (a.startsWith("--payload-file="))
-      out.payloadFile = a.slice(15);
+    else if (a.startsWith("--payload-file=")) out.payloadFile = a.slice(15);
     else if (a === "--max-spend") out.maxSpend = parseFloat(argv[++i]!);
     else if (a.startsWith("--max-spend="))
       out.maxSpend = parseFloat(a.slice(12));
@@ -151,7 +150,9 @@ function parseMintArgs(argv: string[]): MintArgs {
   ];
   for (const key of required) {
     if (out[key] === undefined || out[key] === null) {
-      throw new Error(`Missing required argument: --${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`);
+      throw new Error(
+        `Missing required argument: --${key.replace(/([A-Z])/g, "-$1").toLowerCase()}`
+      );
     }
   }
 
@@ -219,7 +220,10 @@ async function main(): Promise<void> {
 const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
   main().catch((err) => {
-    console.error("[apicity-paygate] fatal:", err instanceof Error ? err.message : err);
+    console.error(
+      "[apicity-paygate] fatal:",
+      err instanceof Error ? err.message : err
+    );
     process.exit(1);
   });
 }

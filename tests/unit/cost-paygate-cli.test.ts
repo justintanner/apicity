@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { generateKeyPairSync, randomBytes, sign } from "node:crypto";
+import { generateKeyPairSync, randomBytes, createHash } from "node:crypto";
 import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
@@ -103,11 +103,7 @@ describe("mintOtp", () => {
     expect(parsed.payload.exp).toBe(parsed.payload.iat + 600);
 
     const parts = otp.split(".");
-    const sigOk = verifyOtpSignature(
-      parts[0]!,
-      parsed.signature,
-      publicKeyPem
-    );
+    const sigOk = verifyOtpSignature(parts[0]!, parsed.signature, publicKeyPem);
     expect(sigOk).toBe(true);
   });
 
@@ -120,11 +116,17 @@ describe("mintOtp", () => {
 
   it("uses correct request hash for canonicalized payload", () => {
     const payload = { b: 1, a: 2 };
-    const otp = mintOtp("kie", "POST", "api.v1.jobs.createTask", payload, 1, 60);
+    const otp = mintOtp(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      payload,
+      1,
+      60
+    );
     const parsed = parseOtp(otp);
 
     const expectedHash = (() => {
-      const { createHash } = require("node:crypto");
       const canonical = JSON.stringify({ a: 2, b: 1 });
       const hash = createHash("sha256").update(canonical, "utf8").digest("hex");
       return `sha256:${hash}`;
@@ -164,7 +166,10 @@ describe("CLI subprocess", () => {
     payloadFile = join(testDir, "payload.json");
     writeFileSync(
       payloadFile,
-      JSON.stringify({ model: "wan/2-7-text-to-video", input: { duration: 5 } }),
+      JSON.stringify({
+        model: "wan/2-7-text-to-video",
+        input: { duration: 5 },
+      }),
       "utf8"
     );
   });
@@ -216,11 +221,7 @@ describe("CLI subprocess", () => {
     expect(parsed.payload.dotPath).toBe("api.v1.jobs.createTask");
     expect(parsed.payload.maxSpendUsd).toBe(5);
     const parts = otp.split(".");
-    const sigOk = verifyOtpSignature(
-      parts[0]!,
-      parsed.signature,
-      publicKeyPem
-    );
+    const sigOk = verifyOtpSignature(parts[0]!, parsed.signature, publicKeyPem);
     expect(sigOk).toBe(true);
   });
   it("exits with error when private key path is missing", async () => {

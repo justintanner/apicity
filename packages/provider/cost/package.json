@@ -20,6 +20,9 @@
       "types": "./dist/src/index.d.ts"
     }
   },
+  "bin": {
+    "apicity-paygate": "./dist/src/paygate-cli.js"
+  },
   "files": [
     "dist",
     "README.md",

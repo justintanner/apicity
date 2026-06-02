@@ -38,3 +38,16 @@ export type {
   PaidEndpointInfo,
   PaidEndpointEntry,
 } from "./paid-endpoints";
+
+export {
+  PayGateError,
+  PayGateApproval,
+  dispatchWithPaidGate,
+  canonicalizeJson,
+  canonicalHash,
+  parseOtp,
+  verifyOtpSignature,
+  isJtiConsumed,
+  consumeJti,
+} from "./paygate";
+export type { PayGateOtpPayload } from "./paygate";

@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie bytedance/seedance-2-fast integration", () => {
   let ctx: PollyContext;
@@ -16,19 +17,20 @@ describe("kie bytedance/seedance-2-fast integration", () => {
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
-    const task = await provider.post.api.v1.jobs.createTask(
-      {
-        model: "bytedance/seedance-2-fast",
-        input: {
-          prompt: "A calm lake at dawn with mist rising over the water",
-          resolution: "480p",
-          aspect_ratio: "16:9",
-          duration: 4,
-          generate_audio: false,
-          web_search: false,
-        },
+    const request = {
+      model: "bytedance/seedance-2-fast",
+      input: {
+        prompt: "A calm lake at dawn with mist rising over the water",
+        resolution: "480p",
+        aspect_ratio: "16:9",
+        duration: 4,
+        generate_audio: false,
+        web_search: false,
       },
-      10
+    };
+    const task = await provider.post.api.v1.jobs.createTask(
+      request,
+      mintKieCreateTaskOtp(request)
     );
 
     expect(task.code).toBe(200);

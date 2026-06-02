@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie wan/2-7-image integration", () => {
   let ctx: PollyContext;
@@ -24,23 +25,24 @@ describe("kie wan/2-7-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "wan/2-7-image",
-          input: {
-            prompt:
-              "A serene mountain landscape at sunrise with misty valleys and golden light.",
-            n: 1,
-            resolution: "2K",
-            aspect_ratio: "1:1",
-            enable_sequential: false,
-            thinking_mode: false,
-            watermark: false,
-            seed: 0,
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "wan/2-7-image",
+        input: {
+          prompt:
+            "A serene mountain landscape at sunrise with misty valleys and golden light.",
+          n: 1,
+          resolution: "2K",
+          aspect_ratio: "1:1",
+          enable_sequential: false,
+          thinking_mode: false,
+          watermark: false,
+          seed: 0,
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

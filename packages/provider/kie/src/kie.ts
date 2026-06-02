@@ -26,7 +26,7 @@ import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { attachExamples } from "./example";
-import { dispatchWithPaidGuard } from "@apicity/cost";
+import { dispatchWithPaidGate } from "@apicity/cost";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -62,14 +62,14 @@ export function kie(opts: KieOptions): KieProvider {
   // Docs: https://docs.kie.ai
   async function createTask(
     req: MediaGenerationRequest,
-    maxSpend?: number
+    approval?: import("./types").KieApproval
   ): Promise<TaskResponse> {
-    return dispatchWithPaidGuard(
+    return dispatchWithPaidGate(
       "kie",
       "POST",
       "api.v1.jobs.createTask",
       req as unknown as Record<string, unknown>,
-      maxSpend ?? opts.maxSpend,
+      approval,
       async () => {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -453,9 +453,9 @@ export function kie(opts: KieOptions): KieProvider {
 export async function submitMediaJob(
   provider: KieProvider,
   request: MediaGenerationRequest,
-  maxSpend?: number
+  approval?: import("./types").KieApproval
 ): Promise<string> {
-  const result = await provider.post.api.v1.jobs.createTask(request, maxSpend);
+  const result = await provider.post.api.v1.jobs.createTask(request, approval);
   if (!result.data?.taskId) {
     throw new KieError(
       `createTask failed: ${result.msg ?? "no taskId in response"}`,

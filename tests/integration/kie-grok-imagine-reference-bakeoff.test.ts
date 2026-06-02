@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 // Reference-video bake-off: Grok Imagine half of the pair.
 // Companion to kie-wan-27-r2v-reference-bakeoff.test.ts. Both tests use the
@@ -65,20 +66,21 @@ describe("kie grok-imagine reference bake-off", () => {
       const manUrl = await uploadFixture(provider, "man.jpg", "image/jpeg");
       const beachUrl = await uploadFixture(provider, "beach.png", "image/png");
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "grok-imagine/image-to-video",
-          input: {
-            prompt: PROMPT,
-            image_urls: [cat1Url, cat2Url, manUrl, beachUrl],
-            duration: "6",
-            resolution: "480p",
-            aspect_ratio: "16:9",
-            mode: "fun",
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          prompt: PROMPT,
+          image_urls: [cat1Url, cat2Url, manUrl, beachUrl],
+          duration: "6",
+          resolution: "480p",
+          aspect_ratio: "16:9",
+          mode: "fun",
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

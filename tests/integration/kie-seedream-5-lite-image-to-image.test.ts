@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie seedream/5-lite-image-to-image integration", () => {
   let ctx: PollyContext;
@@ -24,21 +25,22 @@ describe("kie seedream/5-lite-image-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "seedream/5-lite-image-to-image",
-          input: {
-            prompt:
-              "Transform the scene into a vibrant cyberpunk cityscape at night, neon lighting, photorealistic",
-            image_urls: [
-              "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
-            ],
-            aspect_ratio: "1:1",
-            quality: "basic",
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "seedream/5-lite-image-to-image",
+        input: {
+          prompt:
+            "Transform the scene into a vibrant cyberpunk cityscape at night, neon lighting, photorealistic",
+          image_urls: [
+            "https://static.aiquickdraw.com/tools/example/1764851484363_ScV1s2aq.webp",
+          ],
+          aspect_ratio: "1:1",
+          quality: "basic",
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

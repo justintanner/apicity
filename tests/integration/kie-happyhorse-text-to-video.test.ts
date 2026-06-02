@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie happyhorse/text-to-video integration", () => {
   let ctx: PollyContext;
@@ -24,19 +25,20 @@ describe("kie happyhorse/text-to-video integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "happyhorse/text-to-video",
-          input: {
-            prompt:
-              "A miniature city built from cardboard and bottle caps comes to life at night. A cardboard train slowly passes through, with small lights dotting the scene and illuminating the way ahead.",
-            resolution: "720p",
-            aspect_ratio: "16:9",
-            duration: 3,
-            seed: 1622429582,
-          },
+      const request = {
+        model: "happyhorse/text-to-video",
+        input: {
+          prompt:
+            "A miniature city built from cardboard and bottle caps comes to life at night. A cardboard train slowly passes through, with small lights dotting the scene and illuminating the way ahead.",
+          resolution: "720p",
+          aspect_ratio: "16:9",
+          duration: 3,
+          seed: 1622429582,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

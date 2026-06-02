@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie gpt-image-2-text-to-image integration", () => {
   let ctx: PollyContext;
@@ -24,17 +25,18 @@ describe("kie gpt-image-2-text-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "gpt-image-2-text-to-image",
-          input: {
-            prompt:
-              "A cinematic night city poster with neon reflections on a rainy street.",
-            aspect_ratio: "16:9",
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "gpt-image-2-text-to-image",
+        input: {
+          prompt:
+            "A cinematic night city poster with neon reflections on a rainy street.",
+          aspect_ratio: "16:9",
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

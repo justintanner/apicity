@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie grok-imagine video integration", () => {
   let ctx: PollyContext;
@@ -24,16 +25,17 @@ describe("kie grok-imagine video integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "grok-imagine/text-to-video",
-          input: {
-            prompt: "A golden sunset over calm ocean waves",
-            duration: "6",
-            resolution: "480p",
-          },
+      const request = {
+        model: "grok-imagine/text-to-video",
+        input: {
+          prompt: "A golden sunset over calm ocean waves",
+          duration: "6",
+          resolution: "480p",
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.data?.taskId).toBeTruthy();
@@ -64,18 +66,19 @@ describe("kie grok-imagine video integration", () => {
 
       // Use a completed text-to-video task_id — extend requires the
       // source video to have finished generating.
-      const extend = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "grok-imagine/extend",
-          resolution: "480p",
-          input: {
-            task_id: "c13f22cfc68d83c319043ade1c1fd401",
-            prompt: "The bird lands gracefully on a tree branch",
-            extend_at: 0,
-            extend_times: "6",
-          },
+      const request = {
+        model: "grok-imagine/extend",
+        resolution: "480p",
+        input: {
+          task_id: "c13f22cfc68d83c319043ade1c1fd401",
+          prompt: "The bird lands gracefully on a tree branch",
+          extend_at: 0,
+          extend_times: "6",
         },
-        10
+      };
+      const extend = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(extend.data?.taskId).toBeTruthy();
@@ -99,14 +102,15 @@ describe("kie grok-imagine video integration", () => {
 
       // Use a completed text-to-video task_id — upscale requires the
       // source video to have finished generating.
-      const upscale = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "grok-imagine/upscale",
-          input: {
-            task_id: "d43f0d0ab29f28fdfcf68a9dccbd7a42",
-          },
+      const request = {
+        model: "grok-imagine/upscale",
+        input: {
+          task_id: "d43f0d0ab29f28fdfcf68a9dccbd7a42",
         },
-        10
+      };
+      const upscale = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(upscale.data?.taskId).toBeTruthy();

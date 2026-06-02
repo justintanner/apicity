@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie bytedance/seedance-2 first+last-frame integration", () => {
   let ctx: PollyContext;
@@ -51,23 +52,24 @@ describe("kie bytedance/seedance-2 first+last-frame integration", () => {
       });
       expect(lastUpload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "bytedance/seedance-2",
-          input: {
-            prompt:
-              "Smooth transition from the first pose to the second, natural motion",
-            first_frame_url: firstUpload.data!.downloadUrl,
-            last_frame_url: lastUpload.data!.downloadUrl,
-            resolution: "480p",
-            aspect_ratio: "16:9",
-            duration: 4,
-            generate_audio: false,
-            web_search: false,
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "bytedance/seedance-2",
+        input: {
+          prompt:
+            "Smooth transition from the first pose to the second, natural motion",
+          first_frame_url: firstUpload.data!.downloadUrl,
+          last_frame_url: lastUpload.data!.downloadUrl,
+          resolution: "480p",
+          aspect_ratio: "16:9",
+          duration: 4,
+          generate_audio: false,
+          web_search: false,
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie bytedance/seedance-2 integration", () => {
   let ctx: PollyContext;
@@ -24,20 +25,21 @@ describe("kie bytedance/seedance-2 integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "bytedance/seedance-2",
-          input: {
-            prompt: "A calm lake at dawn with mist rising over the water",
-            resolution: "480p",
-            aspect_ratio: "16:9",
-            duration: 4,
-            generate_audio: false,
-            web_search: false,
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "bytedance/seedance-2",
+        input: {
+          prompt: "A calm lake at dawn with mist rising over the water",
+          resolution: "480p",
+          aspect_ratio: "16:9",
+          duration: 4,
+          generate_audio: false,
+          web_search: false,
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

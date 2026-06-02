@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie happyhorse/video-edit integration", () => {
   let ctx: PollyContext;
@@ -39,19 +40,20 @@ describe("kie happyhorse/video-edit integration", () => {
 
       expect(videoUpload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "happyhorse/video-edit",
-          duration: 5,
-          input: {
-            prompt: "Restyle the scene to look like a watercolor painting",
-            video_url: videoUpload.data!.downloadUrl,
-            resolution: "720p",
-            audio_setting: "auto",
-            seed: 1764574909,
-          },
+      const request = {
+        model: "happyhorse/video-edit",
+        duration: 5,
+        input: {
+          prompt: "Restyle the scene to look like a watercolor painting",
+          video_url: videoUpload.data!.downloadUrl,
+          resolution: "720p",
+          audio_setting: "auto",
+          seed: 1764574909,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

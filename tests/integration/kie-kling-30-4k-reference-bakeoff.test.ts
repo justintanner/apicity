@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 // Reference-video bake-off: Kling 3.0 in **4K mode** (separate column from
 // the cheapest-settings `mode: "std"` test). Same fixtures, same scene,
@@ -60,32 +61,33 @@ describe("kie kling-3.0 4K reference bake-off", () => {
       const manUrl = await uploadFixture(provider, "man.jpg", "image/jpeg");
       const beachUrl = await uploadFixture(provider, "beach.png", "image/png");
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "kling-3.0/video",
-          input: {
-            prompt: PROMPT,
-            image_urls: [beachUrl],
-            kling_elements: [
-              {
-                name: "white_cat",
-                description: "A white cat with mismatched yellow and blue eyes",
-                element_input_urls: [cat1Url, cat2Url],
-              },
-              {
-                name: "blue_suit_man",
-                description: "A man wearing a blue suit and a blue tie",
-                element_input_urls: [manUrl, manUrl],
-              },
-            ],
-            sound: false,
-            duration: "5",
-            aspect_ratio: "16:9",
-            mode: "4K",
-            multi_shots: false,
-          },
+      const request = {
+        model: "kling-3.0/video",
+        input: {
+          prompt: PROMPT,
+          image_urls: [beachUrl],
+          kling_elements: [
+            {
+              name: "white_cat",
+              description: "A white cat with mismatched yellow and blue eyes",
+              element_input_urls: [cat1Url, cat2Url],
+            },
+            {
+              name: "blue_suit_man",
+              description: "A man wearing a blue suit and a blue tie",
+              element_input_urls: [manUrl, manUrl],
+            },
+          ],
+          sound: false,
+          duration: "5",
+          aspect_ratio: "16:9",
+          mode: "4K",
+          multi_shots: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

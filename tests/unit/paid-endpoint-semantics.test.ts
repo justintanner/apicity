@@ -1,4 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
+import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
 import {
   isPaidEndpoint,
   lookupPaidEndpoint,
@@ -8,21 +12,99 @@ import {
   dispatchWithPaidGuard,
   spendBoundCheck,
 } from "../../packages/provider/cost/src/paid-endpoints";
+import { PayGateError } from "../../packages/provider/cost/src/paygate";
+import { canonicalHash } from "../../packages/provider/cost/src/paygate";
+import type { PayGateOtpPayload } from "../../packages/provider/cost/src/paygate";
 import { kie } from "@apicity/kie";
+
+function base64urlEncode(data: Buffer): string {
+  return data
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+function mintTestOtp(
+  privateKeyPem: string,
+  payload: Omit<PayGateOtpPayload, "v">
+): string {
+  const fullPayload: PayGateOtpPayload = { v: 1, ...payload };
+  const payloadJson = JSON.stringify(fullPayload);
+  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
+  const signature = sign(
+    null,
+    Buffer.from(payloadSegment, "utf8"),
+    privateKeyPem
+  );
+  const signatureSegment = base64urlEncode(signature);
+  return `${payloadSegment}.${signatureSegment}`;
+}
+
+function makeTestDir(): string {
+  const dir = join(
+    tmpdir(),
+    "apicity-paygate-test-" + randomBytes(8).toString("hex")
+  );
+  mkdirSync(dir, { recursive: true });
+  return dir;
+}
 
 /**
  * Regression tests for paid-endpoint semantics.
  *
  * These tests lock down the contract described in the epic:
- * - Unlisted endpoints are free (no maxSpend required).
- * - Listed paid endpoints block when maxSpend is omitted or 0.
- * - Listed paid endpoints allow when maxSpend is > 0 and the estimate is
- *   within the bound.
+ * - Unlisted endpoints are free (no OTP required).
+ * - Listed paid endpoints block when OTP is missing or invalid.
+ * - Listed paid endpoints allow when a valid OTP is provided and the estimate
+ *   is within the OTP's maxSpendUsd bound.
  * - Matching is exact (no prefix, wildcard, regex, or sibling match).
  * - Blocking happens before HTTP dispatch.
  */
-
 describe("paid endpoint semantics — regression", () => {
+  let publicKeyPem: string;
+  let privateKeyPem: string;
+  let publicKeyPath: string;
+  let testDir: string;
+
+  beforeEach(() => {
+    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+    publicKeyPem = publicKey;
+    privateKeyPem = privateKey;
+    testDir = makeTestDir();
+    publicKeyPath = join(testDir, "public.pem");
+    writeFileSync(publicKeyPath, publicKeyPem, "utf8");
+    process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH = publicKeyPath;
+  });
+
+  afterEach(() => {
+    delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
+    if (existsSync(testDir)) {
+      rmSync(testDir, { recursive: true, force: true });
+    }
+  });
+
+  function makeOtp(
+    payload: Record<string, unknown>,
+    overrides: Partial<PayGateOtpPayload> = {}
+  ): string {
+    const now = Math.floor(Date.now() / 1000);
+    return mintTestOtp(privateKeyPem, {
+      jti: randomBytes(16).toString("hex"),
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+      requestHash: canonicalHash(payload),
+      maxSpendUsd: 10,
+      iat: now,
+      exp: now + 3600,
+      ...overrides,
+    });
+  }
+
   describe("unlisted endpoints are treated as free", () => {
     it("does not require maxSpend for free endpoints", () => {
       expect(() =>
@@ -60,7 +142,7 @@ describe("paid endpoint semantics — regression", () => {
     });
   });
 
-  describe("KIE POST api.v1.jobs.createTask blocks when maxSpend is omitted", () => {
+  describe("KIE POST api.v1.jobs.createTask blocks when OTP is missing", () => {
     it("maxSpendPreflight throws MaxSpendError", () => {
       expect(() =>
         maxSpendPreflight("kie", "POST", "api.v1.jobs.createTask")
@@ -86,20 +168,25 @@ describe("paid endpoint semantics — regression", () => {
       expect(called).toBe(false);
     });
 
-    it("kie provider createTask throws MaxSpendError without network call", async () => {
+    it("kie provider createTask throws PayGateError without network call", async () => {
       const provider = kie({
         apiKey: "test-key",
         baseURL: "http://localhost:99999",
       });
-      await expect(
-        provider.post.api.v1.jobs.createTask({
+      let caught: PayGateError | undefined;
+      try {
+        await provider.post.api.v1.jobs.createTask({
           model: "grok-imagine/text-to-image",
           input: {
             prompt: "test",
             aspect_ratio: "1:1",
           },
-        })
-      ).rejects.toThrow(MaxSpendError);
+        });
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("otp-missing");
     });
   });
 
@@ -129,13 +216,14 @@ describe("paid endpoint semantics — regression", () => {
       expect(called).toBe(false);
     });
 
-    it("kie provider createTask throws MaxSpendError with maxSpend = 0", async () => {
+    it("kie provider createTask throws PayGateError with numeric maxSpend", async () => {
       const provider = kie({
         apiKey: "test-key",
         baseURL: "http://localhost:99999",
       });
-      await expect(
-        provider.post.api.v1.jobs.createTask(
+      let caught: PayGateError | undefined;
+      try {
+        await provider.post.api.v1.jobs.createTask(
           {
             model: "grok-imagine/text-to-image",
             input: {
@@ -143,15 +231,18 @@ describe("paid endpoint semantics — regression", () => {
               aspect_ratio: "1:1",
             },
           },
-          0
-        )
-      ).rejects.toThrow(MaxSpendError);
+          0 as unknown as { otp: string }
+        );
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
     });
   });
 
   describe(
-    "KIE POST api.v1.jobs.createTask allows when maxSpend = 5 and " +
-      "estimated spend is <= 5 USD",
+    "KIE POST api.v1.jobs.createTask allows with valid OTP and " +
+      "estimated spend is within OTP maxSpendUsd",
     () => {
       it("spendBoundCheck does not throw when estimate is within maxSpend", () => {
         expect(() =>
@@ -190,28 +281,27 @@ describe("paid endpoint semantics — regression", () => {
         expect(result).toBe("ok");
       });
 
-      it("kie provider createTask does not throw MaxSpendError with maxSpend = 5", async () => {
+      it("kie provider createTask does not throw with valid OTP", async () => {
         const provider = kie({
           apiKey: "test-key",
           baseURL: "http://localhost:99999",
         });
+        const payload = {
+          model: "grok-imagine/text-to-image",
+          input: {
+            prompt: "test",
+            aspect_ratio: "1:1",
+          },
+        };
+        const otp = makeOtp(payload);
         let caught: unknown;
         try {
-          await provider.post.api.v1.jobs.createTask(
-            {
-              model: "grok-imagine/text-to-image",
-              input: {
-                prompt: "test",
-                aspect_ratio: "1:1",
-              },
-            },
-            5
-          );
+          await provider.post.api.v1.jobs.createTask(payload, { otp });
         } catch (error) {
           caught = error;
         }
         expect(caught).toBeDefined();
-        expect(caught).not.toBeInstanceOf(MaxSpendError);
+        expect(caught).not.toBeInstanceOf(PayGateError);
         expect(caught).not.toBeInstanceOf(SpendBoundError);
       });
     }
@@ -310,20 +400,25 @@ describe("paid endpoint semantics — regression", () => {
       expect(called).toBe(false);
     });
 
-    it("kie provider does not make a network request when maxSpend is omitted", async () => {
+    it("kie provider does not make a network request when OTP is missing", async () => {
       const provider = kie({
         apiKey: "test-key",
         baseURL: "http://localhost:99999",
       });
-      await expect(
-        provider.post.api.v1.jobs.createTask({
+      let caught: PayGateError | undefined;
+      try {
+        await provider.post.api.v1.jobs.createTask({
           model: "grok-imagine/text-to-image",
           input: {
             prompt: "test",
             aspect_ratio: "1:1",
           },
-        })
-      ).rejects.toThrow(MaxSpendError);
+        });
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("otp-missing");
     });
   });
 
@@ -352,6 +447,30 @@ describe("paid endpoint semantics — regression", () => {
       expect(caught!.method).toBe("POST");
       expect(caught!.dotPath).toBe("api.v1.jobs.createTask");
       expect(caught!.maxSpend).toBe(0);
+    });
+
+    it("PayGateError names the endpoint and mentions OTP", async () => {
+      const provider = kie({
+        apiKey: "test-key",
+        baseURL: "http://localhost:99999",
+      });
+      let caught: PayGateError | undefined;
+      try {
+        await provider.post.api.v1.jobs.createTask({
+          model: "grok-imagine/text-to-image",
+          input: {
+            prompt: "test",
+            aspect_ratio: "1:1",
+          },
+        });
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.provider).toBe("kie");
+      expect(caught!.method).toBe("POST");
+      expect(caught!.dotPath).toBe("api.v1.jobs.createTask");
+      expect(caught!.message).toContain("OTP");
     });
   });
 });

@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie qwen2/text-to-image integration", () => {
   let ctx: PollyContext;
@@ -18,15 +19,16 @@ describe("kie qwen2/text-to-image integration", () => {
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
-    const task = await provider.post.api.v1.jobs.createTask(
-      {
-        model: "qwen2/text-to-image",
-        input: {
-          prompt: "A serene mountain landscape at sunrise",
-          image_size: "16:9",
-        },
+    const request = {
+      model: "qwen2/text-to-image",
+      input: {
+        prompt: "A serene mountain landscape at sunrise",
+        image_size: "16:9",
       },
-      10
+    };
+    const task = await provider.post.api.v1.jobs.createTask(
+      request,
+      mintKieCreateTaskOtp(request)
     );
 
     expect(task.data?.taskId).toBeTruthy();

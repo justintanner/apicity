@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie bytedance/seedance-2 multimodal reference integration", () => {
   let ctx: PollyContext;
@@ -59,24 +60,25 @@ describe("kie bytedance/seedance-2 multimodal reference integration", () => {
       expect(videoUpload.data?.downloadUrl).toBeTruthy();
       expect(audioUpload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "bytedance/seedance-2",
-          input: {
-            prompt:
-              "A cinematic short inspired by the reference style and pacing",
-            reference_image_urls: [imageUpload.data!.downloadUrl],
-            reference_video_urls: [videoUpload.data!.downloadUrl],
-            reference_audio_urls: [audioUpload.data!.downloadUrl],
-            resolution: "480p",
-            aspect_ratio: "16:9",
-            duration: 4,
-            generate_audio: true,
-            web_search: false,
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "bytedance/seedance-2",
+        input: {
+          prompt:
+            "A cinematic short inspired by the reference style and pacing",
+          reference_image_urls: [imageUpload.data!.downloadUrl],
+          reference_video_urls: [videoUpload.data!.downloadUrl],
+          reference_audio_urls: [audioUpload.data!.downloadUrl],
+          resolution: "480p",
+          aspect_ratio: "16:9",
+          duration: 4,
+          generate_audio: true,
+          web_search: false,
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

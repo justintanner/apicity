@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 // Reference-video bake-off: Wan 2.7 half of the pair.
 // Companion to kie-grok-imagine-reference-bakeoff.test.ts. Both tests use the
@@ -65,22 +66,23 @@ describe("kie wan/2-7-r2v reference bake-off", () => {
       const manUrl = await uploadFixture(provider, "man.jpg", "image/jpeg");
       const beachUrl = await uploadFixture(provider, "beach.png", "image/png");
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "wan/2-7-r2v",
-          input: {
-            prompt: PROMPT,
-            reference_image: [cat1Url, cat2Url, manUrl],
-            first_frame: beachUrl,
-            resolution: "720p",
-            aspect_ratio: "16:9",
-            duration: 2,
-            watermark: false,
-            nsfw_checker: false,
-            seed: 1308038620,
-          },
+      const request = {
+        model: "wan/2-7-r2v",
+        input: {
+          prompt: PROMPT,
+          reference_image: [cat1Url, cat2Url, manUrl],
+          first_frame: beachUrl,
+          resolution: "720p",
+          aspect_ratio: "16:9",
+          duration: 2,
+          watermark: false,
+          nsfw_checker: false,
+          seed: 1308038620,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

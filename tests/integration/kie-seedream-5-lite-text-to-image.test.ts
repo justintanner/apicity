@@ -6,6 +6,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie seedream/5-lite-text-to-image integration", () => {
   let ctx: PollyContext;
@@ -24,17 +25,18 @@ describe("kie seedream/5-lite-text-to-image integration", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "seedream/5-lite-text-to-image",
-          input: {
-            prompt: "A serene mountain landscape at sunrise, photorealistic",
-            aspect_ratio: "16:9",
-            quality: "basic",
-            nsfw_checker: false,
-          },
+      const request = {
+        model: "seedream/5-lite-text-to-image",
+        input: {
+          prompt: "A serene mountain landscape at sunrise, photorealistic",
+          aspect_ratio: "16:9",
+          quality: "basic",
+          nsfw_checker: false,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

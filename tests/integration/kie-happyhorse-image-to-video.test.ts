@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie happyhorse/image-to-video integration", () => {
   let ctx: PollyContext;
@@ -40,19 +41,19 @@ describe("kie happyhorse/image-to-video integration", () => {
       expect(upload.code).toBe(200);
       expect(upload.data?.downloadUrl).toBeTruthy();
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "happyhorse/image-to-video",
-          input: {
-            prompt:
-              "The cat blinks slowly and turns its head toward the camera",
-            image_urls: [upload.data!.downloadUrl],
-            resolution: "720p",
-            duration: 3,
-            seed: 1546095068,
-          },
+      const request = {
+        model: "happyhorse/image-to-video",
+        input: {
+          prompt: "The cat blinks slowly and turns its head toward the camera",
+          image_urls: [upload.data!.downloadUrl],
+          resolution: "720p",
+          duration: 3,
+          seed: 1546095068,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

@@ -228,3 +228,85 @@ export function recordingExists(recordingName: string): boolean {
 export function getPollyMode(): RawPollyMode {
   return (process.env.POLLY_MODE ?? "replay") as RawPollyMode;
 }
+
+// ---------------------------------------------------------------------------
+// OTP helpers for paid-endpoint tests
+// ---------------------------------------------------------------------------
+import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
+import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import { join } from "node:path";
+import { tmpdir } from "node:os";
+import { canonicalHash } from "../packages/provider/cost/src/paygate";
+let _otpPrivateKey: string | undefined;
+let _otpPublicKeyPath: string | undefined;
+let _otpTestDir: string | undefined;
+function ensureOtpKeys(): { privateKey: string; publicKeyPath: string } {
+  if (_otpPrivateKey && _otpPublicKeyPath) {
+    return { privateKey: _otpPrivateKey, publicKeyPath: _otpPublicKeyPath };
+  }
+  const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
+    publicKeyEncoding: { type: "spki", format: "pem" },
+    privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  });
+  const testDir = join(
+    tmpdir(),
+    "apicity-paygate-test-" + randomBytes(8).toString("hex")
+  );
+  mkdirSync(testDir, { recursive: true });
+  const publicKeyPath = join(testDir, "public.pem");
+  writeFileSync(publicKeyPath, publicKey, "utf8");
+  _otpPrivateKey = privateKey;
+  _otpPublicKeyPath = publicKeyPath;
+  _otpTestDir = testDir;
+  process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH = publicKeyPath;
+  return { privateKey, publicKeyPath };
+}
+function base64urlEncode(data: Buffer): string {
+  return data
+    .toString("base64")
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+/**
+ * Mint a test OTP signed with the generated private key.
+ */
+export function mintTestOtp(payload: Record<string, unknown>): string {
+  const { privateKey } = ensureOtpKeys();
+  const payloadJson = JSON.stringify({ v: 1, ...payload });
+  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
+  const signature = sign(null, Buffer.from(payloadSegment, "utf8"), privateKey);
+  const signatureSegment = base64urlEncode(signature);
+  return `${payloadSegment}.${signatureSegment}`;
+}
+/**
+ * Generate a valid OTP for a KIE createTask request.
+ */
+export function mintKieCreateTaskOtp(request: Record<string, unknown>): {
+  otp: string;
+} {
+  return {
+    otp: mintTestOtp({
+      jti: randomBytes(16).toString("hex"),
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+      requestHash: canonicalHash(request),
+      maxSpendUsd: 100,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + 3600,
+    }),
+  };
+}
+/**
+ * Clean up OTP test directories. Call in an afterAll or afterEach.
+ */
+export function cleanupOtpKeys(): void {
+  if (_otpTestDir && existsSync(_otpTestDir)) {
+    rmSync(_otpTestDir, { recursive: true, force: true });
+  }
+  _otpPrivateKey = undefined;
+  _otpPublicKeyPath = undefined;
+  _otpTestDir = undefined;
+  delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
+}

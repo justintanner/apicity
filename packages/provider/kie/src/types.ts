@@ -160,8 +160,12 @@ import type {
   FileBase64UploadRequest,
 } from "./zod";
 
+export interface KieApproval {
+  otp: string;
+}
+
 interface KieCreateTaskMethod {
-  (req: MediaGenerationRequest, maxSpend?: number): Promise<TaskResponse>;
+  (req: MediaGenerationRequest, approval?: KieApproval): Promise<TaskResponse>;
   schema: z.ZodType;
 }
 

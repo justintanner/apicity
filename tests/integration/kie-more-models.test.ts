@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 describe("kie additional models", () => {
   let ctx: PollyContext;
@@ -16,14 +17,15 @@ describe("kie additional models", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const result = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "nano-banana-pro",
-          input: {
-            prompt: "A futuristic city with flying vehicles at night",
-          },
+      const request = {
+        model: "nano-banana-pro",
+        input: {
+          prompt: "A futuristic city with flying vehicles at night",
         },
-        10
+      };
+      const result = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       // API may return 402 (insufficient credits) or other non-200 codes
@@ -43,14 +45,15 @@ describe("kie additional models", () => {
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
-      const result = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "nano-banana-2",
-          input: {
-            prompt: "A beautiful garden with roses and a fountain",
-          },
+      const request = {
+        model: "nano-banana-2",
+        input: {
+          prompt: "A beautiful garden with roses and a fountain",
         },
-        10
+      };
+      const result = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       // API may return 402 (insufficient credits) or other non-200 codes

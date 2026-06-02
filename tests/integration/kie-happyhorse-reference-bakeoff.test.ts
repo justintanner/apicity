@@ -8,6 +8,7 @@ import {
   type PollyContext,
 } from "../harness";
 import { kie } from "@apicity/kie";
+import { mintKieCreateTaskOtp } from "../harness";
 
 // Reference-video bake-off: HappyHorse (fifth column).
 // Companion to the grok / wan / seedance / kling bake-off tests. Same four
@@ -64,19 +65,20 @@ describe("kie happyhorse/reference-to-video bake-off", () => {
       const cat1Url = await uploadFixture(provider, "cat1.jpg", "image/jpeg");
       const manUrl = await uploadFixture(provider, "man.jpg", "image/jpeg");
 
-      const task = await provider.post.api.v1.jobs.createTask(
-        {
-          model: "happyhorse/reference-to-video",
-          input: {
-            prompt: PROMPT,
-            reference_image: [cat1Url, manUrl],
-            resolution: "720p",
-            aspect_ratio: "16:9",
-            duration: 3,
-            seed: 1308038620,
-          },
+      const request = {
+        model: "happyhorse/reference-to-video",
+        input: {
+          prompt: PROMPT,
+          reference_image: [cat1Url, manUrl],
+          resolution: "720p",
+          aspect_ratio: "16:9",
+          duration: 3,
+          seed: 1308038620,
         },
-        10
+      };
+      const task = await provider.post.api.v1.jobs.createTask(
+        request,
+        mintKieCreateTaskOtp(request)
       );
 
       expect(task.code).toBe(200);

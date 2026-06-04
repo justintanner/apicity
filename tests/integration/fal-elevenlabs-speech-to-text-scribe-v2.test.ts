@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal elevenlabs speech-to-text scribe-v2 integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("fal elevenlabs speech-to-text scribe-v2 integration", () => {
   });
 
   it("should transcribe audio from a URL", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });

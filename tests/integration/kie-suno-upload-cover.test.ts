@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 // Kie defers uploadUrl reachability checks to the worker, so submit returns
 // 200 with a taskId even for an unreachable URL.
@@ -16,7 +16,7 @@ describe("kie suno generate.uploadCover (submit, deferred validation)", () => {
   });
 
   it("returns 200 with a taskId even when uploadUrl is unreachable", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

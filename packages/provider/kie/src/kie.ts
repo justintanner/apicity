@@ -53,7 +53,7 @@ function inferMimeType(filename: string): string | undefined {
   return ext ? MIME_TYPES[ext] : undefined;
 }
 
-export function kie(opts: KieOptions): KieProvider {
+export function createKie(opts: KieOptions): KieProvider {
   const baseURL = opts.baseURL ?? "https://api.kie.ai";
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
   const doFetch = opts.fetch ?? fetch;
@@ -399,46 +399,50 @@ export function kie(opts: KieOptions): KieProvider {
   }
 
   return attachExamples(
-    withPaidGate("kie", {
-      veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
-      suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
-      chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
-      ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
-      modelInputSchemas,
-      post: {
-        api: {
-          v1: {
-            jobs: {
-              createTask: Object.assign(createTask, {
-                schema: CreateTaskRequestSchema,
-              }),
+    withPaidGate(
+      "kie",
+      {
+        veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
+        suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
+        chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
+        ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
+        modelInputSchemas,
+        post: {
+          api: {
+            v1: {
+              jobs: {
+                createTask: Object.assign(createTask, {
+                  schema: CreateTaskRequestSchema,
+                }),
+              },
+              common: {
+                downloadUrl: Object.assign(downloadUrl, {
+                  schema: DownloadUrlRequestSchema,
+                }),
+              },
             },
-            common: {
-              downloadUrl: Object.assign(downloadUrl, {
-                schema: DownloadUrlRequestSchema,
-              }),
-            },
-          },
-          fileStreamUpload: Object.assign(fileStreamUpload, {
-            schema: UploadMediaRequestSchema,
-          }),
-          fileUrlUpload: Object.assign(fileUrlUpload, {
-            schema: FileUrlUploadRequestSchema,
-          }),
-          fileBase64Upload: Object.assign(fileBase64Upload, {
-            schema: FileBase64UploadRequestSchema,
-          }),
-        },
-      },
-      get: {
-        api: {
-          v1: {
-            jobs: { recordInfo },
-            chat: { credit },
+            fileStreamUpload: Object.assign(fileStreamUpload, {
+              schema: UploadMediaRequestSchema,
+            }),
+            fileUrlUpload: Object.assign(fileUrlUpload, {
+              schema: FileUrlUploadRequestSchema,
+            }),
+            fileBase64Upload: Object.assign(fileBase64Upload, {
+              schema: FileBase64UploadRequestSchema,
+            }),
           },
         },
+        get: {
+          api: {
+            v1: {
+              jobs: { recordInfo },
+              chat: { credit },
+            },
+          },
+        },
       },
-    })
+      { config: opts.paygate }
+    )
   );
 }
 

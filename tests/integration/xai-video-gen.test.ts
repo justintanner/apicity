@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xai video generation integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("xai video generation integration", () => {
   });
 
   it("should generate a video from a text prompt", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
     });
 

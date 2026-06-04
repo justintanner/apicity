@@ -89,6 +89,9 @@ importers:
 
   packages/mcp-server:
     dependencies:
+      '@apicity/cost':
+        specifier: workspace:*
+        version: link:../provider/cost
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)

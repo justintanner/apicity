@@ -5,8 +5,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie bytedance/seedance-2 integration", () => {
   let ctx: PollyContext;
@@ -21,7 +21,8 @@ describe("kie bytedance/seedance-2 integration", () => {
     async () => {
       ctx = setupPolly("kie/bytedance-seedance-2");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -66,7 +67,10 @@ describe("kie bytedance/seedance-2 integration", () => {
   );
 
   it("should validate payload via schema", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
 
     const ok = provider.post.api.v1.jobs.createTask.schema.safeParse({
       model: "bytedance/seedance-2",
@@ -89,7 +93,10 @@ describe("kie bytedance/seedance-2 integration", () => {
   });
 
   it("should expose model input schema for bytedance/seedance-2", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
     const schema = provider.modelInputSchemas["bytedance/seedance-2"];
 
     expect(schema).toBeDefined();

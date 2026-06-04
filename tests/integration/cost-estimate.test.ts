@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { cost, PRICING_AS_OF } from "@apicity/cost";
+import { createCost, PRICING_AS_OF } from "@apicity/cost";
 
 describe("cost.estimate — pure-table (no network)", () => {
   it("free → $0", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({ provider: "free-media-upload" });
     expect(r.usd).toBe(0);
     expect(r.source).toBe("free");
@@ -12,7 +12,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("elevenlabs flash v2.5 → 1000 chars × $0.00006", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "elevenlabs",
       payload: {
@@ -29,7 +29,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie veo3_fast → 8 seconds × $0.10", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: { model: "veo3_fast", prompt: "a sunset", duration: 8 },
@@ -41,7 +41,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie seedance-2 i2v 720p resolves to seedance-2-720p-i2v rate", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -62,7 +62,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie seedance-2 t2v (no first_frame) resolves to seedance-2-720p-t2v rate", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -80,7 +80,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie kling-3.0/video coerces '5s' duration string", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -99,7 +99,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie unknown model → warning + $0", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: { model: "totally-fake-model", duration: 4 },
@@ -110,7 +110,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie video model with no duration → warning", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: { model: "veo3_fast" },
@@ -120,7 +120,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("fireworks heuristic → chars/4 × deepseek-v3 rate", () => {
-    const c = cost();
+    const c = createCost();
     const text = "x".repeat(400);
     const r = c.estimate({
       provider: "fireworks",
@@ -138,7 +138,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("alibaba heuristic — unknown model emits warning, usd=0", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "alibaba",
       payload: {
@@ -155,7 +155,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("openai heuristic → chars/4 × gpt-5 rate", () => {
-    const c = cost();
+    const c = createCost();
     const text = "y".repeat(800);
     const r = c.estimate({
       provider: "openai",
@@ -172,7 +172,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("anthropic heuristic → chars/4 × claude-haiku-4-5 rate", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "anthropic",
       payload: {
@@ -188,7 +188,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("anthropic heuristic includes system prompt in token count", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "anthropic",
       payload: {
@@ -203,7 +203,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("xai grok-4-fast → chars/4 heuristic × bundled rate", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "xai",
       payload: {
@@ -219,7 +219,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kimicoding routes to heuristic-only", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kimicoding",
       payload: {
@@ -235,7 +235,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie grok-imagine/text-to-image (default) → flat $0.02/generation", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -251,7 +251,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie grok-imagine/text-to-image (enable_pro) → flat $0.025/generation", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -264,7 +264,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie grok-imagine/image-to-image → flat $0.02/generation", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -280,7 +280,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie grok-imagine/extend resolves (extend_times, resolution) variant", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -300,7 +300,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie grok-imagine/extend without resolution hint warns", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -318,7 +318,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie happyhorse/video-edit 1080p → $0.265/s with top-level duration hint", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -338,7 +338,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie happyhorse/video-edit 720p → $0.155/s", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -356,7 +356,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie suno/generate via endpoint hint → $0.06/generation regardless of model version", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       endpoint: "suno/generate",
@@ -375,7 +375,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie suno endpoint pricing is independent of model version", () => {
-    const c = cost();
+    const c = createCost();
     const v3 = c.estimate({
       provider: "kie",
       endpoint: "suno/generate",
@@ -390,7 +390,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie suno/vocal-removal-generate separate_vocal → $0.05", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       endpoint: "suno/vocal-removal-generate",
@@ -406,7 +406,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie suno/vocal-removal-generate split_stem → $0.25", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       endpoint: "suno/vocal-removal-generate",
@@ -422,7 +422,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie suno/lyrics → $0.002/generation", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       endpoint: "suno/lyrics",
@@ -432,7 +432,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie sora-watermark-remover → $0.05/generation", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -445,7 +445,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie endpoint hint takes precedence over payload.model", () => {
-    const c = cost();
+    const c = createCost();
     // payload.model would resolve to veo3_fast ($0.10/s × 8 = $0.80),
     // but endpoint=suno/generate forces a flat $0.06 lookup.
     const r = c.estimate({
@@ -457,7 +457,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie nano-banana-pro 2K → $0.09/image", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -471,7 +471,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie nano-banana-pro 4K → $0.12/image", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -484,7 +484,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("kie grok-imagine/upscale → flat $0.05/generation", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "kie",
       payload: {
@@ -497,7 +497,7 @@ describe("cost.estimate — pure-table (no network)", () => {
   });
 
   it("missing max_tokens emits warning", () => {
-    const c = cost();
+    const c = createCost();
     const r = c.estimate({
       provider: "fireworks",
       payload: {

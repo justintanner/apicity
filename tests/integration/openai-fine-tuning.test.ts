@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai fine-tuning", () => {
   describe("payload validation", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
 
     it("should expose schema on jobs create", () => {
       expect(provider.post.v1.fineTuning.jobs.schema).toBeDefined();
@@ -71,7 +71,7 @@ describe("openai fine-tuning", () => {
   });
 
   describe("namespace wiring", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
 
     it("should expose fineTuning.jobs as callable with child methods", () => {
       expect(typeof provider.post.v1.fineTuning.jobs).toBe("function");

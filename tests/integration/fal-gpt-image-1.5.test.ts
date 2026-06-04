@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal gpt-image-1.5 text-to-image integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal gpt-image-1.5 text-to-image integration", () => {
   });
 
   it("should generate an image from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 600000,
     });
@@ -40,7 +40,7 @@ describe("fal gpt-image-1.5 text-to-image integration", () => {
   }, 600000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.gptImage1p5.schema.safeParse({
       prompt: "a cat",
     });
@@ -48,14 +48,14 @@ describe("fal gpt-image-1.5 text-to-image integration", () => {
   });
 
   it("should reject payload missing prompt", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.gptImage1p5.schema.safeParse({});
     expect(v.success).toBe(false);
     expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with wrong enum value", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.gptImage1p5.schema.safeParse({
       prompt: "a cat",
       image_size: "2048x2048",
@@ -64,7 +64,7 @@ describe("fal gpt-image-1.5 text-to-image integration", () => {
   });
 
   it("should reject payload with prompt too short", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.gptImage1p5.schema.safeParse({
       prompt: "a",
     });
@@ -72,14 +72,14 @@ describe("fal gpt-image-1.5 text-to-image integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.gptImage1p5.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.gptImage1p5).toBe(provider.post.run.gptImage1p5);
   });
 });

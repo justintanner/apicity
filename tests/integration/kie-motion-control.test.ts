@@ -4,8 +4,8 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie kling-3.0 motion-control integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,8 @@ describe("kie kling-3.0 motion-control integration", () => {
     });
 
     it("should create a motion-control task and poll status", async () => {
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

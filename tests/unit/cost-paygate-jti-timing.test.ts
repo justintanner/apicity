@@ -1,87 +1,54 @@
 import { describe, it, expect } from "vitest";
-import { sign, generateKeyPairSync } from "node:crypto";
 
 import {
   dispatchWithPaidGate,
-  canonicalHash,
-  type PayGateIo,
-  type PayGateOtpPayload,
+  mintOtp,
+  type PayGateConfig,
+  type ReplayStore,
 } from "../../packages/provider/cost/src/paygate";
 
-function base64urlEncode(data: Buffer): string {
-  return data
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
+const SECRET = "test-secret";
 
-function mintTestOtp(
-  privateKeyPem: string,
-  payload: Omit<PayGateOtpPayload, "v">
-): string {
-  const fullPayload: PayGateOtpPayload = { v: 1, ...payload };
-  const payloadJson = JSON.stringify(fullPayload);
-  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
-  const signature = sign(
-    null,
-    Buffer.from(payloadSegment, "utf8"),
-    privateKeyPem
-  );
-  const signatureSegment = base64urlEncode(signature);
-  return `${payloadSegment}.${signatureSegment}`;
-}
-
-function makeInMemoryIo(publicKeyPem: string): PayGateIo & {
-  ledger: Set<string>;
-} {
-  const ledger = new Set<string>();
+/**
+ * A replay store whose contents can be snapshotted at any point. Backed by a
+ * plain Set so the test can observe exactly which jtis are present during and
+ * after a dispatch.
+ */
+function makeSnapshotStore(): ReplayStore & { snapshot(): string[] } {
+  const seen = new Set<string>();
   return {
-    now: () => 1_500_000,
-    loadPublicKey: () => publicKeyPem,
-    isJtiConsumed: (jti) => ledger.has(jti),
-    consumeJti: (jti) => {
-      ledger.add(jti);
+    has: (jti) => seen.has(jti),
+    add: (jti) => {
+      seen.add(jti);
     },
-    ledger,
+    snapshot: () => [...seen],
   };
 }
 
 /**
  * Invariant: the OTP jti is consumed BEFORE `dispatch()` runs. If dispatch
  * later throws (network error, upstream 5xx, abort), the jti remains in the
- * ledger and a retry must mint a fresh OTP.
+ * replay store and a retry must mint a fresh OTP.
  *
  * This is intentional — without it, a hostile caller could replay an OTP on
  * every transient failure.
  */
 describe("dispatchWithPaidGate — jti consumption timing", () => {
   it("consumes the jti before dispatch is invoked", async () => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-    });
-    const io = makeInMemoryIo(publicKey);
-    const payload = {
+    const store = makeSnapshotStore();
+    const config: PayGateConfig = { secret: SECRET, replayStore: store };
+    const request = {
       model: "wan/2-7-text-to-video",
       input: { duration: 5 },
     };
-    const jti = "jti-pre-dispatch";
-    const nowSec = Math.floor(io.now() / 1000);
-    const otp = mintTestOtp(privateKey, {
-      jti,
-      provider: "kie",
-      method: "POST",
+    const otp = mintOtp(SECRET, {
       dotPath: "api.v1.jobs.createTask",
-      requestHash: canonicalHash(payload),
-      maxSpendUsd: 100,
-      iat: nowSec - 10,
-      exp: nowSec + 3600,
+      request,
     });
 
-    let ledgerSnapshotDuringDispatch: boolean | undefined;
+    let storeSnapshotDuringDispatch: string[] | undefined;
     const dispatch = async () => {
-      ledgerSnapshotDuringDispatch = io.isJtiConsumed(jti);
+      storeSnapshotDuringDispatch = store.snapshot();
       return "ok";
     };
 
@@ -89,36 +56,26 @@ describe("dispatchWithPaidGate — jti consumption timing", () => {
       "kie",
       "POST",
       "api.v1.jobs.createTask",
-      payload,
+      request,
       { otp },
       dispatch,
-      io
+      config
     );
     expect(result).toBe("ok");
-    expect(ledgerSnapshotDuringDispatch).toBe(true);
+    // The jti was added to the store before dispatch ran.
+    expect(storeSnapshotDuringDispatch).toHaveLength(1);
   });
 
   it("leaves the jti consumed when dispatch throws", async () => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-    });
-    const io = makeInMemoryIo(publicKey);
-    const payload = {
+    const store = makeSnapshotStore();
+    const config: PayGateConfig = { secret: SECRET, replayStore: store };
+    const request = {
       model: "wan/2-7-text-to-video",
       input: { duration: 5 },
     };
-    const jti = "jti-dispatch-failure";
-    const nowSec = Math.floor(io.now() / 1000);
-    const otp = mintTestOtp(privateKey, {
-      jti,
-      provider: "kie",
-      method: "POST",
+    const otp = mintOtp(SECRET, {
       dotPath: "api.v1.jobs.createTask",
-      requestHash: canonicalHash(payload),
-      maxSpendUsd: 100,
-      iat: nowSec - 10,
-      exp: nowSec + 3600,
+      request,
     });
 
     const dispatch = async () => {
@@ -130,13 +87,15 @@ describe("dispatchWithPaidGate — jti consumption timing", () => {
         "kie",
         "POST",
         "api.v1.jobs.createTask",
-        payload,
+        request,
         { otp },
         dispatch,
-        io
+        config
       )
     ).rejects.toThrow("simulated network failure");
 
-    expect(io.isJtiConsumed(jti)).toBe(true);
+    // The jti stays consumed despite the dispatch failure — a retry must
+    // mint a fresh OTP.
+    expect(store.snapshot()).toHaveLength(1);
   });
 });

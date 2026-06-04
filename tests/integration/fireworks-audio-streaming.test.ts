@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks audio streaming transcriptions", () => {
   it("should expose streaming method with schema and validation", () => {
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
     });
 
@@ -25,7 +25,7 @@ describe("fireworks audio streaming transcriptions", () => {
   });
 
   it("should validate streaming options correctly", () => {
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
     });
 
@@ -58,7 +58,7 @@ describe("fireworks audio streaming transcriptions", () => {
       ) {}
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -89,7 +89,7 @@ describe("fireworks audio streaming transcriptions", () => {
       }
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -126,7 +126,7 @@ describe("fireworks audio streaming transcriptions", () => {
       }
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       audioStreamingBaseURL: "wss://audio-streaming-v2.api.fireworks.ai",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
@@ -154,7 +154,7 @@ describe("fireworks audio streaming transcriptions", () => {
       }
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -177,7 +177,7 @@ describe("fireworks audio streaming transcriptions", () => {
       constructor(_url: string, _protocols?: string | string[]) {}
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -197,7 +197,7 @@ describe("fireworks audio streaming transcriptions", () => {
       constructor(_url: string, _protocols?: string | string[]) {}
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -220,7 +220,7 @@ describe("fireworks audio streaming transcriptions", () => {
       constructor(_url: string, _protocols?: string | string[]) {}
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -243,7 +243,7 @@ describe("fireworks audio streaming transcriptions", () => {
       constructor(_url: string, _protocols?: string | string[]) {}
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });
@@ -269,7 +269,7 @@ describe("fireworks audio streaming transcriptions", () => {
       constructor(_url: string, _protocols?: string | string[]) {}
     }
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "fw-test-key",
       WebSocket: MockWebSocket as unknown as typeof globalThis.WebSocket,
     });

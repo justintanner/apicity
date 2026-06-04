@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks models CRUD integration", () => {
   let ctx: PollyContext;
@@ -22,7 +22,7 @@ describe("fireworks models CRUD integration", () => {
     });
 
     it("should list models for an account", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.models.list(
@@ -46,7 +46,7 @@ describe("fireworks models CRUD integration", () => {
     });
 
     it("should get a specific model", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.models.get(
@@ -73,7 +73,7 @@ describe("fireworks models CRUD integration", () => {
     });
 
     it("should validate create model payload", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "fw-test-key",
       });
       const valid =
@@ -86,7 +86,7 @@ describe("fireworks models CRUD integration", () => {
     });
 
     it("should reject create payload missing modelId", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "fw-test-key",
       });
       const valid =
@@ -100,7 +100,7 @@ describe("fireworks models CRUD integration", () => {
     });
 
     it("should expose payloadSchema on all model methods", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "fw-test-key",
       });
       const models = provider.inference.v1.accounts.models;

@@ -82,9 +82,9 @@ describe("Fireworks Zod schema validation gaps", () => {
 
 describe("Fireworks Zod schema .schema property coverage", () => {
   it("should validate via multiple endpoint schemas", async () => {
-    const { fireworks } =
+    const { createFireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
-    const client = fireworks({ apiKey: "test" });
+    const client = createFireworks({ apiKey: "test" });
 
     // Test various .schema properties exist and are callable via safeParse
     const tests = [
@@ -197,9 +197,9 @@ describe("Fireworks Zod schema .schema property coverage", () => {
   });
 
   it("should return validation errors for invalid payloads", async () => {
-    const { fireworks } =
+    const { createFireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
-    const client = fireworks({ apiKey: "test" });
+    const client = createFireworks({ apiKey: "test" });
 
     // Test invalid payloads
     const invalidResult1 =
@@ -281,7 +281,7 @@ describe("Fireworks SSE line 55 coverage", () => {
 
 describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", () => {
   it("should return early when signal is undefined", async () => {
-    const { fireworks } =
+    const { createFireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
 
     const mockFetch = vi.fn().mockResolvedValue({
@@ -301,7 +301,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
       }),
     });
 
-    const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
+    const testClient = createFireworks({ apiKey: "test", fetch: mockFetch });
     await testClient.inference.v1.chat.completions({
       model: "gpt-4o",
       messages: [{ role: "user", content: "Hello" }],
@@ -311,7 +311,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
   });
 
   it("should add event listener when signal has addEventListener", async () => {
-    const { fireworks } =
+    const { createFireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
 
     const mockAddEventListener = vi.fn();
@@ -343,7 +343,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
       });
     });
 
-    const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
+    const testClient = createFireworks({ apiKey: "test", fetch: mockFetch });
 
     await testClient.inference.v1.chat.completions(
       {
@@ -361,7 +361,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
   });
 
   it("should handle signal already aborted without addEventListener", async () => {
-    const { fireworks } =
+    const { createFireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
 
     const mockSignal = {
@@ -373,7 +373,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
       json: vi.fn().mockResolvedValue({}),
     });
 
-    const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
+    const testClient = createFireworks({ apiKey: "test", fetch: mockFetch });
 
     try {
       await testClient.inference.v1.chat.completions(
@@ -389,7 +389,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
   });
 
   it("should handle signal abort during request", async () => {
-    const { fireworks } =
+    const { createFireworks } =
       await import("../../packages/provider/fireworks/src/fireworks");
 
     const abortController = new AbortController();
@@ -408,7 +408,7 @@ describe("Fireworks attachAbortHandler coverage (fireworks.ts lines 204-217)", (
       });
     });
 
-    const testClient = fireworks({ apiKey: "test", fetch: mockFetch });
+    const testClient = createFireworks({ apiKey: "test", fetch: mockFetch });
 
     const requestPromise = testClient.inference.v1.chat.completions(
       {

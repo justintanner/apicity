@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal kling-video o3/4k reference-to-video integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,7 @@ describe("fal kling-video o3/4k reference-to-video integration", () => {
   });
 
   it("should generate a video from reference images", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 900000,
     });
@@ -49,7 +49,7 @@ describe("fal kling-video o3/4k reference-to-video integration", () => {
   }, 900000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.klingVideo.o3p4k.referenceToVideo.schema.safeParse({
       prompt: "test prompt",
       duration: "5",
@@ -59,7 +59,7 @@ describe("fal kling-video o3/4k reference-to-video integration", () => {
   });
 
   it("should reject payload with invalid duration", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.klingVideo.o3p4k.referenceToVideo.schema.safeParse({
       duration: "20",
     });
@@ -67,7 +67,7 @@ describe("fal kling-video o3/4k reference-to-video integration", () => {
   });
 
   it("should reject payload with invalid aspect_ratio", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.klingVideo.o3p4k.referenceToVideo.schema.safeParse({
       aspect_ratio: "4:3",
     });
@@ -75,14 +75,14 @@ describe("fal kling-video o3/4k reference-to-video integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.klingVideo.o3p4k.referenceToVideo.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.klingVideo.o3p4k.referenceToVideo).toBe(
       provider.post.run.klingVideo.o3p4k.referenceToVideo
     );

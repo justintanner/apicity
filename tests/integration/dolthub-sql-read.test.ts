@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { dolthub } from "@apicity/dolthub";
+import { createDoltHub } from "@apicity/dolthub";
 
 describe("dolthub sql read integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("dolthub sql read integration", () => {
 
   it("should read from a public database", async () => {
     ctx = setupPolly("dolthub/sql-read-show-tables");
-    const provider = dolthub();
+    const provider = createDoltHub();
     const result = await provider.v1alpha1.sql.read({
       owner: "dolthub",
       database: "ip-to-country",
@@ -26,7 +26,7 @@ describe("dolthub sql read integration", () => {
 
   it("should read with a SELECT query", async () => {
     ctx = setupPolly("dolthub/sql-read-select");
-    const provider = dolthub();
+    const provider = createDoltHub();
     const result = await provider.v1alpha1.sql.read({
       owner: "dolthub",
       database: "ip-to-country",

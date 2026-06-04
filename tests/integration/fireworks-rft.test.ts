@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks reinforcement fine-tuning jobs", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {
@@ -17,7 +17,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     });
 
     it("should reject create payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {}
@@ -28,7 +28,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     });
 
     it("should validate create payload with training and loss config", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {
@@ -56,7 +56,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     });
 
     it("should validate create payload with cloud storage config", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.reinforcementFineTuningJobs.create.schema.safeParse(
           {
@@ -72,7 +72,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
     });
 
     it("should expose payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema =
         provider.inference.v1.accounts.reinforcementFineTuningJobs.create
           .schema;
@@ -86,7 +86,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
 
   describe("namespace structure", () => {
     it("should expose create, get, list, delete, and resume methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const rft = provider.inference.v1.accounts.reinforcementFineTuningJobs;
       expect(typeof rft.create).toBe("function");
       expect(typeof rft.get).toBe("function");
@@ -100,7 +100,7 @@ describe("fireworks reinforcement fine-tuning jobs", () => {
 describe("fireworks rlor trainer jobs", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.rlorTrainerJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-rlor-dataset",
@@ -111,7 +111,7 @@ describe("fireworks rlor trainer jobs", () => {
     });
 
     it("should reject create payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.rlorTrainerJobs.create.schema.safeParse(
           {}
@@ -122,7 +122,7 @@ describe("fireworks rlor trainer jobs", () => {
     });
 
     it("should validate create payload with training config and reward weights", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.rlorTrainerJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-rlor-dataset",
@@ -146,7 +146,7 @@ describe("fireworks rlor trainer jobs", () => {
     });
 
     it("should expose payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema =
         provider.inference.v1.accounts.rlorTrainerJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
@@ -159,7 +159,7 @@ describe("fireworks rlor trainer jobs", () => {
 
   describe("executeTrainStep validation", () => {
     it("should validate executeTrainStep payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
           {
@@ -172,7 +172,7 @@ describe("fireworks rlor trainer jobs", () => {
     });
 
     it("should reject executeTrainStep payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.rlorTrainerJobs.executeTrainStep.schema.safeParse(
           {}
@@ -183,7 +183,7 @@ describe("fireworks rlor trainer jobs", () => {
     });
 
     it("should expose executeTrainStep payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema =
         provider.inference.v1.accounts.rlorTrainerJobs.executeTrainStep.schema;
       expect(typeof schema.safeParse).toBe("function");
@@ -193,7 +193,7 @@ describe("fireworks rlor trainer jobs", () => {
 
   describe("namespace structure", () => {
     it("should expose create, get, list, delete, executeTrainStep, and resume methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const rlor = provider.inference.v1.accounts.rlorTrainerJobs;
       expect(typeof rlor.create).toBe("function");
       expect(typeof rlor.get).toBe("function");

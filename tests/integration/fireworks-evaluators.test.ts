@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks evaluators", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.evaluators.create.schema.safeParse({
           evaluator: {
@@ -17,7 +17,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should reject create payload missing required evaluator field", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.evaluators.create.schema.safeParse({});
       expect(invalid.success).toBe(false);
@@ -25,7 +25,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should validate create payload with criteria and source", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.evaluators.create.schema.safeParse({
           evaluatorId: "my-eval",
@@ -58,7 +58,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should validate update payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.evaluators.update.schema.safeParse({
           displayName: "Updated Evaluator",
@@ -69,7 +69,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should validate getUploadEndpoint payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.evaluators.getUploadEndpoint.schema.safeParse(
           {
@@ -84,7 +84,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should reject getUploadEndpoint payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.evaluators.getUploadEndpoint.schema.safeParse(
           {}
@@ -94,7 +94,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should expose create payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema = provider.inference.v1.accounts.evaluators.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -103,7 +103,7 @@ describe("fireworks evaluators", () => {
     });
 
     it("should expose update payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema = provider.inference.v1.accounts.evaluators.update.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -112,7 +112,7 @@ describe("fireworks evaluators", () => {
 
   describe("namespace structure", () => {
     it("should expose all evaluator methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const evaluators = provider.inference.v1.accounts.evaluators;
       expect(typeof evaluators.create).toBe("function");
       expect(typeof evaluators.list).toBe("function");

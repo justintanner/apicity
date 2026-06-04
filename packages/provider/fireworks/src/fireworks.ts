@@ -211,7 +211,7 @@ function attachAbortHandler(
   }
 }
 
-export function fireworks(opts: FireworksOptions): FireworksProvider {
+export function createFireworks(opts: FireworksOptions): FireworksProvider {
   const baseURL = opts.baseURL ?? "https://api.fireworks.ai/inference/v1";
   const modelsBaseURL = "https://api.fireworks.ai";
   const audioBaseURL =

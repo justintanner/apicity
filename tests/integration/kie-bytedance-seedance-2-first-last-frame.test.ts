@@ -7,8 +7,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie bytedance/seedance-2 first+last-frame integration", () => {
   let ctx: PollyContext;
@@ -25,7 +25,8 @@ describe("kie bytedance/seedance-2 first+last-frame integration", () => {
         "kie/bytedance-seedance-2-first-last-frame"
       );
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

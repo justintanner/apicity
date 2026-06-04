@@ -17,7 +17,7 @@ pnpm add @apicity/anthropic
 ## Quick Start
 
 ```typescript
-import { anthropic as createAnthropic } from "@apicity/anthropic";
+import { createAnthropic } from "@apicity/anthropic";
 
 const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 ```
@@ -38,7 +38,7 @@ the HAR replayed by
 the typed `@apicity/anthropic` client.
 
 ````typescript
-import { anthropic as createAnthropic } from "@apicity/anthropic";
+import { createAnthropic } from "@apicity/anthropic";
 import type {
   AnthropicMessageResponse,
   AnthropicTextBlock,
@@ -568,7 +568,7 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 ## Middleware
 
 ```typescript
-import { anthropic as createAnthropic, withRetry } from "@apicity/anthropic";
+import { createAnthropic, withRetry } from "@apicity/anthropic";
 
 const anthropic = createAnthropic({ apiKey: process.env.ANTHROPIC_API_KEY! });
 const models = withRetry(anthropic.get.v1.models, { retries: 3 });

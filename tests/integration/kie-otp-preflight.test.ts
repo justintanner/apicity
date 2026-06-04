@@ -1,13 +1,14 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
-import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
-import { kie } from "@apicity/kie";
-import { PayGateError, SpendBoundError } from "@apicity/cost";
-import { canonicalHash } from "../../packages/provider/cost/src/paygate";
-import type { PayGateOtpPayload } from "../../packages/provider/cost/src/paygate";
+import { describe, it, expect } from "vitest";
+import { createHmac } from "node:crypto";
+import { createKie } from "@apicity/kie";
+import { PayGateError, canonicalHash } from "@apicity/cost";
+import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
+// ---------------------------------------------------------------------------
+// Local raw HMAC mint, used only to craft edge-case OTPs the public
+// `mintKieCreateTaskOtp` helper cannot produce (expired exp, wrong secret).
+// Mirrors the envelope format in packages/provider/cost/src/paygate.ts.
+// ---------------------------------------------------------------------------
 function base64urlEncode(data: Buffer): string {
   return data
     .toString("base64")
@@ -16,100 +17,67 @@ function base64urlEncode(data: Buffer): string {
     .replace(/=+$/g, "");
 }
 
-function mintTestOtp(
-  privateKeyPem: string,
-  payload: Omit<PayGateOtpPayload, "v">
-): string {
-  const fullPayload: PayGateOtpPayload = { v: 1, ...payload };
-  const payloadJson = JSON.stringify(fullPayload);
-  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
-  const signature = sign(
-    null,
-    Buffer.from(payloadSegment, "utf8"),
-    privateKeyPem
+function mintRaw(secret: string, payload: Record<string, unknown>): string {
+  const segment = base64urlEncode(
+    Buffer.from(JSON.stringify({ v: 1, ...payload }), "utf8")
   );
-  const signatureSegment = base64urlEncode(signature);
-  return `${payloadSegment}.${signatureSegment}`;
+  const signature = base64urlEncode(
+    createHmac("sha256", secret).update(segment, "utf8").digest()
+  );
+  return `${segment}.${signature}`;
 }
 
-function makeTestDir(): string {
-  const dir = join(
-    tmpdir(),
-    "apicity-paygate-test-" + randomBytes(8).toString("hex")
-  );
-  mkdirSync(dir, { recursive: true });
-  return dir;
+const REQUEST = {
+  model: "grok-imagine/text-to-image",
+  input: {
+    prompt: "test",
+    aspect_ratio: "1:1",
+  },
+};
+
+// Builds a syntactically valid OTP envelope bound to REQUEST but with caller
+// chosen field overrides (used for the expired / wrong-secret cases).
+function craftOtp(
+  secret: string,
+  overrides: Record<string, unknown> = {}
+): string {
+  const now = Math.floor(Date.now() / 1000);
+  return mintRaw(secret, {
+    jti: "test-jti-" + now,
+    provider: "kie",
+    method: "POST",
+    dotPath: "api.v1.jobs.createTask",
+    requestHash: canonicalHash(REQUEST),
+    iat: now,
+    exp: now + 600,
+    ...overrides,
+  });
 }
 
 describe("kie OTP preflight", () => {
-  let publicKeyPem: string;
-  let privateKeyPem: string;
-  let publicKeyPath: string;
-  let testDir: string;
-
-  beforeEach(() => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-    });
-    publicKeyPem = publicKey;
-    privateKeyPem = privateKey;
-    testDir = makeTestDir();
-    publicKeyPath = join(testDir, "public.pem");
-    writeFileSync(publicKeyPath, publicKeyPem, "utf8");
-    process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH = publicKeyPath;
-  });
-
-  afterEach(() => {
-    delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  function makeOtp(
-    payload: Record<string, unknown>,
-    overrides: Partial<PayGateOtpPayload> = {}
-  ): string {
-    const now = Math.floor(Date.now() / 1000);
-    return mintTestOtp(privateKeyPem, {
-      jti: randomBytes(16).toString("hex"),
-      provider: "kie",
-      method: "POST",
-      dotPath: "api.v1.jobs.createTask",
-      requestHash: canonicalHash(payload),
-      maxSpendUsd: 10,
-      iat: now,
-      exp: now + 3600,
-      ...overrides,
-    });
-  }
-
-  it("blocks paid endpoint with missing approval when paygate is not configured", async () => {
-    delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
-    const provider = kie({ apiKey: "test-key" });
-    await expect(
-      provider.post.api.v1.jobs.createTask({
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "test",
-          aspect_ratio: "1:1",
-        },
-      })
-    ).rejects.toThrow(PayGateError);
-  });
-
-  it("blocks paid endpoint with missing approval when paygate is configured", async () => {
-    const provider = kie({ apiKey: "test-key" });
+  // -- No-bypass guarantee: a paid endpoint cannot fire without a configured
+  //    pay gate. ---------------------------------------------------------------
+  it("blocks paid endpoint when paygate is not configured", async () => {
+    const provider = createKie({ apiKey: "test-key" });
     let caught: PayGateError | undefined;
     try {
-      await provider.post.api.v1.jobs.createTask({
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "test",
-          aspect_ratio: "1:1",
-        },
-      });
+      await provider.post.api.v1.jobs.createTask(REQUEST);
+    } catch (error) {
+      caught = error as PayGateError;
+    }
+    expect(caught).toBeInstanceOf(PayGateError);
+    expect(caught!.code).toBe("paygate-not-configured");
+  });
+
+  // -- With paygate but no approval -> otp-missing. ---------------------------
+  it("blocks paid endpoint with missing approval when paygate is configured", async () => {
+    const provider = createKie({
+      apiKey: "test-key",
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    let caught: PayGateError | undefined;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST);
     } catch (error) {
       caught = error as PayGateError;
     }
@@ -117,17 +85,14 @@ describe("kie OTP preflight", () => {
     expect(caught!.code).toBe("otp-missing");
   });
 
-  it("error message names the endpoint and mentions OTP", async () => {
-    const provider = kie({ apiKey: "test-key" });
+  it("error names the endpoint and mentions OTP", async () => {
+    const provider = createKie({
+      apiKey: "test-key",
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
     let caught: PayGateError | undefined;
     try {
-      await provider.post.api.v1.jobs.createTask({
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "test",
-          aspect_ratio: "1:1",
-        },
-      });
+      await provider.post.api.v1.jobs.createTask(REQUEST);
     } catch (error) {
       caught = error as PayGateError;
     }
@@ -137,20 +102,16 @@ describe("kie OTP preflight", () => {
     expect(caught!.dotPath).toBe("api.v1.jobs.createTask");
     expect(caught!.message).toContain("OTP");
   });
+
   it("does not make a network request when approval is missing", async () => {
-    const providerNoNetwork = kie({
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
     let caught: PayGateError | undefined;
     try {
-      await providerNoNetwork.post.api.v1.jobs.createTask({
-        model: "grok-imagine/text-to-image",
-        input: {
-          prompt: "test",
-          aspect_ratio: "1:1",
-        },
-      });
+      await provider.post.api.v1.jobs.createTask(REQUEST);
     } catch (error) {
       caught = error as PayGateError;
     }
@@ -158,129 +119,141 @@ describe("kie OTP preflight", () => {
     expect(caught!.code).toBe("otp-missing");
   });
 
-  it("blocks paid endpoint with invalid OTP", async () => {
-    const provider = kie({
+  // -- Malformed OTP string. --------------------------------------------------
+  it("blocks paid endpoint with a malformed OTP", async () => {
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
-    await expect(
-      provider.post.api.v1.jobs.createTask(
-        {
-          model: "grok-imagine/text-to-image",
-          input: {
-            prompt: "test",
-            aspect_ratio: "1:1",
-          },
-        },
-        { otp: "invalid-otp" }
-      )
-    ).rejects.toThrow(PayGateError);
+    let caught: PayGateError | undefined;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST, {
+        otp: "not-a-valid-otp",
+      });
+    } catch (error) {
+      caught = error as PayGateError;
+    }
+    expect(caught).toBeInstanceOf(PayGateError);
+    expect(caught!.code).toBe("otp-malformed");
   });
 
-  it("allows paid endpoint with valid OTP", async () => {
-    const provider = kie({
+  // -- Wrong secret -> otp-invalid-signature. ---------------------------------
+  it("blocks paid endpoint with an OTP signed by the wrong secret", async () => {
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
-    const payload = {
+    const otp = craftOtp("a-different-secret");
+    let caught: PayGateError | undefined;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp });
+    } catch (error) {
+      caught = error as PayGateError;
+    }
+    expect(caught).toBeInstanceOf(PayGateError);
+    expect(caught!.code).toBe("otp-invalid-signature");
+  });
+
+  // -- OTP minted for a different payload -> otp-mismatched-request. ----------
+  it("blocks paid endpoint when the OTP is bound to a different request", async () => {
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const { otp } = mintKieCreateTaskOtp({
       model: "grok-imagine/text-to-image",
-      input: {
-        prompt: "test",
-        aspect_ratio: "1:1",
-      },
-    };
-    const otp = makeOtp(payload);
+      input: { prompt: "a completely different prompt", aspect_ratio: "16:9" },
+    });
+    let caught: PayGateError | undefined;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp });
+    } catch (error) {
+      caught = error as PayGateError;
+    }
+    expect(caught).toBeInstanceOf(PayGateError);
+    expect(caught!.code).toBe("otp-mismatched-request");
+  });
+
+  // -- Expired OTP -> otp-expired. --------------------------------------------
+  it("blocks paid endpoint with an expired OTP", async () => {
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const otp = craftOtp(TEST_PAYGATE_SECRET, { iat: 1, exp: 2 });
+    let caught: PayGateError | undefined;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp });
+    } catch (error) {
+      caught = error as PayGateError;
+    }
+    expect(caught).toBeInstanceOf(PayGateError);
+    expect(caught!.code).toBe("otp-expired");
+  });
+
+  // -- Replay: single-use jti per provider instance -> otp-replayed. ----------
+  it("blocks a replayed OTP on the same provider instance", async () => {
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const { otp } = mintKieCreateTaskOtp(REQUEST);
+
+    // First use: the OTP verifies and the gate consumes its jti before
+    // dispatch. Dispatch then fails at the (unroutable) network layer, which
+    // is NOT a PayGateError.
+    let first: unknown;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp });
+    } catch (error) {
+      first = error;
+    }
+    expect(first).toBeDefined();
+    expect(first).not.toBeInstanceOf(PayGateError);
+
+    // Second use of the same token: the jti is already consumed.
+    let second: PayGateError | undefined;
+    try {
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp });
+    } catch (error) {
+      second = error as PayGateError;
+    }
+    expect(second).toBeInstanceOf(PayGateError);
+    expect(second!.code).toBe("otp-replayed");
+  });
+
+  // -- Happy path: a valid OTP passes the gate and dispatch runs. The OTP is
+  //    verified locally and never sent over the wire, so this case does not
+  //    require a recording — getting past the gate is proven by the error NOT
+  //    being a PayGateError (it fails at the unroutable network layer). --------
+  it("allows paid endpoint with a valid OTP", async () => {
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const { otp } = mintKieCreateTaskOtp(REQUEST);
     let caught: unknown;
     try {
-      await provider.post.api.v1.jobs.createTask(payload, { otp });
+      await provider.post.api.v1.jobs.createTask(REQUEST, { otp });
     } catch (error) {
       caught = error;
     }
     expect(caught).toBeDefined();
     expect(caught).not.toBeInstanceOf(PayGateError);
-    expect(caught).not.toBeInstanceOf(SpendBoundError);
   });
 
-  it("allows paid endpoint when estimated cost is within OTP maxSpendUsd", async () => {
-    const provider = kie({
+  // -- Sanity: the endpoint still exposes its payload schema. ------------------
+  it("paid endpoint still exposes its payload schema", () => {
+    const provider = createKie({
       apiKey: "test-key",
-      baseURL: "http://localhost:99999",
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
-    const payload = {
-      model: "grok-imagine/text-to-image",
-      input: {
-        prompt: "test",
-        aspect_ratio: "1:1",
-      },
-    };
-    const otp = makeOtp(payload, { maxSpendUsd: 5 });
-    let caught: unknown;
-    try {
-      await provider.post.api.v1.jobs.createTask(payload, { otp });
-    } catch (error) {
-      caught = error;
-    }
-    expect(caught).toBeDefined();
-    expect(caught).not.toBeInstanceOf(PayGateError);
-    expect(caught).not.toBeInstanceOf(SpendBoundError);
-  });
-
-  it("blocks paid endpoint when estimated cost exceeds OTP maxSpendUsd", async () => {
-    const provider = kie({
-      apiKey: "test-key",
-      baseURL: "http://localhost:99999",
-    });
-    const payload = {
-      model: "veo3",
-      prompt: "test",
-      duration: 60,
-    };
-    const otp = makeOtp(payload, { maxSpendUsd: 5 });
-    await expect(
-      provider.post.api.v1.jobs.createTask(payload, { otp })
-    ).rejects.toThrow(SpendBoundError);
-  });
-
-  it("blocks paid endpoint when cost cannot be estimated", async () => {
-    const provider = kie({
-      apiKey: "test-key",
-      baseURL: "http://localhost:99999",
-    });
-    const payload = {
-      model: "totally-unknown-model",
-      input: { prompt: "test" },
-    };
-    const otp = makeOtp(payload);
-    await expect(
-      provider.post.api.v1.jobs.createTask(payload, { otp })
-    ).rejects.toThrow(SpendBoundError);
-  });
-
-  it("SpendBoundError names the endpoint and shows estimated cost", async () => {
-    const provider = kie({
-      apiKey: "test-key",
-      baseURL: "http://localhost:99999",
-    });
-    const payload = {
-      model: "veo3",
-      prompt: "test",
-      duration: 60,
-    };
-    const otp = makeOtp(payload, { maxSpendUsd: 5 });
-    let caught: SpendBoundError | undefined;
-    try {
-      await provider.post.api.v1.jobs.createTask(payload, { otp });
-    } catch (error) {
-      caught = error as SpendBoundError;
-    }
-    expect(caught).toBeInstanceOf(SpendBoundError);
-    expect(caught!.message).toContain("kie POST api.v1.jobs.createTask");
-    expect(caught!.message).toContain("estimated cost");
-    expect(caught!.message).toContain("maxSpendUsd");
-  });
-
-  it("free endpoint with omitted approval proceeds normally", async () => {
-    const provider = kie({ apiKey: "test-key" });
     expect(provider.post.api.v1.jobs.createTask.schema).toBeDefined();
   });
 });

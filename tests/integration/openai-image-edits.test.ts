@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai image edits integration", () => {
   let ctx: PollyContext;
@@ -16,7 +16,7 @@ describe("openai image edits integration", () => {
   });
 
   it("should edit an image with a prompt", async () => {
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 

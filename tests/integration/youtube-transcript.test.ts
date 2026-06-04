@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { youtube } from "@apicity/youtube";
+import { createYouTube } from "@apicity/youtube";
 
 describe("youtube transcripts.get", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("youtube transcripts.get", () => {
 
   it("should return transcript for a public video by id (no credentials)", async () => {
     ctx = setupPolly("youtube/transcript-id");
-    const provider = youtube();
+    const provider = createYouTube();
 
     const result = await provider.transcripts.get({
       videoId: "dQw4w9WgXcQ",
@@ -26,7 +26,7 @@ describe("youtube transcripts.get", () => {
 
   it("should accept a full URL and optional lang", async () => {
     ctx = setupPolly("youtube/transcript-url");
-    const provider = youtube();
+    const provider = createYouTube();
 
     const result = await provider.transcripts.get({
       videoId: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -39,7 +39,7 @@ describe("youtube transcripts.get", () => {
 
   it("should throw a typed error when captions are unavailable", async () => {
     ctx = setupPolly("youtube/transcript-unavailable");
-    const provider = youtube();
+    const provider = createYouTube();
 
     // This video ID is intentionally invalid/unavailable to trigger the
     // "No captions available" or "Could not extract player response" path.

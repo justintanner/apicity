@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal bytedance seedance2p0 text-to-video integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
   });
 
   it("should generate a short 480p video from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -40,7 +40,7 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedance2p0.textToVideo.schema.safeParse({
       prompt: "a serene mountain sunset",
     });
@@ -48,7 +48,7 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
   });
 
   it("should reject payload missing prompt", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedance2p0.textToVideo.schema.safeParse(
       {}
     );
@@ -57,7 +57,7 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
   });
 
   it("should reject payload with invalid resolution", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedance2p0.textToVideo.schema.safeParse({
       prompt: "a cat",
       resolution: "1080p",
@@ -66,7 +66,7 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
   });
 
   it("should reject payload with invalid duration", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedance2p0.textToVideo.schema.safeParse({
       prompt: "a cat",
       duration: "20",
@@ -75,14 +75,14 @@ describe("fal bytedance seedance2p0 text-to-video integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedance2p0.textToVideo.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.bytedance.seedance2p0.textToVideo).toBe(
       provider.post.run.bytedance.seedance2p0.textToVideo
     );

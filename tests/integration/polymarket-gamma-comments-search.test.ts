@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const EVENT_ID = 16167;
 const COMMENT_ID = "2887316";
@@ -15,7 +15,7 @@ describe("polymarket gamma comments + search surface", () => {
 
   it("comments(query) lists comments under an event", async () => {
     ctx = setupPolly("polymarket/gamma-comments-list");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.comments({
       parent_entity_type: "Event",
@@ -34,7 +34,7 @@ describe("polymarket gamma comments + search surface", () => {
 
   it("comments(id) returns the matching comment array", async () => {
     ctx = setupPolly("polymarket/gamma-comments-by-id");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.comments(COMMENT_ID);
 
@@ -46,7 +46,7 @@ describe("polymarket gamma comments + search surface", () => {
 
   it("comments.byUser(address) returns the user's comments", async () => {
     ctx = setupPolly("polymarket/gamma-comments-by-user");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.comments.byUser(USER_ADDRESS, {
       limit: 5,
@@ -57,7 +57,7 @@ describe("polymarket gamma comments + search surface", () => {
 
   it("search(query) returns events + markets + profiles buckets", async () => {
     ctx = setupPolly("polymarket/gamma-search");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.search({
       q: "trump",

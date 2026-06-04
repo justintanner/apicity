@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 import {
   setupPolly,
   teardownPolly,
@@ -27,7 +27,7 @@ describe("alibaba wan videoedit integration", () => {
 
     ctx = setupPolly(recordingName);
 
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
       baseURL:
         process.env.DASHSCOPE_BASE_URL ??
@@ -87,7 +87,7 @@ describe("alibaba wan videoedit integration", () => {
   }, 300_000);
 
   it("should validate wan2.7-videoedit payload via .schema.safeParse", () => {
-    const provider = alibaba({ apiKey: "test-key" });
+    const provider = createAlibaba({ apiKey: "test-key" });
 
     const valid =
       provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(

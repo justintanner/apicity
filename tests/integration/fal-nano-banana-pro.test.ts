@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal nano-banana-pro text-to-image integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal nano-banana-pro text-to-image integration", () => {
   });
 
   it("should generate an image from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });

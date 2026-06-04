@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie qwen2/image-edit integration", () => {
   let ctx: PollyContext;
@@ -13,7 +13,8 @@ describe("kie qwen2/image-edit integration", () => {
   it("should create an image-edit task and poll status", async () => {
     ctx = setupPolly("kie/qwen2-image-edit");
 
-    const provider = kie({
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -45,7 +46,10 @@ describe("kie qwen2/image-edit integration", () => {
   });
 
   it("should validate image-edit payload", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
 
     // image_size and output_format are optional per spec
     const valid = provider.post.api.v1.jobs.createTask.schema.safeParse({
@@ -66,7 +70,10 @@ describe("kie qwen2/image-edit integration", () => {
   });
 
   it("should expose model input schema for qwen2/image-edit", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
     const schema = provider.modelInputSchemas["qwen2/image-edit"];
 
     expect(schema).toBeDefined();

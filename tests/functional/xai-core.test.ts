@@ -1,11 +1,11 @@
 // Unit tests for xAI core provider (xai.ts) — mocked fetch, no real API calls
 import { describe, it, expect } from "vitest";
-import { xai, XaiError } from "../../packages/provider/xai/src/index";
+import { createXai, XaiError } from "../../packages/provider/xai/src/index";
 
 describe("xAI provider core", () => {
   describe("provider initialization", () => {
     it("creates provider with apiKey", () => {
-      const provider = xai({ apiKey: "sk-test-key" });
+      const provider = createXai({ apiKey: "sk-test-key" });
       expect(provider.post).toBeDefined();
       expect(provider.get).toBeDefined();
       expect(provider.delete).toBeDefined();
@@ -15,7 +15,7 @@ describe("xAI provider core", () => {
     });
 
     it("creates provider with custom baseURL", () => {
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-test-key",
         baseURL: "https://custom.api.x.ai/v1",
       });
@@ -23,7 +23,7 @@ describe("xAI provider core", () => {
     });
 
     it("creates provider with managementApiKey", () => {
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-test-key",
         managementApiKey: "sk-mgmt-key",
       });
@@ -31,7 +31,7 @@ describe("xAI provider core", () => {
     });
 
     it("creates provider with custom timeout", () => {
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-test-key",
         timeout: 60000,
       });
@@ -45,7 +45,7 @@ describe("xAI provider core", () => {
           headers: { "Content-Type": "application/json" },
         });
 
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-test-key",
         fetch: mockFetch,
       });
@@ -76,7 +76,7 @@ describe("xAI provider core", () => {
         });
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await provider.get.v1.models();
 
       expect(capturedMethod).toBe("GET");
@@ -102,7 +102,7 @@ describe("xAI provider core", () => {
         });
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await provider.post.v1.chat.completions({
         model: "grok-3-fast",
         messages: [{ role: "user", content: "Hello" }],
@@ -128,7 +128,7 @@ describe("xAI provider core", () => {
         });
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await provider.delete.v1.files("file-123");
 
       expect(capturedMethod).toBe("DELETE");
@@ -145,7 +145,7 @@ describe("xAI provider core", () => {
         });
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await provider.get.v1.responses("resp/123+abc");
 
       expect(capturedUrl).toContain("/responses/resp%2F123%2Babc");
@@ -165,7 +165,7 @@ describe("xAI provider core", () => {
         );
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await provider.get.v1.batches({ limit: 10, pagination_token: "abc123" });
 
       expect(capturedUrl).toContain("limit=10");
@@ -179,7 +179,7 @@ describe("xAI provider core", () => {
           headers: { "Content-Type": "application/json" },
         });
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       const result = await provider.get.v1.models("model-123");
 
       expect((result as { id: string }).id).toBe("model-123");
@@ -195,7 +195,7 @@ describe("xAI provider core", () => {
           }
         );
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       const result = await provider.post.v1.batches({ name: "my-batch" });
 
       expect(result.batch_id).toBe("batch-123");
@@ -211,7 +211,7 @@ describe("xAI provider core", () => {
           }
         );
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await expect(
         provider.post.v1.chat.completions({
           model: "grok-3-fast",
@@ -227,7 +227,7 @@ describe("xAI provider core", () => {
           headers: { "Content-Type": "application/json" },
         });
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await expect(provider.get.v1.models()).rejects.toThrow(XaiError);
     });
 
@@ -241,7 +241,7 @@ describe("xAI provider core", () => {
           }
         );
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await expect(provider.get.v1.models()).rejects.toThrow(XaiError);
     });
 
@@ -252,7 +252,7 @@ describe("xAI provider core", () => {
           headers: { "Content-Type": "application/json" },
         });
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await expect(provider.get.v1.models()).rejects.toThrow(XaiError);
     });
 
@@ -263,7 +263,7 @@ describe("xAI provider core", () => {
           statusText: "Internal Server Error",
         });
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await expect(provider.get.v1.models()).rejects.toThrow(XaiError);
     });
 
@@ -272,7 +272,7 @@ describe("xAI provider core", () => {
         throw new Error("Network request failed");
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       await expect(provider.get.v1.models()).rejects.toThrow(XaiError);
     });
 
@@ -289,7 +289,7 @@ describe("xAI provider core", () => {
         });
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       const controller = new AbortController();
       await provider.get.v1.models(controller.signal);
     });
@@ -301,7 +301,7 @@ describe("xAI provider core", () => {
           headers: { "Content-Type": "application/json" },
         });
 
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-my-key",
         fetch: mockFetch,
         timeout: 5000,
@@ -331,7 +331,7 @@ describe("xAI provider core", () => {
         );
       };
 
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-api-key",
         managementApiKey: "sk-mgmt-key",
         fetch: mockFetch,
@@ -360,7 +360,7 @@ describe("xAI provider core", () => {
         );
       };
 
-      const provider = xai({
+      const provider = createXai({
         apiKey: "sk-api-key",
         fetch: mockFetch,
       });
@@ -397,7 +397,7 @@ describe("xAI provider core", () => {
         );
       };
 
-      const provider = xai({ apiKey: "sk-my-key", fetch: mockFetch });
+      const provider = createXai({ apiKey: "sk-my-key", fetch: mockFetch });
       const blob = new Blob(['{"test": "data"}'], { type: "application/json" });
       const result = await provider.post.v1.files(blob, "test.json", "batch");
 
@@ -410,7 +410,7 @@ describe("xAI provider core", () => {
 
   describe("namespace structure", () => {
     it("has correct post.v1 namespace", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
 
       expect(provider.post.v1.responses).toBeDefined();
       expect(provider.post.v1.chat.completions).toBeDefined();
@@ -428,7 +428,7 @@ describe("xAI provider core", () => {
     });
 
     it("has correct get.v1 namespace", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
 
       expect(provider.get.v1.responses).toBeDefined();
       expect(provider.get.v1.chat.deferredCompletion).toBeDefined();
@@ -443,7 +443,7 @@ describe("xAI provider core", () => {
     });
 
     it("has correct delete.v1 namespace", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
 
       expect(provider.delete.v1.responses).toBeDefined();
       expect(provider.delete.v1.files).toBeDefined();
@@ -451,19 +451,19 @@ describe("xAI provider core", () => {
     });
 
     it("has correct put.v1 namespace", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
 
       expect(provider.put.v1.collections).toBeDefined();
     });
 
     it("has correct patch.v1 namespace", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
 
       expect(provider.patch.v1.collections.documents).toBeDefined();
     });
 
     it("has correct ws.v1 namespace", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
 
       expect(provider.ws.v1.realtime).toBeDefined();
     });
@@ -471,7 +471,7 @@ describe("xAI provider core", () => {
 
   describe("schema and safeParse methods", () => {
     it("has schema on chat.completions", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
       expect(provider.post.v1.chat.completions.schema).toBeDefined();
       expect(typeof provider.post.v1.chat.completions.schema.safeParse).toBe(
         "function"
@@ -479,7 +479,7 @@ describe("xAI provider core", () => {
     });
 
     it("validates valid chat payload via schema.safeParse", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
       const result = provider.post.v1.chat.completions.schema.safeParse({
         messages: [{ role: "user", content: "Hello" }],
       });
@@ -487,7 +487,7 @@ describe("xAI provider core", () => {
     });
 
     it("validates valid responses payload via schema.safeParse", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
       const result = provider.post.v1.responses.schema.safeParse({
         model: "grok-4-fast",
         input: "Hello",
@@ -496,7 +496,7 @@ describe("xAI provider core", () => {
     });
 
     it("validates valid image.generations payload via schema.safeParse", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
       const result = provider.post.v1.images.generations.schema.safeParse({
         prompt: "A red apple",
       });
@@ -504,7 +504,7 @@ describe("xAI provider core", () => {
     });
 
     it("returns validation errors for invalid payload", () => {
-      const provider = xai({ apiKey: "sk-test" });
+      const provider = createXai({ apiKey: "sk-test" });
       const result = provider.post.v1.chat.completions.schema.safeParse({});
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);

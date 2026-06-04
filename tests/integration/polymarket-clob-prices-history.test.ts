@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const TOKEN_ID =
   "78433024518676680431174478322854148606578065650008220678402966840627347604025";
@@ -14,7 +14,7 @@ describe("polymarket clob prices-history", () => {
 
   it("should return a time-price series for an interval", async () => {
     ctx = setupPolly("polymarket/clob-prices-history-interval");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.pricesHistory({
       market: TOKEN_ID,
@@ -33,7 +33,7 @@ describe("polymarket clob prices-history", () => {
 
   it("should accept startTs / endTs / fidelity together", async () => {
     ctx = setupPolly("polymarket/clob-prices-history-window");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.pricesHistory({
       market: TOKEN_ID,

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie download url", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("kie download url", () => {
 
   it("should convert kie CDN URL to temporary download URL", async () => {
     ctx = setupPolly("kie/download-url/convert");
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -33,7 +33,7 @@ describe("kie download url", () => {
   });
 
   it("should validate payload schema for downloadUrl", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: "test-key",
     });
 

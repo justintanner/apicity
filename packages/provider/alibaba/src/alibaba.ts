@@ -25,7 +25,7 @@ import {
 import { sseToIterable } from "./sse";
 import { attachExamples } from "./example";
 
-export function alibaba(opts: AlibabaOptions): AlibabaProvider {
+export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
   const baseURL =
     opts.baseURL ?? "https://dashscope.aliyuncs.com/compatible-mode/v1";
   const nativeBaseURL = (() => {

@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal sora-2 text-to-video integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal sora-2 text-to-video integration", () => {
   });
 
   it("should generate a video from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 900000,
     });
@@ -38,7 +38,7 @@ describe("fal sora-2 text-to-video integration", () => {
   }, 900000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.sora2.textToVideo.schema.safeParse({
       prompt: "wave",
     });
@@ -46,14 +46,14 @@ describe("fal sora-2 text-to-video integration", () => {
   });
 
   it("should reject payload missing prompt", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.sora2.textToVideo.schema.safeParse({});
     expect(v.success).toBe(false);
     expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with invalid duration", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.sora2.textToVideo.schema.safeParse({
       prompt: "wave",
       duration: 5,
@@ -62,7 +62,7 @@ describe("fal sora-2 text-to-video integration", () => {
   });
 
   it("should reject payload with invalid aspect ratio", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.sora2.textToVideo.schema.safeParse({
       prompt: "wave",
       aspect_ratio: "1:1",
@@ -71,14 +71,14 @@ describe("fal sora-2 text-to-video integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.sora2.textToVideo.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.sora2.textToVideo).toBe(
       provider.post.run.sora2.textToVideo
     );

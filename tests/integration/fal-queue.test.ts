@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal queue validation", () => {
   it("should expose queue submit schema", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
     });
     expect(provider.v1.queue.submit.schema).toBeDefined();
@@ -11,7 +11,7 @@ describe("fal queue validation", () => {
   });
 
   it("should validate queue submit params - valid", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
     });
     const result = provider.v1.queue.submit.schema.safeParse({
@@ -22,7 +22,7 @@ describe("fal queue validation", () => {
   });
 
   it("should validate queue submit params - missing required", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
     });
     const result = provider.v1.queue.submit.schema.safeParse({});
@@ -36,7 +36,7 @@ describe("fal queue validation", () => {
   });
 
   it("should validate queue submit params - wrong types", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
     });
     const result = provider.v1.queue.submit.schema.safeParse({
@@ -47,7 +47,7 @@ describe("fal queue validation", () => {
   });
 
   it("should validate queue submit params - invalid priority enum", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
     });
     const result = provider.v1.queue.submit.schema.safeParse({
@@ -59,7 +59,7 @@ describe("fal queue validation", () => {
   });
 
   it("should expose queue namespace methods", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
     });
     expect(typeof provider.v1.queue.submit).toBe("function");
@@ -69,7 +69,7 @@ describe("fal queue validation", () => {
   });
 
   it("should accept custom queueBaseURL", () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
       queueBaseURL: "https://custom-queue.example.com",
     });

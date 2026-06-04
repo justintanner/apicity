@@ -12,7 +12,7 @@ import {
 } from "./zod";
 import { attachExamples } from "./example";
 
-export function elevenlabs(opts: ElevenLabsOptions): ElevenLabsProvider {
+export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const baseURL = opts.baseURL ?? "https://api.elevenlabs.io";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import {
-  fireworks,
+  createFireworks,
   type FireworksChatStreamChunk,
   type FireworksCompletionStreamChunk,
 } from "@apicity/fireworks";
@@ -19,7 +19,7 @@ describe("fireworks streaming integration", () => {
     });
 
     it("should stream chat completion chunks", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const chunks: FireworksChatStreamChunk[] = [];
@@ -52,7 +52,7 @@ describe("fireworks streaming integration", () => {
     });
 
     it("should stream completion chunks", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const chunks: FireworksCompletionStreamChunk[] = [];
@@ -74,7 +74,7 @@ describe("fireworks streaming integration", () => {
 
   describe("schema validation", () => {
     it("should expose payloadSchema on stream methods", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "test-key",
       });
       expect(
@@ -87,7 +87,7 @@ describe("fireworks streaming integration", () => {
     });
 
     it("should validate payloads on stream methods", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "test-key",
       });
       const valid =

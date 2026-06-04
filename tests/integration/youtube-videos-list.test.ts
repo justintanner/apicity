@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { youtube } from "@apicity/youtube";
+import { createYouTube } from "@apicity/youtube";
 
 describe("youtube videos.list", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("youtube videos.list", () => {
 
   it("should list a video by id", async () => {
     ctx = setupPolly("youtube/videos-list");
-    const provider = youtube({
+    const provider = createYouTube({
       accessToken: process.env.YOUTUBE_ACCESS_TOKEN ?? "test-token",
     });
 

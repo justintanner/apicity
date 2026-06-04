@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 describe("polymarket gamma sports surface", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("polymarket gamma sports surface", () => {
 
   it("sports() lists supported sports", async () => {
     ctx = setupPolly("polymarket/gamma-sports-list");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.sports();
 
@@ -24,7 +24,7 @@ describe("polymarket gamma sports surface", () => {
 
   it("sports.marketTypes() lists supported market-type identifiers", async () => {
     ctx = setupPolly("polymarket/gamma-sports-market-types");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.sports.marketTypes();
 

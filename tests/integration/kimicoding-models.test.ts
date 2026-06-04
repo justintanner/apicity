@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kimicoding } from "@apicity/kimicoding";
+import { createKimiCoding } from "@apicity/kimicoding";
 
 describe("kimicoding models integration", () => {
   let ctx: PollyContext;
@@ -15,7 +15,7 @@ describe("kimicoding models integration", () => {
     });
 
     it("should list available models", async () => {
-      const provider = kimicoding({
+      const provider = createKimiCoding({
         apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
       });
 

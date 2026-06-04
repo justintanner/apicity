@@ -108,7 +108,7 @@ export function firstContent(response: OpenAiChatResponse): string {
   return response.choices[0]?.message?.content ?? "";
 }
 
-export function openai(opts: OpenAiOptions): OpenAiProvider {
+export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
   const baseURL = opts.baseURL ?? "https://api.openai.com/v1";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

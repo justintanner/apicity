@@ -5,8 +5,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie happyhorse/text-to-video integration", () => {
   let ctx: PollyContext;
@@ -21,7 +21,8 @@ describe("kie happyhorse/text-to-video integration", () => {
     async () => {
       ctx = setupPolly("kie/happyhorse-text-to-video");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

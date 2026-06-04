@@ -5,8 +5,8 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie grok-imagine video integration", () => {
   let ctx: PollyContext;
@@ -21,7 +21,8 @@ describe("kie grok-imagine video integration", () => {
     });
 
     it("should create a text-to-video task and poll status", async () => {
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -60,7 +61,8 @@ describe("kie grok-imagine video integration", () => {
     });
 
     it("should extend a completed video by task_id", async () => {
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -96,7 +98,8 @@ describe("kie grok-imagine video integration", () => {
     });
 
     it("should upscale a completed video by task_id", async () => {
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

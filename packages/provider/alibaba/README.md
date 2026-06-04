@@ -17,7 +17,7 @@ pnpm add @apicity/alibaba
 ## Quick Start
 
 ```typescript
-import { alibaba as createAlibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 
 const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
 ```
@@ -39,7 +39,7 @@ which is the HAR replayed by
 
 ```typescript
 import { readFileSync } from "node:fs";
-import { alibaba as createAlibaba, AlibabaError } from "@apicity/alibaba";
+import { createAlibaba, AlibabaError } from "@apicity/alibaba";
 import type {
   AlibabaVideoSynthesisSubmitResponse,
   AlibabaTaskStatusResponse,
@@ -303,7 +303,7 @@ Source: [`packages/provider/alibaba/src/alibaba.ts`](src/alibaba.ts)
 ## Middleware
 
 ```typescript
-import { alibaba as createAlibaba, withRetry } from "@apicity/alibaba";
+import { createAlibaba, withRetry } from "@apicity/alibaba";
 
 const alibaba = createAlibaba({ apiKey: process.env.ALIBABA_API_KEY! });
 const models = withRetry(alibaba.get.v1.models, { retries: 3 });

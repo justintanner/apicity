@@ -17,7 +17,7 @@ pnpm add @apicity/kie
 ## Quick Start
 
 ```typescript
-import { kie as createKie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 ```
@@ -38,7 +38,7 @@ so the response shapes match what Kie actually returns.
 
 ```typescript
 import { readFileSync } from "node:fs";
-import { kie as createKie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 
@@ -439,7 +439,7 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 ## Middleware
 
 ```typescript
-import { kie as createKie, withRetry } from "@apicity/kie";
+import { createKie, withRetry } from "@apicity/kie";
 
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 const models = withRetry(kie.get.v1.models, { retries: 3 });

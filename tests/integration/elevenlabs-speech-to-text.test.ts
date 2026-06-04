@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { elevenlabs } from "@apicity/elevenlabs";
+import { createElevenLabs } from "@apicity/elevenlabs";
 import type { ElevenLabsTranscript } from "@apicity/elevenlabs";
 
 describe("elevenlabs v1.speechToText", () => {
@@ -20,7 +20,7 @@ describe("elevenlabs v1.speechToText", () => {
     const mp3Path = resolve(__dirname, "../fixtures/tone.mp3");
     const file = new Blob([readFileSync(mp3Path)], { type: "audio/mp3" });
 
-    const provider = elevenlabs({
+    const provider = createElevenLabs({
       apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
 

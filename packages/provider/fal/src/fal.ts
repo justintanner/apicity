@@ -286,7 +286,7 @@ async function* sseToIterable<T>(res: Response): AsyncIterable<T> {
   }
 }
 
-export function fal(opts: FalOptions): FalProvider {
+export function createFal(opts: FalOptions): FalProvider {
   const baseURL = opts.baseURL ?? "https://api.fal.ai/v1";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

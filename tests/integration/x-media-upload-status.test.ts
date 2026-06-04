@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { x } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const recordingName = "x/media-upload-status";
 
@@ -27,7 +27,7 @@ describe("x get.v2.media.upload (status)", () => {
 
     ctx = setupPolly(recordingName);
 
-    const provider = x({
+    const provider = createX({
       accessToken: process.env.X_ACCESS_TOKEN ?? "x-test-token",
     });
 
@@ -43,7 +43,7 @@ describe("x get.v2.media.upload (status)", () => {
   });
 
   it("exposes the status method", () => {
-    const provider = x({ accessToken: "x-test-token" });
+    const provider = createX({ accessToken: "x-test-token" });
     expect(typeof provider.get.v2.media.upload).toBe("function");
   });
 });

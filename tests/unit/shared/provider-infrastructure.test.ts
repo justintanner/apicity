@@ -1,22 +1,22 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { alibaba } from "../../../packages/provider/alibaba/src/index";
-import { anthropic } from "../../../packages/provider/anthropic/src/index";
-import { dolthub } from "../../../packages/provider/dolthub/src/index";
-import { elevenlabs } from "../../../packages/provider/elevenlabs/src/index";
-import { fal } from "../../../packages/provider/fal/src/index";
-import { fireworks } from "../../../packages/provider/fireworks/src/index";
-import { kie } from "../../../packages/provider/kie/src/index";
-import { kimicoding } from "../../../packages/provider/kimicoding/src/index";
-import { meta } from "../../../packages/provider/meta/src/index";
-import { openai } from "../../../packages/provider/openai/src/index";
-import { polymarket } from "../../../packages/provider/polymarket/src/index";
+import { createAlibaba } from "../../../packages/provider/alibaba/src/index";
+import { createAnthropic } from "../../../packages/provider/anthropic/src/index";
+import { createDoltHub } from "../../../packages/provider/dolthub/src/index";
+import { createElevenLabs } from "../../../packages/provider/elevenlabs/src/index";
+import { createFal } from "../../../packages/provider/fal/src/index";
+import { createFireworks } from "../../../packages/provider/fireworks/src/index";
+import { createKie } from "../../../packages/provider/kie/src/index";
+import { createKimiCoding } from "../../../packages/provider/kimicoding/src/index";
+import { createMeta } from "../../../packages/provider/meta/src/index";
+import { createOpenAi } from "../../../packages/provider/openai/src/index";
+import { createPolymarket } from "../../../packages/provider/polymarket/src/index";
 import {
   withFallback,
   withRetry,
 } from "../../../packages/provider/openai/src/middleware";
-import { x } from "../../../packages/provider/x/src/index";
-import { xai } from "../../../packages/provider/xai/src/index";
-import { youtube } from "../../../packages/provider/youtube/src/index";
+import { createX } from "../../../packages/provider/x/src/index";
+import { createXai } from "../../../packages/provider/xai/src/index";
+import { createYouTube } from "../../../packages/provider/youtube/src/index";
 
 interface SharedRequestOptions {
   baseURL?: string;
@@ -38,7 +38,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/openai/v1",
     expectedUrl: "https://custom.example/openai/v1/models",
     invoke: (opts) =>
-      openai({
+      createOpenAi({
         apiKey: "sk-test-key",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -51,7 +51,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/anthropic",
     expectedUrl: "https://custom.example/anthropic/v1/messages/batches",
     invoke: (opts) =>
-      anthropic({
+      createAnthropic({
         apiKey: "sk-ant-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -69,7 +69,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/xai/v1",
     expectedUrl: "https://custom.example/xai/v1/models",
     invoke: (opts) =>
-      xai({
+      createXai({
         apiKey: "sk-xai-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -82,7 +82,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/fal/v1",
     expectedUrl: "https://custom.example/fal/v1/models",
     invoke: (opts) =>
-      fal({
+      createFal({
         apiKey: "fal-test-key",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -95,7 +95,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/fireworks/v1",
     expectedUrl: "https://custom.example/fireworks/v1/chat/completions",
     invoke: (opts) =>
-      fireworks({
+      createFireworks({
         apiKey: "fw-test-key",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -111,7 +111,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/kimi/",
     expectedUrl: "https://custom.example/kimi/v1/models",
     invoke: (opts) =>
-      kimicoding({
+      createKimiCoding({
         apiKey: "kimi-test-key",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -124,7 +124,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/kie",
     expectedUrl: "https://custom.example/kie/api/v1/common/download-url",
     invoke: (opts) =>
-      kie({
+      createKie({
         apiKey: "kie-test-key",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -141,7 +141,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/alibaba",
     expectedUrl: "https://custom.example/alibaba/models",
     invoke: (opts) =>
-      alibaba({
+      createAlibaba({
         apiKey: "sk-alibaba-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -154,7 +154,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/dolthub",
     expectedUrl: "https://custom.example/dolthub/api/v1alpha1/user",
     invoke: (opts) =>
-      dolthub({
+      createDoltHub({
         apiToken: "dolt-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -167,7 +167,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/elevenlabs",
     expectedUrl: "https://custom.example/elevenlabs/v1/sound-generation",
     invoke: (opts) =>
-      elevenlabs({
+      createElevenLabs({
         apiKey: "el-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -182,7 +182,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/meta",
     expectedUrl: "https://custom.example/meta/v25.0/1234567890",
     invoke: (opts) =>
-      meta({
+      createMeta({
         accessToken: "meta-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -195,7 +195,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/clob",
     expectedUrl: "https://custom.example/clob/time",
     invoke: (opts) =>
-      polymarket({
+      createPolymarket({
         clobBaseURL: opts.baseURL,
         fetch: opts.fetch,
         timeout: opts.timeout,
@@ -208,7 +208,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     expectedUrl:
       "https://custom.example/x/2/media/upload?media_id=1234567890&command=STATUS",
     invoke: (opts) =>
-      x({
+      createX({
         accessToken: "x-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,
@@ -224,7 +224,7 @@ const sharedRequestScenarios: SharedRequestScenario[] = [
     customBaseURL: "https://custom.example/youtube/v3",
     expectedUrl: "https://custom.example/youtube/v3/channels?part=snippet",
     invoke: (opts) =>
-      youtube({
+      createYouTube({
         accessToken: "yt-test",
         baseURL: opts.baseURL,
         fetch: opts.fetch,

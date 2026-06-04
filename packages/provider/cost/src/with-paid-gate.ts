@@ -1,7 +1,8 @@
 import {
   dispatchWithPaidGate,
+  createReplayStore,
   type PayGateApproval,
-  type PayGateIo,
+  type PayGateConfig,
 } from "./paygate";
 import { isPaidEndpoint } from "./paid-endpoints";
 
@@ -19,10 +20,11 @@ export interface WithPaidGateOptions {
    */
   roots?: readonly string[];
   /**
-   * Injectable IO surface forwarded to every gated dispatch. Defaults to
-   * `defaultPayGateIo` (filesystem ledger + env-var key path).
+   * Pay-gate configuration (shared HMAC secret + optional replay store/clock)
+   * forwarded to every gated dispatch. When omitted, paid endpoints fail closed
+   * with `paygate-not-configured`.
    */
-  io?: PayGateIo;
+  config?: PayGateConfig;
 }
 
 // Endpoint leaves may be called with any positional shape — the walker only
@@ -47,11 +49,19 @@ export function withPaidGate<T extends object>(
   opts?: WithPaidGateOptions
 ): T {
   const roots = opts?.roots ?? DEFAULT_ROOTS;
-  const io = opts?.io;
+  // Normalize the config once so every gated dispatch on this provider instance
+  // shares a single replay store (single-use OTPs must be remembered across
+  // calls). A custom store passed by the code client is preserved.
+  const config: PayGateConfig | undefined = opts?.config
+    ? {
+        ...opts.config,
+        replayStore: opts.config.replayStore ?? createReplayStore(),
+      }
+    : undefined;
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(tree)) {
     if (roots.includes(key) && value && typeof value === "object") {
-      out[key] = walk(providerName, [key], value, io);
+      out[key] = walk(providerName, [key], value, config);
     } else {
       out[key] = value;
     }
@@ -63,15 +73,15 @@ function walk(
   providerName: string,
   path: string[],
   node: unknown,
-  io: PayGateIo | undefined
+  config: PayGateConfig | undefined
 ): unknown {
   if (typeof node === "function") {
-    return wrapCallable(providerName, path, node as AnyAsyncFn, io);
+    return wrapCallable(providerName, path, node as AnyAsyncFn, config);
   }
   if (node && typeof node === "object" && !Array.isArray(node)) {
     const out: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(node)) {
-      out[k] = walk(providerName, [...path, k], v, io);
+      out[k] = walk(providerName, [...path, k], v, config);
     }
     return out;
   }
@@ -89,7 +99,7 @@ function wrapCallable(
   providerName: string,
   path: string[],
   fn: AnyAsyncFn,
-  io: PayGateIo | undefined
+  config: PayGateConfig | undefined
 ): AnyAsyncFn {
   const method = path[0]!.toUpperCase();
   const dotPath = path.slice(1).join(".");
@@ -106,7 +116,7 @@ function wrapCallable(
           req as Record<string, unknown>,
           approval,
           () => fn(req),
-          io
+          config
         );
       }
     : fn;
@@ -118,7 +128,7 @@ function wrapCallable(
   const children: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(fn)) {
     if (typeof v === "function") {
-      children[k] = walk(providerName, [...path, k], v, io);
+      children[k] = walk(providerName, [...path, k], v, config);
     } else {
       children[k] = v;
     }

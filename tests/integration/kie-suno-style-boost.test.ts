@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie suno style.generate (boost style)", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("kie suno style.generate (boost style)", () => {
   });
 
   it("submits a style-boost request and returns a recognizable envelope", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

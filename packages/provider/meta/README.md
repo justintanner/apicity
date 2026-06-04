@@ -17,7 +17,7 @@ pnpm add @apicity/meta
 ## Quick Start
 
 ```typescript
-import { meta as createMeta } from "@apicity/meta";
+import { createMeta } from "@apicity/meta";
 
 const meta = createMeta({ apiKey: process.env.META_API_KEY! });
 ```
@@ -147,9 +147,9 @@ server.listen(8765, "127.0.0.1");
 ### 4. Use the token
 
 ```typescript
-import { meta as createMeta } from "@apicity/meta";
+import { createMeta } from "@apicity/meta";
 
-const meta = createIg({ accessToken: process.env.IG_ACCESS_TOKEN });
+const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN });
 const igUserId = process.env.IG_USER_ID;
 
 // Public-URL flow: host the mp4 somewhere (e.g. via @apicity/free-media-upload) and
@@ -192,10 +192,10 @@ once a Business/Creator account's `IG_ACCESS_TOKEN` is recorded.
 
 ```typescript
 import { readFileSync } from "node:fs";
-import { meta as createMeta } from "@apicity/meta";
-import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";
+import { createMeta } from "@apicity/meta";
+import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
-const meta = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });
+const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN! });
 const igUserId = process.env.IG_USER_ID!; // 17-digit numeric, e.g. "17841471234567890"
 
 // 1. Host the mp4 publicly. catbox.moe is auth-free and persistent —
@@ -206,7 +206,7 @@ const igUserId = process.env.IG_USER_ID!; // 17-digit numeric, e.g. "17841471234
 const bytes = readFileSync("./jump.mp4");
 const blob = new Blob([bytes], { type: "video/mp4" });
 
-const freeMediaUpload = createFree({});
+const freeMediaUpload = createFreeMediaUpload({});
 const videoUrl = await free.catbox.upload({
   file: blob,
   filename: "jump.mp4",
@@ -343,7 +343,7 @@ Source: [`packages/provider/meta/src/meta.ts`](src/meta.ts)
 ## Middleware
 
 ```typescript
-import { meta as createMeta, withRetry } from "@apicity/meta";
+import { createMeta, withRetry } from "@apicity/meta";
 
 const meta = createMeta({ apiKey: process.env.META_API_KEY! });
 const models = withRetry(meta.get.v1.models, { retries: 3 });

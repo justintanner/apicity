@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const TOKEN_YES =
   "78433024518676680431174478322854148606578065650008220678402966840627347604025";
@@ -22,7 +22,7 @@ describe("polymarket clob batch POSTs", () => {
 
   it("books returns one orderbook per requested token", async () => {
     ctx = setupPolly("polymarket/clob-books-batch");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.post.clob.books([
       { token_id: TOKEN_YES },
@@ -40,7 +40,7 @@ describe("polymarket clob batch POSTs", () => {
 
   it("prices returns a token→side→price map", async () => {
     ctx = setupPolly("polymarket/clob-prices-batch");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.post.clob.prices([
       { token_id: TOKEN_YES, side: "BUY" },
@@ -55,7 +55,7 @@ describe("polymarket clob batch POSTs", () => {
 
   it("midpoints returns a token→midpoint map", async () => {
     ctx = setupPolly("polymarket/clob-midpoints-batch");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.post.clob.midpoints([
       { token_id: TOKEN_YES },
@@ -68,7 +68,7 @@ describe("polymarket clob batch POSTs", () => {
 
   it("spreads returns a token→spread map", async () => {
     ctx = setupPolly("polymarket/clob-spreads-batch");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.post.clob.spreads([
       { token_id: TOKEN_YES },
@@ -81,7 +81,7 @@ describe("polymarket clob batch POSTs", () => {
 
   it("lastTradesPrices returns one entry per requested token", async () => {
     ctx = setupPolly("polymarket/clob-last-trades-prices-batch");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.post.clob.lastTradesPrices([
       { token_id: TOKEN_YES },
@@ -97,7 +97,7 @@ describe("polymarket clob batch POSTs", () => {
 
   it("batchPricesHistory returns a per-market series map", async () => {
     ctx = setupPolly("polymarket/clob-batch-prices-history");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.post.clob.batchPricesHistory({
       markets: [TOKEN_YES, TOKEN_NO],
@@ -125,7 +125,7 @@ describe("polymarket clob batch POSTs", () => {
       return;
     }
     ctx = setupPolly("polymarket/clob-batch-schemas");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     expect(typeof provider.post.clob.books.schema.parse).toBe("function");
     expect(typeof provider.post.clob.prices.schema.parse).toBe("function");

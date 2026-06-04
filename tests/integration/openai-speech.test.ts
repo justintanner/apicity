@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai speech", () => {
   let ctx: PollyContext;
@@ -12,7 +12,7 @@ describe("openai speech", () => {
   it("should generate speech audio from text", async () => {
     ctx = setupPolly("openai/speech-hello");
 
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
@@ -28,7 +28,7 @@ describe("openai speech", () => {
   });
 
   it("should validate speech payload", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
 
     const valid = provider.post.v1.audio.speech.schema.safeParse({
       model: "tts-1",
@@ -45,7 +45,7 @@ describe("openai speech", () => {
   });
 
   it("should expose speech schema", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
     expect(provider.post.v1.audio.speech.schema).toBeDefined();
     expect(typeof provider.post.v1.audio.speech.schema.safeParse).toBe(
       "function"

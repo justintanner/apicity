@@ -1,4 +1,9 @@
-export { kimicoding, textBlock, imageBase64, imageUrl } from "./kimicoding";
+export {
+  createKimiCoding,
+  textBlock,
+  imageBase64,
+  imageUrl,
+} from "./kimicoding";
 
 export { KimiCodingError } from "./types";
 

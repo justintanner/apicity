@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { x } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const recordingName = "x/media-upload-initialize";
 
@@ -27,7 +27,7 @@ describe("x post.v2.media.upload.initialize", () => {
 
     ctx = setupPolly(recordingName);
 
-    const provider = x({
+    const provider = createX({
       accessToken: process.env.X_ACCESS_TOKEN ?? "x-test-token",
     });
 
@@ -45,7 +45,7 @@ describe("x post.v2.media.upload.initialize", () => {
   });
 
   it("exposes a Zod schema with safeParse", () => {
-    const provider = x({ accessToken: "x-test-token" });
+    const provider = createX({ accessToken: "x-test-token" });
     const endpoint = provider.post.v2.media.upload.initialize;
     expect(endpoint.schema).toBeDefined();
     expect(typeof endpoint.schema.safeParse).toBe("function");

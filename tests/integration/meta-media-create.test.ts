@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { meta } from "@apicity/meta";
+import { createMeta } from "@apicity/meta";
 
 const recordingName = "meta/media-create";
 
@@ -27,7 +27,7 @@ describe("meta post.v25.media", () => {
 
     ctx = setupPolly(recordingName);
 
-    const provider = meta({
+    const provider = createMeta({
       accessToken: process.env.IG_ACCESS_TOKEN ?? "ig-test-token",
     });
 
@@ -47,7 +47,7 @@ describe("meta post.v25.media", () => {
   });
 
   it("exposes a Zod schema with safeParse", () => {
-    const provider = meta({ accessToken: "ig-test-token" });
+    const provider = createMeta({ accessToken: "ig-test-token" });
     const endpoint = provider.post.v25.media;
     expect(endpoint.schema).toBeDefined();
     expect(typeof endpoint.schema.safeParse).toBe("function");

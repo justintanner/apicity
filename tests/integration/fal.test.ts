@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fal, FalError } from "@apicity/fal";
+import { createFal, FalError } from "@apicity/fal";
 
 describe("fal integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("fal integration", () => {
 
   it("should search models", async () => {
     ctx = setupPolly("fal/models-search");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models({ limit: 5 });
@@ -23,7 +23,7 @@ describe("fal integration", () => {
 
   it("should search models by query", async () => {
     ctx = setupPolly("fal/models-search-query");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models({ q: "flux", limit: 3 });
@@ -33,7 +33,7 @@ describe("fal integration", () => {
 
   it("should get pricing for an endpoint", async () => {
     ctx = setupPolly("fal/pricing");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.pricing({
@@ -47,7 +47,7 @@ describe("fal integration", () => {
 
   it("should estimate cost with unit price", async () => {
     ctx = setupPolly("fal/estimate-cost");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.pricing.estimate({
@@ -63,7 +63,7 @@ describe("fal integration", () => {
 
   it("should get usage for an endpoint", async () => {
     ctx = setupPolly("fal/usage");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.usage({
@@ -76,7 +76,7 @@ describe("fal integration", () => {
 
   it("should get analytics for an endpoint", async () => {
     ctx = setupPolly("fal/analytics");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.analytics({
@@ -88,7 +88,7 @@ describe("fal integration", () => {
 
   it("should get requests for an endpoint", async () => {
     ctx = setupPolly("fal/requests");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.requests.byEndpoint({
@@ -102,7 +102,7 @@ describe("fal integration", () => {
 
   it("should list workflows", async () => {
     ctx = setupPolly("fal/workflows-list");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.workflows({ limit: 3 });
@@ -113,7 +113,7 @@ describe("fal integration", () => {
 
   it("should list workflows with search", async () => {
     ctx = setupPolly("fal/workflows-list-search");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.workflows({
@@ -126,7 +126,7 @@ describe("fal integration", () => {
 
   it("should throw validation_error for unknown workflow", async () => {
     ctx = setupPolly("fal/workflows-get");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     try {

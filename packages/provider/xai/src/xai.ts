@@ -96,7 +96,7 @@ function attachAbortHandler(
   }
 }
 
-export function xai(opts: XaiOptions): XaiProvider {
+export function createXai(opts: XaiOptions): XaiProvider {
   const baseURL = opts.baseURL ?? "https://api.x.ai/v1";
   const managementBaseURL =
     opts.managementBaseURL ?? "https://management-api.x.ai/v1";

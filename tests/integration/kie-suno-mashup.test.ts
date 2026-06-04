@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie suno mashup (submit)", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("kie suno mashup (submit)", () => {
   });
 
   it("submits a mashup task and returns a taskId", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

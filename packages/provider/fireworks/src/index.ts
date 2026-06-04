@@ -1,5 +1,5 @@
 // Export main provider function
-export { fireworks } from "./fireworks";
+export { createFireworks } from "./fireworks";
 
 // Export error class
 export { FireworksError } from "./types";

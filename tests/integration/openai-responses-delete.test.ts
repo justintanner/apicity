@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 import type { OpenAiResponseDeleteResponse } from "@apicity/openai";
 
 describe("openai responses delete integration", () => {
@@ -12,7 +12,7 @@ describe("openai responses delete integration", () => {
 
   it("should delete a stored response by ID", async () => {
     ctx = setupPolly("openai/responses-delete");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
@@ -36,7 +36,7 @@ describe("openai responses delete integration", () => {
   });
 
   it("should expose delete endpoint as a plain function", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
     expect(typeof provider.delete.v1.responses).toBe("function");
   });
 });

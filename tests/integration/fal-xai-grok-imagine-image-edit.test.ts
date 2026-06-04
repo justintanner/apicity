@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal xai grok-imagine-image edit integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal xai grok-imagine-image edit integration", () => {
   });
 
   it("should edit an image from a reference", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -42,7 +42,7 @@ describe("fal xai grok-imagine-image edit integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.xai.grokImagineImage.edit.schema.safeParse({
       prompt: "make it glow",
     });
@@ -50,13 +50,13 @@ describe("fal xai grok-imagine-image edit integration", () => {
   });
 
   it("should reject payload missing prompt", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.xai.grokImagineImage.edit.schema.safeParse({});
     expect(v.success).toBe(false);
   });
 
   it("should reject num_images outside 1-4 range", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.xai.grokImagineImage.edit.schema.safeParse({
       prompt: "a cat",
       num_images: 5,
@@ -65,7 +65,7 @@ describe("fal xai grok-imagine-image edit integration", () => {
   });
 
   it("should reject more than 3 image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.xai.grokImagineImage.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: [
@@ -79,7 +79,7 @@ describe("fal xai grok-imagine-image edit integration", () => {
   });
 
   it("should reject invalid resolution", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.xai.grokImagineImage.edit.schema.safeParse({
       prompt: "a cat",
       resolution: "4k",
@@ -88,14 +88,14 @@ describe("fal xai grok-imagine-image edit integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.xai.grokImagineImage.edit.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.xai.grokImagineImage.edit).toBe(
       provider.post.run.xai.grokImagineImage.edit
     );

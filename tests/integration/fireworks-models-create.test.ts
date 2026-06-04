@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks models create integration", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.models.create.schema.safeParse({
           modelId: "my-custom-model",
@@ -15,7 +15,7 @@ describe("fireworks models create integration", () => {
     });
 
     it("should reject create payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const invalid =
         provider.inference.v1.accounts.models.create.schema.safeParse({});
       expect(invalid.success).toBe(false);
@@ -24,7 +24,7 @@ describe("fireworks models create integration", () => {
     });
 
     it("should validate create payload with optional cluster field", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.models.create.schema.safeParse({
           modelId: "my-custom-model",
@@ -36,7 +36,7 @@ describe("fireworks models create integration", () => {
     });
 
     it("should expose create payload schema", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const schema = provider.inference.v1.accounts.models.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const TOKEN_ID =
   "78433024518676680431174478322854148606578065650008220678402966840627347604025";
@@ -16,7 +16,7 @@ describe("polymarket clob markets surface", () => {
 
   it("markets() lists markets with cursor pagination", async () => {
     ctx = setupPolly("polymarket/clob-markets-list");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.markets();
 
@@ -37,7 +37,7 @@ describe("polymarket clob markets surface", () => {
 
   it("markets(conditionId) retrieves a single market", async () => {
     ctx = setupPolly("polymarket/clob-markets-by-id");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const m = await provider.get.clob.markets(CONDITION_ID);
 
@@ -53,7 +53,7 @@ describe("polymarket clob markets surface", () => {
 
   it("samplingMarkets() returns active markets only", async () => {
     ctx = setupPolly("polymarket/clob-sampling-markets");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.samplingMarkets();
 
@@ -66,7 +66,7 @@ describe("polymarket clob markets surface", () => {
 
   it("simplifiedMarkets() returns the leaner shape", async () => {
     ctx = setupPolly("polymarket/clob-simplified-markets");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.simplifiedMarkets();
 
@@ -81,7 +81,7 @@ describe("polymarket clob markets surface", () => {
 
   it("samplingSimplifiedMarkets() returns active simplified markets", async () => {
     ctx = setupPolly("polymarket/clob-sampling-simplified-markets");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.samplingSimplifiedMarkets();
 
@@ -92,7 +92,7 @@ describe("polymarket clob markets surface", () => {
 
   it("marketsByToken(tokenId) returns the condition + token pair", async () => {
     ctx = setupPolly("polymarket/clob-markets-by-token");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.marketsByToken(TOKEN_ID);
 
@@ -104,7 +104,7 @@ describe("polymarket clob markets surface", () => {
 
   it("clobMarkets(conditionId) returns the compact form", async () => {
     ctx = setupPolly("polymarket/clob-clob-markets");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.clob.clobMarkets(CONDITION_ID);
 

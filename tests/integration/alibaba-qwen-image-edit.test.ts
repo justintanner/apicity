@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
 describe("alibaba qwen multimodal image editing integration", () => {
@@ -15,7 +15,7 @@ describe("alibaba qwen multimodal image editing integration", () => {
   it("should edit a single image and return image URLs synchronously", async () => {
     ctx = setupPolly("alibaba/qwen-image-edit-single");
 
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
@@ -49,7 +49,7 @@ describe("alibaba qwen multimodal image editing integration", () => {
   }, 300_000);
 
   it("should validate multimodal-generation payload via .schema.safeParse", () => {
-    const provider = alibaba({ apiKey: "test-key" });
+    const provider = createAlibaba({ apiKey: "test-key" });
     const schema =
       provider.post.api.v1.services.aigc.multimodalGeneration.generation.schema;
 

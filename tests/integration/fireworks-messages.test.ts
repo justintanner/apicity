@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks messages integration", () => {
   let ctx: PollyContext;
@@ -15,7 +15,7 @@ describe("fireworks messages integration", () => {
     });
 
     it("should send a messages request", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.messages({
@@ -41,7 +41,7 @@ describe("fireworks messages integration", () => {
     });
 
     it("should stream a messages response", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const events: unknown[] = [];
@@ -61,7 +61,7 @@ describe("fireworks messages integration", () => {
 
   describe("schema validation", () => {
     it("should validate a valid payload", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "test-key",
       });
       const result = provider.inference.v1.messages.schema.safeParse({
@@ -73,7 +73,7 @@ describe("fireworks messages integration", () => {
     });
 
     it("should reject a payload missing model", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "test-key",
       });
       const result = provider.inference.v1.messages.schema.safeParse({
@@ -84,7 +84,7 @@ describe("fireworks messages integration", () => {
     });
 
     it("should expose payloadSchema", () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: "test-key",
       });
       expect(typeof provider.inference.v1.messages.schema.safeParse).toBe(

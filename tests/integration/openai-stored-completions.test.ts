@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 import type {
   OpenAiStoredCompletionListResponse,
   OpenAiStoredCompletionMessageListResponse,
@@ -15,7 +15,7 @@ describe("openai stored completions integration", () => {
 
   it("should list stored completions", async () => {
     ctx = setupPolly("openai/stored-completions-list");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
@@ -29,7 +29,7 @@ describe("openai stored completions integration", () => {
 
   it("should list stored completions with limit", async () => {
     ctx = setupPolly("openai/stored-completions-list-limit");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
@@ -42,7 +42,7 @@ describe("openai stored completions integration", () => {
 
   it("should list messages of a stored completion", async () => {
     ctx = setupPolly("openai/stored-completions-messages");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
@@ -75,7 +75,7 @@ describe("openai stored completions integration", () => {
 
 describe("openai stored completions payload validation", () => {
   it("should expose schema on post method", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
     expect(provider.post.v1.chat.completions.schema).toBeDefined();
     expect(typeof provider.post.v1.chat.completions.schema.safeParse).toBe(
       "function"
@@ -83,7 +83,7 @@ describe("openai stored completions payload validation", () => {
   });
 
   it("should validate a valid chat completion payload", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
     const result = provider.post.v1.chat.completions.schema.safeParse({
       messages: [{ role: "user", content: "Hello" }],
     });
@@ -91,14 +91,14 @@ describe("openai stored completions payload validation", () => {
   });
 
   it("should reject payload missing messages", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
     const result = provider.post.v1.chat.completions.schema.safeParse({});
     expect(result.success).toBe(false);
     expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
   it("should expose delete endpoint as a plain function", () => {
-    const provider = openai({ apiKey: "sk-test-key" });
+    const provider = createOpenAi({ apiKey: "sk-test-key" });
     expect(typeof provider.delete.v1.chat.completions).toBe("function");
   });
 });

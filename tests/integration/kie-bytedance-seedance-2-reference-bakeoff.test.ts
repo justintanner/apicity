@@ -7,8 +7,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Seedance 2 (the non-fast tier) as a separate
 // column from Seedance 2 Fast. Same fixtures, same scene, same prompt — only
@@ -58,7 +58,8 @@ describe("kie bytedance/seedance-2 reference bake-off", () => {
         "kie/bytedance-seedance-2-reference-bakeoff"
       );
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

@@ -5,8 +5,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie grok-imagine full lifecycle", () => {
   let ctx: PollyContext;
@@ -20,7 +20,8 @@ describe("kie grok-imagine full lifecycle", () => {
     { timeout: 660_000 },
     async () => {
       ctx = setupPolly("kie/grok-imagine-lifecycle/step-1-text-to-image");
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -76,7 +77,8 @@ describe("kie grok-imagine full lifecycle", () => {
     { timeout: 660_000 },
     async () => {
       ctx = setupPolly("kie/grok-imagine-lifecycle/step-2-image-to-image");
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

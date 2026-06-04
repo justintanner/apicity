@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie suno music generation integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("kie suno music generation integration", () => {
 
   it("should submit a music generation request via Suno", async () => {
     ctx = setupPolly("kie/suno-generate-vocal");
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -35,7 +35,7 @@ describe("kie suno music generation integration", () => {
 
   it("should support instrumental music generation", async () => {
     ctx = setupPolly("kie/suno-generate-instrumental");
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -51,7 +51,7 @@ describe("kie suno music generation integration", () => {
   });
 
   it("rejects sunoGenerate payload missing required fields", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 

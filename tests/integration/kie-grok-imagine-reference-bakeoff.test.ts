@@ -7,8 +7,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Grok Imagine half of the pair.
 // Companion to kie-wan-27-r2v-reference-bakeoff.test.ts. Both tests use the
@@ -57,7 +57,8 @@ describe("kie grok-imagine reference bake-off", () => {
     async () => {
       ctx = setupPollyForFileUploads("kie/grok-imagine-reference-bakeoff");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

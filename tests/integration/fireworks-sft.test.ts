@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks supervised fine-tuning integration", () => {
   describe("schema validation", () => {
     it("should expose payloadSchema on create", () => {
-      const provider = fireworks({ apiKey: "fw-test-key" });
+      const provider = createFireworks({ apiKey: "fw-test-key" });
       const schema =
         provider.inference.v1.accounts.supervisedFineTuningJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
@@ -14,7 +14,7 @@ describe("fireworks supervised fine-tuning integration", () => {
     });
 
     it("should validate a valid create payload", () => {
-      const provider = fireworks({ apiKey: "fw-test-key" });
+      const provider = createFireworks({ apiKey: "fw-test-key" });
       const result =
         provider.inference.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse(
           {
@@ -29,7 +29,7 @@ describe("fireworks supervised fine-tuning integration", () => {
     });
 
     it("should reject a payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "fw-test-key" });
+      const provider = createFireworks({ apiKey: "fw-test-key" });
       const result =
         provider.inference.v1.accounts.supervisedFineTuningJobs.create.schema.safeParse(
           {
@@ -42,7 +42,7 @@ describe("fireworks supervised fine-tuning integration", () => {
     });
 
     it("should have supervised fine-tuning namespace with all methods", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       expect(
         provider.inference.v1.accounts.supervisedFineTuningJobs
       ).toBeDefined();

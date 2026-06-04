@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 
 import {
   verifyOtp,
@@ -7,29 +7,28 @@ import {
   type PayGateOtpPayload,
 } from "../../packages/provider/cost/src/paygate";
 
-function base64urlEncode(data: Buffer): string {
-  return data
+function b64url(b: Buffer): string {
+  return b
     .toString("base64")
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/g, "");
 }
 
+function mintRaw(secret: string, payload: PayGateOtpPayload): string {
+  const seg = b64url(Buffer.from(JSON.stringify(payload), "utf8"));
+  const sig = b64url(createHmac("sha256", secret).update(seg).digest());
+  return `${seg}.${sig}`;
+}
+
 function mintTestOtp(
-  privateKeyPem: string,
+  secret: string,
   payload: Omit<PayGateOtpPayload, "v">
 ): string {
-  const fullPayload: PayGateOtpPayload = { v: 1, ...payload };
-  const payloadJson = JSON.stringify(fullPayload);
-  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
-  const signature = sign(
-    null,
-    Buffer.from(payloadSegment, "utf8"),
-    privateKeyPem
-  );
-  const signatureSegment = base64urlEncode(signature);
-  return `${payloadSegment}.${signatureSegment}`;
+  return mintRaw(secret, { v: 1, ...payload });
 }
+
+const SECRET = "test-secret";
 
 const expected = {
   provider: "kie",
@@ -37,46 +36,35 @@ const expected = {
   dotPath: "api.v1.jobs.createTask",
 };
 
-function freshKeys() {
-  const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-    publicKeyEncoding: { type: "spki", format: "pem" },
-    privateKeyEncoding: { type: "pkcs8", format: "pem" },
-  });
-  return { publicKey, privateKey };
-}
-
 const noJtiConsumed = () => false;
 const alwaysJtiConsumed = () => true;
 
 describe("verifyOtp — pure tagged-union verifier", () => {
   it("returns ok for a fresh, well-formed OTP that binds to the expected call", () => {
-    const { publicKey, privateKey } = freshKeys();
     const payload = { model: "grok-imagine/text-to-image", input: {} };
     const payloadHash = canonicalHash(payload);
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintTestOtp(SECRET, {
       jti: "jti-1",
       ...expected,
       requestHash: payloadHash,
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
     const result = verifyOtp({
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash,
       otp,
       isJtiConsumed: noJtiConsumed,
     });
-    expect(result).toEqual({ ok: true, jti: "jti-1", maxSpendUsd: 5 });
+    expect(result).toEqual({ ok: true, jti: "jti-1" });
   });
 
   it("returns otp-malformed for envelope with no dot", () => {
-    const { publicKey } = freshKeys();
     const result = verifyOtp({
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash({}),
       otp: "not-a-valid-envelope",
@@ -87,20 +75,17 @@ describe("verifyOtp — pure tagged-union verifier", () => {
   });
 
   it("returns otp-invalid-signature when signed by the wrong key", () => {
-    const { publicKey } = freshKeys();
-    const { privateKey: otherKey } = freshKeys();
     const payload = { model: "x" };
-    const otp = mintTestOtp(otherKey, {
+    const otp = mintTestOtp("other-secret", {
       jti: "jti-1",
       ...expected,
       requestHash: canonicalHash(payload),
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
     const result = verifyOtp({
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash(payload),
       otp,
@@ -111,19 +96,17 @@ describe("verifyOtp — pure tagged-union verifier", () => {
   });
 
   it("returns otp-expired when nowSeconds is past exp", () => {
-    const { publicKey, privateKey } = freshKeys();
     const payload = { model: "x" };
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintTestOtp(SECRET, {
       jti: "jti-1",
       ...expected,
       requestHash: canonicalHash(payload),
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 1100,
     });
     const result = verifyOtp({
       nowSeconds: 2000,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash(payload),
       otp,
@@ -134,21 +117,19 @@ describe("verifyOtp — pure tagged-union verifier", () => {
   });
 
   it("returns otp-mismatched-request for wrong provider/method/dotPath", () => {
-    const { publicKey, privateKey } = freshKeys();
     const payload = { model: "x" };
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintTestOtp(SECRET, {
       jti: "jti-1",
       provider: "other",
       method: "POST",
       dotPath: "api.v1.jobs.createTask",
       requestHash: canonicalHash(payload),
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
     const result = verifyOtp({
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash(payload),
       otp,
@@ -159,19 +140,17 @@ describe("verifyOtp — pure tagged-union verifier", () => {
   });
 
   it("returns otp-mismatched-request when the request hash differs", () => {
-    const { publicKey, privateKey } = freshKeys();
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintTestOtp(SECRET, {
       jti: "jti-1",
       ...expected,
       requestHash:
         "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
     const result = verifyOtp({
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash({ model: "different" }),
       otp,
@@ -182,19 +161,17 @@ describe("verifyOtp — pure tagged-union verifier", () => {
   });
 
   it("returns otp-replayed when the ledger lookup says the jti is consumed", () => {
-    const { publicKey, privateKey } = freshKeys();
     const payload = { model: "x" };
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintTestOtp(SECRET, {
       jti: randomBytes(16).toString("hex"),
       ...expected,
       requestHash: canonicalHash(payload),
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
     const result = verifyOtp({
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash(payload),
       otp,
@@ -205,19 +182,17 @@ describe("verifyOtp — pure tagged-union verifier", () => {
   });
 
   it("is referentially transparent — same inputs return equal results", () => {
-    const { publicKey, privateKey } = freshKeys();
     const payload = { model: "x" };
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintTestOtp(SECRET, {
       jti: "jti-stable",
       ...expected,
       requestHash: canonicalHash(payload),
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
     const input = {
       nowSeconds: 1500,
-      publicKeyPem: publicKey,
+      secret: SECRET,
       expected,
       payloadHash: canonicalHash(payload),
       otp,

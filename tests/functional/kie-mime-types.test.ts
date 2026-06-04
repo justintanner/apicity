@@ -1,6 +1,6 @@
 // Tests for Kie MIME type utilities — pure functions, no API calls
 import { describe, it, expect } from "vitest";
-import { kie } from "../../packages/provider/kie/src/kie";
+import { createKie } from "../../packages/provider/kie/src/kie";
 
 describe("kie inferMimeType", () => {
   // Helper to create a mock fetch that returns a fresh Response each call
@@ -14,7 +14,7 @@ describe("kie inferMimeType", () => {
     });
 
   it("infers image/jpeg for jpg extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -30,7 +30,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers image/jpeg for jpeg extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -45,7 +45,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers image/png for png extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -60,7 +60,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers image/gif for gif extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -75,7 +75,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers image/webp for webp extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -90,7 +90,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers video/mp4 for mp4 extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -105,7 +105,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers audio/mpeg for mp3 extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -120,7 +120,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("is case insensitive for extensions", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -143,7 +143,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("throws error for unknown extension without explicit mimeType", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(() => new Response("", { status: 200 })),
     });
@@ -158,7 +158,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("uses last extension for multiple dots in filename", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -174,7 +174,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("throws error for filename without extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(() => new Response("", { status: 200 })),
     });
@@ -189,7 +189,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("uses explicit mimeType when provided", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -206,7 +206,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers image/svg+xml for svg extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -221,7 +221,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers video/quicktime for mov extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -236,7 +236,7 @@ describe("kie inferMimeType", () => {
   });
 
   it("infers audio/wav for wav extension", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -262,7 +262,7 @@ describe("kie fileBase64Upload with inferMimeType", () => {
     });
 
   it("sends mimeType when provided for base64 uploads", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -276,7 +276,7 @@ describe("kie fileBase64Upload with inferMimeType", () => {
   });
 
   it("proceeds without mimeType when not provided for base64 uploads", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });
@@ -290,7 +290,7 @@ describe("kie fileBase64Upload with inferMimeType", () => {
   });
 
   it("uses explicit mimeType when provided for base64", async () => {
-    const p = kie({
+    const p = createKie({
       apiKey: "test",
       fetch: mockFetch(successResponse),
     });

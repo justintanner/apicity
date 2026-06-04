@@ -1,60 +1,6 @@
-import { describe, it, expect, vi, beforeAll, afterAll } from "vitest";
-import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
-import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
-import { canonicalHash } from "../../packages/provider/cost/src/paygate";
-import { kie } from "../../packages/provider/kie/src/kie";
-
-function base64urlEncode(data: Buffer): string {
-  return data
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
-function mintTestOtp(
-  privateKeyPem: string,
-  payload: Record<string, unknown>
-): string {
-  const payloadJson = JSON.stringify({ v: 1, ...payload });
-  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
-  const signature = sign(
-    null,
-    Buffer.from(payloadSegment, "utf8"),
-    privateKeyPem
-  );
-  const signatureSegment = base64urlEncode(signature);
-  return `${payloadSegment}.${signatureSegment}`;
-}
-
-let privateKeyPem: string;
-let publicKeyPath: string;
-let testDir: string;
-
-beforeAll(() => {
-  const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-    publicKeyEncoding: { type: "spki", format: "pem" },
-    privateKeyEncoding: { type: "pkcs8", format: "pem" },
-  });
-  privateKeyPem = privateKey;
-  testDir = join(
-    tmpdir(),
-    "apicity-paygate-test-" + randomBytes(8).toString("hex")
-  );
-  mkdirSync(testDir, { recursive: true });
-  publicKeyPath = join(testDir, "public.pem");
-  writeFileSync(publicKeyPath, publicKey, "utf8");
-  process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH = publicKeyPath;
-});
-
-afterAll(() => {
-  delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
-  if (existsSync(testDir)) {
-    rmSync(testDir, { recursive: true, force: true });
-  }
-});
+import { describe, it, expect, vi } from "vitest";
+import { createKie } from "@apicity/kie";
+import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
 
 describe("KIE provider switching", () => {
   it("routes Veo requests through the veo namespace", async () => {
@@ -64,7 +10,7 @@ describe("KIE provider switching", () => {
       })
     );
 
-    const provider = kie({
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
@@ -91,7 +37,7 @@ describe("KIE provider switching", () => {
       })
     );
 
-    const provider = kie({
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
@@ -122,7 +68,7 @@ describe("KIE provider switching", () => {
       })
     );
 
-    const provider = kie({
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
@@ -149,10 +95,11 @@ describe("KIE provider switching", () => {
       })
     );
 
-    const provider = kie({
+    const provider = createKie({
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
     const payload = {
@@ -169,17 +116,11 @@ describe("KIE provider switching", () => {
     const validationResult =
       provider.post.api.v1.jobs.createTask.schema.safeParse(payload);
     expect(validationResult.success).toBe(true);
-    const otp = mintTestOtp(privateKeyPem, {
-      jti: randomBytes(16).toString("hex"),
-      provider: "kie",
-      method: "POST",
-      dotPath: "api.v1.jobs.createTask",
-      requestHash: canonicalHash(payload as unknown as Record<string, unknown>),
-      maxSpendUsd: 100,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 3600,
-    });
-    await provider.post.api.v1.jobs.createTask(payload, { otp });
+
+    await provider.post.api.v1.jobs.createTask(
+      payload,
+      mintKieCreateTaskOtp(payload)
+    );
 
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");

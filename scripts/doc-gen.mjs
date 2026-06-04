@@ -164,7 +164,7 @@ function renderXaiRateLimiting() {
     "",
     "```typescript",
     "import {",
-    "  xai as createXai,",
+    "  createXai,",
     "  withRateLimit,",
     "  withRetry,",
     "  createRateLimiter,",
@@ -377,7 +377,7 @@ function renderXSetup() {
     "### 4. Use the token",
     "",
     "```typescript",
-    'import { x as createX } from "@apicity/x";',
+    'import { createX } from "@apicity/x";',
     "",
     "const x = createX({ accessToken: process.env.X_ACCESS_TOKEN });",
     "",
@@ -406,7 +406,7 @@ function renderXExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { x as createX } from "@apicity/x";',
+    'import { createX } from "@apicity/x";',
     "",
     "const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });",
     "",
@@ -492,7 +492,7 @@ function renderXaiExample() {
     "",
     "```typescript",
     'import { readFile } from "node:fs/promises";',
-    'import { xai as createXai } from "@apicity/xai";',
+    'import { createXai } from "@apicity/xai";',
     "",
     "const xai = createXai({ apiKey: process.env.XAI_API_KEY! });",
     "",
@@ -619,7 +619,7 @@ function renderFalExample() {
     "",
     "```typescript",
     'import { readFile } from "node:fs/promises";',
-    'import { fal as createFal } from "@apicity/fal";',
+    'import { createFal } from "@apicity/fal";',
     "",
     "const fal = createFal({ apiKey: process.env.FAL_API_KEY! });",
     "",
@@ -719,7 +719,7 @@ function renderKieExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { kie as createKie } from "@apicity/kie";',
+    'import { createKie } from "@apicity/kie";',
     "",
     "const kie = createKie({ apiKey: process.env.KIE_API_KEY! });",
     "",
@@ -856,10 +856,10 @@ function renderElevenlabsExample() {
     "",
     "```typescript",
     'import { readFileSync, writeFileSync } from "node:fs";',
-    'import { elevenlabs as createElevenlabs } from "@apicity/elevenlabs";',
+    'import { createElevenLabs } from "@apicity/elevenlabs";',
     'import type { ElevenLabsTranscript } from "@apicity/elevenlabs";',
     "",
-    "const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! });",
+    "const elevenlabs = createElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY! });",
     "",
     "// 1. Generate a 0.5s UI click. soundGeneration returns the raw MP3 as",
     "//    an ArrayBuffer — there's no JSON wrapper, the response body is",
@@ -980,10 +980,10 @@ function renderIgExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { meta as createMeta } from "@apicity/meta";',
-    'import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";',
+    'import { createMeta } from "@apicity/meta";',
+    'import { createFreeMediaUpload } from "@apicity/free-media-upload";',
     "",
-    "const meta = createIg({ accessToken: process.env.IG_ACCESS_TOKEN! });",
+    "const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN! });",
     'const igUserId = process.env.IG_USER_ID!; // 17-digit numeric, e.g. "17841471234567890"',
     "",
     "// 1. Host the mp4 publicly. catbox.moe is auth-free and persistent —",
@@ -994,7 +994,7 @@ function renderIgExample() {
     'const bytes = readFileSync("./jump.mp4");',
     'const blob = new Blob([bytes], { type: "video/mp4" });',
     "",
-    "const freeMediaUpload = createFree({});",
+    "const freeMediaUpload = createFreeMediaUpload({});",
     "const videoUrl = await free.catbox.upload({",
     "  file: blob,",
     '  filename: "jump.mp4",',
@@ -1203,9 +1203,9 @@ function renderIgSetup() {
     "### 4. Use the token",
     "",
     "```typescript",
-    'import { meta as createMeta } from "@apicity/meta";',
+    'import { createMeta } from "@apicity/meta";',
     "",
-    "const meta = createIg({ accessToken: process.env.IG_ACCESS_TOKEN });",
+    "const meta = createMeta({ accessToken: process.env.IG_ACCESS_TOKEN });",
     "const igUserId = process.env.IG_USER_ID;",
     "",
     "// Public-URL flow: host the mp4 somewhere (e.g. via @apicity/free-media-upload) and",
@@ -1261,7 +1261,7 @@ function renderAlibabaExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { alibaba as createAlibaba, AlibabaError } from "@apicity/alibaba";',
+    'import { createAlibaba, AlibabaError } from "@apicity/alibaba";',
     "import type {",
     "  AlibabaVideoSynthesisSubmitResponse,",
     "  AlibabaTaskStatusResponse,",
@@ -1435,7 +1435,7 @@ function renderAnthropicExample() {
     "the typed `@apicity/anthropic` client.",
     "",
     "````typescript",
-    'import { anthropic as createAnthropic } from "@apicity/anthropic";',
+    'import { createAnthropic } from "@apicity/anthropic";',
     "import type {",
     "  AnthropicMessageResponse,",
     "  AnthropicTextBlock,",
@@ -1591,7 +1591,7 @@ function renderFireworksExample() {
     "the recorded HARs.",
     "",
     "```typescript",
-    'import { fireworks as createFireworks } from "@apicity/fireworks";',
+    'import { createFireworks } from "@apicity/fireworks";',
     "import type {",
     "  FireworksRerankResponse,",
     "  FireworksChatStreamChunk,",
@@ -1745,7 +1745,7 @@ function renderFreeExample() {
     "",
     "```typescript",
     'import { readFileSync } from "node:fs";',
-    'import { freeMediaUpload as createFreeMediaUpload } from "@apicity/free-media-upload";',
+    'import { createFreeMediaUpload } from "@apicity/free-media-upload";',
     'import type { GofileUploadResponse, UguuUploadResponse, FilebinUploadResponse } from "@apicity/free-media-upload";',
     "",
     "// 1. The factory takes no api key — every host below is genuinely",
@@ -1841,7 +1841,7 @@ function renderFreeExample() {
     "during traffic spikes) but you don't care which one wins.",
     "",
     "```typescript",
-    'import { free as createFree, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";',
+    'import { createFreeMediaUpload, uploadToAnyHost, FreeMediaUploadError } from "@apicity/free-media-upload";',
     "",
     "const freeMediaUpload = createFreeMediaUpload();",
     'const file = new Blob([bytes], { type: "image/jpeg" });',
@@ -1931,10 +1931,30 @@ const PROVIDER_DOCS = {
   polymarket: "https://docs.polymarket.com/api-reference/introduction",
 };
 
+const CANONICAL_FACTORY = {
+  openai: "createOpenAi",
+  xai: "createXai",
+  fal: "createFal",
+  anthropic: "createAnthropic",
+  fireworks: "createFireworks",
+  alibaba: "createAlibaba",
+  kimicoding: "createKimiCoding",
+  kie: "createKie",
+  "free-media-upload": "createFreeMediaUpload",
+  cost: "createCost",
+  elevenlabs: "createElevenLabs",
+  meta: "createMeta",
+  x: "createX",
+  youtube: "createYouTube",
+  dolthub: "createDoltHub",
+  polymarket: "createPolymarket",
+};
+
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
   const pkgName = pkg.name || `@apicity/${providerName}`;
-  const factory = `create${capitalize(providerName)}`;
+  const factory =
+    CANONICAL_FACTORY[providerName] ?? `create${capitalize(providerName)}`;
   const auth = PROVIDER_AUTH[providerName] ?? {};
   const authField = auth.field ?? "apiKey";
   const envKey = auth.env ?? `${providerName.toUpperCase()}_API_KEY`;
@@ -1977,7 +1997,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("## Quick Start");
   sections.push("");
   sections.push("```typescript");
-  sections.push(`import { ${providerName} as ${factory} } from "${pkgName}";`);
+  sections.push(`import { ${factory} } from "${pkgName}";`);
   sections.push("");
   if (noAuth) {
     sections.push(`const ${providerName} = ${factory}();`);
@@ -2037,9 +2057,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push("## Middleware");
     sections.push("");
     sections.push("```typescript");
-    sections.push(
-      `import { ${providerName} as ${factory}, withRetry } from "${pkgName}";`
-    );
+    sections.push(`import { ${factory}, withRetry } from "${pkgName}";`);
     sections.push("");
     sections.push(
       `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`

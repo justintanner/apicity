@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 
 describe("alibaba native uploads (OSS policy) integration", () => {
   let ctx: PollyContext | undefined;
@@ -21,7 +21,7 @@ describe("alibaba native uploads (OSS policy) integration", () => {
   it("should fetch an upload policy, POST a file to OSS, and receive a success response", async () => {
     ctx = setupPollyIgnoringBody("alibaba/uploads-policy");
 
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
       timeout: 120000,
     });
@@ -76,7 +76,7 @@ describe("alibaba native uploads (OSS policy) integration", () => {
   }, 120000);
 
   it("should throw on missing action param at the type level", () => {
-    const provider = alibaba({ apiKey: "test-key" });
+    const provider = createAlibaba({ apiKey: "test-key" });
     expect(typeof provider.get.api.v1.uploads).toBe("function");
   });
 });

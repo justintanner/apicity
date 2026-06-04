@@ -28,11 +28,12 @@ OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-... \
 
 ### Flags
 
-| Flag                  | Description                                                        |
-| --------------------- | ------------------------------------------------------------------ |
-| `--output-dir <path>` | Where binary results and downloaded media URLs land.               |
-| `--providers <csv>`   | Allow-list of providers (default: every one with its env var set). |
-| `--help`              | Print usage.                                                       |
+| Flag                           | Description                                                                                                    |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
+| `--output-dir <path>`          | Where binary results and downloaded media URLs land.                                                           |
+| `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                             |
+| `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)). |
+| `--help`                       | Print usage.                                                                                                   |
 
 ### Credentials
 
@@ -80,6 +81,21 @@ When `--output-dir` is set:
 
 Without `--output-dir`, binary results are summarized as a byte count and URLs
 pass through untouched.
+
+## Paid endpoints
+
+A few endpoints incur direct marginal cost (e.g. `kie_api_v1_jobs_createTask`
+for video/image generation) and are gated behind a single-use OTP. The server
+is the **code client**: pass `--paygate-secret-file <path>` and it holds the
+shared HMAC secret to **verify** OTPs — it never mints them. Paid tools
+advertise an extra optional `otp` argument.
+
+To run a paid call, a human mints an OTP out-of-band from the same secret
+(`apicity-paygate otp mint --secret-file … --dot-path api.v1.jobs.createTask
+--payload-file request.json --ttl 10m`) and the caller passes it as the tool's
+`otp` argument. Because the AI driving the tool never sees the secret, it cannot
+self-approve: with no `otp` (or no secret configured) the paid call fails closed.
+See [@apicity/cost](../provider/cost) for the full spec.
 
 ## Programmatic use
 

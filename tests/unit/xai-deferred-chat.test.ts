@@ -4,7 +4,7 @@ import type {
   XaiRealtimeClientEvent,
   XaiRealtimeServerEvent,
 } from "../../packages/provider/xai/src/types";
-import { xai, XaiError } from "../../packages/provider/xai/src/index";
+import { createXai, XaiError } from "../../packages/provider/xai/src/index";
 
 class MockWebSocket {
   static instances: MockWebSocket[] = [];
@@ -76,7 +76,7 @@ afterEach(() => {
 
 describe("xAI deferred chat completion", () => {
   it("returns ready:false while a deferred completion is still pending", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () => new Response(null, { status: 202 }),
     });
@@ -87,7 +87,7 @@ describe("xAI deferred chat completion", () => {
   });
 
   it("returns ready:true with the completed chat payload", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () =>
         new Response(JSON.stringify(completedResponse), {
@@ -106,7 +106,7 @@ describe("xAI deferred chat completion", () => {
   });
 
   it("wraps API polling failures in XaiError with the parsed error message", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () =>
         new Response(
@@ -133,7 +133,7 @@ describe("xAI deferred chat completion", () => {
   });
 
   it("wraps thrown fetch failures while polling deferred completions", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () => {
         throw new Error("socket hang up");
@@ -157,7 +157,7 @@ describe("xAI realtime websocket connection", () => {
   it("uses the websocket endpoint and token override when connecting", () => {
     vi.stubGlobal("WebSocket", MockWebSocket as unknown as typeof WebSocket);
 
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       baseURL: "https://custom.api.x.ai/v1",
     });
@@ -183,7 +183,7 @@ describe("xAI realtime websocket connection", () => {
   it("serializes client events before sending them to the websocket", () => {
     vi.stubGlobal("WebSocket", MockWebSocket as unknown as typeof WebSocket);
 
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
     const connection = provider.ws.v1.realtime();
     const socket = MockWebSocket.instances[0];
     const event: XaiRealtimeClientEvent = {
@@ -199,7 +199,7 @@ describe("xAI realtime websocket connection", () => {
   it("yields queued realtime events through the async iterator", async () => {
     vi.stubGlobal("WebSocket", MockWebSocket as unknown as typeof WebSocket);
 
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
     const connection = provider.ws.v1.realtime();
     const socket = MockWebSocket.instances[0];
     const iterator = connection[Symbol.asyncIterator]();
@@ -224,7 +224,7 @@ describe("xAI realtime websocket connection", () => {
   it("resolves pending iterators and future reads when the websocket closes or errors", async () => {
     vi.stubGlobal("WebSocket", MockWebSocket as unknown as typeof WebSocket);
 
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const closedConnection = provider.ws.v1.realtime();
     const closingSocket = MockWebSocket.instances[0];

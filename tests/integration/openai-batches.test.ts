@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai batches integration", () => {
   let ctx: PollyContext;
@@ -12,7 +12,7 @@ describe("openai batches integration", () => {
 
     it("should list batches", async () => {
       ctx = setupPolly("openai/batches-list");
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 
@@ -25,7 +25,7 @@ describe("openai batches integration", () => {
 
     it("should list batches with limit parameter", async () => {
       ctx = setupPolly("openai/batches-list-limit");
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 
@@ -39,13 +39,13 @@ describe("openai batches integration", () => {
 
   describe("payload validation", () => {
     it("should expose schema on create method", () => {
-      const provider = openai({ apiKey: "sk-test-key" });
+      const provider = createOpenAi({ apiKey: "sk-test-key" });
       expect(provider.post.v1.batches.schema).toBeDefined();
       expect(typeof provider.post.v1.batches.schema.safeParse).toBe("function");
     });
 
     it("should validate a valid create payload", () => {
-      const provider = openai({ apiKey: "sk-test-key" });
+      const provider = createOpenAi({ apiKey: "sk-test-key" });
       const result = provider.post.v1.batches.schema.safeParse({
         input_file_id: "file-abc123",
         endpoint: "/v1/chat/completions",
@@ -55,7 +55,7 @@ describe("openai batches integration", () => {
     });
 
     it("should reject payload missing required fields", () => {
-      const provider = openai({ apiKey: "sk-test-key" });
+      const provider = createOpenAi({ apiKey: "sk-test-key" });
       const result = provider.post.v1.batches.schema.safeParse({});
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);

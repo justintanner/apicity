@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { fal } from "../../packages/provider/fal/src/fal";
+import { createFal } from "../../packages/provider/fal/src/fal";
 
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -24,7 +24,7 @@ describe("fal nano banana pro", () => {
       })
     );
 
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test-key",
       fetch: mockFetch as unknown as typeof fetch,
     });
@@ -62,7 +62,7 @@ describe("fal nano banana pro", () => {
   });
 
   it("validates text-to-image payloads", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
 
     const valid = provider.run.nanoBananaPro.textToImage.schema.safeParse({
       prompt: "a cat",
@@ -89,7 +89,7 @@ describe("fal nano banana pro", () => {
   });
 
   it("exposes text-to-image through run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
 
     expect(provider.run.nanoBananaPro.textToImage).toBe(
       provider.post.run.nanoBananaPro.textToImage

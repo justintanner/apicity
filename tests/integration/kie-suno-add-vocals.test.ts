@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie suno add vocals (submit)", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("kie suno add vocals (submit)", () => {
   });
 
   it("submits an add vocals task and returns a taskId", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

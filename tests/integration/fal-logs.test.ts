@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal serverless logs validation", () => {
   it("should expose schema on stream", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.post.stream.v1.serverless.logs.stream.schema).toBeDefined();
     expect(
       typeof provider.post.stream.v1.serverless.logs.stream.schema.safeParse
@@ -11,7 +11,7 @@ describe("fal serverless logs validation", () => {
   });
 
   it("should validate stream payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const valid =
       provider.post.stream.v1.serverless.logs.stream.schema.safeParse({
         level: "info",

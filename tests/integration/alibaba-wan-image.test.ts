@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 import {
   setupPolly,
   teardownPolly,
@@ -20,7 +20,7 @@ describe("alibaba wan2.7 image generation integration", () => {
   it("should submit an async text-to-image task and poll status", async () => {
     ctx = setupPolly("alibaba/wan-image-t2i");
 
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
@@ -80,7 +80,7 @@ describe("alibaba wan2.7 image generation integration", () => {
   }, 300_000);
 
   it("should validate image-generation payload via .schema.safeParse", () => {
-    const provider = alibaba({ apiKey: "test-key" });
+    const provider = createAlibaba({ apiKey: "test-key" });
 
     const valid =
       provider.post.api.v1.services.aigc.imageGeneration.generation.schema.safeParse(

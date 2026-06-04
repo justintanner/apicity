@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xai video extensions integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("xai video extensions integration", () => {
 
   it("should extend a video from a source video URL", async () => {
     ctx = setupPolly("xai/video-extensions-basic");
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
     });
 
@@ -32,7 +32,7 @@ describe("xai video extensions integration", () => {
 
   it("should support custom duration for video extension", async () => {
     ctx = setupPolly("xai/video-extensions-duration");
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
     });
 

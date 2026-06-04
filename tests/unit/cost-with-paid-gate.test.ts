@@ -2,7 +2,9 @@ import { describe, it, expect } from "vitest";
 
 import {
   PayGateError,
-  type PayGateIo,
+  createReplayStore,
+  mintOtp,
+  type PayGateConfig,
 } from "../../packages/provider/cost/src/paygate";
 import { withPaidGate } from "../../packages/provider/cost/src/with-paid-gate";
 import { withPaidGate as withPaidGateFromIndex } from "@apicity/cost";
@@ -14,18 +16,17 @@ describe("withPaidGate — module wiring", () => {
   });
 });
 
+const SECRET = "test-secret";
+
 /**
- * An IO that pretends the pay gate is unconfigured. With this io, every
- * paid-leaf invocation throws `PayGateError("paygate-not-configured")` —
- * exactly what we need to assert "the leaf was routed through the gate"
- * without standing up a real key + ledger.
+ * A configured pay gate with its own replay store. With a valid secret, a
+ * paid-leaf invocation that lacks an OTP throws `PayGateError("otp-missing")`,
+ * and one with a valid OTP passes through to the underlying leaf — exactly
+ * what we need to assert "the leaf was routed through the gate".
  */
-const unconfiguredIo: PayGateIo = {
-  now: () => 0,
-  loadPublicKey: () => undefined,
-  isJtiConsumed: () => false,
-  consumeJti: () => {},
-};
+function makeConfig(): PayGateConfig {
+  return { secret: SECRET, replayStore: createReplayStore() };
+}
 
 const schema = { __schemaTag: "createTask" } as const;
 
@@ -63,7 +64,7 @@ function buildKieLikeTree() {
 describe("withPaidGate — walker", () => {
   it("routes a paid leaf through the gate (throws PayGateError without OTP)", async () => {
     const tree = buildKieLikeTree();
-    const wrapped = withPaidGate("kie", tree, { io: unconfiguredIo });
+    const wrapped = withPaidGate("kie", tree, { config: makeConfig() });
     let caught: unknown;
     try {
       await wrapped.post.api.v1.jobs.createTask({ model: "x" });
@@ -71,12 +72,29 @@ describe("withPaidGate — walker", () => {
       caught = e;
     }
     expect(caught).toBeInstanceOf(PayGateError);
-    expect((caught as PayGateError).code).toBe("paygate-not-configured");
+    expect((caught as PayGateError).code).toBe("otp-missing");
+  });
+
+  it("passes a paid leaf through the gate with a valid OTP", async () => {
+    const tree = buildKieLikeTree();
+    const wrapped = withPaidGate("kie", tree, { config: makeConfig() });
+    const request = { model: "x" };
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request,
+    });
+    const out = await (
+      wrapped.post.api.v1.jobs.createTask as unknown as (
+        req: unknown,
+        approval: { otp: string }
+      ) => Promise<unknown>
+    )(request, { otp });
+    expect(out).toEqual({ data: { taskId: "stub" } });
   });
 
   it("leaves free leaves untouched (no gate, no extra approval arg semantics)", async () => {
     const tree = buildKieLikeTree();
-    const wrapped = withPaidGate("kie", tree, { io: unconfiguredIo });
+    const wrapped = withPaidGate("kie", tree, { config: makeConfig() });
     const out = await wrapped.post.api.v1.common.downloadUrl({ id: "x" });
     expect(out).toEqual({ data: { url: "stub" } });
     const info = await wrapped.get.api.v1.jobs.recordInfo("task-1");
@@ -85,7 +103,7 @@ describe("withPaidGate — walker", () => {
 
   it("preserves .schema on a paid leaf", () => {
     const tree = buildKieLikeTree();
-    const wrapped = withPaidGate("kie", tree, { io: unconfiguredIo });
+    const wrapped = withPaidGate("kie", tree, { config: makeConfig() });
     expect(
       (wrapped.post.api.v1.jobs.createTask as unknown as { schema: unknown })
         .schema
@@ -94,7 +112,7 @@ describe("withPaidGate — walker", () => {
 
   it("returns sub-providers and data fields by reference (not walked)", () => {
     const tree = buildKieLikeTree();
-    const wrapped = withPaidGate("kie", tree, { io: unconfiguredIo });
+    const wrapped = withPaidGate("kie", tree, { config: makeConfig() });
     expect(wrapped.veo).toBe(tree.veo);
     expect(wrapped.modelInputSchemas).toBe(tree.modelInputSchemas);
   });
@@ -103,7 +121,7 @@ describe("withPaidGate — walker", () => {
     const tree = buildKieLikeTree();
     const wrapped = withPaidGate("kie", tree, {
       roots: ["get"],
-      io: unconfiguredIo,
+      config: makeConfig(),
     });
     // post bucket was NOT descended; the paid leaf is identity-preserved
     expect(wrapped.post).toBe(tree.post);
@@ -123,7 +141,7 @@ describe("withPaidGate — walker", () => {
       list,
     });
     const tree = { post: { v1: { models: root } } };
-    const wrapped = withPaidGate("openai", tree, { io: unconfiguredIo });
+    const wrapped = withPaidGate("openai", tree, { config: makeConfig() });
     // root is free → still callable and identity-equivalent in behavior
     const out = await wrapped.post.v1.models({});
     expect(out).toEqual({ ok: true });
@@ -147,7 +165,7 @@ describe("withPaidGate — walker", () => {
 
   it("produces a tree with the same key shape as the input", () => {
     const tree = buildKieLikeTree();
-    const wrapped = withPaidGate("kie", tree, { io: unconfiguredIo });
+    const wrapped = withPaidGate("kie", tree, { config: makeConfig() });
     expect(deepKeys(wrapped)).toEqual(deepKeys(tree));
   });
 });

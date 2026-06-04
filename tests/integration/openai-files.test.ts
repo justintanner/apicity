@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai files integration", () => {
   let ctx: PollyContext;
@@ -15,7 +15,7 @@ describe("openai files integration", () => {
     });
 
     it("should list files", async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 
@@ -37,7 +37,7 @@ describe("openai files integration", () => {
     });
 
     it("should upload a file", async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 
@@ -66,7 +66,7 @@ describe("openai files integration", () => {
     });
 
     it("should retrieve file info", async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 
@@ -85,13 +85,13 @@ describe("openai files integration", () => {
 
   describe("validation", () => {
     it("should expose schema on upload", () => {
-      const provider = openai({ apiKey: "sk-test" });
+      const provider = createOpenAi({ apiKey: "sk-test" });
       expect(provider.post.v1.files.schema).toBeDefined();
       expect(typeof provider.post.v1.files.schema.safeParse).toBe("function");
     });
 
     it("should validate upload payload - valid", () => {
-      const provider = openai({ apiKey: "sk-test" });
+      const provider = createOpenAi({ apiKey: "sk-test" });
       const result = provider.post.v1.files.schema.safeParse({
         file: new Blob(["test"]),
         purpose: "fine-tune",
@@ -101,7 +101,7 @@ describe("openai files integration", () => {
     });
 
     it("should validate upload payload - missing required fields", () => {
-      const provider = openai({ apiKey: "sk-test" });
+      const provider = createOpenAi({ apiKey: "sk-test" });
       const result = provider.post.v1.files.schema.safeParse({});
 
       expect(result.success).toBe(false);
@@ -109,7 +109,7 @@ describe("openai files integration", () => {
     });
 
     it("should validate upload payload - invalid purpose", () => {
-      const provider = openai({ apiKey: "sk-test" });
+      const provider = createOpenAi({ apiKey: "sk-test" });
       const result = provider.post.v1.files.schema.safeParse({
         file: new Blob(["test"]),
         purpose: "invalid",

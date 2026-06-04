@@ -11,11 +11,16 @@ A thin wrapper for many APIs covering AI image generation, video generation, all
 ## Example
 
 ```ts
-import { cost } from "@apicity/cost";
-import { kie as createKie } from "@apicity/kie";
+import { createCost } from "@apicity/cost";
+import { createKie } from "@apicity/kie";
 
-const c = cost();
-const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
+const c = createCost();
+const kie = createKie({
+  apiKey: process.env.KIE_API_KEY!,
+  // Paid endpoints (e.g. createTask) are gated — see "Paid endpoints" below.
+  // The secret comes from your secret manager / config, never a magic env var.
+  paygate: { secret: loadSecret() },
+});
 
 // Same JSON body you'd POST to /api/v1/jobs/createTask.
 const payload = {
@@ -38,8 +43,11 @@ if (estimate.usd > 0.1) {
   throw new Error(`Estimate $${estimate.usd.toFixed(4)} exceeds $0.10 cap`);
 }
 
-// Same payload — now actually run the generation.
-const task = await kie.post.api.v1.jobs.createTask(payload);
+// Same payload — now actually run the generation. Paid endpoints require an
+// operator-minted, single-use OTP (see "Paid endpoints (OTP pay gate)" below).
+const task = await kie.post.api.v1.jobs.createTask(payload, {
+  otp: process.env.KIE_OTP!,
+});
 ```
 
 ## Motivation
@@ -77,7 +85,7 @@ Every endpoint is a plain async function with the provider's request and
 response types. Middleware is function-level, so composition stays explicit:
 
 ```ts
-import { xai as createXai, withFallback, withRetry } from "@apicity/xai";
+import { createXai, withFallback, withRetry } from "@apicity/xai";
 
 const primary = createXai({ apiKey: process.env.XAI_API_KEY_PRIMARY! });
 const backup = createXai({ apiKey: process.env.XAI_API_KEY_BACKUP! });
@@ -109,69 +117,67 @@ your own orchestration layer.
 
 Endpoints that incur direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`
 for video/image generation) are listed in `PAID_ENDPOINTS` and gated behind a
-single-use, operator-signed OTP. Autonomous callers cannot self-approve — they
-must present a token signed by an operator-held Ed25519 key. Unlisted endpoints
-are free and require no caller changes.
+single-use OTP. The gate is **fail-closed**: a paid call cannot fire unless the
+provider was constructed with a pay-gate secret **and** the caller presents a
+valid OTP minted from that same secret. Only the human (or the code client that
+holds the secret) can mint OTPs — the autonomous caller never sees the secret,
+so it cannot self-approve. Unlisted endpoints are free and require no changes.
 
-Providers wire the gate once at the bottom of their factory:
+The gate uses a single shared **HMAC secret** — no key files, no environment
+variables, no cost coupling. The code client supplies it via factory options:
 
 ```ts
-import { withPaidGate } from "@apicity/cost";
+import { createKie } from "@apicity/kie";
 
-export function kie(opts: KieOptions): KieProvider {
-  // …build endpoint functions…
-  return withPaidGate("kie", {
-    post: { api: { v1: { jobs: { createTask: Object.assign(createTask, { schema }) } } } },
-    get:  { api: { v1: { jobs: { recordInfo } } } },
-    // sub-providers, schema maps, etc. pass through untouched
-  });
-}
+const provider = createKie({
+  apiKey: process.env.KIE_API_KEY!,
+  paygate: { secret: loadSecret() }, // from your secret manager / config
+});
 ```
 
-Operators mint an OTP per request with the `apicity-paygate` CLI:
+The human (or code client) mints a single-use OTP, bound to the exact request,
+with `mintOtp` (or the `apicity-paygate` CLI):
+
+```ts
+import { mintOtp } from "@apicity/cost";
+
+const otp = mintOtp(secret, {
+  dotPath: "api.v1.jobs.createTask", // provider/method resolved from the registry
+  request: payload, // bound by canonical hash — change a byte and it fails
+  ttl: "10m",
+});
+```
 
 ```bash
-export APICITY_PAYGATE_PRIVATE_KEY_PATH=./paygate-private.pem  # signer
-export APICITY_PAYGATE_PUBLIC_KEY_PATH=./paygate-public.pem    # verifier
-
 apicity-paygate otp mint \
-  --provider kie \
-  --method POST \
+  --secret-file ./paygate.secret \
   --dot-path api.v1.jobs.createTask \
   --payload-file request.json \
-  --max-spend 5 \
   --ttl 10m
 ```
 
 The caller passes the OTP alongside the request:
 
 ```ts
-import { kie } from "@apicity/kie";
-import { PayGateError, SpendBoundError } from "@apicity/cost";
-
-const provider = kie({ apiKey: process.env.KIE_API_KEY! });
+import { PayGateError } from "@apicity/cost";
 
 try {
-  const task = await provider.post.api.v1.jobs.createTask(
-    payload,
-    { otp: process.env.KIE_OTP! },
-  );
+  const task = await provider.post.api.v1.jobs.createTask(payload, { otp });
 } catch (e) {
   if (e instanceof PayGateError) {
-    // otp-missing | otp-expired | otp-invalid-signature
-    // otp-mismatched-request | otp-replayed | paygate-not-configured
-  } else if (e instanceof SpendBoundError) {
-    // estimated cost > maxSpendUsd, or cost couldn't be bounded
+    // paygate-not-configured | otp-missing | otp-malformed
+    // otp-invalid-signature | otp-expired | otp-mismatched-request | otp-replayed
   } else throw e;
 }
 ```
 
-The OTP commits to the exact `(provider, method, dotPath, requestHash,
-maxSpendUsd, exp)` tuple — change any byte of the payload and verification
-fails. The `jti` is consumed before dispatch, so a failed network call still
-burns the token: operators must mint a fresh OTP for any retry. See
-[@apicity/cost](packages/provider/cost) for the full spec, key setup, and
-retry semantics.
+The OTP commits to the exact `(provider, method, dotPath, requestHash, exp)`
+tuple — change any byte of the payload and verification fails. The `jti` is
+consumed before dispatch, so a failed network call still burns the token: mint a
+fresh OTP for any retry. The same gate is generic across providers (`xai` and
+others can opt in by adding a `PAID_ENDPOINTS` entry). See
+[@apicity/cost](packages/provider/cost) for the full spec and the MCP server's
+`--paygate-secret-file` wiring.
 
 ## License
 

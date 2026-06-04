@@ -17,9 +17,9 @@ pnpm add @apicity/elevenlabs
 ## Quick Start
 
 ```typescript
-import { elevenlabs as createElevenlabs } from "@apicity/elevenlabs";
+import { createElevenLabs } from "@apicity/elevenlabs";
 
-const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
+const elevenlabs = createElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
 ```
 
 ## Real-world example: generate a sound effect, then run it through Scribe v2
@@ -39,10 +39,10 @@ from the recorded HARs.
 
 ```typescript
 import { readFileSync, writeFileSync } from "node:fs";
-import { elevenlabs as createElevenlabs } from "@apicity/elevenlabs";
+import { createElevenLabs } from "@apicity/elevenlabs";
 import type { ElevenLabsTranscript } from "@apicity/elevenlabs";
 
-const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
+const elevenlabs = createElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
 
 // 1. Generate a 0.5s UI click. soundGeneration returns the raw MP3 as
 //    an ArrayBuffer — there's no JSON wrapper, the response body is
@@ -177,9 +177,9 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 ## Middleware
 
 ```typescript
-import { elevenlabs as createElevenlabs, withRetry } from "@apicity/elevenlabs";
+import { createElevenLabs, withRetry } from "@apicity/elevenlabs";
 
-const elevenlabs = createElevenlabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
+const elevenlabs = createElevenLabs({ apiKey: process.env.ELEVENLABS_API_KEY! });
 const models = withRetry(elevenlabs.get.v1.models, { retries: 3 });
 ```
 

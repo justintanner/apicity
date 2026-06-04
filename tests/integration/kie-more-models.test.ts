@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie additional models", () => {
   let ctx: PollyContext;
@@ -13,7 +13,8 @@ describe("kie additional models", () => {
   describe("nano-banana-pro", () => {
     it("should create an image generation task", async () => {
       ctx = setupPolly("kie/models/nano-banana-pro");
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -41,7 +42,8 @@ describe("kie additional models", () => {
   describe("nano-banana-2", () => {
     it("should create an image generation task", async () => {
       ctx = setupPolly("kie/models/nano-banana-2");
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -68,7 +70,8 @@ describe("kie additional models", () => {
 
   describe("additional model schemas", () => {
     it("should validate payloads for various model types", async () => {
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: "test-key",
       });
 

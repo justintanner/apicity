@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -21,7 +21,7 @@ describe("xAI speech-to-text integration", () => {
     const mp3Buffer = readFileSync(mp3Path);
     const file = new Blob([mp3Buffer], { type: "audio/mpeg" });
 
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
 
@@ -44,7 +44,7 @@ describe("xAI speech-to-text integration", () => {
   });
 
   it("should validate stt payload", () => {
-    const provider = xai({ apiKey: "xai-test-key" });
+    const provider = createXai({ apiKey: "xai-test-key" });
 
     const valid = provider.post.v1.stt.schema.safeParse({
       file: new Blob([new Uint8Array([0])], { type: "audio/mpeg" }),
@@ -56,7 +56,7 @@ describe("xAI speech-to-text integration", () => {
   });
 
   it("should expose stt schema", () => {
-    const provider = xai({ apiKey: "xai-test-key" });
+    const provider = createXai({ apiKey: "xai-test-key" });
     expect(provider.post.v1.stt.schema).toBeDefined();
     expect(typeof provider.post.v1.stt.schema.safeParse).toBe("function");
   });

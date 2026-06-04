@@ -1,4 +1,4 @@
-export { meta } from "./meta";
+export { createMeta } from "./meta";
 
 export { MetaError } from "./types";
 

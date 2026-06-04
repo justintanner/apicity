@@ -1,22 +1,20 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
-import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
-import { join } from "node:path";
-import { tmpdir } from "node:os";
+import { describe, it, expect } from "vitest";
+import { createHmac, randomBytes } from "node:crypto";
 
 import {
   PayGateError,
+  PayGateConfig,
   PayGateOtpPayload,
+  ReplayStore,
   canonicalizeJson,
   canonicalHash,
   parseOtp,
-  verifyOtpSignature,
-  isJtiConsumed,
-  consumeJti,
+  mintOtp,
+  createReplayStore,
   dispatchWithPaidGate,
 } from "../../packages/provider/cost/src/paygate";
 
-import { SpendBoundError } from "../../packages/provider/cost/src/paid-endpoints";
+const SECRET = "test-secret";
 
 /**
  * Encode a buffer to unpadded base64url.
@@ -30,33 +28,17 @@ function base64urlEncode(data: Buffer): string {
 }
 
 /**
- * Mint a test OTP signed with the given private key PEM.
+ * Mint an OTP from a raw payload object, signed with an HMAC secret. Unlike
+ * `mintOtp`, this gives the test full control over every payload field (jti,
+ * iat, exp, provider, method, dotPath, requestHash) so failure cases can be
+ * constructed deterministically.
  */
-function mintTestOtp(
-  privateKeyPem: string,
-  payload: Omit<PayGateOtpPayload, "v">
-): string {
-  const fullPayload: PayGateOtpPayload = { v: 1, ...payload };
-  const payloadJson = JSON.stringify(fullPayload);
-  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
-
-  const signature = sign(
-    null,
-    Buffer.from(payloadSegment, "utf8"),
-    privateKeyPem
+function mintRaw(secret: string, payload: PayGateOtpPayload): string {
+  const segment = base64urlEncode(Buffer.from(JSON.stringify(payload), "utf8"));
+  const signature = base64urlEncode(
+    createHmac("sha256", secret).update(segment, "utf8").digest()
   );
-
-  const signatureSegment = base64urlEncode(signature);
-  return `${payloadSegment}.${signatureSegment}`;
-}
-
-function makeTestDir(): string {
-  const dir = join(
-    tmpdir(),
-    "apicity-paygate-test-" + randomBytes(8).toString("hex")
-  );
-  mkdirSync(dir, { recursive: true });
-  return dir;
+  return `${segment}.${signature}`;
 }
 
 describe("canonicalizeJson", () => {
@@ -105,17 +87,13 @@ describe("canonicalHash", () => {
 
 describe("parseOtp", () => {
   it("parses a valid OTP", () => {
-    const { privateKey } = generateKeyPairSync("ed25519", {
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-      publicKeyEncoding: { type: "spki", format: "pem" },
-    });
-    const otp = mintTestOtp(privateKey, {
+    const otp = mintRaw(SECRET, {
+      v: 1,
       jti: "abc123",
       provider: "kie",
       method: "POST",
       dotPath: "api.v1.jobs.createTask",
       requestHash: "sha256:deadbeef",
-      maxSpendUsd: 5,
       iat: 1000,
       exp: 2000,
     });
@@ -146,106 +124,90 @@ describe("parseOtp", () => {
   });
 });
 
-describe("verifyOtpSignature", () => {
-  it("accepts valid signature", () => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+describe("mintOtp", () => {
+  it("resolves provider/method from dotPath via PAID_ENDPOINTS", () => {
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request: { model: "wan/2-7-text-to-video" },
     });
-    const payload = "testpayload";
-    const signature = sign(null, Buffer.from(payload, "utf8"), privateKey);
-    expect(verifyOtpSignature(payload, signature, publicKey)).toBe(true);
+    const { payload } = parseOtp(otp);
+    expect(payload.provider).toBe("kie");
+    expect(payload.method).toBe("POST");
+    expect(payload.dotPath).toBe("api.v1.jobs.createTask");
   });
 
-  it("rejects invalid signature", () => {
-    const { publicKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  it("binds requestHash to the canonical request", () => {
+    const request = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request,
     });
-    const fakeSignature = randomBytes(64);
-    expect(verifyOtpSignature("testpayload", fakeSignature, publicKey)).toBe(
-      false
-    );
-  });
-});
-
-describe("replay ledger", () => {
-  let ledgerPath: string;
-  let testDir: string;
-
-  beforeEach(() => {
-    testDir = makeTestDir();
-    ledgerPath = join(testDir, "ledger.jsonl");
+    const { payload } = parseOtp(otp);
+    expect(payload.requestHash).toBe(canonicalHash(request));
   });
 
-  afterEach(() => {
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
+  it("applies a default 600s TTL", () => {
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request: {},
+    });
+    const { payload } = parseOtp(otp);
+    expect(payload.exp - payload.iat).toBe(600);
   });
 
-  it("isJtiConsumed returns false for unknown jti", () => {
-    expect(isJtiConsumed("unknown", ledgerPath)).toBe(false);
+  it("honours a string TTL", () => {
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request: {},
+      ttl: "1h",
+    });
+    const { payload } = parseOtp(otp);
+    expect(payload.exp - payload.iat).toBe(3600);
   });
 
-  it("consumeJti records a jti", () => {
-    consumeJti("jti-1", ledgerPath);
-    expect(isJtiConsumed("jti-1", ledgerPath)).toBe(true);
-    expect(isJtiConsumed("jti-2", ledgerPath)).toBe(false);
-  });
-
-  it("consumeJti creates directories if needed", () => {
-    const deepDir = join(testDir, "a", "b", "ledger.jsonl");
-    consumeJti("jti-deep", deepDir);
-    expect(isJtiConsumed("jti-deep", deepDir)).toBe(true);
-  });
-
-  it("skips malformed lines in ledger", () => {
-    writeFileSync(ledgerPath, "not json\n{\n", "utf8");
-    expect(isJtiConsumed("jti-1", ledgerPath)).toBe(false);
+  it("rejects an empty secret", () => {
+    expect(() =>
+      mintOtp("", { dotPath: "api.v1.jobs.createTask", request: {} })
+    ).toThrow();
   });
 });
 
 describe("dispatchWithPaidGate", () => {
-  let publicKeyPem: string;
-  let privateKeyPem: string;
-  let publicKeyPath: string;
-  let testDir: string;
+  const NOW_MS = 1_700_000_000_000;
+  const NOW_SECONDS = Math.floor(NOW_MS / 1000);
 
-  beforeEach(() => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-    });
-    publicKeyPem = publicKey;
-    privateKeyPem = privateKey;
-    testDir = makeTestDir();
-    publicKeyPath = join(testDir, "public.pem");
-    writeFileSync(publicKeyPath, publicKeyPem, "utf8");
-    process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH = publicKeyPath;
-  });
+  /**
+   * Build a fresh gate config with a controlled clock and an isolated,
+   * in-memory replay store.
+   */
+  function makeConfig(overrides: Partial<PayGateConfig> = {}): PayGateConfig {
+    return {
+      secret: SECRET,
+      replayStore: createReplayStore(),
+      now: () => NOW_MS,
+      ...overrides,
+    };
+  }
 
-  afterEach(() => {
-    delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
+  /**
+   * Mint an OTP for the canonical kie createTask endpoint with controllable
+   * payload field overrides. Defaults to a valid, not-yet-expired token bound
+   * to `request`.
+   */
   function makeOtp(
-    payload: Record<string, unknown>,
-    overrides: Partial<PayGateOtpPayload> = {}
+    request: Record<string, unknown>,
+    overrides: Partial<PayGateOtpPayload> = {},
+    secret = SECRET
   ): string {
-    const now = Math.floor(Date.now() / 1000);
-    return mintTestOtp(privateKeyPem, {
+    return mintRaw(secret, {
+      v: 1,
       jti: randomBytes(16).toString("hex"),
       provider: "kie",
       method: "POST",
       dotPath: "api.v1.jobs.createTask",
-      requestHash: canonicalHash(payload),
-      maxSpendUsd: 10,
-      iat: now,
-      exp: now + 3600,
+      requestHash: canonicalHash(request),
+      iat: NOW_SECONDS - 60,
+      exp: NOW_SECONDS + 3600,
       ...overrides,
     });
   }
@@ -276,19 +238,8 @@ describe("dispatchWithPaidGate", () => {
     expect(result).toBe("ok");
   });
 
-  it("throws paygate-not-configured when public key is missing", async () => {
-    delete process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
+  it("throws paygate-not-configured when no config is supplied", async () => {
     const dispatch = async () => "ok";
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        {},
-        { otp: "test" },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -298,6 +249,26 @@ describe("dispatchWithPaidGate", () => {
         { otp: "test" },
         dispatch
       );
+      throw new Error("expected PayGateError");
+    } catch (e) {
+      expect(e).toBeInstanceOf(PayGateError);
+      expect((e as PayGateError).code).toBe("paygate-not-configured");
+    }
+  });
+
+  it("throws paygate-not-configured when the secret is empty", async () => {
+    const dispatch = async () => "ok";
+    try {
+      await dispatchWithPaidGate(
+        "kie",
+        "POST",
+        "api.v1.jobs.createTask",
+        {},
+        { otp: "test" },
+        dispatch,
+        makeConfig({ secret: "" })
+      );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("paygate-not-configured");
@@ -306,16 +277,6 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-missing when approval is omitted", async () => {
     const dispatch = async () => "ok";
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        {},
-        undefined,
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -323,8 +284,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         {},
         undefined,
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-missing");
@@ -333,16 +296,6 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-missing when approval has no otp", async () => {
     const dispatch = async () => "ok";
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        {},
-        { otp: "" },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -350,8 +303,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         {},
         { otp: "" },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-missing");
@@ -360,16 +315,6 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-malformed for invalid OTP", async () => {
     const dispatch = async () => "ok";
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        {},
-        { otp: "notavalidotp" },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -377,40 +322,19 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         {},
         { otp: "notavalidotp" },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-malformed");
     }
   });
 
-  it("throws otp-invalid-signature for forged OTP", async () => {
+  it("throws otp-invalid-signature for an OTP signed with the wrong secret", async () => {
     const dispatch = async () => "ok";
-    const { privateKey: otherPrivateKey } = generateKeyPairSync("ed25519", {
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-      publicKeyEncoding: { type: "spki", format: "pem" },
-    });
-    const forgedOtp = mintTestOtp(otherPrivateKey, {
-      jti: "forged",
-      provider: "kie",
-      method: "POST",
-      dotPath: "api.v1.jobs.createTask",
-      requestHash: canonicalHash({}),
-      maxSpendUsd: 10,
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 3600,
-    });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        {},
-        { otp: forgedOtp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
+    const forgedOtp = makeOtp({}, {}, "wrong-secret");
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -418,8 +342,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         {},
         { otp: forgedOtp },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-invalid-signature");
@@ -428,18 +354,7 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-expired for expired OTP", async () => {
     const dispatch = async () => "ok";
-    const now = Math.floor(Date.now() / 1000);
-    const expiredOtp = makeOtp({}, { exp: now - 1 });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        {},
-        { otp: expiredOtp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
+    const expiredOtp = makeOtp({}, { exp: NOW_SECONDS - 1 });
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -447,8 +362,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         {},
         { otp: expiredOtp },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-expired");
@@ -457,21 +374,8 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-mismatched-request for wrong provider", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
     const otp = makeOtp(payload, { provider: "other" });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        payload,
-        { otp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -479,8 +383,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-mismatched-request");
@@ -489,21 +395,8 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-mismatched-request for wrong method", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
     const otp = makeOtp(payload, { method: "GET" });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        payload,
-        { otp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -511,8 +404,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-mismatched-request");
@@ -521,21 +416,8 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-mismatched-request for wrong dotPath", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
     const otp = makeOtp(payload, { dotPath: "other.path" });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        payload,
-        { otp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -543,8 +425,10 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-mismatched-request");
@@ -553,24 +437,11 @@ describe("dispatchWithPaidGate", () => {
 
   it("throws otp-mismatched-request for wrong request hash", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
     const otp = makeOtp(payload, {
       requestHash:
         "sha256:0000000000000000000000000000000000000000000000000000000000000000",
     });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        payload,
-        { otp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -578,41 +449,25 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
+        dispatch,
+        makeConfig()
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-mismatched-request");
     }
   });
 
-  it("throws otp-replayed for reused OTP", async () => {
+  it("throws otp-replayed when the jti is already in the store", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
-    const otp = makeOtp(payload);
-    // First call succeeds
-    await dispatchWithPaidGate(
-      "kie",
-      "POST",
-      "api.v1.jobs.createTask",
-      payload,
-      { otp },
-      dispatch
-    );
-    // Second call fails
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        payload,
-        { otp },
-        dispatch
-      )
-    ).rejects.toThrow(PayGateError);
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
+    const jti = randomBytes(16).toString("hex");
+    const otp = makeOtp(payload, { jti });
+
+    const store: ReplayStore = createReplayStore();
+    store.add(jti);
+
     try {
       await dispatchWithPaidGate(
         "kie",
@@ -620,68 +475,87 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
+        dispatch,
+        makeConfig({ replayStore: store })
       );
+      throw new Error("expected PayGateError");
     } catch (e) {
       expect(e).toBeInstanceOf(PayGateError);
       expect((e as PayGateError).code).toBe("otp-replayed");
     }
   });
 
-  it("throws SpendBoundError when estimate exceeds maxSpendUsd", async () => {
+  it("rejects a second dispatch with the same OTP (consumed before dispatch)", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
-    const otp = makeOtp(payload, { maxSpendUsd: 0.01 });
-    await expect(
-      dispatchWithPaidGate(
-        "kie",
-        "POST",
-        "api.v1.jobs.createTask",
-        payload,
-        { otp },
-        dispatch
-      )
-    ).rejects.toThrow(SpendBoundError);
-  });
-
-  it("throws SpendBoundError when cost cannot be estimated", async () => {
-    const dispatch = async () => "ok";
-    const payload = { model: "unknown-model" };
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
     const otp = makeOtp(payload);
-    await expect(
-      dispatchWithPaidGate(
+    const config = makeConfig();
+
+    const first = await dispatchWithPaidGate(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      payload,
+      { otp },
+      dispatch,
+      config
+    );
+    expect(first).toBe("ok");
+
+    try {
+      await dispatchWithPaidGate(
         "kie",
         "POST",
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
-      )
-    ).rejects.toThrow(SpendBoundError);
+        dispatch,
+        config
+      );
+      throw new Error("expected PayGateError");
+    } catch (e) {
+      expect(e).toBeInstanceOf(PayGateError);
+      expect((e as PayGateError).code).toBe("otp-replayed");
+    }
   });
 
-  it("allows paid endpoint with valid OTP and dispatches", async () => {
+  it("allows a paid endpoint with a valid OTP and dispatches", async () => {
     const dispatch = async () => "ok";
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
-    const otp = makeOtp(payload, { maxSpendUsd: 100 });
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
+    const otp = makeOtp(payload);
     const result = await dispatchWithPaidGate(
       "kie",
       "POST",
       "api.v1.jobs.createTask",
       payload,
       { otp },
-      dispatch
+      dispatch,
+      makeConfig()
     );
     expect(result).toBe("ok");
   });
 
-  it("does not call dispatch when gate blocks", async () => {
+  it("accepts an OTP minted by mintOtp end-to-end", async () => {
+    const dispatch = async () => "ok";
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request: payload,
+    });
+    // mintOtp uses Date.now for iat/exp, so let the gate use the real clock.
+    const result = await dispatchWithPaidGate(
+      "kie",
+      "POST",
+      "api.v1.jobs.createTask",
+      payload,
+      { otp },
+      dispatch,
+      { secret: SECRET, replayStore: createReplayStore() }
+    );
+    expect(result).toBe("ok");
+  });
+
+  it("does not call dispatch when the gate blocks", async () => {
     let called = false;
     const dispatch = async () => {
       called = true;
@@ -694,7 +568,8 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         {},
         undefined,
-        dispatch
+        dispatch,
+        makeConfig()
       );
     } catch {
       // expected
@@ -702,15 +577,12 @@ describe("dispatchWithPaidGate", () => {
     expect(called).toBe(false);
   });
 
-  it("propagates dispatch errors after gate passes", async () => {
+  it("propagates dispatch errors after the gate passes", async () => {
     const dispatch = async () => {
       throw new Error("network failure");
     };
-    const payload = {
-      model: "wan/2-7-text-to-video",
-      input: { duration: 5 },
-    };
-    const otp = makeOtp(payload, { maxSpendUsd: 100 });
+    const payload = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
+    const otp = makeOtp(payload);
     await expect(
       dispatchWithPaidGate(
         "kie",
@@ -718,7 +590,8 @@ describe("dispatchWithPaidGate", () => {
         "api.v1.jobs.createTask",
         payload,
         { otp },
-        dispatch
+        dispatch,
+        makeConfig()
       )
     ).rejects.toThrow("network failure");
   });

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 describe("polymarket clob time", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("polymarket clob time", () => {
 
   it("should return the server time as a unix-seconds number", async () => {
     ctx = setupPolly("polymarket/clob-time");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const now = await provider.get.clob.time();
 

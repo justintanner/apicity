@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fireworks, FireworksError } from "@apicity/fireworks";
+import { createFireworks, FireworksError } from "@apicity/fireworks";
 
 describe("fireworks models download endpoint and validate upload", () => {
   let ctx: PollyContext;
@@ -19,7 +19,7 @@ describe("fireworks models download endpoint and validate upload", () => {
     // Foundation models (accounts/fireworks/...) are not downloadable by
     // users; the API returns 403. These tests pin that contract.
     it("should 403 when requesting download endpoint for foundation model", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -42,7 +42,7 @@ describe("fireworks models download endpoint and validate upload", () => {
     });
 
     it("should 403 when validating upload for foundation model", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -57,7 +57,7 @@ describe("fireworks models download endpoint and validate upload", () => {
 
   describe("payload validation", () => {
     it("should validate getDownloadEndpoint request", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.models.getDownloadEndpoint.schema.safeParse(
           {
@@ -74,7 +74,7 @@ describe("fireworks models download endpoint and validate upload", () => {
     });
 
     it("should validate validateUpload request", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.models.validateUpload.schema.safeParse({
           readMask: "status",
@@ -91,7 +91,7 @@ describe("fireworks models download endpoint and validate upload", () => {
 
   describe("namespace structure", () => {
     it("should expose getDownloadEndpoint and validateUpload methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const models = provider.inference.v1.accounts.models;
 
       expect(typeof models.getDownloadEndpoint).toBe("function");
@@ -99,7 +99,7 @@ describe("fireworks models download endpoint and validate upload", () => {
     });
 
     it("should expose payload schemas on methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const models = provider.inference.v1.accounts.models;
 
       expect(models.getDownloadEndpoint.schema).toBeDefined();
@@ -107,7 +107,7 @@ describe("fireworks models download endpoint and validate upload", () => {
     });
 
     it("should expose schema.safeParse on methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const models = provider.inference.v1.accounts.models;
 
       expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(
@@ -117,7 +117,7 @@ describe("fireworks models download endpoint and validate upload", () => {
     });
 
     it("should have correct HTTP methods in schemas", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const models = provider.inference.v1.accounts.models;
 
       expect(typeof models.getDownloadEndpoint.schema.safeParse).toBe(

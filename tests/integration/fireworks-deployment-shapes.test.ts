@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks deployment shapes integration", () => {
   describe("namespace structure", () => {
     it("should have deployment shapes namespace", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       expect(provider.inference.v1.accounts.deploymentShapes).toBeDefined();
       expect(provider.inference.v1.accounts.deploymentShapes.get).toBeTypeOf(
         "function"

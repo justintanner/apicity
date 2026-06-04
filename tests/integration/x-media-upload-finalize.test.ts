@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { x } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const recordingName = "x/media-upload-finalize";
 
@@ -27,7 +27,7 @@ describe("x post.v2.media.upload.finalize", () => {
 
     ctx = setupPolly(recordingName);
 
-    const provider = x({
+    const provider = createX({
       accessToken: process.env.X_ACCESS_TOKEN ?? "x-test-token",
     });
 
@@ -43,7 +43,7 @@ describe("x post.v2.media.upload.finalize", () => {
   });
 
   it("exposes the finalize method", () => {
-    const provider = x({ accessToken: "x-test-token" });
+    const provider = createX({ accessToken: "x-test-token" });
     expect(typeof provider.post.v2.media.upload.finalize).toBe("function");
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { anthropic } from "../../packages/provider/anthropic/src/anthropic";
+import { createAnthropic } from "../../packages/provider/anthropic/src/anthropic";
 import type {
   AnthropicMessageRequest,
   AnthropicStreamEvent,
@@ -232,7 +232,7 @@ describe("anthropic streaming", () => {
       .mockResolvedValue(
         createSseResponse(chunkString(serializeEvents(expectedEvents), 19))
       );
-    const client = anthropic({ apiKey: "test-key", fetch: mockFetch });
+    const client = createAnthropic({ apiKey: "test-key", fetch: mockFetch });
 
     const stream = await client.v1.messages.stream(request);
     const receivedEvents: AnthropicStreamEvent[] = [];
@@ -290,7 +290,7 @@ describe("anthropic streaming", () => {
           connectionError
         )
       );
-    const client = anthropic({ apiKey: "test-key", fetch: mockFetch });
+    const client = createAnthropic({ apiKey: "test-key", fetch: mockFetch });
     const stream = await client.v1.messages.stream(request);
     const receivedEvents: AnthropicStreamEvent[] = [];
 

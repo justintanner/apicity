@@ -18,7 +18,7 @@ import {
 } from "./zod";
 import { attachExamples } from "./example";
 
-export function x(opts: XOptions): XProvider {
+export function createX(opts: XOptions): XProvider {
   const baseURL = opts.baseURL ?? "https://api.x.com";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

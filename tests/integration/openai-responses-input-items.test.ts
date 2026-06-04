@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai responses inputItems integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("openai responses inputItems integration", () => {
 
   it("should list input items for a stored response", async () => {
     ctx = setupPolly("openai/responses-input-items");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 

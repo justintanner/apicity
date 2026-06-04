@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai gpt-image-2-2026-04-21 text-to-image integration", () => {
   let ctx: PollyContext;
@@ -21,7 +21,7 @@ describe("openai gpt-image-2-2026-04-21 text-to-image integration", () => {
     "should generate an image from the cat2 reference prompt",
     { timeout: 120_000 },
     async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
         timeout: 120_000,
       });

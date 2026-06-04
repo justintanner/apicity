@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie claude sonnet 4.6", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("kie claude sonnet 4.6", () => {
 
   it("should complete a chat request", async () => {
     ctx = setupPolly("kie/claude-chat-hello");
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "sk-test-key",
     });
     const result = await provider.claude.post.v1.messages({

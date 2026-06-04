@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kimicoding } from "@apicity/kimicoding";
+import { createKimiCoding } from "@apicity/kimicoding";
 
 describe("kimicoding embeddings integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("kimicoding embeddings integration", () => {
 
   it("should generate embeddings for a text input", async () => {
     ctx = setupPolly("kimicoding/embeddings-hello");
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
 

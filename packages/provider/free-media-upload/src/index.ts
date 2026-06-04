@@ -1,4 +1,4 @@
-export { freeMediaUpload } from "./freeMediaUpload";
+export { createFreeMediaUpload } from "./freeMediaUpload";
 
 export { uploadToAnyHost } from "./uploadToAnyHost";
 export type {

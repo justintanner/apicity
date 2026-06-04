@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 // Verifies the SDK's response shape against the live API for the error path,
 // using a deterministic bogus taskId so the recording is stable across runs.
@@ -16,7 +16,7 @@ describe("kie suno record-info (not found)", () => {
   });
 
   it("returns code:200 with data:null when the taskId does not exist", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

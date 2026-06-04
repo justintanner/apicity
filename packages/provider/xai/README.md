@@ -17,7 +17,7 @@ pnpm add @apicity/xai
 ## Quick Start
 
 ```typescript
-import { xai as createXai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
 ```
@@ -35,7 +35,7 @@ so the response shapes match what xAI actually returns.
 
 ```typescript
 import { readFile } from "node:fs/promises";
-import { xai as createXai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
 
@@ -763,7 +763,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 ## Middleware
 
 ```typescript
-import { xai as createXai, withRetry } from "@apicity/xai";
+import { createXai, withRetry } from "@apicity/xai";
 
 const xai = createXai({ apiKey: process.env.XAI_API_KEY! });
 const models = withRetry(xai.get.v1.models, { retries: 3 });
@@ -775,7 +775,7 @@ Client-side rate limiting that queues requests to stay within xAI API limits.
 
 ```typescript
 import {
-  xai as createXai,
+  createXai,
   withRateLimit,
   withRetry,
   createRateLimiter,

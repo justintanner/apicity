@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const TOKEN_ID =
   "78433024518676680431174478322854148606578065650008220678402966840627347604025";
@@ -14,7 +14,7 @@ describe("polymarket clob price", () => {
 
   it("should return the best price for a token + side", async () => {
     ctx = setupPolly("polymarket/clob-price");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const buy = await provider.get.clob.price({
       token_id: TOKEN_ID,

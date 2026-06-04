@@ -68,7 +68,7 @@ export function imageUrl(url: string): ImageContentBlock {
   return { type: "image", source: { type: "url", url } };
 }
 
-export function kimicoding(opts: KimiCodingOptions): KimiCodingProvider {
+export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
   const baseURL = opts.baseURL ?? "https://api.kimi.com/coding/";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

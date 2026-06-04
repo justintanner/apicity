@@ -1,6 +1,6 @@
 // Export main provider function
 export {
-  openai,
+  createOpenAi,
   textPart,
   imageUrlPart,
   imageBase64Part,

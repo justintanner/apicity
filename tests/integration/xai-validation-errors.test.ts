@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI validation error integration", () => {
   it("should handle type mismatch in request payload - string for number field", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.chat.completions.schema.safeParse({
       model: "grok-3-fast",
@@ -16,7 +16,7 @@ describe("xAI validation error integration", () => {
   });
 
   it("should handle missing required field - messages", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.chat.completions.schema.safeParse({
       model: "grok-3-fast",
@@ -27,7 +27,7 @@ describe("xAI validation error integration", () => {
   });
 
   it("should handle invalid enum value for message role", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.chat.completions.schema.safeParse({
       model: "grok-3-fast",
@@ -39,7 +39,7 @@ describe("xAI validation error integration", () => {
   });
 
   it("should handle invalid message structure in array", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.chat.completions.schema.safeParse({
       model: "grok-3-fast",
@@ -51,7 +51,7 @@ describe("xAI validation error integration", () => {
   });
 
   it("should validate responses schema with invalid temperature type", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.responses.schema.safeParse({
       model: "grok-4-fast",
@@ -64,7 +64,7 @@ describe("xAI validation error integration", () => {
   });
 
   it("should validate image generations with missing prompt", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.images.generations.schema.safeParse({
       model: "grok-imagine-image",

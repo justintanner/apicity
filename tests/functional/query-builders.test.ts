@@ -2,13 +2,13 @@
 import { describe, it, expect } from "vitest";
 
 // Fal query string builder tests
-import { fal } from "../../packages/provider/fal/src/fal";
+import { createFal } from "../../packages/provider/fal/src/fal";
 
 // XAI query builders
-import { xai } from "../../packages/provider/xai/src/xai";
+import { createXai } from "../../packages/provider/xai/src/xai";
 
 // Anthropic query builder tests
-import { anthropic } from "../../packages/provider/anthropic/src/anthropic";
+import { createAnthropic } from "../../packages/provider/anthropic/src/anthropic";
 
 describe("fal buildQueryString", () => {
   it("returns no query string for empty params", async () => {
@@ -22,7 +22,7 @@ describe("fal buildQueryString", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.v1.models();
     expect(capturedUrl).not.toContain("?");
   });
@@ -38,7 +38,7 @@ describe("fal buildQueryString", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.v1.models({ endpoint_id: "test-model" });
     expect(capturedUrl).toContain("endpoint_id=test-model");
   });
@@ -54,7 +54,7 @@ describe("fal buildQueryString", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.v1.models({ endpoint_id: "test-model", q: "search" });
     expect(capturedUrl).toMatch(/endpoint_id=test-model/);
     expect(capturedUrl).toMatch(/q=search/);
@@ -72,7 +72,7 @@ describe("fal buildQueryString", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.v1.models({ endpoint_id: "test-model", q: undefined });
     expect(capturedUrl).toContain("endpoint_id=test-model");
     expect(capturedUrl).not.toContain("q=");
@@ -89,7 +89,7 @@ describe("fal buildQueryString", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.v1.models.pricing({ endpoint_id: ["model1", "model2"] });
     // Fal uses URLSearchParams which serializes arrays as repeated keys
     const params = new URLSearchParams(capturedUrl.split("?")[1]);
@@ -109,7 +109,7 @@ describe("fal buildQueryString", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.v1.models({ limit: 10 });
     expect(capturedUrl).toContain("limit=10");
   });
@@ -131,7 +131,7 @@ describe("xai buildQuery", () => {
         )
       );
     };
-    const p = xai({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     // Call without params - models endpoint is callable directly
     await p.get.v1.models();
     expect(capturedUrl).not.toContain("?");
@@ -151,7 +151,7 @@ describe("xai buildQuery", () => {
         )
       );
     };
-    const p = xai({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     // Collections takes params as first arg
     await p.get.v1.collections({ limit: 10 });
     expect(capturedUrl).toContain("?limit=10");
@@ -171,7 +171,7 @@ describe("xai buildQuery", () => {
         )
       );
     };
-    const p = xai({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.get.v1.collections({ limit: 10, pagination_token: "cursor123" });
     expect(capturedUrl).toMatch(/limit=10/);
     expect(capturedUrl).toMatch(/pagination_token=cursor123/);
@@ -192,7 +192,7 @@ describe("xai buildQuery", () => {
         )
       );
     };
-    const p = xai({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.get.v1.collections({ limit: 10, team_id: undefined });
     expect(capturedUrl).toContain("limit=10");
     expect(capturedUrl).not.toContain("team_id");
@@ -212,7 +212,7 @@ describe("xai buildQuery", () => {
         )
       );
     };
-    const p = xai({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.get.v1.collections({
       limit: 10,
       team_id: null as unknown as string,
@@ -235,7 +235,7 @@ describe("xai buildQuery", () => {
         )
       );
     };
-    const p = xai({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     await p.get.v1.collections({ filter: "test filter" });
     expect(capturedUrl).toContain("filter=test%20filter");
   });
@@ -258,7 +258,10 @@ describe("anthropic list query params", () => {
         )
       );
     };
-    const p = anthropic({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createAnthropic({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     // Use workspaces list with extra params via the list endpoint
     // Anthropic uses bracket notation for array params like beta headers
     // We'll test via the messages batches list endpoint which takes AnthropicListParams
@@ -283,7 +286,10 @@ describe("anthropic list query params", () => {
         )
       );
     };
-    const p = anthropic({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createAnthropic({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     await p.get.v1.messages.batches.list({ limit: 10, before_id: undefined });
     expect(capturedUrl).toContain("limit=10");
     expect(capturedUrl).not.toContain("before_id");
@@ -305,7 +311,10 @@ describe("anthropic list query params", () => {
         )
       );
     };
-    const p = anthropic({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createAnthropic({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     await p.get.v1.messages.batches.list({ limit: 25 });
     expect(capturedUrl).toContain("limit=25");
   });

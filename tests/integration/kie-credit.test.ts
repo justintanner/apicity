@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie credit integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("kie credit integration", () => {
   });
 
   it("should get user credit balance", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     const result = await provider.get.api.v1.chat.credit();
@@ -24,7 +24,7 @@ describe("kie credit integration", () => {
   });
 
   it("should return credit info with valid structure", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     const result = await provider.get.api.v1.chat.credit();

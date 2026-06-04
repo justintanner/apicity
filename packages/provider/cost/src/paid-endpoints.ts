@@ -85,35 +85,3 @@ export function isPaidEndpoint(
 ): boolean {
   return lookupPaidEndpoint(provider, method, dotPath) !== undefined;
 }
-
-/**
- * Error thrown when the estimated cost of a paid endpoint exceeds the
- * OTP's maxSpendUsd or when the cost cannot be safely estimated.
- */
-export class SpendBoundError extends Error {
-  readonly provider: string;
-  readonly method: string;
-  readonly dotPath: string;
-  readonly maxSpend: number;
-  readonly estimatedUsd: number;
-  constructor(
-    provider: string,
-    method: string,
-    dotPath: string,
-    maxSpend: number,
-    estimatedUsd: number,
-    message?: string
-  ) {
-    super(
-      message ??
-        `Endpoint ${provider} ${method} ${dotPath} estimated cost ` +
-          `(${estimatedUsd} USD) exceeds maxSpend (${maxSpend} USD).`
-    );
-    this.name = "SpendBoundError";
-    this.provider = provider;
-    this.method = method;
-    this.dotPath = dotPath;
-    this.maxSpend = maxSpend;
-    this.estimatedUsd = estimatedUsd;
-  }
-}

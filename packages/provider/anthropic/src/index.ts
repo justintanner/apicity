@@ -1,5 +1,5 @@
 // Export main provider function
-export { anthropic } from "./anthropic";
+export { createAnthropic } from "./anthropic";
 
 // Export error class
 export { AnthropicError } from "./types";

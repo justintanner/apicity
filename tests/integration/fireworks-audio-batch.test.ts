@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fireworks, FireworksError } from "@apicity/fireworks";
+import { createFireworks, FireworksError } from "@apicity/fireworks";
 
 describe("fireworks audio batch integration", () => {
   let ctx: PollyContext;
@@ -19,7 +19,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should reject submission with unknown endpoint_id", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -52,7 +52,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should reject submission with unknown endpoint_id", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -77,7 +77,7 @@ describe("fireworks audio batch integration", () => {
 
   describe("payload validation", () => {
     it("should validate batch transcription with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.audio.batch.transcriptions.schema.safeParse({
           file: "https://example.com/audio.mp3",
@@ -88,7 +88,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should reject batch transcription missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.audio.batch.transcriptions.schema.safeParse({});
       expect(invalid.success).toBe(false);
@@ -97,7 +97,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should validate batch transcription with optional fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.audio.batch.transcriptions.schema.safeParse({
           file: "https://example.com/audio.mp3",
@@ -114,7 +114,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should validate batch translation with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.audio.batch.translations.schema.safeParse({
           file: "https://example.com/audio.mp3",
@@ -125,7 +125,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should reject batch translation missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.audio.batch.translations.schema.safeParse({});
       expect(invalid.success).toBe(false);
@@ -134,7 +134,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should expose transcription payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema = provider.inference.v1.audio.batch.transcriptions.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -144,7 +144,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should expose translation payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema = provider.inference.v1.audio.batch.translations.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -156,7 +156,7 @@ describe("fireworks audio batch integration", () => {
 
   describe("namespace structure", () => {
     it("should expose batch transcriptions, translations, and get methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const batch = provider.inference.v1.audio.batch;
       expect(typeof batch.transcriptions).toBe("function");
       expect(typeof batch.translations).toBe("function");
@@ -164,7 +164,7 @@ describe("fireworks audio batch integration", () => {
     });
 
     it("should expose payload schemas on all methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       expect(
         provider.inference.v1.audio.batch.transcriptions.schema
       ).toBeDefined();

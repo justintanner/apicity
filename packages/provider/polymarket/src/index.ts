@@ -1,4 +1,4 @@
-export { polymarket } from "./polymarket";
+export { createPolymarket } from "./polymarket";
 
 export { PolymarketError } from "./types";
 

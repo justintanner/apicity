@@ -8,7 +8,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { freeMediaUpload } from "@apicity/free-media-upload";
+import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
 describe("free-media-upload tmpfiles upload", () => {
   let ctx: PollyContext;
@@ -19,7 +19,7 @@ describe("free-media-upload tmpfiles upload", () => {
 
   it("should upload a file and return a URL", async () => {
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-upload");
-    const provider = freeMediaUpload();
+    const provider = createFreeMediaUpload();
 
     const content = "Hello, tmpfiles!";
     const file = new Blob([content], { type: "text/plain" });
@@ -35,7 +35,7 @@ describe("free-media-upload tmpfiles upload", () => {
 
   it("should upload an image", async () => {
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-upload-image");
-    const provider = freeMediaUpload();
+    const provider = createFreeMediaUpload();
 
     const imgPath = resolve(__dirname, "../fixtures/cat1.jpg");
     const imgBuffer = readFileSync(imgPath);
@@ -52,7 +52,7 @@ describe("free-media-upload tmpfiles upload", () => {
 
   it("should upload a video", async () => {
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-upload-video");
-    const provider = freeMediaUpload();
+    const provider = createFreeMediaUpload();
 
     const vidPath = resolve(__dirname, "../fixtures/jump.mp4");
     const vidBuffer = readFileSync(vidPath);
@@ -75,7 +75,7 @@ describe("free-media-upload tmpfiles upload", () => {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-schema");
-    const provider = freeMediaUpload();
+    const provider = createFreeMediaUpload();
     const schema = provider.tmpfiles.api.v1.upload.schema;
 
     expect(typeof schema.safeParse).toBe("function");
@@ -90,7 +90,7 @@ describe("free-media-upload tmpfiles upload", () => {
       return;
     }
     ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-validate");
-    const provider = freeMediaUpload();
+    const provider = createFreeMediaUpload();
     const result = provider.tmpfiles.api.v1.upload.schema.safeParse({});
 
     expect(result.success).toBe(false);

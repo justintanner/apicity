@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 
 describe("alibaba models list", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("alibaba models list", () => {
 
   it("should list available models", async () => {
     ctx = setupPolly("alibaba/models-list");
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 

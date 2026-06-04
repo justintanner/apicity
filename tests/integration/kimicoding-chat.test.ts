@@ -1,6 +1,9 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kimicoding, type AnthropicStreamEvent } from "@apicity/kimicoding";
+import {
+  createKimiCoding,
+  type AnthropicStreamEvent,
+} from "@apicity/kimicoding";
 
 describe("kimicoding integration", () => {
   let ctx: PollyContext;
@@ -11,7 +14,7 @@ describe("kimicoding integration", () => {
 
   it("should complete a chat request with k2p5", async () => {
     ctx = setupPolly("kimicoding/chat-hi");
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.coding.v1.messages({
@@ -30,7 +33,7 @@ describe("kimicoding integration", () => {
 
   it("should stream a chat response with k2p5", async () => {
     ctx = setupPolly("kimicoding/stream-hi");
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     const deltas: string[] = [];
@@ -52,7 +55,7 @@ describe("kimicoding integration", () => {
 
   it("should analyze a base64 image with k2p5", async () => {
     ctx = setupPolly("kimicoding/chat-image-base64");
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     const redPixel =
@@ -87,7 +90,7 @@ describe("kimicoding integration", () => {
 
   it("should stream image analysis with k2p5", async () => {
     ctx = setupPolly("kimicoding/stream-image-base64");
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     const redPixel =

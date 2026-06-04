@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI collections documents add integration", () => {
   let ctx: PollyContext;
@@ -14,13 +14,13 @@ describe("xAI collections documents add integration", () => {
   });
 
   it("should have collections.documents sub-method on post.v1.collections", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
     expect(provider.post.v1.collections.documents).toBeDefined();
     expect(typeof provider.post.v1.collections.documents).toBe("function");
   });
 
   it("should add document to collection using management API", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       managementApiKey: process.env.XAI_MANAGEMENT_API_KEY ?? "sk-mgmt-key",
     });

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { fal } from "../../packages/provider/fal/src/fal";
+import { createFal } from "../../packages/provider/fal/src/fal";
 
 function makeErroringSseResponse(chunks: string[], error: Error): Response {
   const encoder = new TextEncoder();
@@ -35,7 +35,7 @@ describe("fal stream error handling", () => {
         )
       );
 
-    const provider = fal({
+    const provider = createFal({
       apiKey: "fal-test",
       fetch: mockFetch as unknown as typeof fetch,
     });

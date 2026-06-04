@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks batch inference jobs", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.batchInferenceJobs.create.schema.safeParse(
           {
@@ -17,7 +17,7 @@ describe("fireworks batch inference jobs", () => {
     });
 
     it("should reject create payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.batchInferenceJobs.create.schema.safeParse(
           {}
@@ -28,7 +28,7 @@ describe("fireworks batch inference jobs", () => {
     });
 
     it("should validate create payload with optional fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.batchInferenceJobs.create.schema.safeParse(
           {
@@ -43,7 +43,7 @@ describe("fireworks batch inference jobs", () => {
     });
 
     it("should expose payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema =
         provider.inference.v1.accounts.batchInferenceJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
@@ -56,7 +56,7 @@ describe("fireworks batch inference jobs", () => {
 
   describe("namespace structure", () => {
     it("should expose create, get, list, and delete methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const batch = provider.inference.v1.accounts.batchInferenceJobs;
       expect(typeof batch.create).toBe("function");
       expect(typeof batch.get).toBe("function");

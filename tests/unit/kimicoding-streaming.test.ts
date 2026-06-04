@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { kimicoding } from "../../packages/provider/kimicoding/src/kimicoding";
+import { createKimiCoding } from "../../packages/provider/kimicoding/src/kimicoding";
 import type {
   AnthropicStreamEvent,
   ChatRequest,
@@ -112,7 +112,7 @@ describe("kimicoding streaming", () => {
     const mockFetch = vi
       .fn()
       .mockResolvedValue(createSseResponse(chunkString(rawStream, 11)));
-    const provider = kimicoding({ apiKey: "test-key", fetch: mockFetch });
+    const provider = createKimiCoding({ apiKey: "test-key", fetch: mockFetch });
 
     const receivedEvents: AnthropicStreamEvent[] = [];
     for await (const event of provider.post.stream.coding.v1.messages(
@@ -167,7 +167,7 @@ describe("kimicoding streaming", () => {
     const mockFetch = vi
       .fn()
       .mockResolvedValue(createSseResponse(chunkString(rawStream, 7)));
-    const provider = kimicoding({ apiKey: "test-key", fetch: mockFetch });
+    const provider = createKimiCoding({ apiKey: "test-key", fetch: mockFetch });
 
     const receivedEvents: AnthropicStreamEvent[] = [];
     for await (const event of provider.post.stream.coding.v1.messages(

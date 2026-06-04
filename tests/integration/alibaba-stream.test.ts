@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { alibaba, type AlibabaChatStreamChunk } from "@apicity/alibaba";
+import { createAlibaba, type AlibabaChatStreamChunk } from "@apicity/alibaba";
 
 describe("alibaba chat completions streaming", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("alibaba chat completions streaming", () => {
 
   it("should stream chat completion chunks", async () => {
     ctx = setupPolly("alibaba/stream-hello");
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 

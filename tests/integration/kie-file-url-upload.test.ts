@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie file URL upload payload validation", () => {
   it("should have schema", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     expect(provider.post.api.fileUrlUpload.schema).toBeDefined();
@@ -13,7 +13,7 @@ describe("kie file URL upload payload validation", () => {
   });
 
   it("should validate payload correctly", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     const validPayload = {
@@ -26,7 +26,7 @@ describe("kie file URL upload payload validation", () => {
   });
 
   it("should reject invalid payload", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     const invalidPayload = {};

@@ -7,8 +7,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Wan 2.7 half of the pair.
 // Companion to kie-grok-imagine-reference-bakeoff.test.ts. Both tests use the
@@ -57,7 +57,8 @@ describe("kie wan/2-7-r2v reference bake-off", () => {
     async () => {
       ctx = setupPollyForFileUploads("kie/wan-27-r2v-reference-bakeoff");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

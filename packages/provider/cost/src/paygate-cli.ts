@@ -1,127 +1,30 @@
 #!/usr/bin/env node
-import { sign, generateKeyPairSync, randomBytes } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { canonicalHash } from "./paygate.js";
+import { mintOtp } from "./paygate.js";
 
 /**
- * Encode a buffer to unpadded base64url.
- */
-function base64urlEncode(data: Buffer): string {
-  return data
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
-}
-
-/**
- * Parse a TTL string like "10m", "1h", "30s" into seconds.
- */
-export function parseTtl(ttl: string): number {
-  const match = ttl.match(/^(\d+)([smhd])$/i);
-  if (!match) {
-    throw new Error(
-      `Invalid TTL format: ${ttl}. Expected format like 10m, 1h, 30s.`
-    );
-  }
-  const value = parseInt(match[1]!, 10);
-  const unit = match[2]!.toLowerCase();
-  switch (unit) {
-    case "s":
-      return value;
-    case "m":
-      return value * 60;
-    case "h":
-      return value * 60 * 60;
-    case "d":
-      return value * 60 * 60 * 24;
-    default:
-      throw new Error(`Unknown TTL unit: ${unit}`);
-  }
-}
-
-/**
- * Mint an OTP for a specific request.
+ * Operator CLI for minting OTPs for paid @apicity endpoints.
  *
- * Requires `APICITY_PAYGATE_PRIVATE_KEY_PATH` to point to an Ed25519 private key PEM.
+ * The shared HMAC secret is read from a file (`--secret-file`) — never from an
+ * environment variable. The exported `mintOtp(secret, call)` is the primary
+ * programmatic API; this CLI is a thin convenience wrapper.
  */
-export function mintOtp(
-  provider: string,
-  method: string,
-  dotPath: string,
-  payload: Record<string, unknown>,
-  maxSpendUsd: number,
-  ttlSeconds: number
-): string {
-  const privateKeyPath = process.env.APICITY_PAYGATE_PRIVATE_KEY_PATH;
-  if (!privateKeyPath) {
-    throw new Error(
-      "APICITY_PAYGATE_PRIVATE_KEY_PATH is not set. " +
-        "Export the path to your Ed25519 private key PEM."
-    );
-  }
-
-  const privateKeyPem = readFileSync(privateKeyPath, "utf8");
-
-  const jti = randomBytes(16).toString("hex");
-  const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + ttlSeconds;
-
-  const payloadObj = {
-    v: 1 as const,
-    jti,
-    provider,
-    method,
-    dotPath,
-    requestHash: canonicalHash(payload),
-    maxSpendUsd,
-    iat,
-    exp,
-  };
-
-  const payloadJson = JSON.stringify(payloadObj);
-  const payloadSegment = base64urlEncode(Buffer.from(payloadJson, "utf8"));
-
-  const signature = sign(
-    null,
-    Buffer.from(payloadSegment, "utf8"),
-    privateKeyPem
-  );
-
-  const signatureSegment = base64urlEncode(signature);
-
-  return `${payloadSegment}.${signatureSegment}`;
-}
-
-/**
- * Generate a fresh Ed25519 key pair for the pay gate.
- */
-export function generateKeyPair(): {
-  publicKeyPem: string;
-  privateKeyPem: string;
-} {
-  const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-    publicKeyEncoding: { type: "spki", format: "pem" },
-    privateKeyEncoding: { type: "pkcs8", format: "pem" },
-  });
-  return { publicKeyPem: publicKey, privateKeyPem: privateKey };
-}
 
 interface MintArgs {
-  provider: string;
-  method: string;
+  provider?: string;
+  method?: string;
   dotPath: string;
   payloadFile: string;
-  maxSpend: number;
-  ttl: string;
+  secretFile: string;
+  ttl?: string;
 }
 
 function parseMintArgs(argv: string[]): MintArgs {
   const out: Partial<MintArgs> = {};
   for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
+    const a = argv[i]!;
     if (a === "--provider") out.provider = argv[++i];
     else if (a.startsWith("--provider=")) out.provider = a.slice(11);
     else if (a === "--method") out.method = argv[++i];
@@ -130,9 +33,8 @@ function parseMintArgs(argv: string[]): MintArgs {
     else if (a.startsWith("--dot-path=")) out.dotPath = a.slice(11);
     else if (a === "--payload-file") out.payloadFile = argv[++i];
     else if (a.startsWith("--payload-file=")) out.payloadFile = a.slice(15);
-    else if (a === "--max-spend") out.maxSpend = parseFloat(argv[++i]!);
-    else if (a.startsWith("--max-spend="))
-      out.maxSpend = parseFloat(a.slice(12));
+    else if (a === "--secret-file") out.secretFile = argv[++i];
+    else if (a.startsWith("--secret-file=")) out.secretFile = a.slice(14);
     else if (a === "--ttl") out.ttl = argv[++i];
     else if (a.startsWith("--ttl=")) out.ttl = a.slice(6);
     else {
@@ -140,14 +42,7 @@ function parseMintArgs(argv: string[]): MintArgs {
     }
   }
 
-  const required: (keyof MintArgs)[] = [
-    "provider",
-    "method",
-    "dotPath",
-    "payloadFile",
-    "maxSpend",
-    "ttl",
-  ];
+  const required: (keyof MintArgs)[] = ["dotPath", "payloadFile", "secretFile"];
   for (const key of required) {
     if (out[key] === undefined || out[key] === null) {
       throw new Error(
@@ -166,23 +61,20 @@ function printHelp(): void {
       "",
       "Usage:",
       "  apicity-paygate otp mint \\",
-      "    --provider <provider> \\",
-      "    --method <HTTP method> \\",
+      "    --secret-file <path> \\",
       "    --dot-path <api.path> \\",
       "    --payload-file <path> \\",
-      "    --max-spend <usd> \\",
-      "    --ttl <duration>",
+      "    [--provider <provider>] \\",
+      "    [--method <HTTP method>] \\",
+      "    [--ttl <duration>]",
       "",
       "Options:",
-      "  --provider     Provider name (e.g. kie, openai, xai)",
-      "  --method       HTTP method (e.g. POST, GET)",
+      "  --secret-file  Path to a file containing the shared HMAC secret",
       "  --dot-path     API dot-path (e.g. api.v1.jobs.createTask)",
       "  --payload-file Path to JSON request payload file",
-      "  --max-spend    Maximum spend in USD",
-      "  --ttl          Time-to-live: 10m, 1h, 30s, 1d",
-      "",
-      "Environment:",
-      "  APICITY_PAYGATE_PRIVATE_KEY_PATH  Path to Ed25519 private key PEM",
+      "  --provider     Provider name (optional; resolved from the dot-path)",
+      "  --method       HTTP method (optional; resolved from the dot-path)",
+      "  --ttl          Time-to-live: 10m, 1h, 30s, 1d (default 10m)",
     ].join("\n")
   );
 }
@@ -202,21 +94,21 @@ async function main(): Promise<void> {
   }
 
   const args = parseMintArgs(argv.slice(2));
-  const payload = JSON.parse(readFileSync(args.payloadFile, "utf8")) as Record<
+  const secret = readFileSync(args.secretFile, "utf8").trim();
+  const request = JSON.parse(readFileSync(args.payloadFile, "utf8")) as Record<
     string,
     unknown
   >;
-  const ttlSeconds = parseTtl(args.ttl);
-  const otp = mintOtp(
-    args.provider,
-    args.method,
-    args.dotPath,
-    payload,
-    args.maxSpend,
-    ttlSeconds
-  );
+  const otp = mintOtp(secret, {
+    provider: args.provider,
+    method: args.method,
+    dotPath: args.dotPath,
+    request,
+    ttl: args.ttl,
+  });
   console.log(otp);
 }
+
 const __filename = fileURLToPath(import.meta.url);
 if (process.argv[1] === __filename) {
   main().catch((err) => {

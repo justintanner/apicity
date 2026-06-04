@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie suno midi.generate (error envelope)", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("kie suno midi.generate (error envelope)", () => {
   });
 
   it("returns a recognizable envelope when taskId does not exist", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

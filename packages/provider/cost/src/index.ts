@@ -1,4 +1,4 @@
-export { cost } from "./cost";
+export { createCost } from "./cost";
 export { computeEstimate } from "./compute";
 export { PRICING, PRICING_AS_OF } from "./pricing/index";
 export { MODEL_SLUGS, MODEL_DISPLAY, modelSlug, modelDisplay } from "./slugs";
@@ -27,11 +27,6 @@ export {
   PAID_ENDPOINTS,
   lookupPaidEndpoint,
   isPaidEndpoint,
-  maxSpendPreflight,
-  MaxSpendError,
-  SpendBoundError,
-  spendBoundCheck,
-  dispatchWithPaidGuard,
 } from "./paid-endpoints";
 export type {
   PaidEndpointKey,
@@ -41,13 +36,25 @@ export type {
 
 export {
   PayGateError,
-  PayGateApproval,
   dispatchWithPaidGate,
+  mintOtp,
+  createReplayStore,
   canonicalizeJson,
   canonicalHash,
   parseOtp,
-  verifyOtpSignature,
-  isJtiConsumed,
-  consumeJti,
+  parseTtl,
+  verifyOtp,
 } from "./paygate";
-export type { PayGateOtpPayload } from "./paygate";
+export type {
+  PayGateApproval,
+  PayGateConfig,
+  ReplayStore,
+  OtpCall,
+  PayGateOtpPayload,
+  VerifyFailureCode,
+  VerifyOtpInput,
+  VerifyResult,
+} from "./paygate";
+
+export { withPaidGate } from "./with-paid-gate";
+export type { WithPaidGateOptions } from "./with-paid-gate";

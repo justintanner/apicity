@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const MARKET_ID = "540816";
 const MARKET_SLUG = "russia-ukraine-ceasefire-before-gta-vi-554";
@@ -14,7 +14,7 @@ describe("polymarket gamma markets surface", () => {
 
   it("markets() lists active markets as a bare JSON array", async () => {
     ctx = setupPolly("polymarket/gamma-markets-list");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.markets({ limit: 2, closed: false });
 
@@ -30,7 +30,7 @@ describe("polymarket gamma markets surface", () => {
 
   it("markets(id) retrieves a single market", async () => {
     ctx = setupPolly("polymarket/gamma-markets-by-id");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const m = await provider.get.gamma.markets(MARKET_ID);
 
@@ -43,7 +43,7 @@ describe("polymarket gamma markets surface", () => {
 
   it("markets.keyset() paginates with next_cursor", async () => {
     ctx = setupPolly("polymarket/gamma-markets-keyset");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.markets.keyset({ limit: 2 });
 
@@ -54,7 +54,7 @@ describe("polymarket gamma markets surface", () => {
 
   it("markets.slug(slug) retrieves a market by its slug", async () => {
     ctx = setupPolly("polymarket/gamma-markets-by-slug");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const m = await provider.get.gamma.markets.slug(MARKET_SLUG);
 
@@ -64,7 +64,7 @@ describe("polymarket gamma markets surface", () => {
 
   it("markets.tags(id) returns the market's tags as an array", async () => {
     ctx = setupPolly("polymarket/gamma-markets-tags");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const tags = await provider.get.gamma.markets.tags(MARKET_ID);
 

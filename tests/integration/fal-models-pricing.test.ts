@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal models pricing integration", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("fal models pricing integration", () => {
 
   it("should get model pricing", async () => {
     ctx = setupPolly("fal/models-pricing");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.pricing({
@@ -24,7 +24,7 @@ describe("fal models pricing integration", () => {
 
   it("should estimate pricing for a request", async () => {
     ctx = setupPolly("fal/models-pricing-estimate");
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
     });
     const result = await provider.v1.models.pricing.estimate({

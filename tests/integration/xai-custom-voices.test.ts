@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai, XaiError } from "@apicity/xai";
+import { createXai, XaiError } from "@apicity/xai";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -26,7 +26,7 @@ describe("xAI custom voices integration", () => {
     const refBuffer = readFileSync(refPath);
     const file = new Blob([refBuffer], { type: "audio/mpeg" });
 
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
 
@@ -41,7 +41,7 @@ describe("xAI custom voices integration", () => {
   });
 
   it("should validate customVoices payload", () => {
-    const provider = xai({ apiKey: "xai-test-key" });
+    const provider = createXai({ apiKey: "xai-test-key" });
 
     const valid = provider.post.v1.customVoices.schema.safeParse({
       file: new Blob([new Uint8Array([0])], { type: "audio/mpeg" }),
@@ -64,7 +64,7 @@ describe("xAI custom voices integration", () => {
   });
 
   it("should expose customVoices schema", () => {
-    const provider = xai({ apiKey: "xai-test-key" });
+    const provider = createXai({ apiKey: "xai-test-key" });
     expect(provider.post.v1.customVoices.schema).toBeDefined();
     expect(typeof provider.post.v1.customVoices.schema.safeParse).toBe(
       "function"

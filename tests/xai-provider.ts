@@ -8,7 +8,7 @@
  * The rate limiter does NOT receive the provider's internal AbortSignal
  * so that the provider's 30s timeout doesn't cancel queued requests.
  */
-import { xai, createRateLimiter, XAI_RATE_LIMITS } from "@apicity/xai";
+import { createXai, createRateLimiter, XAI_RATE_LIMITS } from "@apicity/xai";
 import type { RateLimiter } from "@apicity/xai";
 
 const limiter: RateLimiter & {
@@ -31,7 +31,7 @@ function rateLimitedFetch(
 }
 
 export function createXaiProvider() {
-  return xai({
+  return createXai({
     apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
     timeout: 60_000,
     fetch: rateLimitedFetch,

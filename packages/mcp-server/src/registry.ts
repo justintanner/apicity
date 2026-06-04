@@ -79,6 +79,8 @@ async function findAndRead(candidates: string[]): Promise<string> {
 export interface BuildRegistryOptions {
   /** If set, only these provider names are loaded. Defaults to all with env vars. */
   enabledProviders?: string[];
+  /** Shared HMAC secret used to verify OTPs for paid endpoints. */
+  paygateSecret?: string;
 }
 
 export async function buildRegistry(
@@ -91,7 +93,7 @@ export async function buildRegistry(
   for (const [name, spec] of Object.entries(PROVIDERS)) {
     if (!wanted.has(name)) continue;
     try {
-      const inst = await instantiateProvider(name, spec);
+      const inst = await instantiateProvider(name, spec, opts.paygateSecret);
       if (inst) instances.set(name, inst);
     } catch (err) {
       console.error(

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai transcribe", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("openai transcribe", () => {
     const mp3Buffer = readFileSync(mp3Path);
     const file = new Blob([mp3Buffer], { type: "audio/mp3" });
 
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 

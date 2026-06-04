@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 import type { FireworksModel } from "../../../packages/provider/fireworks/src/types";
 
@@ -68,7 +68,10 @@ describe("fireworks model preparation", () => {
       .mockResolvedValueOnce(createJsonResponse(snapshots[2]))
       .mockResolvedValueOnce(createJsonResponse(snapshots[3]));
 
-    const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
+    const provider = createFireworks({
+      apiKey: "fw-test-key",
+      fetch: mockFetch,
+    });
 
     await provider.inference.v1.accounts.models.prepare(
       "acct-123",
@@ -129,7 +132,10 @@ describe("fireworks dataset upload validation", () => {
 
   it("posts validateUpload to the dataset-specific endpoint and defaults to an empty payload", async () => {
     const mockFetch = vi.fn().mockResolvedValue(createJsonResponse({}));
-    const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
+    const provider = createFireworks({
+      apiKey: "fw-test-key",
+      fetch: mockFetch,
+    });
 
     await provider.inference.v1.accounts.datasets.validateUpload(
       "acct-123",
@@ -154,7 +160,7 @@ describe("fireworks dataset upload validation", () => {
   });
 
   it("enforces dataset field requirements and format enums around upload flows via Zod", () => {
-    const provider = fireworks({ apiKey: "fw-test-key" });
+    const provider = createFireworks({ apiKey: "fw-test-key" });
 
     const missingCreateFields =
       provider.inference.v1.accounts.datasets.create.schema.safeParse({});

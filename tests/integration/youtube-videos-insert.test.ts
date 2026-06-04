@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { youtube } from "@apicity/youtube";
+import { createYouTube } from "@apicity/youtube";
 import fs from "fs";
 import path from "path";
 
@@ -33,7 +33,7 @@ describe("youtube videos.insert", () => {
     const videoBuffer = fs.readFileSync(videoPath);
     const videoBlob = new Blob([videoBuffer], { type: "video/mp4" });
 
-    const provider = youtube({
+    const provider = createYouTube({
       accessToken: process.env.YOUTUBE_ACCESS_TOKEN ?? "test-token",
     });
 

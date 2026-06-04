@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 // Direct imports for unit-level coverage
 import {
@@ -82,7 +82,7 @@ describe("fireworks Zod schema validation edge cases", () => {
 
 describe("fireworks schema property on endpoints", () => {
   it("should expose .schema on chat.completions", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.chat.completions.schema).toBeDefined();
     expect(typeof provider.inference.v1.chat.completions.schema.safeParse).toBe(
       "function"
@@ -90,42 +90,42 @@ describe("fireworks schema property on endpoints", () => {
   });
 
   it("should expose .schema on completions", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.completions.schema).toBeDefined();
   });
 
   it("should expose .schema on embeddings", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.embeddings.schema).toBeDefined();
   });
 
   it("should expose .schema on rerank", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.rerank.schema).toBeDefined();
   });
 
   it("should expose .schema on messages", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.messages.schema).toBeDefined();
   });
 
   it("should expose .schema on workflows.textToImage", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.workflows.textToImage.schema).toBeDefined();
   });
 
   it("should expose .schema on workflows.kontext", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.workflows.kontext.schema).toBeDefined();
   });
 
   it("should expose .schema on workflows.getResult", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     expect(provider.inference.v1.workflows.getResult.schema).toBeDefined();
   });
 
   it("should validate via safeParse on chat.completions.schema", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     const result = provider.inference.v1.chat.completions.schema.safeParse({
       model: "test-model",
       messages: [{ role: "user", content: "Hello" }],
@@ -134,7 +134,7 @@ describe("fireworks schema property on endpoints", () => {
   });
 
   it("should reject invalid payload via safeParse on chat.completions.schema", () => {
-    const provider = fireworks({ apiKey: "test-key" });
+    const provider = createFireworks({ apiKey: "test-key" });
     const result = provider.inference.v1.chat.completions.schema.safeParse({
       // Missing required 'model' and 'messages'
     });
@@ -207,7 +207,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
     const abortController = new AbortController();
     let fetchCalledWithSignal: AbortSignal | undefined;
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "test-key",
       fetch: async (_url: string | URL | Request, init?: RequestInit) => {
         fetchCalledWithSignal = init?.signal ?? undefined;
@@ -247,7 +247,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
       onabort: null,
     } as unknown as AbortSignal;
 
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "test-key",
       fetch: async (_url: string | URL | Request, init?: RequestInit) => {
         // Internal controller should be aborted because signal was pre-aborted
@@ -270,7 +270,7 @@ describe("fireworks attachAbortHandler (lines 204-217)", () => {
   });
 
   it("should work without a signal (undefined path)", async () => {
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: "test-key",
       fetch: async () => {
         return new Response(

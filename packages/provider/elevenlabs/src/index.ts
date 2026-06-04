@@ -1,4 +1,4 @@
-export { elevenlabs } from "./elevenlabs";
+export { createElevenLabs } from "./elevenlabs";
 
 export { ElevenLabsError } from "./types";
 

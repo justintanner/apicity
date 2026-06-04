@@ -18,37 +18,37 @@ const PROVIDERS = [
   {
     name: "openai",
     entryFiles: ["packages/provider/openai/src/openai.ts"],
-    factoryNames: ["openai"],
+    factoryNames: ["createOpenAi"],
   },
   {
     name: "xai",
     entryFiles: ["packages/provider/xai/src/xai.ts"],
-    factoryNames: ["xai"],
+    factoryNames: ["createXai"],
   },
   {
     name: "anthropic",
     entryFiles: ["packages/provider/anthropic/src/anthropic.ts"],
-    factoryNames: ["anthropic"],
+    factoryNames: ["createAnthropic"],
   },
   {
     name: "fireworks",
     entryFiles: ["packages/provider/fireworks/src/fireworks.ts"],
-    factoryNames: ["fireworks"],
+    factoryNames: ["createFireworks"],
   },
   {
     name: "fal",
     entryFiles: ["packages/provider/fal/src/fal.ts"],
-    factoryNames: ["fal"],
+    factoryNames: ["createFal"],
   },
   {
     name: "kimicoding",
     entryFiles: ["packages/provider/kimicoding/src/kimicoding.ts"],
-    factoryNames: ["kimicoding"],
+    factoryNames: ["createKimiCoding"],
   },
   {
     name: "alibaba",
     entryFiles: ["packages/provider/alibaba/src/alibaba.ts"],
-    factoryNames: ["alibaba"],
+    factoryNames: ["createAlibaba"],
   },
   {
     name: "kie",
@@ -60,7 +60,7 @@ const PROVIDERS = [
       "packages/provider/kie/src/veo.ts",
     ],
     factoryNames: [
-      "kie",
+      "createKie",
       "createChatProvider",
       "createClaudeProvider",
       "createSunoProvider",
@@ -70,22 +70,22 @@ const PROVIDERS = [
   {
     name: "free-media-upload",
     entryFiles: ["packages/provider/free-media-upload/src/freeMediaUpload.ts"],
-    factoryNames: ["freeMediaUpload"],
+    factoryNames: ["createFreeMediaUpload"],
   },
   {
     name: "elevenlabs",
     entryFiles: ["packages/provider/elevenlabs/src/elevenlabs.ts"],
-    factoryNames: ["elevenlabs"],
+    factoryNames: ["createElevenLabs"],
   },
   {
     name: "x",
     entryFiles: ["packages/provider/x/src/x.ts"],
-    factoryNames: ["x"],
+    factoryNames: ["createX"],
   },
   {
     name: "meta",
     entryFiles: ["packages/provider/meta/src/meta.ts"],
-    factoryNames: ["meta"],
+    factoryNames: ["createMeta"],
   },
   {
     name: "polymarket",
@@ -103,12 +103,12 @@ const PROVIDERS = [
   {
     name: "youtube",
     entryFiles: ["packages/provider/youtube/src/youtube.ts"],
-    factoryNames: ["youtube"],
+    factoryNames: ["createYouTube"],
   },
   {
     name: "dolthub",
     entryFiles: ["packages/provider/dolthub/src/dolthub.ts"],
-    factoryNames: ["dolthub"],
+    factoryNames: ["createDoltHub"],
   },
 ];
 

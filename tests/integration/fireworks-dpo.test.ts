@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks dpo fine-tuning jobs", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.dpoJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-dpo-dataset",
@@ -14,7 +14,7 @@ describe("fireworks dpo fine-tuning jobs", () => {
     });
 
     it("should reject create payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.dpoJobs.create.schema.safeParse({});
       expect(invalid.success).toBe(false);
@@ -22,7 +22,7 @@ describe("fireworks dpo fine-tuning jobs", () => {
     });
 
     it("should validate create payload with training config", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.dpoJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/my-dpo-dataset",
@@ -43,7 +43,7 @@ describe("fireworks dpo fine-tuning jobs", () => {
     });
 
     it("should validate create payload with cloud storage config", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.dpoJobs.create.schema.safeParse({
           dataset: "accounts/test/datasets/s3-dataset",
@@ -56,7 +56,7 @@ describe("fireworks dpo fine-tuning jobs", () => {
     });
 
     it("should expose payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema = provider.inference.v1.accounts.dpoJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -67,7 +67,7 @@ describe("fireworks dpo fine-tuning jobs", () => {
 
   describe("namespace structure", () => {
     it("should expose create, get, list, delete, resume, and getMetricsFileEndpoint methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const dpo = provider.inference.v1.accounts.dpoJobs;
       expect(typeof dpo.create).toBe("function");
       expect(typeof dpo.get).toBe("function");

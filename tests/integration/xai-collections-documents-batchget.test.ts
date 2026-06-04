@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI collections documents batchGet integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("xAI collections documents batchGet integration", () => {
   });
 
   it("should have batchGet sub-method on get.v1.collections.documents", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
     expect(provider.get.v1.collections.documents.batchGet).toBeDefined();
     expect(typeof provider.get.v1.collections.documents.batchGet).toBe(
       "function"
@@ -22,7 +22,7 @@ describe("xAI collections documents batchGet integration", () => {
   });
 
   it("should batch get documents from collection using management API", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       managementApiKey: process.env.XAI_MANAGEMENT_API_KEY ?? "sk-mgmt-key",
     });

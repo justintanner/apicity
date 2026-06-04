@@ -54,7 +54,7 @@ function attachAbortHandler(
   }
 }
 
-export function anthropic(opts: AnthropicOptions): AnthropicProvider {
+export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
   const baseURL = (opts.baseURL ?? "https://api.anthropic.com") + "/v1";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 // Active event from late 2025 — chosen at record time because it has a
 // long-running window and stable id/slug.
@@ -16,7 +16,7 @@ describe("polymarket gamma events surface", () => {
 
   it("events() lists events as a bare JSON array", async () => {
     ctx = setupPolly("polymarket/gamma-events-list");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.events({ limit: 2, closed: false });
 
@@ -34,7 +34,7 @@ describe("polymarket gamma events surface", () => {
 
   it("events(id) retrieves a single event", async () => {
     ctx = setupPolly("polymarket/gamma-events-by-id");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const e = await provider.get.gamma.events(EVENT_ID);
 
@@ -49,7 +49,7 @@ describe("polymarket gamma events surface", () => {
 
   it("events.keyset() paginates with next_cursor envelope", async () => {
     ctx = setupPolly("polymarket/gamma-events-keyset");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.gamma.events.keyset({ limit: 2 });
 
@@ -60,7 +60,7 @@ describe("polymarket gamma events surface", () => {
 
   it("events.slug(slug) retrieves an event by its slug", async () => {
     ctx = setupPolly("polymarket/gamma-events-by-slug");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const e = await provider.get.gamma.events.slug(EVENT_SLUG);
 
@@ -70,7 +70,7 @@ describe("polymarket gamma events surface", () => {
 
   it("events.tags(id) returns the event's tags as an array", async () => {
     ctx = setupPolly("polymarket/gamma-events-tags");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const tags = await provider.get.gamma.events.tags(EVENT_ID);
 

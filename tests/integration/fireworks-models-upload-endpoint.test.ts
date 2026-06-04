@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks models upload endpoint integration", () => {
   describe("payload validation", () => {
     it("should validate getUploadEndpoint payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.models.getUploadEndpoint.schema.safeParse(
           {
@@ -16,7 +16,7 @@ describe("fireworks models upload endpoint integration", () => {
     });
 
     it("should reject getUploadEndpoint payload missing required fields", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const invalid =
         provider.inference.v1.accounts.models.getUploadEndpoint.schema.safeParse(
           {}
@@ -26,7 +26,7 @@ describe("fireworks models upload endpoint integration", () => {
     });
 
     it("should validate getUploadEndpoint payload with optional fields", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.models.getUploadEndpoint.schema.safeParse(
           {
@@ -43,7 +43,7 @@ describe("fireworks models upload endpoint integration", () => {
     });
 
     it("should expose getUploadEndpoint payload schema", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const schema =
         provider.inference.v1.accounts.models.getUploadEndpoint.schema;
       expect(typeof schema.safeParse).toBe("function");
@@ -55,7 +55,7 @@ describe("fireworks models upload endpoint integration", () => {
 
   describe("namespace structure", () => {
     it("should expose upload and download endpoint methods on models", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       expect(
         provider.inference.v1.accounts.models.getUploadEndpoint
       ).toBeTypeOf("function");

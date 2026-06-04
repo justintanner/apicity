@@ -17,7 +17,7 @@ pnpm add @apicity/fal
 ## Quick Start
 
 ```typescript
-import { fal as createFal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 ```
@@ -36,7 +36,7 @@ below comes from real recorded HARs.
 
 ```typescript
 import { readFile } from "node:fs/promises";
-import { fal as createFal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 
@@ -1155,7 +1155,7 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ## Middleware
 
 ```typescript
-import { fal as createFal, withRetry } from "@apicity/fal";
+import { createFal, withRetry } from "@apicity/fal";
 
 const fal = createFal({ apiKey: process.env.FAL_API_KEY! });
 const models = withRetry(fal.get.v1.models, { retries: 3 });

@@ -61,7 +61,7 @@ export function parseTranscriptXml(
   return segments;
 }
 
-export function youtube(opts?: YouTubeOptions): YouTubeProvider {
+export function createYouTube(opts?: YouTubeOptions): YouTubeProvider {
   const baseURL = opts?.baseURL ?? "https://www.googleapis.com/youtube/v3";
   const doFetch = opts?.fetch ?? fetch;
   const timeout = opts?.timeout ?? 30000;

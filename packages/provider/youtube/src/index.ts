@@ -1,4 +1,4 @@
-export { youtube } from "./youtube";
+export { createYouTube } from "./youtube";
 
 export { YouTubeError } from "./types";
 

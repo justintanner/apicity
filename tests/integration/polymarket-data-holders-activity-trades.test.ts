@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const USER_ADDRESS = "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e";
 const CONDITION_ID =
@@ -16,7 +16,7 @@ describe("polymarket data holders+activity+trades surface", () => {
 
   it("holders(query) returns per-token leaderboard groups", async () => {
     ctx = setupPolly("polymarket/data-holders");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.holders({
       market: CONDITION_ID,
@@ -32,7 +32,7 @@ describe("polymarket data holders+activity+trades surface", () => {
 
   it("activity(query) returns the user's recent on-chain actions", async () => {
     ctx = setupPolly("polymarket/data-activity");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.activity({
       user: USER_ADDRESS,
@@ -50,7 +50,7 @@ describe("polymarket data holders+activity+trades surface", () => {
 
   it("trades(query) returns the user's trades", async () => {
     ctx = setupPolly("polymarket/data-trades");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.trades({
       user: USER_ADDRESS,
@@ -68,7 +68,7 @@ describe("polymarket data holders+activity+trades surface", () => {
 
   it("oi() returns global open interest by default", async () => {
     ctx = setupPolly("polymarket/data-oi");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.oi();
 
@@ -81,7 +81,7 @@ describe("polymarket data holders+activity+trades surface", () => {
 
   it("liveVolume(query) returns per-event volume rollup", async () => {
     ctx = setupPolly("polymarket/data-live-volume");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.liveVolume({ id: EVENT_ID });
 

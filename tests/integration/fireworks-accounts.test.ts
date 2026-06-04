@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks accounts integration", () => {
   describe("accounts get", () => {
@@ -15,7 +15,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should get account details", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.get("jwtanner");
@@ -35,7 +35,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should list users", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.users.list(
@@ -60,7 +60,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should get user details", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       // Use the user ID from the recording (jwtanner)
@@ -84,7 +84,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should list api keys for a user", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       // Use the user ID from the recording (jwtanner)
@@ -108,7 +108,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should list secrets", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.secrets.list(
@@ -121,7 +121,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should get secret details if secrets exist", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const listResult = await provider.inference.v1.accounts.secrets.list(
@@ -146,7 +146,7 @@ describe("fireworks accounts integration", () => {
 
   describe("payload validation", () => {
     it("should validate create user payload", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.users.create.schema.safeParse({
           role: "user",
@@ -157,7 +157,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should reject create user without role", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const result =
         provider.inference.v1.accounts.users.create.schema.safeParse({
           email: "test@example.com",
@@ -167,14 +167,14 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should expose create user schema", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const schema = provider.inference.v1.accounts.users.create.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
     });
 
     it("should validate update user payload", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.users.update.schema.safeParse({
           role: "admin",
@@ -183,7 +183,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should reject update user without role", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const result =
         provider.inference.v1.accounts.users.update.schema.safeParse({
           displayName: "New Name",
@@ -193,7 +193,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should expose update user schema", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const schema = provider.inference.v1.accounts.users.update.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -201,7 +201,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should validate create api key payload", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.apiKeys.create.schema.safeParse({
           apiKey: { displayName: "test-key" },
@@ -210,7 +210,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should reject create api key without apiKey object", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const result =
         provider.inference.v1.accounts.apiKeys.create.schema.safeParse({});
       expect(result.success).toBe(false);
@@ -218,7 +218,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should validate delete api key payload", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.apiKeys.delete.schema.safeParse({
           keyId: "key-123",
@@ -227,7 +227,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should reject delete api key without keyId", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const result =
         provider.inference.v1.accounts.apiKeys.delete.schema.safeParse({});
       expect(result.success).toBe(false);
@@ -235,7 +235,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should validate create secret payload", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.secrets.create.schema.safeParse({
           keyName: "MY_SECRET",
@@ -245,7 +245,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should reject create secret without keyName", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const result =
         provider.inference.v1.accounts.secrets.create.schema.safeParse({
           value: "secret-value",
@@ -255,7 +255,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should validate update secret payload", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const valid =
         provider.inference.v1.accounts.secrets.update.schema.safeParse({
           keyName: "MY_SECRET",
@@ -265,7 +265,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should reject update secret without keyName", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const result =
         provider.inference.v1.accounts.secrets.update.schema.safeParse({
           value: "new-value",
@@ -275,7 +275,7 @@ describe("fireworks accounts integration", () => {
     });
 
     it("should expose update secret schema", () => {
-      const provider = fireworks({ apiKey: "test-key" });
+      const provider = createFireworks({ apiKey: "test-key" });
       const schema = provider.inference.v1.accounts.secrets.update.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");

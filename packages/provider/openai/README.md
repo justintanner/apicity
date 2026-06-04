@@ -17,9 +17,9 @@ pnpm add @apicity/openai
 ## Quick Start
 
 ```typescript
-import { openai as createOpenai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
-const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
+const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 ```
 
 ## API Reference
@@ -619,9 +619,9 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 ## Middleware
 
 ```typescript
-import { openai as createOpenai, withRetry } from "@apicity/openai";
+import { createOpenAi, withRetry } from "@apicity/openai";
 
-const openai = createOpenai({ apiKey: process.env.OPENAI_API_KEY! });
+const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 const models = withRetry(openai.get.v1.models, { retries: 3 });
 ```
 

@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai images integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("openai images integration", () => {
   });
 
   it("should generate an image", async () => {
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.images.generations({

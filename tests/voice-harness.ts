@@ -1,7 +1,7 @@
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
-import { xai } from "../packages/provider/xai/src/index.js";
+import { createXai } from "../packages/provider/xai/src/index.js";
 
 const args = process.argv.slice(2);
 let port = 3476;
@@ -19,7 +19,7 @@ if (!apiKey) {
   process.exit(1);
 }
 
-const provider = xai({ apiKey });
+const provider = createXai({ apiKey });
 
 const HTML_PATH = path.resolve(import.meta.dirname, "voice-harness.html");
 

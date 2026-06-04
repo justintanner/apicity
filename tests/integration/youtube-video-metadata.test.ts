@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { youtube } from "@apicity/youtube";
+import { createYouTube } from "@apicity/youtube";
 
 describe("youtube videoMetadata", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("youtube videoMetadata", () => {
 
   it("should return metadata for a public video by id (no credentials)", async () => {
     ctx = setupPolly("youtube/video-metadata-id");
-    const provider = youtube();
+    const provider = createYouTube();
 
     const result = await provider.videoMetadata({
       videoId: "dQw4w9WgXcQ",
@@ -30,7 +30,7 @@ describe("youtube videoMetadata", () => {
 
   it("should accept a full URL", async () => {
     ctx = setupPolly("youtube/video-metadata-url");
-    const provider = youtube();
+    const provider = createYouTube();
 
     const result = await provider.videoMetadata({
       videoId: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
@@ -42,7 +42,7 @@ describe("youtube videoMetadata", () => {
 
   it("should throw a typed error for an invalid video id", async () => {
     ctx = setupPolly("youtube/video-metadata-invalid");
-    const provider = youtube();
+    const provider = createYouTube();
 
     await expect(
       provider.videoMetadata({

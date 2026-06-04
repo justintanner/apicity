@@ -37,7 +37,7 @@ import {
   DoltHubPullMergeRequestSchema,
 } from "./zod";
 
-export function dolthub(opts?: DoltHubOptions): DoltHubProvider {
+export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
   const baseURL = opts?.baseURL ?? "https://www.dolthub.com";
   const doFetch = opts?.fetch ?? fetch;
   const timeout = opts?.timeout ?? 30000;

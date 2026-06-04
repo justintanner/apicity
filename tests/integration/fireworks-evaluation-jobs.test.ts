@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks evaluation jobs", () => {
   describe("payload validation", () => {
     it("should validate create payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.evaluationJobs.create.schema.safeParse({
           evaluationJob: {
@@ -18,7 +18,7 @@ describe("fireworks evaluation jobs", () => {
     });
 
     it("should reject create payload missing required evaluationJob field", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid =
         provider.inference.v1.accounts.evaluationJobs.create.schema.safeParse(
           {}
@@ -28,7 +28,7 @@ describe("fireworks evaluation jobs", () => {
     });
 
     it("should validate create payload with optional fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.accounts.evaluationJobs.create.schema.safeParse({
           evaluationJobId: "my-eval-job",
@@ -50,7 +50,7 @@ describe("fireworks evaluation jobs", () => {
     });
 
     it("should expose create payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema =
         provider.inference.v1.accounts.evaluationJobs.create.schema;
       expect(typeof schema.safeParse).toBe("function");
@@ -62,7 +62,7 @@ describe("fireworks evaluation jobs", () => {
 
   describe("namespace structure", () => {
     it("should expose all evaluation job methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const evalJobs = provider.inference.v1.accounts.evaluationJobs;
       expect(typeof evalJobs.create).toBe("function");
       expect(typeof evalJobs.list).toBe("function");

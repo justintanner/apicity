@@ -8,14 +8,31 @@
 
 A thin wrapper for many APIs covering AI image generation, video generation, all major social media APIs, and more.
 
+## Features
+
+- **OTP pay gate — no bypass.** Paid endpoints (media generation, etc.) only fire with a human- or code-client-minted, single-use OTP bound to the exact request. An autonomous agent driving the API can't self-approve and can't run up your bill. [Details ↓](#paid-endpoints-otp-pay-gate)
+- **Pre-flight cost estimates.** Pure, local USD estimates for any call across every provider — no keys, no network.
+- **Schemas for agents.** Every POST endpoint validates its payload before sending, so a hallucinated call fails locally instead of at the API.
+- **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
+- **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as plain function wrappers.
+- **Zero provider dependencies.** Self-contained packages, ESM, strict TypeScript.
+
 ## Example
 
-```ts
-import { cost } from "@apicity/cost";
-import { kie as createKie } from "@apicity/kie";
+The headline behavior: a **paid endpoint is gated**. Without an approved,
+single-use OTP the call fails closed — an autonomous caller cannot bypass it.
 
-const c = cost();
-const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
+```ts
+import { createKie } from "@apicity/kie";
+import { mintOtp, createCost } from "@apicity/cost";
+
+// The code client holds the pay-gate secret (from your secret manager / config).
+// The autonomous caller never sees it, so it can never self-approve a paid call.
+const secret = loadSecret();
+const kie = createKie({
+  apiKey: process.env.KIE_API_KEY!,
+  paygate: { secret },
+});
 
 // Same JSON body you'd POST to /api/v1/jobs/createTask.
 const payload = {
@@ -27,19 +44,24 @@ const payload = {
   },
 };
 
-// Preview the cost — no keys, no network, sync.
-const estimate = c.estimate({ provider: "kie", payload });
+// Pure, local cost preview — no keys, no network, sync.
+const estimate = createCost().estimate({ provider: "kie", payload });
 // estimate.usd === 0.08
-// estimate.source === "per-unit-table"
-// estimate.breakdown === { units: 1, unit: "images", perUnitUsd: 0.08 }
 
-// Budget-gate before committing to the generation.
-if (estimate.usd > 0.1) {
-  throw new Error(`Estimate $${estimate.usd.toFixed(4)} exceeds $0.10 cap`);
-}
+// Paid endpoint with no approval → fails closed. No bypass.
+await kie.post.api.v1.jobs.createTask(payload);
+// ❌ throws PayGateError { code: "otp-missing" }
 
-// Same payload — now actually run the generation.
-const task = await kie.post.api.v1.jobs.createTask(payload);
+// A human (or the code client) mints a single-use OTP, bound to THIS request.
+const otp = mintOtp(secret, {
+  dotPath: "api.v1.jobs.createTask",
+  request: payload,
+  ttl: "10m",
+});
+
+// Approved — the generation runs once. Replaying the OTP, or changing any byte
+// of the payload, fails verification.
+const task = await kie.post.api.v1.jobs.createTask(payload, { otp });
 ```
 
 ## Motivation
@@ -71,13 +93,37 @@ Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
 | [@apicity/cost](packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)                        | MCP server exposing provider endpoints as tools                    |
 
-## Composition
+## Middleware
 
-Every endpoint is a plain async function with the provider's request and
-response types. Middleware is function-level, so composition stays explicit:
+Every endpoint is a plain `(req, signal?) => Promise<T>` function, and every
+package exports generic, function-level wrappers — `withRetry`, `withFallback`,
+and `withRateLimit` — that compose naturally. (`@apicity/kimicoding` also ships
+`withStreamRetry` / `withStreamFallback` for streamed async iterables.)
+
+### `withRetry` — exponential backoff
+
+Retries transient errors (HTTP 429 and 5xx) with configurable backoff.
 
 ```ts
-import { xai as createXai, withFallback, withRetry } from "@apicity/xai";
+import { createOpenAi, withRetry } from "@apicity/openai";
+
+const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
+
+const chat = withRetry(openai.v1.chat.completions, {
+  retries: 3, // max attempts (default: 2)
+  baseMs: 500, // initial delay in ms (default: 300)
+  factor: 2, // exponential multiplier (default: 2)
+  jitter: true, // randomize delay ±20% (default: true)
+});
+```
+
+### `withFallback` — multi-provider failover
+
+Tries each function in order; the next picks up when one fails. Wrappers return
+the same signature, so they nest:
+
+```ts
+import { createXai, withFallback, withRetry } from "@apicity/xai";
 
 const primary = createXai({ apiKey: process.env.XAI_API_KEY_PRIMARY! });
 const backup = createXai({ apiKey: process.env.XAI_API_KEY_BACKUP! });
@@ -94,16 +140,66 @@ const result = await image({
 });
 ```
 
-Use the wrappers that ship with each provider, or pass endpoint functions into
-your own orchestration layer.
+### `withRateLimit` — client-side throttling
 
-## More
+Bounds requests-per-minute and concurrency through a shared limiter:
 
-- **Schemas for agents** — `openai.v1.chat.completions.schema.safeParse(payload)` validates before POST; useful when an LLM generates the call.
-- **MCP server** — [@apicity/mcp-server](packages/mcp-server) maps each endpoint 1:1 to a tool name like `openai_v1_chat_completions`.
-- **Cost coverage** — [@apicity/cost](packages/provider/cost) covers tokens, images, and video; pure local math, no keys, no network.
+```ts
+import {
+  createOpenAi,
+  withRateLimit,
+  createRateLimiter,
+} from "@apicity/openai";
+
+const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
+const limiter = createRateLimiter({ rpm: 60, concurrent: 5 });
+
+const chat = withRateLimit(openai.v1.chat.completions, limiter);
+```
+
+Use the wrappers each provider ships, or pass endpoint functions into your own
+orchestration layer.
+
+## Development
+
 - **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
-- **Develop** — `pnpm install && pnpm run build && pnpm run test:run`. Integration tests record/replay via Polly.js (no keys needed for replay).
+- **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`. Integration tests record/replay via Polly.js (no keys needed for replay).
+- **Validate before sending** — every POST endpoint exposes a `.schema`: `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a hallucinated call locally instead of at the API.
+
+## Paid endpoints (OTP pay gate)
+
+Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`) are
+listed in `PAID_ENDPOINTS` and gated behind a single-use OTP — the flow is the
+[example above](#example). The gate is **fail-closed**: a paid call cannot fire
+unless the provider was built with a pay-gate secret **and** the caller presents
+a valid OTP minted from that same secret. The autonomous caller never sees the
+secret, so it cannot self-approve. Unlisted endpoints are free.
+
+The OTP is signed with a single shared **HMAC secret** — no key files, no
+environment variables, no cost coupling. It commits to the exact `(provider,
+method, dotPath, requestHash, exp)` tuple: change any byte of the payload and
+verification fails. The `jti` is consumed before dispatch, so a failed network
+call still burns the token — mint a fresh OTP for any retry.
+
+Operators (or the code client) mint OTPs with `mintOtp(secret, { dotPath,
+request, ttl })` or the CLI — the secret is read from a file, never an env var:
+
+```bash
+apicity-paygate otp mint \
+  --secret-file ./paygate.secret \
+  --dot-path api.v1.jobs.createTask \
+  --payload-file request.json \
+  --ttl 10m
+```
+
+A blocked call throws `PayGateError` whose `.code` is one of
+`paygate-not-configured`, `otp-missing`, `otp-malformed`,
+`otp-invalid-signature`, `otp-expired`, `otp-mismatched-request`, or
+`otp-replayed`.
+
+The gate is generic — `xai` and others opt in by adding a `PAID_ENDPOINTS`
+entry. See [@apicity/cost](packages/provider/cost) for the full spec and the MCP
+server's `--paygate-secret-file` wiring.
 
 ## License
 

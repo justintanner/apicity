@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks GET endpoints integration", () => {
   const accountId = "jwtanner";
 
   function provider() {
-    return fireworks({
+    return createFireworks({
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
   }

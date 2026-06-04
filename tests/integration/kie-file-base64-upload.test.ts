@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie file base64 upload integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("kie file base64 upload integration", () => {
   });
 
   it("should upload file from base64", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     // Small 1x1 red PNG as base64
@@ -36,7 +36,7 @@ describe("kie file base64 upload integration", () => {
   });
 
   it("should infer mime type from filename", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     const base64Content = "SGVsbG8gV29ybGQ="; // "Hello World" in base64
@@ -50,7 +50,7 @@ describe("kie file base64 upload integration", () => {
   });
 
   it("should have schema", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     expect(provider.post.api.fileBase64Upload.schema).toBeDefined();
@@ -60,7 +60,7 @@ describe("kie file base64 upload integration", () => {
   });
 
   it("should validate payload correctly", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
     const validPayload = {

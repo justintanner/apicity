@@ -6,7 +6,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { meta } from "@apicity/meta";
+import { createMeta } from "@apicity/meta";
 
 const recordingName = "meta/container-status";
 
@@ -27,7 +27,7 @@ describe("meta get.v25.container", () => {
 
     ctx = setupPolly(recordingName);
 
-    const provider = meta({
+    const provider = createMeta({
       accessToken: process.env.IG_ACCESS_TOKEN ?? "ig-test-token",
     });
 
@@ -47,7 +47,7 @@ describe("meta get.v25.container", () => {
   });
 
   it("exposes the container method", () => {
-    const provider = meta({ accessToken: "ig-test-token" });
+    const provider = createMeta({ accessToken: "ig-test-token" });
     expect(typeof provider.get.v25.container).toBe("function");
   });
 });

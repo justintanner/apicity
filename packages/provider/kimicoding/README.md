@@ -17,9 +17,9 @@ pnpm add @apicity/kimicoding
 ## Quick Start
 
 ```typescript
-import { kimicoding as createKimicoding } from "@apicity/kimicoding";
+import { createKimiCoding } from "@apicity/kimicoding";
 
-const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! });
+const kimicoding = createKimiCoding({ apiKey: process.env.KIMICODING_API_KEY! });
 ```
 
 ## API Reference
@@ -106,9 +106,9 @@ Source: [`packages/provider/kimicoding/src/kimicoding.ts`](src/kimicoding.ts)
 ## Middleware
 
 ```typescript
-import { kimicoding as createKimicoding, withRetry } from "@apicity/kimicoding";
+import { createKimiCoding, withRetry } from "@apicity/kimicoding";
 
-const kimicoding = createKimicoding({ apiKey: process.env.KIMICODING_API_KEY! });
+const kimicoding = createKimiCoding({ apiKey: process.env.KIMICODING_API_KEY! });
 const models = withRetry(kimicoding.get.v1.models, { retries: 3 });
 ```
 

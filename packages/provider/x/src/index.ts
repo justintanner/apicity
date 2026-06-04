@@ -1,4 +1,4 @@
-export { x } from "./x";
+export { createX } from "./x";
 
 export { XError } from "./types";
 

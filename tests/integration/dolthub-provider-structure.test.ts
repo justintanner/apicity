@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { dolthub, DoltHubError } from "@apicity/dolthub";
+import { createDoltHub, DoltHubError } from "@apicity/dolthub";
 
 describe("dolthub provider structure", () => {
   it("should expose v1alpha1 namespace", () => {
-    const provider = dolthub();
+    const provider = createDoltHub();
     expect(provider.v1alpha1).toBeDefined();
     expect(provider.v1alpha1.sql).toBeDefined();
     expect(provider.v1alpha1.sql.read).toBeInstanceOf(Function);
@@ -24,7 +24,7 @@ describe("dolthub provider structure", () => {
   });
 
   it("should throw DoltHubError on HTTP error", async () => {
-    const provider = dolthub({
+    const provider = createDoltHub({
       fetch: async () =>
         new Response(JSON.stringify({ message: "Not found" }), {
           status: 404,
@@ -42,7 +42,7 @@ describe("dolthub provider structure", () => {
 
   it("should pass apiToken in authorization header", async () => {
     let capturedHeaders: Record<string, string> = {};
-    const provider = dolthub({
+    const provider = createDoltHub({
       apiToken: "test-token-123",
       fetch: async (_url, init) => {
         capturedHeaders = (init?.headers as Record<string, string>) ?? {};

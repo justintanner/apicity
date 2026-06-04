@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 function createJsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -19,7 +19,10 @@ describe("fireworks workflows.kontext", () => {
     const mockFetch = vi
       .fn()
       .mockResolvedValue(createJsonResponse({ request_id: "req-123" }));
-    const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
+    const provider = createFireworks({
+      apiKey: "fw-test-key",
+      fetch: mockFetch,
+    });
     const payload = {
       prompt: "Turn this sketch into a watercolor painting",
       input_image: "https://example.com/sketch.png",
@@ -66,7 +69,10 @@ describe("fireworks workflows.kontext", () => {
         details: { queue_position: 2 },
       })
     );
-    const provider = fireworks({ apiKey: "fw-test-key", fetch: mockFetch });
+    const provider = createFireworks({
+      apiKey: "fw-test-key",
+      fetch: mockFetch,
+    });
 
     const result = await provider.inference.v1.workflows.getResult(
       "flux-kontext-pro",
@@ -99,7 +105,7 @@ describe("fireworks workflows.kontext", () => {
   });
 
   it("validates required and enum-mapped kontext fields via Zod schema", () => {
-    const provider = fireworks({ apiKey: "fw-test-key" });
+    const provider = createFireworks({ apiKey: "fw-test-key" });
 
     const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
       prompt: "Add warm afternoon lighting",

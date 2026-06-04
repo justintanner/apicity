@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { kimicoding } from "../../packages/provider/kimicoding/src/kimicoding";
+import { createKimiCoding } from "../../packages/provider/kimicoding/src/kimicoding";
 import { KimiCodingError } from "../../packages/provider/kimicoding/src/types";
 import type {
   AnthropicMessage,
@@ -38,7 +38,7 @@ describe("kimicoding token handling", () => {
       },
     };
     const mockFetch = vi.fn().mockResolvedValue(createJsonResponse(response));
-    const provider = kimicoding({ apiKey: "test-key", fetch: mockFetch });
+    const provider = createKimiCoding({ apiKey: "test-key", fetch: mockFetch });
 
     const result = await provider.post.coding.v1.messages(request);
     const [url, init] = mockFetch.mock.calls[0];
@@ -64,7 +64,7 @@ describe("kimicoding token handling", () => {
     const mockFetch = vi
       .fn()
       .mockResolvedValue(createJsonResponse({ input_tokens: 42 }));
-    const provider = kimicoding({ apiKey: "test-key", fetch: mockFetch });
+    const provider = createKimiCoding({ apiKey: "test-key", fetch: mockFetch });
 
     const result = await provider.post.coding.v1.countTokens(request);
     const [url, init] = mockFetch.mock.calls[0];
@@ -96,7 +96,7 @@ describe("kimicoding token handling", () => {
     const mockFetch = vi
       .fn()
       .mockResolvedValue(createJsonResponse(errorBody, { status: 429 }));
-    const provider = kimicoding({ apiKey: "test-key", fetch: mockFetch });
+    const provider = createKimiCoding({ apiKey: "test-key", fetch: mockFetch });
 
     const promise = provider.post.coding.v1.countTokens(request);
 

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("openai integration", () => {
   });
 
   it("should complete a chat request", async () => {
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.chat.completions({

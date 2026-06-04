@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { generateKeyPairSync, randomBytes, createHash } from "node:crypto";
+import { randomBytes, createHash } from "node:crypto";
 import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
@@ -8,12 +8,12 @@ import { fileURLToPath } from "node:url";
 import {
   mintOtp,
   parseTtl,
-  generateKeyPair,
-} from "../../packages/provider/cost/src/paygate-cli.js";
-import {
   parseOtp,
-  verifyOtpSignature,
+  verifyOtp,
+  canonicalHash,
 } from "../../packages/provider/cost/src/paygate.js";
+
+const SECRET = "test-shared-hmac-secret-value";
 
 function makeTestDir(): string {
   const dir = join(
@@ -38,6 +38,7 @@ describe("parseTtl", () => {
   });
 
   it("parses days", () => {
+    expect(parseTtl("1d")).toBe(86400);
     expect(parseTtl("2d")).toBe(172800);
   });
 
@@ -54,47 +55,21 @@ describe("parseTtl", () => {
 });
 
 describe("mintOtp", () => {
-  let testDir: string;
-  let privateKeyPath: string;
-  let privateKeyPem: string;
-  let publicKeyPem: string;
-
-  beforeEach(() => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  it("mints a valid OTP signed with the shared HMAC secret", () => {
+    const request = { model: "wan/2-7-text-to-video", input: { duration: 5 } };
+    const otp = mintOtp(SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+      request,
+      ttl: 600,
     });
-    publicKeyPem = publicKey;
-    privateKeyPem = privateKey;
-    testDir = makeTestDir();
-    privateKeyPath = join(testDir, "private.pem");
-    writeFileSync(privateKeyPath, privateKeyPem, "utf8");
-    process.env.APICITY_PAYGATE_PRIVATE_KEY_PATH = privateKeyPath;
-  });
-
-  afterEach(() => {
-    delete process.env.APICITY_PAYGATE_PRIVATE_KEY_PATH;
-    if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
-    }
-  });
-
-  it("mints a valid OTP signed with Ed25519", () => {
-    const otp = mintOtp(
-      "kie",
-      "POST",
-      "api.v1.jobs.createTask",
-      { model: "wan/2-7-text-to-video", input: { duration: 5 } },
-      5,
-      600
-    );
 
     const parsed = parseOtp(otp);
     expect(parsed.payload.v).toBe(1);
     expect(parsed.payload.provider).toBe("kie");
     expect(parsed.payload.method).toBe("POST");
     expect(parsed.payload.dotPath).toBe("api.v1.jobs.createTask");
-    expect(parsed.payload.maxSpendUsd).toBe(5);
     expect(parsed.payload.jti).toHaveLength(32);
     expect(parsed.payload.requestHash).toMatch(/^sha256:[a-f0-9]{64}$/);
     expect(parsed.payload.iat).toBeLessThanOrEqual(
@@ -102,28 +77,82 @@ describe("mintOtp", () => {
     );
     expect(parsed.payload.exp).toBe(parsed.payload.iat + 600);
 
-    const parts = otp.split(".");
-    const sigOk = verifyOtpSignature(parts[0]!, parsed.signature, publicKeyPem);
-    expect(sigOk).toBe(true);
+    // Payload no longer carries maxSpendUsd.
+    expect(
+      (parsed.payload as Record<string, unknown>).maxSpendUsd
+    ).toBeUndefined();
+
+    // Verify the HMAC signature with verifyOtp as the oracle.
+    const result = verifyOtp({
+      nowSeconds: Math.floor(Date.now() / 1000),
+      secret: SECRET,
+      expected: {
+        provider: "kie",
+        method: "POST",
+        dotPath: "api.v1.jobs.createTask",
+      },
+      payloadHash: canonicalHash(request),
+      otp,
+      isJtiConsumed: () => false,
+    });
+    expect(result).toEqual({ ok: true, jti: parsed.payload.jti });
   });
 
-  it("refuses to run without APICITY_PAYGATE_PRIVATE_KEY_PATH", () => {
-    delete process.env.APICITY_PAYGATE_PRIVATE_KEY_PATH;
-    expect(() =>
-      mintOtp("kie", "POST", "api.v1.jobs.createTask", {}, 1, 60)
-    ).toThrow("APICITY_PAYGATE_PRIVATE_KEY_PATH is not set");
+  it("resolves provider/method from the dot-path when omitted", () => {
+    const otp = mintOtp(SECRET, {
+      dotPath: "api.v1.jobs.createTask",
+      request: { model: "x" },
+    });
+    const parsed = parseOtp(otp);
+    expect(parsed.payload.provider).toBe("kie");
+    expect(parsed.payload.method).toBe("POST");
+  });
+
+  it("defaults TTL to 600 seconds when omitted", () => {
+    const otp = mintOtp(SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+      request: {},
+    });
+    const parsed = parseOtp(otp);
+    expect(parsed.payload.exp).toBe(parsed.payload.iat + 600);
+  });
+
+  it("rejects an OTP signed with a different secret", () => {
+    const request = { model: "x" };
+    const otp = mintOtp(SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+      request,
+    });
+    const result = verifyOtp({
+      nowSeconds: Math.floor(Date.now() / 1000),
+      secret: "a-completely-different-secret",
+      expected: {
+        provider: "kie",
+        method: "POST",
+        dotPath: "api.v1.jobs.createTask",
+      },
+      payloadHash: canonicalHash(request),
+      otp,
+      isJtiConsumed: () => false,
+    });
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.code).toBe("otp-invalid-signature");
+    }
   });
 
   it("uses correct request hash for canonicalized payload", () => {
     const payload = { b: 1, a: 2 };
-    const otp = mintOtp(
-      "kie",
-      "POST",
-      "api.v1.jobs.createTask",
-      payload,
-      1,
-      60
-    );
+    const otp = mintOtp(SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.jobs.createTask",
+      request: payload,
+    });
     const parsed = parseOtp(otp);
 
     const expectedHash = (() => {
@@ -134,35 +163,32 @@ describe("mintOtp", () => {
 
     expect(parsed.payload.requestHash).toBe(expectedHash);
   });
-});
 
-describe("generateKeyPair", () => {
-  it("returns Ed25519 PEM pair", () => {
-    const { publicKeyPem, privateKeyPem } = generateKeyPair();
-    expect(publicKeyPem).toMatch(/^-----BEGIN PUBLIC KEY-----/);
-    expect(privateKeyPem).toMatch(/^-----BEGIN PRIVATE KEY-----/);
+  it("throws on an empty secret", () => {
+    expect(() =>
+      mintOtp("", {
+        provider: "kie",
+        method: "POST",
+        dotPath: "api.v1.jobs.createTask",
+        request: {},
+      })
+    ).toThrow("non-empty secret");
   });
 });
+
 describe("CLI subprocess", () => {
   let testDir: string;
-  let privateKeyPath: string;
+  let secretFile: string;
   let payloadFile: string;
-  let privateKeyPem: string;
-  let publicKeyPem: string;
   const cliPath = join(
     dirname(fileURLToPath(import.meta.url)),
-    "../../packages/provider/cost/dist/src/paygate-cli.js"
+    "../../packages/provider/cost/src/paygate-cli.ts"
   );
+
   beforeEach(() => {
-    const { publicKey, privateKey } = generateKeyPairSync("ed25519", {
-      publicKeyEncoding: { type: "spki", format: "pem" },
-      privateKeyEncoding: { type: "pkcs8", format: "pem" },
-    });
-    publicKeyPem = publicKey;
-    privateKeyPem = privateKey;
     testDir = makeTestDir();
-    privateKeyPath = join(testDir, "private.pem");
-    writeFileSync(privateKeyPath, privateKeyPem, "utf8");
+    secretFile = join(testDir, "secret.txt");
+    writeFileSync(secretFile, SECRET, "utf8");
     payloadFile = join(testDir, "payload.json");
     writeFileSync(
       payloadFile,
@@ -173,18 +199,21 @@ describe("CLI subprocess", () => {
       "utf8"
     );
   });
+
   afterEach(() => {
     if (existsSync(testDir)) {
       rmSync(testDir, { recursive: true, force: true });
     }
   });
+
   it("mints an OTP via CLI subprocess", async () => {
     const { execFile } = await import("node:child_process");
     const result = await new Promise<{ stdout: string; stderr: string }>(
       (resolve, reject) => {
         execFile(
-          "node",
+          "npx",
           [
+            "tsx",
             cliPath,
             "otp",
             "mint",
@@ -196,17 +225,12 @@ describe("CLI subprocess", () => {
             "api.v1.jobs.createTask",
             "--payload-file",
             payloadFile,
-            "--max-spend",
-            "5",
+            "--secret-file",
+            secretFile,
             "--ttl",
             "10m",
           ],
-          {
-            env: {
-              ...process.env,
-              APICITY_PAYGATE_PRIVATE_KEY_PATH: privateKeyPath,
-            },
-          },
+          { env: { ...process.env } },
           (error, stdout, stderr) => {
             if (error) reject(error);
             else resolve({ stdout, stderr });
@@ -214,25 +238,41 @@ describe("CLI subprocess", () => {
         );
       }
     );
+
     const otp = result.stdout.trim();
     const parsed = parseOtp(otp);
     expect(parsed.payload.provider).toBe("kie");
     expect(parsed.payload.method).toBe("POST");
     expect(parsed.payload.dotPath).toBe("api.v1.jobs.createTask");
-    expect(parsed.payload.maxSpendUsd).toBe(5);
-    const parts = otp.split(".");
-    const sigOk = verifyOtpSignature(parts[0]!, parsed.signature, publicKeyPem);
-    expect(sigOk).toBe(true);
+    expect(parsed.payload.exp).toBe(parsed.payload.iat + 600);
+
+    const request = {
+      model: "wan/2-7-text-to-video",
+      input: { duration: 5 },
+    };
+    const verifyResult = verifyOtp({
+      nowSeconds: Math.floor(Date.now() / 1000),
+      secret: SECRET,
+      expected: {
+        provider: "kie",
+        method: "POST",
+        dotPath: "api.v1.jobs.createTask",
+      },
+      payloadHash: canonicalHash(request),
+      otp,
+      isJtiConsumed: () => false,
+    });
+    expect(verifyResult).toEqual({ ok: true, jti: parsed.payload.jti });
   });
-  it("exits with error when private key path is missing", async () => {
+
+  it("exits with error when --secret-file is missing", async () => {
     const { execFile } = await import("node:child_process");
-    const env = { ...process.env };
-    delete env.APICITY_PAYGATE_PRIVATE_KEY_PATH;
     await expect(
       new Promise((resolve, reject) => {
         execFile(
-          "node",
+          "npx",
           [
+            "tsx",
             cliPath,
             "otp",
             "mint",
@@ -244,12 +284,10 @@ describe("CLI subprocess", () => {
             "api.v1.jobs.createTask",
             "--payload-file",
             payloadFile,
-            "--max-spend",
-            "5",
             "--ttl",
             "10m",
           ],
-          { env },
+          { env: { ...process.env } },
           (error, stdout, stderr) => {
             if (error) reject(error);
             else resolve({ stdout, stderr });

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { youtube } from "@apicity/youtube";
+import { createYouTube } from "@apicity/youtube";
 
 describe("youtube integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("youtube integration", () => {
   });
 
   it("should list the authenticated user's channel", async () => {
-    const provider = youtube({
+    const provider = createYouTube({
       accessToken: process.env.YOUTUBE_ACCESS_TOKEN ?? "youtube-test-token",
     });
     const result = await provider.channels.list({

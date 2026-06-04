@@ -1,5 +1,5 @@
 // Export main provider function
-export { xai } from "./xai";
+export { createXai } from "./xai";
 
 // Export error class
 export { XaiError } from "./types";

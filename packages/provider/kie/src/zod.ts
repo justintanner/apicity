@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { PayGateConfig } from "@apicity/cost";
 
 // ---------------------------------------------------------------------------
 // Enums / named union types
@@ -848,6 +849,9 @@ export const KieOptionsSchema = z.object({
       (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
     >()
     .optional(),
+  // Pay-gate configuration (shared HMAC secret). Required to call paid
+  // endpoints such as createTask; omitting it makes those calls fail closed.
+  paygate: z.custom<PayGateConfig>().optional(),
 });
 
 // ---------------------------------------------------------------------------

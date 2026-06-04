@@ -17,7 +17,7 @@ pnpm add @apicity/fireworks
 ## Quick Start
 
 ```typescript
-import { fireworks as createFireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 const fireworks = createFireworks({ apiKey: process.env.FIREWORKS_API_KEY! });
 ```
@@ -41,7 +41,7 @@ so every score, token count, and SSE shape below comes straight from
 the recorded HARs.
 
 ```typescript
-import { fireworks as createFireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 import type {
   FireworksRerankResponse,
   FireworksChatStreamChunk,
@@ -1681,7 +1681,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 ## Middleware
 
 ```typescript
-import { fireworks as createFireworks, withRetry } from "@apicity/fireworks";
+import { createFireworks, withRetry } from "@apicity/fireworks";
 
 const fireworks = createFireworks({ apiKey: process.env.FIREWORKS_API_KEY! });
 const models = withRetry(fireworks.get.v1.models, { retries: 3 });

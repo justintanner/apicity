@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI text-to-speech integration", () => {
   let ctx: PollyContext;
@@ -12,7 +12,7 @@ describe("xAI text-to-speech integration", () => {
   it("should synthesize speech audio from text", async () => {
     ctx = setupPolly("xai/tts-welcome");
 
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
 
@@ -27,7 +27,7 @@ describe("xAI text-to-speech integration", () => {
   });
 
   it("should validate tts payload", () => {
-    const provider = xai({ apiKey: "xai-test-key" });
+    const provider = createXai({ apiKey: "xai-test-key" });
 
     const valid = provider.post.v1.tts.schema.safeParse({
       text: "Hello",
@@ -48,7 +48,7 @@ describe("xAI text-to-speech integration", () => {
   });
 
   it("should expose tts schema", () => {
-    const provider = xai({ apiKey: "xai-test-key" });
+    const provider = createXai({ apiKey: "xai-test-key" });
     expect(provider.post.v1.tts.schema).toBeDefined();
     expect(typeof provider.post.v1.tts.schema.safeParse).toBe("function");
   });

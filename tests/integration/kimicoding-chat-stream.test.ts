@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kimicoding } from "@apicity/kimicoding";
+import { createKimiCoding } from "@apicity/kimicoding";
 
 describe("kimicoding chat stream integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("kimicoding chat stream integration", () => {
   });
 
   it("should stream chat messages", async () => {
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
 
@@ -42,7 +42,7 @@ describe("kimicoding chat stream integration", () => {
   });
 
   it("should validate payload schema for streaming", () => {
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
 

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
 const SHOT_PATTERN =
@@ -27,7 +27,7 @@ describe("alibaba vision JSON integration", () => {
   });
 
   it("should validate multimodal chat content with image_url parts", () => {
-    const provider = alibaba({ apiKey: "test-key" });
+    const provider = createAlibaba({ apiKey: "test-key" });
     const schema = provider.post.compatibleMode.v1.chat.completions.schema;
 
     const parsed = schema.safeParse({
@@ -65,7 +65,7 @@ describe("alibaba vision JSON integration", () => {
     const image = readFileSync(imagePath);
     const base64 = image.toString("base64");
 
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
       timeout: 60_000,
     });

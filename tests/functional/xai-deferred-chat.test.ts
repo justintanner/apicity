@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { xai, XaiError } from "../../packages/provider/xai/src/index";
+import { createXai, XaiError } from "../../packages/provider/xai/src/index";
 
 describe("xai deferred chat completion", () => {
   const completedResponse = {
@@ -27,7 +27,7 @@ describe("xai deferred chat completion", () => {
   };
 
   it("should return ready:false for a pending request (202)", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () =>
         new Response(null, { status: 202, statusText: "Accepted" }),
@@ -40,7 +40,7 @@ describe("xai deferred chat completion", () => {
   });
 
   it("should return ready:true with data for a completed request (200)", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () =>
         new Response(JSON.stringify(completedResponse), {
@@ -62,7 +62,7 @@ describe("xai deferred chat completion", () => {
   });
 
   it("should throw XaiError on error responses", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async () =>
         new Response(
@@ -78,7 +78,7 @@ describe("xai deferred chat completion", () => {
 
   it("should send correct URL with encoded request_id", async () => {
     let capturedUrl = "";
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async (input: RequestInfo | URL) => {
         capturedUrl = String(input);
@@ -92,7 +92,7 @@ describe("xai deferred chat completion", () => {
 
   it("should send Authorization header", async () => {
     let capturedHeaders: Record<string, string> = {};
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-my-api-key",
       fetch: async (_input: RequestInfo | URL, init?: RequestInit) => {
         capturedHeaders = Object.fromEntries(
@@ -108,7 +108,7 @@ describe("xai deferred chat completion", () => {
 
   it("should use GET method", async () => {
     let capturedMethod = "";
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async (_input: RequestInfo | URL, init?: RequestInit) => {
         capturedMethod = init?.method ?? "";
@@ -122,7 +122,7 @@ describe("xai deferred chat completion", () => {
 
   it("should accept deferred:true in chat completions request type", async () => {
     let capturedBody = "";
-    const provider = xai({
+    const provider = createXai({
       apiKey: "sk-test-key",
       fetch: async (_input: RequestInfo | URL, init?: RequestInit) => {
         capturedBody = (init?.body as string) ?? "";

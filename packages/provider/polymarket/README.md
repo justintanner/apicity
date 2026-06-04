@@ -18,7 +18,7 @@ pnpm add @apicity/polymarket
 ## Quick Start
 
 ```typescript
-import { polymarket as createPolymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const polymarket = createPolymarket();
 ```

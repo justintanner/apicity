@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 describe("kie file uploads", () => {
   let ctx: PollyContext;
@@ -15,7 +15,7 @@ describe("kie file uploads", () => {
 
   it("should upload file stream and return download URL", async () => {
     ctx = setupPollyForFileUploads("kie/file-uploads/stream");
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -42,7 +42,7 @@ describe("kie file uploads", () => {
 
   it("should upload base64 encoded file", async () => {
     ctx = setupPollyForFileUploads("kie/file-uploads/base64");
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -61,7 +61,7 @@ describe("kie file uploads", () => {
   });
 
   it("should validate payload schema for file uploads", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: "test-key",
     });
 

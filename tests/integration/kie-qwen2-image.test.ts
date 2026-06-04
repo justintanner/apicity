@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie qwen2/text-to-image integration", () => {
   let ctx: PollyContext;
@@ -15,7 +15,8 @@ describe("kie qwen2/text-to-image integration", () => {
   });
 
   it("should create a text-to-image task and poll status", async () => {
-    const provider = kie({
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 

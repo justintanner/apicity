@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { anthropic } from "../../packages/provider/anthropic/src/anthropic";
+import { createAnthropic } from "../../packages/provider/anthropic/src/anthropic";
 import {
   AnthropicCountTokensRequestSchema,
   AnthropicMessageRequestSchema,
@@ -59,7 +59,7 @@ describe("anthropic tool calls", () => {
         },
       })
     );
-    const client = anthropic({ apiKey: "test-key", fetch: mockFetch });
+    const client = createAnthropic({ apiKey: "test-key", fetch: mockFetch });
 
     const result = await client.v1.messages(messageRequest);
     const [url, init] = mockFetch.mock.calls[0];
@@ -110,7 +110,7 @@ describe("anthropic tool calls", () => {
     const mockFetch = vi
       .fn()
       .mockResolvedValue(createJsonResponse({ input_tokens: 42 }));
-    const client = anthropic({ apiKey: "test-key", fetch: mockFetch });
+    const client = createAnthropic({ apiKey: "test-key", fetch: mockFetch });
 
     const result = await client.v1.messages.countTokens(countRequest);
     const [url, init] = mockFetch.mock.calls[0];
@@ -122,7 +122,7 @@ describe("anthropic tool calls", () => {
   });
 
   it("should enforce max_tokens for messages but not countTokens via Zod schemas", () => {
-    const client = anthropic({ apiKey: "test-key" });
+    const client = createAnthropic({ apiKey: "test-key" });
 
     expect(client.v1.messages.schema).toBe(AnthropicMessageRequestSchema);
     expect(client.v1.messages.countTokens.schema).toBe(

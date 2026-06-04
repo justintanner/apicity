@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kimicoding } from "@apicity/kimicoding";
+import { createKimiCoding } from "@apicity/kimicoding";
 
 describe("kimicoding system prompt", () => {
   let ctx: PollyContext;
@@ -11,7 +11,7 @@ describe("kimicoding system prompt", () => {
 
   it("should use system prompt to constrain response format", async () => {
     ctx = setupPolly("kimicoding/system-prompt");
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.coding.v1.messages({

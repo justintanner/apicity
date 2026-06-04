@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks kontext endpoint integration", () => {
   let ctx: PollyContext;
@@ -19,7 +19,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should submit a kontext job and poll its result", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -58,7 +58,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should support streaming kontext response", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -80,7 +80,7 @@ describe("fireworks kontext endpoint integration", () => {
 
   describe("payload validation", () => {
     it("should validate kontext payload with required fields", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
         prompt: "A beautiful landscape",
       });
@@ -89,7 +89,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should reject kontext payload missing prompt", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const invalid = provider.inference.v1.workflows.kontext.schema.safeParse(
         {}
       );
@@ -98,7 +98,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should validate kontext payload with all options", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
         prompt: "A beautiful landscape",
         seed: 42,
@@ -111,7 +111,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should expose kontext payload schema", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const schema = provider.inference.v1.workflows.kontext.schema;
       expect(typeof schema.safeParse).toBe("function");
       expect(typeof schema.safeParse).toBe("function");
@@ -119,7 +119,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should validate getResult payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid = provider.inference.v1.workflows.getResult.schema.safeParse({
         id: "abc-123",
       });
@@ -134,7 +134,7 @@ describe("fireworks kontext endpoint integration", () => {
 
   describe("namespace structure", () => {
     it("should expose workflows namespace with kontext and getResult", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       expect(typeof provider.inference.v1.workflows.kontext).toBe("function");
       expect(typeof provider.inference.v1.workflows.getResult).toBe("function");
       expect(typeof provider.inference.v1.workflows.textToImage).toBe(
@@ -143,7 +143,7 @@ describe("fireworks kontext endpoint integration", () => {
     });
 
     it("should expose payload schemas on workflow methods", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       expect(provider.inference.v1.workflows.kontext.schema).toBeDefined();
       expect(provider.inference.v1.workflows.getResult.schema).toBeDefined();
       expect(provider.inference.v1.workflows.textToImage.schema).toBeDefined();

@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal qwen-image edit integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,7 @@ describe("fal qwen-image edit integration", () => {
   });
 
   it("should edit an image with a prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 600000,
     });
@@ -51,7 +51,7 @@ describe("fal qwen-image edit integration", () => {
   }, 600000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.qwenImage.edit.schema.safeParse({
       prompt: "a cat",
       image_url: "https://example.com/cat.png",
@@ -60,7 +60,7 @@ describe("fal qwen-image edit integration", () => {
   });
 
   it("should reject payload missing required fields", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.qwenImage.edit.schema.safeParse({});
     expect(v.success).toBe(false);
     expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
@@ -70,7 +70,7 @@ describe("fal qwen-image edit integration", () => {
   });
 
   it("should reject payload with wrong enum value", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.qwenImage.edit.schema.safeParse({
       prompt: "a cat",
       image_url: "https://example.com/cat.png",
@@ -80,14 +80,14 @@ describe("fal qwen-image edit integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.qwenImage.edit.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.qwenImage.edit).toBe(provider.post.run.qwenImage.edit);
   });
 });

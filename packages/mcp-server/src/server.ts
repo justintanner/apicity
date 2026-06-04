@@ -4,6 +4,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
+import { isPaidEndpoint } from "@apicity/cost";
 import { buildRegistry, type Endpoint } from "./registry.js";
 import { zodToJsonSchema, type JsonSchema } from "./schema.js";
 import {
@@ -18,6 +19,8 @@ export interface StartServerOptions {
   enabledProviders?: string[];
   name?: string;
   version?: string;
+  /** Shared HMAC secret used to verify OTPs for paid endpoints. */
+  paygateSecret?: string;
 }
 
 export async function startServer(
@@ -25,6 +28,7 @@ export async function startServer(
 ): Promise<void> {
   const endpoints = await buildRegistry({
     enabledProviders: opts.enabledProviders,
+    paygateSecret: opts.paygateSecret,
   });
 
   const server = new Server(
@@ -67,6 +71,12 @@ export async function startServer(
 
 function describe(ep: Endpoint, outputDir?: string): string {
   const lines = [`${ep.method} ${ep.fullUrl}`, `Docs: ${ep.docsUrl}`];
+  if (isPaidEndpoint(ep.provider, ep.method, ep.dotPath)) {
+    lines.push(
+      "PAID endpoint: requires an operator-minted `otp` (one-time approval). " +
+        "The OTP is bound to this exact request and is single-use."
+    );
+  }
   if (outputDir && isMediaEndpoint(ep)) {
     lines.push(`Returned binary or media URLs are saved to: ${outputDir}`);
   }
@@ -85,13 +95,28 @@ function isMediaEndpoint(ep: Endpoint): boolean {
   );
 }
 
+const OTP_SCHEMA: JsonSchema = {
+  type: "string",
+  description:
+    "Operator-minted one-time approval token authorizing this paid call. " +
+    "Bound to this exact request and single-use; the AI cannot mint it.",
+};
+
 function buildInputSchema(ep: Endpoint): JsonSchema {
+  const paid = isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
   const body = zodToJsonSchema(ep.schema);
   // If the endpoint takes path params (e.g., {taskId}), wrap them at the top
   // level alongside the body fields and mark them required.
   if (ep.pathParams.length === 0) {
-    if (body.type === "object") return body;
-    return { type: "object", properties: {}, additionalProperties: true };
+    if (body.type === "object") {
+      return paid ? withOtp(body) : body;
+    }
+    const obj: JsonSchema = {
+      type: "object",
+      properties: {},
+      additionalProperties: true,
+    };
+    return paid ? withOtp(obj) : obj;
   }
   const properties: Record<string, JsonSchema> = {};
   const required: string[] = [];
@@ -108,19 +133,45 @@ function buildInputSchema(ep: Endpoint): JsonSchema {
       description: "Request body (free-form)",
     };
   }
+  if (paid) properties.otp = OTP_SCHEMA;
   return { type: "object", properties, required };
+}
+
+/** Add an optional top-level `otp` property to an object schema. */
+function withOtp(objSchema: JsonSchema): JsonSchema {
+  const properties = {
+    ...((objSchema.properties as Record<string, JsonSchema>) ?? {}),
+    otp: OTP_SCHEMA,
+  };
+  return { ...objSchema, properties };
 }
 
 async function invoke(
   ep: Endpoint,
   args: Record<string, unknown>
 ): Promise<unknown> {
+  const paid = isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
+  // For paid endpoints, peel the `otp` approval off the arguments before the
+  // rest is treated as the request body. The approval is forwarded as the final
+  // argument so the provider's pay gate can verify it (or fail closed).
+  let approval: { otp: string } | undefined;
+  if (paid) {
+    approval = extractApproval(args);
+    args = stripApproval(args);
+  }
+
   let pathArgs: unknown[] = [];
   let body: unknown = args;
   if (ep.pathParams.length > 0) {
     pathArgs = ep.pathParams.map((p) => args[p]);
     body = (args as Record<string, unknown>).body ?? undefined;
   }
+
+  if (paid) {
+    const result = await ep.fn(...pathArgs, body ?? {}, approval);
+    return await maybeBuffer(result);
+  }
+
   if (
     body === undefined ||
     (isPlainObject(body) && Object.keys(body).length === 0)
@@ -130,6 +181,29 @@ async function invoke(
   }
   const result = await ep.fn(...pathArgs, body);
   return await maybeBuffer(result);
+}
+
+/** Read an `otp` approval from tool args (top-level `otp` or `approval.otp`). */
+function extractApproval(
+  args: Record<string, unknown>
+): { otp: string } | undefined {
+  if (typeof args.otp === "string") return { otp: args.otp };
+  const approval = args.approval;
+  if (
+    isPlainObject(approval) &&
+    typeof (approval as Record<string, unknown>).otp === "string"
+  ) {
+    return { otp: (approval as Record<string, unknown>).otp as string };
+  }
+  return undefined;
+}
+
+/** Return a copy of args without the approval fields. */
+function stripApproval(args: Record<string, unknown>): Record<string, unknown> {
+  const { otp: _otp, approval: _approval, ...rest } = args;
+  void _otp;
+  void _approval;
+  return rest;
 }
 
 function isPlainObject(v: unknown): v is Record<string, unknown> {

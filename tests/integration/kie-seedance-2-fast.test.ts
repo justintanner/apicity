@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie bytedance/seedance-2-fast integration", () => {
   let ctx: PollyContext;
@@ -13,7 +13,8 @@ describe("kie bytedance/seedance-2-fast integration", () => {
   it("should create a seedance-2-fast task and poll status", async () => {
     ctx = setupPolly("kie/seedance-2-fast");
 
-    const provider = kie({
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -45,7 +46,10 @@ describe("kie bytedance/seedance-2-fast integration", () => {
   });
 
   it("should validate seedance-2-fast payload", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
 
     const valid = provider.post.api.v1.jobs.createTask.schema.safeParse({
       model: "bytedance/seedance-2-fast",
@@ -69,7 +73,10 @@ describe("kie bytedance/seedance-2-fast integration", () => {
   });
 
   it("should expose model input schema for bytedance/seedance-2-fast", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
     const schema = provider.modelInputSchemas["bytedance/seedance-2-fast"];
 
     expect(schema).toBeDefined();

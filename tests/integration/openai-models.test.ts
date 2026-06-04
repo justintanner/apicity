@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai models integration", () => {
   let ctx: PollyContext;
@@ -15,7 +15,7 @@ describe("openai models integration", () => {
     });
 
     it("should list available models", async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 
@@ -41,7 +41,7 @@ describe("openai models integration", () => {
     });
 
     it("should retrieve a specific model", async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       });
 

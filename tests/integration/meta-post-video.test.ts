@@ -9,8 +9,11 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { meta as createMeta } from "@apicity/meta";
-import { freeMediaUpload, uploadToAnyHost } from "@apicity/free-media-upload";
+import { createMeta } from "@apicity/meta";
+import {
+  createFreeMediaUpload,
+  uploadToAnyHost,
+} from "@apicity/free-media-upload";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const recordingName = "meta/post-video";
@@ -43,7 +46,7 @@ describe("meta post video end-to-end", () => {
     const bytes = readFileSync(videoPath);
     const blob = new Blob([bytes], { type: "video/mp4" });
 
-    const host = freeMediaUpload({});
+    const host = createFreeMediaUpload({});
     const videoUrl = await uploadToAnyHost(host, {
       file: blob,
       filename: "jump.mp4",

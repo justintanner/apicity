@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 // Active "Yes" outcome token from the Reya FDV market — chosen at record time
 // because it had a populated orderbook. Replay reads the recorded HAR, so the
@@ -17,7 +17,7 @@ describe("polymarket clob book", () => {
 
   it("should return bids and asks for an active token", async () => {
     ctx = setupPolly("polymarket/clob-book");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const book = await provider.get.clob.book({ token_id: TOKEN_ID });
 

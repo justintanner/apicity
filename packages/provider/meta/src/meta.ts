@@ -15,7 +15,7 @@ import {
 } from "./zod";
 import { attachExamples } from "./example";
 
-export function meta(opts: MetaOptions): MetaProvider {
+export function createMeta(opts: MetaOptions): MetaProvider {
   const baseURL = opts.baseURL ?? "https://graph.instagram.com";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;

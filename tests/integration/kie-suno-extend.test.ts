@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 // Kie defers audioId validation to the worker, so submit returns 200 with a
 // taskId even for an unknown audioId. The recording captures that response
@@ -17,7 +17,7 @@ describe("kie suno generate.extend (submit, deferred validation)", () => {
   });
 
   it("returns 200 with a taskId even when audioId is bogus", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

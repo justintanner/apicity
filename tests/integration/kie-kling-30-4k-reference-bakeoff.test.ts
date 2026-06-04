@@ -7,8 +7,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: Kling 3.0 in **4K mode** (separate column from
 // the cheapest-settings `mode: "std"` test). Same fixtures, same scene,
@@ -52,7 +52,8 @@ describe("kie kling-3.0 4K reference bake-off", () => {
     async () => {
       ctx = setupPollyForFileUploads("kie/kling-30-4k-reference-bakeoff");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

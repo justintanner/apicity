@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { elevenlabs } from "@apicity/elevenlabs";
+import { createElevenLabs } from "@apicity/elevenlabs";
 
 describe("elevenlabs v1.soundGeneration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("elevenlabs v1.soundGeneration", () => {
   });
 
   it("generates a short sound effect and returns binary audio", async () => {
-    const provider = elevenlabs({
+    const provider = createElevenLabs({
       apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
 

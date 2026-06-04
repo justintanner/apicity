@@ -17,9 +17,9 @@ pnpm add @apicity/youtube
 ## Quick Start
 
 ```typescript
-import { youtube as createYoutube } from "@apicity/youtube";
+import { createYouTube } from "@apicity/youtube";
 
-const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
+const youtube = createYouTube({ apiKey: process.env.YOUTUBE_API_KEY! });
 ```
 
 ## API Reference
@@ -106,9 +106,9 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 ## Middleware
 
 ```typescript
-import { youtube as createYoutube, withRetry } from "@apicity/youtube";
+import { createYouTube, withRetry } from "@apicity/youtube";
 
-const youtube = createYoutube({ apiKey: process.env.YOUTUBE_API_KEY! });
+const youtube = createYouTube({ apiKey: process.env.YOUTUBE_API_KEY! });
 const models = withRetry(youtube.get.v1.models, { retries: 3 });
 ```
 

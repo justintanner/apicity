@@ -1,5 +1,5 @@
 import {
-  kimicoding as createKimicoding,
+  createKimiCoding as createKimicoding,
   textBlock,
   imageBase64,
 } from "@apicity/kimicoding";

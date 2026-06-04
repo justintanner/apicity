@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI collections PUT update integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("xAI collections PUT update integration", () => {
   });
 
   it("should have schema with safeParse on put.v1.collections", () => {
-    const provider = xai({ apiKey: "sk-test-key" });
+    const provider = createXai({ apiKey: "sk-test-key" });
     expect(provider.put.v1.collections.schema).toBeDefined();
     expect(typeof provider.put.v1.collections.schema.safeParse).toBe(
       "function"
@@ -27,7 +27,7 @@ describe("xAI collections PUT update integration", () => {
   });
 
   it("should update a collection using PUT with management API", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
       managementApiKey: process.env.XAI_MANAGEMENT_API_KEY ?? "sk-mgmt-key",
     });

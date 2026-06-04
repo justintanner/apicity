@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
+import { createKie } from "@apicity/kie";
 
 // Uses bogus IDs to avoid spending credits (separate_vocal=10, split_stem=50).
 describe("kie suno vocalRemoval.generate (error envelope)", () => {
@@ -15,7 +15,7 @@ describe("kie suno vocalRemoval.generate (error envelope)", () => {
   });
 
   it("returns a recognizable envelope when taskId/audioId do not exist", async () => {
-    const provider = kie({
+    const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
 

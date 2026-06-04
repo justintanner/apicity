@@ -2,8 +2,8 @@
 import { describe, it, expect } from "vitest";
 
 // Import type guards indirectly by testing their behavior through error handling
-import { fal } from "../../packages/provider/fal/src/fal";
-import { kimicoding } from "../../packages/provider/kimicoding/src/kimicoding";
+import { createFal } from "../../packages/provider/fal/src/fal";
+import { createKimiCoding } from "../../packages/provider/kimicoding/src/kimicoding";
 
 describe("fal isFalApiErrorResponse type guard", () => {
   it("recognizes valid fal error response", async () => {
@@ -23,7 +23,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
       await p.v1.models();
     } catch (err) {
@@ -48,7 +48,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
       await p.v1.models();
     } catch (err) {
@@ -65,7 +65,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
         new Response("Internal Server Error", { status: 500 })
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
       await p.v1.models();
     } catch (err) {
@@ -83,7 +83,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
         new Response(JSON.stringify(null), { status: 500 })
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
       await p.v1.models();
     } catch (err) {
@@ -102,7 +102,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
         })
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
       await p.v1.models();
     } catch (err) {
@@ -131,7 +131,7 @@ describe("fal isFalApiErrorResponse type guard", () => {
         )
       );
     };
-    const p = fal({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createFal({ apiKey: "test", fetch: mockFetch as typeof fetch });
     try {
       await p.v1.models();
     } catch (err) {
@@ -159,7 +159,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
         )
       );
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {
@@ -179,7 +182,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
         })
       );
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {
@@ -197,7 +203,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
         new Response("Internal Server Error", { status: 500 })
       );
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {
@@ -214,7 +223,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
         new Response(JSON.stringify(null), { status: 500 })
       );
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {
@@ -231,7 +243,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
         new Response(JSON.stringify({ error: {} }), { status: 500 })
       );
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {
@@ -247,7 +262,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
     const mockFetch = (): Promise<Response> => {
       return Promise.reject(new Error("Network error"));
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {
@@ -270,7 +288,10 @@ describe("kimicoding isAnthropicErrorBody type guard", () => {
         new Response(JSON.stringify(errorBody), { status: 400 })
       );
     };
-    const p = kimicoding({ apiKey: "test", fetch: mockFetch as typeof fetch });
+    const p = createKimiCoding({
+      apiKey: "test",
+      fetch: mockFetch as typeof fetch,
+    });
     try {
       await p.get.coding.v1.models();
     } catch (err) {

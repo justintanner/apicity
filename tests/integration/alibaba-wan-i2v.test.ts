@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { alibaba } from "@apicity/alibaba";
+import { createAlibaba } from "@apicity/alibaba";
 import {
   setupPolly,
   teardownPolly,
@@ -25,7 +25,7 @@ describe("alibaba wan i2v integration", () => {
   it("should submit an image-to-video task and poll status", async () => {
     ctx = setupPolly("alibaba/wan-i2v");
 
-    const provider = alibaba({
+    const provider = createAlibaba({
       apiKey: process.env.DASHSCOPE_API_KEY ?? "test-key",
     });
 
@@ -86,7 +86,7 @@ describe("alibaba wan i2v integration", () => {
   }, 300_000);
 
   it("should validate video-synthesis payload via .schema.safeParse", () => {
-    const provider = alibaba({ apiKey: "test-key" });
+    const provider = createAlibaba({ apiKey: "test-key" });
 
     const valid =
       provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(

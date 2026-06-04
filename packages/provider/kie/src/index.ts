@@ -1,5 +1,5 @@
 // Export main provider function and helpers
-export { kie, submitMediaJob, uploadFile } from "./kie";
+export { createKie, submitMediaJob, uploadFile } from "./kie";
 
 // Export error class
 export { KieError } from "./types";

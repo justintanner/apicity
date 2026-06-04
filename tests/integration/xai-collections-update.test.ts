@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI collections update integration", () => {
   describe("schema validation", () => {
     it("should have collections update under put.v1", () => {
-      const provider = xai({ apiKey: "test-key" });
+      const provider = createXai({ apiKey: "test-key" });
       expect(provider.put.v1.collections).toBeDefined();
       expect(provider.put.v1.collections).toBeTypeOf("function");
     });

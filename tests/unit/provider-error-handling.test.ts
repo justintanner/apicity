@@ -1,32 +1,32 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { alibaba } from "../../packages/provider/alibaba/src/alibaba";
+import { createAlibaba } from "../../packages/provider/alibaba/src/alibaba";
 import { AlibabaError } from "../../packages/provider/alibaba/src/types";
-import { anthropic } from "../../packages/provider/anthropic/src/anthropic";
+import { createAnthropic } from "../../packages/provider/anthropic/src/anthropic";
 import { AnthropicError } from "../../packages/provider/anthropic/src/types";
-import { dolthub } from "../../packages/provider/dolthub/src/dolthub";
+import { createDoltHub } from "../../packages/provider/dolthub/src/dolthub";
 import { DoltHubError } from "../../packages/provider/dolthub/src/types";
-import { elevenlabs } from "../../packages/provider/elevenlabs/src/elevenlabs";
+import { createElevenLabs } from "../../packages/provider/elevenlabs/src/elevenlabs";
 import { ElevenLabsError } from "../../packages/provider/elevenlabs/src/types";
-import { fal } from "../../packages/provider/fal/src/fal";
+import { createFal } from "../../packages/provider/fal/src/fal";
 import { FalError } from "../../packages/provider/fal/src/types";
-import { fireworks } from "../../packages/provider/fireworks/src/fireworks";
+import { createFireworks } from "../../packages/provider/fireworks/src/fireworks";
 import { FireworksError } from "../../packages/provider/fireworks/src/types";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
-import { kimicoding } from "../../packages/provider/kimicoding/src/kimicoding";
+import { createKimiCoding } from "../../packages/provider/kimicoding/src/kimicoding";
 import { KimiCodingError } from "../../packages/provider/kimicoding/src/types";
-import { meta } from "../../packages/provider/meta/src/meta";
+import { createMeta } from "../../packages/provider/meta/src/meta";
 import { MetaError } from "../../packages/provider/meta/src/types";
-import { openai } from "../../packages/provider/openai/src/openai";
+import { createOpenAi } from "../../packages/provider/openai/src/openai";
 import { OpenAiError } from "../../packages/provider/openai/src/types";
-import { polymarket } from "../../packages/provider/polymarket/src/polymarket";
+import { createPolymarket } from "../../packages/provider/polymarket/src/polymarket";
 import { PolymarketError } from "../../packages/provider/polymarket/src/types";
-import { x } from "../../packages/provider/x/src/x";
+import { createX } from "../../packages/provider/x/src/x";
 import { XError } from "../../packages/provider/x/src/types";
-import { xai } from "../../packages/provider/xai/src/xai";
+import { createXai } from "../../packages/provider/xai/src/xai";
 import { XaiError } from "../../packages/provider/xai/src/types";
-import { youtube } from "../../packages/provider/youtube/src/youtube";
+import { createYouTube } from "../../packages/provider/youtube/src/youtube";
 import { YouTubeError } from "../../packages/provider/youtube/src/types";
 
 type ErrorConstructor<T extends Error> = new (...args: never[]) => T;
@@ -97,7 +97,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "OpenAI",
     errorClass: OpenAiError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return openai({
+      return createOpenAi({
         apiKey: "sk-openai-test",
         fetch: fetchImpl,
         timeout,
@@ -114,7 +114,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "Anthropic",
     errorClass: AnthropicError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return anthropic({
+      return createAnthropic({
         apiKey: "sk-anthropic-test",
         fetch: fetchImpl,
         timeout,
@@ -133,7 +133,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "xAI",
     errorClass: XaiError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return xai({
+      return createXai({
         apiKey: "sk-xai-test",
         fetch: fetchImpl,
         timeout,
@@ -150,7 +150,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "KimiCoding",
     errorClass: KimiCodingError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return kimicoding({
+      return createKimiCoding({
         apiKey: "sk-kimi-test",
         fetch: fetchImpl,
         timeout,
@@ -167,7 +167,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "Fal",
     errorClass: FalError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return fal({
+      return createFal({
         apiKey: "fal-test",
         fetch: fetchImpl,
         timeout,
@@ -189,7 +189,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "Fireworks",
     errorClass: FireworksError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return fireworks({
+      return createFireworks({
         apiKey: "fw-test",
         fetch: fetchImpl,
         timeout,
@@ -227,7 +227,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "Alibaba",
     errorClass: AlibabaError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return alibaba({
+      return createAlibaba({
         apiKey: "sk-alibaba-test",
         fetch: fetchImpl,
         timeout,
@@ -244,7 +244,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "DoltHub",
     errorClass: DoltHubError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return dolthub({
+      return createDoltHub({
         apiToken: "dolt-test",
         fetch: fetchImpl,
         timeout,
@@ -261,7 +261,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "ElevenLabs",
     errorClass: ElevenLabsError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return elevenlabs({
+      return createElevenLabs({
         apiKey: "el-test",
         fetch: fetchImpl,
         timeout,
@@ -280,7 +280,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "Meta",
     errorClass: MetaError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return meta({
+      return createMeta({
         accessToken: "meta-test",
         fetch: fetchImpl,
         timeout,
@@ -297,7 +297,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "Polymarket",
     errorClass: PolymarketError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return polymarket({
+      return createPolymarket({
         fetch: fetchImpl,
         timeout,
       }).get.clob.book({ token_id: "123" });
@@ -313,7 +313,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "X",
     errorClass: XError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return x({
+      return createX({
         accessToken: "x-test",
         fetch: fetchImpl,
         timeout,
@@ -330,7 +330,7 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     name: "YouTube",
     errorClass: YouTubeError as ErrorConstructor<Error>,
     invoke(fetchImpl, timeout) {
-      return youtube({
+      return createYouTube({
         accessToken: "yt-test",
         fetch: fetchImpl,
         timeout,

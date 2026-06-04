@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { anthropic } from "@apicity/anthropic";
+import { createAnthropic } from "@apicity/anthropic";
 import type {
   AnthropicMessageResponse,
   AnthropicTextBlock,
@@ -15,7 +15,7 @@ describe("anthropic v1.messages multi-turn code review", () => {
 
   it("reviews a snippet with a system prompt and few-shot history", async () => {
     ctx = setupPolly("anthropic/messages-code-review");
-    const provider = anthropic({
+    const provider = createAnthropic({
       apiKey: process.env.ANTHROPIC_API_KEY ?? "sk-test-key",
     });
 

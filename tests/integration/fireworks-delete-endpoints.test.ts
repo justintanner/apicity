@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks DELETE endpoint handlers", () => {
-  const provider = fireworks({ apiKey: "test-key" });
+  const provider = createFireworks({ apiKey: "test-key" });
 
   describe("apiKeys delete", () => {
     it("should be a callable function", () => {

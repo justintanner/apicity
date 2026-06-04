@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai gpt-image-2-2026-04-21 image-to-image integration (man portrait)", () => {
   let ctx: PollyContext;
@@ -25,7 +25,7 @@ describe("openai gpt-image-2-2026-04-21 image-to-image integration (man portrait
     "should edit the man portrait reference image",
     { timeout: 120_000 },
     async () => {
-      const provider = openai({
+      const provider = createOpenAi({
         apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
         timeout: 120_000,
       });

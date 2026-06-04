@@ -5,8 +5,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie seedream/5-lite-text-to-image integration", () => {
   let ctx: PollyContext;
@@ -21,7 +21,8 @@ describe("kie seedream/5-lite-text-to-image integration", () => {
     async () => {
       ctx = setupPolly("kie/seedream-5-lite-text-to-image");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 
@@ -63,7 +64,10 @@ describe("kie seedream/5-lite-text-to-image integration", () => {
   );
 
   it("should validate payload via schema", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
 
     const ok = provider.post.api.v1.jobs.createTask.schema.safeParse({
       model: "seedream/5-lite-text-to-image",

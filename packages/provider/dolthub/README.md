@@ -17,9 +17,9 @@ pnpm add @apicity/dolthub
 ## Quick Start
 
 ```typescript
-import { dolthub as createDolthub } from "@apicity/dolthub";
+import { createDoltHub } from "@apicity/dolthub";
 
-const dolthub = createDolthub({ apiKey: process.env.DOLTHUB_API_KEY! });
+const dolthub = createDoltHub({ apiKey: process.env.DOLTHUB_API_KEY! });
 ```
 
 ## API Reference
@@ -192,9 +192,9 @@ Source: [`packages/provider/dolthub/src/dolthub.ts`](src/dolthub.ts)
 ## Middleware
 
 ```typescript
-import { dolthub as createDolthub, withRetry } from "@apicity/dolthub";
+import { createDoltHub, withRetry } from "@apicity/dolthub";
 
-const dolthub = createDolthub({ apiKey: process.env.DOLTHUB_API_KEY! });
+const dolthub = createDoltHub({ apiKey: process.env.DOLTHUB_API_KEY! });
 const models = withRetry(dolthub.get.v1.models, { retries: 3 });
 ```
 

@@ -17,7 +17,7 @@ pnpm add @apicity/x
 ## Quick Start
 
 ```typescript
-import { x as createX } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });
 ```
@@ -150,7 +150,7 @@ server.listen(8765, "127.0.0.1");
 ### 4. Use the token
 
 ```typescript
-import { x as createX } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const x = createX({ accessToken: process.env.X_ACCESS_TOKEN });
 
@@ -172,7 +172,7 @@ so the response shapes match what X actually returns.
 
 ```typescript
 import { readFileSync } from "node:fs";
-import { x as createX } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const x = createX({ accessToken: process.env.X_ACCESS_TOKEN! });
 

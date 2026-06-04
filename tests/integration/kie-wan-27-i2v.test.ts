@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie wan/2-7-image-to-video integration", () => {
   let ctx: PollyContext;
@@ -13,7 +13,8 @@ describe("kie wan/2-7-image-to-video integration", () => {
   it("should create a wan 2.7 i2v task and poll status", async () => {
     ctx = setupPolly("kie/wan-27-i2v");
 
-    const provider = kie({
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
       apiKey: process.env.KIE_API_KEY ?? "test-key",
     });
 
@@ -49,7 +50,10 @@ describe("kie wan/2-7-image-to-video integration", () => {
   });
 
   it("should validate wan/2-7-image-to-video payload", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
 
     const valid = provider.post.api.v1.jobs.createTask.schema.safeParse({
       model: "wan/2-7-image-to-video",
@@ -71,7 +75,10 @@ describe("kie wan/2-7-image-to-video integration", () => {
   });
 
   it("should expose model input schema for wan/2-7-image-to-video", () => {
-    const provider = kie({ apiKey: "test-key" });
+    const provider = createKie({
+      paygate: { secret: TEST_PAYGATE_SECRET },
+      apiKey: "test-key",
+    });
     const schema = provider.modelInputSchemas["wan/2-7-image-to-video"];
 
     expect(schema).toBeDefined();

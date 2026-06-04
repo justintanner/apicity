@@ -1,6 +1,6 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
 
-import { kie } from "../../packages/provider/kie/src/kie";
+import { createKie } from "../../packages/provider/kie/src/kie";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
 
@@ -348,7 +348,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         uploadBaseURL: "https://uploads.kie.ai",
         fetch: mockFetch,
@@ -387,7 +387,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         uploadBaseURL: "https://uploads.kie.ai",
         fetch: mockFetch,
@@ -411,7 +411,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         uploadBaseURL: "https://uploads.kie.ai",
         fetch: mockFetch,
@@ -442,7 +442,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         uploadBaseURL: "https://uploads.kie.ai",
         fetch: mockFetch,
@@ -469,7 +469,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         uploadBaseURL: "https://uploads.kie.ai",
         fetch: mockFetch,
@@ -503,7 +503,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         uploadBaseURL: "https://uploads.kie.ai",
         fetch: mockFetch,
@@ -528,7 +528,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         baseURL: "https://api.kie.ai",
         fetch: mockFetch,
@@ -556,7 +556,7 @@ describe("KIE request utilities", () => {
         })
       );
 
-      const provider = kie({
+      const provider = createKie({
         apiKey: "test-key",
         fetch: mockFetch,
       });

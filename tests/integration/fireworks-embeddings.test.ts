@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks embeddings integration", () => {
   let ctx: PollyContext;
@@ -14,7 +14,7 @@ describe("fireworks embeddings integration", () => {
   });
 
   it("should generate embeddings for a text input", async () => {
-    const provider = fireworks({
+    const provider = createFireworks({
       apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
     });
 

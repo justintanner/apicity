@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fireworks } from "@apicity/fireworks";
+import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks workflows integration", () => {
   describe("kontext async (FLUX Kontext Pro)", () => {
@@ -19,7 +19,7 @@ describe("fireworks workflows integration", () => {
     });
 
     it("should submit an async image generation request and poll for result", async () => {
-      const provider = fireworks({
+      const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
 
@@ -53,7 +53,7 @@ describe("fireworks workflows integration", () => {
 
   describe("payload validation", () => {
     it("should validate textToImage payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid =
         provider.inference.v1.workflows.textToImage.schema.safeParse({
           prompt: "A cat",
@@ -68,7 +68,7 @@ describe("fireworks workflows integration", () => {
     });
 
     it("should validate kontext payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid = provider.inference.v1.workflows.kontext.schema.safeParse({
         prompt: "A cat",
       });
@@ -82,7 +82,7 @@ describe("fireworks workflows integration", () => {
     });
 
     it("should validate getResult payload", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       const valid = provider.inference.v1.workflows.getResult.schema.safeParse({
         id: "abc-123",
       });
@@ -95,7 +95,7 @@ describe("fireworks workflows integration", () => {
     });
 
     it("should expose payload schemas", () => {
-      const provider = fireworks({ apiKey: "test" });
+      const provider = createFireworks({ apiKey: "test" });
       expect(
         typeof provider.inference.v1.workflows.textToImage.schema.safeParse
       ).toBe("function");

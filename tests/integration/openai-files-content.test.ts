@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 
 describe("openai files content download integration", () => {
   let ctx: PollyContext;
@@ -13,7 +13,7 @@ describe("openai files content download integration", () => {
   afterEach(async () => {
     if (createdFileId) {
       try {
-        const provider = openai({
+        const provider = createOpenAi({
           apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
         });
         await provider.delete.v1.files(createdFileId);
@@ -26,7 +26,7 @@ describe("openai files content download integration", () => {
   });
 
   it("should download file content as text", async () => {
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     // Upload a file first

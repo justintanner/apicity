@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { kimicoding } from "@apicity/kimicoding";
+import { createKimiCoding } from "@apicity/kimicoding";
 
 describe("kimicoding count tokens integration", () => {
   it("should have schema", async () => {
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     expect(provider.post.coding.v1.countTokens.schema).toBeDefined();
@@ -13,7 +13,7 @@ describe("kimicoding count tokens integration", () => {
   });
 
   it("should validate payload correctly", async () => {
-    const provider = kimicoding({
+    const provider = createKimiCoding({
       apiKey: process.env.KIMI_CODING_API_KEY ?? "sk-test-key",
     });
     const validPayload = {

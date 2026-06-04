@@ -7,8 +7,8 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { kie } from "@apicity/kie";
-import { mintKieCreateTaskOtp } from "../harness";
+import { createKie } from "@apicity/kie";
+import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 // Reference-video bake-off: HappyHorse (fifth column).
 // Companion to the grok / wan / seedance / kling bake-off tests. Same four
@@ -58,7 +58,8 @@ describe("kie happyhorse/reference-to-video bake-off", () => {
     async () => {
       ctx = setupPollyForFileUploads("kie/happyhorse-reference-bakeoff");
 
-      const provider = kie({
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
         apiKey: process.env.KIE_API_KEY ?? "test-key",
       });
 

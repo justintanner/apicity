@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal hunyuan-image v3 instruct edit integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should edit an image with a prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -50,7 +50,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "Turn this artwork into a realistic image",
       image_urls: ["https://example.com/image.jpg"],
@@ -59,7 +59,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should reject payload missing image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
     });
@@ -70,7 +70,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should reject empty image_urls array", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
       image_urls: [],
@@ -79,7 +79,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should reject more than 3 image_urls (max is 3)", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
       image_urls: [
@@ -93,7 +93,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should reject num_images outside 1-4 range", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/a.jpg"],
@@ -103,7 +103,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should reject guidance_scale outside 1-20 range", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/a.jpg"],
@@ -113,7 +113,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should accept valid image_size enum values", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/a.jpg"],
@@ -123,7 +123,7 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should accept valid image_size object", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.hunyuan.v3.instructEdit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/a.jpg"],
@@ -133,14 +133,14 @@ describe("fal hunyuan-image v3 instruct edit integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.hunyuan.v3.instructEdit.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.hunyuan.v3.instructEdit).toBe(
       provider.post.run.hunyuan.v3.instructEdit
     );

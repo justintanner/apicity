@@ -9,7 +9,7 @@ import {
   recordingExists,
   type PollyContext,
 } from "../harness";
-import { x } from "@apicity/x";
+import { createX } from "@apicity/x";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const recordingName = "x/post-video";
@@ -31,7 +31,7 @@ describe("x post video end-to-end", () => {
 
     ctx = setupPollyForFileUploads(recordingName);
 
-    const provider = x({
+    const provider = createX({
       accessToken: process.env.X_ACCESS_TOKEN ?? "x-test-token",
     });
 

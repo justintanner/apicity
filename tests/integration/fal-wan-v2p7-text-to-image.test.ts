@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal wan v2.7 text-to-image integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal wan v2.7 text-to-image integration", () => {
   });
 
   it("should generate an image from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -38,7 +38,7 @@ describe("fal wan v2.7 text-to-image integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.textToImage.schema.safeParse({
       prompt: "a serene mountain landscape",
     });
@@ -46,14 +46,14 @@ describe("fal wan v2.7 text-to-image integration", () => {
   });
 
   it("should reject payload missing required fields", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.textToImage.schema.safeParse({});
     expect(v.success).toBe(false);
     expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
   });
 
   it("should reject payload with wrong enum value for image_size", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.textToImage.schema.safeParse({
       prompt: "a cat",
       image_size: "ultra_hd",
@@ -62,7 +62,7 @@ describe("fal wan v2.7 text-to-image integration", () => {
   });
 
   it("should reject max_images outside 1-5 range", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.textToImage.schema.safeParse({
       prompt: "a cat",
       max_images: 6,
@@ -71,7 +71,7 @@ describe("fal wan v2.7 text-to-image integration", () => {
   });
 
   it("should reject negative_prompt longer than 500 characters", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.textToImage.schema.safeParse({
       prompt: "a cat",
       negative_prompt: "x".repeat(501),
@@ -80,14 +80,14 @@ describe("fal wan v2.7 text-to-image integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.wan.v2p7.textToImage.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.wan.v2p7.textToImage).toBe(
       provider.post.run.wan.v2p7.textToImage
     );

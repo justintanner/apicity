@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal bytedance seedream v5 lite edit integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should edit images with a prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -51,7 +51,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a beautiful landscape",
       image_urls: ["https://example.com/image.png"],
@@ -60,7 +60,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should reject payload missing required fields", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({});
     expect(v.success).toBe(false);
     expect(v.error?.issues.some((i) => i.path.includes("prompt"))).toBe(true);
@@ -70,7 +70,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should reject payload with wrong enum value for image_size", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/cat.png"],
@@ -80,7 +80,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should reject non-string items in image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: [123, 456],
@@ -89,7 +89,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should reject empty image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: [],
@@ -98,7 +98,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should reject more than 10 image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: Array.from(
@@ -119,7 +119,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
     "auto_2K",
     "auto_3K",
   ])("should accept image_size preset %s", (preset) => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/cat.png"],
@@ -129,7 +129,7 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should reject image_size auto_4K (not supported upstream)", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.bytedance.seedream.v5.lite.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: ["https://example.com/cat.png"],
@@ -139,14 +139,14 @@ describe("fal bytedance seedream v5 lite edit integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedream.v5.lite.edit.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.bytedance.seedream.v5.lite.edit).toBe(
       provider.post.run.bytedance.seedream.v5.lite.edit
     );

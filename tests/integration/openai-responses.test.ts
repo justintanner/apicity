@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { openai } from "@apicity/openai";
+import { createOpenAi } from "@apicity/openai";
 import type {
   OpenAiResponseOutputMessage,
   OpenAiResponseOutputText,
@@ -17,7 +17,7 @@ describe("openai responses integration", () => {
 
   it("should create a response with string input", async () => {
     ctx = setupPolly("openai/responses-hello");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.responses({
@@ -36,7 +36,7 @@ describe("openai responses integration", () => {
 
   it("should create a response with instructions", async () => {
     ctx = setupPolly("openai/responses-instructions");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.responses({
@@ -61,7 +61,7 @@ describe("openai responses integration", () => {
 
   it("should create a response with structured output (JSON schema)", async () => {
     ctx = setupPolly("openai/responses-structured");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.responses({
@@ -100,7 +100,7 @@ describe("openai responses integration", () => {
 
   it("should create a response with web search tool", async () => {
     ctx = setupPolly("openai/responses-web-search");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.responses({
@@ -135,7 +135,7 @@ describe("openai responses integration", () => {
 
   it("should create a response with reasoning config", async () => {
     ctx = setupPolly("openai/responses-reasoning");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
       timeout: 60000,
     });
@@ -165,7 +165,7 @@ describe("openai responses integration", () => {
     const pngBuffer = readFileSync(pngPath);
     const base64 = pngBuffer.toString("base64");
 
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
     const result = await provider.post.v1.responses({
@@ -198,7 +198,7 @@ describe("openai responses integration", () => {
 
   it("should support multi-turn with previous_response_id", async () => {
     ctx = setupPolly("openai/responses-multi-turn");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 
@@ -232,7 +232,7 @@ describe("openai responses integration", () => {
 
   it("should get a response by ID", async () => {
     ctx = setupPolly("openai/responses-get");
-    const provider = openai({
+    const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
 

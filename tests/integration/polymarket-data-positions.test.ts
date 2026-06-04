@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { polymarket } from "@apicity/polymarket";
+import { createPolymarket } from "@apicity/polymarket";
 
 const USER_ADDRESS = "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e";
 
@@ -13,7 +13,7 @@ describe("polymarket data positions surface", () => {
 
   it("positions(query) lists open positions for a wallet", async () => {
     ctx = setupPolly("polymarket/data-positions");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.positions({
       user: USER_ADDRESS,
@@ -32,7 +32,7 @@ describe("polymarket data positions surface", () => {
 
   it("value(query) returns the wallet's net portfolio value", async () => {
     ctx = setupPolly("polymarket/data-value");
-    const provider = polymarket();
+    const provider = createPolymarket();
 
     const res = await provider.get.data.value({ user: USER_ADDRESS });
 

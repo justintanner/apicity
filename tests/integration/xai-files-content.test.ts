@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { xai } from "@apicity/xai";
+import { createXai } from "@apicity/xai";
 
 describe("xAI files content download integration", () => {
   let ctx: PollyContext;
@@ -13,7 +13,7 @@ describe("xAI files content download integration", () => {
   afterEach(async () => {
     if (createdFileId) {
       try {
-        const provider = xai({
+        const provider = createXai({
           apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
         });
         await provider.delete.v1.files(createdFileId);
@@ -26,7 +26,7 @@ describe("xAI files content download integration", () => {
   });
 
   it("should download file content as text", async () => {
-    const provider = xai({
+    const provider = createXai({
       apiKey: process.env.XAI_API_KEY ?? "xai-test-key",
     });
     // Upload a file first

@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal wan v2.7 pro edit integration", () => {
   let ctx: PollyContext;
@@ -18,7 +18,7 @@ describe("fal wan v2.7 pro edit integration", () => {
   });
 
   it("should edit an image from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -41,7 +41,7 @@ describe("fal wan v2.7 pro edit integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.pro.edit.schema.safeParse({
       prompt: "make it a watercolor",
       image_urls: ["https://example.com/image.jpg"],
@@ -50,7 +50,7 @@ describe("fal wan v2.7 pro edit integration", () => {
   });
 
   it("should reject payload missing image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.pro.edit.schema.safeParse({
       prompt: "a cat",
     });
@@ -58,7 +58,7 @@ describe("fal wan v2.7 pro edit integration", () => {
   });
 
   it("should reject more than 4 image_urls", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.run.wan.v2p7.pro.edit.schema.safeParse({
       prompt: "a cat",
       image_urls: [
@@ -73,14 +73,14 @@ describe("fal wan v2.7 pro edit integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.wan.v2p7.pro.edit.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.wan.v2p7.pro.edit).toBe(
       provider.post.run.wan.v2p7.pro.edit
     );

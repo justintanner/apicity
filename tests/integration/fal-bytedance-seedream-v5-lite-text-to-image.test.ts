@@ -4,7 +4,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,7 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   });
 
   it("should generate an image from a text prompt", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 300000,
     });
@@ -41,7 +41,7 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   }, 300000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v =
       provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({
         prompt: "a beautiful landscape",
@@ -50,7 +50,7 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   });
 
   it("should reject payload missing required fields", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v =
       provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({});
     expect(v.success).toBe(false);
@@ -58,7 +58,7 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   });
 
   it("should reject payload with wrong enum value for image_size", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v =
       provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({
         prompt: "a cat",
@@ -77,7 +77,7 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
     "auto_2K",
     "auto_3K",
   ])("should accept image_size preset %s", (preset) => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v =
       provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({
         prompt: "a cat",
@@ -87,7 +87,7 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   });
 
   it("should reject image_size auto_4K (not supported upstream)", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v =
       provider.run.bytedance.seedream.v5.lite.textToImage.schema.safeParse({
         prompt: "a cat",
@@ -97,14 +97,14 @@ describe("fal bytedance seedream v5 lite text-to-image integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.run.bytedance.seedream.v5.lite.textToImage.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");
   });
 
   it("should expose the same function via run and post.run", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     expect(provider.run.bytedance.seedream.v5.lite.textToImage).toBe(
       provider.post.run.bytedance.seedream.v5.lite.textToImage
     );

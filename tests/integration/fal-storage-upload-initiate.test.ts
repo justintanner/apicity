@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { fal } from "@apicity/fal";
+import { createFal } from "@apicity/fal";
 
 describe("fal storage upload initiate integration", () => {
   let ctx: PollyContext;
@@ -20,7 +20,7 @@ describe("fal storage upload initiate integration", () => {
   });
 
   it("should initiate an upload, PUT bytes, and return a usable CDN url", async () => {
-    const provider = fal({
+    const provider = createFal({
       apiKey: process.env.FAL_API_KEY ?? "fal-test-key",
       timeout: 120000,
     });
@@ -50,7 +50,7 @@ describe("fal storage upload initiate integration", () => {
   }, 120000);
 
   it("should validate a valid payload", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.storage.upload.initiate.schema.safeParse({
       file_name: "test.jpg",
       content_type: "image/jpeg",
@@ -59,7 +59,7 @@ describe("fal storage upload initiate integration", () => {
   });
 
   it("should reject payload missing required fields", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.storage.upload.initiate.schema.safeParse({});
     expect(v.success).toBe(false);
     expect(v.error?.issues.some((i) => i.path.includes("file_name"))).toBe(
@@ -71,7 +71,7 @@ describe("fal storage upload initiate integration", () => {
   });
 
   it("should accept an optional lifecycle object", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const v = provider.storage.upload.initiate.schema.safeParse({
       file_name: "test.jpg",
       content_type: "image/jpeg",
@@ -81,7 +81,7 @@ describe("fal storage upload initiate integration", () => {
   });
 
   it("should expose schema", () => {
-    const provider = fal({ apiKey: "fal-test-key" });
+    const provider = createFal({ apiKey: "fal-test-key" });
     const schema = provider.storage.upload.initiate.schema;
     expect(schema).toBeDefined();
     expect(typeof schema.safeParse).toBe("function");

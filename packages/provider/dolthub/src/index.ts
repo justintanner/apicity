@@ -1,4 +1,4 @@
-export { dolthub } from "./dolthub";
+export { createDoltHub } from "./dolthub";
 
 export { DoltHubError } from "./types";
 

@@ -8,18 +8,30 @@
 
 A thin wrapper for many APIs covering AI image generation, video generation, all major social media APIs, and more.
 
+## Features
+
+- **OTP pay gate — no bypass.** Paid endpoints (media generation, etc.) only fire with a human- or code-client-minted, single-use OTP bound to the exact request. An autonomous agent driving the API can't self-approve and can't run up your bill. [Details ↓](#paid-endpoints-otp-pay-gate)
+- **Pre-flight cost estimates.** Pure, local USD estimates for any call across every provider — no keys, no network.
+- **Schemas for agents.** Every POST endpoint validates its payload before sending, so a hallucinated call fails locally instead of at the API.
+- **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
+- **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as plain function wrappers.
+- **Zero provider dependencies.** Self-contained packages, ESM, strict TypeScript.
+
 ## Example
 
-```ts
-import { createCost } from "@apicity/cost";
-import { createKie } from "@apicity/kie";
+The headline behavior: a **paid endpoint is gated**. Without an approved,
+single-use OTP the call fails closed — an autonomous caller cannot bypass it.
 
-const c = createCost();
+```ts
+import { createKie } from "@apicity/kie";
+import { mintOtp, createCost } from "@apicity/cost";
+
+// The code client holds the pay-gate secret (from your secret manager / config).
+// The autonomous caller never sees it, so it can never self-approve a paid call.
+const secret = loadSecret();
 const kie = createKie({
   apiKey: process.env.KIE_API_KEY!,
-  // Paid endpoints (e.g. createTask) are gated — see "Paid endpoints" below.
-  // The secret comes from your secret manager / config, never a magic env var.
-  paygate: { secret: loadSecret() },
+  paygate: { secret },
 });
 
 // Same JSON body you'd POST to /api/v1/jobs/createTask.
@@ -32,22 +44,24 @@ const payload = {
   },
 };
 
-// Preview the cost — no keys, no network, sync.
-const estimate = c.estimate({ provider: "kie", payload });
+// Pure, local cost preview — no keys, no network, sync.
+const estimate = createCost().estimate({ provider: "kie", payload });
 // estimate.usd === 0.08
-// estimate.source === "per-unit-table"
-// estimate.breakdown === { units: 1, unit: "images", perUnitUsd: 0.08 }
 
-// Budget-gate before committing to the generation.
-if (estimate.usd > 0.1) {
-  throw new Error(`Estimate $${estimate.usd.toFixed(4)} exceeds $0.10 cap`);
-}
+// Paid endpoint with no approval → fails closed. No bypass.
+await kie.post.api.v1.jobs.createTask(payload);
+// ❌ throws PayGateError { code: "otp-missing" }
 
-// Same payload — now actually run the generation. Paid endpoints require an
-// operator-minted, single-use OTP (see "Paid endpoints (OTP pay gate)" below).
-const task = await kie.post.api.v1.jobs.createTask(payload, {
-  otp: process.env.KIE_OTP!,
+// A human (or the code client) mints a single-use OTP, bound to THIS request.
+const otp = mintOtp(secret, {
+  dotPath: "api.v1.jobs.createTask",
+  request: payload,
+  ttl: "10m",
 });
+
+// Approved — the generation runs once. Replaying the OTP, or changing any byte
+// of the payload, fails verification.
+const task = await kie.post.api.v1.jobs.createTask(payload, { otp });
 ```
 
 ## Motivation

@@ -27,11 +27,7 @@ export {
   PAID_ENDPOINTS,
   lookupPaidEndpoint,
   isPaidEndpoint,
-  maxSpendPreflight,
-  MaxSpendError,
   SpendBoundError,
-  spendBoundCheck,
-  dispatchWithPaidGuard,
 } from "./paid-endpoints";
 export type {
   PaidEndpointKey,
@@ -41,13 +37,25 @@ export type {
 
 export {
   PayGateError,
-  PayGateApproval,
   dispatchWithPaidGate,
+  defaultPayGateIo,
   canonicalizeJson,
   canonicalHash,
   parseOtp,
+  verifyOtp,
   verifyOtpSignature,
   isJtiConsumed,
   consumeJti,
+  loadPublicKey,
 } from "./paygate";
-export type { PayGateOtpPayload } from "./paygate";
+export type {
+  PayGateApproval,
+  PayGateIo,
+  PayGateOtpPayload,
+  VerifyFailureCode,
+  VerifyOtpInput,
+  VerifyResult,
+} from "./paygate";
+
+export { withPaidGate } from "./with-paid-gate";
+export type { WithPaidGateOptions } from "./with-paid-gate";

@@ -151,24 +151,7 @@ console.log(result.resultUrls[0]);
 
 ## API Reference
 
-26 endpoints across 15 groups. Each method mirrors an upstream URL path.
-
-### chat
-
-<details>
-<summary><code>GET</code> <b><code>kie.get.api.v1.chat.credit</code></b></summary>
-
-<code>GET https://api.kie.ai/api/v1/chat/credit</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.get.api.v1.chat.credit({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
+19 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### claude
 
@@ -184,74 +167,6 @@ const res = await kie.claude.post.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
-
-</details>
-
-### common
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.common.downloadUrl</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/common/download-url</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.post.api.v1.common.downloadUrl({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### fileBase64Upload
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.fileBase64Upload</code></b></summary>
-
-<code>POST https://api.kie.ai/api/file-base64-upload</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.post.api.fileBase64Upload({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### fileStreamUpload
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.fileStreamUpload</code></b></summary>
-
-<code>POST https://api.kie.ai/api/file-stream-upload</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.post.api.fileStreamUpload({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### fileUrlUpload
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.fileUrlUpload</code></b></summary>
-
-<code>POST https://api.kie.ai/api/file-url-upload</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.post.api.fileUrlUpload({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 
@@ -396,38 +311,6 @@ const res = await kie.suno.post.api.v1.generate.uploadExtend({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
-
-</details>
-
-### jobs
-
-<details>
-<summary><code>GET</code> <b><code>kie.get.api.v1.jobs.recordInfo</code></b></summary>
-
-<code>GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.get.api.v1.jobs.recordInfo({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.jobs.createTask</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
-
-[Upstream docs ↗](https://docs.kie.ai)
-
-```typescript
-const res = await kie.post.api.v1.jobs.createTask({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 

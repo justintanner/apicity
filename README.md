@@ -105,6 +105,74 @@ your own orchestration layer.
 - **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
 - **Develop** — `pnpm install && pnpm run build && pnpm run test:run`. Integration tests record/replay via Polly.js (no keys needed for replay).
 
+## Paid endpoints (OTP pay gate)
+
+Endpoints that incur direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`
+for video/image generation) are listed in `PAID_ENDPOINTS` and gated behind a
+single-use, operator-signed OTP. Autonomous callers cannot self-approve — they
+must present a token signed by an operator-held Ed25519 key. Unlisted endpoints
+are free and require no caller changes.
+
+Providers wire the gate once at the bottom of their factory:
+
+```ts
+import { withPaidGate } from "@apicity/cost";
+
+export function kie(opts: KieOptions): KieProvider {
+  // …build endpoint functions…
+  return withPaidGate("kie", {
+    post: { api: { v1: { jobs: { createTask: Object.assign(createTask, { schema }) } } } },
+    get:  { api: { v1: { jobs: { recordInfo } } } },
+    // sub-providers, schema maps, etc. pass through untouched
+  });
+}
+```
+
+Operators mint an OTP per request with the `apicity-paygate` CLI:
+
+```bash
+export APICITY_PAYGATE_PRIVATE_KEY_PATH=./paygate-private.pem  # signer
+export APICITY_PAYGATE_PUBLIC_KEY_PATH=./paygate-public.pem    # verifier
+
+apicity-paygate otp mint \
+  --provider kie \
+  --method POST \
+  --dot-path api.v1.jobs.createTask \
+  --payload-file request.json \
+  --max-spend 5 \
+  --ttl 10m
+```
+
+The caller passes the OTP alongside the request:
+
+```ts
+import { kie } from "@apicity/kie";
+import { PayGateError, SpendBoundError } from "@apicity/cost";
+
+const provider = kie({ apiKey: process.env.KIE_API_KEY! });
+
+try {
+  const task = await provider.post.api.v1.jobs.createTask(
+    payload,
+    { otp: process.env.KIE_OTP! },
+  );
+} catch (e) {
+  if (e instanceof PayGateError) {
+    // otp-missing | otp-expired | otp-invalid-signature
+    // otp-mismatched-request | otp-replayed | paygate-not-configured
+  } else if (e instanceof SpendBoundError) {
+    // estimated cost > maxSpendUsd, or cost couldn't be bounded
+  } else throw e;
+}
+```
+
+The OTP commits to the exact `(provider, method, dotPath, requestHash,
+maxSpendUsd, exp)` tuple — change any byte of the payload and verification
+fails. The `jti` is consumed before dispatch, so a failed network call still
+burns the token: operators must mint a fresh OTP for any retry. See
+[@apicity/cost](packages/provider/cost) for the full spec, key setup, and
+retry semantics.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

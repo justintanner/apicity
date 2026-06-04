@@ -4,8 +4,7 @@ import { join } from "node:path";
 import { homedir } from "node:os";
 
 import { computeEstimate } from "./compute";
-import { isPaidEndpoint } from "./paid-endpoints";
-import { SpendBoundError } from "./paid-endpoints";
+import { isPaidEndpoint, SpendBoundError } from "./paid-endpoints";
 
 import type { EstimateRequest } from "./types";
 
@@ -62,6 +61,38 @@ export class PayGateError extends Error {
     this.dotPath = dotPath;
     this.code = code;
   }
+}
+
+/**
+ * Verification-only error codes — the subset of PayGateError codes that the
+ * pure `verifyOtp` can emit. The shell layer ("paygate-not-configured",
+ * "otp-missing") is handled separately in `dispatchWithPaidGate`.
+ */
+export type VerifyFailureCode =
+  | "otp-malformed"
+  | "otp-invalid-signature"
+  | "otp-expired"
+  | "otp-mismatched-request"
+  | "otp-replayed";
+
+/**
+ * Tagged-union result from the pure `verifyOtp` function.
+ */
+export type VerifyResult =
+  | { ok: true; jti: string; maxSpendUsd: number }
+  | { ok: false; code: VerifyFailureCode; message: string };
+
+/**
+ * Pure inputs to `verifyOtp`. Every dependency is explicit — no env vars,
+ * no `Date.now()`, no filesystem reads.
+ */
+export interface VerifyOtpInput {
+  nowSeconds: number;
+  publicKeyPem: string;
+  expected: { provider: string; method: string; dotPath: string };
+  payloadHash: `sha256:${string}`;
+  otp: string;
+  isJtiConsumed: (jti: string) => boolean;
 }
 
 /**
@@ -122,7 +153,6 @@ export function canonicalHash(value: unknown): `sha256:${string}` {
  * Decode base64url (no padding required).
  */
 function base64urlDecode(str: string): Buffer {
-  // Replace base64url chars with base64 chars and add padding
   const base64 = str.replace(/-/g, "+").replace(/_/g, "/");
   const padLen = (4 - (base64.length % 4)) % 4;
   const padded = base64 + "=".repeat(padLen);
@@ -194,6 +224,77 @@ export function verifyOtpSignature(
 }
 
 /**
+ * Pure verification of an OTP against expected request context.
+ *
+ * Returns a tagged-union `VerifyResult` — never throws. The caller is
+ * responsible for converting `{ ok: false }` into a `PayGateError` at the
+ * boundary.
+ */
+export function verifyOtp(input: VerifyOtpInput): VerifyResult {
+  let parsed: { payload: PayGateOtpPayload; signature: Buffer };
+  try {
+    parsed = parseOtp(input.otp);
+  } catch (e) {
+    return {
+      ok: false,
+      code: "otp-malformed",
+      message: e instanceof Error ? e.message : "OTP is malformed",
+    };
+  }
+
+  const { payload, signature } = parsed;
+  const payloadSegment = input.otp.split(".")[0]!;
+
+  if (!verifyOtpSignature(payloadSegment, signature, input.publicKeyPem)) {
+    return {
+      ok: false,
+      code: "otp-invalid-signature",
+      message: "OTP signature is invalid",
+    };
+  }
+
+  if (payload.exp < input.nowSeconds) {
+    return {
+      ok: false,
+      code: "otp-expired",
+      message: `OTP expired at ${payload.exp} (now is ${input.nowSeconds})`,
+    };
+  }
+
+  if (
+    payload.provider !== input.expected.provider ||
+    payload.method !== input.expected.method ||
+    payload.dotPath !== input.expected.dotPath
+  ) {
+    return {
+      ok: false,
+      code: "otp-mismatched-request",
+      message:
+        `OTP bound to ${payload.provider} ${payload.method} ${payload.dotPath}, ` +
+        `but call is ${input.expected.provider} ${input.expected.method} ${input.expected.dotPath}`,
+    };
+  }
+
+  if (payload.requestHash !== input.payloadHash) {
+    return {
+      ok: false,
+      code: "otp-mismatched-request",
+      message: `OTP request hash mismatch: expected ${input.payloadHash}, got ${payload.requestHash}`,
+    };
+  }
+
+  if (input.isJtiConsumed(payload.jti)) {
+    return {
+      ok: false,
+      code: "otp-replayed",
+      message: `OTP jti ${payload.jti} has already been consumed`,
+    };
+  }
+
+  return { ok: true, jti: payload.jti, maxSpendUsd: payload.maxSpendUsd };
+}
+
+/**
  * Resolve the default replay ledger path.
  */
 function defaultLedgerPath(): string {
@@ -206,9 +307,6 @@ function defaultLedgerPath(): string {
 
 /**
  * Check whether a jti has already been consumed.
- *
- * @param jti - The OTP jti to check
- * @param ledgerPath - Optional override path; defaults to XDG_STATE_HOME or ~/.local/state
  */
 export function isJtiConsumed(
   jti: string,
@@ -235,9 +333,6 @@ export function isJtiConsumed(
 
 /**
  * Append a jti to the replay ledger.
- *
- * @param jti - The OTP jti to consume
- * @param ledgerPath - Optional override path; defaults to XDG_STATE_HOME or ~/.local/state
  */
 export function consumeJti(
   jti: string,
@@ -257,7 +352,7 @@ export function consumeJti(
 /**
  * Load the Ed25519 public key PEM from the configured path.
  */
-function loadPublicKey(): string | undefined {
+export function loadPublicKey(): string | undefined {
   const path = process.env.APICITY_PAYGATE_PUBLIC_KEY_PATH;
   if (!path) {
     return undefined;
@@ -266,94 +361,23 @@ function loadPublicKey(): string | undefined {
 }
 
 /**
- * Verify an OTP against the public key, checking signature, expiry,
- * request binding, and replay.
+ * Injectable IO surface for the pay-gate shell. The default implementation
+ * reads env vars, the filesystem ledger, and the system clock. Tests can swap
+ * in deterministic in-memory implementations.
  */
-function verifyOtp(
-  provider: string,
-  method: string,
-  dotPath: string,
-  payload: Record<string, unknown>,
-  otp: string,
-  publicKeyPem: string
-): PayGateOtpPayload {
-  let parsed: { payload: PayGateOtpPayload; signature: Buffer };
-  try {
-    parsed = parseOtp(otp);
-  } catch (e) {
-    throw new PayGateError(
-      provider,
-      method,
-      dotPath,
-      "otp-malformed",
-      e instanceof Error ? e.message : "OTP is malformed"
-    );
-  }
-
-  const { payload: otpPayload, signature } = parsed;
-  const parts = otp.split(".");
-  const payloadSegment = parts[0]!;
-
-  const sigOk = verifyOtpSignature(payloadSegment, signature, publicKeyPem);
-  if (!sigOk) {
-    throw new PayGateError(
-      provider,
-      method,
-      dotPath,
-      "otp-invalid-signature",
-      "OTP signature is invalid"
-    );
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-  if (otpPayload.exp < now) {
-    throw new PayGateError(
-      provider,
-      method,
-      dotPath,
-      "otp-expired",
-      `OTP expired at ${otpPayload.exp} (now is ${now})`
-    );
-  }
-
-  if (
-    otpPayload.provider !== provider ||
-    otpPayload.method !== method ||
-    otpPayload.dotPath !== dotPath
-  ) {
-    throw new PayGateError(
-      provider,
-      method,
-      dotPath,
-      "otp-mismatched-request",
-      `OTP bound to ${otpPayload.provider} ${otpPayload.method} ${otpPayload.dotPath}, ` +
-        `but call is ${provider} ${method} ${dotPath}`
-    );
-  }
-
-  const expectedHash = canonicalHash(payload);
-  if (otpPayload.requestHash !== expectedHash) {
-    throw new PayGateError(
-      provider,
-      method,
-      dotPath,
-      "otp-mismatched-request",
-      `OTP request hash mismatch: expected ${expectedHash}, got ${otpPayload.requestHash}`
-    );
-  }
-
-  if (isJtiConsumed(otpPayload.jti)) {
-    throw new PayGateError(
-      provider,
-      method,
-      dotPath,
-      "otp-replayed",
-      `OTP jti ${otpPayload.jti} has already been consumed`
-    );
-  }
-
-  return otpPayload;
+export interface PayGateIo {
+  now(): number;
+  loadPublicKey(): string | undefined;
+  isJtiConsumed(jti: string): boolean;
+  consumeJti(jti: string): void;
 }
+
+export const defaultPayGateIo: PayGateIo = {
+  now: () => Date.now(),
+  loadPublicKey,
+  isJtiConsumed: (jti) => isJtiConsumed(jti),
+  consumeJti: (jti) => consumeJti(jti),
+};
 
 /**
  * Wrap a provider network dispatch with the OTP-based paid-endpoint gate.
@@ -364,6 +388,11 @@ function verifyOtp(
  * Paid endpoints fail closed: if the pay gate is not configured, or the OTP
  * is missing, invalid, expired, replayed, mismatched, or the cost exceeds the
  * OTP's maxSpendUsd, the call throws before dispatch runs.
+ *
+ * The OTP jti is consumed BEFORE dispatch. If dispatch later fails for any
+ * reason, the jti remains consumed and the caller must mint a fresh OTP to
+ * retry. This is intentional — without it, a hostile caller could replay an
+ * OTP on every transient failure.
  */
 export async function dispatchWithPaidGate<T>(
   provider: string,
@@ -371,13 +400,14 @@ export async function dispatchWithPaidGate<T>(
   dotPath: string,
   payload: Record<string, unknown>,
   approval: PayGateApproval | undefined,
-  dispatch: () => Promise<T>
+  dispatch: () => Promise<T>,
+  io: PayGateIo = defaultPayGateIo
 ): Promise<T> {
   if (!isPaidEndpoint(provider, method, dotPath)) {
     return dispatch();
   }
 
-  const publicKeyPem = loadPublicKey();
+  const publicKeyPem = io.loadPublicKey();
   if (!publicKeyPem) {
     throw new PayGateError(
       provider,
@@ -398,14 +428,23 @@ export async function dispatchWithPaidGate<T>(
     );
   }
 
-  const otpPayload = verifyOtp(
-    provider,
-    method,
-    dotPath,
-    payload,
-    approval.otp,
-    publicKeyPem
-  );
+  const result = verifyOtp({
+    nowSeconds: Math.floor(io.now() / 1000),
+    publicKeyPem,
+    expected: { provider, method, dotPath },
+    payloadHash: canonicalHash(payload),
+    otp: approval.otp,
+    isJtiConsumed: io.isJtiConsumed,
+  });
+  if (!result.ok) {
+    throw new PayGateError(
+      provider,
+      method,
+      dotPath,
+      result.code,
+      result.message
+    );
+  }
 
   const estimate = computeEstimate({
     provider: provider as EstimateRequest["provider"],
@@ -417,7 +456,7 @@ export async function dispatchWithPaidGate<T>(
       provider,
       method,
       dotPath,
-      otpPayload.maxSpendUsd,
+      result.maxSpendUsd,
       estimate.usd,
       `Endpoint ${provider} ${method} ${dotPath} spend cannot be bounded ` +
         `from the payload: ${estimate.warnings.join("; ")}. ` +
@@ -426,20 +465,19 @@ export async function dispatchWithPaidGate<T>(
     );
   }
 
-  if (estimate.usd > otpPayload.maxSpendUsd) {
+  if (estimate.usd > result.maxSpendUsd) {
     throw new SpendBoundError(
       provider,
       method,
       dotPath,
-      otpPayload.maxSpendUsd,
+      result.maxSpendUsd,
       estimate.usd,
       `Endpoint ${provider} ${method} ${dotPath} estimated cost ` +
-        `(${estimate.usd} USD) exceeds OTP maxSpendUsd (${otpPayload.maxSpendUsd} USD).`
+        `(${estimate.usd} USD) exceeds OTP maxSpendUsd (${result.maxSpendUsd} USD).`
     );
   }
 
-  // Consume the OTP immediately before dispatch.
-  consumeJti(otpPayload.jti);
+  io.consumeJti(result.jti);
 
   return dispatch();
 }

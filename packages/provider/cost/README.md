@@ -178,15 +178,15 @@ Payload schema:
 
 ```ts
 interface PayGateOtpPayload {
-  v: 1;                        // version
-  jti: string;                 // random 128-bit hex (unique token id)
-  provider: string;            // e.g. "kie"
-  method: string;              // e.g. "POST"
-  dotPath: string;             // e.g. "api.v1.jobs.createTask"
+  v: 1; // version
+  jti: string; // random 128-bit hex (unique token id)
+  provider: string; // e.g. "kie"
+  method: string; // e.g. "POST"
+  dotPath: string; // e.g. "api.v1.jobs.createTask"
   requestHash: `sha256:${string}`; // sha256 of canonical request JSON
-  maxSpendUsd: number;         // maximum allowed spend in USD
-  iat: number;                 // issued-at unix seconds
-  exp: number;                 // expiration unix seconds
+  maxSpendUsd: number; // maximum allowed spend in USD
+  iat: number; // issued-at unix seconds
+  exp: number; // expiration unix seconds
 }
 ```
 
@@ -198,15 +198,15 @@ Non-JSON payload values must fail closed.
 
 **Runtime (verification):**
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `APICITY_PAYGATE_PUBLIC_KEY_PATH` | Yes | Path to an Ed25519 public key PEM file. Without this, the pay gate is disabled and all paid endpoints throw `PayGateError`. |
+| Variable                          | Required | Description                                                                                                                 |
+| --------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `APICITY_PAYGATE_PUBLIC_KEY_PATH` | Yes      | Path to an Ed25519 public key PEM file. Without this, the pay gate is disabled and all paid endpoints throw `PayGateError`. |
 
 **CLI (minting):**
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `APICITY_PAYGATE_PRIVATE_KEY_PATH` | Yes | Path to an Ed25519 private key PEM file. Used by the `apicity-paygate` CLI to sign OTPs. |
+| Variable                           | Required | Description                                                                              |
+| ---------------------------------- | -------- | ---------------------------------------------------------------------------------------- |
+| `APICITY_PAYGATE_PRIVATE_KEY_PATH` | Yes      | Path to an Ed25519 private key PEM file. Used by the `apicity-paygate` CLI to sign OTPs. |
 
 ### Request canonicalization
 
@@ -305,17 +305,17 @@ try {
 
 ### Failure modes
 
-| Condition | Error | Notes |
-|-----------|-------|-------|
-| No `APICITY_PAYGATE_PUBLIC_KEY_PATH` | `PayGateError` | Pay gate is not configured |
-| Paid endpoint without OTP | `PayGateError` | Caller must pass `approval.otp` |
-| Invalid signature | `PayGateError` | OTP was not signed by the correct key |
-| Expired OTP (`exp` < now) | `PayGateError` | Operator must mint a fresh OTP |
-| Replayed OTP (`jti` in ledger) | `PayGateError` | Each OTP is single-use |
-| Mismatched provider/method/dotPath | `PayGateError` | OTP is bound to a specific call |
-| Mismatched request hash | `PayGateError` | Payload must match exactly |
-| Estimate > `maxSpendUsd` | `SpendBoundError` | Request is too expensive |
-| Unestimable cost | `SpendBoundError` | Unknown model or missing fields |
+| Condition                            | Error             | Notes                                 |
+| ------------------------------------ | ----------------- | ------------------------------------- |
+| No `APICITY_PAYGATE_PUBLIC_KEY_PATH` | `PayGateError`    | Pay gate is not configured            |
+| Paid endpoint without OTP            | `PayGateError`    | Caller must pass `approval.otp`       |
+| Invalid signature                    | `PayGateError`    | OTP was not signed by the correct key |
+| Expired OTP (`exp` < now)            | `PayGateError`    | Operator must mint a fresh OTP        |
+| Replayed OTP (`jti` in ledger)       | `PayGateError`    | Each OTP is single-use                |
+| Mismatched provider/method/dotPath   | `PayGateError`    | OTP is bound to a specific call       |
+| Mismatched request hash              | `PayGateError`    | Payload must match exactly            |
+| Estimate > `maxSpendUsd`             | `SpendBoundError` | Request is too expensive              |
+| Unestimable cost                     | `SpendBoundError` | Unknown model or missing fields       |
 
 ### CLI: minting OTPs
 
@@ -335,34 +335,41 @@ apicity-paygate otp mint \
 The CLI requires `APICITY_PAYGATE_PRIVATE_KEY_PATH` and prints only the OTP
 to stdout on success.
 
-### Migration from `maxSpend`
+### Wiring the gate into a provider
 
-The previous numeric `maxSpend` parameter is **deprecated**. It allowed
-autonomous callers to self-approve by passing any positive number, which is
-not a true authority boundary.
+Providers apply the gate once at the bottom of their factory using
+`withPaidGate`. The walker descends the HTTP-method roots (`post`, `get`,
+`delete`, `patch`, `put`) and routes every leaf whose `(provider, method,
+dotPath)` is in `PAID_ENDPOINTS` through `dispatchWithPaidGate`. Free leaves
+pass through unchanged. Sub-providers, schema records, and other non-route
+properties are returned by reference.
 
-Migration path:
+```ts
+import { withPaidGate } from "@apicity/cost";
 
-1. **Operator** generates an Ed25519 key pair:
-   ```bash
-   openssl genpkey -algorithm Ed25519 -out paygate-private.pem
-   openssl pkey -in paygate-private.pem -pubout -out paygate-public.pem
-   ```
-2. **Runtime** sets `APICITY_PAYGATE_PUBLIC_KEY_PATH` to the public key.
-3. **Operator** mints OTPs before each paid call using the CLI or a custom
-   tool that signs the same payload format.
-4. **Caller** passes `{ otp }` instead of a numeric `maxSpend`:
-   ```ts
-   // Before (deprecated)
-   await provider.post.api.v1.jobs.createTask({ ... }, 5);
+export function kie(opts: KieOptions): KieProvider {
+  // ...build endpoint functions...
+  return withPaidGate("kie", {
+    veo: createVeoProvider(...),     // sub-provider, untouched
+    modelInputSchemas,               // data, untouched
+    post: { api: { v1: { jobs: { createTask: Object.assign(createTask, { schema }) } } } },
+    get:  { api: { v1: { jobs: { recordInfo } } } },
+  });
+}
+```
 
-   // After
-   await provider.post.api.v1.jobs.createTask({ ... }, { otp: "..." });
-   ```
+Wrapped paid leaves accept a second optional `approval` argument at the call
+site. Free leaves are unaffected. To inject deterministic IO in tests, pass
+`{ io }` as the third argument to `withPaidGate`.
 
-The old `maxSpendPreflight`, `MaxSpendError`, and `dispatchWithPaidGuard`
-interfaces are retained during the transition but will be removed in a
-future major version.
+### Retry semantics
+
+The OTP `jti` is consumed **before** `dispatch()` runs. If dispatch later
+fails (network error, upstream 5xx, abort), the `jti` remains in the replay
+ledger and the caller must mint a fresh OTP to retry. This is intentional —
+without it, a hostile caller could replay a single OTP on every transient
+failure. Operators should treat OTPs as single-use authority for one
+network attempt.
 
 ### Minimal operator workflow
 

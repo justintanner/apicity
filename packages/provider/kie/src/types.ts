@@ -160,9 +160,8 @@ import type {
   FileBase64UploadRequest,
 } from "./zod";
 
-export interface KieApproval {
-  otp: string;
-}
+export type { PayGateApproval as KieApproval } from "@apicity/cost";
+import type { PayGateApproval as KieApproval } from "@apicity/cost";
 
 interface KieCreateTaskMethod {
   (req: MediaGenerationRequest, approval?: KieApproval): Promise<TaskResponse>;

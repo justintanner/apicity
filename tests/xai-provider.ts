@@ -10,6 +10,7 @@
  */
 import { createXai, createRateLimiter, XAI_RATE_LIMITS } from "@apicity/xai";
 import type { RateLimiter } from "@apicity/xai";
+import { TEST_PAYGATE_SECRET } from "./harness";
 
 const limiter: RateLimiter & {
   _acquire: (signal?: AbortSignal, maxQueueMs?: number) => Promise<void>;
@@ -35,5 +36,6 @@ export function createXaiProvider() {
     apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
     timeout: 60_000,
     fetch: rateLimitedFetch,
+    paygate: { secret: TEST_PAYGATE_SECRET },
   });
 }

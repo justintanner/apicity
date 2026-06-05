@@ -327,6 +327,14 @@ function resolveNode(node, visited = new Set()) {
       const args = node.getArguments();
       if (args.length > 0) return resolveNode(args[0], visited);
     }
+    // withPaidGate(name, tree, opts) unwraps the 2nd arg
+    if (
+      expr.getKind() === SyntaxKind.Identifier &&
+      expr.getText() === "withPaidGate"
+    ) {
+      const args = node.getArguments();
+      if (args.length >= 2) return resolveNode(args[1], visited);
+    }
     // Spread factory call like `...createClaudeProvider(...)` — handled by caller
     // via spread expression resolution; here we treat as opaque.
     return [node];

@@ -255,3 +255,15 @@ export function mintKieCreateTaskOtp(request: Record<string, unknown>): {
     }),
   };
 }
+
+export function mintXaiOtp(
+  dotPath: string,
+  request: Record<string, unknown>
+): { otp: string } {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      dotPath,
+      request,
+    }),
+  };
+}

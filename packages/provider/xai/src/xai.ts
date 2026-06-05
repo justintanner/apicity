@@ -79,6 +79,7 @@ import {
   XaiCustomVoiceCreateRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
+import { withPaidGate } from "@apicity/cost";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -713,590 +714,608 @@ export function createXai(opts: XaiOptions): XaiProvider {
     }
   );
 
-  return attachExamples({
-    post: {
-      v1: {
-        // POST https://api.x.ai/v1/responses
-        // Docs: https://docs.x.ai/docs/api-reference
-        responses: Object.assign(
-          async function postResponses(
-            req: XaiResponseRequest,
-            signal?: AbortSignal
-          ): Promise<XaiResponseResponse> {
-            return await makeRequest<XaiResponseResponse>(
-              "POST",
-              "/responses",
-              req,
-              signal
-            );
-          },
-          {
-            schema: XaiResponseRequestSchema,
-          }
-        ),
-        chat: {
-          // POST https://api.x.ai/v1/chat/completions
-          // Docs: https://docs.x.ai/docs/api-reference
-          completions: Object.assign(
-            async function completions(
-              req: XaiChatRequest,
-              signal?: AbortSignal
-            ): Promise<XaiChatResponse> {
-              return await makeRequest<XaiChatResponse>(
-                "POST",
-                "/chat/completions",
-                req,
-                signal
-              );
-            },
-            {
-              schema: XaiChatRequestSchema,
-            }
-          ),
-        },
-        images: {
-          // POST https://api.x.ai/v1/images/generations
-          // Docs: https://docs.x.ai/docs/api-reference
-          generations: Object.assign(
-            async function generations(
-              req: XaiImageGenerateRequest,
-              signal?: AbortSignal
-            ): Promise<XaiImageResponse> {
-              return await makeRequest(
-                "POST",
-                "/images/generations",
-                req,
-                signal
-              );
-            },
-            {
-              schema: XaiImageGenerateRequestSchema,
-            }
-          ),
-          // POST https://api.x.ai/v1/images/edits
-          // Docs: https://docs.x.ai/docs/api-reference
-          edits: Object.assign(
-            async function edits(
-              req: XaiImageEditRequest,
-              signal?: AbortSignal
-            ): Promise<XaiImageResponse> {
-              return await makeRequest("POST", "/images/edits", req, signal);
-            },
-            {
-              schema: XaiImageEditRequestSchema,
-            }
-          ),
-        },
-        videos: {
-          // POST https://api.x.ai/v1/videos/generations
-          // Docs: https://docs.x.ai/docs/api-reference
-          generations: Object.assign(
-            async function generations(
-              req: XaiVideoGenerateRequest,
-              signal?: AbortSignal
-            ): Promise<XaiVideoAsyncResponse> {
-              return await makeRequest(
-                "POST",
-                "/videos/generations",
-                req,
-                signal
-              );
-            },
-            {
-              schema: XaiVideoGenerateRequestSchema,
-            }
-          ),
-          // POST https://api.x.ai/v1/videos/edits
-          // Docs: https://docs.x.ai/docs/api-reference
-          edits: Object.assign(
-            async function edits(
-              req: XaiVideoEditRequest,
-              signal?: AbortSignal
-            ): Promise<XaiVideoAsyncResponse> {
-              return await makeRequest("POST", "/videos/edits", req, signal);
-            },
-            {
-              schema: XaiVideoEditRequestSchema,
-            }
-          ),
-          // POST https://api.x.ai/v1/videos/extensions
-          // Docs: https://docs.x.ai/docs/api-reference
-          extensions: Object.assign(
-            async function extensions(
-              req: XaiVideoExtendRequest,
-              signal?: AbortSignal
-            ): Promise<XaiVideoAsyncResponse> {
-              return await makeRequest(
-                "POST",
-                "/videos/extensions",
-                req,
-                signal
-              );
-            },
-            {
-              schema: XaiVideoExtendRequestSchema,
-            }
-          ),
-        },
-        // POST https://api.x.ai/v1/files
-        // Docs: https://docs.x.ai/docs/api-reference
-        files: Object.assign(async function postFiles(
-          file: Blob,
-          filename: string,
-          purpose?: string,
-          signal?: AbortSignal
-        ): Promise<XaiFileObject> {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), timeout);
-          if (signal) {
-            attachAbortHandler(signal, controller);
-          }
-
-          try {
-            const formData = new FormData();
-            formData.append("file", file, filename);
-            if (purpose !== undefined) formData.append("purpose", purpose);
-
-            const res = await doFetch(`${baseURL}/files`, {
-              method: "POST",
-              headers: { Authorization: `Bearer ${opts.apiKey}` },
-              body: formData,
-              signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!res.ok) {
-              let message = `XAI API error: ${res.status}`;
-              let body: unknown = null;
-              try {
-                body = await res.json();
-                if (
-                  typeof body === "object" &&
-                  body !== null &&
-                  "error" in body
-                ) {
-                  const err = (body as { error: { message?: string } }).error;
-                  if (err?.message) {
-                    message = `XAI API error ${res.status}: ${err.message}`;
-                  }
-                }
-              } catch {
-                // ignore parse errors
+  return attachExamples(
+    withPaidGate(
+      "xai",
+      {
+        post: {
+          v1: {
+            // POST https://api.x.ai/v1/responses
+            // Docs: https://docs.x.ai/docs/api-reference
+            responses: Object.assign(
+              async function postResponses(
+                req: XaiResponseRequest,
+                signal?: AbortSignal
+              ): Promise<XaiResponseResponse> {
+                return await makeRequest<XaiResponseResponse>(
+                  "POST",
+                  "/responses",
+                  req,
+                  signal
+                );
+              },
+              {
+                schema: XaiResponseRequestSchema,
               }
-              throw new XaiError(message, res.status, body);
-            }
-
-            return (await res.json()) as XaiFileObject;
-          } catch (error) {
-            clearTimeout(timeoutId);
-            if (error instanceof XaiError) throw error;
-            throw new XaiError(`XAI request failed: ${error}`, 500);
-          }
-        }, {}),
-        batches: postBatches,
-        collections: postCollections,
-        documents: {
-          // POST https://api.x.ai/v1/documents/search
-          // Docs: https://docs.x.ai/docs/api-reference
-          search: Object.assign(
-            async function search(
-              req: XaiDocumentSearchRequest,
-              signal?: AbortSignal
-            ): Promise<XaiDocumentSearchResponse> {
-              return await makeRequest(
-                "POST",
-                "/documents/search",
-                req,
-                signal
-              );
-            },
-            {
-              schema: XaiDocumentSearchRequestSchema,
-            }
-          ),
-        },
-        // POST https://api.x.ai/v1/tokenize-text
-        // Docs: https://docs.x.ai/docs/api-reference
-        tokenizeText: Object.assign(
-          async function tokenizeText(
-            req: XaiTokenizeTextRequest,
-            signal?: AbortSignal
-          ): Promise<XaiTokenizeTextResponse> {
-            return await makeRequest<XaiTokenizeTextResponse>(
-              "POST",
-              "/tokenize-text",
-              req,
-              signal
-            );
-          },
-          {
-            schema: XaiTokenizeTextRequestSchema,
-          }
-        ),
-        realtime: {
-          // POST https://api.x.ai/v1/realtime/client_secrets
-          // Docs: https://docs.x.ai/docs/api-reference
-          clientSecrets: Object.assign(
-            async function clientSecrets(
-              req: XaiRealtimeClientSecretRequest,
-              signal?: AbortSignal
-            ): Promise<XaiRealtimeClientSecretResponse> {
-              return await makeRequest(
-                "POST",
-                "/realtime/client_secrets",
-                req,
-                signal
-              );
-            },
-            {
-              schema: XaiRealtimeClientSecretRequestSchema,
-            }
-          ),
-        },
-        // POST https://api.x.ai/v1/tts
-        // Docs: https://docs.x.ai/docs/api-reference
-        tts: Object.assign(
-          async function tts(
-            req: XaiTtsRequest,
-            signal?: AbortSignal
-          ): Promise<ArrayBuffer> {
-            return await makeBinaryRequest("/tts", req, signal);
-          },
-          {
-            schema: XaiTtsRequestSchema,
-          }
-        ),
-        // POST https://api.x.ai/v1/stt
-        // Docs: https://docs.x.ai/docs/api-reference
-        stt: Object.assign(
-          async function stt(
-            req: XaiSttRequest,
-            signal?: AbortSignal
-          ): Promise<XaiSttResponse> {
-            const form = new FormData();
-            form.append("file", req.file, req.filename ?? "audio");
-            if (req.language !== undefined) {
-              form.append("language", req.language);
-            }
-            return await makeMultipartRequest<XaiSttResponse>(
-              "/stt",
-              form,
-              signal
-            );
-          },
-          {
-            schema: XaiSttRequestSchema,
-          }
-        ),
-        // POST https://api.x.ai/v1/custom-voices
-        // Docs: https://docs.x.ai/docs/api-reference
-        customVoices: Object.assign(
-          async function customVoices(
-            req: XaiCustomVoiceCreateRequest,
-            signal?: AbortSignal
-          ): Promise<XaiCustomVoice> {
-            const form = new FormData();
-            form.append("file", req.file, req.filename ?? "reference");
-            form.append("name", req.name);
-            form.append("language", req.language);
-            return await makeMultipartRequest<XaiCustomVoice>(
-              "/custom-voices",
-              form,
-              signal
-            );
-          },
-          {
-            schema: XaiCustomVoiceCreateRequestSchema,
-          }
-        ),
-      },
-    },
-    get: {
-      v1: {
-        // GET https://api.x.ai/v1/responses/{id}
-        // Docs: https://docs.x.ai/docs/api-reference
-        responses: async function getResponses(
-          id: string,
-          signal?: AbortSignal
-        ): Promise<XaiResponseResponse> {
-          return await makeRequest<XaiResponseResponse>(
-            "GET",
-            `/responses/${encodeURIComponent(id)}`,
-            undefined,
-            signal
-          );
-        },
-        chat: {
-          // GET https://api.x.ai/v1/chat/deferred-completion/{requestId}
-          // Docs: https://docs.x.ai/docs/api-reference
-          deferredCompletion: async function deferredCompletion(
-            requestId: string,
-            signal?: AbortSignal
-          ): Promise<XaiDeferredChatCompletionResult> {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-            if (signal) {
-              attachAbortHandler(signal, controller);
-            }
-
-            try {
-              const res = await doFetch(
-                `${baseURL}/chat/deferred-completion/${encodeURIComponent(requestId)}`,
+            ),
+            chat: {
+              // POST https://api.x.ai/v1/chat/completions
+              // Docs: https://docs.x.ai/docs/api-reference
+              completions: Object.assign(
+                async function completions(
+                  req: XaiChatRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiChatResponse> {
+                  return await makeRequest<XaiChatResponse>(
+                    "POST",
+                    "/chat/completions",
+                    req,
+                    signal
+                  );
+                },
                 {
-                  method: "GET",
+                  schema: XaiChatRequestSchema,
+                }
+              ),
+            },
+            images: {
+              // POST https://api.x.ai/v1/images/generations
+              // Docs: https://docs.x.ai/docs/api-reference
+              generations: Object.assign(
+                async function generations(
+                  req: XaiImageGenerateRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiImageResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/images/generations",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiImageGenerateRequestSchema,
+                }
+              ),
+              // POST https://api.x.ai/v1/images/edits
+              // Docs: https://docs.x.ai/docs/api-reference
+              edits: Object.assign(
+                async function edits(
+                  req: XaiImageEditRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiImageResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/images/edits",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiImageEditRequestSchema,
+                }
+              ),
+            },
+            videos: {
+              // POST https://api.x.ai/v1/videos/generations
+              // Docs: https://docs.x.ai/docs/api-reference
+              generations: Object.assign(
+                async function generations(
+                  req: XaiVideoGenerateRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiVideoAsyncResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/videos/generations",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiVideoGenerateRequestSchema,
+                }
+              ),
+              // POST https://api.x.ai/v1/videos/edits
+              // Docs: https://docs.x.ai/docs/api-reference
+              edits: Object.assign(
+                async function edits(
+                  req: XaiVideoEditRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiVideoAsyncResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/videos/edits",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiVideoEditRequestSchema,
+                }
+              ),
+              // POST https://api.x.ai/v1/videos/extensions
+              // Docs: https://docs.x.ai/docs/api-reference
+              extensions: Object.assign(
+                async function extensions(
+                  req: XaiVideoExtendRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiVideoAsyncResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/videos/extensions",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiVideoExtendRequestSchema,
+                }
+              ),
+            },
+            // POST https://api.x.ai/v1/files
+            // Docs: https://docs.x.ai/docs/api-reference
+            files: Object.assign(async function postFiles(
+              file: Blob,
+              filename: string,
+              purpose?: string,
+              signal?: AbortSignal
+            ): Promise<XaiFileObject> {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), timeout);
+              if (signal) {
+                attachAbortHandler(signal, controller);
+              }
+
+              try {
+                const formData = new FormData();
+                formData.append("file", file, filename);
+                if (purpose !== undefined) formData.append("purpose", purpose);
+
+                const res = await doFetch(`${baseURL}/files`, {
+                  method: "POST",
+                  headers: { Authorization: `Bearer ${opts.apiKey}` },
+                  body: formData,
+                  signal: controller.signal,
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!res.ok) {
+                  let message = `XAI API error: ${res.status}`;
+                  let body: unknown = null;
+                  try {
+                    body = await res.json();
+                    if (
+                      typeof body === "object" &&
+                      body !== null &&
+                      "error" in body
+                    ) {
+                      const err = (body as { error: { message?: string } })
+                        .error;
+                      if (err?.message) {
+                        message = `XAI API error ${res.status}: ${err.message}`;
+                      }
+                    }
+                  } catch {
+                    // ignore parse errors
+                  }
+                  throw new XaiError(message, res.status, body);
+                }
+
+                return (await res.json()) as XaiFileObject;
+              } catch (error) {
+                clearTimeout(timeoutId);
+                if (error instanceof XaiError) throw error;
+                throw new XaiError(`XAI request failed: ${error}`, 500);
+              }
+            }, {}),
+            batches: postBatches,
+            collections: postCollections,
+            documents: {
+              // POST https://api.x.ai/v1/documents/search
+              // Docs: https://docs.x.ai/docs/api-reference
+              search: Object.assign(
+                async function search(
+                  req: XaiDocumentSearchRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiDocumentSearchResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/documents/search",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiDocumentSearchRequestSchema,
+                }
+              ),
+            },
+            // POST https://api.x.ai/v1/tokenize-text
+            // Docs: https://docs.x.ai/docs/api-reference
+            tokenizeText: Object.assign(
+              async function tokenizeText(
+                req: XaiTokenizeTextRequest,
+                signal?: AbortSignal
+              ): Promise<XaiTokenizeTextResponse> {
+                return await makeRequest<XaiTokenizeTextResponse>(
+                  "POST",
+                  "/tokenize-text",
+                  req,
+                  signal
+                );
+              },
+              {
+                schema: XaiTokenizeTextRequestSchema,
+              }
+            ),
+            realtime: {
+              // POST https://api.x.ai/v1/realtime/client_secrets
+              // Docs: https://docs.x.ai/docs/api-reference
+              clientSecrets: Object.assign(
+                async function clientSecrets(
+                  req: XaiRealtimeClientSecretRequest,
+                  signal?: AbortSignal
+                ): Promise<XaiRealtimeClientSecretResponse> {
+                  return await makeRequest(
+                    "POST",
+                    "/realtime/client_secrets",
+                    req,
+                    signal
+                  );
+                },
+                {
+                  schema: XaiRealtimeClientSecretRequestSchema,
+                }
+              ),
+            },
+            // POST https://api.x.ai/v1/tts
+            // Docs: https://docs.x.ai/docs/api-reference
+            tts: Object.assign(
+              async function tts(
+                req: XaiTtsRequest,
+                signal?: AbortSignal
+              ): Promise<ArrayBuffer> {
+                return await makeBinaryRequest("/tts", req, signal);
+              },
+              {
+                schema: XaiTtsRequestSchema,
+              }
+            ),
+            // POST https://api.x.ai/v1/stt
+            // Docs: https://docs.x.ai/docs/api-reference
+            stt: Object.assign(
+              async function stt(
+                req: XaiSttRequest,
+                signal?: AbortSignal
+              ): Promise<XaiSttResponse> {
+                const form = new FormData();
+                form.append("file", req.file, req.filename ?? "audio");
+                if (req.language !== undefined) {
+                  form.append("language", req.language);
+                }
+                return await makeMultipartRequest<XaiSttResponse>(
+                  "/stt",
+                  form,
+                  signal
+                );
+              },
+              {
+                schema: XaiSttRequestSchema,
+              }
+            ),
+            // POST https://api.x.ai/v1/custom-voices
+            // Docs: https://docs.x.ai/docs/api-reference
+            customVoices: Object.assign(
+              async function customVoices(
+                req: XaiCustomVoiceCreateRequest,
+                signal?: AbortSignal
+              ): Promise<XaiCustomVoice> {
+                const form = new FormData();
+                form.append("file", req.file, req.filename ?? "reference");
+                form.append("name", req.name);
+                form.append("language", req.language);
+                return await makeMultipartRequest<XaiCustomVoice>(
+                  "/custom-voices",
+                  form,
+                  signal
+                );
+              },
+              {
+                schema: XaiCustomVoiceCreateRequestSchema,
+              }
+            ),
+          },
+        },
+        get: {
+          v1: {
+            // GET https://api.x.ai/v1/responses/{id}
+            // Docs: https://docs.x.ai/docs/api-reference
+            responses: async function getResponses(
+              id: string,
+              signal?: AbortSignal
+            ): Promise<XaiResponseResponse> {
+              return await makeRequest<XaiResponseResponse>(
+                "GET",
+                `/responses/${encodeURIComponent(id)}`,
+                undefined,
+                signal
+              );
+            },
+            chat: {
+              // GET https://api.x.ai/v1/chat/deferred-completion/{requestId}
+              // Docs: https://docs.x.ai/docs/api-reference
+              deferredCompletion: async function deferredCompletion(
+                requestId: string,
+                signal?: AbortSignal
+              ): Promise<XaiDeferredChatCompletionResult> {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+                if (signal) {
+                  attachAbortHandler(signal, controller);
+                }
+
+                try {
+                  const res = await doFetch(
+                    `${baseURL}/chat/deferred-completion/${encodeURIComponent(requestId)}`,
+                    {
+                      method: "GET",
+                      headers: { Authorization: `Bearer ${opts.apiKey}` },
+                      signal: controller.signal,
+                    }
+                  );
+
+                  clearTimeout(timeoutId);
+
+                  if (res.status === 202) {
+                    return { ready: false, data: null };
+                  }
+
+                  if (!res.ok) {
+                    let message = `XAI API error: ${res.status}`;
+                    let body: unknown = null;
+                    try {
+                      body = await res.json();
+                      if (
+                        typeof body === "object" &&
+                        body !== null &&
+                        "error" in body
+                      ) {
+                        const err = (body as { error: { message?: string } })
+                          .error;
+                        if (err?.message) {
+                          message = `XAI API error ${res.status}: ${err.message}`;
+                        }
+                      }
+                    } catch {
+                      // ignore parse errors
+                    }
+                    throw new XaiError(message, res.status, body);
+                  }
+
+                  const data = (await res.json()) as XaiChatResponse;
+                  return { ready: true, data };
+                } catch (error) {
+                  clearTimeout(timeoutId);
+                  if (error instanceof XaiError) throw error;
+                  throw new XaiError(`XAI request failed: ${error}`, 500);
+                }
+              },
+            },
+            // GET https://api.x.ai/v1/videos/{requestId}
+            // Docs: https://docs.x.ai/docs/api-reference
+            videos: async function getVideos(
+              requestId: string,
+              signal?: AbortSignal
+            ): Promise<XaiVideoResult> {
+              return await makeRequest(
+                "GET",
+                `/videos/${requestId}`,
+                undefined,
+                signal
+              );
+            },
+            files: getFiles,
+            models: getModels,
+            languageModels: getLanguageModels,
+            imageGenerationModels: getImageGenerationModels,
+            videoGenerationModels: getVideoGenerationModels,
+            batches: getBatchesNamespace,
+            collections: getCollectionsNamespace,
+          },
+        },
+        delete: {
+          v1: {
+            // DELETE https://api.x.ai/v1/responses/{id}
+            // Docs: https://docs.x.ai/docs/api-reference
+            responses: async function deleteResponses(
+              id: string,
+              signal?: AbortSignal
+            ): Promise<XaiResponseDeleteResponse> {
+              return await makeRequest<XaiResponseDeleteResponse>(
+                "DELETE",
+                `/responses/${encodeURIComponent(id)}`,
+                undefined,
+                signal
+              );
+            },
+            // DELETE https://api.x.ai/v1/files/{fileId}
+            // Docs: https://docs.x.ai/docs/api-reference
+            files: async function deleteFiles(
+              fileId: string,
+              signal?: AbortSignal
+            ): Promise<{ id: string; deleted: boolean }> {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), timeout);
+              if (signal) {
+                attachAbortHandler(signal, controller);
+              }
+
+              try {
+                const res = await doFetch(`${baseURL}/files/${fileId}`, {
+                  method: "DELETE",
                   headers: { Authorization: `Bearer ${opts.apiKey}` },
                   signal: controller.signal,
-                }
-              );
+                });
 
-              clearTimeout(timeoutId);
+                clearTimeout(timeoutId);
 
-              if (res.status === 202) {
-                return { ready: false, data: null };
-              }
-
-              if (!res.ok) {
-                let message = `XAI API error: ${res.status}`;
-                let body: unknown = null;
-                try {
-                  body = await res.json();
-                  if (
-                    typeof body === "object" &&
-                    body !== null &&
-                    "error" in body
-                  ) {
-                    const err = (body as { error: { message?: string } }).error;
-                    if (err?.message) {
-                      message = `XAI API error ${res.status}: ${err.message}`;
-                    }
+                if (!res.ok) {
+                  let deleteBody: unknown = null;
+                  try {
+                    deleteBody = await res.json();
+                  } catch {
+                    // ignore parse errors
                   }
-                } catch {
-                  // ignore parse errors
+                  throw new XaiError(
+                    `XAI API error: ${res.status}`,
+                    res.status,
+                    deleteBody
+                  );
                 }
-                throw new XaiError(message, res.status, body);
-              }
 
-              const data = (await res.json()) as XaiChatResponse;
-              return { ready: true, data };
-            } catch (error) {
-              clearTimeout(timeoutId);
-              if (error instanceof XaiError) throw error;
-              throw new XaiError(`XAI request failed: ${error}`, 500);
-            }
+                return (await res.json()) as { id: string; deleted: boolean };
+              } catch (error) {
+                clearTimeout(timeoutId);
+                if (error instanceof XaiError) throw error;
+                throw new XaiError(`XAI request failed: ${error}`, 500);
+              }
+            },
+            collections: deleteCollections,
           },
         },
-        // GET https://api.x.ai/v1/videos/{requestId}
-        // Docs: https://docs.x.ai/docs/api-reference
-        videos: async function getVideos(
-          requestId: string,
-          signal?: AbortSignal
-        ): Promise<XaiVideoResult> {
-          return await makeRequest(
-            "GET",
-            `/videos/${requestId}`,
-            undefined,
-            signal
-          );
-        },
-        files: getFiles,
-        models: getModels,
-        languageModels: getLanguageModels,
-        imageGenerationModels: getImageGenerationModels,
-        videoGenerationModels: getVideoGenerationModels,
-        batches: getBatchesNamespace,
-        collections: getCollectionsNamespace,
-      },
-    },
-    delete: {
-      v1: {
-        // DELETE https://api.x.ai/v1/responses/{id}
-        // Docs: https://docs.x.ai/docs/api-reference
-        responses: async function deleteResponses(
-          id: string,
-          signal?: AbortSignal
-        ): Promise<XaiResponseDeleteResponse> {
-          return await makeRequest<XaiResponseDeleteResponse>(
-            "DELETE",
-            `/responses/${encodeURIComponent(id)}`,
-            undefined,
-            signal
-          );
-        },
-        // DELETE https://api.x.ai/v1/files/{fileId}
-        // Docs: https://docs.x.ai/docs/api-reference
-        files: async function deleteFiles(
-          fileId: string,
-          signal?: AbortSignal
-        ): Promise<{ id: string; deleted: boolean }> {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), timeout);
-          if (signal) {
-            attachAbortHandler(signal, controller);
-          }
-
-          try {
-            const res = await doFetch(`${baseURL}/files/${fileId}`, {
-              method: "DELETE",
-              headers: { Authorization: `Bearer ${opts.apiKey}` },
-              signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!res.ok) {
-              let deleteBody: unknown = null;
-              try {
-                deleteBody = await res.json();
-              } catch {
-                // ignore parse errors
-              }
-              throw new XaiError(
-                `XAI API error: ${res.status}`,
-                res.status,
-                deleteBody
-              );
-            }
-
-            return (await res.json()) as { id: string; deleted: boolean };
-          } catch (error) {
-            clearTimeout(timeoutId);
-            if (error instanceof XaiError) throw error;
-            throw new XaiError(`XAI request failed: ${error}`, 500);
-          }
-        },
-        collections: deleteCollections,
-      },
-    },
-    put: {
-      v1: {
-        collections: putCollections,
-      },
-    },
-    patch: {
-      v1: {
-        collections: {
-          // PATCH https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}
-          // Docs: https://docs.x.ai/docs/api-reference
-          documents: async function regenerateDocument(
-            collectionId: string,
-            fileId: string,
-            signal?: AbortSignal
-          ): Promise<void> {
-            await makeManagementRequest(
-              "PATCH",
-              `/collections/${collectionId}/documents/${fileId}`,
-              undefined,
-              signal
-            );
+        put: {
+          v1: {
+            collections: putCollections,
           },
         },
-      },
-    },
-    ws: {
-      v1: {
-        realtime: function connectRealtime(
-          connectOpts?: XaiRealtimeConnectOptions
-        ): XaiRealtimeConnection {
-          const wsBaseURL = baseURL.replace(/^http/, "ws");
-          const token = connectOpts?.token ?? opts.apiKey;
-          const model = connectOpts?.model;
-
-          // Voice-agent connection: ?model= query string + Authorization
-          // header (no subprotocols). Otherwise, OpenAI-compat subprotocol auth.
-          let ws: WebSocket;
-          if (model) {
-            const url = `${wsBaseURL}/realtime?model=${encodeURIComponent(model)}`;
-            // Node `ws` accepts a third-arg options object with `headers`;
-            // browsers ignore it. Cast keeps TS happy across DOM/Node lib defs.
-            ws = new (WebSocket as unknown as new (
-              url: string,
-              protocols: string[] | undefined,
-              opts: { headers: Record<string, string> }
-            ) => WebSocket)(url, undefined, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-          } else {
-            ws = new WebSocket(`${wsBaseURL}/realtime`, [
-              "realtime",
-              `openai-insecure-api-key.${token}`,
-              "openai-beta.realtime-v1",
-            ]);
-          }
-
-          let resolveNext:
-            | ((value: IteratorResult<XaiRealtimeServerEvent>) => void)
-            | null = null;
-          const eventQueue: XaiRealtimeServerEvent[] = [];
-          let closed = false;
-
-          ws.onmessage = (ev: MessageEvent) => {
-            const event = JSON.parse(
-              typeof ev.data === "string" ? ev.data : String(ev.data)
-            ) as XaiRealtimeServerEvent;
-            if (resolveNext) {
-              const resolve = resolveNext;
-              resolveNext = null;
-              resolve({ value: event, done: false });
-            } else {
-              eventQueue.push(event);
-            }
-          };
-
-          ws.onclose = () => {
-            closed = true;
-            if (resolveNext) {
-              const resolve = resolveNext;
-              resolveNext = null;
-              resolve({ value: undefined as never, done: true });
-            }
-          };
-
-          ws.onerror = () => {
-            closed = true;
-            if (resolveNext) {
-              const resolve = resolveNext;
-              resolveNext = null;
-              resolve({ value: undefined as never, done: true });
-            }
-          };
-
-          return {
-            send(event: XaiRealtimeClientEvent): void {
-              ws.send(JSON.stringify(event));
+        patch: {
+          v1: {
+            collections: {
+              // PATCH https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}
+              // Docs: https://docs.x.ai/docs/api-reference
+              documents: async function regenerateDocument(
+                collectionId: string,
+                fileId: string,
+                signal?: AbortSignal
+              ): Promise<void> {
+                await makeManagementRequest(
+                  "PATCH",
+                  `/collections/${collectionId}/documents/${fileId}`,
+                  undefined,
+                  signal
+                );
+              },
             },
-            close(): void {
-              closed = true;
-              ws.close();
-            },
-            [Symbol.asyncIterator](): AsyncIterableIterator<XaiRealtimeServerEvent> {
+          },
+        },
+        ws: {
+          v1: {
+            realtime: function connectRealtime(
+              connectOpts?: XaiRealtimeConnectOptions
+            ): XaiRealtimeConnection {
+              const wsBaseURL = baseURL.replace(/^http/, "ws");
+              const token = connectOpts?.token ?? opts.apiKey;
+              const model = connectOpts?.model;
+
+              // Voice-agent connection: ?model= query string + Authorization
+              // header (no subprotocols). Otherwise, OpenAI-compat subprotocol auth.
+              let ws: WebSocket;
+              if (model) {
+                const url = `${wsBaseURL}/realtime?model=${encodeURIComponent(model)}`;
+                // Node `ws` accepts a third-arg options object with `headers`;
+                // browsers ignore it. Cast keeps TS happy across DOM/Node lib defs.
+                ws = new (WebSocket as unknown as new (
+                  url: string,
+                  protocols: string[] | undefined,
+                  opts: { headers: Record<string, string> }
+                ) => WebSocket)(url, undefined, {
+                  headers: { Authorization: `Bearer ${token}` },
+                });
+              } else {
+                ws = new WebSocket(`${wsBaseURL}/realtime`, [
+                  "realtime",
+                  `openai-insecure-api-key.${token}`,
+                  "openai-beta.realtime-v1",
+                ]);
+              }
+
+              let resolveNext:
+                | ((value: IteratorResult<XaiRealtimeServerEvent>) => void)
+                | null = null;
+              const eventQueue: XaiRealtimeServerEvent[] = [];
+              let closed = false;
+
+              ws.onmessage = (ev: MessageEvent) => {
+                const event = JSON.parse(
+                  typeof ev.data === "string" ? ev.data : String(ev.data)
+                ) as XaiRealtimeServerEvent;
+                if (resolveNext) {
+                  const resolve = resolveNext;
+                  resolveNext = null;
+                  resolve({ value: event, done: false });
+                } else {
+                  eventQueue.push(event);
+                }
+              };
+
+              ws.onclose = () => {
+                closed = true;
+                if (resolveNext) {
+                  const resolve = resolveNext;
+                  resolveNext = null;
+                  resolve({ value: undefined as never, done: true });
+                }
+              };
+
+              ws.onerror = () => {
+                closed = true;
+                if (resolveNext) {
+                  const resolve = resolveNext;
+                  resolveNext = null;
+                  resolve({ value: undefined as never, done: true });
+                }
+              };
+
               return {
-                next(): Promise<IteratorResult<XaiRealtimeServerEvent>> {
-                  if (eventQueue.length > 0) {
-                    return Promise.resolve({
-                      value: eventQueue.shift()!,
-                      done: false,
-                    });
-                  }
-                  if (closed) {
-                    return Promise.resolve({
-                      value: undefined as never,
-                      done: true,
-                    });
-                  }
-                  return new Promise((resolve) => {
-                    resolveNext = resolve;
-                  });
+                send(event: XaiRealtimeClientEvent): void {
+                  ws.send(JSON.stringify(event));
                 },
-                [Symbol.asyncIterator]() {
-                  return this;
+                close(): void {
+                  closed = true;
+                  ws.close();
+                },
+                [Symbol.asyncIterator](): AsyncIterableIterator<XaiRealtimeServerEvent> {
+                  return {
+                    next(): Promise<IteratorResult<XaiRealtimeServerEvent>> {
+                      if (eventQueue.length > 0) {
+                        return Promise.resolve({
+                          value: eventQueue.shift()!,
+                          done: false,
+                        });
+                      }
+                      if (closed) {
+                        return Promise.resolve({
+                          value: undefined as never,
+                          done: true,
+                        });
+                      }
+                      return new Promise((resolve) => {
+                        resolveNext = resolve;
+                      });
+                    },
+                    [Symbol.asyncIterator]() {
+                      return this;
+                    },
+                  };
                 },
               };
             },
-          };
+          },
         },
       },
-    },
-  });
+      { config: opts.paygate }
+    )
+  );
 }

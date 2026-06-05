@@ -490,6 +490,7 @@ export const XaiOptionsSchema = z.object({
       (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
     >()
     .optional(),
+  paygate: z.custom<import("@apicity/cost").PayGateConfig>().optional(),
 });
 
 // ---------------------------------------------------------------------------

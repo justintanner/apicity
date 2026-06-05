@@ -218,6 +218,9 @@ importers:
 
   packages/provider/xai:
     dependencies:
+      '@apicity/cost':
+        specifier: workspace:*
+        version: link:../cost
       zod:
         specifier: ^3.24.0
         version: 3.25.76

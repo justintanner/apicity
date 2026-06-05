@@ -1,6 +1,6 @@
 {
   "name": "@apicity/xai",
-  "version": "0.2.0-alpha.0",
+  "version": "0.2.0",
   "description": "X.AI / Grok provider for chat and search.",
   "license": "MIT",
   "repository": {
@@ -31,6 +31,9 @@
     "zod": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "@apicity/cost": "workspace:*"
   },
   "files": [
     "dist",

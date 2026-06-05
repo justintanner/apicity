@@ -12,10 +12,13 @@ import { execFileSync } from "node:child_process";
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 
 const GC_OMP_HOOK_VERSION = 1;
-const PATH_PREFIX =
-  `/opt/homebrew/bin:/usr/local/bin:${process.env.HOME}/go/bin:${process.env.HOME}/.local/bin:`;
+const PATH_PREFIX = `/opt/homebrew/bin:/usr/local/bin:${process.env.HOME}/go/bin:${process.env.HOME}/.local/bin:`;
 
-function run(args: string[], cwd?: string, extraEnv: Record<string, string> = {}): string {
+function run(
+  args: string[],
+  cwd?: string,
+  extraEnv: Record<string, string> = {}
+): string {
   try {
     return execFileSync("gc", args, {
       cwd: cwd || process.cwd(),
@@ -33,24 +36,36 @@ function run(args: string[], cwd?: string, extraEnv: Record<string, string> = {}
   }
 }
 
-function logRunFailure(args: string[], cwd: string | undefined, err: unknown): void {
+function logRunFailure(
+  args: string[],
+  cwd: string | undefined,
+  err: unknown
+): void {
   try {
-    const maybeError = err as { code?: string; signal?: string; message?: string } | undefined;
-    const detail = maybeError?.code || maybeError?.signal || maybeError?.message || "unknown error";
+    const maybeError = err as
+      | { code?: string; signal?: string; message?: string }
+      | undefined;
+    const detail =
+      maybeError?.code ||
+      maybeError?.signal ||
+      maybeError?.message ||
+      "unknown error";
     console.error(
       "gc-hooks run:",
       `gc ${args.join(" ")}`,
       "cwd",
       cwd || process.cwd(),
       "failed:",
-      detail,
+      detail
     );
   } catch {
     // Keep OMP hooks non-fatal even if stderr is unavailable.
   }
 }
 
-function providerSessionEnv(ctx: { sessionManager?: { getSessionId?: () => string } }): Record<string, string> {
+function providerSessionEnv(ctx: {
+  sessionManager?: { getSessionId?: () => string };
+}): Record<string, string> {
   const sessionID = ctx.sessionManager?.getSessionId?.() || "";
   if (!sessionID) {
     return {};
@@ -58,7 +73,10 @@ function providerSessionEnv(ctx: { sessionManager?: { getSessionId?: () => strin
   return { GC_PROVIDER_SESSION_ID: sessionID };
 }
 
-function appendSystemPrompt(systemPrompt: string[], additions: string[]): string[] {
+function appendSystemPrompt(
+  systemPrompt: string[],
+  additions: string[]
+): string[] {
   const extras = additions.filter(Boolean);
   if (extras.length === 0) {
     return systemPrompt;

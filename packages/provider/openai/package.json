@@ -1,6 +1,6 @@
 {
   "name": "@apicity/openai",
-  "version": "0.2.0-alpha.0",
+  "version": "0.2.0",
   "description": "OpenAI / GPT provider for chat completions.",
   "license": "MIT",
   "repository": {

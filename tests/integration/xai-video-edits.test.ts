@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createXai } from "@apicity/xai";
+import { setupPolly, teardownPolly, type PollyContext, mintXaiOtp } from "../harness";
+import { createXaiProvider } from "../xai-provider";
 
 describe("xai video edits integration", () => {
   let ctx: PollyContext;
@@ -14,17 +14,16 @@ describe("xai video edits integration", () => {
   });
 
   it("should submit a video edit and poll for status", async () => {
-    const provider = createXai({
-      apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    });
+    const provider = createXaiProvider();
 
-    const result = await provider.post.v1.videos.edits({
-      model: "grok-imagine-video",
+    const req = {
+      model: "grok-imagine-video" as const,
       prompt: "Give the woman a silver necklace",
       video: {
         url: "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4",
       },
-    });
+    };
+    const result = await provider.post.v1.videos.edits(req, mintXaiOtp("v1.videos.edits", req));
     expect(result.request_id).toBeTruthy();
     expect(typeof result.request_id).toBe("string");
 

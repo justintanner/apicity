@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createXai } from "@apicity/xai";
+import { setupPolly, teardownPolly, type PollyContext, mintXaiOtp } from "../harness";
+import { createXaiProvider } from "../xai-provider";
 
 describe("xai video generation integration", () => {
   let ctx: PollyContext;
@@ -14,18 +14,17 @@ describe("xai video generation integration", () => {
   });
 
   it("should generate a video from a text prompt", async () => {
-    const provider = createXai({
-      apiKey: process.env.XAI_API_KEY ?? "sk-test-key",
-    });
+    const provider = createXaiProvider();
 
-    const result = await provider.post.v1.videos.generations({
+    const req = {
       prompt:
         "A white cat with heterochromia eyes walking across a rooftop at golden hour, cinematic drone shot",
-      model: "grok-imagine-video",
+      model: "grok-imagine-video" as const,
       duration: 10,
-      aspect_ratio: "16:9",
-      resolution: "720p",
-    });
+      aspect_ratio: "16:9" as const,
+      resolution: "720p" as const,
+    };
+    const result = await provider.post.v1.videos.generations(req, mintXaiOtp("v1.videos.generations", req));
 
     expect(result.request_id).toBeTruthy();
     expect(typeof result.request_id).toBe("string");

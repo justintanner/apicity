@@ -24,16 +24,9 @@
       "types": "./dist/src/zod.d.ts"
     }
   },
-  "peerDependencies": {
-    "zod": "^4.0.0"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    }
-  },
   "dependencies": {
-    "@apicity/cost": "workspace:*"
+    "@apicity/cost": "workspace:*",
+    "zod": "^4.0.0"
   },
   "files": [
     "dist",

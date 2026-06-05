@@ -24,13 +24,8 @@
       "types": "./dist/src/zod.d.ts"
     }
   },
-  "peerDependencies": {
+  "dependencies": {
     "zod": "^3.24.0"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    }
   },
   "files": [
     "dist",

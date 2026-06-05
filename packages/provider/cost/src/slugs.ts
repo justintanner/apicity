@@ -33,6 +33,7 @@ export const MODEL_SLUGS = {
     // Video — Grok Imagine
     "grok-imagine/text-to-video": "grok",
     "grok-imagine/image-to-video": "grok",
+    "grok-imagine-video-1-5-preview": "grok",
     "grok-imagine/extend": "grok",
     "grok-imagine/upscale": "grok",
 
@@ -207,6 +208,7 @@ export const MODEL_DISPLAY = {
 
     "grok-imagine/text-to-video": "Grok Imagine",
     "grok-imagine/image-to-video": "Grok Imagine",
+    "grok-imagine-video-1-5-preview": "Grok Imagine",
     "grok-imagine/extend": "Grok Extend",
     "grok-imagine/upscale": "Grok Upscale",
 

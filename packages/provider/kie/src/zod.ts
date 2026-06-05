@@ -12,6 +12,7 @@ export const KieMediaModelSchema = z.enum([
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
   "grok-imagine/image-to-video",
+  "grok-imagine-video-1-5-preview",
   "nano-banana-pro",
   "nano-banana-2",
   "gpt-image/1.5-image-to-image",
@@ -70,6 +71,19 @@ export const GrokImagineModeSchema = z.enum(["fun", "normal", "spicy"]);
 export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
 export const GrokImagineResolutionSchema = z.enum(["480p", "720p"]);
+
+// Grok Imagine Video 1.5 Preview accepts a wider aspect-ratio set than the
+// older grok-imagine video models — it adds "auto", "4:3", and "3:4".
+export const GrokVideo15AspectRatioSchema = z.enum([
+  "auto",
+  "1:1",
+  "16:9",
+  "9:16",
+  "4:3",
+  "3:4",
+  "3:2",
+  "2:3",
+]);
 
 export const NanoBananaResolutionSchema = z.enum(["1K", "2K", "4K"]);
 
@@ -263,6 +277,23 @@ export const GrokImageToVideoRequestSchema = z.object({
     resolution: GrokImagineResolutionSchema.optional(),
     aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
     nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// Grok Imagine Video 1.5 Preview (grok-imagine-video-1-5-preview) is a new
+// image-to-video model on the createTask jobs endpoint. Unlike the older grok
+// video models it requires image_urls, takes a numeric duration (1–15s), and
+// defaults nsfw_checker to true.
+export const GrokVideo15PreviewRequestSchema = z.object({
+  model: z.literal("grok-imagine-video-1-5-preview"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().max(4096).optional(),
+    image_urls: z.array(z.string()).min(1),
+    aspect_ratio: GrokVideo15AspectRatioSchema.default("auto"),
+    resolution: GrokImagineResolutionSchema.default("480p"),
+    duration: z.number().int().min(1).max(15).default(8),
+    nsfw_checker: z.boolean().default(true),
   }),
 });
 
@@ -1024,6 +1055,7 @@ export const MediaGenerationRequestSchema = z.union([
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
   GrokImageToVideoRequestSchema,
+  GrokVideo15PreviewRequestSchema,
   GrokVideoExtendRequestSchema,
   GrokVideoUpscaleRequestSchema,
   NanoBananaProRequestSchema,
@@ -1066,6 +1098,9 @@ export type GrokImageToVideoDuration = z.infer<
   typeof GrokImageToVideoDurationSchema
 >;
 export type GrokImagineResolution = z.infer<typeof GrokImagineResolutionSchema>;
+export type GrokVideo15AspectRatio = z.infer<
+  typeof GrokVideo15AspectRatioSchema
+>;
 export type NanoBananaResolution = z.infer<typeof NanoBananaResolutionSchema>;
 export type NanoBananaOutputFormat = z.infer<
   typeof NanoBananaOutputFormatSchema
@@ -1109,6 +1144,9 @@ export type GrokTextToVideoRequest = z.infer<
 >;
 export type GrokImageToVideoRequest = z.infer<
   typeof GrokImageToVideoRequestSchema
+>;
+export type GrokVideo15PreviewRequest = z.infer<
+  typeof GrokVideo15PreviewRequestSchema
 >;
 export type GrokVideoExtendRequest = z.infer<
   typeof GrokVideoExtendRequestSchema

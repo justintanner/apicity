@@ -153,6 +153,16 @@ export const kie: Record<string, ModelPricing> = {
     "xai/grok-imagine"
   ),
 
+  // grok-imagine-video-1-5-preview: image-to-video, 2 tiers by resolution.
+  // Rates mirror the other grok-imagine video tiers — VERIFY against the kie
+  // marketplace listing before relying on these for billing. Defaults to 480p
+  // (matches the model default) when the payload omits input.resolution.
+  "grok-imagine-video-1-5-preview": tieredResolutionVideo(
+    { "480p": 0.008, "720p": 0.015 },
+    "xai/grok-imagine",
+    "480p"
+  ),
+
   // grok-imagine images — kie returns a fixed bundle per call (6 default,
   // 4 with input.enable_pro=true for t2i; 2 for i2i). The caller can't
   // request n=1, so price is flat per generation.

@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext, mintXaiOtp } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  type PollyContext,
+  mintXaiOtp,
+} from "../harness";
 import { createXaiProvider } from "../xai-provider";
 
 describe("xai video edits integration", () => {
@@ -23,7 +28,10 @@ describe("xai video edits integration", () => {
         url: "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4",
       },
     };
-    const result = await provider.post.v1.videos.edits(req, mintXaiOtp("v1.videos.edits", req));
+    const result = await provider.post.v1.videos.edits(
+      req,
+      mintXaiOtp("v1.videos.edits", req)
+    );
     expect(result.request_id).toBeTruthy();
     expect(typeof result.request_id).toBe("string");
 

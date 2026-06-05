@@ -8,6 +8,10 @@ import {
   mintXaiOtp,
 } from "../harness";
 import { createXaiProvider } from "../xai-provider";
+import type {
+  XaiImageEditRequest,
+  XaiImageGenerateRequest,
+} from "@apicity/xai";
 
 const cat1Base64 = readFileSync(
   resolve(__dirname, "../fixtures/cat1.jpg")
@@ -28,7 +32,7 @@ describe("xai image generation integration", () => {
       prompt: "A simple red apple on a white background",
       model: "grok-imagine-image",
       n: 1,
-    } as any;
+    } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
       mintXaiOtp("v1.images.generations", req)
@@ -46,7 +50,7 @@ describe("xai image generation integration", () => {
       prompt: "A simple blue circle",
       model: "grok-imagine-image",
       n: 2,
-    } as any;
+    } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
       mintXaiOtp("v1.images.generations", req)
@@ -65,7 +69,7 @@ describe("xai image generation integration", () => {
       prompt: "A mountain landscape",
       model: "grok-imagine-image",
       aspect_ratio: "16:9",
-    } as any;
+    } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
       mintXaiOtp("v1.images.generations", req)
@@ -82,7 +86,7 @@ describe("xai image generation integration", () => {
       prompt: "A simple geometric pattern",
       model: "grok-imagine-image",
       resolution: "1k",
-    } as any;
+    } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
       mintXaiOtp("v1.images.generations", req)
@@ -100,7 +104,7 @@ describe("xai image generation integration", () => {
       model: "grok-imagine-image",
       response_format: "b64_json",
       n: 1,
-    } as any;
+    } satisfies XaiImageGenerateRequest;
     const result = await provider.post.v1.images.generations(
       req,
       mintXaiOtp("v1.images.generations", req)
@@ -123,7 +127,7 @@ describe("xai image generation integration", () => {
           url: cat1DataUri,
           type: "image_url",
         },
-      } as any;
+      } satisfies XaiImageEditRequest;
       const result = await provider.post.v1.images.edits(
         req,
         mintXaiOtp("v1.images.edits", req)
@@ -146,7 +150,7 @@ describe("xai image generation integration", () => {
         type: "image_url",
       },
       aspect_ratio: "1:1",
-    } as any;
+    } satisfies XaiImageEditRequest;
     const result = await provider.post.v1.images.edits(
       req,
       mintXaiOtp("v1.images.edits", req)

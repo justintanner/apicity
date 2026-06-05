@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext, mintXaiOtp } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  type PollyContext,
+  mintXaiOtp,
+} from "../harness";
 import { createXaiProvider } from "../xai-provider";
 
 describe("xai video generation integration", () => {
@@ -24,7 +29,10 @@ describe("xai video generation integration", () => {
       aspect_ratio: "16:9" as const,
       resolution: "720p" as const,
     };
-    const result = await provider.post.v1.videos.generations(req, mintXaiOtp("v1.videos.generations", req));
+    const result = await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp("v1.videos.generations", req)
+    );
 
     expect(result.request_id).toBeTruthy();
     expect(typeof result.request_id).toBe("string");

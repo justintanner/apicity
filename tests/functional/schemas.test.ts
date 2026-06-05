@@ -805,4 +805,45 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.duration).toBeDefined();
     expect(schema.fields.mode).toBeDefined();
   });
+
+  it("gpt-image-2 text-to-image exposes documented aspect ratios", () => {
+    const schema = modelInputSchemas["gpt-image-2-text-to-image"];
+    expect(schema.type).toBe("image");
+    expect(schema.fields.aspect_ratio.enum).toEqual([
+      "auto",
+      "1:1",
+      "3:2",
+      "2:3",
+      "4:3",
+      "3:4",
+      "5:4",
+      "4:5",
+      "9:16",
+      "16:9",
+      "2:1",
+      "1:2",
+      "3:1",
+      "1:3",
+      "21:9",
+      "9:21",
+    ]);
+  });
+
+  it("gpt-image-2 image-to-image exposes documented aspect ratios", () => {
+    const schema = modelInputSchemas["gpt-image-2-image-to-image"];
+    expect(schema.type).toBe("image");
+    expect(schema.fields.aspect_ratio.enum).toEqual([
+      "auto",
+      "1:1",
+      "5:4",
+      "9:16",
+      "21:9",
+      "16:9",
+      "4:3",
+      "3:2",
+      "4:5",
+      "3:4",
+      "2:3",
+    ]);
+  });
 });

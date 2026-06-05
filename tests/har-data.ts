@@ -244,7 +244,7 @@ const BASE64_MEDIA_MARKERS = [
 // Require a full http(s) URL — a substring like `"filename": "upload.jpg"`
 // in a file-listing response should NOT flag the recording as media-bearing.
 const MEDIA_URL_EXT =
-  /https?:\/\/[^\s"]+\.(mp4|webm|mov|png|jpe?g|gif|webp|wav|mp3|ogg|flac|m4a)(\?|")/i;
+  /https?:\/\/[^\s"\\]+\.(mp4|webm|mov|png|jpe?g|gif|webp|wav|mp3|ogg|flac|m4a)(?:\?[^\s"\\]*)?/i;
 
 export function entryHasMedia(entry: HarEntry): boolean {
   const mime = (entry.response.content?.mimeType ?? "").toLowerCase();

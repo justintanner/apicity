@@ -11,6 +11,8 @@ import {
   SunoGenerateRequestSchema,
   KieChatRequestSchema,
   KieClaudeRequestSchema,
+  GptImage2ImageToImageRequestSchema,
+  GptImage2TextToImageRequestSchema,
 } from "../../../packages/provider/kie/src/zod";
 
 describe("kie Zod schema validation", () => {
@@ -125,6 +127,103 @@ describe("kie Zod schema validation", () => {
       expect(result.error?.issues.some((i) => i.path.includes("input"))).toBe(
         true
       );
+    });
+  });
+
+  describe("gpt-image-2 text-to-image", () => {
+    it("should apply documented defaults", () => {
+      const result = GptImage2TextToImageRequestSchema.safeParse({
+        model: "gpt-image-2-text-to-image",
+        input: {
+          prompt: "Generate an image of a glass building at sunrise.",
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.aspect_ratio).toBe("auto");
+      expect(result.data.input.resolution).toBe("1K");
+    });
+
+    it("should accept the documented aspect ratios", () => {
+      const aspectRatios = [
+        "auto",
+        "1:1",
+        "3:2",
+        "2:3",
+        "4:3",
+        "3:4",
+        "5:4",
+        "4:5",
+        "16:9",
+        "9:16",
+        "2:1",
+        "1:2",
+        "3:1",
+        "1:3",
+        "21:9",
+        "9:21",
+      ];
+
+      for (const aspect_ratio of aspectRatios) {
+        const result = GptImage2TextToImageRequestSchema.safeParse({
+          model: "gpt-image-2-text-to-image",
+          input: {
+            prompt: "Generate an image of a glass building at sunrise.",
+            aspect_ratio,
+            resolution: "1K",
+          },
+        });
+
+        expect(result.success, `${aspect_ratio} should be accepted`).toBe(true);
+      }
+    });
+  });
+
+  describe("gpt-image-2 image-to-image", () => {
+    it("should apply documented defaults", () => {
+      const result = GptImage2ImageToImageRequestSchema.safeParse({
+        model: "gpt-image-2-image-to-image",
+        input: {
+          prompt: "Turn this product photo into a studio advertisement.",
+          input_urls: ["https://example.com/input.png"],
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.aspect_ratio).toBe("auto");
+      expect(result.data.input.resolution).toBe("1K");
+    });
+
+    it("should accept the documented aspect ratios", () => {
+      const aspectRatios = [
+        "auto",
+        "1:1",
+        "5:4",
+        "9:16",
+        "21:9",
+        "16:9",
+        "4:3",
+        "3:2",
+        "4:5",
+        "3:4",
+        "2:3",
+      ];
+
+      for (const aspect_ratio of aspectRatios) {
+        const result = GptImage2ImageToImageRequestSchema.safeParse({
+          model: "gpt-image-2-image-to-image",
+          input: {
+            prompt: "Turn this product photo into a studio advertisement.",
+            input_urls: ["https://example.com/input.png"],
+            aspect_ratio,
+            resolution: "1K",
+          },
+        });
+
+        expect(result.success, `${aspect_ratio} should be accepted`).toBe(true);
+      }
     });
   });
 

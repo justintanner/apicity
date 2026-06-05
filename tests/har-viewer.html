@@ -356,6 +356,21 @@
         display: block;
         margin: 4px 0;
       }
+      .media-load-error {
+        display: block;
+        max-width: 640px;
+        margin: 6px 0;
+        padding: 10px 12px;
+        border: 1px solid #f38ba8;
+        border-radius: 6px;
+        background: rgba(243, 139, 168, 0.1);
+        color: #f38ba8;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+      .media-load-error a {
+        color: #89b4fa;
+      }
       .b64-truncated {
         color: #6c7086;
         font-style: italic;
@@ -515,6 +530,18 @@
         if (b64.startsWith("R0lGOD")) return "image/gif";
         if (b64.startsWith("UklGR")) return "image/webp";
         return null;
+      }
+
+      function mediaLoadErrorAttr(label) {
+        return (
+          '" onerror="this.outerHTML=&apos;<div class=&quot;media-load-error&quot;>' +
+          label +
+          " failed to load. The recorded URL may have expired: <a href=&quot;" +
+          "' + this.src + '" +
+          "&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;>" +
+          "' + this.src + '" +
+          '&lt;/a&gt;&lt;/div&gt;&apos;"'
+        );
       }
 
       function syntaxHighlight(json) {
@@ -692,7 +719,8 @@
               fullUrl +
               '"</span><img class="b64-img-preview" src="' +
               fullUrl +
-              '" onerror="this.style.display=&apos;none&apos;">'
+              mediaLoadErrorAttr("Image") +
+              ">"
             );
           }
         );
@@ -730,7 +758,8 @@
                   previews +=
                     '<img class="b64-img-preview" src="' +
                     url +
-                    '" onerror="this.style.display=&apos;none&apos;">';
+                    mediaLoadErrorAttr("Output image") +
+                    ">";
                 }
               }
               return prefix + escapedJson + '"</span>' + previews;
@@ -789,7 +818,8 @@
                   previews +=
                     '<img class="b64-img-preview" src="' +
                     url +
-                    '" onerror="this.style.display=&apos;none&apos;">';
+                    mediaLoadErrorAttr("Input image") +
+                    ">";
                 }
               }
               return prefix + escapedJson + '"</span>' + previews;

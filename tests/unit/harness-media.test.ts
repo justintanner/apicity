@@ -62,4 +62,30 @@ describe("harness media detection", () => {
 
     expect(entryHasMedia(entry)).toBe(false);
   });
+
+  it("detects Kie resultJson media URLs", () => {
+    const entry = jsonEntry(
+      {
+        model: "gpt-image-2-text-to-image",
+        input: { prompt: "A neon city poster." },
+      },
+      {
+        code: 200,
+        msg: "success",
+        data: {
+          taskId: "task-123",
+          model: "gpt-image-2-text-to-image",
+          state: "success",
+          resultJson: JSON.stringify({
+            resultUrls: [
+              "https://tempfile.aiquickdraw.com/images/chatgpt/result.png",
+            ],
+          }),
+        },
+      }
+    );
+
+    expect(entryHasMedia(entry)).toBe(true);
+    expect(recordingHasMedia({ entries: [entry] })).toBe(true);
+  });
 });

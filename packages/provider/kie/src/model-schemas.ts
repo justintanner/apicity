@@ -238,6 +238,41 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "grok-imagine-video-1-5-preview": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        description: "Video generation prompt (max 4096 chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        description: "Input image URLs (jpeg/png/webp, max 20MB each)",
+        items: { type: "string" },
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["auto", "1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"],
+        description:
+          "Output aspect ratio (default auto; follows image size if unset)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        description: "Output resolution (default 480p)",
+      },
+      duration: {
+        type: "number",
+        description: "Duration in seconds (1-15, default 8)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content filtering (default true)",
+      },
+    },
+  },
+
   "grok-imagine/extend": {
     type: "video",
     fields: {

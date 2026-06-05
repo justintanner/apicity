@@ -487,10 +487,15 @@ export const GptImageToImageRequestSchema = z.object({
 export const GptImage2ImageToImageAspectRatioSchema = z.enum([
   "auto",
   "1:1",
+  "5:4",
   "9:16",
+  "21:9",
   "16:9",
   "4:3",
+  "3:2",
+  "4:5",
   "3:4",
+  "2:3",
 ]);
 
 export const GptImage2ImageToImageResolutionSchema = z.enum(["1K", "2K", "4K"]);
@@ -501,8 +506,8 @@ export const GptImage2ImageToImageRequestSchema = z.object({
   input: z.object({
     prompt: z.string().min(1).max(20000),
     input_urls: z.array(z.string()).min(1).max(16),
-    aspect_ratio: GptImage2ImageToImageAspectRatioSchema.default("16:9"),
-    resolution: GptImage2ImageToImageResolutionSchema.default("2K"),
+    aspect_ratio: GptImage2ImageToImageAspectRatioSchema.default("auto"),
+    resolution: GptImage2ImageToImageResolutionSchema.default("1K"),
     nsfw_checker: z.boolean().default(false),
   }),
 });
@@ -510,10 +515,20 @@ export const GptImage2ImageToImageRequestSchema = z.object({
 export const GptImage2TextToImageAspectRatioSchema = z.enum([
   "auto",
   "1:1",
-  "9:16",
-  "16:9",
+  "3:2",
+  "2:3",
   "4:3",
   "3:4",
+  "5:4",
+  "4:5",
+  "9:16",
+  "16:9",
+  "2:1",
+  "1:2",
+  "3:1",
+  "1:3",
+  "21:9",
+  "9:21",
 ]);
 
 export const GptImage2TextToImageResolutionSchema = z.enum(["1K", "2K", "4K"]);
@@ -523,8 +538,8 @@ export const GptImage2TextToImageRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().min(1).max(20000),
-    aspect_ratio: GptImage2TextToImageAspectRatioSchema.default("16:9"),
-    resolution: GptImage2TextToImageResolutionSchema.default("2K"),
+    aspect_ratio: GptImage2TextToImageAspectRatioSchema.default("auto"),
+    resolution: GptImage2TextToImageResolutionSchema.default("1K"),
     nsfw_checker: z.boolean().default(false),
   }),
 });

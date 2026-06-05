@@ -52,3 +52,5 @@ export.auto: false
 issue_prefix: ac
 issue-prefix: ac
 types.custom: molecule,convoy,message,event,gate,merge-request,agent,role,rig,session,spec,convergence,step
+
+sync.remote: "git+https://github.com/justintanner/apicity.git"

@@ -1,11 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   isPaidEndpoint,
   lookupPaidEndpoint,
   PayGateError,
 } from "@apicity/cost";
 import { createKie } from "@apicity/kie";
-import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
+import {
+  TEST_PAYGATE_SECRET,
+  mintKieCreateTaskOtp,
+  mintKieVeoOtp,
+} from "../harness";
 
 /**
  * Regression tests for paid-endpoint semantics.
@@ -28,6 +32,15 @@ describe("paid endpoint semantics — regression", () => {
       aspect_ratio: "1:1",
     },
   };
+  const VEO_GENERATE_REQUEST = {
+    prompt: "A short product reveal video",
+    model: "veo3",
+  } as const;
+  const VEO_EXTEND_REQUEST = {
+    taskId: "veo-task-1",
+    prompt: "Continue the camera move",
+    model: "quality",
+  } as const;
 
   function makeGatedProvider() {
     return createKie({
@@ -43,6 +56,10 @@ describe("paid endpoint semantics — regression", () => {
         false
       );
       expect(isPaidEndpoint("kie", "GET", "api.v1.jobs.recordInfo")).toBe(
+        false
+      );
+      expect(isPaidEndpoint("kie", "POST", "api.file-url-upload")).toBe(false);
+      expect(isPaidEndpoint("kie", "POST", "api.v1.common.downloadUrl")).toBe(
         false
       );
       expect(isPaidEndpoint("xai", "POST", "v1.chat.completions")).toBe(false);
@@ -80,6 +97,48 @@ describe("paid endpoint semantics — regression", () => {
     });
   });
 
+  describe("KIE direct VEO endpoints block when OTP is missing", () => {
+    it("veo.generate throws PayGateError before network dispatch", async () => {
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      let caught: PayGateError | undefined;
+      try {
+        await provider.veo.post.api.v1.veo.generate(VEO_GENERATE_REQUEST);
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("otp-missing");
+      expect(caught!.dotPath).toBe("api.v1.veo.generate");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it("veo.extend throws PayGateError before network dispatch", async () => {
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      let caught: PayGateError | undefined;
+      try {
+        await provider.veo.post.api.v1.veo.extend(VEO_EXTEND_REQUEST);
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("otp-missing");
+      expect(caught!.dotPath).toBe("api.v1.veo.extend");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+  });
+
   describe("KIE POST api.v1.jobs.createTask allows with a valid OTP", () => {
     it("createTask passes the gate with a valid request-bound OTP", async () => {
       const provider = makeGatedProvider();
@@ -96,6 +155,130 @@ describe("paid endpoint semantics — regression", () => {
       // unreachable host. That surfaces a network error — never a PayGateError.
       expect(caught).toBeDefined();
       expect(caught).not.toBeInstanceOf(PayGateError);
+    });
+  });
+
+  describe("KIE direct VEO endpoints allow with a valid OTP", () => {
+    it("veo.generate passes the gate and dispatches", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: { taskId: "veo-1" } }), {
+          status: 200,
+        })
+      );
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+
+      await provider.veo.post.api.v1.veo.generate(
+        VEO_GENERATE_REQUEST,
+        mintKieVeoOtp("api.v1.veo.generate", VEO_GENERATE_REQUEST)
+      );
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/veo/generate");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(VEO_GENERATE_REQUEST);
+    });
+
+    it("veo.extend passes the gate and dispatches", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ code: 200, data: { taskId: "veo-2" } }), {
+          status: 200,
+        })
+      );
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+
+      await provider.veo.post.api.v1.veo.extend(
+        VEO_EXTEND_REQUEST,
+        mintKieVeoOtp("api.v1.veo.extend", VEO_EXTEND_REQUEST)
+      );
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/veo/extend");
+      expect(init.method).toBe("POST");
+      expect(JSON.parse(init.body as string)).toEqual(VEO_EXTEND_REQUEST);
+    });
+  });
+
+  describe("KIE free upload, status, and helper endpoints stay ungated", () => {
+    it("dispatches free endpoints without OTP despite paygate config", async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              code: 200,
+              data: { downloadUrl: "https://cdn/file" },
+            }),
+            { status: 200 }
+          )
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({ code: 200, data: { status: "success" } }),
+            { status: 200 }
+          )
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({ code: 200, data: { url: "https://cdn/out" } }),
+            { status: 200 }
+          )
+        );
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        uploadBaseURL: "https://upload.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+
+      await provider.post.api.fileUrlUpload({
+        fileUrl: "https://example.com/in.png",
+        uploadPath: "uploads",
+      });
+      await provider.get.api.v1.jobs.recordInfo("task-1");
+      await provider.post.api.v1.common.downloadUrl({ url: "https://cdn/out" });
+
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(mockFetch.mock.calls[0][0]).toBe(
+        "https://upload.kie.ai/api/file-url-upload"
+      );
+      expect(mockFetch.mock.calls[1][0]).toBe(
+        "https://api.kie.ai/api/v1/jobs/recordInfo?taskId=task-1"
+      );
+      expect(mockFetch.mock.calls[2][0]).toBe(
+        "https://api.kie.ai/api/v1/common/download-url"
+      );
+    });
+  });
+
+  describe("KIE VEO wrapping preserves schemas", () => {
+    it("keeps schema attachments on direct VEO endpoints", () => {
+      const provider = makeGatedProvider();
+      expect(provider.veo.post.api.v1.veo.generate.schema.safeParse).toBeTypeOf(
+        "function"
+      );
+      expect(provider.veo.post.api.v1.veo.extend.schema.safeParse).toBeTypeOf(
+        "function"
+      );
+      expect(
+        provider.veo.post.api.v1.veo.generate.schema.safeParse(
+          VEO_GENERATE_REQUEST
+        ).success
+      ).toBe(true);
+      expect(
+        provider.veo.post.api.v1.veo.extend.schema.safeParse(VEO_EXTEND_REQUEST)
+          .success
+      ).toBe(true);
     });
   });
 

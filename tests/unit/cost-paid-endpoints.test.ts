@@ -6,17 +6,24 @@ import {
 } from "../../packages/provider/cost/src/paid-endpoints";
 
 describe("paid-endpoint registry", () => {
-  it("has the expected initial paid entry for kie createTask", () => {
-    const entry = PAID_ENDPOINTS.find(
-      (e) =>
-        e.key.provider === "kie" &&
-        e.key.method === "POST" &&
-        e.key.dotPath === "api.v1.jobs.createTask"
-    );
-    expect(entry).toBeDefined();
-    expect(entry!.info.reason).toMatch(/direct marginal compute cost/);
-    expect(entry!.info.estimatorId).toBe("kie-per-unit");
-    expect(entry!.info.costNotes).toMatch(/Billed per unit/);
+  it("has the expected paid entries for KIE media generation", () => {
+    const entries = [
+      "api.v1.jobs.createTask",
+      "api.v1.veo.generate",
+      "api.v1.veo.extend",
+    ];
+    for (const dotPath of entries) {
+      const entry = PAID_ENDPOINTS.find(
+        (e) =>
+          e.key.provider === "kie" &&
+          e.key.method === "POST" &&
+          e.key.dotPath === dotPath
+      );
+      expect(entry).toBeDefined();
+      expect(entry!.info.reason).toMatch(/direct marginal compute cost/);
+      expect(entry!.info.estimatorId).toBe("kie-per-unit");
+      expect(entry!.info.costNotes).toMatch(/Billed per/);
+    }
   });
 
   it("registry is small and reviewable", () => {
@@ -33,6 +40,13 @@ describe("paid-endpoint registry", () => {
     expect(info).toBeDefined();
     expect(info!.reason).toMatch(/direct marginal compute cost/);
     expect(info!.estimatorId).toBe("kie-per-unit");
+
+    expect(
+      lookupPaidEndpoint("kie", "POST", "api.v1.veo.generate")
+    ).toBeDefined();
+    expect(
+      lookupPaidEndpoint("kie", "POST", "api.v1.veo.extend")
+    ).toBeDefined();
   });
 
   it("lookupPaidEndpoint returns undefined for unlisted endpoints", () => {
@@ -70,6 +84,8 @@ describe("paid-endpoint registry", () => {
 
   it("isPaidEndpoint returns true for exact match", () => {
     expect(isPaidEndpoint("kie", "POST", "api.v1.jobs.createTask")).toBe(true);
+    expect(isPaidEndpoint("kie", "POST", "api.v1.veo.generate")).toBe(true);
+    expect(isPaidEndpoint("kie", "POST", "api.v1.veo.extend")).toBe(true);
   });
 
   it("isPaidEndpoint returns false for unlisted endpoints", () => {

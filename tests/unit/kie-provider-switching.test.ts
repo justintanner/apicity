@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { createKie } from "@apicity/kie";
-import { TEST_PAYGATE_SECRET, mintKieCreateTaskOtp } from "../harness";
+import {
+  TEST_PAYGATE_SECRET,
+  mintKieCreateTaskOtp,
+  mintKieVeoOtp,
+} from "../harness";
 
 describe("KIE provider switching", () => {
   it("routes Veo requests through the veo namespace", async () => {
@@ -14,20 +18,23 @@ describe("KIE provider switching", () => {
       apiKey: "test-key",
       baseURL: "https://api.kie.ai",
       fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
     });
 
-    await provider.veo.post.api.v1.veo.generate({
+    const payload = {
       prompt: "Make a short video",
       model: "veo3",
-    });
+    } as const;
+
+    await provider.veo.post.api.v1.veo.generate(
+      payload,
+      mintKieVeoOtp("api.v1.veo.generate", payload)
+    );
 
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/veo/generate");
     expect(init.method).toBe("POST");
-    expect(JSON.parse(init.body as string)).toEqual({
-      prompt: "Make a short video",
-      model: "veo3",
-    });
+    expect(JSON.parse(init.body as string)).toEqual(payload);
   });
 
   it("routes Suno requests through the suno namespace", async () => {

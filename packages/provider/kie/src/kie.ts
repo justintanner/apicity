@@ -26,7 +26,7 @@ import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { attachExamples } from "./example";
-import { withPaidGate } from "@apicity/cost";
+import { createReplayStore, withPaidGate } from "@apicity/cost";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -58,6 +58,12 @@ export function createKie(opts: KieOptions): KieProvider {
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+  const paygate = opts.paygate
+    ? {
+        ...opts.paygate,
+        replayStore: opts.paygate.replayStore ?? createReplayStore(),
+      }
+    : undefined;
   // POST https://api.kie.ai/api/v1/jobs/createTask
   // Docs: https://docs.kie.ai
   async function createTask(
@@ -402,7 +408,11 @@ export function createKie(opts: KieOptions): KieProvider {
     withPaidGate(
       "kie",
       {
-        veo: createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
+        veo: withPaidGate(
+          "kie",
+          createVeoProvider(baseURL, opts.apiKey, doFetch, timeout),
+          { config: paygate }
+        ),
         suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
         chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
@@ -441,7 +451,7 @@ export function createKie(opts: KieOptions): KieProvider {
           },
         },
       },
-      { config: opts.paygate }
+      { config: paygate }
     )
   );
 }

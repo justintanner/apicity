@@ -333,28 +333,36 @@ apicity-paygate otp mint \
 
 ### Wiring the gate into a provider
 
-Providers apply the gate once at the bottom of their factory using
-`withPaidGate`. The walker descends the HTTP-method roots (`post`, `get`,
-`delete`, `patch`, `put`) and routes every leaf whose `(provider, method,
-dotPath)` is in `PAID_ENDPOINTS` through `dispatchWithPaidGate`. Free leaves
-pass through unchanged; sub-providers, schema records, and other non-route
-properties are returned by reference. The config is passed once and shared
-(one replay store per provider instance):
+Providers apply the gate at the bottom of their factory using `withPaidGate`.
+The walker descends the HTTP-method roots (`post`, `get`, `delete`, `patch`,
+`put`) and routes every leaf whose `(provider, method, dotPath)` is in
+`PAID_ENDPOINTS` through `dispatchWithPaidGate`. Free leaves pass through
+unchanged; schema records and other non-route properties are returned by
+reference. Providers with paid sub-provider roots wrap those sub-provider trees
+explicitly and pass the same config so one replay store covers the provider
+instance:
 
 ```ts
-import { withPaidGate } from "@apicity/cost";
+import { createReplayStore, withPaidGate } from "@apicity/cost";
 
 export function createKie(opts: KieOptions): KieProvider {
+  const paygate = opts.paygate
+    ? {
+        ...opts.paygate,
+        replayStore: opts.paygate.replayStore ?? createReplayStore(),
+      }
+    : undefined;
+
   // ...build endpoint functions...
   return withPaidGate(
     "kie",
     {
-      veo: createVeoProvider(...),     // sub-provider, untouched
+      veo: withPaidGate("kie", createVeoProvider(...), { config: paygate }),
       modelInputSchemas,               // data, untouched
       post: { api: { v1: { jobs: { createTask: Object.assign(createTask, { schema }) } } } },
       get:  { api: { v1: { jobs: { recordInfo } } } },
     },
-    { config: opts.paygate }
+    { config: paygate }
   );
 }
 ```

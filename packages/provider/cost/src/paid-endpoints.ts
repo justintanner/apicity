@@ -49,6 +49,32 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
   },
   {
     key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.veo.generate",
+    },
+    info: {
+      reason:
+        "Direct VEO video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video generation based on model and duration",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.veo.extend",
+    },
+    info: {
+      reason:
+        "Direct VEO video extension task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video extension based on model and duration",
+    },
+  },
+  {
+    key: {
       provider: "xai",
       method: "POST",
       dotPath: "v1.images.generations",

@@ -64,6 +64,12 @@ const otp = mintOtp(secret, {
 const task = await kie.post.api.v1.jobs.createTask(payload, { otp });
 ```
 
+Direct KIE VEO calls are gated separately from `createTask`. For
+`kie.veo.post.api.v1.veo.generate`, mint the OTP with
+`dotPath: "api.v1.veo.generate"`; for
+`kie.veo.post.api.v1.veo.extend`, use `dotPath: "api.v1.veo.extend"`.
+Upload, status, and helper endpoints are unlisted and remain free.
+
 ## Motivation
 
 Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
@@ -168,8 +174,9 @@ orchestration layer.
 
 ## Paid endpoints (OTP pay gate)
 
-Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`) are
-listed in `PAID_ENDPOINTS` and gated behind a single-use OTP — the flow is the
+Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask` and
+direct VEO calls under `kie.veo.post.api.v1.veo.*`) are listed in
+`PAID_ENDPOINTS` and gated behind a single-use OTP — the flow is the
 [example above](#example). The gate is **fail-closed**: a paid call cannot fire
 unless the provider was built with a pay-gate secret **and** the caller presents
 a valid OTP minted from that same secret. The autonomous caller never sees the

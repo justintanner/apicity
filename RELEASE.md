@@ -1,6 +1,6 @@
 # Releasing `@apicity/*`
 
-Apicity ships 15 scoped npm packages in lockstep — 14 providers under
+Apicity ships 17 scoped npm packages in lockstep — 16 providers under
 `packages/provider/*` plus `packages/mcp-server`. All share one version and
 one npm dist-tag per release.
 
@@ -15,7 +15,8 @@ The release flow is: feature work → `main` → fast-forward `stable` → publi
 
 ## Versioning + dist-tags
 
-Pre-1.0 we ship under the `alpha` dist-tag. Order of stability:
+Prereleases ship under prerelease dist-tags. Stable releases ship under
+`latest`. Order of stability:
 
 ```
 0.1.0-alpha.N   →  --tag alpha
@@ -24,7 +25,7 @@ Pre-1.0 we ship under the `alpha` dist-tag. Order of stability:
 0.1.0           →  --tag latest    (first stable)
 ```
 
-Bump in lockstep across all 15 packages. Don't drift one package's version
+Bump in lockstep across all 17 packages. Don't drift one package's version
 without bumping the rest — the formula's `bump-versions` step enforces this.
 
 ## How to release
@@ -50,7 +51,7 @@ The formula creates 10 chained beads. An agent (or you, manually) walks them:
 2. `sync-stable` — `git checkout stable && git merge --ff-only origin/main`
 3. `preflight-gates` — `pnpm run ci:local` (build + lint + tests)
 4. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
-5. `bump-versions` — write `version` to all 15 `package.json`, commit
+5. `bump-versions` — write `version` to all 17 `package.json`, commit
 6. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
 7. **`publish`** — `pnpm publish --tag <dist_tag>`. Requires `npm whoami` and 2FA OTP.
 8. `tag-and-push` — `git tag v<version>`, push `stable` + tag

@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext, mintXaiOtp } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  type PollyContext,
+  mintXaiOtp,
+} from "../harness";
 import { createXaiProvider } from "../xai-provider";
 
 describe("xai video extensions integration", () => {
@@ -23,7 +28,10 @@ describe("xai video extensions integration", () => {
       },
       duration: 5,
     };
-    const result = await provider.post.v1.videos.extensions(req, mintXaiOtp("v1.videos.extensions", req));
+    const result = await provider.post.v1.videos.extensions(
+      req,
+      mintXaiOtp("v1.videos.extensions", req)
+    );
 
     expect(result.request_id).toBeTruthy();
     expect(typeof result.request_id).toBe("string");
@@ -41,7 +49,10 @@ describe("xai video extensions integration", () => {
       },
       duration: 10,
     };
-    const result = await provider.post.v1.videos.extensions(req, mintXaiOtp("v1.videos.extensions", req));
+    const result = await provider.post.v1.videos.extensions(
+      req,
+      mintXaiOtp("v1.videos.extensions", req)
+    );
 
     expect(result.request_id).toBeTruthy();
   });

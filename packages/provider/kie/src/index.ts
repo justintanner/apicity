@@ -108,6 +108,14 @@ export type {
   HappyHorseImageToVideoRequest,
   HappyHorseReferenceToVideoRequest,
   HappyHorseVideoEditRequest,
+  ElevenLabsAudioIsolationRequest,
+  ElevenLabsTextToDialogueV3Request,
+  ElevenLabsTextToSpeechMultilingualV2Request,
+  ElevenLabsTextToSpeechTurbo25Request,
+  ElevenLabsSoundEffectV2Request,
+  GeminiOmniAudioCreateRequest,
+  GeminiOmniAudioCreateData,
+  GeminiOmniAudioCreateResponse,
 } from "./types";
 
 // Export sub-provider types

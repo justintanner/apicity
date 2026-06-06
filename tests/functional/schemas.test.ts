@@ -846,4 +846,15 @@ describe("kie modelInputSchemas", () => {
       "2:3",
     ]);
   });
+
+  it("elevenlabs text-to-audio models expose audio metadata", () => {
+    const tts = modelInputSchemas["elevenlabs/text-to-speech-turbo-2-5"];
+    expect(tts.type).toBe("audio");
+    expect(tts.fields.text.required).toBe(true);
+    expect(tts.fields.voice.required).toBe(true);
+
+    const dialogue = modelInputSchemas["elevenlabs/text-to-dialogue-v3"];
+    expect(dialogue.type).toBe("audio");
+    expect(dialogue.fields.dialogue.required).toBe(true);
+  });
 });

@@ -13,6 +13,13 @@ import {
   KieClaudeRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
+  MediaGenerationRequestSchema,
+  ElevenLabsTextToSpeechTurbo25RequestSchema,
+  ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+  ElevenLabsTextToDialogueV3RequestSchema,
+  ElevenLabsSoundEffectV2RequestSchema,
+  ElevenLabsAudioIsolationRequestSchema,
+  GeminiOmniAudioCreateRequestSchema,
 } from "../../../packages/provider/kie/src/zod";
 
 describe("kie Zod schema validation", () => {
@@ -224,6 +231,136 @@ describe("kie Zod schema validation", () => {
 
         expect(result.success, `${aspect_ratio} should be accepted`).toBe(true);
       }
+    });
+  });
+
+  describe("elevenlabs text-to-audio models", () => {
+    it("should accept text-to-speech turbo requests", () => {
+      const request = {
+        model: "elevenlabs/text-to-speech-turbo-2-5",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          text: "Unlock powerful API with Kie.ai.",
+          voice: "Rachel",
+          stability: 0.5,
+          similarity_boost: 0.75,
+          style: 0,
+          speed: 1,
+          timestamps: false,
+          previous_text: "",
+          next_text: "",
+          language_code: "",
+        },
+      };
+
+      expect(
+        ElevenLabsTextToSpeechTurbo25RequestSchema.safeParse(request).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should accept multilingual text-to-speech requests", () => {
+      const request = {
+        model: "elevenlabs/text-to-speech-multilingual-v2",
+        input: {
+          text: "Bonjour depuis Kie.",
+          voice: "Rachel",
+          language_code: "fr",
+        },
+      };
+
+      expect(
+        ElevenLabsTextToSpeechMultilingualV2RequestSchema.safeParse(request)
+          .success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should accept dialogue text-to-speech requests", () => {
+      const request = {
+        model: "elevenlabs/text-to-dialogue-v3",
+        input: {
+          dialogue: [
+            {
+              text: "I have a pen, I have an apple.",
+              voice: "EkK5I93UQWFDigLMpZcX",
+            },
+            {
+              text: "A happy dog.",
+              voice: "Z3R5wn05IrDiVCyEkUrK",
+            },
+          ],
+          stability: 0.5,
+        },
+      };
+
+      expect(
+        ElevenLabsTextToDialogueV3RequestSchema.safeParse(request).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should reject dialogue requests without turns", () => {
+      const result = ElevenLabsTextToDialogueV3RequestSchema.safeParse({
+        model: "elevenlabs/text-to-dialogue-v3",
+        input: {
+          dialogue: [],
+        },
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it("should accept sound effect and audio isolation requests", () => {
+      const soundEffect = {
+        model: "elevenlabs/sound-effect-v2",
+        input: {
+          text: "",
+          loop: false,
+          prompt_influence: 0.3,
+          output_format: "mp3_44100_128",
+        },
+      };
+      const audioIsolation = {
+        model: "elevenlabs/audio-isolation",
+        input: {
+          audio_url: "https://example.com/source.mp3",
+        },
+      };
+
+      expect(
+        ElevenLabsSoundEffectV2RequestSchema.safeParse(soundEffect).success
+      ).toBe(true);
+      expect(
+        ElevenLabsAudioIsolationRequestSchema.safeParse(audioIsolation).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(soundEffect).success).toBe(
+        true
+      );
+      expect(
+        MediaGenerationRequestSchema.safeParse(audioIsolation).success
+      ).toBe(true);
+    });
+  });
+
+  describe("gemini omni audio", () => {
+    it("should validate audio create requests", () => {
+      const result = GeminiOmniAudioCreateRequestSchema.safeParse({
+        audio_id: "achernar",
+        name: "achernar Narrator",
+        voice_description:
+          "A calm, clear, and friendly male voice for explainers.",
+        example_dialogue: "Hello, I am achernar.",
+      });
+
+      expect(result.success).toBe(true);
     });
   });
 

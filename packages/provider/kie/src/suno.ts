@@ -597,7 +597,7 @@ export function createSunoProvider(
   const requestOpts = { apiKey, doFetch, timeout };
 
   // POST https://api.kie.ai/api/v1/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/generate-music
   async function createTask(
     req: SunoGenerateRequest
   ): Promise<SunoSubmitResponse> {
@@ -609,7 +609,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/generate/extend
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/extend-music
   async function extendTask(
     req: SunoExtendRequest
   ): Promise<SunoSubmitResponse> {
@@ -621,7 +621,7 @@ export function createSunoProvider(
   }
 
   // GET https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/get-music-details
   async function recordInfo(taskId: string): Promise<SunoRecordInfoResponse> {
     return kieRequest<SunoRecordInfoResponse>(
       `${baseURL}/api/v1/generate/record-info?taskId=${encodeURIComponent(taskId)}`,
@@ -633,7 +633,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/wav/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/convert-to-wav
   async function wavGenerate(req: SunoWavRequest): Promise<SunoSubmitResponse> {
     return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/wav/generate`, {
       method: "POST",
@@ -643,7 +643,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/vocal-removal/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/separate-vocals
   async function vocalRemovalGenerate(
     req: SunoVocalRemovalRequest
   ): Promise<SunoSubmitResponse> {
@@ -658,7 +658,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/mp4/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/create-music-video
   async function mp4Generate(req: SunoMp4Request): Promise<SunoSubmitResponse> {
     return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/mp4/generate`, {
       method: "POST",
@@ -668,7 +668,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/lyrics
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/generate-lyrics
   async function lyricsGenerate(
     req: SunoLyricsRequest
   ): Promise<SunoSubmitResponse> {
@@ -680,7 +680,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/style/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/boost-music-style
   async function boostStyle(
     req: SunoBoostStyleRequest
   ): Promise<SunoSubmitResponse> {
@@ -692,7 +692,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/generate/upload-cover
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/upload-and-cover-audio
   async function uploadCover(
     req: SunoUploadCoverRequest
   ): Promise<SunoSubmitResponse> {
@@ -707,7 +707,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/generate/upload-extend
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/upload-and-extend-audio
   async function uploadExtend(
     req: SunoUploadExtendRequest
   ): Promise<SunoSubmitResponse> {
@@ -722,7 +722,7 @@ export function createSunoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/midi/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/suno-api/generate-midi
   async function midiGenerate(
     req: SunoMidiRequest
   ): Promise<SunoSubmitResponse> {

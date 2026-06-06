@@ -75,6 +75,12 @@ export type {
   HappyHorseImageToVideoRequest,
   HappyHorseReferenceToVideoRequest,
   HappyHorseVideoEditRequest,
+  ElevenLabsAudioIsolationRequest,
+  ElevenLabsTextToDialogueV3Request,
+  ElevenLabsTextToSpeechMultilingualV2Request,
+  ElevenLabsTextToSpeechTurbo25Request,
+  ElevenLabsSoundEffectV2Request,
+  GeminiOmniAudioCreateRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -132,6 +138,14 @@ export interface KieTaskInfoData {
 export type KieTaskInfo = KieApiEnvelope<KieTaskInfoData>;
 export type KieCreditsResponse = KieApiEnvelope<number>;
 
+export interface GeminiOmniAudioCreateData {
+  kieAudioId: string;
+  name: string;
+}
+
+export type GeminiOmniAudioCreateResponse =
+  KieApiEnvelope<GeminiOmniAudioCreateData>;
+
 // ---------------------------------------------------------------------------
 // Model input schema types (for parameter discovery / UI generation)
 // ---------------------------------------------------------------------------
@@ -160,6 +174,7 @@ import type {
   UploadMediaRequest,
   FileUrlUploadRequest,
   FileBase64UploadRequest,
+  GeminiOmniAudioCreateRequest,
 } from "./zod";
 
 export type { PayGateApproval as KieApproval } from "@apicity/cost";
@@ -190,11 +205,21 @@ interface KieFileBase64UploadMethod {
   schema: z.ZodType<FileBase64UploadRequest>;
 }
 
+interface KieGeminiOmniAudioCreateMethod {
+  (req: GeminiOmniAudioCreateRequest): Promise<GeminiOmniAudioCreateResponse>;
+  schema: z.ZodType<GeminiOmniAudioCreateRequest>;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
     jobs: { createTask: KieCreateTaskMethod };
     common: { downloadUrl: KieDownloadUrlMethod };
+    omni: {
+      audio: {
+        create: KieGeminiOmniAudioCreateMethod;
+      };
+    };
   };
   fileStreamUpload: KieFileStreamUploadMethod;
   fileUrlUpload: KieFileUrlUploadMethod;

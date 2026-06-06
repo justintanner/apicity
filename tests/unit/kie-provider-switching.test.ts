@@ -95,6 +95,44 @@ describe("KIE provider switching", () => {
     });
   });
 
+  it("routes Gemini Omni Audio requests through the omni audio namespace", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          code: 0,
+          msg: "success",
+          data: { kieAudioId: "audio-1", name: "Narrator" },
+        }),
+        { status: 200 }
+      )
+    );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+    });
+
+    const payload = {
+      audio_id: "narrator",
+      name: "Narrator",
+      voice_description: "A calm narration voice.",
+      example_dialogue: "Hello from Kie.",
+    };
+
+    expect(
+      provider.post.api.v1.omni.audio.create.schema.safeParse(payload).success
+    ).toBe(true);
+
+    const result = await provider.post.api.v1.omni.audio.create(payload);
+
+    expect(result.data?.kieAudioId).toBe("audio-1");
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.kie.ai/api/v1/omni/audio/create");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual(payload);
+  });
+
   it("keeps grok-imagine models on createTask and exposes their schema", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ code: 200, data: { taskId: "grok-1" } }), {

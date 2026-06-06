@@ -12,6 +12,8 @@ import {
   FileUrlUploadRequest,
   FileBase64UploadRequest,
   KieTaskInfo,
+  GeminiOmniAudioCreateRequest,
+  GeminiOmniAudioCreateResponse,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -19,6 +21,7 @@ import {
   UploadMediaRequestSchema,
   FileUrlUploadRequestSchema,
   FileBase64UploadRequestSchema,
+  GeminiOmniAudioCreateRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -27,6 +30,7 @@ import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { attachExamples } from "./example";
 import { createReplayStore, withPaidGate } from "@apicity/cost";
+import { kieRequest } from "./request";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -65,7 +69,7 @@ export function createKie(opts: KieOptions): KieProvider {
       }
     : undefined;
   // POST https://api.kie.ai/api/v1/jobs/createTask
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/market/quickstart
   async function createTask(
     req: MediaGenerationRequest
   ): Promise<TaskResponse> {
@@ -113,7 +117,7 @@ export function createKie(opts: KieOptions): KieProvider {
   }
 
   // GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/market/common/get-task-detail
   async function recordInfo(taskId: string): Promise<KieTaskInfo> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -161,7 +165,7 @@ export function createKie(opts: KieOptions): KieProvider {
   }
 
   // POST https://api.kie.ai/api/file-stream-upload
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/file-upload-api/upload-file-stream
   async function fileStreamUpload(
     req: UploadMediaRequest
   ): Promise<UploadMediaResponse> {
@@ -224,7 +228,7 @@ export function createKie(opts: KieOptions): KieProvider {
   }
 
   // POST https://api.kie.ai/api/file-url-upload
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/file-upload-api/upload-file-url
   async function fileUrlUpload(
     req: FileUrlUploadRequest
   ): Promise<UploadMediaResponse> {
@@ -276,7 +280,7 @@ export function createKie(opts: KieOptions): KieProvider {
   }
 
   // POST https://api.kie.ai/api/file-base64-upload
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/file-upload-api/upload-file-base-64
   async function fileBase64Upload(
     req: FileBase64UploadRequest
   ): Promise<UploadMediaResponse> {
@@ -329,7 +333,7 @@ export function createKie(opts: KieOptions): KieProvider {
   }
 
   // POST https://api.kie.ai/api/v1/common/download-url
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/common-api/download-url
   async function downloadUrl(
     req: DownloadUrlRequest
   ): Promise<DownloadUrlResponse> {
@@ -376,8 +380,25 @@ export function createKie(opts: KieOptions): KieProvider {
     }
   }
 
+  // POST https://api.kie.ai/api/v1/omni/audio/create
+  // Docs: https://docs.kie.ai/market/gemini-omni-audio
+  async function omniAudioCreate(
+    req: GeminiOmniAudioCreateRequest
+  ): Promise<GeminiOmniAudioCreateResponse> {
+    return kieRequest<GeminiOmniAudioCreateResponse>(
+      `${baseURL}/api/v1/omni/audio/create`,
+      {
+        method: "POST",
+        body: req,
+        apiKey: opts.apiKey,
+        doFetch,
+        timeout,
+      }
+    );
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
     const res = await doFetch(`${baseURL}/api/v1/chat/credit`, {
       method: "GET",
@@ -429,6 +450,13 @@ export function createKie(opts: KieOptions): KieProvider {
                 downloadUrl: Object.assign(downloadUrl, {
                   schema: DownloadUrlRequestSchema,
                 }),
+              },
+              omni: {
+                audio: {
+                  create: Object.assign(omniAudioCreate, {
+                    schema: GeminiOmniAudioCreateRequestSchema,
+                  }),
+                },
               },
             },
             fileStreamUpload: Object.assign(fileStreamUpload, {

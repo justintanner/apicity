@@ -131,7 +131,7 @@ export function createClaudeProvider(
       post: {
         v1: {
           // POST https://api.kie.ai/claude/v1/messages
-          // Docs: https://docs.kie.ai
+          // Docs: https://docs.kie.ai/market/claude/claude-sonnet-4-6
           messages: Object.assign(
             async function messages(
               req: KieClaudeRequest,

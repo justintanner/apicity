@@ -36,6 +36,11 @@ export const KieMediaModelSchema = z.enum([
   "happyhorse/image-to-video",
   "happyhorse/reference-to-video",
   "happyhorse/video-edit",
+  "elevenlabs/audio-isolation",
+  "elevenlabs/text-to-dialogue-v3",
+  "elevenlabs/text-to-speech-multilingual-v2",
+  "elevenlabs/text-to-speech-turbo-2-5",
+  "elevenlabs/sound-effect-v2",
   "sora-watermark-remover",
 ]);
 
@@ -634,6 +639,66 @@ export const HappyHorseVideoEditRequestSchema = z.object({
   }),
 });
 
+const ElevenLabsTextToSpeechInputSchema = z.object({
+  text: z.string().min(1),
+  voice: z.string().min(1),
+  stability: z.number().optional(),
+  similarity_boost: z.number().optional(),
+  style: z.number().optional(),
+  speed: z.number().optional(),
+  timestamps: z.boolean().optional(),
+  previous_text: z.string().optional(),
+  next_text: z.string().optional(),
+  language_code: z.string().optional(),
+});
+
+export const ElevenLabsAudioIsolationRequestSchema = z.object({
+  model: z.literal("elevenlabs/audio-isolation"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    audio_url: z.string().min(1),
+  }),
+});
+
+export const ElevenLabsTextToDialogueV3RequestSchema = z.object({
+  model: z.literal("elevenlabs/text-to-dialogue-v3"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    dialogue: z
+      .array(
+        z.object({
+          text: z.string().min(1),
+          voice: z.string().min(1),
+        })
+      )
+      .min(1),
+    stability: z.number().optional(),
+  }),
+});
+
+export const ElevenLabsTextToSpeechMultilingualV2RequestSchema = z.object({
+  model: z.literal("elevenlabs/text-to-speech-multilingual-v2"),
+  callBackUrl: z.string().optional(),
+  input: ElevenLabsTextToSpeechInputSchema,
+});
+
+export const ElevenLabsTextToSpeechTurbo25RequestSchema = z.object({
+  model: z.literal("elevenlabs/text-to-speech-turbo-2-5"),
+  callBackUrl: z.string().optional(),
+  input: ElevenLabsTextToSpeechInputSchema,
+});
+
+export const ElevenLabsSoundEffectV2RequestSchema = z.object({
+  model: z.literal("elevenlabs/sound-effect-v2"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    text: z.string(),
+    loop: z.boolean().optional(),
+    prompt_influence: z.number().optional(),
+    output_format: z.string().optional(),
+  }),
+});
+
 // Refines live on the outer request object (not the `input` sub-object) so
 // that `input.*` fields remain introspectable by downstream tools that walk
 // ZodArray/ZodObject defs (e.g. videocity's readSlotConstraints).
@@ -881,6 +946,13 @@ export const DownloadUrlRequestSchema = z.object({
   url: z.string().min(1),
 });
 
+export const GeminiOmniAudioCreateRequestSchema = z.object({
+  audio_id: z.string().min(1),
+  name: z.string().min(1),
+  voice_description: z.string().min(1),
+  example_dialogue: z.string().min(1),
+});
+
 // ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
@@ -1094,6 +1166,11 @@ export const MediaGenerationRequestSchema = z.union([
   HappyHorseImageToVideoRequestSchema,
   HappyHorseReferenceToVideoRequestSchema,
   HappyHorseVideoEditRequestSchema,
+  ElevenLabsAudioIsolationRequestSchema,
+  ElevenLabsTextToDialogueV3RequestSchema,
+  ElevenLabsTextToSpeechMultilingualV2RequestSchema,
+  ElevenLabsTextToSpeechTurbo25RequestSchema,
+  ElevenLabsSoundEffectV2RequestSchema,
   SoraWatermarkRequestSchema,
 ]);
 
@@ -1227,6 +1304,21 @@ export type HappyHorseReferenceToVideoRequest = z.infer<
 export type HappyHorseVideoEditRequest = z.infer<
   typeof HappyHorseVideoEditRequestSchema
 >;
+export type ElevenLabsAudioIsolationRequest = z.infer<
+  typeof ElevenLabsAudioIsolationRequestSchema
+>;
+export type ElevenLabsTextToDialogueV3Request = z.infer<
+  typeof ElevenLabsTextToDialogueV3RequestSchema
+>;
+export type ElevenLabsTextToSpeechMultilingualV2Request = z.infer<
+  typeof ElevenLabsTextToSpeechMultilingualV2RequestSchema
+>;
+export type ElevenLabsTextToSpeechTurbo25Request = z.infer<
+  typeof ElevenLabsTextToSpeechTurbo25RequestSchema
+>;
+export type ElevenLabsSoundEffectV2Request = z.infer<
+  typeof ElevenLabsSoundEffectV2RequestSchema
+>;
 export type Wan27TaskResultJson = z.infer<typeof Wan27TaskResultJsonSchema>;
 export type Wan27VideoResult = z.infer<typeof Wan27VideoResultSchema>;
 export type Wan27ImageResult = z.infer<typeof Wan27ImageResultSchema>;
@@ -1237,6 +1329,9 @@ export type FileBase64UploadRequest = z.infer<
   typeof FileBase64UploadRequestSchema
 >;
 export type DownloadUrlRequest = z.infer<typeof DownloadUrlRequestSchema>;
+export type GeminiOmniAudioCreateRequest = z.infer<
+  typeof GeminiOmniAudioCreateRequestSchema
+>;
 export type KieOptions = z.infer<typeof KieOptionsSchema>;
 
 export type MediaGenerationRequest = z.infer<

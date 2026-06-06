@@ -78,7 +78,7 @@ export function createVeoProvider(
   const requestOpts = { apiKey, doFetch, timeout };
 
   // POST https://api.kie.ai/api/v1/veo/generate
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/veo3-api/generate-veo-3-video
   async function submitGenerate(
     req: VeoGenerateRequest
   ): Promise<VeoSubmitResponse> {
@@ -90,7 +90,7 @@ export function createVeoProvider(
   }
 
   // POST https://api.kie.ai/api/v1/veo/extend
-  // Docs: https://docs.kie.ai
+  // Docs: https://docs.kie.ai/veo3-api/extend-video
   async function submitExtend(
     req: VeoExtendRequest
   ): Promise<VeoSubmitResponse> {

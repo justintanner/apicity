@@ -151,7 +151,7 @@ console.log(result.resultUrls[0]);
 
 ## API Reference
 
-26 endpoints across 15 groups. Each method mirrors an upstream URL path.
+27 endpoints across 16 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -160,7 +160,7 @@ console.log(result.resultUrls[0]);
 
 <code>GET https://api.kie.ai/api/v1/chat/credit</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/common-api/get-account-credits)
 
 ```typescript
 const res = await kie.get.api.v1.chat.credit({ /* ... */ });
@@ -177,7 +177,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/claude/v1/messages</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/market/claude/claude-sonnet-4-6)
 
 ```typescript
 const res = await kie.claude.post.v1.messages({ /* ... */ });
@@ -194,7 +194,7 @@ Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
 
 <code>POST https://api.kie.ai/api/v1/common/download-url</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/common-api/download-url)
 
 ```typescript
 const res = await kie.post.api.v1.common.downloadUrl({ /* ... */ });
@@ -211,7 +211,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/file-base64-upload</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-base-64)
 
 ```typescript
 const res = await kie.post.api.fileBase64Upload({ /* ... */ });
@@ -228,7 +228,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/file-stream-upload</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-stream)
 
 ```typescript
 const res = await kie.post.api.fileStreamUpload({ /* ... */ });
@@ -245,7 +245,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/file-url-upload</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-url)
 
 ```typescript
 const res = await kie.post.api.fileUrlUpload({ /* ... */ });
@@ -275,7 +275,7 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/generate</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/suno-api/generate-music)
 
 ```typescript
 const res = await kie.suno.post.api.v1.generate({ /* ... */ });
@@ -406,7 +406,7 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/market/common/get-task-detail)
 
 ```typescript
 const res = await kie.get.api.v1.jobs.recordInfo({ /* ... */ });
@@ -421,7 +421,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 <code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/market/quickstart)
 
 ```typescript
 const res = await kie.post.api.v1.jobs.createTask({ /* ... */ });
@@ -476,6 +476,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 </details>
 
+### omni
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.omni.audio.create</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/omni/audio/create</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini-omni-audio)
+
+```typescript
+const res = await kie.post.api.v1.omni.audio.create({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
 ### style
 
 <details>
@@ -498,7 +515,7 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 <code>POST https://api.kie.ai/api/v1/veo/extend</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/veo3-api/extend-video)
 
 ```typescript
 const res = await kie.veo.post.api.v1.veo.extend({ /* ... */ });
@@ -513,7 +530,7 @@ Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
 
 <code>POST https://api.kie.ai/api/v1/veo/generate</code>
 
-[Upstream docs ↗](https://docs.kie.ai)
+[Upstream docs ↗](https://docs.kie.ai/veo3-api/generate-veo-3-video)
 
 ```typescript
 const res = await kie.veo.post.api.v1.veo.generate({ /* ... */ });

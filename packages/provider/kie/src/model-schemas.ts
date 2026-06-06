@@ -1149,6 +1149,158 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "elevenlabs/audio-isolation": {
+    type: "audio",
+    fields: {
+      audio_url: {
+        type: "string",
+        required: true,
+        description: "Source audio URL to isolate speech or foreground audio",
+      },
+    },
+  },
+
+  "elevenlabs/text-to-dialogue-v3": {
+    type: "audio",
+    fields: {
+      dialogue: {
+        type: "array",
+        required: true,
+        description: "Dialogue turns to synthesize",
+        items: {
+          type: "object",
+          properties: {
+            text: { type: "string", required: true },
+            voice: { type: "string", required: true },
+          },
+        },
+      },
+      stability: {
+        type: "number",
+        description: "Voice stability setting",
+      },
+    },
+  },
+
+  "elevenlabs/text-to-speech-multilingual-v2": {
+    type: "audio",
+    fields: {
+      text: {
+        type: "string",
+        required: true,
+        description: "Text to synthesize",
+      },
+      voice: {
+        type: "string",
+        required: true,
+        description: "Voice name or voice ID",
+      },
+      stability: {
+        type: "number",
+        description: "Voice stability setting",
+      },
+      similarity_boost: {
+        type: "number",
+        description: "Voice similarity boost",
+      },
+      style: {
+        type: "number",
+        description: "Style exaggeration setting",
+      },
+      speed: {
+        type: "number",
+        description: "Speech speed",
+      },
+      timestamps: {
+        type: "boolean",
+        description: "Return timestamp metadata when supported",
+      },
+      previous_text: {
+        type: "string",
+        description: "Previous context text",
+      },
+      next_text: {
+        type: "string",
+        description: "Next context text",
+      },
+      language_code: {
+        type: "string",
+        description: "Optional language code",
+      },
+    },
+  },
+
+  "elevenlabs/text-to-speech-turbo-2-5": {
+    type: "audio",
+    fields: {
+      text: {
+        type: "string",
+        required: true,
+        description: "Text to synthesize",
+      },
+      voice: {
+        type: "string",
+        required: true,
+        description: "Voice name or voice ID",
+      },
+      stability: {
+        type: "number",
+        description: "Voice stability setting",
+      },
+      similarity_boost: {
+        type: "number",
+        description: "Voice similarity boost",
+      },
+      style: {
+        type: "number",
+        description: "Style exaggeration setting",
+      },
+      speed: {
+        type: "number",
+        description: "Speech speed",
+      },
+      timestamps: {
+        type: "boolean",
+        description: "Return timestamp metadata when supported",
+      },
+      previous_text: {
+        type: "string",
+        description: "Previous context text",
+      },
+      next_text: {
+        type: "string",
+        description: "Next context text",
+      },
+      language_code: {
+        type: "string",
+        description: "Optional language code",
+      },
+    },
+  },
+
+  "elevenlabs/sound-effect-v2": {
+    type: "audio",
+    fields: {
+      text: {
+        type: "string",
+        required: true,
+        description: "Sound effect prompt",
+      },
+      loop: {
+        type: "boolean",
+        description: "Generate a loopable sound",
+      },
+      prompt_influence: {
+        type: "number",
+        description: "Prompt influence strength",
+      },
+      output_format: {
+        type: "string",
+        description: "Requested audio output format",
+      },
+    },
+  },
+
   "sora-watermark-remover": {
     type: "video",
     fields: {

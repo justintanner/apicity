@@ -63,6 +63,8 @@ Source: [`packages/provider/youtube/src/youtube.ts`](src/youtube.ts)
 <details>
 <summary><b><code>youtube.videoMetadata</code></b></summary>
 
+[Upstream docs ↗](https://developers.google.com/youtube/player_parameters)
+
 ```typescript
 const res = await youtube.videoMetadata({ /* ... */ });
 ```

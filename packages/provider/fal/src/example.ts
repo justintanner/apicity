@@ -233,13 +233,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": 4
     }
   },
-  "POST storage.upload.initiate": {
-    "source": "fal/storage-upload-initiate",
-    "payload": {
-      "file_name": "cat1.jpg",
-      "content_type": "image/jpeg"
-    }
-  },
   "POST v1.models.pricing.estimate": {
     "source": "fal/estimate-cost",
     "payload": {

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { createKie } from "@apicity/kie";
+import { mintOtp } from "@apicity/cost";
 import {
   TEST_PAYGATE_SECRET,
   mintKieCreateTaskOtp,
@@ -7,6 +8,18 @@ import {
 } from "../harness";
 
 describe("KIE provider switching", () => {
+  function mintKieAudioOtp(
+    dotPath:
+      | "api.v1.elevenlabs.textToDialogueV3"
+      | "api.v1.elevenlabs.textToSpeechMultilingualV2"
+      | "api.v1.elevenlabs.textToSpeechTurbo25",
+    request: Record<string, unknown>
+  ): { otp: string } {
+    return {
+      otp: mintOtp(TEST_PAYGATE_SECRET, { dotPath, request }),
+    };
+  }
+
   it("routes Veo requests through the veo namespace", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ code: 200, data: { taskId: "veo-1" } }), {
@@ -129,6 +142,87 @@ describe("KIE provider switching", () => {
     expect(result.data?.audioId).toBe("audio-1");
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/omni/audio/create");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual(payload);
+  });
+
+  it("routes Kie ElevenLabs TTS helpers through createTask", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ code: 200, data: { taskId: "audio-1" } }), {
+        status: 200,
+      })
+    );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+
+    const payload = {
+      model: "elevenlabs/text-to-speech-turbo-2-5" as const,
+      input: {
+        text: "A concise Apicity TTS helper test.",
+        voice: "Rachel",
+      },
+    };
+
+    expect(
+      provider.post.api.v1.elevenlabs.textToSpeechTurbo25.schema.safeParse(
+        payload
+      ).success
+    ).toBe(true);
+
+    await provider.post.api.v1.elevenlabs.textToSpeechTurbo25(
+      payload,
+      mintKieAudioOtp("api.v1.elevenlabs.textToSpeechTurbo25", payload)
+    );
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual(payload);
+  });
+
+  it("routes Kie ElevenLabs dialogue helpers through createTask", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ code: 200, data: { taskId: "audio-2" } }), {
+        status: 200,
+      })
+    );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+
+    const payload = {
+      model: "elevenlabs/text-to-dialogue-v3" as const,
+      input: {
+        dialogue: [
+          {
+            text: "Who is there?",
+            voice: "JBFqnCBsd6RMkjVDRZzb",
+          },
+        ],
+      },
+    };
+
+    expect(
+      provider.post.api.v1.elevenlabs.textToDialogueV3.schema.safeParse(payload)
+        .success
+    ).toBe(true);
+
+    await provider.post.api.v1.elevenlabs.textToDialogueV3(
+      payload,
+      mintKieAudioOtp("api.v1.elevenlabs.textToDialogueV3", payload)
+    );
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body as string)).toEqual(payload);
   });

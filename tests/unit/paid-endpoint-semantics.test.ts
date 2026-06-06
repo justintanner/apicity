@@ -41,6 +41,13 @@ describe("paid endpoint semantics — regression", () => {
     prompt: "Continue the camera move",
     model: "quality",
   } as const;
+  const ELEVENLABS_TTS_REQUEST = {
+    model: "elevenlabs/text-to-speech-turbo-2-5",
+    input: {
+      text: "A short paygate regression test.",
+      voice: "Rachel",
+    },
+  } as const;
 
   function makeGatedProvider() {
     return createKie({
@@ -135,6 +142,30 @@ describe("paid endpoint semantics — regression", () => {
       expect(caught).toBeInstanceOf(PayGateError);
       expect(caught!.code).toBe("otp-missing");
       expect(caught!.dotPath).toBe("api.v1.veo.extend");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("KIE ElevenLabs task helpers block when OTP is missing", () => {
+    it("textToSpeechTurbo25 throws PayGateError before network dispatch", async () => {
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      let caught: PayGateError | undefined;
+      try {
+        await provider.post.api.v1.elevenlabs.textToSpeechTurbo25(
+          ELEVENLABS_TTS_REQUEST
+        );
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("otp-missing");
+      expect(caught!.dotPath).toBe("api.v1.elevenlabs.textToSpeechTurbo25");
       expect(mockFetch).not.toHaveBeenCalled();
     });
   });

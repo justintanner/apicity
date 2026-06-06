@@ -25,6 +25,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
     }
   },
+  "POST api.v1.elevenlabs.textToDialogueV3": {
+    "source": "kie/grok-video-upscale",
+    "payload": {
+      "model": "grok-imagine/upscale",
+      "input": {
+        "task_id": "d43f0d0ab29f28fdfcf68a9dccbd7a42"
+      }
+    }
+  },
   "POST api.v1.generate": {
     "source": "kie/suno-generate-vocal",
     "payload": {
@@ -53,6 +62,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "style": "soft pop",
       "callBackUrl": "https://example.com/cb",
       "model": "V4_5PLUS"
+    }
+  },
+  "POST api.v1.generate.extend": {
+    "source": "kie/suno/extend-bogus-audio-id",
+    "payload": {
+      "defaultParamFlag": true,
+      "audioId": "apicity-test-bogus-audio-id",
+      "prompt": "extend with a bridge",
+      "model": "V5",
+      "callBackUrl": "https://example.com/cb",
+      "style": "Synthwave",
+      "title": "Side B",
+      "continueAt": 30
     }
   },
   "POST api.v1.generate.mashup": {
@@ -89,13 +111,51 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "callBackUrl": "https://example.com/cb"
     }
   },
-  "POST api.v1.jobs.createTask": {
-    "source": "kie/grok-video-upscale",
+  "POST api.v1.generate.uploadCover": {
+    "source": "kie/suno/upload-cover-bogus-url",
     "payload": {
-      "model": "grok-imagine/upscale",
-      "input": {
-        "task_id": "d43f0d0ab29f28fdfcf68a9dccbd7a42"
-      }
+      "uploadUrl": "https://invalid-host-apicity-test.invalid/song.mp3",
+      "prompt": "Cover this in a synthwave style",
+      "customMode": true,
+      "instrumental": false,
+      "model": "V5",
+      "callBackUrl": "https://example.com/cb",
+      "style": "Synthwave",
+      "title": "Cover Take"
+    }
+  },
+  "POST api.v1.generate.uploadExtend": {
+    "source": "kie/suno/upload-extend-bogus-url",
+    "payload": {
+      "uploadUrl": "https://invalid-host-apicity-test.invalid/song.mp3",
+      "defaultParamFlag": true,
+      "instrumental": false,
+      "continueAt": 60,
+      "model": "V5",
+      "callBackUrl": "https://example.com/cb",
+      "prompt": "Continue the chorus then resolve"
+    }
+  },
+  "POST api.v1.lyrics": {
+    "source": "kie/suno/lyrics-submit",
+    "payload": {
+      "prompt": "A short song about morning coffee",
+      "callBackUrl": "https://example.com/cb"
+    }
+  },
+  "POST api.v1.midi.generate": {
+    "source": "kie/suno/midi-bogus-task-id",
+    "payload": {
+      "taskId": "apicity-test-bogus-vocal-removal-task-id",
+      "callBackUrl": "https://example.com/cb"
+    }
+  },
+  "POST api.v1.mp4.generate": {
+    "source": "kie/suno/mp4-bogus-ids",
+    "payload": {
+      "taskId": "apicity-test-bogus-task-id",
+      "audioId": "apicity-test-bogus-audio-id",
+      "callBackUrl": "https://example.com/cb"
     }
   },
   "POST api.v1.omni.audio.create": {
@@ -105,6 +165,29 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "name": "Apicity HAR Test Narrator",
       "voice_description": "A calm, clear, friendly voice for a short API smoke test.",
       "example_dialogue": "Hello from the Apicity Kie audio HAR test."
+    }
+  },
+  "POST api.v1.style.generate": {
+    "source": "kie/suno/style-boost",
+    "payload": {
+      "content": "Pop, Mysterious"
+    }
+  },
+  "POST api.v1.vocalRemoval.generate": {
+    "source": "kie/suno/vocal-removal-bogus-ids",
+    "payload": {
+      "taskId": "apicity-test-bogus-task-id",
+      "audioId": "apicity-test-bogus-audio-id",
+      "callBackUrl": "https://example.com/cb",
+      "type": "separate_vocal"
+    }
+  },
+  "POST api.v1.wav.generate": {
+    "source": "kie/suno/wav-bogus-ids",
+    "payload": {
+      "taskId": "apicity-test-bogus-task-id",
+      "audioId": "apicity-test-bogus-audio-id",
+      "callBackUrl": "https://example.com/cb"
     }
   },
   "POST claude.v1.messages": {

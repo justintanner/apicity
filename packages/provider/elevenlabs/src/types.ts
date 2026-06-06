@@ -1,12 +1,16 @@
 import type { z } from "zod";
 import type {
   ElevenLabsSoundGenerationRequest,
+  ElevenLabsTextToDialogueRequest,
+  ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
 } from "./zod";
 
 export type {
   ElevenLabsOptions,
   ElevenLabsSoundGenerationRequest,
+  ElevenLabsTextToDialogueRequest,
+  ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
 } from "./zod";
 
@@ -100,6 +104,23 @@ export interface ElevenLabsSoundGenerationMethod {
   schema: z.ZodType<ElevenLabsSoundGenerationRequest>;
 }
 
+export interface ElevenLabsTextToSpeechMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsTextToSpeechRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsTextToSpeechRequest>;
+}
+
+export interface ElevenLabsTextToDialogueMethod {
+  (
+    req: ElevenLabsTextToDialogueRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsTextToDialogueRequest>;
+}
+
 export interface ElevenLabsSpeechToTextMethod {
   (
     req: ElevenLabsSpeechToTextRequest,
@@ -112,6 +133,8 @@ export interface ElevenLabsSpeechToTextMethod {
 
 export interface ElevenLabsV1Namespace {
   soundGeneration: ElevenLabsSoundGenerationMethod;
+  textToSpeech: ElevenLabsTextToSpeechMethod;
+  textToDialogue: ElevenLabsTextToDialogueMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
 }
 

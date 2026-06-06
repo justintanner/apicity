@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 
 import {
   ElevenLabsSoundGenerationRequestSchema,
+  ElevenLabsTextToDialogueRequestSchema,
+  ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
 } from "../../packages/provider/elevenlabs/src/zod";
 
@@ -279,6 +281,83 @@ describe("ElevenLabs Zod schema validation", () => {
         entity_redaction: null,
       });
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("text to speech schema", () => {
+    it("should validate a text-to-speech request", () => {
+      const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+        text: "The first move sets everything in motion.",
+        model_id: "eleven_multilingual_v2",
+        language_code: "en",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+          style: 0,
+          use_speaker_boost: true,
+          speed: 1,
+        },
+        pronunciation_dictionary_locators: [
+          {
+            pronunciation_dictionary_id: "dict_123",
+            version_id: "v1",
+          },
+        ],
+        seed: 42,
+        previous_text: "Before.",
+        next_text: "After.",
+        previous_request_ids: ["req_prev"],
+        next_request_ids: ["req_next"],
+        use_pvc_as_ivc: false,
+        apply_text_normalization: "auto",
+        output_format: "mp3_44100_128",
+        enable_logging: false,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject text-to-speech without text", () => {
+      const result = ElevenLabsTextToSpeechRequestSchema.safeParse({
+        model_id: "eleven_multilingual_v2",
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
+        true
+      );
+    });
+  });
+
+  describe("text to dialogue schema", () => {
+    it("should validate a text-to-dialogue request", () => {
+      const result = ElevenLabsTextToDialogueRequestSchema.safeParse({
+        inputs: [
+          {
+            text: "[curious] Who is there?",
+            voice_id: "JBFqnCBsd6RMkjVDRZzb",
+          },
+        ],
+        model_id: "eleven_v3",
+        language_code: "en",
+        settings: { stability: 0.5 },
+        seed: 42,
+        apply_text_normalization: "auto",
+        output_format: "mp3_44100_128",
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject text-to-dialogue without turns", () => {
+      const result = ElevenLabsTextToDialogueRequestSchema.safeParse({
+        inputs: [],
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("inputs"))).toBe(
+        true
+      );
     });
   });
 });

@@ -51,6 +51,45 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "kie",
       method: "POST",
+      dotPath: "api.v1.elevenlabs.textToDialogueV3",
+    },
+    info: {
+      reason:
+        "ElevenLabs dialogue generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per generated audio task based on text length/model",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.elevenlabs.textToSpeechMultilingualV2",
+    },
+    info: {
+      reason:
+        "ElevenLabs text-to-speech generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per generated audio task based on text length/model",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.elevenlabs.textToSpeechTurbo25",
+    },
+    info: {
+      reason:
+        "ElevenLabs text-to-speech generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per generated audio task based on text length/model",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
       dotPath: "api.v1.veo.generate",
     },
     info: {

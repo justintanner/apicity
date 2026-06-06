@@ -34,6 +34,82 @@ export type ElevenLabsSoundGenerationRequest = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/text-to-speech/:voice_id
+// ---------------------------------------------------------------------------
+
+// `voice_id` is a path parameter on the factory method, not a body field.
+// `output_format` and `enable_logging` are query-string parameters.
+export const ElevenLabsVoiceSettingsSchema = z
+  .object({
+    stability: z.number().min(0).max(1).optional(),
+    similarity_boost: z.number().min(0).max(1).optional(),
+    style: z.number().min(0).max(1).optional(),
+    use_speaker_boost: z.boolean().optional(),
+    speed: z.number().optional(),
+  })
+  .passthrough();
+
+export const ElevenLabsPronunciationDictionaryLocatorSchema = z
+  .object({
+    pronunciation_dictionary_id: z.string(),
+    version_id: z.string().optional(),
+  })
+  .passthrough();
+
+export const ElevenLabsTextToSpeechRequestSchema = z.object({
+  text: z.string().min(1),
+  model_id: z.string().optional(),
+  language_code: z.string().nullable().optional(),
+  voice_settings: ElevenLabsVoiceSettingsSchema.nullable().optional(),
+  pronunciation_dictionary_locators: z
+    .array(ElevenLabsPronunciationDictionaryLocatorSchema)
+    .nullable()
+    .optional(),
+  seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+  previous_text: z.string().nullable().optional(),
+  next_text: z.string().nullable().optional(),
+  previous_request_ids: z.array(z.string()).nullable().optional(),
+  next_request_ids: z.array(z.string()).nullable().optional(),
+  use_pvc_as_ivc: z.boolean().optional(),
+  apply_text_normalization: z.enum(["auto", "on", "off"]).optional(),
+  output_format: z.string().optional(),
+  enable_logging: z.boolean().optional(),
+});
+
+export type ElevenLabsTextToSpeechRequest = z.infer<
+  typeof ElevenLabsTextToSpeechRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/text-to-dialogue
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsTextToDialogueRequestSchema = z.object({
+  inputs: z
+    .array(
+      z.object({
+        text: z.string().min(1),
+        voice_id: z.string().min(1),
+      })
+    )
+    .min(1),
+  model_id: z.string().optional(),
+  language_code: z.string().nullable().optional(),
+  settings: z.record(z.string(), z.unknown()).nullable().optional(),
+  pronunciation_dictionary_locators: z
+    .array(ElevenLabsPronunciationDictionaryLocatorSchema)
+    .nullable()
+    .optional(),
+  seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+  apply_text_normalization: z.enum(["auto", "on", "off"]).optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsTextToDialogueRequest = z.infer<
+  typeof ElevenLabsTextToDialogueRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/speech-to-text
 // ---------------------------------------------------------------------------
 

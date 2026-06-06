@@ -138,7 +138,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+4 endpoints across 4 groups. Each method mirrors an upstream URL path.
 
 ### soundGeneration
 
@@ -168,6 +168,40 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.speechToText({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### textToDialogue
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-dialogue</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert)
+
+```typescript
+const res = await elevenlabs.v1.textToDialogue({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### textToSpeech
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert)
+
+```typescript
+const res = await elevenlabs.v1.textToSpeech("voice_id", { /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

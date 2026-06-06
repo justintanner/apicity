@@ -9,6 +9,9 @@ describe("paid-endpoint registry", () => {
   it("has the expected paid entries for KIE media generation", () => {
     const entries = [
       "api.v1.jobs.createTask",
+      "api.v1.elevenlabs.textToDialogueV3",
+      "api.v1.elevenlabs.textToSpeechMultilingualV2",
+      "api.v1.elevenlabs.textToSpeechTurbo25",
       "api.v1.veo.generate",
       "api.v1.veo.extend",
     ];
@@ -47,6 +50,9 @@ describe("paid-endpoint registry", () => {
     expect(
       lookupPaidEndpoint("kie", "POST", "api.v1.veo.extend")
     ).toBeDefined();
+    expect(
+      lookupPaidEndpoint("kie", "POST", "api.v1.elevenlabs.textToSpeechTurbo25")
+    ).toBeDefined();
   });
 
   it("lookupPaidEndpoint returns undefined for unlisted endpoints", () => {
@@ -84,6 +90,9 @@ describe("paid-endpoint registry", () => {
 
   it("isPaidEndpoint returns true for exact match", () => {
     expect(isPaidEndpoint("kie", "POST", "api.v1.jobs.createTask")).toBe(true);
+    expect(
+      isPaidEndpoint("kie", "POST", "api.v1.elevenlabs.textToDialogueV3")
+    ).toBe(true);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.generate")).toBe(true);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.extend")).toBe(true);
   });

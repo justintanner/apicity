@@ -11,6 +11,30 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST api.v1.services.aigc.imageGeneration.generation": {
+    "source": "alibaba/wan-image-t2i",
+    "payload": {
+      "model": "wan2.7-image-pro",
+      "input": {
+        "messages": [
+          {
+            "role": "user",
+            "content": [
+              {
+                "text": "A flower shop with exquisite windows, a beautiful wooden door, and flowers on display"
+              }
+            ]
+          }
+        ]
+      },
+      "parameters": {
+        "size": "2K",
+        "n": 1,
+        "watermark": false,
+        "thinking_mode": true
+      }
+    }
+  },
   "POST api.v1.services.aigc.multimodalGeneration.generation": {
     "source": "alibaba/qwen-image-edit-single",
     "payload": {

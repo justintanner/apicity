@@ -57,6 +57,9 @@ function sectionKey(dotPath) {
 
 function formatUsageSnippet(providerName, dotPath) {
   const call = dotPath ? `${providerName}.${dotPath}` : providerName;
+  if (providerName === "elevenlabs" && dotPath === "v1.textToSpeech") {
+    return `const res = await ${call}("voice_id", { /* ... */ });`;
+  }
   return `const res = await ${call}({ /* ... */ });`;
 }
 

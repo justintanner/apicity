@@ -1,6 +1,8 @@
 import {
   ElevenLabsOptions,
   ElevenLabsSoundGenerationRequest,
+  ElevenLabsTextToDialogueRequest,
+  ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
   ElevenLabsProvider,
@@ -8,6 +10,8 @@ import {
 } from "./types";
 import {
   ElevenLabsSoundGenerationRequestSchema,
+  ElevenLabsTextToDialogueRequestSchema,
+  ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
@@ -182,6 +186,18 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     form.append(key, JSON.stringify(value));
   }
 
+  function optionalQuery(
+    pairs: Record<string, string | undefined>
+  ): Record<string, string> | undefined {
+    const query: Record<string, string> = {};
+    for (const [key, value] of Object.entries(pairs)) {
+      if (value !== undefined) {
+        query[key] = value;
+      }
+    }
+    return Object.keys(query).length > 0 ? query : undefined;
+  }
+
   // -- Endpoints -------------------------------------------------------------
 
   // POST https://api.elevenlabs.io/v1/sound-generation
@@ -196,6 +212,44 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       return makeBinaryRequest("/v1/sound-generation", body, query, signal);
     },
     { schema: ElevenLabsSoundGenerationRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/convert
+  const textToSpeech = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsTextToSpeechRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+      return makeBinaryRequest(
+        `/v1/text-to-speech/${encodeURIComponent(voiceId)}`,
+        body,
+        query,
+        signal
+      );
+    },
+    { schema: ElevenLabsTextToSpeechRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-dialogue
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert
+  const textToDialogue = Object.assign(
+    async (
+      req: ElevenLabsTextToDialogueRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const { output_format, ...body } = req;
+      const query = optionalQuery({ output_format });
+      return makeBinaryRequest("/v1/text-to-dialogue", body, query, signal);
+    },
+    { schema: ElevenLabsTextToDialogueRequestSchema }
   );
 
   // POST https://api.elevenlabs.io/v1/speech-to-text
@@ -226,8 +280,18 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSpeechToTextRequestSchema }
   );
 
-  const postV1 = { soundGeneration, speechToText };
-  const v1 = { soundGeneration, speechToText };
+  const postV1 = {
+    soundGeneration,
+    textToSpeech,
+    textToDialogue,
+    speechToText,
+  };
+  const v1 = {
+    soundGeneration,
+    textToSpeech,
+    textToDialogue,
+    speechToText,
+  };
 
   return attachExamples({
     v1,

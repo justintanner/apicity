@@ -848,6 +848,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><b><code>fal.storage.upload.completeMultipart</code></b></summary>
 
+[Upstream docs ↗](https://docs.fal.ai)
+
 ```typescript
 const res = await fal.storage.upload.completeMultipart({ /* ... */ });
 ```
@@ -859,6 +861,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 <details>
 <summary><b><code>fal.storage.upload.initiate</code></b></summary>
 
+[Upstream docs ↗](https://docs.fal.ai)
+
 ```typescript
 const res = await fal.storage.upload.initiate({ /* ... */ });
 ```
@@ -869,6 +873,8 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 <details>
 <summary><b><code>fal.storage.upload.initiateMultipart</code></b></summary>
+
+[Upstream docs ↗](https://docs.fal.ai)
 
 ```typescript
 const res = await fal.storage.upload.initiateMultipart({ /* ... */ });

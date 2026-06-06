@@ -139,7 +139,7 @@ export type KieTaskInfo = KieApiEnvelope<KieTaskInfoData>;
 export type KieCreditsResponse = KieApiEnvelope<number>;
 
 export interface GeminiOmniAudioCreateData {
-  kieAudioId: string;
+  audioId: string;
   name: string;
 }
 

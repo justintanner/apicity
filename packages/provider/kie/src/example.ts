@@ -98,6 +98,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
       }
     }
   },
+  "POST api.v1.omni.audio.create": {
+    "source": "kie/audio/gemini-omni-audio-create",
+    "payload": {
+      "audio_id": "achernar",
+      "name": "Apicity HAR Test Narrator",
+      "voice_description": "A calm, clear, friendly voice for a short API smoke test.",
+      "example_dialogue": "Hello from the Apicity Kie audio HAR test."
+    }
+  },
   "POST claude.v1.messages": {
     "source": "kie/claude-chat-hello",
     "payload": {

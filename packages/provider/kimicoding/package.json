@@ -1,6 +1,6 @@
 {
   "name": "@apicity/kimicoding",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Kimi for Coding provider for Apicity - completely standalone with Anthropic Messages API format, streaming-first, and built-in middleware.",
   "license": "MIT",
   "repository": {

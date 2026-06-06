@@ -45,7 +45,7 @@ bd mol pour mol-apicity-release \
   --var dist_tag=alpha
 ```
 
-The formula creates 10 chained beads. An agent (or you, manually) walks them:
+The formula creates 11 chained beads. An agent (or you, manually) walks them:
 
 1. `load-context` — verify clean working tree, read the release bead
 2. `sync-stable` — `git checkout stable && git merge --ff-only origin/main`
@@ -53,21 +53,21 @@ The formula creates 10 chained beads. An agent (or you, manually) walks them:
 4. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
 5. `bump-versions` — write `version` to all 17 `package.json`, commit
 6. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
-7. **`publish`** — `pnpm publish --tag <dist_tag>`. Requires `npm whoami` and 2FA OTP.
+7. **`publish`** — `pnpm publish --tag <dist_tag>` with `NPM_TOKEN` from the `apicity` 1Password vault
 8. `tag-and-push` — `git tag v<version>`, push `stable` + tag
-9. `smoke-install` — `npm install @apicity/openai@<dist_tag>` in `/tmp` and dynamic-import
-10. `close` — close the release bead, `bd remember` the version
+9. `sync-main-release` — fast-forward `main` to the release commit and push it
+10. `smoke-install` — `npm install @apicity/openai@<dist_tag>` in `/tmp` and dynamic-import
+11. `close` — close the release bead, `bd remember` the version
 
 ## What the formula does NOT do automatically
 
-- **Authenticate to npm.** You must `npm login` before pouring; `npm whoami`
-  must return the publishing account. The `publish` step verifies this and
-  errors out otherwise.
-- **Type the 2FA OTP.** If the publishing account has 2FA enabled (it should),
-  pnpm pauses at each package for the OTP. A human must be at the keyboard.
-- **Decide divergence resolution.** If `stable` has diverged from `main` so
-  the `--ff-only` merge fails, the formula stops and you decide whether to
-  rebase, cherry-pick, or abort.
+- **Create or repair npm credentials.** The `publish` step reads
+  `op://apicity/NPM_TOKEN/password` and verifies it with `npm whoami`. If
+  1Password access is unavailable or the token lacks publish rights, fix that
+  before continuing.
+- **Decide divergence resolution.** If `stable` has diverged from `main` before
+  release, or if `main` has moved before the post-release fast-forward, the
+  formula stops and you decide whether to rebase, cherry-pick, or abort.
 
 ## Dry-run
 

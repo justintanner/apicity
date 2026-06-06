@@ -10,9 +10,9 @@ The formula publishes 17 scoped packages in one go: 16 providers under
 packages/provider/* plus packages/mcp-server. All ship under one version
 and one dist-tag (alpha / beta / next / latest).
 
-This formula does NOT auto-publish without authentication. The `publish`
-step requires an authenticated `npm whoami` and (most likely) an interactive
-2FA OTP. The human running the agent must be present at that step.
+The `publish` step uses the `NPM_TOKEN` item in the `apicity` 1Password vault
+(`op://apicity/NPM_TOKEN/password`) through a temporary npm user config. The
+token must have publish access for the `@apicity` scope.
 
 ## Variables
 
@@ -239,26 +239,33 @@ id = "publish"
 title = "Publish to npm"
 needs = ["publish-dry-run"]
 description = """
-**HUMAN MUST BE PRESENT.** This step requires an authenticated npm session
-and (most likely) an interactive 2FA one-time password.
+Publish with the npm token stored in 1Password. Do not write the token to the
+repo, shell history, or logs.
 
-**1. Verify auth:**
+**1. Verify token access and auth:**
 ```bash
-npm whoami   # MUST print the publishing account
-npm config get registry   # should be https://registry.npmjs.org/
+op read 'op://apicity/NPM_TOKEN/password' >/dev/null
+
+tmp_npmrc=$(mktemp)
+cleanup() { rm -f "$tmp_npmrc"; }
+trap cleanup EXIT
+npm_token=$(op read 'op://apicity/NPM_TOKEN/password')
+printf 'registry=https://registry.npmjs.org/\n//registry.npmjs.org/:_authToken=%s\n' "$npm_token" > "$tmp_npmrc"
+NPM_CONFIG_USERCONFIG="$tmp_npmrc" npm whoami   # MUST print the publishing account
+NPM_CONFIG_USERCONFIG="$tmp_npmrc" npm config get registry
 ```
 
-If `npm whoami` errors, STOP. Run `npm login` interactively first.
+If `op read` or `npm whoami` errors, STOP. Fix 1Password access or the
+`NPM_TOKEN` item before publishing.
 
 **2. Publish all 17 packages:**
 ```bash
-pnpm -r --filter "@apicity/*" publish --tag {{dist_tag}} --no-git-checks
+NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag {{dist_tag}} --no-git-checks
 ```
 
-`pnpm` will pause on each package for the OTP prompt if 2FA is enabled.
-Type the code from your authenticator. `--no-git-checks` is required because
-we're publishing from a release commit that may not yet have an upstream tag
-(the `tag-and-push` step handles that next).
+`--no-git-checks` is required because we're publishing from a release commit
+that may not yet have an upstream tag (the `tag-and-push` step handles that
+next).
 
 **3. Verify on the registry:**
 ```bash
@@ -268,8 +275,9 @@ npm view @apicity/mcp-server dist-tags
 
 If publish fails partway through (network, auth lapse), some packages may
 already be live. STOP. Resume by re-running `pnpm publish` for only the
-packages that didn't get through — npm rejects re-publishing the same
-version, so it's safe to retry the whole filter.
+packages that didn't get through with the same `NPM_CONFIG_USERCONFIG`
+environment. npm rejects re-publishing the same version, so it's safe to retry
+the whole filter.
 
 **Exit criteria:** All 17 packages visible at `{{version}}` under `{{dist_tag}}`."""
 
@@ -289,9 +297,32 @@ git push origin v{{version}}
 **Exit criteria:** `origin/stable` is up to date and `v{{version}}` tag is pushed."""
 
 [[steps]]
+id = "sync-main-release"
+title = "Fast-forward main to the release commit"
+needs = ["tag-and-push"]
+description = """
+Propagate the release version bump back to `main` so `main` and `stable` do
+not drift after publishing.
+
+```bash
+git checkout main
+git pull --ff-only origin main
+git merge --ff-only stable
+git push origin main
+git checkout stable
+```
+
+**If `merge --ff-only` fails:** `main` has moved since the release started.
+STOP and mail Witness with the divergence summary. Do not create a merge
+commit or cherry-pick without an explicit decision.
+
+**Exit criteria:** `origin/main` and `origin/stable` point at the release
+commit, and the working branch is back on `stable`."""
+
+[[steps]]
 id = "smoke-install"
 title = "Install the published package in a clean dir"
-needs = ["tag-and-push"]
+needs = ["sync-main-release"]
 description = """
 End-to-end sanity: a fresh consumer install resolves the just-published
 artifact and the entrypoint loads.
@@ -320,7 +351,7 @@ description = """
 Record the release in beads memory and close the tracking bead.
 
 ```bash
-bd close {{release_bead}} --reason "Published @apicity/* v{{version}} on dist-tag {{dist_tag}}; tag v{{version}} pushed to origin/stable"
+bd close {{release_bead}} --reason "Published @apicity/* v{{version}} on dist-tag {{dist_tag}}; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
 bd remember "apicity-last-release: v{{version}} on {{dist_tag}} ($(date +%Y-%m-%d))"
 ```
 

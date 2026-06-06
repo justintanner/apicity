@@ -9,7 +9,7 @@ import { PAID_ENDPOINTS } from "@apicity/cost";
 
 export interface ProviderSpec {
   envVar: string;
-  optionKey: "apiKey" | "accessToken";
+  optionKey: "apiKey" | "accessToken" | "botToken";
   importPath: string;
   factoryName: string;
 }
@@ -98,6 +98,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     optionKey: "accessToken",
     importPath: "@apicity/youtube",
     factoryName: "createYouTube",
+  },
+  telegram: {
+    envVar: "TELEGRAM_BOT_KEY",
+    optionKey: "botToken",
+    importPath: "@apicity/telegram",
+    factoryName: "createTelegram",
   },
 };
 

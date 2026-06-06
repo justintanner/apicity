@@ -11,6 +11,7 @@ ANTHROPIC_API_KEY=op://Apicity/ANTHROPIC_API_KEY/password
 DASHSCOPE_API_KEY=op://Apicity/DASHSCOPE_API_KEY/password
 ELEVENLABS_API_KEY=op://Apicity/ELEVENLABS_API_KEY/password
 YOUTUBE_ACCESS_TOKEN=op://Apicity/YOUTUBE_ACCESS_TOKEN/password
+TELEGRAM_BOT_KEY=op://Apicity/TELEGRAM_BOT_KEY/password
 IG_ACCESS_TOKEN=op://Apicity/IG_ACCESS_TOKEN/password
 IG_USER_ID=op://Apicity/IG_USER_ID/password
 # X social API credentials live in .env.x.tpl (separate file so missing

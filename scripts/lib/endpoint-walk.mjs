@@ -106,6 +106,11 @@ const PROVIDERS = [
     factoryNames: ["createYouTube"],
   },
   {
+    name: "telegram",
+    entryFiles: ["packages/provider/telegram/src/telegram.ts"],
+    factoryNames: ["createTelegram"],
+  },
+  {
     name: "dolthub",
     entryFiles: ["packages/provider/dolthub/src/dolthub.ts"],
     factoryNames: ["createDoltHub"],

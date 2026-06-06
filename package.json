@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/telegram, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {
     "node": ">=18.12.0",
@@ -13,7 +13,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:kimicoding && pnpm run build:cost && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:mcp-server && pnpm run doc-gen",
+    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:kimicoding && pnpm run build:cost && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:telegram && pnpm run build:mcp-server && pnpm run doc-gen",
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
@@ -27,6 +27,7 @@
     "build:x": "pnpm --filter @apicity/x run build",
     "build:meta": "pnpm --filter @apicity/meta run build",
     "build:youtube": "pnpm --filter @apicity/youtube run build",
+    "build:telegram": "pnpm --filter @apicity/telegram run build",
     "build:polymarket": "pnpm --filter @apicity/polymarket run build",
     "build:free-media-upload": "pnpm --filter @apicity/free-media-upload run build",
     "build:cost": "pnpm --filter @apicity/cost run build",
@@ -48,6 +49,7 @@
     "doc-gen:polymarket": "node scripts/doc-gen.mjs polymarket",
     "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free",
     "doc-gen:youtube": "node scripts/doc-gen.mjs youtube",
+    "doc-gen:telegram": "node scripts/doc-gen.mjs telegram",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "pretest:run": "pnpm run build",
@@ -77,7 +79,7 @@
     "dev:preflight": "pnpm run format && pnpm run lint && pnpm run test:run",
     "ci:local": "pnpm run build && pnpm run lint && pnpm run test:run",
     "audit": "pnpm audit --audit-level=moderate",
-    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\",\"YOUTUBE_ACCESS_TOKEN\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
+    "check:op": "op run --env-file=.env.tpl -- node -e 'console.log(\"1Password OK — %d secrets resolved\", Object.keys(process.env).filter(k => [\"OPENAI_API_KEY\",\"KIE_API_KEY\",\"XAI_API_KEY\",\"KIMI_CODING_API_KEY\",\"FAL_API_KEY\",\"FIREWORKS_API_KEY\",\"ANTHROPIC_API_KEY\",\"DASHSCOPE_API_KEY\",\"ELEVENLABS_API_KEY\",\"YOUTUBE_ACCESS_TOKEN\",\"TELEGRAM_BOT_KEY\"].includes(k) && process.env[k] && !process.env[k].startsWith(\"op://\")).length)'",
     "compare:video": "pnpm run build:cost --silent && node scripts/compare-video-cost.mjs",
     "compare:image": "pnpm run build:cost --silent && node scripts/compare-image-cost.mjs"
   },

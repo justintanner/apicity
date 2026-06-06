@@ -22,6 +22,8 @@ import { createOpenAi } from "../../packages/provider/openai/src/openai";
 import { OpenAiError } from "../../packages/provider/openai/src/types";
 import { createPolymarket } from "../../packages/provider/polymarket/src/polymarket";
 import { PolymarketError } from "../../packages/provider/polymarket/src/types";
+import { createTelegram } from "../../packages/provider/telegram/src/telegram";
+import { TelegramError } from "../../packages/provider/telegram/src/types";
 import { createX } from "../../packages/provider/x/src/x";
 import { XError } from "../../packages/provider/x/src/types";
 import { createXai } from "../../packages/provider/xai/src/xai";
@@ -341,6 +343,31 @@ const requestErrorCases: Array<RequestErrorCase<Error>> = [
     assertError(error, context) {
       const youtubeError = error as YouTubeError;
       expect(youtubeError.status).toBe(context === "rateLimit" ? 429 : 500);
+    },
+  },
+  {
+    name: "Telegram",
+    errorClass: TelegramError as ErrorConstructor<Error>,
+    invoke(fetchImpl, timeout) {
+      return createTelegram({
+        botToken: "telegram-test",
+        fetch: fetchImpl,
+        timeout,
+      }).sendMessage({
+        chat_id: 42,
+        text: "hello",
+      });
+    },
+    rateLimitBody: {
+      ok: false,
+      error_code: 429,
+      description: "Too Many Requests: retry later",
+    },
+    expectedRateLimitMessage:
+      "Telegram API error 429: Too Many Requests: retry later",
+    assertError(error, context) {
+      const telegramError = error as TelegramError;
+      expect(telegramError.status).toBe(context === "rateLimit" ? 429 : 500);
     },
   },
 ];

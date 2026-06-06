@@ -1904,6 +1904,44 @@ function renderFreeExample() {
   ].join("\n");
 }
 
+function renderTelegramSetup() {
+  return [
+    "## Setup",
+    "",
+    "This package uses a Telegram Bot API token. In this repo,",
+    "`TELEGRAM_BOT_KEY` resolves from 1Password for `@apicitylogbot`.",
+    "",
+    "```typescript",
+    'import { createTelegram } from "@apicity/telegram";',
+    "",
+    "const telegram = createTelegram({",
+    "  botToken: process.env.TELEGRAM_BOT_KEY!,",
+    "});",
+    "",
+    "await telegram.sendMessage({",
+    '  chat_id: "@your_channel_or_chat_id",',
+    '  text: "hello from @apicity/telegram",',
+    "});",
+    "",
+    'const photo = new Blob(["image bytes"], { type: "image/png" });',
+    "await telegram.sendPhoto({",
+    '  chat_id: "@your_channel_or_chat_id",',
+    "  photo,",
+    '  caption: "uploaded from @apicitylogbot",',
+    "});",
+    "```",
+    "",
+    "**Notes**",
+    "",
+    "- `chat_id` can be a numeric chat id or a username such as `@channelname`.",
+    "- `photo`, `video`, `audio`, `thumbnail`, and `cover` accept a Telegram",
+    "  `file_id`, an HTTP URL, an `attach://...` reference, or a `Blob`.",
+    "- Blob payloads are sent as `multipart/form-data`; string payloads use",
+    "  `application/json`.",
+    "",
+  ].join("\n");
+}
+
 // Providers whose options object uses a non-default auth field/env-var or
 // who don't re-export the shared middleware helpers. Anything not listed here
 // gets the default `apiKey` / `<PROVIDER>_API_KEY` / middleware-section.
@@ -1926,12 +1964,18 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  telegram: {
+    field: "botToken",
+    env: "TELEGRAM_BOT_KEY",
+    showMiddleware: false,
+  },
 };
 
 // Per-provider upstream documentation URLs. When set, a docs badge is
 // rendered in the README header.
 const PROVIDER_DOCS = {
   polymarket: "https://docs.polymarket.com/api-reference/introduction",
+  telegram: "https://core.telegram.org/bots/api",
 };
 
 const CANONICAL_FACTORY = {
@@ -1951,6 +1995,7 @@ const CANONICAL_FACTORY = {
   youtube: "createYouTube",
   dolthub: "createDoltHub",
   polymarket: "createPolymarket",
+  telegram: "createTelegram",
 };
 
 async function generateReadme(providerDir, providerName, endpoints) {
@@ -2052,6 +2097,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
   if (providerName === "meta") {
     sections.push(renderIgSetup());
     sections.push(renderIgExample());
+  }
+
+  if (providerName === "telegram") {
+    sections.push(renderTelegramSetup());
   }
 
   sections.push(renderApiReference(providerName, endpoints));

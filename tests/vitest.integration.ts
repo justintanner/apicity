@@ -113,6 +113,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/youtube/src"
       ),
+      "@apicity/telegram/zod": path.resolve(
+        __dirname,
+        "../packages/provider/telegram/src/zod"
+      ),
+      "@apicity/telegram": path.resolve(
+        __dirname,
+        "../packages/provider/telegram/src"
+      ),
       "@apicity/dolthub/zod": path.resolve(
         __dirname,
         "../packages/provider/dolthub/src/zod"

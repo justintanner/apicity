@@ -64,6 +64,7 @@
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
     "@apicity/openai": "workspace:*",
+    "@apicity/telegram": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*"
   },
@@ -98,6 +99,9 @@
     "@apicity/openai": {
       "optional": true
     },
+    "@apicity/telegram": {
+      "optional": true
+    },
     "@apicity/x": {
       "optional": true
     },
@@ -116,6 +120,7 @@
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
     "@apicity/openai": "workspace:*",
+    "@apicity/telegram": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*"
   },

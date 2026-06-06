@@ -5,6 +5,7 @@ import {
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
+  ElevenLabsUserSubscriptionResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -20,6 +21,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const baseURL = opts.baseURL ?? "https://api.elevenlabs.io";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+
+  interface ElevenLabsSubscriptionPayload extends Record<string, unknown> {
+    tier: string;
+    character_count: number;
+    character_limit: number;
+    remaining_character_count?: number;
+  }
 
   function attachAbortHandler(
     signal: AbortSignal,
@@ -112,6 +120,61 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       }
 
       return await res.arrayBuffer();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
+  async function makeJsonRequest<T>(
+    method: "GET" | "POST",
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        "xi-api-key": opts.apiKey,
+      };
+      const init: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
+
+      if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
+      }
+
+      const res = await doFetch(`${baseURL}${path}`, init);
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return (await res.json()) as T;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof ElevenLabsError) throw error;
@@ -280,6 +343,33 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSpeechToTextRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/user/subscription
+  // Docs: https://elevenlabs.io/docs/api-reference/user/subscription/get
+  const userSubscription = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUserSubscriptionResponse> => {
+      const subscription = await makeJsonRequest<ElevenLabsSubscriptionPayload>(
+        "GET",
+        "/v1/user/subscription",
+        undefined,
+        signal
+      );
+
+      return {
+        ...subscription,
+        remaining_character_count: Math.max(
+          0,
+          subscription.character_limit - subscription.character_count
+        ),
+      };
+    },
+    { schema: undefined }
+  );
+
+  const user = {
+    subscription: userSubscription,
+  };
   const postV1 = {
     soundGeneration,
     textToSpeech,
@@ -291,10 +381,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToSpeech,
     textToDialogue,
     speechToText,
+    user,
   };
 
   return attachExamples({
     v1,
+    get: { v1: { user } },
     post: { v1: postV1 },
   });
 }

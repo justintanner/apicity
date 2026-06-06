@@ -3,6 +3,48 @@ import { describe, expect, it, vi } from "vitest";
 import { createElevenLabs } from "../../packages/provider/elevenlabs/src";
 
 describe("ElevenLabs endpoint wiring", () => {
+  it("gets user subscription data and computes remaining characters", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          tier: "starter",
+          character_count: 1000,
+          character_limit: 10000,
+          status: "active",
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    const result = await provider.v1.user.subscription();
+
+    expect(result).toEqual({
+      tier: "starter",
+      character_count: 1000,
+      character_limit: 10000,
+      status: "active",
+      remaining_character_count: 9000,
+    });
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.elevenlabs.io/v1/user/subscription");
+    expect(init.method).toBe("GET");
+    expect(init.headers).toEqual({
+      "xi-api-key": "el-test",
+    });
+    expect(init.body).toBeUndefined();
+    expect(provider.get.v1.user.subscription).toBe(
+      provider.v1.user.subscription
+    );
+  });
+
   it("posts text-to-speech requests to the voice-specific create endpoint", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(new Uint8Array([1, 2, 3]), {

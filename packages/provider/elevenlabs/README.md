@@ -138,7 +138,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-4 endpoints across 4 groups. Each method mirrors an upstream URL path.
+5 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### soundGeneration
 
@@ -202,6 +202,23 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.textToSpeech("voice_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### user
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.user.subscription</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/user/subscription</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/user/subscription/get)
+
+```typescript
+const res = await elevenlabs.v1.user.subscription();
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

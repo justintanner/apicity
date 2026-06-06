@@ -183,3 +183,6 @@ test-branch-protection.txt
 !.beads/issues.jsonl
 !.beads/formulas/
 !.beads/formulas/**
+
+# Gas City
+!.beads/identity.toml

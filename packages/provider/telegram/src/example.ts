@@ -10,7 +10,15 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST sendMessage": {
+    "source": "telegram/send-all-types",
+    "payload": {
+      "chat_id": "@justintanner",
+      "text": "apicity telegram HAR text 2026-06-06T16:29:37.784Z"
+    }
+  }
+};
 
 export default EXAMPLES;
 

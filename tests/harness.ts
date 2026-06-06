@@ -1,6 +1,7 @@
 import { Polly, Timing } from "@pollyjs/core";
 import FetchAdapter from "@pollyjs/adapter-fetch";
 import FSPersister from "@pollyjs/persister-fs";
+import { createHash } from "node:crypto";
 import path from "path";
 import fs from "fs";
 
@@ -60,6 +61,72 @@ function findHeaderValue(
 ): string | undefined {
   const lower = name.toLowerCase();
   return headers?.find((header) => header.name?.toLowerCase() === lower)?.value;
+}
+
+function redactUrlSecrets(url: string): string {
+  return url.replace(/(https:\/\/api\.telegram\.org\/bot)[^/]+/g, "$1***");
+}
+
+function stableStringify(value: unknown): string | undefined {
+  if (value === undefined) return undefined;
+  if (value === null || typeof value !== "object") {
+    return JSON.stringify(value);
+  }
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item) ?? "null").join(",")}]`;
+  }
+
+  const objectValue = value as Record<string, unknown>;
+  const entries = Object.keys(objectValue)
+    .sort()
+    .flatMap((key) => {
+      const item = stableStringify(objectValue[key]);
+      return item === undefined ? [] : [`${JSON.stringify(key)}:${item}`];
+    });
+
+  return `{${entries.join(",")}}`;
+}
+
+function redactIdentifierSecrets(value: unknown): {
+  value: unknown;
+  redacted: boolean;
+} {
+  if (typeof value === "string") {
+    const redactedValue = redactUrlSecrets(value);
+    return { value: redactedValue, redacted: redactedValue !== value };
+  }
+  if (Array.isArray(value)) {
+    let redacted = false;
+    const redactedValues = value.map((item) => {
+      const result = redactIdentifierSecrets(item);
+      redacted ||= result.redacted;
+      return result.value;
+    });
+    return { value: redactedValues, redacted };
+  }
+  if (value === null || typeof value !== "object") {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const redactedObject: Record<string, unknown> = {};
+  for (const key of Object.keys(value as Record<string, unknown>)) {
+    const result = redactIdentifierSecrets(
+      (value as Record<string, unknown>)[key]
+    );
+    redacted ||= result.redacted;
+    redactedObject[key] = result.value;
+  }
+  return { value: redactedObject, redacted };
+}
+
+function redactedRequestId(req: { identifiers?: unknown }): string | undefined {
+  if (!req.identifiers) return undefined;
+  const result = redactIdentifierSecrets(req.identifiers);
+  if (!result.redacted) return undefined;
+  const serialized = stableStringify(result.value);
+  if (!serialized) return undefined;
+  return createHash("md5").update(serialized).digest("hex");
 }
 
 export function summarizeMultipartFormData(
@@ -164,6 +231,12 @@ function setupPollyWithOptions(
   // Redact sensitive headers before persisting to disk and keep a scrubbed
   // multipart summary so prompts remain visible in the harness viewer.
   polly.server.any().on("beforePersist", (req, recording) => {
+    if (recording.request?.url) {
+      const requestId = redactedRequestId(req);
+      recording.request.url = redactUrlSecrets(recording.request.url);
+      if (requestId) recording._id = requestId;
+    }
+
     const entries = recording.request?.headers ?? [];
     for (const header of entries) {
       if (header.name?.toLowerCase() === "authorization") {

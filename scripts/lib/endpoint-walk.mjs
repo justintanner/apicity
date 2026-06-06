@@ -467,6 +467,7 @@ const HELPER_METHOD_HINTS = {
   makeFormRequestText: "POST",
   makeBinaryPostRequest: "POST",
   makeManagementRequest: "POST",
+  makeManagementRootRequest: "POST",
   makeStreamRequest: "POST",
   makeSSERequest: "POST",
   makeAudioRequest: "POST",
@@ -495,6 +496,8 @@ const ABSOLUTE_URL_HELPERS = new Set([]);
 // baseOverride option.
 const HELPER_BASE_URLS = {
   makeUploadRequest: "https://www.googleapis.com/upload/youtube/v3",
+  makeManagementRequest: "https://management-api.x.ai/v1",
+  makeManagementRootRequest: "https://management-api.x.ai",
 };
 
 /**
@@ -520,7 +523,13 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
       const first = args[0].getLiteralText().toUpperCase();
       if (HTTP_METHODS.includes(first) && args.length > 1) {
         const p = extractPath(args[1]);
-        if (p) return { method: first, path: p };
+        if (p) {
+          return {
+            method: first,
+            path: p,
+            baseOverride: HELPER_BASE_URLS[name] ?? null,
+          };
+        }
       }
     }
 

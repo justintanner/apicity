@@ -24,7 +24,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-38 endpoints across 10 groups. Each method mirrors an upstream URL path.
+49 endpoints across 11 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -503,6 +503,173 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 ```typescript
 const res = await openai.v1.moderations({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+### organization
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.costs</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/costs</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.costs({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.projects</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/projects/{idOrOpts}</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/projects)
+
+```typescript
+const res = await openai.v1.organization.projects({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.projects.rateLimits</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/projects/{projectId}/rate_limits</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/project-rate-limits)
+
+```typescript
+const res = await openai.v1.organization.projects.rateLimits({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.audioSpeeches</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/audio_speeches</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.audioSpeeches({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.audioTranscriptions</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/audio_transcriptions</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.audioTranscriptions({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.codeInterpreterSessions</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/code_interpreter_sessions</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.codeInterpreterSessions({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.completions</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/completions</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.embeddings</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/embeddings</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.embeddings({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.images</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/images</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.images({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.moderations</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/moderations</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.moderations({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.usage.vectorStores</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/usage/vector_stores</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/usage)
+
+```typescript
+const res = await openai.v1.organization.usage.vectorStores({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

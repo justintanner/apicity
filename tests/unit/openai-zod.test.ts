@@ -18,6 +18,10 @@ import {
   OpenAiStoredCompletionUpdateRequestSchema,
   OpenAiResponseCompactRequestSchema,
   OpenAiResponseInputTokensRequestSchema,
+  OpenAiOrganizationUsageQuerySchema,
+  OpenAiOrganizationCostsQuerySchema,
+  OpenAiOrganizationProjectListQuerySchema,
+  OpenAiOrganizationProjectRateLimitListQuerySchema,
 } from "@apicity/openai/zod";
 
 describe("OpenAI Zod schemas", () => {
@@ -501,6 +505,58 @@ describe("OpenAI Zod schemas", () => {
         input: "Hello",
       });
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("Organization usage schemas", () => {
+    it("accepts valid usage query filters", () => {
+      const result = OpenAiOrganizationUsageQuerySchema.safeParse({
+        start_time: 1700000000,
+        end_time: 1700086400,
+        bucket_width: "1d",
+        models: ["gpt-5"],
+        group_by: ["model"],
+        batch: true,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("rejects usage queries without start_time", () => {
+      const result = OpenAiOrganizationUsageQuerySchema.safeParse({
+        bucket_width: "1d",
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it("accepts valid costs query filters", () => {
+      const result = OpenAiOrganizationCostsQuerySchema.safeParse({
+        start_time: 1700000000,
+        end_time: 1700086400,
+        bucket_width: "1d",
+        project_ids: ["proj_123"],
+        group_by: ["project_id"],
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts project list and rate limit pagination options", () => {
+      const projects = OpenAiOrganizationProjectListQuerySchema.safeParse({
+        after: "proj_123",
+        include_archived: true,
+        limit: 20,
+      });
+      const rateLimits =
+        OpenAiOrganizationProjectRateLimitListQuerySchema.safeParse({
+          after: "rl_123",
+          before: "rl_456",
+          limit: 20,
+        });
+
+      expect(projects.success).toBe(true);
+      expect(rateLimits.success).toBe(true);
     });
   });
 });

@@ -56,14 +56,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST v1.collections": {
-    "source": "xai/collections-documents-add",
-    "payload": {}
-  },
-  "POST v1.collections.documents": {
     "source": "xai/collections-docs",
     "payload": {
       "name": "test-delete-doc-1775143467493"
     }
+  },
+  "POST v1.collections.documents": {
+    "source": "xai/collections-documents-add",
+    "payload": {}
   },
   "POST v1.documents.search": {
     "source": "xai/documents-search",

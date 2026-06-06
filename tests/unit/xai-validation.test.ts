@@ -16,6 +16,7 @@ import {
   XaiResponseRequestSchema,
   XaiRealtimeClientSecretRequestSchema,
   XaiTokenizeTextRequestSchema,
+  XaiBillingUsageRequestSchema,
 } from "../../packages/provider/xai/src/zod";
 
 describe("Zod schema validation edge cases", () => {
@@ -597,6 +598,50 @@ describe("Zod schema validation edge cases", () => {
       expect(result.error?.issues.some((i) => i.path.includes("text"))).toBe(
         true
       );
+    });
+  });
+
+  describe("billing usage validation", () => {
+    it("should validate billing usage requests", () => {
+      const result = XaiBillingUsageRequestSchema.safeParse({
+        analyticsRequest: {
+          timeRange: {
+            startTime: "2026-01-01T00:00:00Z",
+            endTime: "2026-01-02T00:00:00Z",
+            timezone: "UTC",
+          },
+          timeUnit: "TIME_UNIT_DAY",
+          values: [{ name: "usd", aggregation: "AGGREGATION_SUM" }],
+          groupBy: ["model"],
+          filters: ["model:grok-4"],
+        },
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject billing usage without analyticsRequest", () => {
+      const result = XaiBillingUsageRequestSchema.safeParse({});
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("analyticsRequest"))
+      ).toBe(true);
+    });
+
+    it("should reject invalid billing usage aggregations", () => {
+      const result = XaiBillingUsageRequestSchema.safeParse({
+        analyticsRequest: {
+          timeRange: {
+            startTime: "2026-01-01T00:00:00Z",
+            endTime: "2026-01-02T00:00:00Z",
+            timezone: "UTC",
+          },
+          values: [{ name: "usd", aggregation: "TOTAL" }],
+        },
+      });
+
+      expect(result.success).toBe(false);
     });
   });
 

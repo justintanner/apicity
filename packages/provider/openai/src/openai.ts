@@ -51,6 +51,15 @@ import {
   OpenAiCheckpointPermissionListOptions,
   OpenAiCheckpointPermissionListResponse,
   OpenAiCheckpointPermissionDeleteResponse,
+  OpenAiOrganizationUsageQuery,
+  OpenAiOrganizationUsageResponse,
+  OpenAiOrganizationCostsQuery,
+  OpenAiOrganizationCostsResponse,
+  OpenAiOrganizationProjectListQuery,
+  OpenAiOrganizationProjectListResponse,
+  OpenAiOrganizationProject,
+  OpenAiOrganizationProjectRateLimitListQuery,
+  OpenAiProjectRateLimitListResponse,
   OpenAiStoredCompletionListOptions,
   OpenAiStoredCompletionListResponse,
   OpenAiStoredCompletionDeleteResponse,
@@ -79,6 +88,10 @@ import {
   OpenAiResponseInputTokensRequestSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
+  OpenAiOrganizationUsageQuerySchema,
+  OpenAiOrganizationCostsQuerySchema,
+  OpenAiOrganizationProjectListQuerySchema,
+  OpenAiOrganizationProjectRateLimitListQuerySchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -225,7 +238,7 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
 
   async function makeGetRequest<T>(
     path: string,
-    query?: Record<string, string | string[] | boolean | undefined>,
+    query?: Record<string, string | string[] | boolean | number | undefined>,
     signal?: AbortSignal
   ): Promise<T> {
     const controller = new AbortController();
@@ -1032,6 +1045,207 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {}
     ) as import("./types").OpenAiGetV1BatchesNamespace,
+    organization: {
+      usage: {
+        // GET https://api.openai.com/v1/organization/usage/completions
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        completions: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/completions",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/embeddings
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        embeddings: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/embeddings",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/moderations
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        moderations: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/moderations",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/images
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        images: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/images",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/audio_speeches
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        audioSpeeches: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/audio_speeches",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/audio_transcriptions
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        audioTranscriptions: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/audio_transcriptions",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/vector_stores
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        vectorStores: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/vector_stores",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+        // GET https://api.openai.com/v1/organization/usage/code_interpreter_sessions
+        // Docs: https://platform.openai.com/docs/api-reference/usage
+        codeInterpreterSessions: Object.assign(
+          async (
+            opts: OpenAiOrganizationUsageQuery,
+            signal?: AbortSignal
+          ): Promise<OpenAiOrganizationUsageResponse> => {
+            return makeGetRequest<OpenAiOrganizationUsageResponse>(
+              "/organization/usage/code_interpreter_sessions",
+              opts,
+              signal
+            );
+          },
+          {
+            schema: OpenAiOrganizationUsageQuerySchema,
+          }
+        ),
+      },
+      // GET https://api.openai.com/v1/organization/costs
+      // Docs: https://platform.openai.com/docs/api-reference/usage
+      costs: Object.assign(
+        async (
+          opts: OpenAiOrganizationCostsQuery,
+          signal?: AbortSignal
+        ): Promise<OpenAiOrganizationCostsResponse> => {
+          return makeGetRequest<OpenAiOrganizationCostsResponse>(
+            "/organization/costs",
+            opts,
+            signal
+          );
+        },
+        {
+          schema: OpenAiOrganizationCostsQuerySchema,
+        }
+      ),
+      // GET https://api.openai.com/v1/organization/projects/{idOrOpts}
+      // Docs: https://platform.openai.com/docs/api-reference/projects
+      projects: Object.assign(
+        async (
+          idOrOpts?: string | OpenAiOrganizationProjectListQuery,
+          signal?: AbortSignal
+        ): Promise<
+          OpenAiOrganizationProject | OpenAiOrganizationProjectListResponse
+        > => {
+          if (typeof idOrOpts === "string") {
+            return makeGetRequest<OpenAiOrganizationProject>(
+              `/organization/projects/${encodeURIComponent(idOrOpts)}`,
+              undefined,
+              signal
+            );
+          }
+          return makeGetRequest<OpenAiOrganizationProjectListResponse>(
+            "/organization/projects",
+            idOrOpts,
+            signal
+          );
+        },
+        {
+          schema: OpenAiOrganizationProjectListQuerySchema,
+          // GET https://api.openai.com/v1/organization/projects/{projectId}/rate_limits
+          // Docs: https://platform.openai.com/docs/api-reference/project-rate-limits
+          rateLimits: Object.assign(
+            async (
+              projectId: string,
+              opts?: OpenAiOrganizationProjectRateLimitListQuery,
+              signal?: AbortSignal
+            ): Promise<OpenAiProjectRateLimitListResponse> => {
+              return makeGetRequest<OpenAiProjectRateLimitListResponse>(
+                `/organization/projects/${encodeURIComponent(projectId)}/rate_limits`,
+                opts,
+                signal
+              );
+            },
+            {
+              schema: OpenAiOrganizationProjectRateLimitListQuerySchema,
+            }
+          ),
+        }
+      ) as import("./types").OpenAiGetV1OrganizationProjects,
+    },
     fineTuning: {
       // GET https://api.openai.com/v1/fine_tuning/jobs/{idOrOpts}
       // Docs: https://platform.openai.com/docs/api-reference

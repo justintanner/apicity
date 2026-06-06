@@ -139,7 +139,41 @@ console.log(result.usage);
 
 ## API Reference
 
-39 endpoints across 17 groups. Each method mirrors an upstream URL path.
+45 endpoints across 20 groups. Each method mirrors an upstream URL path.
+
+### apiKey
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.apiKey</code></b></summary>
+
+<code>GET https://api.x.ai/v1/api-key</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/other)
+
+```typescript
+const res = await xai.v1.apiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+### auth
+
+<details>
+<summary><code>GET</code> <b><code>xai.auth.teams.apiKeys</code></b></summary>
+
+<code>GET https://management-api.x.ai/auth/teams/{teamId}/api-keys{query}</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/auth)
+
+```typescript
+const res = await xai.auth.teams.apiKeys({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
 
 ### batches
 
@@ -233,6 +267,68 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 </details>
 
+### billing
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.billing.teams.postpaid.invoice.preview</code></b></summary>
+
+<code>GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/invoice/preview</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
+
+```typescript
+const res = await xai.v1.billing.teams.postpaid.invoice.preview({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.billing.teams.postpaid.spendingLimits</code></b></summary>
+
+<code>GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/spending-limits</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
+
+```typescript
+const res = await xai.v1.billing.teams.postpaid.spendingLimits({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.billing.teams.prepaid.balance</code></b></summary>
+
+<code>GET https://management-api.x.ai/v1/billing/teams/{teamId}/prepaid/balance</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
+
+```typescript
+const res = await xai.v1.billing.teams.prepaid.balance({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.billing.teams.usage</code></b></summary>
+
+<code>POST https://management-api.x.ai/v1/billing/teams/{teamId}/usage</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/management/billing)
+
+```typescript
+const res = await xai.v1.billing.teams.usage({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
 ### chat
 
 <details>
@@ -270,7 +366,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>DELETE</code> <b><code>xai.v1.collections</code></b></summary>
 
-<code>DELETE https://api.x.ai/v1/collections/{collectionId}</code>
+<code>DELETE https://management-api.x.ai/v1/collections/{collectionId}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -285,7 +381,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>DELETE</code> <b><code>xai.v1.collections.documents</code></b></summary>
 
-<code>DELETE https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
+<code>DELETE https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -300,7 +396,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>GET</code> <b><code>xai.v1.collections</code></b></summary>
 
-<code>GET https://api.x.ai/v1/collections/{paramsOrIdOrSignal}</code>
+<code>GET https://management-api.x.ai/v1/collections/{paramsOrIdOrSignal}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -315,7 +411,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>GET</code> <b><code>xai.v1.collections.documents</code></b></summary>
 
-<code>GET https://api.x.ai/v1/collections/{collectionId}/documents/{paramsOrFileId}</code>
+<code>GET https://management-api.x.ai/v1/collections/{collectionId}/documents/{paramsOrFileId}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -330,7 +426,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>GET</code> <b><code>xai.v1.collections.documents.batchGet</code></b></summary>
 
-<code>GET https://api.x.ai/v1/collections/{collectionId}/documents:batchGet{query}</code>
+<code>GET https://management-api.x.ai/v1/collections/{collectionId}/documents:batchGet{query}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -345,7 +441,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>PATCH</code> <b><code>xai.v1.collections.documents</code></b></summary>
 
-<code>PATCH https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
+<code>PATCH https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -360,7 +456,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>POST</code> <b><code>xai.v1.collections</code></b></summary>
 
-<code>POST https://api.x.ai/v1/collections</code>
+<code>POST https://management-api.x.ai/v1/collections</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -375,7 +471,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>POST</code> <b><code>xai.v1.collections.documents</code></b></summary>
 
-<code>POST https://api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
+<code>POST https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -390,7 +486,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>PUT</code> <b><code>xai.v1.collections</code></b></summary>
 
-<code>PUT https://api.x.ai/v1/collections/{collectionId}</code>
+<code>PUT https://management-api.x.ai/v1/collections/{collectionId}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 

@@ -423,6 +423,7 @@ describe("xAI provider core", () => {
       expect(provider.post.v1.batches).toBeDefined();
       expect(provider.post.v1.collections).toBeDefined();
       expect(provider.post.v1.documents.search).toBeDefined();
+      expect(provider.post.v1.billing.teams.usage).toBeDefined();
       expect(provider.post.v1.tokenizeText).toBeDefined();
       expect(provider.post.v1.realtime.clientSecrets).toBeDefined();
     });
@@ -430,6 +431,7 @@ describe("xAI provider core", () => {
     it("has correct get.v1 namespace", () => {
       const provider = createXai({ apiKey: "sk-test" });
 
+      expect(provider.get.v1.apiKey).toBeDefined();
       expect(provider.get.v1.responses).toBeDefined();
       expect(provider.get.v1.chat.deferredCompletion).toBeDefined();
       expect(provider.get.v1.videos).toBeDefined();
@@ -440,6 +442,14 @@ describe("xAI provider core", () => {
       expect(provider.get.v1.videoGenerationModels).toBeDefined();
       expect(provider.get.v1.batches).toBeDefined();
       expect(provider.get.v1.collections).toBeDefined();
+      expect(provider.get.v1.billing.teams.prepaid.balance).toBeDefined();
+      expect(
+        provider.get.v1.billing.teams.postpaid.invoice.preview
+      ).toBeDefined();
+      expect(
+        provider.get.v1.billing.teams.postpaid.spendingLimits
+      ).toBeDefined();
+      expect(provider.get.auth.teams.apiKeys).toBeDefined();
     });
 
     it("has correct delete.v1 namespace", () => {

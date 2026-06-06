@@ -561,6 +561,48 @@ export const OpenAiCheckpointPermissionCreateRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Organization usage / costs / limits
+// ---------------------------------------------------------------------------
+
+export const OpenAiOrganizationUsageQuerySchema = z.object({
+  start_time: z.number().int(),
+  end_time: z.number().int().optional(),
+  bucket_width: z.enum(["1m", "1h", "1d"]).optional(),
+  project_ids: z.array(z.string()).optional(),
+  user_ids: z.array(z.string()).optional(),
+  api_key_ids: z.array(z.string()).optional(),
+  models: z.array(z.string()).optional(),
+  group_by: z.array(z.string()).optional(),
+  limit: z.number().int().positive().optional(),
+  page: z.string().optional(),
+  batch: z.boolean().optional(),
+  sizes: z.array(z.string()).optional(),
+  sources: z.array(z.string()).optional(),
+});
+
+export const OpenAiOrganizationCostsQuerySchema = z.object({
+  start_time: z.number().int(),
+  end_time: z.number().int().optional(),
+  bucket_width: z.literal("1d").optional(),
+  project_ids: z.array(z.string()).optional(),
+  group_by: z.array(z.string()).optional(),
+  limit: z.number().int().positive().optional(),
+  page: z.string().optional(),
+});
+
+export const OpenAiOrganizationProjectListQuerySchema = z.object({
+  after: z.string().optional(),
+  include_archived: z.boolean().optional(),
+  limit: z.number().int().positive().optional(),
+});
+
+export const OpenAiOrganizationProjectRateLimitListQuerySchema = z.object({
+  after: z.string().optional(),
+  before: z.string().optional(),
+  limit: z.number().int().positive().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
 
@@ -711,5 +753,17 @@ export type OpenAiFineTuningJobCreateRequest = z.infer<
 >;
 export type OpenAiCheckpointPermissionCreateRequest = z.infer<
   typeof OpenAiCheckpointPermissionCreateRequestSchema
+>;
+export type OpenAiOrganizationUsageQuery = z.infer<
+  typeof OpenAiOrganizationUsageQuerySchema
+>;
+export type OpenAiOrganizationCostsQuery = z.infer<
+  typeof OpenAiOrganizationCostsQuerySchema
+>;
+export type OpenAiOrganizationProjectListQuery = z.infer<
+  typeof OpenAiOrganizationProjectListQuerySchema
+>;
+export type OpenAiOrganizationProjectRateLimitListQuery = z.infer<
+  typeof OpenAiOrganizationProjectRateLimitListQuerySchema
 >;
 export type OpenAiOptions = z.infer<typeof OpenAiOptionsSchema>;

@@ -57,6 +57,10 @@ export type {
   OpenAiFineTuningIntegration,
   OpenAiFineTuningJobCreateRequest,
   OpenAiCheckpointPermissionCreateRequest,
+  OpenAiOrganizationUsageQuery,
+  OpenAiOrganizationCostsQuery,
+  OpenAiOrganizationProjectListQuery,
+  OpenAiOrganizationProjectRateLimitListQuery,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -720,6 +724,107 @@ export interface OpenAiModelDeleteResponse {
   deleted: boolean;
 }
 
+// --- Organization usage / costs / limits API types ---
+
+export interface OpenAiOrganizationUsageResult {
+  object: string;
+  input_tokens?: number;
+  output_tokens?: number;
+  input_cached_tokens?: number;
+  input_audio_tokens?: number;
+  output_audio_tokens?: number;
+  num_model_requests?: number;
+  images?: number;
+  num_seconds?: number;
+  usage_bytes?: number;
+  num_sessions?: number;
+  project_id?: string | null;
+  user_id?: string | null;
+  api_key_id?: string | null;
+  model?: string | null;
+  batch?: boolean | null;
+  service_tier?: string | null;
+  size?: string | null;
+  source?: string | null;
+}
+
+export interface OpenAiOrganizationUsageBucket {
+  object: "bucket";
+  start_time: number;
+  end_time: number;
+  results: OpenAiOrganizationUsageResult[];
+}
+
+export interface OpenAiOrganizationUsageResponse {
+  object: "page";
+  data: OpenAiOrganizationUsageBucket[];
+  has_more: boolean;
+  next_page: string | null;
+}
+
+export interface OpenAiOrganizationCostAmount {
+  value: number;
+  currency: string;
+}
+
+export interface OpenAiOrganizationCostsResult {
+  object: "organization.costs.result";
+  amount: OpenAiOrganizationCostAmount;
+  line_item: string | null;
+  project_id: string | null;
+}
+
+export interface OpenAiOrganizationCostsBucket {
+  object: "bucket";
+  start_time: number;
+  end_time: number;
+  results: OpenAiOrganizationCostsResult[];
+}
+
+export interface OpenAiOrganizationCostsResponse {
+  object: "page";
+  data: OpenAiOrganizationCostsBucket[];
+  has_more: boolean;
+  next_page: string | null;
+}
+
+export interface OpenAiOrganizationProject {
+  id: string;
+  object: "organization.project";
+  name: string;
+  created_at: number;
+  archived_at?: number | null;
+  status?: string;
+}
+
+export interface OpenAiOrganizationProjectListResponse {
+  object: "list";
+  data: OpenAiOrganizationProject[];
+  first_id?: string | null;
+  last_id?: string | null;
+  has_more: boolean;
+}
+
+export interface OpenAiProjectRateLimit {
+  object: "project.rate_limit";
+  id: string;
+  model: string;
+  max_requests_per_1_minute?: number;
+  max_tokens_per_1_minute?: number;
+  max_images_per_1_minute?: number;
+  max_audio_megabytes_per_1_minute?: number;
+  max_requests_per_1_day?: number;
+  batch_1_day_max_input_tokens?: number;
+}
+
+export interface OpenAiProjectRateLimitListResponse {
+  object: "list";
+  data: OpenAiProjectRateLimit[];
+  first_id?: string | null;
+  last_id?: string | null;
+  has_more: boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
@@ -744,6 +849,10 @@ import type {
   OpenAiResponseInputTokensRequest,
   OpenAiFineTuningJobCreateRequest,
   OpenAiCheckpointPermissionCreateRequest,
+  OpenAiOrganizationUsageQuery,
+  OpenAiOrganizationCostsQuery,
+  OpenAiOrganizationProjectListQuery,
+  OpenAiOrganizationProjectRateLimitListQuery,
 } from "./zod";
 
 interface OpenAiPostV1ChatCompletionsBase {
@@ -1086,6 +1195,56 @@ export interface OpenAiGetV1FineTuningNamespace {
   };
 }
 
+export interface OpenAiGetV1OrganizationUsageEndpoint {
+  (
+    opts: OpenAiOrganizationUsageQuery,
+    signal?: AbortSignal
+  ): Promise<OpenAiOrganizationUsageResponse>;
+  schema: z.ZodType<OpenAiOrganizationUsageQuery>;
+}
+
+export interface OpenAiGetV1OrganizationCosts {
+  (
+    opts: OpenAiOrganizationCostsQuery,
+    signal?: AbortSignal
+  ): Promise<OpenAiOrganizationCostsResponse>;
+  schema: z.ZodType<OpenAiOrganizationCostsQuery>;
+}
+
+export interface OpenAiGetV1OrganizationProjects {
+  (
+    opts?: OpenAiOrganizationProjectListQuery,
+    signal?: AbortSignal
+  ): Promise<OpenAiOrganizationProjectListResponse>;
+  (id: string, signal?: AbortSignal): Promise<OpenAiOrganizationProject>;
+  rateLimits: OpenAiGetV1OrganizationProjectRateLimits;
+  schema: z.ZodType<OpenAiOrganizationProjectListQuery>;
+}
+
+export interface OpenAiGetV1OrganizationProjectRateLimits {
+  (
+    projectId: string,
+    opts?: OpenAiOrganizationProjectRateLimitListQuery,
+    signal?: AbortSignal
+  ): Promise<OpenAiProjectRateLimitListResponse>;
+  schema: z.ZodType<OpenAiOrganizationProjectRateLimitListQuery>;
+}
+
+export interface OpenAiGetV1OrganizationNamespace {
+  usage: {
+    completions: OpenAiGetV1OrganizationUsageEndpoint;
+    embeddings: OpenAiGetV1OrganizationUsageEndpoint;
+    moderations: OpenAiGetV1OrganizationUsageEndpoint;
+    images: OpenAiGetV1OrganizationUsageEndpoint;
+    audioSpeeches: OpenAiGetV1OrganizationUsageEndpoint;
+    audioTranscriptions: OpenAiGetV1OrganizationUsageEndpoint;
+    vectorStores: OpenAiGetV1OrganizationUsageEndpoint;
+    codeInterpreterSessions: OpenAiGetV1OrganizationUsageEndpoint;
+  };
+  costs: OpenAiGetV1OrganizationCosts;
+  projects: OpenAiGetV1OrganizationProjects;
+}
+
 export interface OpenAiGetV1Namespace {
   chat: OpenAiGetV1ChatNamespace;
   files: OpenAiGetV1FilesNamespace;
@@ -1093,6 +1252,7 @@ export interface OpenAiGetV1Namespace {
   responses: OpenAiGetV1ResponsesNamespace;
   batches: OpenAiGetV1BatchesNamespace;
   fineTuning: OpenAiGetV1FineTuningNamespace;
+  organization: OpenAiGetV1OrganizationNamespace;
 }
 
 // --- DELETE v1 namespace types ---

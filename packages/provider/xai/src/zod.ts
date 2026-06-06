@@ -476,6 +476,57 @@ export const XaiRealtimeClientSecretRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Management billing
+// ---------------------------------------------------------------------------
+
+export const XaiBillingUsageAggregationSchema = z.enum([
+  "AGGREGATION_NONE",
+  "AGGREGATION_SUM",
+  "AGGREGATION_AVG",
+  "AGGREGATION_VAR",
+  "AGGREGATION_STD",
+  "AGGREGATION_MIN",
+  "AGGREGATION_MAX",
+  "AGGREGATION_P50",
+  "AGGREGATION_P90",
+  "AGGREGATION_P99",
+  "AGGREGATION_P999",
+  "AGGREGATION_COUNT",
+  "AGGREGATION_COUNT_DISTINCT",
+]);
+
+export const XaiBillingUsageTimeUnitSchema = z.enum([
+  "TIME_UNIT_INVALID",
+  "TIME_UNIT_MONTH",
+  "TIME_UNIT_CALENDAR_WEEK",
+  "TIME_UNIT_DAY",
+  "TIME_UNIT_HOUR",
+  "TIME_UNIT_QUARTER_HOUR",
+  "TIME_UNIT_MINUTE",
+  "TIME_UNIT_SECOND",
+  "TIME_UNIT_NONE",
+]);
+
+export const XaiBillingUsageRequestSchema = z.object({
+  analyticsRequest: z.object({
+    timeRange: z.object({
+      startTime: z.string(),
+      endTime: z.string(),
+      timezone: z.string(),
+    }),
+    timeUnit: XaiBillingUsageTimeUnitSchema.optional(),
+    values: z.array(
+      z.object({
+        name: z.string().min(1),
+        aggregation: XaiBillingUsageAggregationSchema,
+      })
+    ),
+    groupBy: z.array(z.string()).optional(),
+    filters: z.array(z.string()).optional(),
+  }),
+});
+
+// ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
 
@@ -577,4 +628,7 @@ export type XaiTtsRequest = z.infer<typeof XaiTtsRequestSchema>;
 export type XaiSttRequest = z.infer<typeof XaiSttRequestSchema>;
 export type XaiCustomVoiceCreateRequest = z.infer<
   typeof XaiCustomVoiceCreateRequestSchema
+>;
+export type XaiBillingUsageRequest = z.infer<
+  typeof XaiBillingUsageRequestSchema
 >;

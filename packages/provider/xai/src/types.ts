@@ -45,6 +45,7 @@ export type {
   XaiTtsRequest,
   XaiSttRequest,
   XaiCustomVoiceCreateRequest,
+  XaiBillingUsageRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -841,6 +842,156 @@ export interface XaiRealtimeConnection {
   [Symbol.asyncIterator](): AsyncIterableIterator<XaiRealtimeServerEvent>;
 }
 
+// API key information (GET /v1/api-key)
+export interface XaiApiKeyInfo {
+  redacted_api_key: string;
+  user_id: string;
+  name: string;
+  create_time: string;
+  modify_time: string;
+  modified_by: string;
+  team_id: string;
+  acls: string[];
+  api_key_id: string;
+  team_blocked: boolean;
+  api_key_blocked: boolean;
+  api_key_disabled: boolean;
+}
+
+// Management API key object (GET /auth/teams/{teamId}/api-keys)
+export interface XaiManagementApiKey {
+  redactedApiKey: string;
+  apiKey?: string;
+  userId: string;
+  name?: string;
+  createTime?: string;
+  modifyTime?: string;
+  teamId: string;
+  apiKeyId: string;
+  disabled: boolean;
+  expireTime?: string;
+  qps?: number;
+  qpm?: number;
+  tpm?: string;
+  aclStrings?: string[];
+}
+
+export interface XaiManagementApiKeyListParams {
+  pageSize?: number;
+  paginationToken?: string;
+  aclFilters?: string[];
+  activeOnly?: boolean;
+}
+
+export interface XaiManagementApiKeyListResponse {
+  apiKeys: XaiManagementApiKey[];
+  paginationToken?: string;
+}
+
+// Management billing responses
+export interface XaiUsdCents {
+  val: string;
+}
+
+export type XaiBillingBalanceChangeOrigin =
+  | "INVALID_ORIGIN"
+  | "PURCHASE"
+  | "SPEND"
+  | "REFUND"
+  | "MANUAL"
+  | "AUTO_PURCHASE";
+
+export type XaiBillingTopupStatus =
+  | "INVALID_STATUS"
+  | "TO_GENERATE_INVOICE"
+  | "FAILED_TO_GEMNERATE_INVOICE"
+  | "TO_CHARGE"
+  | "FAILED_TO_CHARGE"
+  | "SUCCEEDED";
+
+export interface XaiBillingPaymentProcessor {
+  kind: "UNKNOWN" | "STRIPE" | "CHECKOUT" | "EXTERNAL" | "MANUAL";
+  externalParty?: string;
+  externalInvoiceId?: string;
+}
+
+export interface XaiBillingPrepaidBalanceChange {
+  teamId: string;
+  changeOrigin: XaiBillingBalanceChangeOrigin;
+  topupStatus: XaiBillingTopupStatus;
+  amount: XaiUsdCents;
+  invoiceId?: string;
+  invoiceNumber?: string;
+  createTime?: string;
+  spendBpKeyYear?: number;
+  spendBpKeyMonth?: number;
+  createTs?: string;
+  paymentProcessor?: XaiBillingPaymentProcessor;
+}
+
+export interface XaiBillingPrepaidBalanceResponse {
+  changes: XaiBillingPrepaidBalanceChange[];
+  total: XaiUsdCents;
+}
+
+export interface XaiBillingInvoiceLine {
+  clusterName: string;
+  description: string;
+  unitType: string;
+  unitPrice: string;
+  numUnits: string;
+  amount: string;
+}
+
+export interface XaiBillingPostpaidInvoicePreviewResponse {
+  coreInvoice: {
+    lines: XaiBillingInvoiceLine[];
+    amountBeforeVatLimited?: XaiUsdCents;
+    amountBeforeVatUnlimited?: XaiUsdCents;
+    amountBeforeVatLimitedAndUnlimited?: XaiUsdCents;
+    amountBeforeVat: string;
+    vatCost: string;
+    amountAfterVat: string;
+    autoCreditsIssued: string;
+    defaultCreditsIssued: string;
+    totalWithCorr?: XaiUsdCents;
+    prepaidCredits?: XaiUsdCents;
+    prepaidCreditsUsed?: XaiUsdCents;
+  };
+  effectiveSpendingLimit: string;
+  defaultCredits: string;
+  billingCycle: {
+    year: number;
+    month: number;
+  };
+}
+
+export interface XaiBillingPostpaidSpendingLimitsResponse {
+  spendingLimits: {
+    hardSlOverride?: XaiUsdCents;
+    hardSlAuto?: XaiUsdCents;
+    effectiveHardSl?: XaiUsdCents;
+    softSl?: XaiUsdCents;
+    effectiveSl?: XaiUsdCents;
+  };
+}
+
+export interface XaiBillingUsageDataPoint {
+  timestamp: string;
+  values: number[];
+}
+
+export interface XaiBillingUsageTimeSeries {
+  group: string[];
+  groupLabels: string[];
+  dataPoints: XaiBillingUsageDataPoint[];
+}
+
+export interface XaiBillingUsageResponse {
+  timeSeries: XaiBillingUsageTimeSeries[];
+  limitReached: boolean;
+}
+
 // ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
@@ -863,6 +1014,7 @@ import type {
   XaiTtsRequest,
   XaiSttRequest,
   XaiCustomVoiceCreateRequest,
+  XaiBillingUsageRequest,
 } from "./zod";
 
 interface XaiChatCompletionsMethod {
@@ -910,6 +1062,15 @@ interface XaiVideoExtensionsMethod {
 interface XaiPostResponsesMethod {
   (req: XaiResponseRequest, signal?: AbortSignal): Promise<XaiResponseResponse>;
   schema: z.ZodType<XaiResponseRequest>;
+}
+
+interface XaiBillingUsageMethod {
+  (
+    teamId: string,
+    req: XaiBillingUsageRequest,
+    signal?: AbortSignal
+  ): Promise<XaiBillingUsageResponse>;
+  schema: z.ZodType<XaiBillingUsageRequest>;
 }
 
 interface XaiPostFilesMethod {
@@ -1013,6 +1174,11 @@ interface XaiPostV1 {
   batches: XaiPostBatchesMethod;
   collections: XaiPostCollectionsMethod;
   documents: { search: XaiDocumentSearchMethod };
+  billing: {
+    teams: {
+      usage: XaiBillingUsageMethod;
+    };
+  };
   tokenizeText: XaiTokenizeTextMethod;
   realtime: { clientSecrets: XaiRealtimeClientSecretsMethod };
   tts: XaiTtsMethod;
@@ -1066,7 +1232,41 @@ interface XaiGetCollectionsMethod {
   documents: XaiGetCollectionsDocumentsMethod;
 }
 
+interface XaiGetApiKeyMethod {
+  (signal?: AbortSignal): Promise<XaiApiKeyInfo>;
+}
+
+interface XaiGetManagementApiKeysMethod {
+  (
+    teamId: string,
+    params?: XaiManagementApiKeyListParams,
+    signal?: AbortSignal
+  ): Promise<XaiManagementApiKeyListResponse>;
+}
+
+interface XaiGetBillingPrepaidBalanceMethod {
+  (
+    teamId: string,
+    signal?: AbortSignal
+  ): Promise<XaiBillingPrepaidBalanceResponse>;
+}
+
+interface XaiGetBillingPostpaidInvoicePreviewMethod {
+  (
+    teamId: string,
+    signal?: AbortSignal
+  ): Promise<XaiBillingPostpaidInvoicePreviewResponse>;
+}
+
+interface XaiGetBillingPostpaidSpendingLimitsMethod {
+  (
+    teamId: string,
+    signal?: AbortSignal
+  ): Promise<XaiBillingPostpaidSpendingLimitsResponse>;
+}
+
 interface XaiGetV1 {
+  apiKey: XaiGetApiKeyMethod;
   responses(id: string, signal?: AbortSignal): Promise<XaiResponseResponse>;
   chat: {
     deferredCompletion(
@@ -1091,6 +1291,25 @@ interface XaiGetV1 {
   >;
   batches: XaiGetBatchesMethod;
   collections: XaiGetCollectionsMethod;
+  billing: {
+    teams: {
+      prepaid: {
+        balance: XaiGetBillingPrepaidBalanceMethod;
+      };
+      postpaid: {
+        invoice: {
+          preview: XaiGetBillingPostpaidInvoicePreviewMethod;
+        };
+        spendingLimits: XaiGetBillingPostpaidSpendingLimitsMethod;
+      };
+    };
+  };
+}
+
+interface XaiGetAuth {
+  teams: {
+    apiKeys: XaiGetManagementApiKeysMethod;
+  };
 }
 
 // DELETE v1 namespace
@@ -1146,7 +1365,7 @@ interface XaiWsV1 {
 // Provider interface
 export interface XaiProvider {
   post: { v1: XaiPostV1 };
-  get: { v1: XaiGetV1 };
+  get: { v1: XaiGetV1; auth: XaiGetAuth };
   delete: { v1: XaiDeleteV1 };
   put: { v1: XaiPutV1 };
   patch: { v1: XaiPatchV1 };

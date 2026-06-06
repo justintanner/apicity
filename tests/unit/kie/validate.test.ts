@@ -14,6 +14,7 @@ import {
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
   MediaGenerationRequestSchema,
+  HappyHorseImageToVideoRequestSchema,
   HappyHorseTextToVideoRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -269,6 +270,48 @@ describe("kie Zod schema validation", () => {
       expect(result.success).toBe(false);
       expect(
         result.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
+    });
+  });
+
+  describe("happyhorse image-to-video", () => {
+    it("should accept the documented image-to-video request", () => {
+      const request = {
+        model: "happyhorse/image-to-video",
+        input: {
+          prompt:
+            "Tracking shot as the girl walks gracefully through the meadow. Her dress and hair flutter in the wind, and clouds drift slowly. Cinematic audio of soft footsteps on grass, rustling summer wind, and melodic bird calls.",
+          image_urls: [
+            "https://static.aiquickdraw.com/tools/example/1777359961666_Z3je05MP.png",
+          ],
+          resolution: "1080p",
+          duration: 5,
+          seed: 42,
+        },
+      };
+
+      expect(
+        HappyHorseImageToVideoRequestSchema.safeParse(request).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should require exactly one image URL", () => {
+      const result = HappyHorseImageToVideoRequestSchema.safeParse({
+        model: "happyhorse/image-to-video",
+        input: {
+          image_urls: [
+            "https://example.com/first.png",
+            "https://example.com/second.png",
+          ],
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("image_urls"))
       ).toBe(true);
     });
   });

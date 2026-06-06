@@ -14,6 +14,7 @@ import {
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
   MediaGenerationRequestSchema,
+  HappyHorseTextToVideoRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -231,6 +232,44 @@ describe("kie Zod schema validation", () => {
 
         expect(result.success, `${aspect_ratio} should be accepted`).toBe(true);
       }
+    });
+  });
+
+  describe("happyhorse text-to-video", () => {
+    it("should accept the documented text-to-video request", () => {
+      const request = {
+        model: "happyhorse/text-to-video",
+        input: {
+          prompt:
+            "A Pixar-style short about a nervous little traffic cone who dreams of being a finish line pylon at a major race. Other cones mock its ambitions. A construction worker accidentally places it at a marathon finish line. The cone's painted face shifts from terror to joy as runners pass. Confetti falls on its cone head. Other cones watch on TV, inspired. Audio: Traffic sounds becoming crowd cheers, inspirational swelling music.",
+          resolution: "1080p",
+          aspect_ratio: "16:9",
+          duration: 5,
+          seed: 42,
+        },
+      };
+
+      expect(
+        HappyHorseTextToVideoRequestSchema.safeParse(request).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should enforce documented duration bounds", () => {
+      const result = HappyHorseTextToVideoRequestSchema.safeParse({
+        model: "happyhorse/text-to-video",
+        input: {
+          prompt: "A short video prompt.",
+          duration: 16,
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
     });
   });
 

@@ -57,6 +57,19 @@ function sectionKey(dotPath) {
 
 function formatUsageSnippet(providerName, dotPath) {
   const call = dotPath ? `${providerName}.${dotPath}` : providerName;
+  if (
+    providerName === "google" &&
+    dotPath === "v1.publishers.google.models.generateContent"
+  ) {
+    return [
+      `const res = await ${call}(`,
+      '  "gemini-2.5-flash",',
+      "  {",
+      '    contents: [{ role: "user", parts: [{ text: "How does AI work?" }] }],',
+      "  }",
+      ");",
+    ].join("\n");
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.textToSpeech") {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }
@@ -1949,6 +1962,9 @@ function renderTelegramSetup() {
 // who don't re-export the shared middleware helpers. Anything not listed here
 // gets the default `apiKey` / `<PROVIDER>_API_KEY` / middleware-section.
 const PROVIDER_AUTH = {
+  google: {
+    showMiddleware: false,
+  },
   x: {
     field: "accessToken",
     env: "X_ACCESS_TOKEN",
@@ -1977,6 +1993,8 @@ const PROVIDER_AUTH = {
 // Per-provider upstream documentation URLs. When set, a docs badge is
 // rendered in the README header.
 const PROVIDER_DOCS = {
+  google:
+    "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent",
   polymarket: "https://docs.polymarket.com/api-reference/introduction",
   telegram: "https://core.telegram.org/bots/api",
 };
@@ -1985,6 +2003,7 @@ const CANONICAL_FACTORY = {
   openai: "createOpenAi",
   xai: "createXai",
   fal: "createFal",
+  google: "createGoogle",
   anthropic: "createAnthropic",
   fireworks: "createFireworks",
   alibaba: "createAlibaba",

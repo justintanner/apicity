@@ -70,6 +70,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/alibaba/src"
       ),
+      "@apicity/google/zod": path.resolve(
+        __dirname,
+        "../packages/provider/google/src/zod"
+      ),
+      "@apicity/google": path.resolve(
+        __dirname,
+        "../packages/provider/google/src"
+      ),
       "@apicity/free-media-upload/zod": path.resolve(
         __dirname,
         "../packages/provider/free-media-upload/src/zod"

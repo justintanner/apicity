@@ -46,6 +46,11 @@ const PROVIDERS = [
     factoryNames: ["createKimiCoding"],
   },
   {
+    name: "google",
+    entryFiles: ["packages/provider/google/src/google.ts"],
+    factoryNames: ["createGoogle"],
+  },
+  {
     name: "alibaba",
     entryFiles: ["packages/provider/alibaba/src/alibaba.ts"],
     factoryNames: ["createAlibaba"],

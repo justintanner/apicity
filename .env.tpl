@@ -6,6 +6,7 @@ KIMI_CODING_API_KEY=op://Apicity/KIMI_CODING_API_KEY/password
 FAL_API_KEY=op://Apicity/FAL_API_KEY/password
 FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password
 FIREWORKS_ACCOUNT_ID=op://Apicity/FIREWORKS_ACCOUNT_ID/password
+GOOGLE_API_KEY=op://Apicity/GOOGLE_API_KEY/password
 GEMINI_API_KEY=op://Apicity/GEMINI_API_KEY/password
 ANTHROPIC_API_KEY=op://Apicity/ANTHROPIC_API_KEY/password
 DASHSCOPE_API_KEY=op://Apicity/DASHSCOPE_API_KEY/password

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/free-media-upload`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/free-media-upload`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 `@apicity/cost` is a deliberate exception — a cross-provider helper that depends on the per-provider workspace packages to expose each upstream's pre-execution estimate endpoint behind one factory.
 
@@ -34,7 +34,7 @@ over raw `vitest` / `op run` invocations.
 # Build / lint / format
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
-pnpm run build:kimicoding        # Build single package (also: build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:free)
+pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:free)
 pnpm run lint                    # Lint (runs build first via prelint)
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
@@ -92,6 +92,7 @@ packages/provider/<name>/
 **openai** — Chat, embeddings, images, files, models, moderations, batches, responses, audio, fine-tuning
 **xai** — Chat, images, video, files, batches, collections, search, models, auth, realtime, responses, tokenize-text
 **fal** — Models (pricing, usage, analytics, requests), queue, serverless (files, logs, apps, metrics), workflows
+**google** — Gemini express-mode generateContent
 **kimicoding** — Messages, streaming, models, embeddings, countTokens
 **kie** — Media generation (video/image/audio), sub-providers (veo, suno, chat, claude)
 **anthropic** — Messages, streaming, batches, files, models, skills, admin/org APIs

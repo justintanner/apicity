@@ -204,6 +204,7 @@ fireworks	inference.v1.rerank	POST	https://api.fireworks.ai/inference/v1/rerank	
 fireworks	inference.v1.workflows.getResult	POST	?	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.workflows.kontext	POST	?	https://docs.fireworks.ai/api-reference
 fireworks	inference.v1.workflows.textToImage	POST	?	https://docs.fireworks.ai/api-reference
+google	v1.publishers.google.models.generateContent	POST	https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent	https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent
 free-media-upload	catbox.upload	POST	https://catbox.moe/user/api.php	https://catbox.moe/tools.php
 free-media-upload	filebin.upload	POST	https://filebin.net/{bin}/{filename}	https://filebin.net/
 free-media-upload	gofile.upload	POST	https://upload.gofile.io/uploadfile	https://gofile.io/api

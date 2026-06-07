@@ -87,6 +87,7 @@ Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
 | [@apicity/anthropic](packages/provider/anthropic)                 | Anthropic messages, streams, batches, files, models, admin APIs    |
 | [@apicity/xai](packages/provider/xai)                             | xAI chat, responses, Grok images/video, files, collections, search |
 | [@apicity/fal](packages/provider/fal)                             | fal model registry, generation, pricing, usage, analytics          |
+| [@apicity/google](packages/provider/google)                       | Google Gemini express-mode generateContent                         |
 | [@apicity/kie](packages/provider/kie)                             | KIE media generation for video, image, audio, Claude, Suno         |
 | [@apicity/alibaba](packages/provider/alibaba)                     | Alibaba DashScope/Qwen chat, image, and video workflows            |
 | [@apicity/fireworks](packages/provider/fireworks)                 | Fireworks chat, embeddings, audio, deployments, fine-tuning        |

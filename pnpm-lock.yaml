@@ -114,6 +114,9 @@ importers:
       '@apicity/free-media-upload':
         specifier: workspace:*
         version: link:../provider/free-media-upload
+      '@apicity/google':
+        specifier: workspace:*
+        version: link:../provider/google
       '@apicity/kie':
         specifier: workspace:*
         version: link:../provider/kie
@@ -175,6 +178,12 @@ importers:
         version: 3.25.76
 
   packages/provider/free-media-upload:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/google:
     dependencies:
       zod:
         specifier: ^3.24.0

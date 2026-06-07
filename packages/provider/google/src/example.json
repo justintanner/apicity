@@ -1,0 +1,24 @@
+{
+  "POST v1.publishers.google.models.generateContent": {
+    "source": "google/generate-content",
+    "payload": {
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "Say hello in one short sentence."
+            }
+          ]
+        }
+      ],
+      "generationConfig": {
+        "temperature": 0,
+        "thinkingConfig": {
+          "thinkingBudget": 0
+        },
+        "maxOutputTokens": 32
+      }
+    }
+  }
+}

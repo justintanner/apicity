@@ -60,6 +60,7 @@
     "@apicity/fal": "workspace:*",
     "@apicity/fireworks": "workspace:*",
     "@apicity/free-media-upload": "workspace:*",
+    "@apicity/google": "workspace:*",
     "@apicity/meta": "workspace:*",
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
@@ -85,6 +86,9 @@
       "optional": true
     },
     "@apicity/free-media-upload": {
+      "optional": true
+    },
+    "@apicity/google": {
       "optional": true
     },
     "@apicity/meta": {
@@ -116,6 +120,7 @@
     "@apicity/fal": "workspace:*",
     "@apicity/fireworks": "workspace:*",
     "@apicity/free-media-upload": "workspace:*",
+    "@apicity/google": "workspace:*",
     "@apicity/meta": "workspace:*",
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",

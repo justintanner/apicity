@@ -42,7 +42,7 @@ cp -rf source dest          # NOT: cp -r source dest
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/free-media-upload`). Each package has zero external dependencies.
+Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/free-media-upload`). Each package has zero external dependencies.
 
 Method paths mirror upstream API URL paths segment-by-segment; kebab-case becomes camelCase (e.g. `/v1/chat/completions` → `openai.v1.chat.completions()`).
 

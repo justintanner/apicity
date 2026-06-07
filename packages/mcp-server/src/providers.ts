@@ -50,6 +50,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/fal",
     factoryName: "createFal",
   },
+  google: {
+    envVar: "GOOGLE_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/google",
+    factoryName: "createGoogle",
+  },
   kie: {
     envVar: "KIE_API_KEY",
     optionKey: "apiKey",

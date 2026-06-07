@@ -22,11 +22,6 @@ const MAX_JSON_LEN = 2000;
 const MAX_COMMENT_LEN = 60_000;
 const ASSETS_DIR = "tests/fixtures/harness-generated";
 
-interface CliOptions {
-  full: boolean;
-  outPath: string;
-}
-
 const VISIBLE_REQUEST_HEADERS = new Set([
   "content-type",
   "authorization",
@@ -58,22 +53,6 @@ interface MediaItem {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function parseCliOptions(): CliOptions {
-  const outIdx = process.argv.indexOf("--out");
-  const outPath = outIdx >= 0 ? process.argv[outIdx + 1] : "harness-summary.md";
-  if (outIdx >= 0 && !outPath) {
-    console.error(
-      "Usage: npx tsx tests/harness-summary.ts [--full] [--out <path>]"
-    );
-    process.exit(1);
-  }
-
-  return {
-    full: process.argv.includes("--full"),
-    outPath,
-  };
-}
 
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
@@ -815,10 +794,7 @@ function renderCard(recording: ChangedRecording): string {
 // Summary generation
 // ---------------------------------------------------------------------------
 
-function generateSummary(
-  recordings: ChangedRecording[],
-  full: boolean
-): string {
+function generateSummary(recordings: ChangedRecording[]): string {
   const newCount = recordings.filter((r) => r.changeType === "new").length;
   const modCount = recordings.filter((r) => r.changeType === "modified").length;
 
@@ -873,7 +849,7 @@ function generateSummary(
   );
 
   let md = lines.join("\n");
-  if (!full && md.length > MAX_COMMENT_LEN) {
+  if (md.length > MAX_COMMENT_LEN) {
     md = md.slice(0, MAX_COMMENT_LEN) + "\n\n*(truncated — see full artifact)*";
   }
 
@@ -891,18 +867,17 @@ function setOutput(name: string, value: string): void {
   }
 }
 
-const options = parseCliOptions();
 const baseBranch = getBaseBranch();
 const recordings = getChangedRecordings(baseBranch);
 
 if (recordings.length === 0) {
   setOutput("has_changes", "false");
   setOutput("has_assets", "false");
-  fs.writeFileSync(options.outPath, "");
+  fs.writeFileSync("harness-summary.md", "");
 } else {
   setOutput("has_changes", "true");
-  const md = generateSummary(recordings, options.full);
-  fs.writeFileSync(options.outPath, md);
+  const md = generateSummary(recordings);
+  fs.writeFileSync("harness-summary.md", md);
 
   const hasAssets =
     fs.existsSync(ASSETS_DIR) && fs.readdirSync(ASSETS_DIR).length > 0;

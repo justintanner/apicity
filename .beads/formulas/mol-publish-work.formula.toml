@@ -39,15 +39,6 @@ Read the bead's title and description carefully. This is your task.
 **2. Implement the solution:**
 
 Do exactly what the bead describes. Follow existing codebase conventions.
-If the work adds or modifies an Apicity provider endpoint, follow the
-`CLAUDE.md` "Adding a New Endpoint" checklist before closing the bead. Endpoint
-work is not complete until the endpoint has a Polly harness test, fixtures are
-recorded and replay-verified, and the uncapped harness report has been sent to
-the Telegram chat ID resolved from 1Password via:
-```bash
-pnpm run harness:endpoint-report
-```
-
 Make atomic, focused commits as you work:
 ```bash
 git add <files>

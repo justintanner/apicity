@@ -53,11 +53,8 @@ pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
 pnpm run harness:report          # Generate PR-diff harness report directory (SPA shell + per-commit JSON)
-pnpm run harness:summary:full    # Generate uncapped harness-summary-full.md
 pnpm run harness:screenshot      # Generate + screenshot the full harness report locally
 pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing recordings
-pnpm run harness:telegram        # Send full report text + media to TELEGRAM_CHAT_ID via 1Password
-pnpm run harness:endpoint-report # Generate screenshot + full summary, then send Telegram report
 
 # Secrets
 pnpm run check:op                # Verify 1Password service account is working
@@ -195,24 +192,9 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
    `scripts/endpoint-docs.tsv` (the source of truth for docs URLs). Both are
    enforced by `pnpm run lint:endpoints`. For overloaded endpoints (one async
    function that dispatches to multiple paths), comment the default path.
-6. **Harness integration test (required)** — Every added endpoint must have a
-   Polly harness test. First search `tests/integration/` for existing coverage;
-   if none exists, write `tests/integration/<provider>-<slug>.test.ts` using
-   setupPolly/teardownPolly. Record fixtures and verify replay. Do not skip the
-   harness test just because the endpoint is low-risk or has unit coverage.
-7. **Full harness report to Telegram (required)** — For endpoint work, generate
-   and send the uncapped harness report after recording/replay succeeds:
-
-   ```bash
-   pnpm run harness:endpoint-report
-   ```
-
-   `harness:telegram` resolves `TELEGRAM_BOT_KEY` and `TELEGRAM_CHAT_ID` from
-   the Apicity 1Password vault via `.env.tpl`, sends the Markdown report as a
-   document, chunks the full report text into Telegram messages, and attaches
-   generated/local media plus media URLs found in the report. Use the full
-   report, not the capped PR comment summary.
-8. **Commit and PR** — One endpoint per PR.
+6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
+   using setupPolly/teardownPolly. Record fixtures, verify replay.
+7. **Commit and PR** — One endpoint per PR.
 
 ## Development Workflow
 
@@ -221,14 +203,13 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 
 | # | Phase             | Command                                                          |
 | - | ----------------- | ---------------------------------------------------------------- |
-| 1 | Implement         | _(edit code — types, schema, factory, harness test)_             |
+| 1 | Implement         | _(edit code — types, schema, factory, integration test)_         |
 | 2 | Record fixtures   | `pnpm run dev:record -- tests/integration/<file>.test.ts`        |
 | 3 | Verify replay     | `pnpm run test:run tests/integration/<file>.test.ts`             |
-| 4 | Telegram report   | `pnpm run harness:endpoint-report`                               |
-| 5 | Pre-push          | `pnpm run dev:preflight`                                         |
-| 6 | CI dry-run        | `pnpm run ci:local`                                              |
-| 7 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
-| 8 | CI + harness diff | _(automatic — same 3 commands as `ci:local` + harness report)_   |
+| 4 | Pre-push          | `pnpm run dev:preflight`                                         |
+| 5 | CI dry-run        | `pnpm run ci:local`                                              |
+| 6 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
+| 7 | CI + harness diff | _(automatic — same 3 commands as `ci:local` + harness report)_   |
 
 **Escape hatches**
 
@@ -238,13 +219,6 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 - `pnpm run check:op` — confirm 1Password is resolving all 8 provider keys
   before recording.
 - `pnpm run harness` — local HAR viewer at `localhost:3475`.
-- `pnpm run harness:summary:full` — write uncapped `harness-summary-full.md`
-  for local review or Telegram delivery.
-- `pnpm run harness:telegram -- --report harness-summary-full.md` — send the
-  full harness report, code fences, generated media, and media URLs to the
-  Telegram chat ID stored in 1Password.
-- `pnpm run harness:endpoint-report` — run the full endpoint closeout report
-  path: screenshot, uncapped Markdown summary, and Telegram delivery.
 - `pnpm run harness:screenshot:media` — generate the same media-only PNG that
   the CI harness-report job attaches to PRs, useful when iterating on
   `har-viewer.html` rendering.

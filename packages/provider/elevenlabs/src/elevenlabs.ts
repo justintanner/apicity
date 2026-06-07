@@ -1,4 +1,7 @@
 import {
+  ElevenLabsGetVoiceRequest,
+  ElevenLabsListVoicesRequest,
+  ElevenLabsListVoicesResponse,
   ElevenLabsOptions,
   ElevenLabsSoundGenerationRequest,
   ElevenLabsTextToDialogueRequest,
@@ -6,10 +9,14 @@ import {
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
   ElevenLabsUserSubscriptionResponse,
+  ElevenLabsVoice,
+  ElevenLabsVoiceSettings,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
 import {
+  ElevenLabsGetVoiceRequestSchema,
+  ElevenLabsListVoicesRequestSchema,
   ElevenLabsSoundGenerationRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
@@ -131,7 +138,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     method: "GET" | "POST",
     path: string,
     body?: unknown,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    queryString = ""
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -155,7 +163,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         init.body = JSON.stringify(body);
       }
 
-      const res = await doFetch(`${baseURL}${path}`, init);
+      const res = await doFetch(`${baseURL}${path}${queryString}`, init);
 
       clearTimeout(timeoutId);
 
@@ -261,7 +269,81 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     return Object.keys(query).length > 0 ? query : undefined;
   }
 
+  function buildQueryString(params: object): string {
+    const query = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+      if (Array.isArray(value)) {
+        for (const item of value) {
+          if (item !== undefined && item !== null) {
+            query.append(key, String(item));
+          }
+        }
+        continue;
+      }
+      query.append(key, String(value));
+    }
+
+    const serialized = query.toString();
+    return serialized ? `?${serialized}` : "";
+  }
+
   // -- Endpoints -------------------------------------------------------------
+
+  // GET https://api.elevenlabs.io/v1/voices/{voiceId}
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/get
+  const getVoice = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsGetVoiceRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsVoice> => {
+      return makeJsonRequest<ElevenLabsVoice>(
+        "GET",
+        `/v1/voices/${encodeURIComponent(voiceId)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetVoiceRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/voices/{voiceId}/settings
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/get-settings
+  const getVoiceSettings = Object.assign(
+    async (
+      voiceId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsVoiceSettings> => {
+      return makeJsonRequest<ElevenLabsVoiceSettings>(
+        "GET",
+        `/v1/voices/${encodeURIComponent(voiceId)}/settings`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v2/voices
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/search
+  const voices = Object.assign(
+    async (
+      req: ElevenLabsListVoicesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListVoicesResponse> => {
+      return makeJsonRequest<ElevenLabsListVoicesResponse>(
+        "GET",
+        "/v2/voices",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListVoicesRequestSchema }
+  );
 
   // POST https://api.elevenlabs.io/v1/sound-generation
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert
@@ -370,6 +452,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const user = {
     subscription: userSubscription,
   };
+  const v1Voices = Object.assign(getVoice, {
+    settings: getVoiceSettings,
+  });
+  const v2 = {
+    voices,
+  };
   const postV1 = {
     soundGeneration,
     textToSpeech,
@@ -377,6 +465,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     speechToText,
   };
   const v1 = {
+    voices: v1Voices,
     soundGeneration,
     textToSpeech,
     textToDialogue,
@@ -386,7 +475,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
 
   return attachExamples({
     v1,
-    get: { v1: { user } },
+    v2,
+    get: { v1: { voices: v1Voices, user }, v2 },
     post: { v1: postV1 },
   });
 }

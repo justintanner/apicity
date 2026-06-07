@@ -86,6 +86,12 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "elevenlabs" && dotPath === "v1.textToSpeech") {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }
+  if (providerName === "elevenlabs" && dotPath === "v1.voices") {
+    return `const res = await ${call}("voice_id", { /* ... */ });`;
+  }
+  if (providerName === "elevenlabs" && dotPath === "v1.voices.settings") {
+    return `const res = await ${call}("voice_id");`;
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.user.subscription") {
     return `const res = await ${call}();`;
   }

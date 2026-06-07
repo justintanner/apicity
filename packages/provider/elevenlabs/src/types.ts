@@ -1,5 +1,7 @@
 import type { z } from "zod";
 import type {
+  ElevenLabsGetVoiceRequest,
+  ElevenLabsListVoicesRequest,
   ElevenLabsSoundGenerationRequest,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
@@ -8,6 +10,8 @@ import type {
 
 export type {
   ElevenLabsOptions,
+  ElevenLabsGetVoiceRequest,
+  ElevenLabsListVoicesRequest,
   ElevenLabsSoundGenerationRequest,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
@@ -93,6 +97,258 @@ export type ElevenLabsSpeechToTextResponse =
   | ElevenLabsTranscript
   | ElevenLabsMultichannelTranscript
   | ElevenLabsWebhookAcknowledgement;
+
+// -- Voice response shapes ---------------------------------------------------
+
+export type ElevenLabsSpeakerSeparationStatus =
+  | "not_started"
+  | "pending"
+  | "completed"
+  | "failed";
+
+export interface ElevenLabsUtterance {
+  start: number;
+  end: number;
+}
+
+export interface ElevenLabsSpeaker {
+  speaker_id: string;
+  duration_secs: number;
+  utterances?: ElevenLabsUtterance[] | null;
+}
+
+export interface ElevenLabsSpeakerSeparation {
+  voice_id: string;
+  sample_id: string;
+  status: ElevenLabsSpeakerSeparationStatus;
+  speakers?: Record<string, ElevenLabsSpeaker> | null;
+  selected_speaker_ids?: string[] | null;
+}
+
+export interface ElevenLabsVoiceSample {
+  sample_id?: string;
+  file_name?: string;
+  mime_type?: string;
+  size_bytes?: number;
+  hash?: string;
+  duration_secs?: number | null;
+  remove_background_noise?: boolean | null;
+  has_isolated_audio?: boolean | null;
+  has_isolated_audio_preview?: boolean | null;
+  speaker_separation?: ElevenLabsSpeakerSeparation | null;
+  trim_start?: number | null;
+  trim_end?: number | null;
+}
+
+export type ElevenLabsVoiceCategory =
+  | "generated"
+  | "cloned"
+  | "premade"
+  | "professional"
+  | "famous"
+  | "high_quality";
+
+export type ElevenLabsFineTuningState =
+  | "not_started"
+  | "queued"
+  | "fine_tuning"
+  | "fine_tuned"
+  | "failed"
+  | "delayed";
+
+export interface ElevenLabsRecording {
+  recording_id: string;
+  mime_type: string;
+  size_bytes: number;
+  upload_date_unix: number;
+  transcription: string;
+}
+
+export interface ElevenLabsVerificationAttempt {
+  text: string;
+  date_unix: number;
+  accepted: boolean;
+  similarity: number;
+  levenshtein_distance: number;
+  recording?: ElevenLabsRecording | null;
+}
+
+export interface ElevenLabsManualVerificationFile {
+  file_id: string;
+  file_name: string;
+  mime_type: string;
+  size_bytes: number;
+  upload_date_unix: number;
+}
+
+export interface ElevenLabsManualVerification {
+  extra_text: string;
+  request_time_unix: number;
+  files: ElevenLabsManualVerificationFile[];
+}
+
+export interface ElevenLabsFineTuning {
+  is_allowed_to_fine_tune?: boolean;
+  state?: Record<string, ElevenLabsFineTuningState>;
+  verification_failures?: string[];
+  verification_attempts_count?: number;
+  manual_verification_requested?: boolean;
+  language?: string | null;
+  progress?: Record<string, number> | null;
+  message?: Record<string, string> | null;
+  dataset_duration_seconds?: number | null;
+  verification_attempts?: ElevenLabsVerificationAttempt[] | null;
+  slice_ids?: string[] | null;
+  manual_verification?: ElevenLabsManualVerification | null;
+  max_verification_attempts?: number | null;
+  next_max_verification_attempts_reset_unix_ms?: number | null;
+  finetuning_state?: unknown;
+}
+
+export interface ElevenLabsVoiceSettings {
+  stability?: number | null;
+  use_speaker_boost?: boolean | null;
+  similarity_boost?: number | null;
+  style?: number | null;
+  speed?: number | null;
+}
+
+export type ElevenLabsVoiceSharingState =
+  | "enabled"
+  | "disabled"
+  | "copied"
+  | "copied_disabled";
+
+export type ElevenLabsReviewStatus =
+  | "not_requested"
+  | "pending"
+  | "declined"
+  | "allowed"
+  | "allowed_with_changes";
+
+export interface ElevenLabsVoiceSharingModerationCheck {
+  date_checked_unix?: number | null;
+  name_value?: string | null;
+  name_check?: boolean | null;
+  description_value?: string | null;
+  description_check?: boolean | null;
+  sample_ids?: string[] | null;
+  sample_checks?: number[] | null;
+  captcha_ids?: string[] | null;
+  captcha_checks?: number[] | null;
+}
+
+export type ElevenLabsReaderResourceType = "read" | "collection";
+
+export interface ElevenLabsReaderResource {
+  resource_type: ElevenLabsReaderResourceType;
+  resource_id: string;
+}
+
+export interface ElevenLabsVoiceSharing {
+  status?: ElevenLabsVoiceSharingState;
+  history_item_sample_id?: string | null;
+  date_unix?: number;
+  whitelisted_emails?: string[];
+  public_owner_id?: string;
+  original_voice_id?: string;
+  financial_rewards_enabled?: boolean;
+  free_users_allowed?: boolean;
+  live_moderation_enabled?: boolean;
+  rate?: number | null;
+  fiat_rate?: number | null;
+  notice_period?: number;
+  disable_at_unix?: number | null;
+  voice_mixing_allowed?: boolean;
+  featured?: boolean;
+  category?: ElevenLabsVoiceCategory;
+  reader_app_enabled?: boolean | null;
+  image_url?: string | null;
+  ban_reason?: string | null;
+  liked_by_count?: number;
+  cloned_by_count?: number;
+  name?: string;
+  description?: string | null;
+  labels?: Record<string, string>;
+  review_status?: ElevenLabsReviewStatus;
+  review_message?: string | null;
+  enabled_in_library?: boolean;
+  instagram_username?: string | null;
+  twitter_username?: string | null;
+  youtube_username?: string | null;
+  tiktok_username?: string | null;
+  moderation_check?: ElevenLabsVoiceSharingModerationCheck | null;
+  reader_restricted_on?: ElevenLabsReaderResource[] | null;
+}
+
+export interface ElevenLabsVerifiedVoiceLanguage {
+  language: string;
+  model_id: string;
+  accent?: string | null;
+  locale?: string | null;
+  preview_url?: string | null;
+}
+
+export type ElevenLabsVoiceSafetyControl =
+  | "NONE"
+  | "BAN"
+  | "CAPTCHA"
+  | "ENTERPRISE_BAN"
+  | "ENTERPRISE_CAPTCHA";
+
+export interface ElevenLabsVoiceVerification {
+  requires_verification: boolean;
+  is_verified: boolean;
+  verification_failures: string[];
+  verification_attempts_count: number;
+  language?: string | null;
+  verification_attempts?: ElevenLabsVerificationAttempt[] | null;
+}
+
+export type ElevenLabsRecordingQuality =
+  | "studio"
+  | "good"
+  | "ok"
+  | "poor"
+  | "bad";
+
+export type ElevenLabsLabellingStatus = "in_review" | "review_complete";
+
+export interface ElevenLabsVoice {
+  voice_id: string;
+  name?: string;
+  samples?: ElevenLabsVoiceSample[] | null;
+  category?: ElevenLabsVoiceCategory;
+  fine_tuning?: ElevenLabsFineTuning | null;
+  labels?: Record<string, string>;
+  description?: string | null;
+  preview_url?: string | null;
+  available_for_tiers?: string[];
+  settings?: ElevenLabsVoiceSettings | null;
+  sharing?: ElevenLabsVoiceSharing | null;
+  high_quality_base_model_ids?: string[];
+  verified_languages?: ElevenLabsVerifiedVoiceLanguage[] | null;
+  collection_ids?: string[] | null;
+  safety_control?: ElevenLabsVoiceSafetyControl | null;
+  voice_verification?: ElevenLabsVoiceVerification | null;
+  permission_on_resource?: string | null;
+  is_owner?: boolean | null;
+  is_legacy?: boolean;
+  is_mixed?: boolean;
+  favorited_at_unix?: number | null;
+  created_at_unix?: number | null;
+  is_bookmarked?: boolean | null;
+  recording_quality?: ElevenLabsRecordingQuality | null;
+  labelling_status?: ElevenLabsLabellingStatus | null;
+  recording_quality_reason?: string | null;
+}
+
+export interface ElevenLabsListVoicesResponse {
+  voices: ElevenLabsVoice[];
+  has_more: boolean;
+  total_count: number;
+  next_page_token?: string | null;
+}
 
 // -- User/subscription response shapes ---------------------------------------
 
@@ -194,6 +450,28 @@ export interface ElevenLabsSpeechToTextMethod {
   schema: z.ZodType<ElevenLabsSpeechToTextRequest>;
 }
 
+export interface ElevenLabsListVoicesMethod {
+  (
+    req?: ElevenLabsListVoicesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListVoicesResponse>;
+  schema: z.ZodType<ElevenLabsListVoicesRequest>;
+}
+
+export interface ElevenLabsGetVoiceMethod {
+  (
+    voiceId: string,
+    req?: ElevenLabsGetVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsVoice>;
+  schema: z.ZodType<ElevenLabsGetVoiceRequest>;
+  settings: ElevenLabsGetVoiceSettingsMethod;
+}
+
+export interface ElevenLabsGetVoiceSettingsMethod {
+  (voiceId: string, signal?: AbortSignal): Promise<ElevenLabsVoiceSettings>;
+}
+
 export interface ElevenLabsUserSubscriptionMethod {
   (signal?: AbortSignal): Promise<ElevenLabsUserSubscriptionResponse>;
 }
@@ -205,11 +483,16 @@ export interface ElevenLabsUserNamespace {
 }
 
 export interface ElevenLabsV1Namespace {
+  voices: ElevenLabsGetVoiceMethod;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   user: ElevenLabsUserNamespace;
+}
+
+export interface ElevenLabsV2Namespace {
+  voices: ElevenLabsListVoicesMethod;
 }
 
 export interface ElevenLabsPostV1Namespace {
@@ -224,15 +507,22 @@ export interface ElevenLabsPostNamespace {
 }
 
 export interface ElevenLabsGetV1Namespace {
+  voices: ElevenLabsGetVoiceMethod;
   user: ElevenLabsUserNamespace;
+}
+
+export interface ElevenLabsGetV2Namespace {
+  voices: ElevenLabsListVoicesMethod;
 }
 
 export interface ElevenLabsGetNamespace {
   v1: ElevenLabsGetV1Namespace;
+  v2: ElevenLabsGetV2Namespace;
 }
 
 export interface ElevenLabsProvider {
   v1: ElevenLabsV1Namespace;
+  v2: ElevenLabsV2Namespace;
   post: ElevenLabsPostNamespace;
   get: ElevenLabsGetNamespace;
 }

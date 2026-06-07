@@ -138,7 +138,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-5 endpoints across 5 groups. Each method mirrors an upstream URL path.
+8 endpoints across 6 groups. Each method mirrors an upstream URL path.
 
 ### soundGeneration
 
@@ -219,6 +219,53 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.user.subscription();
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### voices
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices/{voiceId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/get)
+
+```typescript
+const res = await elevenlabs.v1.voices("voice_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices.settings</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices/{voiceId}/settings</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/get-settings)
+
+```typescript
+const res = await elevenlabs.v1.voices.settings("voice_id");
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v2.voices</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v2/voices</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/search)
+
+```typescript
+const res = await elevenlabs.v2.voices({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

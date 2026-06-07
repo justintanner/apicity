@@ -14,6 +14,66 @@ export const ElevenLabsOptionsSchema = z.object({
 export type ElevenLabsOptions = z.infer<typeof ElevenLabsOptionsSchema>;
 
 // ---------------------------------------------------------------------------
+// GET /v2/voices
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListVoicesRequestSchema = z.object({
+  next_page_token: z.string().nullable().optional(),
+  page_size: z.number().int().max(100).optional(),
+  search: z.string().nullable().optional(),
+  sort: z.enum(["created_at_unix", "name"]).nullable().optional(),
+  sort_direction: z.enum(["asc", "desc"]).nullable().optional(),
+  voice_type: z
+    .enum([
+      "personal",
+      "community",
+      "default",
+      "workspace",
+      "non-default",
+      "non-community",
+      "saved",
+    ])
+    .nullable()
+    .optional(),
+  category: z
+    .enum(["premade", "cloned", "generated", "professional"])
+    .nullable()
+    .optional(),
+  fine_tuning_state: z
+    .enum([
+      "draft",
+      "not_verified",
+      "not_started",
+      "queued",
+      "fine_tuning",
+      "fine_tuned",
+      "failed",
+      "delayed",
+    ])
+    .nullable()
+    .optional(),
+  collection_id: z.string().nullable().optional(),
+  include_total_count: z.boolean().optional(),
+  voice_ids: z.array(z.string()).max(100).nullable().optional(),
+});
+
+export type ElevenLabsListVoicesRequest = z.infer<
+  typeof ElevenLabsListVoicesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/voices/:voice_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetVoiceRequestSchema = z.object({
+  with_settings: z.boolean().optional(),
+});
+
+export type ElevenLabsGetVoiceRequest = z.infer<
+  typeof ElevenLabsGetVoiceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/sound-generation
 // ---------------------------------------------------------------------------
 

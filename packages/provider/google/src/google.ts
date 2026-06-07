@@ -1,11 +1,16 @@
 import { GoogleError } from "./types";
 import type {
+  GoogleCountTokensRequest,
+  GoogleCountTokensResponse,
   GoogleGenerateContentRequest,
   GoogleGenerateContentResponse,
   GoogleOptions,
   GoogleProvider,
 } from "./types";
-import { GoogleGenerateContentRequestSchema } from "./zod";
+import {
+  GoogleCountTokensRequestSchema,
+  GoogleGenerateContentRequestSchema,
+} from "./zod";
 import { attachExamples } from "./example";
 
 interface GoogleErrorBody {
@@ -101,6 +106,25 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     publishers: {
       google: {
         models: {
+          // sig-ok: aiplatform service host omitted from provider namespace
+          // POST https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:countTokens
+          // Docs: https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/express-mode/rest/v1/publishers.models/countTokens
+          countTokens: Object.assign(
+            async (
+              model: string,
+              req: GoogleCountTokensRequest,
+              signal?: AbortSignal
+            ): Promise<GoogleCountTokensResponse> => {
+              return makeRequest<GoogleCountTokensResponse>(
+                `/publishers/google/models/${encodeURIComponent(model)}:countTokens`,
+                req,
+                signal
+              );
+            },
+            {
+              schema: GoogleCountTokensRequestSchema,
+            }
+          ),
           // sig-ok: aiplatform service host omitted from provider namespace
           // POST https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:generateContent
           // Docs: https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent

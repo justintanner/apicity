@@ -11,6 +11,21 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST v1.publishers.google.models.countTokens": {
+    "source": "google/count-tokens",
+    "payload": {
+      "contents": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "Count the tokens in this short prompt."
+            }
+          ]
+        }
+      ]
+    }
+  },
   "POST v1.publishers.google.models.generateContent": {
     "source": "google/generate-content",
     "payload": {

@@ -9,9 +9,12 @@ export type {
   GooglePostV1PublishersNamespace,
   GooglePostV1PublishersGoogleNamespace,
   GooglePostV1PublishersGoogleModelsNamespace,
+  GoogleCountTokensMethod,
+  GoogleCountTokensResponse,
   GoogleGenerateContentMethod,
   GoogleGenerateContentResponse,
   GoogleCandidate,
+  GoogleModalityTokenCount,
   GooglePromptFeedback,
   GoogleUsageMetadata,
 } from "./types";
@@ -30,6 +33,7 @@ export type {
   GoogleTool,
   GoogleToolConfig,
   GoogleGenerateContentRequest,
+  GoogleCountTokensRequest,
 } from "./zod";
 
 export {
@@ -46,4 +50,5 @@ export {
   GoogleToolSchema,
   GoogleToolConfigSchema,
   GoogleGenerateContentRequestSchema,
+  GoogleCountTokensRequestSchema,
 } from "./zod";

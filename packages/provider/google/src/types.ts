@@ -1,5 +1,8 @@
 import type { z } from "zod";
-import type { GoogleGenerateContentRequest } from "./zod";
+import type {
+  GoogleCountTokensRequest,
+  GoogleGenerateContentRequest,
+} from "./zod";
 
 export type {
   GoogleOptions,
@@ -15,6 +18,7 @@ export type {
   GoogleTool,
   GoogleToolConfig,
   GoogleGenerateContentRequest,
+  GoogleCountTokensRequest,
 } from "./zod";
 
 export class GoogleError extends Error {
@@ -66,6 +70,19 @@ export interface GoogleGenerateContentResponse {
   [key: string]: unknown;
 }
 
+export interface GoogleModalityTokenCount {
+  modality?: string;
+  tokenCount?: number;
+  [key: string]: unknown;
+}
+
+export interface GoogleCountTokensResponse {
+  totalTokens?: number;
+  totalBillableCharacters?: number;
+  promptTokensDetails?: GoogleModalityTokenCount[];
+  [key: string]: unknown;
+}
+
 export interface GoogleGenerateContentMethod {
   (
     model: string,
@@ -75,7 +92,17 @@ export interface GoogleGenerateContentMethod {
   schema: z.ZodType<GoogleGenerateContentRequest>;
 }
 
+export interface GoogleCountTokensMethod {
+  (
+    model: string,
+    req: GoogleCountTokensRequest,
+    signal?: AbortSignal
+  ): Promise<GoogleCountTokensResponse>;
+  schema: z.ZodType<GoogleCountTokensRequest>;
+}
+
 export interface GooglePostV1PublishersGoogleModelsNamespace {
+  countTokens: GoogleCountTokensMethod;
   generateContent: GoogleGenerateContentMethod;
 }
 

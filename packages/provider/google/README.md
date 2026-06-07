@@ -25,9 +25,29 @@ const google = createGoogle({ apiKey: process.env.GOOGLE_API_KEY! });
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 1 group. Each method mirrors an upstream URL path.
 
 ### publishers
+
+<details>
+<summary><code>POST</code> <b><code>google.v1.publishers.google.models.countTokens</code></b></summary>
+
+<code>POST https://aiplatform.googleapis.com/v1/publishers/google/models/{model}:countTokens</code>
+
+[Upstream docs ↗](https://docs.cloud.google.com/gemini-enterprise-agent-platform/reference/express-mode/rest/v1/publishers.models/countTokens)
+
+```typescript
+const res = await google.v1.publishers.google.models.countTokens(
+  "gemini-2.5-flash",
+  {
+    contents: [{ role: "user", parts: [{ text: "How does AI work?" }] }],
+  }
+);
+```
+
+Source: [`packages/provider/google/src/google.ts`](src/google.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>google.v1.publishers.google.models.generateContent</code></b></summary>

@@ -59,6 +59,19 @@ function formatUsageSnippet(providerName, dotPath) {
   const call = dotPath ? `${providerName}.${dotPath}` : providerName;
   if (
     providerName === "google" &&
+    dotPath === "v1.publishers.google.models.countTokens"
+  ) {
+    return [
+      `const res = await ${call}(`,
+      '  "gemini-2.5-flash",',
+      "  {",
+      '    contents: [{ role: "user", parts: [{ text: "How does AI work?" }] }],',
+      "  }",
+      ");",
+    ].join("\n");
+  }
+  if (
+    providerName === "google" &&
     dotPath === "v1.publishers.google.models.generateContent"
   ) {
     return [

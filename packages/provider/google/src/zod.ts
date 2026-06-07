@@ -95,6 +95,17 @@ export const GoogleGenerateContentRequestSchema = z
   })
   .passthrough();
 
+export const GoogleCountTokensRequestSchema = z
+  .object({
+    model: z.string().optional(),
+    instances: z.array(z.unknown()).optional(),
+    contents: z.array(GoogleContentSchema).optional(),
+    tools: z.array(GoogleToolSchema).optional(),
+    systemInstruction: GoogleContentSchema.optional(),
+    generationConfig: GoogleGenerationConfigSchema.optional(),
+  })
+  .passthrough();
+
 export type GoogleOptions = z.infer<typeof GoogleOptionsSchema>;
 export type GoogleBlob = z.infer<typeof GoogleBlobSchema>;
 export type GoogleFileData = z.infer<typeof GoogleFileDataSchema>;
@@ -115,4 +126,7 @@ export type GoogleTool = z.infer<typeof GoogleToolSchema>;
 export type GoogleToolConfig = z.infer<typeof GoogleToolConfigSchema>;
 export type GoogleGenerateContentRequest = z.infer<
   typeof GoogleGenerateContentRequestSchema
+>;
+export type GoogleCountTokensRequest = z.infer<
+  typeof GoogleCountTokensRequestSchema
 >;

@@ -35,7 +35,7 @@ fresh tracking bead:
 
 ```bash
 # 1. File a release tracking bead
-bd create --title="Release @apicity/* v0.1.0-alpha.N" --type=task --priority=2
+bd create --title="Release Apicity v0.1.0-alpha.N" --type=task --priority=2
 # → returns na-XXX
 
 # 2. Pour the formula

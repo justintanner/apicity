@@ -289,7 +289,7 @@ description = """
 Annotate the release commit and propagate to the remote.
 
 ```bash
-git tag -a v{{version}} -m "Release @apicity/* v{{version}} ({{dist_tag}})"
+git tag -a v{{version}} -m "Release Apicity v{{version}} ({{dist_tag}})"
 git push origin stable
 git push origin v{{version}}
 ```
@@ -336,10 +336,10 @@ const body = section
   ? section.replace(/^[^\n]*\n?/, "").trim()
   : "";
 
-console.log(`# @apicity/* v${version}`);
+console.log(`# Apicity v${version}`);
 console.log("");
 console.log(`- npm dist-tag: \`${distTag}\``);
-console.log("- Published packages: 18 scoped packages in lockstep");
+console.log("- Published packages: 18 @apicity packages in lockstep");
 console.log(`- Git tag: \`v${version}\``);
 console.log("");
 
@@ -348,7 +348,7 @@ if (body) {
   console.log("");
   console.log(body);
 } else {
-  console.log("Published the lockstep @apicity/* package set to npm.");
+  console.log("Published the lockstep Apicity package set to npm.");
 }
 NODE
 cat "$notes"
@@ -357,7 +357,7 @@ cat "$notes"
 **3. Create or update the release page:**
 ```bash
 if gh release view "v{{version}}" >/dev/null 2>&1; then
-  edit_flags=(--title "@apicity/* v{{version}}" --notes-file "$notes")
+  edit_flags=(--title "Apicity v{{version}}" --notes-file "$notes")
   if [ "{{dist_tag}}" = "latest" ]; then
     edit_flags+=(--latest)
   else
@@ -365,7 +365,7 @@ if gh release view "v{{version}}" >/dev/null 2>&1; then
   fi
   gh release edit "v{{version}}" "${edit_flags[@]}"
 else
-  flags=(--verify-tag --title "@apicity/* v{{version}}" --notes-file "$notes")
+  flags=(--verify-tag --title "Apicity v{{version}}" --notes-file "$notes")
   if [ "{{dist_tag}}" = "latest" ]; then
     flags+=(--latest)
   else
@@ -434,7 +434,7 @@ description = """
 Record the release in beads memory and close the tracking bead.
 
 ```bash
-bd close {{release_bead}} --reason "Published @apicity/* v{{version}} on dist-tag {{dist_tag}}; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
+bd close {{release_bead}} --reason "Published Apicity v{{version}} on dist-tag {{dist_tag}}; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
 bd remember "apicity-last-release: v{{version}} on {{dist_tag}} ($(date +%Y-%m-%d))"
 ```
 

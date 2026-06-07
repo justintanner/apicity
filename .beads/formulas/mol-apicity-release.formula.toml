@@ -6,7 +6,7 @@ Branch model:
   - main   = agents work here (feature work lands here first)
   - stable = release branch; releases cut from stable; tags pushed to stable
 
-The formula publishes 18 scoped packages in one go: 17 providers under
+The formula publishes 19 scoped packages in one go: 18 providers under
 packages/provider/* plus packages/mcp-server. All ship under one version
 and one dist-tag (alpha / beta / next / latest).
 
@@ -73,7 +73,7 @@ release on top of unstaged work.
 
 **4. Confirm intent:**
 
-You are about to publish 18 packages to the public npm registry under
+You are about to publish 19 packages to the public npm registry under
 `@apicity/*`. Once `latest`-tagged versions are out, they cannot be unpublished
 after 72h. Read the values:
 
@@ -139,7 +139,7 @@ node -e '
 const fs = require("fs");
 const PKGS = [
   "packages/mcp-server",
-  ...["alibaba","anthropic","cost","dolthub","elevenlabs","fal","fireworks","free-media-upload","meta","kie","kimicoding","openai","polymarket","telegram","x","xai","youtube"]
+  ...["alibaba","anthropic","cost","dolthub","elevenlabs","fal","fireworks","free-media-upload","google","meta","kie","kimicoding","openai","polymarket","telegram","x","xai","youtube"]
     .map(p => "packages/provider/" + p),
 ];
 let bad = 0;
@@ -151,7 +151,7 @@ for (const p of PKGS) {
   if (!fs.existsSync(p + "/LICENSE"))
     { console.log("✗ missing LICENSE in", p); bad++; }
 }
-if (bad === 0) console.log("✓ all 18 packages publish-ready");
+if (bad === 0) console.log("✓ all 19 packages publish-ready");
 process.exit(bad === 0 ? 0 : 1);
 '
 ```
@@ -160,14 +160,14 @@ If any of these fail, the prep work was not completed. STOP. File a bug
 referencing the parent epic and abort the release — pour again once prep is
 green.
 
-**Exit criteria:** All 18 packages pass all three checks."""
+**Exit criteria:** All 19 packages pass all three checks."""
 
 [[steps]]
 id = "bump-versions"
 title = "Bump every @apicity/* package to {{version}}"
 needs = ["verify-publish-config"]
 description = """
-Bump in lockstep — all 18 packages ship under one version. Don't use
+Bump in lockstep — all 19 packages ship under one version. Don't use
 `pnpm -r exec npm version` here — it implicitly runs `npm install`, which
 trips on the optional zod peer dep. Direct JSON write is simpler and
 deterministic:
@@ -177,7 +177,7 @@ node -e '
 const fs = require("fs");
 const PKGS = [
   "packages/mcp-server/package.json",
-  ...["alibaba","anthropic","cost","dolthub","elevenlabs","fal","fireworks","free-media-upload","meta","kie","kimicoding","openai","polymarket","telegram","x","xai","youtube"]
+  ...["alibaba","anthropic","cost","dolthub","elevenlabs","fal","fireworks","free-media-upload","google","meta","kie","kimicoding","openai","polymarket","telegram","x","xai","youtube"]
     .map(p => "packages/provider/" + p + "/package.json"),
 ];
 for (const p of PKGS) {
@@ -187,7 +187,7 @@ for (const p of PKGS) {
 }
 const wrong = PKGS.filter(p => JSON.parse(fs.readFileSync(p, "utf8")).version !== "{{version}}");
 if (wrong.length) { console.log("WRONG:", wrong); process.exit(1); }
-console.log("✓ all 18 at {{version}}");
+console.log("✓ all 19 at {{version}}");
 '
 ```
 
@@ -197,7 +197,7 @@ git add packages/mcp-server/package.json packages/provider/*/package.json
 git commit -m "chore(release): @apicity/* → {{version}}"
 ```
 
-**Exit criteria:** All 18 package.json files at `{{version}}`, change committed."""
+**Exit criteria:** All 19 package.json files at `{{version}}`, change committed."""
 
 [[steps]]
 id = "publish-dry-run"
@@ -216,7 +216,7 @@ pnpm -r --filter "@apicity/*" publish --dry-run --tag {{dist_tag}} --no-git-chec
 
 **Sanity-check the log manually:**
 
-  - For each of the 18 packages, the tarball lists `dist/...`, `README.md`,
+  - For each of the 19 packages, the tarball lists `dist/...`, `README.md`,
     `LICENSE`, and `package.json` — and nothing else. No `tests/`, no
     `.env*`, no `*.har` recordings.
   - File counts and total size look reasonable (anything >10MB is suspicious).
@@ -258,7 +258,7 @@ NPM_CONFIG_USERCONFIG="$tmp_npmrc" npm config get registry
 If `op read` or `npm whoami` errors, STOP. Fix 1Password access or the
 `NPM_TOKEN` item before publishing.
 
-**2. Publish all 18 packages:**
+**2. Publish all 19 packages:**
 ```bash
 NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag {{dist_tag}} --no-git-checks
 ```
@@ -279,7 +279,7 @@ packages that didn't get through with the same `NPM_CONFIG_USERCONFIG`
 environment. npm rejects re-publishing the same version, so it's safe to retry
 the whole filter.
 
-**Exit criteria:** All 18 packages visible at `{{version}}` under `{{dist_tag}}`."""
+**Exit criteria:** All 19 packages visible at `{{version}}` under `{{dist_tag}}`."""
 
 [[steps]]
 id = "tag-and-push"
@@ -339,7 +339,7 @@ const body = section
 console.log(`# Apicity v${version}`);
 console.log("");
 console.log(`- npm dist-tag: \`${distTag}\``);
-console.log("- Published packages: 18 @apicity packages in lockstep");
+console.log("- Published packages: 19 @apicity packages in lockstep");
 console.log(`- Git tag: \`v${version}\``);
 console.log("");
 

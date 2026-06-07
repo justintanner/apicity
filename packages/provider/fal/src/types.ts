@@ -24,6 +24,7 @@ export type {
   FalNanoBanana2EditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
@@ -80,6 +81,7 @@ import type {
   FalNanoBanana2EditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
+  FalSeedSpeechTtsV2Params,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalWanV2p7TextToImageParams,
   FalWanV2p7EditParams,
@@ -692,6 +694,77 @@ export interface FalSeedreamV5LiteTextToImageResponse {
   seed: number;
 }
 
+// Bytedance Seed Speech TTS v2
+export type FalSeedSpeechTtsV2Voice =
+  | "vivi_mixed_en_zh_ja_es_id"
+  | "mindy_en_es_id_pt_zh"
+  | "stokie_en"
+  | "dacey_en"
+  | "tim_en"
+  | "kian_en_zh"
+  | "cedric_en_zh"
+  | "sophie_en_zh"
+  | "jean_en_zh"
+  | "magnus_en_zh"
+  | "mabel_en_zh"
+  | "nadia_en_zh"
+  | "opal_en_zh"
+  | "pearl_en_zh"
+  | "quentin_en_zh"
+  | "vienna_mixed_en_zh"
+  | "alina_mixed_en_zh"
+  | "corinne_mixed_en_zh"
+  | "esther_mixed_en_zh"
+  | "freya_mixed_en_zh"
+  | "gigi_mixed_en_zh"
+  | "holly_mixed_en_zh"
+  | "lyla_mixed_en_zh"
+  | "daisy_mixed_en_zh"
+  | "tracy_es_zh"
+  | "jess_ja_es_id_pt_en_zh"
+  | "pinky_es_ko_mixed_en_zh"
+  | "sweety_ja_es"
+  | "sandy_es_mixed_en_zh"
+  | "sven_de"
+  | "minimi_ja"
+  | "usseau_fr"
+  | "felipe_es"
+  | "han_id"
+  | "martins_pt"
+  | "enzo_it"
+  | "shane_ko"
+  | "bonnie_zh"
+  | "felix_zh"
+  | "celeste_zh"
+  | "monkey_king_zh";
+
+export type FalSeedSpeechTtsV2OutputFormat = "mp3" | "opus";
+
+export type FalSeedSpeechTtsV2SampleRate =
+  | 8000
+  | 16000
+  | 22050
+  | 24000
+  | 32000
+  | 44100
+  | 48000;
+
+export type FalSeedSpeechTtsV2Language =
+  | "zh"
+  | "en"
+  | "ja"
+  | "es-mx"
+  | "id"
+  | "pt-br"
+  | "ko"
+  | "it"
+  | "de"
+  | "fr";
+
+export interface FalSeedSpeechTtsV2Response {
+  audio: FalFile;
+}
+
 // Wan v2.7 text-to-image
 export type FalWanImageSize =
   | "square_hd"
@@ -1246,8 +1319,24 @@ export interface FalRunBytedanceSeedreamNamespace {
   v5: FalRunBytedanceSeedreamV5Namespace;
 }
 
+type FalSeedSpeechTtsV2Fn = ((
+  params: FalSeedSpeechTtsV2Params,
+  signal?: AbortSignal
+) => Promise<FalSeedSpeechTtsV2Response>) & {
+  schema: z.ZodType<FalSeedSpeechTtsV2Params>;
+};
+
+export interface FalRunBytedanceSeedSpeechTtsNamespace {
+  v2: FalSeedSpeechTtsV2Fn;
+}
+
+export interface FalRunBytedanceSeedSpeechNamespace {
+  tts: FalRunBytedanceSeedSpeechTtsNamespace;
+}
+
 export interface FalRunBytedanceNamespace {
   seedance2p0: FalRunBytedanceSeedance2p0Namespace;
+  seedSpeech: FalRunBytedanceSeedSpeechNamespace;
   seedream: FalRunBytedanceSeedreamNamespace;
 }
 

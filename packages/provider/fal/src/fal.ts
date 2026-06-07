@@ -60,6 +60,8 @@ import {
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedreamV5LiteTextToImageResponse,
+  FalSeedSpeechTtsV2Params,
+  FalSeedSpeechTtsV2Response,
   FalElevenlabsSpeechToTextScribeV2Params,
   FalElevenlabsSpeechToTextScribeV2Response,
   FalWanV2p7TextToImageParams,
@@ -149,6 +151,7 @@ import {
   FalNanoBanana2EditRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
+  FalSeedSpeechTtsV2RequestSchema,
   FalElevenlabsSpeechToTextScribeV2RequestSchema,
   FalWanV2p7TextToImageRequestSchema,
   FalWanV2p7EditRequestSchema,
@@ -951,6 +954,28 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   // sig-ok: stylistic dotPath divergence from URL
+  // POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2
+  // Docs: https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
+  const seedSpeechTtsV2 = Object.assign(
+    async function v2(
+      params: FalSeedSpeechTtsV2Params,
+      signal?: AbortSignal
+    ): Promise<FalSeedSpeechTtsV2Response> {
+      return makeRequest<FalSeedSpeechTtsV2Response>(
+        "POST",
+        "/fal-ai/bytedance/seed-speech/tts/v2",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalSeedSpeechTtsV2RequestSchema,
+    }
+  );
+
+  // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2
   // Docs: https://docs.fal.ai
   const elevenlabsSpeechToTextScribeV2 = Object.assign(
@@ -1746,6 +1771,11 @@ export function createFal(opts: FalOptions): FalProvider {
           imageToVideo: bytedanceSeedance2p0FastImageToVideo,
           textToVideo: bytedanceSeedance2p0FastTextToVideo,
           referenceToVideo: bytedanceSeedance2p0FastReferenceToVideo,
+        },
+      },
+      seedSpeech: {
+        tts: {
+          v2: seedSpeechTtsV2,
         },
       },
       seedream: {

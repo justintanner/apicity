@@ -166,6 +166,15 @@ describe("PRICING data", () => {
       kind: "tokens",
       rate: { input: 3, output: 15 },
     });
+    expect(PRICING.xai["grok-build-0.1"]).toMatchObject({
+      kind: "tokens",
+      rate: { input: 1, output: 2, cacheRead: 0.2 },
+    });
+    expect(PRICING.xai["grok-code-fast-1"]).toBe(PRICING.xai["grok-build-0.1"]);
+    expect(PRICING.xai["grok-code-fast"]).toBe(PRICING.xai["grok-build-0.1"]);
+    expect(PRICING.xai["grok-code-fast-1-0825"]).toBe(
+      PRICING.xai["grok-build-0.1"]
+    );
   });
 
   it("kimicoding has token-priced models", () => {

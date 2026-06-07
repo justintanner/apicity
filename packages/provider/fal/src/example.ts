@@ -11,6 +11,20 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST bytedance.seedSpeech.tts.v2": {
+    "source": "fal/bytedance-seed-speech-tts-v2",
+    "payload": {
+      "text": "Hello from Apicity.",
+      "voice": "stokie_en",
+      "output_format": "mp3",
+      "sample_rate": 24000,
+      "speed": 1,
+      "volume": 1,
+      "pitch": 0,
+      "language": "en",
+      "voice_instruction": "Speak in a warm, cheerful tone."
+    }
+  },
   "POST bytedance.seedance2p0.fast.imageToVideo": {
     "source": "fal/bytedance-seedance2p0-fast-image-to-video",
     "payload": {

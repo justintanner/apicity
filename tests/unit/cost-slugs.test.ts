@@ -65,6 +65,8 @@ describe("MODEL_SLUGS", () => {
 
   it("has xai models", () => {
     expect(MODEL_SLUGS.xai).toMatchObject({
+      "grok-build-0.1": "grokbuild01",
+      "grok-code-fast-1": "grokbuild01",
       "grok-3": "grok3",
       "grok-4": "grok4",
       "grok-4-fast": "grok4f",
@@ -118,6 +120,11 @@ describe("modelSlug", () => {
 
   it("returns correct slug for xai grok-4", () => {
     expect(modelSlug("xai", "grok-4")).toBe("grok4");
+  });
+
+  it("returns shared slug for xai grok build aliases", () => {
+    expect(modelSlug("xai", "grok-build-0.1")).toBe("grokbuild01");
+    expect(modelSlug("xai", "grok-code-fast-1")).toBe("grokbuild01");
   });
 
   it("returns correct slug for kie veo3", () => {
@@ -207,6 +214,8 @@ describe("MODEL_DISPLAY", () => {
 
   it("has xai display names", () => {
     expect(MODEL_DISPLAY.xai).toMatchObject({
+      "grok-build-0.1": "Grok Build 0.1",
+      "grok-code-fast-1": "Grok Build 0.1",
       "grok-3": "Grok 3",
       "grok-4": "Grok 4",
       "grok-4-fast": "Grok 4 Fast",

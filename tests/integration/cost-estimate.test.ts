@@ -218,6 +218,23 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown.outputUsdPerMillion).toBe(0.5);
   });
 
+  it("xai grok-code-fast-1 alias → Grok Build 0.1 bundled rate", () => {
+    const c = createCost();
+    const r = c.estimate({
+      provider: "xai",
+      payload: {
+        model: "grok-code-fast-1",
+        text: "Plan a small TypeScript refactor.",
+        max_tokens: 80,
+      },
+    });
+    expect(r.source).toBe("tokens-heuristic+table");
+    expect(r.breakdown.inputTokens).toBeGreaterThan(0);
+    expect(r.breakdown.inputUsdPerMillion).toBe(1);
+    expect(r.breakdown.outputUsdPerMillion).toBe(2);
+    expect(r.warnings).toEqual([]);
+  });
+
   it("kimicoding routes to heuristic-only", () => {
     const c = createCost();
     const r = c.estimate({

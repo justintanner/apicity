@@ -114,9 +114,24 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-68 endpoints across 18 groups. Each method mirrors an upstream URL path.
+69 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
+
+<details>
+<summary><code>POST</code> <b><code>fal.bytedance.seedSpeech.tts.v2</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2</code>
+
+[Upstream docs ↗](https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api)
+
+```typescript
+const res = await fal.bytedance.seedSpeech.tts.v2({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>fal.bytedance.seedance2p0.fast.imageToVideo</code></b></summary>

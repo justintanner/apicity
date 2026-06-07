@@ -602,6 +602,89 @@ export const FalSeedreamV5LiteTextToImageRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Bytedance Seed Speech TTS v2
+// ---------------------------------------------------------------------------
+
+const FalSeedSpeechTtsV2VoiceSchema = z.enum([
+  "vivi_mixed_en_zh_ja_es_id",
+  "mindy_en_es_id_pt_zh",
+  "stokie_en",
+  "dacey_en",
+  "tim_en",
+  "kian_en_zh",
+  "cedric_en_zh",
+  "sophie_en_zh",
+  "jean_en_zh",
+  "magnus_en_zh",
+  "mabel_en_zh",
+  "nadia_en_zh",
+  "opal_en_zh",
+  "pearl_en_zh",
+  "quentin_en_zh",
+  "vienna_mixed_en_zh",
+  "alina_mixed_en_zh",
+  "corinne_mixed_en_zh",
+  "esther_mixed_en_zh",
+  "freya_mixed_en_zh",
+  "gigi_mixed_en_zh",
+  "holly_mixed_en_zh",
+  "lyla_mixed_en_zh",
+  "daisy_mixed_en_zh",
+  "tracy_es_zh",
+  "jess_ja_es_id_pt_en_zh",
+  "pinky_es_ko_mixed_en_zh",
+  "sweety_ja_es",
+  "sandy_es_mixed_en_zh",
+  "sven_de",
+  "minimi_ja",
+  "usseau_fr",
+  "felipe_es",
+  "han_id",
+  "martins_pt",
+  "enzo_it",
+  "shane_ko",
+  "bonnie_zh",
+  "felix_zh",
+  "celeste_zh",
+  "monkey_king_zh",
+]);
+
+const FalSeedSpeechTtsV2LanguageSchema = z.enum([
+  "zh",
+  "en",
+  "ja",
+  "es-mx",
+  "id",
+  "pt-br",
+  "ko",
+  "it",
+  "de",
+  "fr",
+]);
+
+export const FalSeedSpeechTtsV2RequestSchema = z.object({
+  text: z.string().max(5000),
+  voice: FalSeedSpeechTtsV2VoiceSchema.optional(),
+  output_format: z.enum(["mp3", "opus"]).optional(),
+  sample_rate: z
+    .union([
+      z.literal(8000),
+      z.literal(16000),
+      z.literal(22050),
+      z.literal(24000),
+      z.literal(32000),
+      z.literal(44100),
+      z.literal(48000),
+    ])
+    .optional(),
+  speed: z.number().min(0.5).max(2).optional(),
+  volume: z.number().min(0.5).max(2).optional(),
+  pitch: z.number().int().min(-12).max(12).optional(),
+  language: FalSeedSpeechTtsV2LanguageSchema.nullable().optional(),
+  voice_instruction: z.string().nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Wan v2.7 text-to-image
 // ---------------------------------------------------------------------------
 
@@ -1183,6 +1266,9 @@ export type FalSeedreamV5LiteEditParams = z.infer<
 >;
 export type FalSeedreamV5LiteTextToImageParams = z.infer<
   typeof FalSeedreamV5LiteTextToImageRequestSchema
+>;
+export type FalSeedSpeechTtsV2Params = z.infer<
+  typeof FalSeedSpeechTtsV2RequestSchema
 >;
 export type FalElevenlabsSpeechToTextScribeV2Params = z.infer<
   typeof FalElevenlabsSpeechToTextScribeV2RequestSchema

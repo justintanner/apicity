@@ -127,6 +127,10 @@ export const MODEL_SLUGS = {
   },
 
   xai: {
+    "grok-build-0.1": "grokbuild01",
+    "grok-code-fast-1": "grokbuild01",
+    "grok-code-fast": "grokbuild01",
+    "grok-code-fast-1-0825": "grokbuild01",
     "grok-3": "grok3",
     "grok-4": "grok4",
     "grok-4-fast": "grok4f",
@@ -292,6 +296,10 @@ export const MODEL_DISPLAY = {
   },
 
   xai: {
+    "grok-build-0.1": "Grok Build 0.1",
+    "grok-code-fast-1": "Grok Build 0.1",
+    "grok-code-fast": "Grok Build 0.1",
+    "grok-code-fast-1-0825": "Grok Build 0.1",
     "grok-3": "Grok 3",
     "grok-4": "Grok 4",
     "grok-4-fast": "Grok 4 Fast",

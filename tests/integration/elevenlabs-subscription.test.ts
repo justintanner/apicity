@@ -21,8 +21,34 @@ describe("elevenlabs v1.user.subscription", () => {
     const subscription = await provider.v1.user.subscription();
 
     expect(typeof subscription.tier).toBe("string");
+    expect(subscription.tier.length).toBeGreaterThan(0);
     expect(subscription.character_count).toBeGreaterThanOrEqual(0);
     expect(subscription.character_limit).toBeGreaterThanOrEqual(0);
+    expect(subscription.character_count).toBeLessThanOrEqual(
+      subscription.character_limit
+    );
+    expect(subscription.remaining_character_count).toBe(
+      Math.max(0, subscription.character_limit - subscription.character_count)
+    );
+    expect(subscription.remaining_character_count).toBeGreaterThanOrEqual(0);
+    expect(
+      subscription.character_count + subscription.remaining_character_count
+    ).toBe(subscription.character_limit);
+    expect(typeof subscription.status).toBe("string");
+    expect(subscription.status?.length).toBeGreaterThan(0);
+  });
+
+  it("exposes the same token balance check via get.v1", async () => {
+    const provider = createElevenLabs({
+      apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
+    });
+
+    expect(provider.get.v1.user.subscription).toBe(
+      provider.v1.user.subscription
+    );
+
+    const subscription = await provider.get.v1.user.subscription();
+
     expect(subscription.remaining_character_count).toBe(
       Math.max(0, subscription.character_limit - subscription.character_count)
     );

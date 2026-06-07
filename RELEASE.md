@@ -11,7 +11,8 @@ one npm dist-tag per release.
 | `main`   | Where agents and humans land work. CI runs here on every PR.           |
 | `stable` | Release branch. Releases cut from `stable`; `vX.Y.Z` tags pushed here. |
 
-The release flow is: feature work → `main` → fast-forward `stable` → publish.
+The release flow is: feature work → green `main` tests and CI →
+fast-forward `stable` → publish.
 
 ## Versioning + dist-tags
 
@@ -45,20 +46,22 @@ bd mol pour mol-apicity-release \
   --var dist_tag=alpha
 ```
 
-The formula creates 12 chained beads. An agent (or you, manually) walks them:
+The formula creates 13 chained beads. An agent (or you, manually) walks them:
 
 1. `load-context` — verify clean working tree, read the release bead
-2. `sync-stable` — `git checkout stable && git merge --ff-only origin/main`
-3. `preflight-gates` — `pnpm run ci:local` (build + lint + tests)
-4. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
-5. `bump-versions` — write `version` to all 19 `package.json`, commit
-6. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
-7. **`publish`** — `pnpm publish --tag <dist_tag>` with `NPM_TOKEN` from the `apicity` 1Password vault
-8. `tag-and-push` — `git tag v<version>`, push `stable` + tag
-9. `update-github-release` — create or update the GitHub release page for `v<version>`
-10. `sync-main-release` — fast-forward `main` to the release commit and push it
-11. `smoke-install` — `npm install @apicity/openai@<dist_tag>` in `/tmp` and dynamic-import
-12. `close` — close the release bead, `bd remember` the version
+2. `verify-main-gates` — on `main`, run `pnpm run test:run`,
+   `pnpm run ci:local`, and verify GitHub CI is green for `origin/main`
+3. `sync-stable` — `git checkout stable && git merge --ff-only origin/main`
+4. `preflight-gates` — `pnpm run ci:local` (build + lint + tests)
+5. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
+6. `bump-versions` — write `version` to all 19 `package.json`, commit
+7. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
+8. **`publish`** — `pnpm publish --tag <dist_tag>` with `NPM_TOKEN` from the `apicity` 1Password vault
+9. `tag-and-push` — `git tag v<version>`, push `stable` + tag
+10. `update-github-release` — create or update the GitHub release page for `v<version>`
+11. `sync-main-release` — fast-forward `main` to the release commit and push it
+12. `smoke-install` — `npm install @apicity/openai@<dist_tag>` in `/tmp` and dynamic-import
+13. `close` — close the release bead, `bd remember` the version
 
 ## What the formula does NOT do automatically
 

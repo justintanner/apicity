@@ -23,5 +23,11 @@ export function createPolymarket(
     post: {
       ...clob.post,
     },
+    put: {
+      ...clob.put,
+    },
+    delete: {
+      ...clob.delete,
+    },
   });
 }

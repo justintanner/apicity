@@ -24,3 +24,10 @@ DASHBOARD_PASS=op://Apicity/DASHBOARD_PASS/password
 # (justintanner/superlzy) push. Public key registered on the
 # justintanner DoltHub account. See ~/superlzy/scripts/install-dolt-creds.sh.
 DOLT_CREDS_JWK=op://Apicity/DOLT_CREDS_JWK/password
+POLYMARKET_ADDRESS=op://Apicity/POLYMARKET_ADDRESS/password
+POLYMARKET_CLOB_API_KEY=op://Apicity/POLYMARKET_CLOB_API_KEY/password
+POLYMARKET_CLOB_API_SECRET=op://Apicity/POLYMARKET_CLOB_API_SECRET/password
+POLYMARKET_CLOB_API_PASSPHRASE=op://Apicity/POLYMARKET_CLOB_API_PASSPHRASE/password
+POLYMARKET_PRIVATE_KEY=op://Apicity/POLYMARKET_PRIVATE_KEY/password
+POLYMARKET_SIGNATURE_TYPE=op://Apicity/POLYMARKET_SIGNATURE_TYPE/password
+POLYMARKET_FUNDER_ADDRESS=op://Apicity/POLYMARKET_FUNDER_ADDRESS/password

@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 [![docs](https://img.shields.io/badge/docs-docs.polymarket.com-blue)](https://docs.polymarket.com/api-reference/introduction)
 
-Polymarket public-data API provider — Gamma, Data, and CLOB market-data endpoints (no auth).
+Polymarket API provider — Gamma, Data, and CLOB market-data/trading endpoints.
 
 ## Installation
 
@@ -25,9 +25,174 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-46 endpoints across 3 groups. Each method mirrors an upstream URL path.
+70 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.auth.apiKey</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/auth/api-key</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.cancelAll</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/cancel-all</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-all-orders)
+
+```typescript
+const res = await polymarket.clob.cancelAll({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.cancelMarketOrders</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/cancel-market-orders</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market)
+
+```typescript
+const res = await polymarket.clob.cancelMarketOrders({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.notifications</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/notifications{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.notifications({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.order</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/order</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-single-order)
+
+```typescript
+const res = await polymarket.clob.order({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.orders</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/orders</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders)
+
+```typescript
+const res = await polymarket.clob.orders({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.auth.apiKeys</code></b></summary>
+
+<code>GET https://clob.polymarket.com/auth/api-keys</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.auth.apiKeys({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.auth.banStatus.closedOnly</code></b></summary>
+
+<code>GET https://clob.polymarket.com/auth/ban-status/closed-only</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.auth.banStatus.closedOnly({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.auth.deriveApiKey</code></b></summary>
+
+<code>GET https://clob.polymarket.com/auth/derive-api-key</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.auth.deriveApiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.balanceAllowance</code></b></summary>
+
+<code>GET https://clob.polymarket.com/balance-allowance{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.balanceAllowance({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.balanceAllowance.update</code></b></summary>
+
+<code>GET https://clob.polymarket.com/balance-allowance/update{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.balanceAllowance.update({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>polymarket.clob.book</code></b></summary>
@@ -53,6 +218,51 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.clobMarkets({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.data.order</code></b></summary>
+
+<code>GET https://clob.polymarket.com/data/order/{orderID}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-single-order-by-id)
+
+```typescript
+const res = await polymarket.clob.data.order({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.data.orders</code></b></summary>
+
+<code>GET https://clob.polymarket.com/data/orders{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-user-orders)
+
+```typescript
+const res = await polymarket.clob.data.orders({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.data.trades</code></b></summary>
+
+<code>GET https://clob.polymarket.com/data/trades{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-trades)
+
+```typescript
+const res = await polymarket.clob.data.trades({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -128,6 +338,51 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.midpoint({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.notifications</code></b></summary>
+
+<code>GET https://clob.polymarket.com/notifications{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.notifications({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.orderScoring</code></b></summary>
+
+<code>GET https://clob.polymarket.com/order-scoring{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status)
+
+```typescript
+const res = await polymarket.clob.orderScoring({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.ordersScoring</code></b></summary>
+
+<code>GET https://clob.polymarket.com/orders-scoring{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status)
+
+```typescript
+const res = await polymarket.clob.ordersScoring({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -255,6 +510,21 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>polymarket.clob.auth.apiKey</code></b></summary>
+
+<code>POST https://clob.polymarket.com/auth/api-key</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>polymarket.clob.batchPricesHistory</code></b></summary>
 
 <code>POST https://clob.polymarket.com/batch-prices-history</code>
@@ -278,6 +548,21 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.books({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.heartbeats</code></b></summary>
+
+<code>POST https://clob.polymarket.com/heartbeats</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat)
+
+```typescript
+const res = await polymarket.clob.heartbeats({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -315,6 +600,51 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>polymarket.clob.order</code></b></summary>
+
+<code>POST https://clob.polymarket.com/order</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order)
+
+```typescript
+const res = await polymarket.clob.order({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.orders</code></b></summary>
+
+<code>POST https://clob.polymarket.com/orders</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-multiple-orders)
+
+```typescript
+const res = await polymarket.clob.orders({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.ordersScoring</code></b></summary>
+
+<code>POST https://clob.polymarket.com/orders-scoring</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status)
+
+```typescript
+const res = await polymarket.clob.ordersScoring({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>polymarket.clob.prices</code></b></summary>
 
 <code>POST https://clob.polymarket.com/prices</code>
@@ -338,6 +668,36 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.spreads({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.v1.heartbeats</code></b></summary>
+
+<code>POST https://clob.polymarket.com/v1/heartbeats</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat)
+
+```typescript
+const res = await polymarket.clob.v1.heartbeats({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>polymarket.clob.balanceAllowance</code></b></summary>
+
+<code>PUT https://clob.polymarket.com/balance-allowance{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+
+```typescript
+const res = await polymarket.clob.balanceAllowance({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)

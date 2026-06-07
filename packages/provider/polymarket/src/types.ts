@@ -1,21 +1,56 @@
 // ---------------------------------------------------------------------------
-// @apicity/polymarket — public Polymarket APIs (Gamma, Data, CLOB market-data)
+// @apicity/polymarket — Polymarket APIs (Gamma, Data, CLOB trading/market-data)
 // ---------------------------------------------------------------------------
 
 import type { z } from "zod";
 import type {
+  PolymarketClobL1Headers,
   PolymarketClobTokenBatchRequest,
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
+  PolymarketClobPostOrderRequest,
+  PolymarketClobPostOrdersRequest,
+  PolymarketClobCancelOrderRequest,
+  PolymarketClobCancelOrdersRequest,
+  PolymarketClobCancelMarketOrdersRequest,
+  PolymarketClobBalanceAllowanceQuery,
+  PolymarketClobUserOrdersQuery,
+  PolymarketClobUserTradesQuery,
+  PolymarketClobNotificationsQuery,
+  PolymarketClobDropNotificationsQuery,
+  PolymarketClobOrderScoringQuery,
+  PolymarketClobOrdersScoringQuery,
+  PolymarketClobOrdersScoringRequest,
+  PolymarketClobHeartbeatRequest,
 } from "./zod";
 
 // -- Request types — derived from Zod schemas (source of truth in zod.ts) ----
 
 export type {
   PolymarketOptions,
+  PolymarketClobApiCredentials,
+  PolymarketClobL1Headers,
+  PolymarketClobL2HeaderArgs,
+  PolymarketClobL2Headers,
+  PolymarketClobL2HeaderSigner,
   PolymarketClobTokenBatchRequest,
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
+  PolymarketClobSignedOrder,
+  PolymarketClobPostOrderRequest,
+  PolymarketClobPostOrdersRequest,
+  PolymarketClobCancelOrderRequest,
+  PolymarketClobCancelOrdersRequest,
+  PolymarketClobCancelMarketOrdersRequest,
+  PolymarketClobBalanceAllowanceQuery,
+  PolymarketClobUserOrdersQuery,
+  PolymarketClobUserTradesQuery,
+  PolymarketClobNotificationsQuery,
+  PolymarketClobDropNotificationsQuery,
+  PolymarketClobOrderScoringQuery,
+  PolymarketClobOrdersScoringQuery,
+  PolymarketClobOrdersScoringRequest,
+  PolymarketClobHeartbeatRequest,
 } from "./zod";
 
 // -- Shared scalars ---------------------------------------------------------
@@ -24,6 +59,16 @@ export type {
 // "1116.34") to preserve precision over the wire — callers convert to Number
 // when arithmetic is needed.
 export type PolymarketClobSide = "BUY" | "SELL";
+export type PolymarketClobSignatureType = 0 | 1 | 2 | 3;
+export type PolymarketClobOrderType = "GTC" | "FOK" | "GTD" | "FAK";
+export type PolymarketClobTradeStatus =
+  | "TRADE_STATUS_CONFIRMED"
+  | "TRADE_STATUS_FAILED"
+  | "TRADE_STATUS_RETRYING"
+  | "TRADE_STATUS_MATCHED"
+  | "TRADE_STATUS_MINED"
+  | string;
+export type PolymarketClobTraderSide = "TAKER" | "MAKER";
 
 // -- Response types (hand-written) ------------------------------------------
 
@@ -248,6 +293,143 @@ export interface PolymarketClobBatchPricesHistoryResponse {
   history: Record<string, PolymarketClobPriceHistoryPoint[]>;
 }
 
+// -- Authenticated CLOB account/trading responses ---------------------------
+
+export interface PolymarketClobApiKeyResponse {
+  apiKey: string;
+  secret: string;
+  passphrase: string;
+}
+
+export interface PolymarketClobApiKeysResponse {
+  apiKeys: string[];
+}
+
+export interface PolymarketClobPostOrderResponse {
+  success: boolean;
+  orderID: string;
+  status: "live" | "matched" | "delayed" | string;
+  makingAmount?: string;
+  takingAmount?: string;
+  transactionsHashes?: string[];
+  tradeIDs?: string[];
+  errorMsg?: string;
+  [key: string]: unknown;
+}
+
+export type PolymarketClobPostOrdersResponse =
+  PolymarketClobPostOrderResponse[];
+
+export interface PolymarketClobCancelOrdersResponse {
+  canceled: string[];
+  not_canceled: Record<string, string>;
+}
+
+export interface PolymarketClobOpenOrder {
+  id: string;
+  status: string;
+  owner: string;
+  maker_address: string;
+  market: string;
+  asset_id: string;
+  side: PolymarketClobSide;
+  original_size: string;
+  size_matched: string;
+  price: string;
+  outcome: string;
+  expiration: string;
+  order_type: PolymarketClobOrderType | string;
+  associate_trades?: string[];
+  created_at: number;
+  [key: string]: unknown;
+}
+
+export type PolymarketClobOpenOrderResponse = PolymarketClobOpenOrder;
+
+export interface PolymarketClobOpenOrdersResponse {
+  limit: number;
+  next_cursor: string;
+  count: number;
+  data: PolymarketClobOpenOrder[];
+}
+
+export interface PolymarketClobBalanceAllowanceResponse {
+  balance: string;
+  allowances: Record<string, string>;
+}
+
+export interface PolymarketClobClosedOnlyResponse {
+  closed_only: boolean;
+}
+
+export interface PolymarketClobNotification {
+  id: number;
+  owner: string;
+  type: number;
+  payload: Record<string, unknown>;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type PolymarketClobNotificationsResponse = PolymarketClobNotification[];
+
+export interface PolymarketClobHeartbeatResponse {
+  status: string;
+}
+
+export interface PolymarketClobHeartbeatV1Response {
+  heartbeat_id: string;
+}
+
+export interface PolymarketClobOrderScoringResponse {
+  scoring: boolean;
+}
+
+export type PolymarketClobOrdersScoringResponse = Record<string, boolean>;
+
+export interface PolymarketClobTradeMakerOrder {
+  order_id?: string;
+  owner?: string;
+  maker_address?: string;
+  matched_amount?: string;
+  price?: string;
+  fee_rate_bps?: string;
+  asset_id?: string;
+  outcome?: string;
+  side?: PolymarketClobSide;
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobTrade {
+  id: string;
+  taker_order_id: string;
+  market: string;
+  asset_id: string;
+  side: PolymarketClobSide;
+  size: string;
+  price: string;
+  status: PolymarketClobTradeStatus;
+  match_time: string;
+  match_time_nano?: string;
+  last_update: string;
+  outcome: string;
+  bucket_index: number;
+  owner: string;
+  maker_address: string;
+  transaction_hash?: string;
+  err_msg?: string | null;
+  maker_orders?: PolymarketClobTradeMakerOrder[];
+  trader_side: PolymarketClobTraderSide;
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobTradesResponse {
+  limit: number;
+  next_cursor: string;
+  count: number;
+  data: PolymarketClobTrade[];
+}
+
 // -- Query types ------------------------------------------------------------
 
 export interface PolymarketClobTokenQuery {
@@ -407,6 +589,7 @@ export interface PolymarketClobMarketsCompactMethod {
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface PolymarketClobGetNamespace {
+  auth: PolymarketClobAuthGetNamespace;
   time: PolymarketClobTimeMethod;
   book: PolymarketClobBookMethod;
   price: PolymarketClobPriceMethod;
@@ -422,6 +605,11 @@ export interface PolymarketClobGetNamespace {
   samplingSimplifiedMarkets: PolymarketClobSamplingSimplifiedMarketsMethod;
   marketsByToken: PolymarketClobMarketsByTokenMethod;
   clobMarkets: PolymarketClobMarketsCompactMethod;
+  data: PolymarketClobDataGetNamespace;
+  balanceAllowance: PolymarketClobBalanceAllowanceMethod;
+  notifications: PolymarketClobNotificationsMethod;
+  orderScoring: PolymarketClobOrderScoringMethod;
+  ordersScoring: PolymarketClobOrdersScoringMethod;
 }
 
 // -- POST method interfaces (C5) --------------------------------------------
@@ -474,17 +662,204 @@ export interface PolymarketClobBatchPricesHistoryMethod {
   schema: z.ZodType<PolymarketClobBatchPricesHistoryRequest>;
 }
 
+export interface PolymarketClobL1AuthMethod<T> {
+  (signal?: AbortSignal): Promise<T>;
+  (headers: PolymarketClobL1Headers, signal?: AbortSignal): Promise<T>;
+}
+
+export interface PolymarketClobAuthGetNamespace {
+  apiKeys: PolymarketClobL1AuthMethod<PolymarketClobApiKeysResponse>;
+  deriveApiKey: PolymarketClobL1AuthMethod<PolymarketClobApiKeyResponse>;
+  banStatus: {
+    closedOnly(signal?: AbortSignal): Promise<PolymarketClobClosedOnlyResponse>;
+  };
+}
+
+export interface PolymarketClobAuthPostNamespace {
+  apiKey: PolymarketClobL1AuthMethod<PolymarketClobApiKeyResponse>;
+}
+
+export interface PolymarketClobAuthDeleteNamespace {
+  apiKey(signal?: AbortSignal): Promise<string>;
+}
+
+export interface PolymarketClobPostOrderMethod {
+  (
+    req: PolymarketClobPostOrderRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPostOrderResponse>;
+  schema: z.ZodType<PolymarketClobPostOrderRequest>;
+}
+
+export interface PolymarketClobPostOrdersMethod {
+  (
+    req: PolymarketClobPostOrdersRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPostOrdersResponse>;
+  schema: z.ZodType<PolymarketClobPostOrdersRequest>;
+}
+
+export interface PolymarketClobCancelOrderMethod {
+  (
+    req: PolymarketClobCancelOrderRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobCancelOrdersResponse>;
+  schema: z.ZodType<PolymarketClobCancelOrderRequest>;
+}
+
+export interface PolymarketClobCancelOrdersMethod {
+  (
+    req: PolymarketClobCancelOrdersRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobCancelOrdersResponse>;
+  schema: z.ZodType<PolymarketClobCancelOrdersRequest>;
+}
+
+export interface PolymarketClobCancelAllMethod {
+  (signal?: AbortSignal): Promise<PolymarketClobCancelOrdersResponse>;
+}
+
+export interface PolymarketClobCancelMarketOrdersMethod {
+  (
+    req: PolymarketClobCancelMarketOrdersRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobCancelOrdersResponse>;
+  schema: z.ZodType<PolymarketClobCancelMarketOrdersRequest>;
+}
+
+export interface PolymarketClobDataOrdersMethod {
+  (
+    params?: PolymarketClobUserOrdersQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobOpenOrdersResponse>;
+}
+
+export interface PolymarketClobDataOrderMethod {
+  (
+    orderID: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobOpenOrderResponse>;
+}
+
+export interface PolymarketClobDataTradesMethod {
+  (
+    params?: PolymarketClobUserTradesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobTradesResponse>;
+}
+
+export interface PolymarketClobDataGetNamespace {
+  orders: PolymarketClobDataOrdersMethod;
+  order: PolymarketClobDataOrderMethod;
+  trades: PolymarketClobDataTradesMethod;
+}
+
+export interface PolymarketClobBalanceAllowanceMethod {
+  (
+    params: PolymarketClobBalanceAllowanceQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBalanceAllowanceResponse>;
+  update(
+    params: PolymarketClobBalanceAllowanceQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBalanceAllowanceResponse>;
+}
+
+export interface PolymarketClobBalanceAllowancePutMethod {
+  (
+    params: PolymarketClobBalanceAllowanceQuery,
+    signal?: AbortSignal
+  ): Promise<Record<string, unknown>>;
+}
+
+export interface PolymarketClobNotificationsMethod {
+  (
+    params: PolymarketClobNotificationsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobNotificationsResponse>;
+}
+
+export interface PolymarketClobDropNotificationsMethod {
+  (
+    params: PolymarketClobDropNotificationsQuery,
+    signal?: AbortSignal
+  ): Promise<string>;
+}
+
+export interface PolymarketClobHeartbeatMethod {
+  (signal?: AbortSignal): Promise<PolymarketClobHeartbeatResponse>;
+}
+
+export interface PolymarketClobHeartbeatV1Method {
+  (
+    req: PolymarketClobHeartbeatRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobHeartbeatV1Response>;
+  schema: z.ZodType<PolymarketClobHeartbeatRequest>;
+}
+
+export interface PolymarketClobOrderScoringMethod {
+  (
+    params: PolymarketClobOrderScoringQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobOrderScoringResponse>;
+}
+
+export interface PolymarketClobOrdersScoringMethod {
+  (
+    params: PolymarketClobOrdersScoringQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobOrdersScoringResponse>;
+}
+
+export interface PolymarketClobOrdersScoringPostMethod {
+  (
+    req: PolymarketClobOrdersScoringRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobOrdersScoringResponse>;
+  schema: z.ZodType<PolymarketClobOrdersScoringRequest>;
+}
+
 export interface PolymarketClobPostNamespace {
+  auth: PolymarketClobAuthPostNamespace;
+  order: PolymarketClobPostOrderMethod;
+  orders: PolymarketClobPostOrdersMethod;
   books: PolymarketClobBooksBatchMethod;
   prices: PolymarketClobPricesBatchMethod;
   midpoints: PolymarketClobMidpointsBatchMethod;
   spreads: PolymarketClobSpreadsBatchMethod;
   lastTradesPrices: PolymarketClobLastTradesPricesBatchMethod;
   batchPricesHistory: PolymarketClobBatchPricesHistoryMethod;
+  heartbeats: PolymarketClobHeartbeatMethod;
+  v1: {
+    heartbeats: PolymarketClobHeartbeatV1Method;
+  };
+  ordersScoring: PolymarketClobOrdersScoringPostMethod;
 }
 
 export interface PolymarketPostNamespace {
   clob: PolymarketClobPostNamespace;
+}
+
+export interface PolymarketClobDeleteNamespace {
+  auth: PolymarketClobAuthDeleteNamespace;
+  order: PolymarketClobCancelOrderMethod;
+  orders: PolymarketClobCancelOrdersMethod;
+  cancelAll: PolymarketClobCancelAllMethod;
+  cancelMarketOrders: PolymarketClobCancelMarketOrdersMethod;
+  notifications: PolymarketClobDropNotificationsMethod;
+}
+
+export interface PolymarketDeleteNamespace {
+  clob: PolymarketClobDeleteNamespace;
+}
+
+export interface PolymarketClobPutNamespace {
+  balanceAllowance: PolymarketClobBalanceAllowancePutMethod;
+}
+
+export interface PolymarketPutNamespace {
+  clob: PolymarketClobPutNamespace;
 }
 
 // ===========================================================================
@@ -1134,4 +1509,6 @@ export interface PolymarketGetNamespace {
 export interface PolymarketProvider {
   get: PolymarketGetNamespace;
   post: PolymarketPostNamespace;
+  put: PolymarketPutNamespace;
+  delete: PolymarketDeleteNamespace;
 }

@@ -96,19 +96,15 @@ importers:
 
   packages/mcp-server:
     dependencies:
-      '@apicity/cost':
-        specifier: workspace:*
-        version: link:../provider/cost
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.29.0
-        version: 1.29.0(zod@4.4.3)
-    devDependencies:
       '@apicity/alibaba':
         specifier: workspace:*
         version: link:../provider/alibaba
       '@apicity/anthropic':
         specifier: workspace:*
         version: link:../provider/anthropic
+      '@apicity/cost':
+        specifier: workspace:*
+        version: link:../provider/cost
       '@apicity/elevenlabs':
         specifier: workspace:*
         version: link:../provider/elevenlabs
@@ -145,6 +141,12 @@ importers:
       '@apicity/xai':
         specifier: workspace:*
         version: link:../provider/xai
+      '@apicity/youtube':
+        specifier: workspace:*
+        version: link:../provider/youtube
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
 
   packages/provider/alibaba:
     dependencies:

@@ -14,8 +14,6 @@ in lockstep with the providers.
 npm install @apicity/mcp-server
 # or
 pnpm add @apicity/mcp-server
-# plus whichever providers you want exposed:
-pnpm add @apicity/openai @apicity/anthropic @apicity/xai @apicity/fal
 ```
 
 ## Run
@@ -23,14 +21,31 @@ pnpm add @apicity/openai @apicity/anthropic @apicity/xai @apicity/fal
 ```bash
 # Stdio server. Logs to stderr; stdout is reserved for MCP framing.
 OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-... \
-  npx apicity-mcp --output-dir ./apicity-out
+  npx apicity-mcp
+```
+
+With 1Password, put each provider secret in an item named after the env var
+(`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) with the value in the `password`
+field, then pass the vault name:
+
+```bash
+npx -y @apicity/mcp-server --op-vault Apicity
+```
+
+Claude Code setup:
+
+```bash
+claude mcp add --scope user apicity -- \
+  npx -y @apicity/mcp-server \
+  --op-vault Apicity
 ```
 
 ### Flags
 
 | Flag                           | Description                                                                                                    |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `--output-dir <path>`          | Where binary results and downloaded media URLs land.                                                           |
+| `--op-vault <vault>`           | Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or use `APICITY_OP_VAULT`).       |
+| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.       |
 | `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                             |
 | `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)). |
 | `--help`                       | Print usage.                                                                                                   |
@@ -48,11 +63,17 @@ OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-... \
 | `kimicoding` | `KIMI_CODING_API_KEY`  |
 | `alibaba`    | `DASHSCOPE_API_KEY`    |
 | `elevenlabs` | `ELEVENLABS_API_KEY`   |
+| `google`     | `GOOGLE_API_KEY`       |
 | `x`          | `X_ACCESS_TOKEN`       |
 | `ig`         | `IG_ACCESS_TOKEN`      |
+| `youtube`    | `YOUTUBE_ACCESS_TOKEN` |
+| `telegram`   | `TELEGRAM_BOT_KEY`     |
 | `free`       | _(none — public APIs)_ |
 
-Providers without their env var set are silently skipped.
+Providers without their env var set are silently skipped. With `--op-vault`,
+missing env vars are read from 1Password before the MCP server starts. If
+`--providers` is set, a missing requested provider secret is a startup error;
+without `--providers`, missing vault items are skipped.
 
 ## Tool naming
 
@@ -68,7 +89,9 @@ The tool description always includes the upstream URL and docs URL.
 
 ## Output handling
 
-When `--output-dir` is set:
+The CLI saves binary responses and downloaded media URLs to
+`CLAUDE_PROJECT_DIR` when Claude Code provides it, otherwise to the current
+directory. Pass `--output-dir` to override that location.
 
 - **Binary responses** (`ArrayBuffer` / `Uint8Array`, e.g. `openai_v1_audio_speech`)
   are written to the directory; the tool result is `{ savedTo, bytes }`.
@@ -78,9 +101,6 @@ When `--output-dir` is set:
   added next to the original URL. Failures are inlined as
   `*_savedTo: "error: ..."` and don't break the response.
 - Streaming endpoints (anthropic streams, etc.) are buffered into an array.
-
-Without `--output-dir`, binary results are summarized as a byte count and URLs
-pass through untouched.
 
 ## Paid endpoints
 
@@ -124,13 +144,10 @@ embed the registry into your own MCP server.
       "args": [
         "-y",
         "@apicity/mcp-server",
-        "--output-dir",
-        "/Users/me/apicity-out"
+        "--op-vault",
+        "Apicity"
       ],
-      "env": {
-        "OPENAI_API_KEY": "sk-...",
-        "ANTHROPIC_API_KEY": "sk-..."
-      }
+      "env": {}
     }
   }
 }

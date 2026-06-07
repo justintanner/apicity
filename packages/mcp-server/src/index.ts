@@ -1,5 +1,19 @@
 export { startServer, type StartServerOptions } from "./server.js";
 export {
+  parseArgs,
+  resolveOpVault,
+  resolveOutputDir,
+  type ParsedArgs,
+} from "./cli.js";
+export {
+  fillOnePasswordEnv,
+  getProviderEnvVars,
+  onePasswordRef,
+  readOnePasswordSecret,
+  type OnePasswordEnvOptions,
+  type OpRead,
+} from "./one-password.js";
+export {
   buildRegistry,
   loadTsv,
   makeToolName,

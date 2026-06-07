@@ -50,84 +50,23 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
+    "@apicity/alibaba": "workspace:*",
+    "@apicity/anthropic": "workspace:*",
     "@apicity/cost": "workspace:*",
+    "@apicity/elevenlabs": "workspace:*",
+    "@apicity/fal": "workspace:*",
+    "@apicity/fireworks": "workspace:*",
+    "@apicity/free-media-upload": "workspace:*",
+    "@apicity/google": "workspace:*",
+    "@apicity/meta": "workspace:*",
+    "@apicity/kie": "workspace:*",
+    "@apicity/kimicoding": "workspace:*",
+    "@apicity/openai": "workspace:*",
+    "@apicity/telegram": "workspace:*",
+    "@apicity/x": "workspace:*",
+    "@apicity/xai": "workspace:*",
+    "@apicity/youtube": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0"
-  },
-  "peerDependencies": {
-    "@apicity/alibaba": "workspace:*",
-    "@apicity/anthropic": "workspace:*",
-    "@apicity/elevenlabs": "workspace:*",
-    "@apicity/fal": "workspace:*",
-    "@apicity/fireworks": "workspace:*",
-    "@apicity/free-media-upload": "workspace:*",
-    "@apicity/google": "workspace:*",
-    "@apicity/meta": "workspace:*",
-    "@apicity/kie": "workspace:*",
-    "@apicity/kimicoding": "workspace:*",
-    "@apicity/openai": "workspace:*",
-    "@apicity/telegram": "workspace:*",
-    "@apicity/x": "workspace:*",
-    "@apicity/xai": "workspace:*"
-  },
-  "peerDependenciesMeta": {
-    "@apicity/alibaba": {
-      "optional": true
-    },
-    "@apicity/anthropic": {
-      "optional": true
-    },
-    "@apicity/elevenlabs": {
-      "optional": true
-    },
-    "@apicity/fal": {
-      "optional": true
-    },
-    "@apicity/fireworks": {
-      "optional": true
-    },
-    "@apicity/free-media-upload": {
-      "optional": true
-    },
-    "@apicity/google": {
-      "optional": true
-    },
-    "@apicity/meta": {
-      "optional": true
-    },
-    "@apicity/kie": {
-      "optional": true
-    },
-    "@apicity/kimicoding": {
-      "optional": true
-    },
-    "@apicity/openai": {
-      "optional": true
-    },
-    "@apicity/telegram": {
-      "optional": true
-    },
-    "@apicity/x": {
-      "optional": true
-    },
-    "@apicity/xai": {
-      "optional": true
-    }
-  },
-  "devDependencies": {
-    "@apicity/alibaba": "workspace:*",
-    "@apicity/anthropic": "workspace:*",
-    "@apicity/elevenlabs": "workspace:*",
-    "@apicity/fal": "workspace:*",
-    "@apicity/fireworks": "workspace:*",
-    "@apicity/free-media-upload": "workspace:*",
-    "@apicity/google": "workspace:*",
-    "@apicity/meta": "workspace:*",
-    "@apicity/kie": "workspace:*",
-    "@apicity/kimicoding": "workspace:*",
-    "@apicity/openai": "workspace:*",
-    "@apicity/telegram": "workspace:*",
-    "@apicity/x": "workspace:*",
-    "@apicity/xai": "workspace:*"
   },
   "homepage": "https://github.com/justintanner/apicity#readme",
   "bugs": {

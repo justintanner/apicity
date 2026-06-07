@@ -1,6 +1,6 @@
 {
   "name": "@apicity/elevenlabs",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "ElevenLabs provider for sound effect generation, text-to-speech, and audio APIs.",
   "license": "MIT",
   "repository": {

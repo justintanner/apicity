@@ -312,16 +312,98 @@ gh auth status
 If `gh auth status` fails, STOP. Fix GitHub CLI authentication before
 continuing; do not skip the release page.
 
-**2. Build release notes from the root changelog when available:**
+**2. Build release notes from the changelog or git history:**
 ```bash
 notes="/tmp/apicity-github-release-v{{version}}.md"
 node <<'NODE' > "$notes"
 const fs = require("fs");
+const { execFileSync } = require("child_process");
+
 const version = "{{version}}";
 const distTag = "{{dist_tag}}";
+const currentTag = `v${version}`;
 const changelog = fs.existsSync("CHANGELOG.md")
   ? fs.readFileSync("CHANGELOG.md", "utf8")
   : "";
+
+function git(args) {
+  try {
+    return execFileSync("git", args, {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
+function readPackages() {
+  const dirs = [
+    "packages/mcp-server",
+    ...fs
+      .readdirSync("packages/provider", { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => `packages/provider/${entry.name}`),
+  ];
+
+  return dirs
+    .filter((dir) => fs.existsSync(`${dir}/package.json`))
+    .map((dir) => JSON.parse(fs.readFileSync(`${dir}/package.json`, "utf8")))
+    .filter((pkg) => pkg.name && pkg.name.startsWith("@apicity/"))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function findPreviousTag() {
+  const nearest = git([
+    "describe",
+    "--tags",
+    "--abbrev=0",
+    `${currentTag}^`,
+    "--match",
+    "v[0-9]*",
+  ]);
+  if (nearest) return nearest;
+
+  return git([
+    "tag",
+    "--merged",
+    currentTag,
+    "--sort=-version:refname",
+    "--list",
+    "v*",
+  ])
+    .split("\n")
+    .find((tag) => tag && tag !== currentTag) || "";
+}
+
+function readCommits(previousTag) {
+  const range = previousTag ? `${previousTag}..${currentTag}` : currentTag;
+  return git(["log", "--format=%h%x09%s", range])
+    .split("\n")
+    .filter(Boolean)
+    .map((line) => {
+      const [hash, ...subjectParts] = line.split("\t");
+      return { hash, subject: subjectParts.join("\t") };
+    });
+}
+
+function printCommitList(commits) {
+  const limit = 40;
+  for (const commit of commits.slice(0, limit)) {
+    console.log(`- \`${commit.hash}\` ${commit.subject}`);
+  }
+  if (commits.length > limit) {
+    console.log(`- ...and ${commits.length - limit} more commits.`);
+  }
+}
+
+function isReleaseMaintenance(commit) {
+  return (
+    /^(chore|fix)\(release\):/i.test(commit.subject) ||
+    /\brelease formula\b/i.test(commit.subject) ||
+    /\brelease title\b/i.test(commit.subject)
+  );
+}
 
 const section = changelog
   .split(/^## /m)
@@ -335,12 +417,22 @@ const section = changelog
 const body = section
   ? section.replace(/^[^\n]*\n?/, "").trim()
   : "";
+const packages = readPackages();
+const previousTag = findPreviousTag();
+const commits = readCommits(previousTag);
+const releaseMaintenance = commits.filter(isReleaseMaintenance);
+const changes = commits.filter((commit) => !isReleaseMaintenance(commit));
 
 console.log(`# Apicity v${version}`);
 console.log("");
+console.log("## Summary");
+console.log("");
 console.log(`- npm dist-tag: \`${distTag}\``);
-console.log("- Published packages: 19 @apicity packages in lockstep");
-console.log(`- Git tag: \`v${version}\``);
+console.log(`- Published packages: ${packages.length} @apicity packages in lockstep`);
+console.log(`- Git tag: \`${currentTag}\``);
+if (previousTag) {
+  console.log(`- Compare range: \`${previousTag}...${currentTag}\``);
+}
 console.log("");
 
 if (body) {
@@ -348,7 +440,33 @@ if (body) {
   console.log("");
   console.log(body);
 } else {
-  console.log("Published the lockstep Apicity package set to npm.");
+  console.log("## What's Changed");
+  console.log("");
+  if (changes.length) {
+    printCommitList(changes);
+  } else if (previousTag) {
+    console.log(
+      `No non-release commits were found between \`${previousTag}\` and \`${currentTag}\`.`
+    );
+  } else {
+    console.log(
+      "No previous release tag was found and no commits were available for release notes."
+    );
+  }
+  console.log("");
+
+  if (releaseMaintenance.length) {
+    console.log("## Release Maintenance");
+    console.log("");
+    printCommitList(releaseMaintenance);
+    console.log("");
+  }
+}
+
+console.log("## Published Packages");
+console.log("");
+for (const pkg of packages) {
+  console.log(`- \`${pkg.name}@${pkg.version}\``);
 }
 NODE
 cat "$notes"

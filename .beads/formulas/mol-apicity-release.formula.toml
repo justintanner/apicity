@@ -357,7 +357,7 @@ cat "$notes"
 **3. Create or update the release page:**
 ```bash
 if gh release view "v{{version}}" >/dev/null 2>&1; then
-  edit_flags=(--title "Apicity v{{version}}" --notes-file "$notes")
+  edit_flags=(--title "v{{version}}" --notes-file "$notes")
   if [ "{{dist_tag}}" = "latest" ]; then
     edit_flags+=(--latest)
   else
@@ -365,7 +365,7 @@ if gh release view "v{{version}}" >/dev/null 2>&1; then
   fi
   gh release edit "v{{version}}" "${edit_flags[@]}"
 else
-  flags=(--verify-tag --title "Apicity v{{version}}" --notes-file "$notes")
+  flags=(--verify-tag --title "v{{version}}" --notes-file "$notes")
   if [ "{{dist_tag}}" = "latest" ]; then
     flags+=(--latest)
   else

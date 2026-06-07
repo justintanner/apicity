@@ -297,9 +297,92 @@ git push origin v{{version}}
 **Exit criteria:** `origin/stable` is up to date and `v{{version}}` tag is pushed."""
 
 [[steps]]
+id = "update-github-release"
+title = "Update the GitHub release page"
+needs = ["tag-and-push"]
+description = '''
+Create or update the GitHub release page for the pushed `v{{version}}` tag.
+This is the public release page humans see in GitHub.
+
+**1. Verify GitHub CLI auth:**
+```bash
+gh auth status
+```
+
+If `gh auth status` fails, STOP. Fix GitHub CLI authentication before
+continuing; do not skip the release page.
+
+**2. Build release notes from the root changelog when available:**
+```bash
+notes="/tmp/apicity-github-release-v{{version}}.md"
+node <<'NODE' > "$notes"
+const fs = require("fs");
+const version = "{{version}}";
+const distTag = "{{dist_tag}}";
+const changelog = fs.existsSync("CHANGELOG.md")
+  ? fs.readFileSync("CHANGELOG.md", "utf8")
+  : "";
+
+const section = changelog
+  .split(/^## /m)
+  .slice(1)
+  .find((part) =>
+    part.startsWith(`[${version}]`) ||
+    part.startsWith(`${version} `) ||
+    part.startsWith(`${version}\n`)
+  );
+
+const body = section
+  ? section.replace(/^[^\n]*\n?/, "").trim()
+  : "";
+
+console.log(`# @apicity/* v${version}`);
+console.log("");
+console.log(`- npm dist-tag: \`${distTag}\``);
+console.log("- Published packages: 18 scoped packages in lockstep");
+console.log(`- Git tag: \`v${version}\``);
+console.log("");
+
+if (body) {
+  console.log("## Changelog");
+  console.log("");
+  console.log(body);
+} else {
+  console.log("Published the lockstep @apicity/* package set to npm.");
+}
+NODE
+cat "$notes"
+```
+
+**3. Create or update the release page:**
+```bash
+if gh release view "v{{version}}" >/dev/null 2>&1; then
+  edit_flags=(--title "@apicity/* v{{version}}" --notes-file "$notes")
+  if [ "{{dist_tag}}" = "latest" ]; then
+    edit_flags+=(--latest)
+  else
+    edit_flags+=(--prerelease --latest=false)
+  fi
+  gh release edit "v{{version}}" "${edit_flags[@]}"
+else
+  flags=(--verify-tag --title "@apicity/* v{{version}}" --notes-file "$notes")
+  if [ "{{dist_tag}}" = "latest" ]; then
+    flags+=(--latest)
+  else
+    flags+=(--prerelease --latest=false)
+  fi
+  gh release create "v{{version}}" "${flags[@]}"
+fi
+gh release view "v{{version}}"
+```
+
+**Exit criteria:** GitHub release page for `v{{version}}` exists, has current
+notes, and is marked prerelease unless `dist_tag` is `latest`.'''
+
+[[steps]]
 id = "sync-main-release"
 title = "Fast-forward main to the release commit"
-needs = ["tag-and-push"]
+needs = ["update-github-release"]
 description = """
 Propagate the release version bump back to `main` so `main` and `stable` do
 not drift after publishing.

@@ -336,7 +336,7 @@ describe("xAI provider core", () => {
         managementApiKey: "sk-mgmt-key",
         fetch: mockFetch,
       });
-      await provider.get.v1.collections();
+      await provider.get.managementApi.v1.collections();
 
       expect(capturedHeaders["authorization"]).toBe("Bearer sk-mgmt-key");
     });
@@ -364,7 +364,7 @@ describe("xAI provider core", () => {
         apiKey: "sk-api-key",
         fetch: mockFetch,
       });
-      await provider.get.v1.collections();
+      await provider.get.managementApi.v1.collections();
 
       expect(capturedHeaders["authorization"]).toBe("Bearer sk-api-key");
     });
@@ -421,9 +421,9 @@ describe("xAI provider core", () => {
       expect(provider.post.v1.videos.extensions).toBeDefined();
       expect(provider.post.v1.files).toBeDefined();
       expect(provider.post.v1.batches).toBeDefined();
-      expect(provider.post.v1.collections).toBeDefined();
+      expect(provider.post.managementApi.v1.collections).toBeDefined();
       expect(provider.post.v1.documents.search).toBeDefined();
-      expect(provider.post.v1.billing.teams.usage).toBeDefined();
+      expect(provider.post.managementApi.v1.billing.teams.usage).toBeDefined();
       expect(provider.post.v1.tokenizeText).toBeDefined();
       expect(provider.post.v1.realtime.clientSecrets).toBeDefined();
     });
@@ -441,15 +441,17 @@ describe("xAI provider core", () => {
       expect(provider.get.v1.imageGenerationModels).toBeDefined();
       expect(provider.get.v1.videoGenerationModels).toBeDefined();
       expect(provider.get.v1.batches).toBeDefined();
-      expect(provider.get.v1.collections).toBeDefined();
-      expect(provider.get.v1.billing.teams.prepaid.balance).toBeDefined();
+      expect(provider.get.managementApi.v1.collections).toBeDefined();
       expect(
-        provider.get.v1.billing.teams.postpaid.invoice.preview
+        provider.get.managementApi.v1.billing.teams.prepaid.balance
       ).toBeDefined();
       expect(
-        provider.get.v1.billing.teams.postpaid.spendingLimits
+        provider.get.managementApi.v1.billing.teams.postpaid.invoice.preview
       ).toBeDefined();
-      expect(provider.get.auth.teams.apiKeys).toBeDefined();
+      expect(
+        provider.get.managementApi.v1.billing.teams.postpaid.spendingLimits
+      ).toBeDefined();
+      expect(provider.get.managementApi.auth.teams.apiKeys).toBeDefined();
     });
 
     it("has correct delete.v1 namespace", () => {
@@ -457,19 +459,21 @@ describe("xAI provider core", () => {
 
       expect(provider.delete.v1.responses).toBeDefined();
       expect(provider.delete.v1.files).toBeDefined();
-      expect(provider.delete.v1.collections).toBeDefined();
+      expect(provider.delete.managementApi.v1.collections).toBeDefined();
     });
 
     it("has correct put.v1 namespace", () => {
       const provider = createXai({ apiKey: "sk-test" });
 
-      expect(provider.put.v1.collections).toBeDefined();
+      expect(provider.put.managementApi.v1.collections).toBeDefined();
     });
 
     it("has correct patch.v1 namespace", () => {
       const provider = createXai({ apiKey: "sk-test" });
 
-      expect(provider.patch.v1.collections.documents).toBeDefined();
+      expect(
+        provider.patch.managementApi.v1.collections.documents
+      ).toBeDefined();
     });
 
     it("has correct ws.v1 namespace", () => {

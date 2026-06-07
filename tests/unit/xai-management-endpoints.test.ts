@@ -53,7 +53,8 @@ describe("xAI management endpoint wiring", () => {
       fetch: mockFetch,
     });
 
-    const result = await xai.get.v1.billing.teams.prepaid.balance("team/1");
+    const result =
+      await xai.get.managementApi.v1.billing.teams.prepaid.balance("team/1");
 
     expect(result).toEqual(responseBody);
     const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
@@ -88,7 +89,10 @@ describe("xAI management endpoint wiring", () => {
       fetch: mockFetch,
     });
 
-    const result = await xai.post.v1.billing.teams.usage("team-1", request);
+    const result = await xai.post.managementApi.v1.billing.teams.usage(
+      "team-1",
+      request
+    );
 
     expect(result).toEqual(responseBody);
     const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
@@ -115,7 +119,7 @@ describe("xAI management endpoint wiring", () => {
       fetch: mockFetch,
     });
 
-    const result = await xai.get.auth.teams.apiKeys("team-1", {
+    const result = await xai.get.managementApi.auth.teams.apiKeys("team-1", {
       pageSize: 10,
       activeOnly: true,
       aclFilters: ["api-key:model:*"],

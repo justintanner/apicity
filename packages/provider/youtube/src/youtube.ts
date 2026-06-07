@@ -335,6 +335,7 @@ export function createYouTube(opts?: YouTubeOptions): YouTubeProvider {
     }
   }
 
+  // sig-ok: transcript namespace wraps YouTube watch-page scraping
   // GET https://www.youtube.com/watch?v={videoId}
   // Docs: https://github.com/jdepoix/youtube-transcript-api
   const getTranscript = Object.assign(

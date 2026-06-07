@@ -146,8 +146,8 @@ describe("paid endpoint semantics — regression", () => {
     });
   });
 
-  describe("KIE ElevenLabs task helpers block when OTP is missing", () => {
-    it("textToSpeechTurbo25 throws PayGateError before network dispatch", async () => {
+  describe("KIE ElevenLabs createTask requests block when OTP is missing", () => {
+    it("createTask blocks ElevenLabs TTS before network dispatch", async () => {
       const mockFetch = vi.fn();
       const provider = createKie({
         apiKey: "test-key",
@@ -157,15 +157,13 @@ describe("paid endpoint semantics — regression", () => {
       });
       let caught: PayGateError | undefined;
       try {
-        await provider.post.api.v1.elevenlabs.textToSpeechTurbo25(
-          ELEVENLABS_TTS_REQUEST
-        );
+        await provider.post.api.v1.jobs.createTask(ELEVENLABS_TTS_REQUEST);
       } catch (error) {
         caught = error as PayGateError;
       }
       expect(caught).toBeInstanceOf(PayGateError);
       expect(caught!.code).toBe("otp-missing");
-      expect(caught!.dotPath).toBe("api.v1.elevenlabs.textToSpeechTurbo25");
+      expect(caught!.dotPath).toBe("api.v1.jobs.createTask");
       expect(mockFetch).not.toHaveBeenCalled();
     });
   });

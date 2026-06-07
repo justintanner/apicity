@@ -13,14 +13,14 @@ describe("xAI collections PUT update integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should have schema with safeParse on put.v1.collections", () => {
+  it("should have schema with safeParse on put.managementApi.v1.collections", () => {
     const provider = createXai({ apiKey: "sk-test-key" });
-    expect(provider.put.v1.collections.schema).toBeDefined();
-    expect(typeof provider.put.v1.collections.schema.safeParse).toBe(
-      "function"
-    );
+    expect(provider.put.managementApi.v1.collections.schema).toBeDefined();
+    expect(
+      typeof provider.put.managementApi.v1.collections.schema.safeParse
+    ).toBe("function");
 
-    const result = provider.put.v1.collections.schema.safeParse({
+    const result = provider.put.managementApi.v1.collections.schema.safeParse({
       collection_name: "test-collection",
     });
     expect(result.success).toBe(true);
@@ -33,13 +33,13 @@ describe("xAI collections PUT update integration", () => {
     });
 
     // Create a collection first
-    const collection = await provider.post.v1.collections({
+    const collection = await provider.post.managementApi.v1.collections({
       collection_name: "test-collection-for-update",
     });
     expect(collection.collection_id).toBeDefined();
 
     // Update the collection
-    const updated = await provider.put.v1.collections(
+    const updated = await provider.put.managementApi.v1.collections(
       collection.collection_id,
       {
         collection_name: "updated-collection-name",

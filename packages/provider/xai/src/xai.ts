@@ -981,7 +981,6 @@ export function createXai(opts: XaiOptions): XaiProvider {
               }
             }, {}),
             batches: postBatches,
-            collections: postCollections,
             documents: {
               // POST https://api.x.ai/v1/documents/search
               // Docs: https://docs.x.ai/docs/api-reference
@@ -1001,29 +1000,6 @@ export function createXai(opts: XaiOptions): XaiProvider {
                   schema: XaiDocumentSearchRequestSchema,
                 }
               ),
-            },
-            billing: {
-              teams: {
-                // POST https://management-api.x.ai/v1/billing/teams/{teamId}/usage
-                // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
-                usage: Object.assign(
-                  async function usage(
-                    teamId: string,
-                    req: XaiBillingUsageRequest,
-                    signal?: AbortSignal
-                  ): Promise<XaiBillingUsageResponse> {
-                    return await makeManagementRequest(
-                      "POST",
-                      `/billing/teams/${encodeURIComponent(teamId)}/usage`,
-                      req,
-                      signal
-                    );
-                  },
-                  {
-                    schema: XaiBillingUsageRequestSchema,
-                  }
-                ),
-              },
             },
             // POST https://api.x.ai/v1/tokenize-text
             // Docs: https://docs.x.ai/docs/api-reference
@@ -1119,6 +1095,34 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 schema: XaiCustomVoiceCreateRequestSchema,
               }
             ),
+          },
+          managementApi: {
+            v1: {
+              collections: postCollections,
+              billing: {
+                teams: {
+                  // POST https://management-api.x.ai/v1/billing/teams/{teamId}/usage
+                  // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
+                  usage: Object.assign(
+                    async function usage(
+                      teamId: string,
+                      req: XaiBillingUsageRequest,
+                      signal?: AbortSignal
+                    ): Promise<XaiBillingUsageResponse> {
+                      return await makeManagementRequest(
+                        "POST",
+                        `/billing/teams/${encodeURIComponent(teamId)}/usage`,
+                        req,
+                        signal
+                      );
+                    },
+                    {
+                      schema: XaiBillingUsageRequestSchema,
+                    }
+                  ),
+                },
+              },
+            },
           },
         },
         get: {
@@ -1228,73 +1232,77 @@ export function createXai(opts: XaiOptions): XaiProvider {
             imageGenerationModels: getImageGenerationModels,
             videoGenerationModels: getVideoGenerationModels,
             batches: getBatchesNamespace,
-            collections: getCollectionsNamespace,
-            billing: {
-              teams: {
-                prepaid: {
-                  // GET https://management-api.x.ai/v1/billing/teams/{teamId}/prepaid/balance
-                  // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
-                  balance: async function balance(
-                    teamId: string,
-                    signal?: AbortSignal
-                  ): Promise<XaiBillingPrepaidBalanceResponse> {
-                    return await makeManagementRequest(
-                      "GET",
-                      `/billing/teams/${encodeURIComponent(teamId)}/prepaid/balance`,
-                      undefined,
-                      signal
-                    );
-                  },
-                },
-                postpaid: {
-                  invoice: {
-                    // GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/invoice/preview
+          },
+          managementApi: {
+            v1: {
+              collections: getCollectionsNamespace,
+              billing: {
+                teams: {
+                  prepaid: {
+                    // GET https://management-api.x.ai/v1/billing/teams/{teamId}/prepaid/balance
                     // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
-                    preview: async function preview(
+                    balance: async function balance(
                       teamId: string,
                       signal?: AbortSignal
-                    ): Promise<XaiBillingPostpaidInvoicePreviewResponse> {
+                    ): Promise<XaiBillingPrepaidBalanceResponse> {
                       return await makeManagementRequest(
                         "GET",
-                        `/billing/teams/${encodeURIComponent(teamId)}/postpaid/invoice/preview`,
+                        `/billing/teams/${encodeURIComponent(teamId)}/prepaid/balance`,
                         undefined,
                         signal
                       );
                     },
                   },
-                  // GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/spending-limits
-                  // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
-                  spendingLimits: async function spendingLimits(
-                    teamId: string,
-                    signal?: AbortSignal
-                  ): Promise<XaiBillingPostpaidSpendingLimitsResponse> {
-                    return await makeManagementRequest(
-                      "GET",
-                      `/billing/teams/${encodeURIComponent(teamId)}/postpaid/spending-limits`,
-                      undefined,
-                      signal
-                    );
+                  postpaid: {
+                    invoice: {
+                      // GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/invoice/preview
+                      // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
+                      preview: async function preview(
+                        teamId: string,
+                        signal?: AbortSignal
+                      ): Promise<XaiBillingPostpaidInvoicePreviewResponse> {
+                        return await makeManagementRequest(
+                          "GET",
+                          `/billing/teams/${encodeURIComponent(teamId)}/postpaid/invoice/preview`,
+                          undefined,
+                          signal
+                        );
+                      },
+                    },
+                    // GET https://management-api.x.ai/v1/billing/teams/{teamId}/postpaid/spending-limits
+                    // Docs: https://docs.x.ai/developers/rest-api-reference/management/billing
+                    spendingLimits: async function spendingLimits(
+                      teamId: string,
+                      signal?: AbortSignal
+                    ): Promise<XaiBillingPostpaidSpendingLimitsResponse> {
+                      return await makeManagementRequest(
+                        "GET",
+                        `/billing/teams/${encodeURIComponent(teamId)}/postpaid/spending-limits`,
+                        undefined,
+                        signal
+                      );
+                    },
                   },
                 },
               },
             },
-          },
-          auth: {
-            teams: {
-              // GET https://management-api.x.ai/auth/teams/{teamId}/api-keys{query}
-              // Docs: https://docs.x.ai/developers/rest-api-reference/management/auth
-              apiKeys: async function apiKeys(
-                teamId: string,
-                params?: XaiManagementApiKeyListParams,
-                signal?: AbortSignal
-              ): Promise<XaiManagementApiKeyListResponse> {
-                const query = buildManagementQuery(params ?? {});
-                return await makeManagementRootRequest(
-                  "GET",
-                  `/auth/teams/${encodeURIComponent(teamId)}/api-keys${query}`,
-                  undefined,
-                  signal
-                );
+            auth: {
+              teams: {
+                // GET https://management-api.x.ai/auth/teams/{teamId}/api-keys{query}
+                // Docs: https://docs.x.ai/developers/rest-api-reference/management/auth
+                apiKeys: async function apiKeys(
+                  teamId: string,
+                  params?: XaiManagementApiKeyListParams,
+                  signal?: AbortSignal
+                ): Promise<XaiManagementApiKeyListResponse> {
+                  const query = buildManagementQuery(params ?? {});
+                  return await makeManagementRootRequest(
+                    "GET",
+                    `/auth/teams/${encodeURIComponent(teamId)}/api-keys${query}`,
+                    undefined,
+                    signal
+                  );
+                },
               },
             },
           },
@@ -1356,30 +1364,38 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 throw new XaiError(`XAI request failed: ${error}`, 500);
               }
             },
-            collections: deleteCollections,
+          },
+          managementApi: {
+            v1: {
+              collections: deleteCollections,
+            },
           },
         },
         put: {
-          v1: {
-            collections: putCollections,
+          managementApi: {
+            v1: {
+              collections: putCollections,
+            },
           },
         },
         patch: {
-          v1: {
-            collections: {
-              // PATCH https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}
-              // Docs: https://docs.x.ai/docs/api-reference
-              documents: async function regenerateDocument(
-                collectionId: string,
-                fileId: string,
-                signal?: AbortSignal
-              ): Promise<void> {
-                await makeManagementRequest(
-                  "PATCH",
-                  `/collections/${collectionId}/documents/${fileId}`,
-                  undefined,
-                  signal
-                );
+          managementApi: {
+            v1: {
+              collections: {
+                // PATCH https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}
+                // Docs: https://docs.x.ai/docs/api-reference
+                documents: async function regenerateDocument(
+                  collectionId: string,
+                  fileId: string,
+                  signal?: AbortSignal
+                ): Promise<void> {
+                  await makeManagementRequest(
+                    "PATCH",
+                    `/collections/${collectionId}/documents/${fileId}`,
+                    undefined,
+                    signal
+                  );
+                },
               },
             },
           },

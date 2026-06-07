@@ -13,10 +13,12 @@ describe("xAI collections documents add integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should have collections.documents sub-method on post.v1.collections", () => {
+  it("should have collections.documents sub-method on post.managementApi.v1.collections", () => {
     const provider = createXai({ apiKey: "sk-test-key" });
-    expect(provider.post.v1.collections.documents).toBeDefined();
-    expect(typeof provider.post.v1.collections.documents).toBe("function");
+    expect(provider.post.managementApi.v1.collections.documents).toBeDefined();
+    expect(typeof provider.post.managementApi.v1.collections.documents).toBe(
+      "function"
+    );
   });
 
   it("should add document to collection using management API", async () => {
@@ -26,7 +28,7 @@ describe("xAI collections documents add integration", () => {
     });
 
     // Create a collection first
-    const collection = await provider.post.v1.collections({
+    const collection = await provider.post.managementApi.v1.collections({
       collection_name: "test-collection-for-docs",
     });
     expect(collection.collection_id).toBeDefined();
@@ -37,13 +39,13 @@ describe("xAI collections documents add integration", () => {
     expect(file.id).toBeDefined();
 
     // Add the file as a document to the collection
-    await provider.post.v1.collections.documents(
+    await provider.post.managementApi.v1.collections.documents(
       collection.collection_id,
       file.id
     );
 
     // Verify by listing documents
-    const documents = await provider.get.v1.collections.documents(
+    const documents = await provider.get.managementApi.v1.collections.documents(
       collection.collection_id
     );
     expect(documents).toBeDefined();

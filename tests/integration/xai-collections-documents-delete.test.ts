@@ -13,10 +13,14 @@ describe("xAI collections documents delete integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("should have delete.v1.collections.documents sub-method", () => {
+  it("should have delete.managementApi.v1.collections.documents sub-method", () => {
     const provider = createXai({ apiKey: "sk-test-key" });
-    expect(provider.delete.v1.collections.documents).toBeDefined();
-    expect(typeof provider.delete.v1.collections.documents).toBe("function");
+    expect(
+      provider.delete.managementApi.v1.collections.documents
+    ).toBeDefined();
+    expect(typeof provider.delete.managementApi.v1.collections.documents).toBe(
+      "function"
+    );
   });
 
   it("should delete document from collection using management API", async () => {
@@ -26,7 +30,7 @@ describe("xAI collections documents delete integration", () => {
     });
 
     // Create a collection
-    const collection = await provider.post.v1.collections({
+    const collection = await provider.post.managementApi.v1.collections({
       collection_name: "test-collection-delete-doc",
     });
     expect(collection.collection_id).toBeDefined();
@@ -39,19 +43,19 @@ describe("xAI collections documents delete integration", () => {
     expect(file.id).toBeDefined();
 
     // Add document to collection
-    await provider.post.v1.collections.documents(
+    await provider.post.managementApi.v1.collections.documents(
       collection.collection_id,
       file.id
     );
 
     // Delete the document
-    await provider.delete.v1.collections.documents(
+    await provider.delete.managementApi.v1.collections.documents(
       collection.collection_id,
       file.id
     );
 
     // Verify by listing documents
-    const documents = await provider.get.v1.collections.documents(
+    const documents = await provider.get.managementApi.v1.collections.documents(
       collection.collection_id
     );
     expect(documents).toBeDefined();

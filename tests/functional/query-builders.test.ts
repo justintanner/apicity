@@ -153,7 +153,7 @@ describe("xai buildQuery", () => {
     };
     const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
     // Collections takes params as first arg
-    await p.get.v1.collections({ limit: 10 });
+    await p.get.managementApi.v1.collections({ limit: 10 });
     expect(capturedUrl).toContain("?limit=10");
   });
 
@@ -172,7 +172,10 @@ describe("xai buildQuery", () => {
       );
     };
     const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.get.v1.collections({ limit: 10, pagination_token: "cursor123" });
+    await p.get.managementApi.v1.collections({
+      limit: 10,
+      pagination_token: "cursor123",
+    });
     expect(capturedUrl).toMatch(/limit=10/);
     expect(capturedUrl).toMatch(/pagination_token=cursor123/);
     expect(capturedUrl).toContain("?");
@@ -193,7 +196,7 @@ describe("xai buildQuery", () => {
       );
     };
     const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.get.v1.collections({ limit: 10, team_id: undefined });
+    await p.get.managementApi.v1.collections({ limit: 10, team_id: undefined });
     expect(capturedUrl).toContain("limit=10");
     expect(capturedUrl).not.toContain("team_id");
   });
@@ -213,7 +216,7 @@ describe("xai buildQuery", () => {
       );
     };
     const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.get.v1.collections({
+    await p.get.managementApi.v1.collections({
       limit: 10,
       team_id: null as unknown as string,
     });
@@ -236,7 +239,7 @@ describe("xai buildQuery", () => {
       );
     };
     const p = createXai({ apiKey: "test", fetch: mockFetch as typeof fetch });
-    await p.get.v1.collections({ filter: "test filter" });
+    await p.get.managementApi.v1.collections({ filter: "test filter" });
     expect(capturedUrl).toContain("filter=test%20filter");
   });
 });

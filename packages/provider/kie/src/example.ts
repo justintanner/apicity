@@ -25,15 +25,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
     }
   },
-  "POST api.v1.elevenlabs.textToDialogueV3": {
-    "source": "kie/grok-video-upscale",
-    "payload": {
-      "model": "grok-imagine/upscale",
-      "input": {
-        "task_id": "d43f0d0ab29f28fdfcf68a9dccbd7a42"
-      }
-    }
-  },
   "POST api.v1.generate": {
     "source": "kie/suno-generate-vocal",
     "payload": {
@@ -134,6 +125,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "V5",
       "callBackUrl": "https://example.com/cb",
       "prompt": "Continue the chorus then resolve"
+    }
+  },
+  "POST api.v1.jobs.createTask": {
+    "source": "kie/grok-video-upscale",
+    "payload": {
+      "model": "grok-imagine/upscale",
+      "input": {
+        "task_id": "d43f0d0ab29f28fdfcf68a9dccbd7a42"
+      }
     }
   },
   "POST api.v1.lyrics": {

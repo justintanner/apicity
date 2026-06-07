@@ -169,9 +169,6 @@ export interface ModelInputSchema {
 // ---------------------------------------------------------------------------
 
 import type {
-  ElevenLabsTextToDialogueV3Request,
-  ElevenLabsTextToSpeechMultilingualV2Request,
-  ElevenLabsTextToSpeechTurbo25Request,
   MediaGenerationRequest,
   DownloadUrlRequest,
   UploadMediaRequest,
@@ -213,39 +210,10 @@ interface KieGeminiOmniAudioCreateMethod {
   schema: z.ZodType<GeminiOmniAudioCreateRequest>;
 }
 
-interface KieElevenLabsTextToDialogueV3Method {
-  (
-    req: ElevenLabsTextToDialogueV3Request,
-    approval?: KieApproval
-  ): Promise<TaskResponse>;
-  schema: z.ZodType<ElevenLabsTextToDialogueV3Request>;
-}
-
-interface KieElevenLabsTextToSpeechMultilingualV2Method {
-  (
-    req: ElevenLabsTextToSpeechMultilingualV2Request,
-    approval?: KieApproval
-  ): Promise<TaskResponse>;
-  schema: z.ZodType<ElevenLabsTextToSpeechMultilingualV2Request>;
-}
-
-interface KieElevenLabsTextToSpeechTurbo25Method {
-  (
-    req: ElevenLabsTextToSpeechTurbo25Request,
-    approval?: KieApproval
-  ): Promise<TaskResponse>;
-  schema: z.ZodType<ElevenLabsTextToSpeechTurbo25Request>;
-}
-
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
     jobs: { createTask: KieCreateTaskMethod };
-    elevenlabs: {
-      textToDialogueV3: KieElevenLabsTextToDialogueV3Method;
-      textToSpeechMultilingualV2: KieElevenLabsTextToSpeechMultilingualV2Method;
-      textToSpeechTurbo25: KieElevenLabsTextToSpeechTurbo25Method;
-    };
     common: { downloadUrl: KieDownloadUrlMethod };
     omni: {
       audio: {

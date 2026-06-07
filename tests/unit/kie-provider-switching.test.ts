@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
 import { createKie } from "@apicity/kie";
-import { mintOtp } from "@apicity/cost";
 import {
   TEST_PAYGATE_SECRET,
   mintKieCreateTaskOtp,
@@ -8,18 +7,6 @@ import {
 } from "../harness";
 
 describe("KIE provider switching", () => {
-  function mintKieAudioOtp(
-    dotPath:
-      | "api.v1.elevenlabs.textToDialogueV3"
-      | "api.v1.elevenlabs.textToSpeechMultilingualV2"
-      | "api.v1.elevenlabs.textToSpeechTurbo25",
-    request: Record<string, unknown>
-  ): { otp: string } {
-    return {
-      otp: mintOtp(TEST_PAYGATE_SECRET, { dotPath, request }),
-    };
-  }
-
   it("routes Veo requests through the veo namespace", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ code: 200, data: { taskId: "veo-1" } }), {
@@ -146,7 +133,7 @@ describe("KIE provider switching", () => {
     expect(JSON.parse(init.body as string)).toEqual(payload);
   });
 
-  it("routes Kie ElevenLabs TTS helpers through createTask", async () => {
+  it("routes Kie ElevenLabs TTS models through createTask", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ code: 200, data: { taskId: "audio-1" } }), {
         status: 200,
@@ -169,14 +156,12 @@ describe("KIE provider switching", () => {
     };
 
     expect(
-      provider.post.api.v1.elevenlabs.textToSpeechTurbo25.schema.safeParse(
-        payload
-      ).success
+      provider.post.api.v1.jobs.createTask.schema.safeParse(payload).success
     ).toBe(true);
 
-    await provider.post.api.v1.elevenlabs.textToSpeechTurbo25(
+    await provider.post.api.v1.jobs.createTask(
       payload,
-      mintKieAudioOtp("api.v1.elevenlabs.textToSpeechTurbo25", payload)
+      mintKieCreateTaskOtp(payload)
     );
 
     const [url, init] = mockFetch.mock.calls[0];
@@ -185,7 +170,7 @@ describe("KIE provider switching", () => {
     expect(JSON.parse(init.body as string)).toEqual(payload);
   });
 
-  it("routes Kie ElevenLabs dialogue helpers through createTask", async () => {
+  it("routes Kie ElevenLabs dialogue models through createTask", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ code: 200, data: { taskId: "audio-2" } }), {
         status: 200,
@@ -212,13 +197,12 @@ describe("KIE provider switching", () => {
     };
 
     expect(
-      provider.post.api.v1.elevenlabs.textToDialogueV3.schema.safeParse(payload)
-        .success
+      provider.post.api.v1.jobs.createTask.schema.safeParse(payload).success
     ).toBe(true);
 
-    await provider.post.api.v1.elevenlabs.textToDialogueV3(
+    await provider.post.api.v1.jobs.createTask(
       payload,
-      mintKieAudioOtp("api.v1.elevenlabs.textToDialogueV3", payload)
+      mintKieCreateTaskOtp(payload)
     );
 
     const [url, init] = mockFetch.mock.calls[0];

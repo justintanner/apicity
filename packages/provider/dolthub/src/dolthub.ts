@@ -137,6 +137,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     return query ? `?${query}` : "";
   }
 
+  // sig-ok: semantic DoltHub SQL read namespace over dynamic repo URL
   // GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}{refPath}{query}
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/sql
   const sqlRead = Object.assign(
@@ -158,6 +159,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubSqlReadRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub SQL write namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write/{fromBranch}/{toBranch}{query}
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/sql
   const sqlWrite = Object.assign(
@@ -180,6 +182,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubSqlWriteRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub SQL write namespace over dynamic repo URL
   // GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write{query}
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/sql
   const writePoll = Object.assign(
@@ -200,6 +203,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubWritePollRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub database namespace over API root URL
   // POST https://www.dolthub.com/api/v1alpha1/database
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const databaseCreate = Object.assign(
@@ -217,6 +221,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubDatabaseCreateRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub branches namespace over dynamic repo URL
   // GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const branchesList = Object.assign(
@@ -236,6 +241,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubBranchesListRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub branches namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/branches
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const branchCreate = Object.assign(
@@ -260,6 +266,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubBranchCreateRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub pulls namespace over dynamic repo URL
   // GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls{query}
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const pullsList = Object.assign(
@@ -285,6 +292,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubPullsListRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub pulls namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const pullCreate = Object.assign(
@@ -314,6 +322,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubPullCreateRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub pulls namespace over dynamic repo URL
   // GET https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls/{pullId}
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const pullGet = Object.assign(
@@ -334,6 +343,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubPullGetRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub pulls namespace over dynamic repo URL
   // POST https://www.dolthub.com/api/v1alpha1/{owner}/{database}/pulls/{pullId}/merge
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/database
   const pullMerge = Object.assign(
@@ -354,6 +364,7 @@ export function createDoltHub(opts?: DoltHubOptions): DoltHubProvider {
     { schema: DoltHubPullMergeRequestSchema }
   );
 
+  // sig-ok: semantic DoltHub user namespace over API root URL
   // GET https://www.dolthub.com/api/v1alpha1/user
   // Docs: https://www.dolthub.com/docs/products/dolthub/api/user
   const userGet = Object.assign(

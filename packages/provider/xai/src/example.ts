@@ -11,6 +11,16 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "POST managementApi.v1.collections": {
+    "source": "xai/collections-docs",
+    "payload": {
+      "name": "test-delete-doc-1775143467493"
+    }
+  },
+  "POST managementApi.v1.collections.documents": {
+    "source": "xai/collections-documents-add",
+    "payload": {}
+  },
   "POST v1.batches": {
     "source": "xai/batch-get",
     "payload": {
@@ -54,16 +64,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "temperature": 0
     }
-  },
-  "POST v1.collections": {
-    "source": "xai/collections-docs",
-    "payload": {
-      "name": "test-delete-doc-1775143467493"
-    }
-  },
-  "POST v1.collections.documents": {
-    "source": "xai/collections-documents-add",
-    "payload": {}
   },
   "POST v1.documents.search": {
     "source": "xai/documents-search",
@@ -149,7 +149,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A cat playing with a ball"
     }
   },
-  "PUT v1.collections": {
+  "PUT managementApi.v1.collections": {
     "source": "xai/collections-put-update",
     "payload": {
       "collection_name": "updated-collection-name"

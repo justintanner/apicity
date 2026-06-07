@@ -1172,18 +1172,21 @@ interface XaiPostV1 {
   };
   files: XaiPostFilesMethod;
   batches: XaiPostBatchesMethod;
-  collections: XaiPostCollectionsMethod;
   documents: { search: XaiDocumentSearchMethod };
-  billing: {
-    teams: {
-      usage: XaiBillingUsageMethod;
-    };
-  };
   tokenizeText: XaiTokenizeTextMethod;
   realtime: { clientSecrets: XaiRealtimeClientSecretsMethod };
   tts: XaiTtsMethod;
   stt: XaiSttMethod;
   customVoices: XaiCustomVoicesMethod;
+}
+
+interface XaiManagementPostV1 {
+  collections: XaiPostCollectionsMethod;
+  billing: {
+    teams: {
+      usage: XaiBillingUsageMethod;
+    };
+  };
 }
 
 // GET v1 namespace
@@ -1290,6 +1293,9 @@ interface XaiGetV1 {
     XaiVideoGenerationModel
   >;
   batches: XaiGetBatchesMethod;
+}
+
+interface XaiManagementGetV1 {
   collections: XaiGetCollectionsMethod;
   billing: {
     teams: {
@@ -1306,7 +1312,7 @@ interface XaiGetV1 {
   };
 }
 
-interface XaiGetAuth {
+interface XaiManagementAuth {
   teams: {
     apiKeys: XaiGetManagementApiKeysMethod;
   };
@@ -1322,6 +1328,9 @@ interface XaiDeleteV1 {
     fileId: string,
     signal?: AbortSignal
   ): Promise<{ id: string; deleted: boolean }>;
+}
+
+interface XaiManagementDeleteV1 {
   collections: {
     (collectionId: string, signal?: AbortSignal): Promise<void>;
     documents(
@@ -1332,7 +1341,6 @@ interface XaiDeleteV1 {
   };
 }
 
-// PUT v1 namespace
 interface XaiPutCollectionsMethod {
   (
     collectionId: string,
@@ -1342,12 +1350,11 @@ interface XaiPutCollectionsMethod {
   schema: z.ZodType<XaiCollectionUpdateRequest>;
 }
 
-interface XaiPutV1 {
+interface XaiManagementPutV1 {
   collections: XaiPutCollectionsMethod;
 }
 
-// PATCH v1 namespace
-interface XaiPatchV1 {
+interface XaiManagementPatchV1 {
   collections: {
     documents(
       collectionId: string,
@@ -1364,11 +1371,14 @@ interface XaiWsV1 {
 
 // Provider interface
 export interface XaiProvider {
-  post: { v1: XaiPostV1 };
-  get: { v1: XaiGetV1; auth: XaiGetAuth };
-  delete: { v1: XaiDeleteV1 };
-  put: { v1: XaiPutV1 };
-  patch: { v1: XaiPatchV1 };
+  post: { v1: XaiPostV1; managementApi: { v1: XaiManagementPostV1 } };
+  get: {
+    v1: XaiGetV1;
+    managementApi: { v1: XaiManagementGetV1; auth: XaiManagementAuth };
+  };
+  delete: { v1: XaiDeleteV1; managementApi: { v1: XaiManagementDeleteV1 } };
+  put: { managementApi: { v1: XaiManagementPutV1 } };
+  patch: { managementApi: { v1: XaiManagementPatchV1 } };
   ws: { v1: XaiWsV1 };
 }
 

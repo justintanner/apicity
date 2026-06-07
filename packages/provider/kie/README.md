@@ -151,7 +151,7 @@ console.log(result.resultUrls[0]);
 
 ## API Reference
 
-30 endpoints across 17 groups. Each method mirrors an upstream URL path.
+27 endpoints across 16 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -198,53 +198,6 @@ Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
 
 ```typescript
 const res = await kie.post.api.v1.common.downloadUrl({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-### elevenlabs
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.elevenlabs.textToDialogueV3</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/elevenlabs/text-to-dialogue-v3)
-
-```typescript
-const res = await kie.post.api.v1.elevenlabs.textToDialogueV3({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.elevenlabs.textToSpeechMultilingualV2</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/elevenlabs/text-to-speech-multilingual-v2)
-
-```typescript
-const res = await kie.post.api.v1.elevenlabs.textToSpeechMultilingualV2({ /* ... */ });
-```
-
-Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
-
-</details>
-
-<details>
-<summary><code>POST</code> <b><code>kie.post.api.v1.elevenlabs.textToSpeechTurbo25</code></b></summary>
-
-<code>POST https://api.kie.ai/api/v1/jobs/createTask</code>
-
-[Upstream docs ↗](https://docs.kie.ai/market/elevenlabs/text-to-speech-turbo-2-5)
-
-```typescript
-const res = await kie.post.api.v1.elevenlabs.textToSpeechTurbo25({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

@@ -14,9 +14,6 @@ import {
   KieTaskInfo,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateResponse,
-  ElevenLabsTextToDialogueV3Request,
-  ElevenLabsTextToSpeechMultilingualV2Request,
-  ElevenLabsTextToSpeechTurbo25Request,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -25,9 +22,6 @@ import {
   FileUrlUploadRequestSchema,
   FileBase64UploadRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
-  ElevenLabsTextToDialogueV3RequestSchema,
-  ElevenLabsTextToSpeechMultilingualV2RequestSchema,
-  ElevenLabsTextToSpeechTurbo25RequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -120,30 +114,6 @@ export function createKie(opts: KieOptions): KieProvider {
       if (error instanceof KieError) throw error;
       throw new KieError(`Failed to create task: ${error}`, 500);
     }
-  }
-
-  // POST https://api.kie.ai/api/v1/jobs/createTask
-  // Docs: https://docs.kie.ai/market/elevenlabs/text-to-dialogue-v3
-  async function elevenLabsTextToDialogueV3(
-    req: ElevenLabsTextToDialogueV3Request
-  ): Promise<TaskResponse> {
-    return createTask(req);
-  }
-
-  // POST https://api.kie.ai/api/v1/jobs/createTask
-  // Docs: https://docs.kie.ai/market/elevenlabs/text-to-speech-multilingual-v2
-  async function elevenLabsTextToSpeechMultilingualV2(
-    req: ElevenLabsTextToSpeechMultilingualV2Request
-  ): Promise<TaskResponse> {
-    return createTask(req);
-  }
-
-  // POST https://api.kie.ai/api/v1/jobs/createTask
-  // Docs: https://docs.kie.ai/market/elevenlabs/text-to-speech-turbo-2-5
-  async function elevenLabsTextToSpeechTurbo25(
-    req: ElevenLabsTextToSpeechTurbo25Request
-  ): Promise<TaskResponse> {
-    return createTask(req);
   }
 
   // GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}
@@ -475,23 +445,6 @@ export function createKie(opts: KieOptions): KieProvider {
                 createTask: Object.assign(createTask, {
                   schema: CreateTaskRequestSchema,
                 }),
-              },
-              elevenlabs: {
-                textToDialogueV3: Object.assign(elevenLabsTextToDialogueV3, {
-                  schema: ElevenLabsTextToDialogueV3RequestSchema,
-                }),
-                textToSpeechMultilingualV2: Object.assign(
-                  elevenLabsTextToSpeechMultilingualV2,
-                  {
-                    schema: ElevenLabsTextToSpeechMultilingualV2RequestSchema,
-                  }
-                ),
-                textToSpeechTurbo25: Object.assign(
-                  elevenLabsTextToSpeechTurbo25,
-                  {
-                    schema: ElevenLabsTextToSpeechTurbo25RequestSchema,
-                  }
-                ),
               },
               common: {
                 downloadUrl: Object.assign(downloadUrl, {

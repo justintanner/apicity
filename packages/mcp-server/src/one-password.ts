@@ -11,7 +11,10 @@ export interface OnePasswordEnvOptions {
   enabledProviders?: string[];
   env?: NodeJS.ProcessEnv;
   readSecret?: OpRead;
+  concurrency?: number;
 }
+
+const DEFAULT_OP_READ_CONCURRENCY = 6;
 
 export async function fillOnePasswordEnv(
   opts: OnePasswordEnvOptions
@@ -20,21 +23,35 @@ export async function fillOnePasswordEnv(
   const readSecret = opts.readSecret ?? readOnePasswordSecret;
   const providerEnvVars = getProviderEnvVars(opts.enabledProviders);
   const required = opts.enabledProviders !== undefined;
+  const missingEnvVars = providerEnvVars.filter(
+    (envVar) => !hasResolvedEnvValue(env[envVar])
+  );
+  const concurrency = normalizeConcurrency(
+    opts.concurrency ?? DEFAULT_OP_READ_CONCURRENCY,
+    missingEnvVars.length
+  );
+  let next = 0;
+  let firstError: Error | undefined;
 
-  for (const envVar of providerEnvVars) {
-    if (hasResolvedEnvValue(env[envVar])) continue;
-
-    const ref = onePasswordRef(opts.vault, envVar);
-    try {
-      env[envVar] = await readSecret(ref);
-    } catch (err) {
-      if (!required && isMissingOnePasswordItem(err)) continue;
-      throw new Error(
-        `Missing 1Password secret for ${envVar}. Expected ${ref}. ` +
-          `${errorMessage(err)}`
-      );
+  async function worker(): Promise<void> {
+    while (next < missingEnvVars.length) {
+      const envVar = missingEnvVars[next++];
+      try {
+        env[envVar] = await readSecret(onePasswordRef(opts.vault, envVar));
+      } catch (err) {
+        const wrapped = wrapReadError(err, opts.vault, envVar, required);
+        if (wrapped && !firstError) firstError = wrapped;
+      }
     }
   }
+
+  await Promise.all(
+    Array.from({ length: concurrency }, async () => {
+      await worker();
+    })
+  );
+
+  if (firstError) throw firstError;
 }
 
 export function getProviderEnvVars(enabledProviders?: string[]): string[] {
@@ -68,6 +85,26 @@ export async function readOnePasswordSecret(ref: string): Promise<string> {
     }
     throw err;
   }
+}
+
+function normalizeConcurrency(concurrency: number, jobCount: number): number {
+  if (jobCount === 0) return 0;
+  if (!Number.isFinite(concurrency) || concurrency < 1) return 1;
+  return Math.min(Math.floor(concurrency), jobCount);
+}
+
+function wrapReadError(
+  err: unknown,
+  vault: string,
+  envVar: string,
+  required: boolean
+): Error | undefined {
+  if (!required && isMissingOnePasswordItem(err)) return undefined;
+  const ref = onePasswordRef(vault, envVar);
+  return new Error(
+    `Missing 1Password secret for ${envVar}. Expected ${ref}. ` +
+      `${errorMessage(err)}`
+  );
 }
 
 function hasResolvedEnvValue(value: string | undefined): boolean {

@@ -122,6 +122,58 @@ describe("1Password credential resolution", () => {
     expect(readSecret).toHaveBeenCalledTimes(2);
   });
 
+  it("reads missing provider env vars concurrently", async () => {
+    const env: NodeJS.ProcessEnv = {};
+    const started: string[] = [];
+    let resolveAllStarted: () => void = () => undefined;
+    let releaseReads: () => void = () => undefined;
+    const allStarted = new Promise<void>((resolve) => {
+      resolveAllStarted = resolve;
+    });
+    const readRelease = new Promise<void>((resolve) => {
+      releaseReads = resolve;
+    });
+    const readSecret: OpRead = vi.fn(async (ref) => {
+      started.push(ref);
+      if (started.length === 4) resolveAllStarted();
+      await readRelease;
+      return `secret:${ref}`;
+    });
+
+    const fill = fillOnePasswordEnv({
+      vault: "Apicity",
+      enabledProviders: ["openai", "xai", "anthropic", "fireworks"],
+      env,
+      readSecret,
+      concurrency: 4,
+    });
+
+    await Promise.race([
+      allStarted,
+      new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error("1Password reads did not start in parallel")),
+          100
+        )
+      ),
+    ]);
+    expect(started).toHaveLength(4);
+
+    releaseReads();
+    await fill;
+
+    expect(env.OPENAI_API_KEY).toBe(
+      "secret:op://Apicity/OPENAI_API_KEY/password"
+    );
+    expect(env.XAI_API_KEY).toBe("secret:op://Apicity/XAI_API_KEY/password");
+    expect(env.ANTHROPIC_API_KEY).toBe(
+      "secret:op://Apicity/ANTHROPIC_API_KEY/password"
+    );
+    expect(env.FIREWORKS_API_KEY).toBe(
+      "secret:op://Apicity/FIREWORKS_API_KEY/password"
+    );
+  });
+
   it("does not overwrite resolved env vars", async () => {
     const env: NodeJS.ProcessEnv = {
       OPENAI_API_KEY: "existing",

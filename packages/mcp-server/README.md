@@ -20,10 +20,10 @@ pnpm add @apicity/mcp-server
 
 ```bash
 # Stdio server. Logs to stderr; stdout is reserved for MCP framing.
-OP_SERVICE_TOKEN=ops_... \
+OP_SERVICE_ACCOUNT_TOKEN=ops_... \
   npx -y @apicity/mcp-server@latest \
   --op-vault apicity \
-  --op-service-token env:OP_SERVICE_TOKEN
+  --op-service-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
 
 Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
@@ -37,7 +37,7 @@ the vault name and a 1Password service-account token:
 ```bash
 npx -y @apicity/mcp-server@latest \
   --op-vault apicity \
-  --op-service-token env:OP_SERVICE_TOKEN
+  --op-service-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
 
 `--op-service-token` accepts a literal token, `env:VAR`, `$VAR`, or an existing
@@ -47,11 +47,18 @@ used instead of flags.
 Claude Code setup:
 
 ```bash
-claude mcp add --scope user apicity -- \
+claude mcp add --scope user apicity \
+  -e OP_SERVICE_ACCOUNT_TOKEN="$OP_SERVICE_ACCOUNT_TOKEN" \
+  -- \
   npx -y @apicity/mcp-server@latest \
   --op-vault apicity \
-  --op-service-token env:OP_SERVICE_TOKEN
+  --op-service-token env:OP_SERVICE_ACCOUNT_TOKEN
 ```
+
+The `-e` flag is required for Claude Code because the MCP subprocess uses
+Claude's stored server environment. `env:OP_SERVICE_ACCOUNT_TOKEN` then tells
+`apicity-mcp` to read that stored value before it starts resolving provider
+credentials from 1Password.
 
 ### Flags
 
@@ -162,10 +169,10 @@ embed the registry into your own MCP server.
         "--op-vault",
         "apicity",
         "--op-service-token",
-        "env:OP_SERVICE_TOKEN"
+        "env:OP_SERVICE_ACCOUNT_TOKEN"
       ],
       "env": {
-        "OP_SERVICE_TOKEN": "ops_..."
+        "OP_SERVICE_ACCOUNT_TOKEN": "ops_..."
       }
     }
   }

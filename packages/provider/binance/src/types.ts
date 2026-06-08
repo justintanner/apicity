@@ -243,6 +243,22 @@ export type BinanceTickerTradingDayResponse =
   | BinanceTickerTradingDay
   | BinanceTickerTradingDay[];
 
+export interface BinanceTickerPriceRequest {
+  symbol?: string;
+  symbols?: string[];
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
+}
+
+export interface BinanceTickerPrice {
+  symbol: string;
+  price: string;
+  [key: string]: unknown;
+}
+
+export type BinanceTickerPriceResponse =
+  | BinanceTickerPrice
+  | BinanceTickerPrice[];
+
 export interface BinanceTradesRequest {
   symbol: string;
   limit?: number;
@@ -358,6 +374,14 @@ export interface BinanceTickerTradingDayMethod {
   schema: typeof import("./zod").BinanceTickerTradingDayRequestSchema;
 }
 
+export interface BinanceTickerPriceMethod {
+  (
+    req?: BinanceTickerPriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceTickerPriceResponse>;
+  schema: typeof import("./zod").BinanceTickerPriceRequestSchema;
+}
+
 export interface BinanceTradesMethod {
   (
     req: BinanceTradesRequest,
@@ -398,6 +422,7 @@ export interface BinanceApiV3Namespace {
 }
 
 export interface BinanceTickerNamespace {
+  price: BinanceTickerPriceMethod;
   tradingDay: BinanceTickerTradingDayMethod;
   twentyFourHr: BinanceTicker24hrMethod;
 }

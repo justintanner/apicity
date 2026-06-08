@@ -44,6 +44,10 @@ export type {
   BinanceTicker24hrMethod,
   BinanceTicker24hrRequest,
   BinanceTicker24hrResponse,
+  BinanceTickerTradingDay,
+  BinanceTickerTradingDayMethod,
+  BinanceTickerTradingDayRequest,
+  BinanceTickerTradingDayResponse,
   BinanceTickerNamespace,
   BinanceTimeMethod,
   BinanceTimeResponse,
@@ -66,6 +70,7 @@ export {
   BinanceKlineIntervalSchema,
   BinanceKlinesRequestSchema,
   BinanceTicker24hrRequestSchema,
+  BinanceTickerTradingDayRequestSchema,
   BinanceTradesRequestSchema,
   BinanceUiKlinesRequestSchema,
 } from "./zod";

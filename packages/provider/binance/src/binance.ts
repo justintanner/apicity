@@ -19,6 +19,8 @@ import type {
   BinanceProvider,
   BinanceTicker24hrRequest,
   BinanceTicker24hrResponse,
+  BinanceTickerTradingDayRequest,
+  BinanceTickerTradingDayResponse,
   BinanceTimeResponse,
   BinanceTradesRequest,
   BinanceTradesResponse,
@@ -34,6 +36,7 @@ import {
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
   BinanceTicker24hrRequestSchema,
+  BinanceTickerTradingDayRequestSchema,
   BinanceTradesRequestSchema,
   BinanceUiKlinesRequestSchema,
 } from "./zod";
@@ -415,7 +418,32 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceTicker24hrRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/ticker/tradingDay{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#trading-day-ticker
+  const tickerTradingDay = Object.assign(
+    async (
+      req: BinanceTickerTradingDayRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTickerTradingDayResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbols: req.symbols,
+        timeZone: req.timeZone,
+        type: req.type,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceTickerTradingDayResponse>(
+        "GET",
+        `/api/v3/ticker/tradingDay${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceTickerTradingDayRequestSchema }
+  );
+
   const ticker = {
+    tradingDay: tickerTradingDay,
     twentyFourHr: tickerTwentyFourHr,
   };
 

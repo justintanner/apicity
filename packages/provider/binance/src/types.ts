@@ -212,6 +212,37 @@ export interface BinanceTicker24hr {
 
 export type BinanceTicker24hrResponse = BinanceTicker24hr | BinanceTicker24hr[];
 
+export interface BinanceTickerTradingDayRequest {
+  symbol?: string;
+  symbols?: string[];
+  timeZone?: string;
+  type?: "FULL" | "MINI";
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
+}
+
+export interface BinanceTickerTradingDay {
+  symbol: string;
+  priceChange?: string;
+  priceChangePercent?: string;
+  weightedAvgPrice?: string;
+  openPrice?: string;
+  highPrice?: string;
+  lowPrice?: string;
+  lastPrice?: string;
+  volume?: string;
+  quoteVolume?: string;
+  openTime?: number;
+  closeTime?: number;
+  firstId?: number;
+  lastId?: number;
+  count?: number;
+  [key: string]: unknown;
+}
+
+export type BinanceTickerTradingDayResponse =
+  | BinanceTickerTradingDay
+  | BinanceTickerTradingDay[];
+
 export interface BinanceTradesRequest {
   symbol: string;
   limit?: number;
@@ -319,6 +350,14 @@ export interface BinanceTicker24hrMethod {
   schema: typeof import("./zod").BinanceTicker24hrRequestSchema;
 }
 
+export interface BinanceTickerTradingDayMethod {
+  (
+    req: BinanceTickerTradingDayRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceTickerTradingDayResponse>;
+  schema: typeof import("./zod").BinanceTickerTradingDayRequestSchema;
+}
+
 export interface BinanceTradesMethod {
   (
     req: BinanceTradesRequest,
@@ -359,6 +398,7 @@ export interface BinanceApiV3Namespace {
 }
 
 export interface BinanceTickerNamespace {
+  tradingDay: BinanceTickerTradingDayMethod;
   twentyFourHr: BinanceTicker24hrMethod;
 }
 

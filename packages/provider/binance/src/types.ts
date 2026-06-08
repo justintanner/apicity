@@ -179,6 +179,39 @@ export type BinanceKlinesResponse = BinanceKline[];
 export type BinanceUiKlinesRequest = BinanceKlinesRequest;
 export type BinanceUiKlinesResponse = BinanceKlinesResponse;
 
+export interface BinanceTicker24hrRequest {
+  symbol?: string;
+  symbols?: string[];
+  type?: "FULL" | "MINI";
+}
+
+export interface BinanceTicker24hr {
+  symbol: string;
+  priceChange?: string;
+  priceChangePercent?: string;
+  weightedAvgPrice?: string;
+  prevClosePrice?: string;
+  lastPrice?: string;
+  lastQty?: string;
+  bidPrice?: string;
+  bidQty?: string;
+  askPrice?: string;
+  askQty?: string;
+  openPrice?: string;
+  highPrice?: string;
+  lowPrice?: string;
+  volume?: string;
+  quoteVolume?: string;
+  openTime?: number;
+  closeTime?: number;
+  firstId?: number;
+  lastId?: number;
+  count?: number;
+  [key: string]: unknown;
+}
+
+export type BinanceTicker24hrResponse = BinanceTicker24hr | BinanceTicker24hr[];
+
 export interface BinanceTradesRequest {
   symbol: string;
   limit?: number;
@@ -278,6 +311,14 @@ export interface BinanceUiKlinesMethod {
   schema: typeof import("./zod").BinanceUiKlinesRequestSchema;
 }
 
+export interface BinanceTicker24hrMethod {
+  (
+    req?: BinanceTicker24hrRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceTicker24hrResponse>;
+  schema: typeof import("./zod").BinanceTicker24hrRequestSchema;
+}
+
 export interface BinanceTradesMethod {
   (
     req: BinanceTradesRequest,
@@ -312,8 +353,13 @@ export interface BinanceApiV3Namespace {
   klines: BinanceKlinesMethod;
   ping: BinancePingMethod;
   time: BinanceTimeMethod;
+  ticker: BinanceTickerNamespace;
   trades: BinanceTradesMethod;
   uiKlines: BinanceUiKlinesMethod;
+}
+
+export interface BinanceTickerNamespace {
+  twentyFourHr: BinanceTicker24hrMethod;
 }
 
 export interface BinanceApiNamespace {

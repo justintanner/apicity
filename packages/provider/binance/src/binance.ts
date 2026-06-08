@@ -17,6 +17,8 @@ import type {
   BinanceOptions,
   BinancePingResponse,
   BinanceProvider,
+  BinanceTicker24hrRequest,
+  BinanceTicker24hrResponse,
   BinanceTimeResponse,
   BinanceTradesRequest,
   BinanceTradesResponse,
@@ -31,6 +33,7 @@ import {
   BinanceHistoricalBlockTradesRequestSchema,
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
+  BinanceTicker24hrRequestSchema,
   BinanceTradesRequestSchema,
   BinanceUiKlinesRequestSchema,
 } from "./zod";
@@ -389,6 +392,33 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceUiKlinesRequestSchema }
   );
 
+  // sig-ok: upstream numeric segment exposed as a TypeScript-friendly name.
+  // GET https://api.binance.com/api/v3/ticker/24hr{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#24hr-ticker-price-change-statistics
+  const tickerTwentyFourHr = Object.assign(
+    async (
+      req: BinanceTicker24hrRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTicker24hrResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbols: req.symbols,
+        type: req.type,
+      });
+      return makeJsonRequest<BinanceTicker24hrResponse>(
+        "GET",
+        `/api/v3/ticker/24hr${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceTicker24hrRequestSchema }
+  );
+
+  const ticker = {
+    twentyFourHr: tickerTwentyFourHr,
+  };
+
   const api = {
     v3: {
       aggTrades,
@@ -400,6 +430,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
       klines,
       ping,
       time,
+      ticker,
       trades,
       uiKlines,
     },

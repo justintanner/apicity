@@ -164,6 +164,7 @@ __pycache__/
 state.json
 CLAUDE.md
 CLAUDE.local.md
+settings.local.json
 
 # Claude Code local harness files
 .claude/

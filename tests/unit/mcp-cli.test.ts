@@ -2,8 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   parseArgs,
+  resolveOpServiceToken,
   resolveOpVault,
   resolveOutputDir,
+  resolveRequiredOnePasswordOptions,
 } from "../../packages/mcp-server/src/cli";
 import {
   fillOnePasswordEnv,
@@ -18,6 +20,8 @@ describe("apicity-mcp CLI parsing", () => {
       parseArgs([
         "--op-vault",
         "Apicity",
+        "--op-service-token",
+        "env:OP_SERVICE_TOKEN",
         "--providers",
         "openai,xai",
         "--output-dir",
@@ -28,6 +32,7 @@ describe("apicity-mcp CLI parsing", () => {
     ).toEqual({
       help: false,
       opVault: "Apicity",
+      opServiceToken: "env:OP_SERVICE_TOKEN",
       enabledProviders: ["openai", "xai"],
       outputDir: "/tmp/out",
       paygateSecretFile: "/tmp/secret",
@@ -38,6 +43,7 @@ describe("apicity-mcp CLI parsing", () => {
     expect(
       parseArgs([
         "--op-vault=Apicity",
+        "--op-service-token=op-token",
         "--providers=openai, anthropic",
         "--output-dir=/tmp/out",
         "--paygate-secret-file=/tmp/secret",
@@ -45,6 +51,7 @@ describe("apicity-mcp CLI parsing", () => {
     ).toEqual({
       help: false,
       opVault: "Apicity",
+      opServiceToken: "op-token",
       enabledProviders: ["openai", "anthropic"],
       outputDir: "/tmp/out",
       paygateSecretFile: "/tmp/secret",
@@ -70,7 +77,7 @@ describe("apicity-mcp output directory", () => {
   });
 });
 
-describe("apicity-mcp 1Password vault option", () => {
+describe("apicity-mcp 1Password options", () => {
   it("uses an explicit vault before APICITY_OP_VAULT", () => {
     expect(resolveOpVault("Explicit", { APICITY_OP_VAULT: "EnvVault" })).toBe(
       "Explicit"
@@ -81,6 +88,56 @@ describe("apicity-mcp 1Password vault option", () => {
     expect(resolveOpVault(undefined, { APICITY_OP_VAULT: "EnvVault" })).toBe(
       "EnvVault"
     );
+  });
+
+  it("uses an explicit service token before APICITY_OP_SERVICE_TOKEN", () => {
+    expect(
+      resolveOpServiceToken("explicit-token", {
+        APICITY_OP_SERVICE_TOKEN: "env-token",
+      })
+    ).toBe("explicit-token");
+  });
+
+  it("falls back to APICITY_OP_SERVICE_TOKEN", () => {
+    expect(
+      resolveOpServiceToken(undefined, {
+        APICITY_OP_SERVICE_TOKEN: "env-token",
+      })
+    ).toBe("env-token");
+  });
+
+  it("resolves service token env references", () => {
+    const env = { OP_SERVICE_TOKEN: "resolved-token" };
+    expect(resolveOpServiceToken("env:OP_SERVICE_TOKEN", env)).toBe(
+      "resolved-token"
+    );
+    expect(resolveOpServiceToken("$OP_SERVICE_TOKEN", env)).toBe(
+      "resolved-token"
+    );
+    expect(resolveOpServiceToken("OP_SERVICE_TOKEN", env)).toBe(
+      "resolved-token"
+    );
+  });
+
+  it("requires a vault and service token together", () => {
+    expect(() => resolveRequiredOnePasswordOptions({}, {})).toThrow(
+      "--op-vault is required."
+    );
+    expect(() =>
+      resolveRequiredOnePasswordOptions({ opVault: "Apicity" }, {})
+    ).toThrow("--op-service-token is required.");
+    expect(
+      resolveRequiredOnePasswordOptions(
+        {},
+        {
+          APICITY_OP_VAULT: "Apicity",
+          APICITY_OP_SERVICE_TOKEN: "op-token",
+        }
+      )
+    ).toEqual({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+    });
   });
 });
 
@@ -110,6 +167,7 @@ describe("1Password credential resolution", () => {
 
     await fillOnePasswordEnv({
       vault: "Apicity",
+      serviceAccountToken: "op-token",
       enabledProviders: ["openai", "xai"],
       env,
       readSecret,
@@ -139,6 +197,7 @@ describe("1Password credential resolution", () => {
 
     await fillOnePasswordEnv({
       vault: "Apicity",
+      serviceAccountToken: "op-token",
       enabledProviders: ["openai", "xai"],
       env,
       listItemTitles,
@@ -158,6 +217,7 @@ describe("1Password credential resolution", () => {
 
     await fillOnePasswordEnv({
       vault: "Apicity",
+      serviceAccountToken: "op-token",
       env,
       listItemTitles,
       injectSecrets,
@@ -176,6 +236,7 @@ describe("1Password credential resolution", () => {
     await expect(
       fillOnePasswordEnv({
         vault: "Apicity",
+        serviceAccountToken: "op-token",
         enabledProviders: ["openai"],
         env,
         listItemTitles,
@@ -207,6 +268,7 @@ describe("1Password credential resolution", () => {
 
     const fill = fillOnePasswordEnv({
       vault: "Apicity",
+      serviceAccountToken: "op-token",
       enabledProviders: ["openai", "xai", "anthropic", "fireworks"],
       env,
       readSecret,
@@ -247,6 +309,7 @@ describe("1Password credential resolution", () => {
 
     await fillOnePasswordEnv({
       vault: "Apicity",
+      serviceAccountToken: "op-token",
       enabledProviders: ["openai", "xai"],
       env,
       readSecret,
@@ -268,6 +331,7 @@ describe("1Password credential resolution", () => {
 
     await fillOnePasswordEnv({
       vault: "Apicity",
+      serviceAccountToken: "op-token",
       env,
       readSecret,
     });
@@ -287,6 +351,7 @@ describe("1Password credential resolution", () => {
     await expect(
       fillOnePasswordEnv({
         vault: "Apicity",
+        serviceAccountToken: "op-token",
         enabledProviders: ["openai"],
         env,
         readSecret,

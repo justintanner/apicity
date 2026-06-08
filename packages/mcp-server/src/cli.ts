@@ -7,7 +7,13 @@ export interface ParsedArgs {
   enabledProviders?: string[];
   paygateSecretFile?: string;
   opVault?: string;
+  opServiceToken?: string;
   help: boolean;
+}
+
+export interface ResolvedOnePasswordOptions {
+  vault: string;
+  serviceAccountToken: string;
 }
 
 export function parseArgs(argv: string[]): ParsedArgs {
@@ -29,6 +35,10 @@ export function parseArgs(argv: string[]): ParsedArgs {
       out.opVault = argv[++i];
     } else if (a.startsWith("--op-vault=")) {
       out.opVault = a.slice(11);
+    } else if (a === "--op-service-token") {
+      out.opServiceToken = argv[++i];
+    } else if (a.startsWith("--op-service-token=")) {
+      out.opServiceToken = a.slice(19);
     } else {
       console.error(`[apicity-mcp] unknown arg: ${a}`);
     }
@@ -51,18 +61,56 @@ export function resolveOpVault(
   return explicitOpVault ?? env.APICITY_OP_VAULT;
 }
 
+export function resolveOpServiceToken(
+  explicitOpServiceToken?: string,
+  env: NodeJS.ProcessEnv = process.env
+): string | undefined {
+  const tokenOrRef = explicitOpServiceToken ?? env.APICITY_OP_SERVICE_TOKEN;
+  if (!tokenOrRef) return undefined;
+
+  if (tokenOrRef.startsWith("env:")) {
+    return resolveRequiredEnv(tokenOrRef.slice(4), "--op-service-token", env);
+  }
+  if (tokenOrRef.startsWith("$")) {
+    return resolveRequiredEnv(tokenOrRef.slice(1), "--op-service-token", env);
+  }
+  return env[tokenOrRef] ?? tokenOrRef;
+}
+
+export function resolveRequiredOnePasswordOptions(
+  args: Pick<ParsedArgs, "opVault" | "opServiceToken">,
+  env: NodeJS.ProcessEnv = process.env
+): ResolvedOnePasswordOptions {
+  const vault = resolveOpVault(args.opVault, env);
+  if (!vault) {
+    throw new Error("--op-vault is required.");
+  }
+  const serviceAccountToken = resolveOpServiceToken(args.opServiceToken, env);
+  if (!serviceAccountToken) {
+    throw new Error("--op-service-token is required.");
+  }
+  return { vault, serviceAccountToken };
+}
+
 export function printHelp(): void {
   console.error(
     [
       "apicity-mcp — MCP server exposing every @apicity provider endpoint as a tool.",
       "",
       "Usage:",
-      "  apicity-mcp [--op-vault <vault>] [--output-dir <path>] [--providers <csv>]",
+      "  apicity-mcp --op-vault <vault> --op-service-token <token|env:VAR>",
+      "              [--output-dir <path>] [--providers <csv>]",
       "",
       "Options:",
-      "  --op-vault <vault>   Resolve missing provider credentials from 1Password.",
+      "  --op-vault <vault>   Required. Resolve missing provider credentials from 1Password.",
       "                       Looks for op://<vault>/<ENV_VAR>/password.",
       "                       Can also be set with APICITY_OP_VAULT.",
+      "  --op-service-token <token|env:VAR>",
+      "                       Required. Use a 1Password service-account token for",
+      "                       non-interactive credential reads. Literal tokens, env:VAR,",
+      "                       $VAR, or an existing env var name are accepted.",
+      "                       Can also be set with",
+      "                       APICITY_OP_SERVICE_TOKEN.",
       "  --output-dir <path>  Directory to write binary results and downloaded media URLs.",
       "                       Defaults to CLAUDE_PROJECT_DIR, then the current directory.",
       "  --providers <csv>    Comma-separated provider allow-list (e.g. openai,xai,anthropic).",
@@ -87,13 +135,12 @@ export async function runCli(argv = process.argv.slice(2)): Promise<void> {
     return;
   }
 
-  const opVault = resolveOpVault(args.opVault);
-  if (opVault) {
-    await fillOnePasswordEnv({
-      vault: opVault,
-      enabledProviders: args.enabledProviders,
-    });
-  }
+  const onePassword = resolveRequiredOnePasswordOptions(args);
+  await fillOnePasswordEnv({
+    vault: onePassword.vault,
+    enabledProviders: args.enabledProviders,
+    serviceAccountToken: onePassword.serviceAccountToken,
+  });
 
   const paygateSecret = args.paygateSecretFile
     ? readFileSync(args.paygateSecretFile, "utf8").trim()
@@ -111,4 +158,19 @@ function parseProviderCsv(value: string | undefined): string[] {
     .split(",")
     .map((provider) => provider.trim())
     .filter(Boolean);
+}
+
+function resolveRequiredEnv(
+  name: string,
+  source: string,
+  env: NodeJS.ProcessEnv
+): string {
+  if (!name) {
+    throw new Error(`${source} env reference is empty.`);
+  }
+  const value = env[name];
+  if (!value) {
+    throw new Error(`${source} env reference ${name} is not set.`);
+  }
+  return value;
 }

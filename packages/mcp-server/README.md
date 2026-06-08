@@ -20,31 +20,42 @@ pnpm add @apicity/mcp-server
 
 ```bash
 # Stdio server. Logs to stderr; stdout is reserved for MCP framing.
-OPENAI_API_KEY=sk-... ANTHROPIC_API_KEY=sk-... \
-  npx apicity-mcp
+OP_SERVICE_TOKEN=ops_... \
+  npx -y @apicity/mcp-server \
+  --op-vault Apicity \
+  --op-service-token env:OP_SERVICE_TOKEN
 ```
 
-With 1Password, put each provider secret in an item named after the env var
-(`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) with the value in the `password`
-field, then pass the vault name:
+The CLI requires both `--op-vault` and `--op-service-token`. Put each provider
+secret in a 1Password item named after the env var (`OPENAI_API_KEY`,
+`ANTHROPIC_API_KEY`, etc.) with the value in the `password` field, then pass
+the vault name and a 1Password service-account token:
 
 ```bash
-npx -y @apicity/mcp-server --op-vault Apicity
+npx -y @apicity/mcp-server \
+  --op-vault Apicity \
+  --op-service-token env:OP_SERVICE_TOKEN
 ```
+
+`--op-service-token` accepts a literal token, `env:VAR`, `$VAR`, or an existing
+env var name. `APICITY_OP_VAULT` and `APICITY_OP_SERVICE_TOKEN` can also be
+used instead of flags.
 
 Claude Code setup:
 
 ```bash
 claude mcp add --scope user apicity -- \
   npx -y @apicity/mcp-server \
-  --op-vault Apicity
+  --op-vault Apicity \
+  --op-service-token env:OP_SERVICE_TOKEN
 ```
 
 ### Flags
 
 | Flag                           | Description                                                                                                    |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `--op-vault <vault>`           | Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or use `APICITY_OP_VAULT`).       |
+| `--op-vault <vault>`           | Required. Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or `APICITY_OP_VAULT`). |
+| `--op-service-token <token>`   | Required. 1Password service-account token, `env:VAR`, `$VAR`, or env var name (or `APICITY_OP_SERVICE_TOKEN`). |
 | `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.      |
 | `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                             |
 | `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)). |
@@ -70,11 +81,11 @@ claude mcp add --scope user apicity -- \
 | `telegram`   | `TELEGRAM_BOT_KEY`     |
 | `free`       | _(none — public APIs)_ |
 
-Providers without their env var set are silently skipped. With `--op-vault`,
-the vault is listed once and existing provider secrets are resolved in one
-batch before the MCP server starts. If `--providers` is set, a missing
-requested provider secret is a startup error; without `--providers`, missing
-vault items are skipped.
+Before the MCP server starts, the CLI lists the vault once and resolves
+existing provider secrets in one batch using `OP_SERVICE_ACCOUNT_TOKEN` scoped
+to the child `op` process. Provider env vars that are already set are left
+untouched. If `--providers` is set, a missing requested provider secret is a
+startup error; without `--providers`, missing vault items are skipped.
 
 ## Tool naming
 
@@ -142,8 +153,17 @@ embed the registry into your own MCP server.
   "mcpServers": {
     "apicity": {
       "command": "npx",
-      "args": ["-y", "@apicity/mcp-server", "--op-vault", "Apicity"],
-      "env": {}
+      "args": [
+        "-y",
+        "@apicity/mcp-server",
+        "--op-vault",
+        "Apicity",
+        "--op-service-token",
+        "env:OP_SERVICE_TOKEN"
+      ],
+      "env": {
+        "OP_SERVICE_TOKEN": "ops_..."
+      }
     }
   }
 }

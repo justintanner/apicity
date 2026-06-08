@@ -10,6 +10,7 @@ export type OpInject = (template: string) => Promise<string>;
 
 export interface OnePasswordEnvOptions {
   vault: string;
+  serviceAccountToken: string;
   enabledProviders?: string[];
   env?: NodeJS.ProcessEnv;
   readSecret?: OpRead;
@@ -91,13 +92,14 @@ export function onePasswordRef(vault: string, envVar: string): string {
 
 export async function readOnePasswordSecret(
   ref: string,
-  timeoutMs = DEFAULT_OP_TIMEOUT_MS
+  timeoutMs = DEFAULT_OP_TIMEOUT_MS,
+  serviceAccountToken?: string
 ): Promise<string> {
   try {
     const { stdout } = await execFileAsync(
       "op",
       ["read", "--no-newline", ref],
-      { timeout: timeoutMs }
+      { timeout: timeoutMs, env: opEnv(serviceAccountToken) }
     );
     return stdout.trim();
   } catch (err) {
@@ -110,13 +112,18 @@ export async function readOnePasswordSecret(
 
 export async function listOnePasswordItemTitles(
   vault: string,
-  timeoutMs = DEFAULT_OP_TIMEOUT_MS
+  timeoutMs = DEFAULT_OP_TIMEOUT_MS,
+  serviceAccountToken?: string
 ): Promise<string[]> {
   try {
     const { stdout } = await execFileAsync(
       "op",
       ["item", "list", "--vault", vault, "--format", "json"],
-      { timeout: timeoutMs, maxBuffer: 2 * 1024 * 1024 }
+      {
+        timeout: timeoutMs,
+        maxBuffer: 2 * 1024 * 1024,
+        env: opEnv(serviceAccountToken),
+      }
     );
     const parsed = JSON.parse(stdout) as unknown;
     if (!Array.isArray(parsed)) {
@@ -141,12 +148,14 @@ export async function listOnePasswordItemTitles(
 
 export async function injectOnePasswordSecrets(
   template: string,
-  timeoutMs = DEFAULT_OP_TIMEOUT_MS
+  timeoutMs = DEFAULT_OP_TIMEOUT_MS,
+  serviceAccountToken?: string
 ): Promise<string> {
   return await runOpWithInput(
     ["inject", "--in-file", "/dev/stdin"],
     template,
-    timeoutMs
+    timeoutMs,
+    serviceAccountToken
   );
 }
 
@@ -159,10 +168,12 @@ async function fillOnePasswordEnvBatch(
   const timeoutMs = opts.timeoutMs ?? DEFAULT_OP_TIMEOUT_MS;
   const listItemTitles =
     opts.listItemTitles ??
-    ((vault: string) => listOnePasswordItemTitles(vault, timeoutMs));
+    ((vault: string) =>
+      listOnePasswordItemTitles(vault, timeoutMs, opts.serviceAccountToken));
   const injectSecrets =
     opts.injectSecrets ??
-    ((template: string) => injectOnePasswordSecrets(template, timeoutMs));
+    ((template: string) =>
+      injectOnePasswordSecrets(template, timeoutMs, opts.serviceAccountToken));
   const itemTitles = new Set(await listItemTitles(opts.vault));
   const availableEnvVars = missingEnvVars.filter((envVar) =>
     itemTitles.has(envVar)
@@ -210,10 +221,14 @@ function parseInjectedEnv(injected: string): Record<string, string> {
 async function runOpWithInput(
   args: string[],
   input: string,
-  timeoutMs: number
+  timeoutMs: number,
+  serviceAccountToken?: string
 ): Promise<string> {
   return await new Promise((resolve, reject) => {
-    const child = spawn("op", args, { stdio: ["pipe", "pipe", "pipe"] });
+    const child = spawn("op", args, {
+      stdio: ["pipe", "pipe", "pipe"],
+      env: opEnv(serviceAccountToken),
+    });
     let stdout = "";
     let stderr = "";
     let timedOut = false;
@@ -263,6 +278,14 @@ async function runOpWithInput(
     });
     child.stdin.end(input);
   });
+}
+
+function opEnv(serviceAccountToken: string | undefined): NodeJS.ProcessEnv {
+  if (!serviceAccountToken) return process.env;
+  return {
+    ...process.env,
+    OP_SERVICE_ACCOUNT_TOKEN: serviceAccountToken,
+  };
 }
 
 function normalizeConcurrency(concurrency: number, jobCount: number): number {

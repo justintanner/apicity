@@ -45,7 +45,7 @@ claude mcp add --scope user apicity -- \
 | Flag                           | Description                                                                                                    |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
 | `--op-vault <vault>`           | Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or use `APICITY_OP_VAULT`).       |
-| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.       |
+| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.      |
 | `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                             |
 | `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)). |
 | `--help`                       | Print usage.                                                                                                   |
@@ -71,9 +71,10 @@ claude mcp add --scope user apicity -- \
 | `free`       | _(none — public APIs)_ |
 
 Providers without their env var set are silently skipped. With `--op-vault`,
-missing env vars are read from 1Password before the MCP server starts. If
-`--providers` is set, a missing requested provider secret is a startup error;
-without `--providers`, missing vault items are skipped.
+the vault is listed once and existing provider secrets are resolved in one
+batch before the MCP server starts. If `--providers` is set, a missing
+requested provider secret is a startup error; without `--providers`, missing
+vault items are skipped.
 
 ## Tool naming
 
@@ -141,12 +142,7 @@ embed the registry into your own MCP server.
   "mcpServers": {
     "apicity": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@apicity/mcp-server",
-        "--op-vault",
-        "Apicity"
-      ],
+      "args": ["-y", "@apicity/mcp-server", "--op-vault", "Apicity"],
       "env": {}
     }
   }

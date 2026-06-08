@@ -122,6 +122,71 @@ describe("1Password credential resolution", () => {
     expect(readSecret).toHaveBeenCalledTimes(2);
   });
 
+  it("batch resolves existing vault items with one inject call", async () => {
+    const env: NodeJS.ProcessEnv = {};
+    const listItemTitles = vi.fn(async () => ["OPENAI_API_KEY", "XAI_API_KEY"]);
+    const injectSecrets = vi.fn(async (template: string) => {
+      expect(template).toContain(
+        "OPENAI_API_KEY={{ op://Apicity/OPENAI_API_KEY/password }}"
+      );
+      expect(template).toContain(
+        "XAI_API_KEY={{ op://Apicity/XAI_API_KEY/password }}"
+      );
+      return ["OPENAI_API_KEY=openai-secret", "XAI_API_KEY=xai-secret"].join(
+        "\n"
+      );
+    });
+
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      enabledProviders: ["openai", "xai"],
+      env,
+      listItemTitles,
+      injectSecrets,
+    });
+
+    expect(env.OPENAI_API_KEY).toBe("openai-secret");
+    expect(env.XAI_API_KEY).toBe("xai-secret");
+    expect(listItemTitles).toHaveBeenCalledWith("Apicity");
+    expect(injectSecrets).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips absent vault items when providers are not explicit", async () => {
+    const env: NodeJS.ProcessEnv = {};
+    const listItemTitles = vi.fn(async () => ["OPENAI_API_KEY"]);
+    const injectSecrets = vi.fn(async () => "OPENAI_API_KEY=openai-secret");
+
+    await fillOnePasswordEnv({
+      vault: "Apicity",
+      env,
+      listItemTitles,
+      injectSecrets,
+    });
+
+    expect(env.OPENAI_API_KEY).toBe("openai-secret");
+    expect(env.XAI_API_KEY).toBeUndefined();
+    expect(injectSecrets).toHaveBeenCalledOnce();
+  });
+
+  it("fails when a requested provider item is absent from the vault list", async () => {
+    const env: NodeJS.ProcessEnv = {};
+    const listItemTitles = vi.fn(async () => []);
+    const injectSecrets = vi.fn(async () => "");
+
+    await expect(
+      fillOnePasswordEnv({
+        vault: "Apicity",
+        enabledProviders: ["openai"],
+        env,
+        listItemTitles,
+        injectSecrets,
+      })
+    ).rejects.toThrow(
+      "Missing 1Password secret for OPENAI_API_KEY. Expected op://Apicity/OPENAI_API_KEY/password."
+    );
+    expect(injectSecrets).not.toHaveBeenCalled();
+  });
+
   it("reads missing provider env vars concurrently", async () => {
     const env: NodeJS.ProcessEnv = {};
     const started: string[] = [];

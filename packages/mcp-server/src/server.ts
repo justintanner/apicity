@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
@@ -32,7 +33,10 @@ export async function startServer(
   });
 
   const server = new Server(
-    { name: opts.name ?? "apicity", version: opts.version ?? "0.1.0" },
+    {
+      name: opts.name ?? "apicity",
+      version: opts.version ?? readPackageVersion(),
+    },
     { capabilities: { tools: {} } }
   );
 
@@ -275,4 +279,22 @@ function safeStringify(value: unknown): string {
   } catch {
     return String(value);
   }
+}
+
+function readPackageVersion(): string {
+  for (const path of [
+    new URL("../package.json", import.meta.url),
+    new URL("../../package.json", import.meta.url),
+  ]) {
+    try {
+      const pkg = JSON.parse(readFileSync(path, "utf8")) as unknown;
+      if (typeof pkg === "object" && pkg !== null) {
+        const version = (pkg as Record<string, unknown>).version;
+        if (typeof version === "string") return version;
+      }
+    } catch {
+      /* try source/dist fallback */
+    }
+  }
+  return "0.0.0";
 }

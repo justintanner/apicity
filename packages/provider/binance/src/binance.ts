@@ -6,6 +6,8 @@ import type {
   BinanceDepthResponse,
   BinanceExchangeInfoRequest,
   BinanceExchangeInfoResponse,
+  BinanceHistoricalBlockTradesRequest,
+  BinanceHistoricalBlockTradesResponse,
   BinanceHistoricalTradesRequest,
   BinanceHistoricalTradesResponse,
   BinanceOptions,
@@ -19,6 +21,7 @@ import {
   BinanceAggTradesRequestSchema,
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
+  BinanceHistoricalBlockTradesRequestSchema,
   BinanceHistoricalTradesRequestSchema,
   BinanceTradesRequestSchema,
 } from "./zod";
@@ -261,6 +264,28 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceHistoricalTradesRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/historicalBlockTrades{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#historical-block-trades
+  const historicalBlockTrades = Object.assign(
+    async (
+      req: BinanceHistoricalBlockTradesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceHistoricalBlockTradesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        fromId: req.fromId,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceHistoricalBlockTradesResponse>(
+        "GET",
+        `/api/v3/historicalBlockTrades${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceHistoricalBlockTradesRequestSchema }
+  );
+
   // GET https://api.binance.com/api/v3/aggTrades{query}
   // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#compressedaggregate-trades-list
   const aggTrades = Object.assign(
@@ -290,6 +315,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
       aggTrades,
       depth,
       exchangeInfo,
+      historicalBlockTrades,
       historicalTrades,
       ping,
       time,

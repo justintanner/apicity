@@ -133,6 +133,12 @@ export interface BinanceHistoricalTradesRequest {
   fromId?: number;
 }
 
+export interface BinanceHistoricalBlockTradesRequest {
+  symbol: string;
+  fromId: number;
+  limit?: number;
+}
+
 export interface BinanceTrade {
   id: number;
   price: string;
@@ -145,6 +151,17 @@ export interface BinanceTrade {
 
 export type BinanceTradesResponse = BinanceTrade[];
 export type BinanceHistoricalTradesResponse = BinanceTrade[];
+
+export interface BinanceBlockTrade {
+  id: number;
+  price: string;
+  qty: string;
+  quoteQty: string;
+  time: number;
+  isBuyerMaker: boolean;
+}
+
+export type BinanceHistoricalBlockTradesResponse = BinanceBlockTrade[];
 
 export interface BinancePingMethod {
   (signal?: AbortSignal): Promise<BinancePingResponse>;
@@ -196,10 +213,19 @@ export interface BinanceHistoricalTradesMethod {
   schema: typeof import("./zod").BinanceHistoricalTradesRequestSchema;
 }
 
+export interface BinanceHistoricalBlockTradesMethod {
+  (
+    req: BinanceHistoricalBlockTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceHistoricalBlockTradesResponse>;
+  schema: typeof import("./zod").BinanceHistoricalBlockTradesRequestSchema;
+}
+
 export interface BinanceApiV3Namespace {
   aggTrades: BinanceAggTradesMethod;
   depth: BinanceDepthMethod;
   exchangeInfo: BinanceExchangeInfoMethod;
+  historicalBlockTrades: BinanceHistoricalBlockTradesMethod;
   historicalTrades: BinanceHistoricalTradesMethod;
   ping: BinancePingMethod;
   time: BinanceTimeMethod;

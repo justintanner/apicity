@@ -25,7 +25,7 @@ const binance = createBinance();
 
 ## API Reference
 
-7 endpoints across 7 groups. Each method mirrors an upstream URL path.
+8 endpoints across 8 groups. Each method mirrors an upstream URL path.
 
 ### aggTrades
 
@@ -72,6 +72,23 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 ```typescript
 const res = await binance.api.v3.exchangeInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+### historicalBlockTrades
+
+<details>
+<summary><code>GET</code> <b><code>binance.api.v3.historicalBlockTrades</code></b></summary>
+
+<code>GET https://api.binance.com/api/v3/historicalBlockTrades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#historical-block-trades)
+
+```typescript
+const res = await binance.api.v3.historicalBlockTrades({ /* ... */ });
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)

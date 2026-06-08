@@ -591,41 +591,22 @@ function shorten(value, maxLength = 260) {
 }
 
 function printWorkItems(items) {
-  const groups = [
-    ["Features", (issue) => issue.issue_type === "feature"],
-    ["Fixes", (issue) => issue.issue_type === "bug"],
-    ["Tasks", (issue) => issue.issue_type === "task"],
-    ["Chores", (issue) => issue.issue_type === "chore"],
-    [
-      "Other",
-      (issue) => !["feature", "bug", "task", "chore"].includes(issue.issue_type),
-    ],
-  ];
-
-  for (const [heading, predicate] of groups) {
-    const groupItems = items.filter(predicate);
-    if (!groupItems.length) continue;
-    console.log(`### ${heading}`);
-    console.log("");
-    for (const issue of groupItems) {
-      const title = normalize(issue.title);
-      const reason = shorten(issue.close_reason || issue.description);
-      const priority = Number.isInteger(issue.priority)
-        ? `P${issue.priority}`
-        : "P?";
-      const suffix = reason ? ` - ${reason}` : "";
-      console.log(`- **${title}** (\`${issue.id}\`, ${priority})${suffix}`);
-    }
-    console.log("");
+  for (const issue of items) {
+    const title = normalize(issue.title);
+    const reason = shorten(issue.close_reason || issue.description);
+    const priority = Number.isInteger(issue.priority)
+      ? `P${issue.priority}`
+      : "P?";
+    const suffix = reason ? ` - ${reason}` : "";
+    console.log(`- **${title}** (\`${issue.id}\`, ${priority})${suffix}`);
   }
+  console.log("");
 }
 
 function printCommitFallback(commits) {
   const visible = commits.filter((commit) => !isReleaseCommit(commit));
   if (!visible.length) return;
 
-  console.log("## Git Fallback");
-  console.log("");
   console.log(
     "No closed bead work was found for this release window, so these non-release commits are listed instead."
   );
@@ -651,24 +632,6 @@ console.log(`# Apicity v${version}`);
 console.log("");
 console.log("## Summary");
 console.log("");
-console.log(`- npm dist-tag: \`${distTag}\``);
-console.log(`- Published packages: ${packages.length} @apicity packages in lockstep`);
-console.log(`- Git tag: \`${currentTag}\``);
-if (previousTag) {
-  console.log(`- Compare range: \`${previousTag}...${currentTag}\``);
-}
-if (previousRelease) {
-  console.log(
-    `- Previous release bead: \`${previousRelease.id}\` closed ${previousRelease.closed_at}`
-  );
-}
-if (previousDate) {
-  console.log(`- Beads window: \`${previousDate}\` to \`${currentDate}\``);
-}
-console.log("");
-
-console.log("## Released Work");
-console.log("");
 if (work.length) {
   printWorkItems(work);
 } else {
@@ -686,9 +649,9 @@ NODE
 cat "$notes"
 ```
 
-Review the generated file before uploading it. It should summarize closed bead
-work under `Released Work`, and it should not include a `What's Changed` or
-`Release Maintenance` section for normal releases.
+Review the generated file before uploading it. `Summary` should contain a flat
+list of closed bead work. It should not include release metadata, `Released
+Work`, `What's Changed`, `Release Maintenance`, or type grouping headings.
 
 **3. Create or update the release page:**
 ```bash

@@ -22,3 +22,8 @@ export const BinanceDepthRequestSchema = z.object({
   limit: z.number().int().positive().max(5000).optional(),
   symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
+
+export const BinanceTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(1000).optional(),
+});

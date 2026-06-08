@@ -23,9 +23,14 @@ export type {
   BinanceSymbolInfo,
   BinanceTimeMethod,
   BinanceTimeResponse,
+  BinanceTrade,
+  BinanceTradesMethod,
+  BinanceTradesRequest,
+  BinanceTradesResponse,
 } from "./types";
 
 export {
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
+  BinanceTradesRequestSchema,
 } from "./zod";

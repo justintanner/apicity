@@ -10,6 +10,7 @@ binance	api.v3.ping	GET	https://api.binance.com/api/v3/ping	https://developers.b
 binance	api.v3.exchangeInfo	GET	https://api.binance.com/api/v3/exchangeInfo{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#exchange-information
 binance	api.v3.time	GET	https://api.binance.com/api/v3/time	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#check-server-time
 binance	api.v3.depth	GET	https://api.binance.com/api/v3/depth{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#order-book
+binance	api.v3.trades	GET	https://api.binance.com/api/v3/trades{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#recent-trades-list
 anthropic	v1.files	POST	https://api.anthropic.com/v1/files	https://docs.anthropic.com/en/api
 anthropic	v1.files.content	GET	https://api.anthropic.com/v1/files/{fileId}/content	https://docs.anthropic.com/en/api
 anthropic	v1.files.del	DELETE	https://api.anthropic.com/v1/files/{fileId}	https://docs.anthropic.com/en/api

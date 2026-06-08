@@ -8,10 +8,13 @@ import type {
   BinancePingResponse,
   BinanceProvider,
   BinanceTimeResponse,
+  BinanceTradesRequest,
+  BinanceTradesResponse,
 } from "./types";
 import {
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
+  BinanceTradesRequestSchema,
 } from "./zod";
 
 type BinanceQueryValue =
@@ -209,12 +212,34 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceDepthRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/trades{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#recent-trades-list
+  const trades = Object.assign(
+    async (
+      req: BinanceTradesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTradesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTradesResponse>(
+        "GET",
+        `/api/v3/trades${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceTradesRequestSchema }
+  );
+
   const api = {
     v3: {
       depth,
       exchangeInfo,
       ping,
       time,
+      trades,
     },
   };
 

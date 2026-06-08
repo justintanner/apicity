@@ -1,9 +1,20 @@
 import { BinanceError } from "./types";
 import type {
+  BinanceExchangeInfoRequest,
+  BinanceExchangeInfoResponse,
   BinanceOptions,
   BinancePingResponse,
   BinanceProvider,
+  BinanceTimeResponse,
 } from "./types";
+import { BinanceExchangeInfoRequestSchema } from "./zod";
+
+type BinanceQueryValue =
+  | string
+  | number
+  | boolean
+  | readonly string[]
+  | undefined;
 
 export function createBinance(opts?: BinanceOptions): BinanceProvider {
   const baseURL = (opts?.baseURL ?? "https://api.binance.com").replace(
@@ -104,6 +115,21 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     }
   }
 
+  function buildQuery(params: Record<string, BinanceQueryValue>): string {
+    const qs = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined) {
+        continue;
+      }
+      qs.append(
+        key,
+        Array.isArray(value) ? JSON.stringify(value) : String(value)
+      );
+    }
+    const query = qs.toString();
+    return query ? `?${query}` : "";
+  }
+
   // GET https://api.binance.com/api/v3/ping
   // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity
   const ping = Object.assign(
@@ -118,9 +144,49 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: undefined }
   );
 
+  // GET https://api.binance.com/api/v3/time
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#check-server-time
+  const time = Object.assign(
+    async (signal?: AbortSignal): Promise<BinanceTimeResponse> => {
+      return makeJsonRequest<BinanceTimeResponse>(
+        "GET",
+        "/api/v3/time",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.binance.com/api/v3/exchangeInfo{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#exchange-information
+  const exchangeInfo = Object.assign(
+    async (
+      req: BinanceExchangeInfoRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceExchangeInfoResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbols: req.symbols,
+        permissions: req.permissions,
+        showPermissionSets: req.showPermissionSets,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceExchangeInfoResponse>(
+        "GET",
+        `/api/v3/exchangeInfo${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceExchangeInfoRequestSchema }
+  );
+
   const api = {
     v3: {
+      exchangeInfo,
       ping,
+      time,
     },
   };
 

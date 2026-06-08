@@ -20,7 +20,7 @@
  */
 
 export function compileTsvUrlPattern(fullUrl) {
-  const stripped = fullUrl.split("?")[0];
+  const stripped = stripQueryMarker(fullUrl).split("?")[0];
   const escaped = escapeRegExp(stripped).replace(/\\\{[^}]+\\\}/g, "[^/]+");
   return new RegExp(`^${escaped}$`);
 }
@@ -31,7 +31,7 @@ export function matchHarEntryStrict(entry, tsvRow) {
     return false;
   }
   return compileTsvUrlPattern(tsvRow.fullUrl).test(
-    entry.request.url.split("?")[0]
+    stripQueryMarker(entry.request.url).split("?")[0]
   );
 }
 
@@ -74,7 +74,7 @@ export function findMatchingRow(entry, tsvRows, { provider } = {}) {
 }
 
 function pathSegments(url) {
-  const path = stripHost(url).split("?")[0].split("#")[0];
+  const path = stripQueryMarker(stripHost(url)).split("?")[0].split("#")[0];
   return path.split("/").filter((s) => s.length > 0);
 }
 
@@ -102,6 +102,10 @@ function stripHost(url) {
   if (url.startsWith("/")) return url;
   const m = url.match(/^https?:\/\/[^/]+(\/.*)?$/i);
   return m ? (m[1] ?? "/") : url;
+}
+
+function stripQueryMarker(url) {
+  return url.replace(/\{query\}/g, "");
 }
 
 function escapeRegExp(s) {

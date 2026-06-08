@@ -74,8 +74,12 @@ function escapeHtmlAttr(text: string): string {
   return escapeHtml(text).replace(/"/g, "&quot;");
 }
 
+function stripQueryMarker(url: string): string {
+  return url.replace(/\{query\}/g, "");
+}
+
 function stripQuery(url: string): string {
-  return url.split("?")[0];
+  return stripQueryMarker(url).split("?")[0];
 }
 
 function stripHost(url: string): string {
@@ -85,7 +89,7 @@ function stripHost(url: string): string {
 }
 
 function pathSegments(url: string): string[] {
-  const pathOnly = stripHost(url).split("?")[0].split("#")[0];
+  const pathOnly = stripQueryMarker(stripHost(url)).split("?")[0].split("#")[0];
   return pathOnly.split("/").filter((segment) => segment.length > 0);
 }
 

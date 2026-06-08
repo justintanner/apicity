@@ -13,6 +13,14 @@ const endpointDocs: EndpointDocRow[] = [
     fullUrl: "https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2",
     docsUrl: "https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api",
   },
+  {
+    provider: "binance",
+    dotPath: "api.v3.exchangeInfo",
+    method: "GET",
+    fullUrl: "https://api.binance.com/api/v3/exchangeInfo{query}",
+    docsUrl:
+      "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#exchange-information",
+  },
 ];
 
 function seedSpeechRecording(): ChangedRecording {
@@ -57,6 +65,38 @@ function seedSpeechRecording(): ChangedRecording {
   };
 }
 
+function binanceExchangeInfoRecording(): ChangedRecording {
+  return {
+    provider: "binance",
+    recordingName: "binance/exchange-info",
+    changeType: "new",
+    filePath:
+      "tests/recordings/binance_1298037041/" +
+      "exchange-info_3388488339/recording.har",
+    entries: [
+      {
+        request: {
+          method: "GET",
+          url: "https://api.binance.com/api/v3/exchangeInfo?symbol=BTCUSDT",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/json" }],
+          content: {
+            mimeType: "application/json",
+            text: JSON.stringify({
+              timezone: "UTC",
+              symbols: [{ symbol: "BTCUSDT", status: "TRADING" }],
+            }),
+          },
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -79,5 +119,20 @@ describe("harness Telegram messages", () => {
     );
     expect(message.text).not.toContain("```");
     expect(message.text).not.toContain("###");
+  });
+
+  it("matches endpoint docs rows that use the {query} URL marker", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [binanceExchangeInfoRecording()],
+      endpointDocs
+    );
+
+    expect(message.endpoint).toBe(
+      "GET https://api.binance.com/api/v3/exchangeInfo"
+    );
+    expect(message.apicityPath).toBe("binance.api.v3.exchangeInfo");
+    expect(message.text).toContain(
+      "developers.binance.com/docs/binance-spot-api-docs"
+    );
   });
 });

@@ -25,7 +25,7 @@ const binance = createBinance();
 
 ## API Reference
 
-17 endpoints across 13 groups. Each method mirrors an upstream URL path.
+18 endpoints across 13 groups. Each method mirrors an upstream URL path.
 
 ### aggTrades
 
@@ -174,6 +174,21 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 ```typescript
 const res = await binance.api.v3.referencePrice({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.api.v3.referencePrice.calculation</code></b></summary>
+
+<code>GET https://api.binance.com/api/v3/referencePrice/calculation{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price-calculation)
+
+```typescript
+const res = await binance.api.v3.referencePrice.calculation({ /* ... */ });
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)

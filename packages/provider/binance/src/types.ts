@@ -122,6 +122,20 @@ export interface BinanceReferencePriceResponse {
   [key: string]: unknown;
 }
 
+export interface BinanceReferencePriceCalculationRequest {
+  symbol: string;
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
+}
+
+export interface BinanceReferencePriceCalculationResponse {
+  symbol: string;
+  calculationType: string;
+  bucketCount?: number;
+  bucketWidthMs?: number;
+  externalCalculationId?: number;
+  [key: string]: unknown;
+}
+
 export interface BinanceAggTradesRequest {
   symbol: string;
   fromId?: number;
@@ -401,6 +415,14 @@ export interface BinanceReferencePriceMethod {
   schema: typeof import("./zod").BinanceReferencePriceRequestSchema;
 }
 
+export interface BinanceReferencePriceCalculationMethod {
+  (
+    req: BinanceReferencePriceCalculationRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceReferencePriceCalculationResponse>;
+  schema: typeof import("./zod").BinanceReferencePriceCalculationRequestSchema;
+}
+
 export interface BinanceAggTradesMethod {
   (
     req: BinanceAggTradesRequest,
@@ -505,7 +527,9 @@ export interface BinanceApiV3Namespace {
   uiKlines: BinanceUiKlinesMethod;
 }
 
-export type BinanceReferencePriceNamespace = BinanceReferencePriceMethod;
+export interface BinanceReferencePriceNamespace extends BinanceReferencePriceMethod {
+  calculation: BinanceReferencePriceCalculationMethod;
+}
 
 export interface BinanceTickerNamespace extends BinanceTickerMethod {
   bookTicker: BinanceTickerBookTickerMethod;

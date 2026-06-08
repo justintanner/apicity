@@ -31,6 +31,11 @@ export const BinanceReferencePriceRequestSchema = z.object({
   symbol: z.string().min(1),
 });
 
+export const BinanceReferencePriceCalculationRequestSchema = z.object({
+  symbol: z.string().min(1),
+  symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
+});
+
 export const BinanceAggTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   fromId: z.number().int().nonnegative().optional(),

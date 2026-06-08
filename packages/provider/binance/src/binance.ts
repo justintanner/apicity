@@ -17,6 +17,8 @@ import type {
   BinanceOptions,
   BinancePingResponse,
   BinanceProvider,
+  BinanceReferencePriceCalculationRequest,
+  BinanceReferencePriceCalculationResponse,
   BinanceReferencePriceRequest,
   BinanceReferencePriceResponse,
   BinanceTicker24hrRequest,
@@ -43,6 +45,7 @@ import {
   BinanceHistoricalBlockTradesRequestSchema,
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
+  BinanceReferencePriceCalculationRequestSchema,
   BinanceReferencePriceRequestSchema,
   BinanceTicker24hrRequestSchema,
   BinanceTickerBookTickerRequestSchema,
@@ -382,6 +385,27 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceAvgPriceRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/referencePrice/calculation{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price-calculation
+  const referencePriceCalculation = Object.assign(
+    async (
+      req: BinanceReferencePriceCalculationRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceReferencePriceCalculationResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceReferencePriceCalculationResponse>(
+        "GET",
+        `/api/v3/referencePrice/calculation${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceReferencePriceCalculationRequestSchema }
+  );
+
   // GET https://api.binance.com/api/v3/referencePrice{query}
   // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price
   const referencePrice = Object.assign(
@@ -399,7 +423,10 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
         signal
       );
     },
-    { schema: BinanceReferencePriceRequestSchema }
+    {
+      calculation: referencePriceCalculation,
+      schema: BinanceReferencePriceRequestSchema,
+    }
   );
 
   // GET https://api.binance.com/api/v3/uiKlines{query}

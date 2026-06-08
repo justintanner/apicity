@@ -206,14 +206,25 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           PUSH_BEFORE: ${{ github.event.before }}
         run: |
-          if [ -z "$TELEGRAM_BOT_KEY" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
-            echo "Telegram secrets are not configured; skipping."
-            exit 0
-          fi
-
           base="$PUSH_BEFORE"
           if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
             base="HEAD^"
+          fi
+
+          pnpm run harness:telegram -- \
+            --dry-run \
+            --base "$base" \
+            --out harness-telegram-messages.json
+
+          message_count=$(node -e 'const fs = require("node:fs"); const messages = JSON.parse(fs.readFileSync("harness-telegram-messages.json", "utf8")); console.log(messages.length);')
+          if [ "$message_count" = "0" ]; then
+            echo "No endpoint Telegram messages to send."
+            exit 0
+          fi
+
+          if [ -z "$TELEGRAM_BOT_KEY" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "::error::Telegram secrets are not configured for $message_count endpoint message(s)."
+            exit 1
           fi
 
           pnpm run harness:telegram -- --base "$base"

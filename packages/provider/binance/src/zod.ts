@@ -27,3 +27,9 @@ export const BinanceTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   limit: z.number().int().positive().max(1000).optional(),
 });
+
+export const BinanceHistoricalTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(1000).optional(),
+  fromId: z.number().int().nonnegative().optional(),
+});

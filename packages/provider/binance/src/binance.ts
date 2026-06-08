@@ -4,6 +4,8 @@ import type {
   BinanceDepthResponse,
   BinanceExchangeInfoRequest,
   BinanceExchangeInfoResponse,
+  BinanceHistoricalTradesRequest,
+  BinanceHistoricalTradesResponse,
   BinanceOptions,
   BinancePingResponse,
   BinanceProvider,
@@ -14,6 +16,7 @@ import type {
 import {
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
+  BinanceHistoricalTradesRequestSchema,
   BinanceTradesRequestSchema,
 } from "./zod";
 
@@ -233,10 +236,33 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceTradesRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/historicalTrades{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#old-trade-lookup
+  const historicalTrades = Object.assign(
+    async (
+      req: BinanceHistoricalTradesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceHistoricalTradesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        limit: req.limit,
+        fromId: req.fromId,
+      });
+      return makeJsonRequest<BinanceHistoricalTradesResponse>(
+        "GET",
+        `/api/v3/historicalTrades${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceHistoricalTradesRequestSchema }
+  );
+
   const api = {
     v3: {
       depth,
       exchangeInfo,
+      historicalTrades,
       ping,
       time,
       trades,

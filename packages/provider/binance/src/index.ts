@@ -15,6 +15,9 @@ export type {
   BinanceExchangeInfoMethod,
   BinanceExchangeInfoRequest,
   BinanceExchangeInfoResponse,
+  BinanceHistoricalTradesMethod,
+  BinanceHistoricalTradesRequest,
+  BinanceHistoricalTradesResponse,
   BinancePingMethod,
   BinancePingResponse,
   BinanceOrderBookLevel,
@@ -32,5 +35,6 @@ export type {
 export {
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
+  BinanceHistoricalTradesRequestSchema,
   BinanceTradesRequestSchema,
 } from "./zod";

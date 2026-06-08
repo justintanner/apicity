@@ -106,6 +106,12 @@ export interface BinanceTradesRequest {
   limit?: number;
 }
 
+export interface BinanceHistoricalTradesRequest {
+  symbol: string;
+  limit?: number;
+  fromId?: number;
+}
+
 export interface BinanceTrade {
   id: number;
   price: string;
@@ -117,6 +123,7 @@ export interface BinanceTrade {
 }
 
 export type BinanceTradesResponse = BinanceTrade[];
+export type BinanceHistoricalTradesResponse = BinanceTrade[];
 
 export interface BinancePingMethod {
   (signal?: AbortSignal): Promise<BinancePingResponse>;
@@ -152,9 +159,18 @@ export interface BinanceTradesMethod {
   schema: typeof import("./zod").BinanceTradesRequestSchema;
 }
 
+export interface BinanceHistoricalTradesMethod {
+  (
+    req: BinanceHistoricalTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceHistoricalTradesResponse>;
+  schema: typeof import("./zod").BinanceHistoricalTradesRequestSchema;
+}
+
 export interface BinanceApiV3Namespace {
   depth: BinanceDepthMethod;
   exchangeInfo: BinanceExchangeInfoMethod;
+  historicalTrades: BinanceHistoricalTradesMethod;
   ping: BinancePingMethod;
   time: BinanceTimeMethod;
   trades: BinanceTradesMethod;

@@ -1,6 +1,6 @@
 {
   "name": "@apicity/anthropic",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Anthropic / Claude provider for messages, batches, models, files, and admin APIs.",
   "license": "MIT",
   "repository": {

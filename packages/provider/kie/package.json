@@ -1,6 +1,6 @@
 {
   "name": "@apicity/kie",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Kie provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).",
   "license": "MIT",
   "repository": {

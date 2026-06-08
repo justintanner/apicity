@@ -21,10 +21,13 @@ pnpm add @apicity/mcp-server
 ```bash
 # Stdio server. Logs to stderr; stdout is reserved for MCP framing.
 OP_SERVICE_TOKEN=ops_... \
-  npx -y @apicity/mcp-server \
-  --op-vault Apicity \
+  npx -y @apicity/mcp-server@latest \
+  --op-vault apicity \
   --op-service-token env:OP_SERVICE_TOKEN
 ```
+
+Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
+cached package that does not understand newer flags.
 
 The CLI requires both `--op-vault` and `--op-service-token`. Put each provider
 secret in a 1Password item named after the env var (`OPENAI_API_KEY`,
@@ -32,8 +35,8 @@ secret in a 1Password item named after the env var (`OPENAI_API_KEY`,
 the vault name and a 1Password service-account token:
 
 ```bash
-npx -y @apicity/mcp-server \
-  --op-vault Apicity \
+npx -y @apicity/mcp-server@latest \
+  --op-vault apicity \
   --op-service-token env:OP_SERVICE_TOKEN
 ```
 
@@ -45,8 +48,8 @@ Claude Code setup:
 
 ```bash
 claude mcp add --scope user apicity -- \
-  npx -y @apicity/mcp-server \
-  --op-vault Apicity \
+  npx -y @apicity/mcp-server@latest \
+  --op-vault apicity \
   --op-service-token env:OP_SERVICE_TOKEN
 ```
 
@@ -155,9 +158,9 @@ embed the registry into your own MCP server.
       "command": "npx",
       "args": [
         "-y",
-        "@apicity/mcp-server",
+        "@apicity/mcp-server@latest",
         "--op-vault",
-        "Apicity",
+        "apicity",
         "--op-service-token",
         "env:OP_SERVICE_TOKEN"
       ],

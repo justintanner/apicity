@@ -57,6 +57,12 @@ describe("apicity-mcp CLI parsing", () => {
       paygateSecretFile: "/tmp/secret",
     });
   });
+
+  it("rejects unknown flags", () => {
+    expect(() => parseArgs(["--op-vualt", "Apicity"])).toThrow(
+      "unknown arg: --op-vualt"
+    );
+  });
 });
 
 describe("apicity-mcp output directory", () => {

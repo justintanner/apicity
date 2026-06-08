@@ -40,7 +40,7 @@ export function parseArgs(argv: string[]): ParsedArgs {
     } else if (a.startsWith("--op-service-token=")) {
       out.opServiceToken = a.slice(19);
     } else {
-      console.error(`[apicity-mcp] unknown arg: ${a}`);
+      throw new Error(`unknown arg: ${a}`);
     }
   }
   return out;

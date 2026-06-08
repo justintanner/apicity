@@ -9,7 +9,7 @@ import { PAID_ENDPOINTS } from "@apicity/cost";
 
 export interface ProviderSpec {
   envVar: string;
-  optionKey: "apiKey" | "accessToken" | "botToken";
+  optionKey: "apiKey" | "apiToken" | "accessToken" | "botToken";
   importPath: string;
   factoryName: string;
 }
@@ -56,6 +56,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/google",
     factoryName: "createGoogle",
   },
+  dolthub: {
+    envVar: "DOLTHUB_API_KEY",
+    optionKey: "apiToken",
+    importPath: "@apicity/dolthub",
+    factoryName: "createDoltHub",
+  },
   kie: {
     envVar: "KIE_API_KEY",
     optionKey: "apiKey",
@@ -91,6 +97,13 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     optionKey: "accessToken",
     importPath: "@apicity/meta",
     factoryName: "createMeta",
+  },
+  // Polymarket public Gamma/Data/CLOB market-data endpoints need no credential.
+  polymarket: {
+    envVar: "",
+    optionKey: "apiKey",
+    importPath: "@apicity/polymarket",
+    factoryName: "createPolymarket",
   },
   // free needs no credential — handled specially in registry.ts
   "free-media-upload": {
@@ -130,8 +143,8 @@ export async function instantiateProvider(
   if (name === "free-media-upload") {
     return (factory as () => InstantiatedProvider)();
   }
-  const credential = process.env[spec.envVar];
-  if (!credential && name !== "youtube") return null;
+  const credential = spec.envVar ? process.env[spec.envVar] : undefined;
+  if (!credential && spec.envVar && name !== "youtube") return null;
   const opts: Record<string, unknown> = {};
   if (credential) opts[spec.optionKey] = credential;
   // The MCP server is the code client: it holds the shared secret to *verify*

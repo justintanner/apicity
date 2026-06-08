@@ -166,7 +166,7 @@ function resolveEndpointFn(
     }
   }
   for (const c of candidates) {
-    const fn = walkPath(c, segs);
+    const fn = walkPathOrMethodLeaf(c, segs, m);
     if (fn) return fn;
   }
   // kie style B: sub-provider key is one of the URL path segments rather than
@@ -185,6 +185,26 @@ function resolveEndpointFn(
     if (fn) return fn;
   }
   return null;
+}
+
+function walkPathOrMethodLeaf(
+  root: unknown,
+  segments: string[],
+  method: string
+): EndpointFn | null {
+  let cur: unknown = root;
+  for (const segment of segments) {
+    if (cur === null || cur === undefined) return null;
+    const t = typeof cur;
+    if (t !== "object" && t !== "function") return null;
+    cur = (cur as Record<string, unknown>)[segment];
+  }
+  if (typeof cur === "function") return cur as EndpointFn;
+  if (cur === null || cur === undefined) return null;
+  const t = typeof cur;
+  if (t !== "object" && t !== "function") return null;
+  const methodLeaf = (cur as Record<string, unknown>)[method];
+  return typeof methodLeaf === "function" ? (methodLeaf as EndpointFn) : null;
 }
 
 function extractPathParams(url: string): string[] {

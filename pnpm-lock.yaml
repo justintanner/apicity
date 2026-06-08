@@ -105,6 +105,9 @@ importers:
       '@apicity/cost':
         specifier: workspace:*
         version: link:../provider/cost
+      '@apicity/dolthub':
+        specifier: workspace:*
+        version: link:../provider/dolthub
       '@apicity/elevenlabs':
         specifier: workspace:*
         version: link:../provider/elevenlabs
@@ -132,6 +135,9 @@ importers:
       '@apicity/openai':
         specifier: workspace:*
         version: link:../provider/openai
+      '@apicity/polymarket':
+        specifier: workspace:*
+        version: link:../provider/polymarket
       '@apicity/telegram':
         specifier: workspace:*
         version: link:../provider/telegram

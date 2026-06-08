@@ -80,6 +80,7 @@ credentials from 1Password.
 | `anthropic`  | `ANTHROPIC_API_KEY`    |
 | `fireworks`  | `FIREWORKS_API_KEY`    |
 | `fal`        | `FAL_API_KEY`          |
+| `dolthub`    | `DOLTHUB_API_KEY`      |
 | `kie`        | `KIE_API_KEY`          |
 | `kimicoding` | `KIMI_CODING_API_KEY`  |
 | `alibaba`    | `DASHSCOPE_API_KEY`    |
@@ -87,6 +88,7 @@ credentials from 1Password.
 | `google`     | `GOOGLE_API_KEY`       |
 | `x`          | `X_ACCESS_TOKEN`       |
 | `ig`         | `IG_ACCESS_TOKEN`      |
+| `polymarket` | _(none for public data)_ |
 | `youtube`    | `YOUTUBE_ACCESS_TOKEN` |
 | `telegram`   | `TELEGRAM_BOT_KEY`     |
 | `free`       | _(none — public APIs)_ |

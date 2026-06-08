@@ -91,6 +91,17 @@ export const BinanceTickerBookTickerRequestSchema = z.object({
   symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
 
+export const BinanceTickerRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  symbols: z.array(z.string().min(1)).max(100).optional(),
+  windowSize: z
+    .string()
+    .regex(/^(?:[1-9]|[1-5][0-9])m$|^(?:[1-9]|1[0-9]|2[0-3])h$|^[1-7]d$/)
+    .optional(),
+  type: z.enum(["FULL", "MINI"]).optional(),
+  symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
+});
+
 export const BinanceTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   limit: z.number().int().positive().max(1000).optional(),

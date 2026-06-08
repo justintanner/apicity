@@ -278,6 +278,35 @@ export type BinanceTickerBookTickerResponse =
   | BinanceTickerBookTicker
   | BinanceTickerBookTicker[];
 
+export interface BinanceTickerRequest {
+  symbol?: string;
+  symbols?: string[];
+  windowSize?: string;
+  type?: "FULL" | "MINI";
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
+}
+
+export interface BinanceTicker {
+  symbol: string;
+  priceChange?: string;
+  priceChangePercent?: string;
+  weightedAvgPrice?: string;
+  openPrice?: string;
+  highPrice?: string;
+  lowPrice?: string;
+  lastPrice?: string;
+  volume?: string;
+  quoteVolume?: string;
+  openTime?: number;
+  closeTime?: number;
+  firstId?: number;
+  lastId?: number;
+  count?: number;
+  [key: string]: unknown;
+}
+
+export type BinanceTickerResponse = BinanceTicker | BinanceTicker[];
+
 export interface BinanceTradesRequest {
   symbol: string;
   limit?: number;
@@ -409,6 +438,14 @@ export interface BinanceTickerBookTickerMethod {
   schema: typeof import("./zod").BinanceTickerBookTickerRequestSchema;
 }
 
+export interface BinanceTickerMethod {
+  (
+    req: BinanceTickerRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceTickerResponse>;
+  schema: typeof import("./zod").BinanceTickerRequestSchema;
+}
+
 export interface BinanceTradesMethod {
   (
     req: BinanceTradesRequest,
@@ -448,7 +485,7 @@ export interface BinanceApiV3Namespace {
   uiKlines: BinanceUiKlinesMethod;
 }
 
-export interface BinanceTickerNamespace {
+export interface BinanceTickerNamespace extends BinanceTickerMethod {
   bookTicker: BinanceTickerBookTickerMethod;
   price: BinanceTickerPriceMethod;
   tradingDay: BinanceTickerTradingDayMethod;

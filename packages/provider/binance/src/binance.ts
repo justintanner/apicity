@@ -23,6 +23,8 @@ import type {
   BinanceTickerBookTickerResponse,
   BinanceTickerPriceRequest,
   BinanceTickerPriceResponse,
+  BinanceTickerRequest,
+  BinanceTickerResponse,
   BinanceTickerTradingDayRequest,
   BinanceTickerTradingDayResponse,
   BinanceTimeResponse,
@@ -42,6 +44,7 @@ import {
   BinanceTicker24hrRequestSchema,
   BinanceTickerBookTickerRequestSchema,
   BinanceTickerPriceRequestSchema,
+  BinanceTickerRequestSchema,
   BinanceTickerTradingDayRequestSchema,
   BinanceTradesRequestSchema,
   BinanceUiKlinesRequestSchema,
@@ -492,12 +495,35 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceTickerBookTickerRequestSchema }
   );
 
-  const ticker = {
-    bookTicker: tickerBookTicker,
-    price: tickerPrice,
-    tradingDay: tickerTradingDay,
-    twentyFourHr: tickerTwentyFourHr,
-  };
+  // GET https://api.binance.com/api/v3/ticker{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#rolling-window-price-change-statistics
+  const ticker = Object.assign(
+    async (
+      req: BinanceTickerRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTickerResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbols: req.symbols,
+        windowSize: req.windowSize,
+        type: req.type,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceTickerResponse>(
+        "GET",
+        `/api/v3/ticker${query}`,
+        undefined,
+        signal
+      );
+    },
+    {
+      bookTicker: tickerBookTicker,
+      price: tickerPrice,
+      schema: BinanceTickerRequestSchema,
+      tradingDay: tickerTradingDay,
+      twentyFourHr: tickerTwentyFourHr,
+    }
+  );
 
   const api = {
     v3: {

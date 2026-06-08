@@ -10,6 +10,8 @@ import type {
   BinanceHistoricalBlockTradesResponse,
   BinanceHistoricalTradesRequest,
   BinanceHistoricalTradesResponse,
+  BinanceKlinesRequest,
+  BinanceKlinesResponse,
   BinanceOptions,
   BinancePingResponse,
   BinanceProvider,
@@ -23,6 +25,7 @@ import {
   BinanceExchangeInfoRequestSchema,
   BinanceHistoricalBlockTradesRequestSchema,
   BinanceHistoricalTradesRequestSchema,
+  BinanceKlinesRequestSchema,
   BinanceTradesRequestSchema,
 } from "./zod";
 
@@ -310,6 +313,31 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceAggTradesRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/klines{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#klinecandlestick-data
+  const klines = Object.assign(
+    async (
+      req: BinanceKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceKlinesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        timeZone: req.timeZone,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceKlinesResponse>(
+        "GET",
+        `/api/v3/klines${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceKlinesRequestSchema }
+  );
+
   const api = {
     v3: {
       aggTrades,
@@ -317,6 +345,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
       exchangeInfo,
       historicalBlockTrades,
       historicalTrades,
+      klines,
       ping,
       time,
       trades,

@@ -122,6 +122,50 @@ export interface BinanceAggregateTrade {
 
 export type BinanceAggTradesResponse = BinanceAggregateTrade[];
 
+export type BinanceKlineInterval =
+  | "1s"
+  | "1m"
+  | "3m"
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "4h"
+  | "6h"
+  | "8h"
+  | "12h"
+  | "1d"
+  | "3d"
+  | "1w"
+  | "1M";
+
+export interface BinanceKlinesRequest {
+  symbol: string;
+  interval: BinanceKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  timeZone?: string;
+  limit?: number;
+}
+
+export type BinanceKline = [
+  openTime: number,
+  open: string,
+  high: string,
+  low: string,
+  close: string,
+  volume: string,
+  closeTime: number,
+  quoteAssetVolume: string,
+  numberOfTrades: number,
+  takerBuyBaseAssetVolume: string,
+  takerBuyQuoteAssetVolume: string,
+  unused: string,
+];
+
+export type BinanceKlinesResponse = BinanceKline[];
+
 export interface BinanceTradesRequest {
   symbol: string;
   limit?: number;
@@ -197,6 +241,14 @@ export interface BinanceAggTradesMethod {
   schema: typeof import("./zod").BinanceAggTradesRequestSchema;
 }
 
+export interface BinanceKlinesMethod {
+  (
+    req: BinanceKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceKlinesResponse>;
+  schema: typeof import("./zod").BinanceKlinesRequestSchema;
+}
+
 export interface BinanceTradesMethod {
   (
     req: BinanceTradesRequest,
@@ -227,6 +279,7 @@ export interface BinanceApiV3Namespace {
   exchangeInfo: BinanceExchangeInfoMethod;
   historicalBlockTrades: BinanceHistoricalBlockTradesMethod;
   historicalTrades: BinanceHistoricalTradesMethod;
+  klines: BinanceKlinesMethod;
   ping: BinancePingMethod;
   time: BinanceTimeMethod;
   trades: BinanceTradesMethod;

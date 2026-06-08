@@ -31,6 +31,34 @@ export const BinanceAggTradesRequestSchema = z.object({
   limit: z.number().int().positive().max(1000).optional(),
 });
 
+export const BinanceKlineIntervalSchema = z.enum([
+  "1s",
+  "1m",
+  "3m",
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "2h",
+  "4h",
+  "6h",
+  "8h",
+  "12h",
+  "1d",
+  "3d",
+  "1w",
+  "1M",
+]);
+
+export const BinanceKlinesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  interval: BinanceKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  timeZone: z.string().optional(),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
 export const BinanceTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   limit: z.number().int().positive().max(1000).optional(),

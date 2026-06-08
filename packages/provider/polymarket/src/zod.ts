@@ -50,6 +50,14 @@ export const PolymarketOptionsSchema = z.object({
   clobApiCredentials: z.custom<PolymarketClobApiCredentials>().optional(),
   clobL1Headers: z.custom<PolymarketClobL1Headers>().optional(),
   clobL2HeaderSigner: z.custom<PolymarketClobL2HeaderSigner>().optional(),
+  // EOA private key (0x-prefixed) used to EIP-712-sign CLOB orders locally.
+  clobPrivateKey: z.string().optional(),
+  // Polymarket proxy/safe address that holds the funds (the order `maker`).
+  clobFunderAddress: z.string().optional(),
+  // 0 = EOA, 1 = Polymarket proxy, 2 = Gnosis safe, 3 = EIP-1271.
+  clobSignatureType: z
+    .union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)])
+    .optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
@@ -160,6 +168,23 @@ export const PolymarketClobPostOrderRequestSchema = z.object({
 
 export type PolymarketClobPostOrderRequest = z.infer<
   typeof PolymarketClobPostOrderRequestSchema
+>;
+
+// High-level "place an order" intent. Unlike PostOrderRequest (which needs a
+// fully pre-signed order), this takes plain price/size and the provider signs
+// it locally with the configured wallet. Limit orders only (GTC / GTD).
+export const PolymarketClobPlaceOrderRequestSchema = z.object({
+  tokenID: z.string().min(1),
+  side: PolymarketClobSideSchema,
+  price: z.number().gt(0).lt(1),
+  size: z.number().gt(0),
+  orderType: z.enum(["GTC", "GTD"]).optional(),
+  // Unix seconds; required by Polymarket when orderType is GTD.
+  expiration: z.number().int().nonnegative().optional(),
+});
+
+export type PolymarketClobPlaceOrderRequest = z.infer<
+  typeof PolymarketClobPlaceOrderRequestSchema
 >;
 
 export const PolymarketClobPostOrdersRequestSchema = z

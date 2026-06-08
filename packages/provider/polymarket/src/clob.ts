@@ -44,6 +44,7 @@ import {
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
   PolymarketClobPostOrderRequest,
+  PolymarketClobPlaceOrderRequest,
   PolymarketClobPostOrdersRequest,
   PolymarketClobCancelOrderRequest,
   PolymarketClobCancelOrdersRequest,
@@ -68,6 +69,7 @@ import {
   PolymarketClobPricesBatchRequestSchema,
   PolymarketClobBatchPricesHistoryRequestSchema,
   PolymarketClobPostOrderRequestSchema,
+  PolymarketClobPlaceOrderRequestSchema,
   PolymarketClobPostOrdersRequestSchema,
   PolymarketClobCancelOrderRequestSchema,
   PolymarketClobCancelOrdersRequestSchema,
@@ -76,6 +78,7 @@ import {
   PolymarketClobHeartbeatRequestSchema,
 } from "./zod";
 import { createRequestHelpers } from "./_helpers";
+import { createClobTrader } from "./sign";
 
 export interface PolymarketClobSubProvider {
   get: { clob: PolymarketClobGetNamespace };
@@ -100,6 +103,9 @@ export function createClobProvider(
     makeAuthenticatedRequest,
     makeL1Request,
   } = createRequestHelpers(doFetch, timeout, opts);
+
+  // Wallet-backed order signer (lazy — only built when a trade is placed).
+  const trader = createClobTrader(opts);
 
   // GET https://clob.polymarket.com/time
   // Docs: https://docs.polymarket.com/api-reference/clob/get-server-time
@@ -457,6 +463,21 @@ export function createClobProvider(
       );
     },
     { schema: PolymarketClobPostOrderRequestSchema }
+  );
+
+  // Builds + EIP-712-signs a limit order from plain price/size using the
+  // configured wallet, then submits it. Returns the CLOB post response.
+
+  // POST https://clob.polymarket.com/order
+  // Docs: https://docs.polymarket.com/api-reference/trade/post-a-new-order
+  const clobPlaceOrder = Object.assign(
+    async (
+      req: PolymarketClobPlaceOrderRequest,
+      _signal?: AbortSignal
+    ): Promise<unknown> => {
+      return trader.placeOrder(req);
+    },
+    { schema: PolymarketClobPlaceOrderRequestSchema }
   );
 
   // POST https://clob.polymarket.com/orders
@@ -872,6 +893,7 @@ export function createClobProvider(
       clob: {
         auth: authPost,
         order: clobPostOrder,
+        placeOrder: clobPlaceOrder,
         orders: clobPostOrders,
         books: clobBooksBatch,
         prices: clobPricesBatch,

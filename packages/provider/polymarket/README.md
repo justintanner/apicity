@@ -25,7 +25,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-70 endpoints across 3 groups. Each method mirrors an upstream URL path.
+71 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -638,6 +638,19 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.ordersScoring({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.placeOrder</code></b></summary>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order)
+
+```typescript
+const res = await polymarket.clob.placeOrder({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)

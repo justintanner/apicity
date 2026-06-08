@@ -12,6 +12,36 @@ export interface ProviderSpec {
   optionKey: "apiKey" | "apiToken" | "accessToken" | "botToken";
   importPath: string;
   factoryName: string;
+  // Extra env vars (beyond `envVar`) this provider needs resolved from the
+  // secret store. Used by providers like polymarket whose factory takes a
+  // bundle of credentials rather than a single `optionKey` value.
+  extraEnvVars?: string[];
+}
+
+// Polymarket's CLOB trading factory takes a credential bundle, not a single
+// key. These names match both the `op://<vault>/<NAME>/password` references and
+// the keys read in `instantiateProvider` below.
+export const POLYMARKET_ENV_VARS = [
+  "POLYMARKET_CLOB_API_KEY",
+  "POLYMARKET_CLOB_API_SECRET",
+  "POLYMARKET_CLOB_API_PASSPHRASE",
+  "POLYMARKET_ADDRESS",
+  "POLYMARKET_PRIVATE_KEY",
+  "POLYMARKET_FUNDER_ADDRESS",
+  "POLYMARKET_SIGNATURE_TYPE",
+];
+
+function polymarketOptionsFromEnv(): Record<string, unknown> {
+  const signatureType = process.env.POLYMARKET_SIGNATURE_TYPE;
+  return {
+    clobApiKey: process.env.POLYMARKET_CLOB_API_KEY,
+    clobApiSecret: process.env.POLYMARKET_CLOB_API_SECRET,
+    clobApiPassphrase: process.env.POLYMARKET_CLOB_API_PASSPHRASE,
+    clobAddress: process.env.POLYMARKET_ADDRESS,
+    clobPrivateKey: process.env.POLYMARKET_PRIVATE_KEY,
+    clobFunderAddress: process.env.POLYMARKET_FUNDER_ADDRESS,
+    clobSignatureType: signatureType ? Number(signatureType) : undefined,
+  };
 }
 
 /** Provider names that have at least one paid endpoint in the registry. */
@@ -98,12 +128,15 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/meta",
     factoryName: "createMeta",
   },
-  // Polymarket public Gamma/Data/CLOB market-data endpoints need no credential.
+  // Public Gamma/Data/CLOB market-data endpoints need no credential; the CLOB
+  // trading/account endpoints use the bundle in `extraEnvVars`, resolved from
+  // the secret store and passed to the factory in `instantiateProvider`.
   polymarket: {
     envVar: "",
     optionKey: "apiKey",
     importPath: "@apicity/polymarket",
     factoryName: "createPolymarket",
+    extraEnvVars: POLYMARKET_ENV_VARS,
   },
   // free needs no credential — handled specially in registry.ts
   "free-media-upload": {
@@ -142,6 +175,13 @@ export async function instantiateProvider(
   }
   if (name === "free-media-upload") {
     return (factory as () => InstantiatedProvider)();
+  }
+  if (name === "polymarket") {
+    // Always instantiate: read-only market data works with no creds, and the
+    // trading endpoints pick up the wallet/credential bundle when present.
+    return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
+      polymarketOptionsFromEnv()
+    );
   }
   const credential = spec.envVar ? process.env[spec.envVar] : undefined;
   if (!credential && spec.envVar && name !== "youtube") return null;

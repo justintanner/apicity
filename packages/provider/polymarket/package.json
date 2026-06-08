@@ -25,6 +25,8 @@
     }
   },
   "dependencies": {
+    "@ethersproject/wallet": "^5.8.0",
+    "@polymarket/clob-client-v2": "^1.0.6",
     "zod": "^3.24.0"
   },
   "files": [

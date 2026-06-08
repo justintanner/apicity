@@ -329,6 +329,7 @@ polymarket	clob.notifications	DELETE	https://clob.polymarket.com/notifications{q
 polymarket	clob.notifications	GET	https://clob.polymarket.com/notifications{query}	https://docs.polymarket.com/api-reference/authentication
 polymarket	clob.order	DELETE	https://clob.polymarket.com/order	https://docs.polymarket.com/api-reference/trade/cancel-single-order
 polymarket	clob.order	POST	https://clob.polymarket.com/order	https://docs.polymarket.com/api-reference/trade/post-a-new-order
+polymarket	clob.placeOrder	POST	https://clob.polymarket.com/order	https://docs.polymarket.com/api-reference/trade/post-a-new-order
 polymarket	clob.orderScoring	GET	https://clob.polymarket.com/order-scoring{query}	https://docs.polymarket.com/api-reference/trade/get-order-scoring-status
 polymarket	clob.orders	DELETE	https://clob.polymarket.com/orders	https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders
 polymarket	clob.orders	POST	https://clob.polymarket.com/orders	https://docs.polymarket.com/api-reference/trade/post-multiple-orders

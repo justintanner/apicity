@@ -81,6 +81,9 @@ export function getProviderEnvVars(enabledProviders?: string[]): string[] {
     if (spec.envVar && !envVars.includes(spec.envVar)) {
       envVars.push(spec.envVar);
     }
+    for (const extra of spec.extraEnvVars ?? []) {
+      if (!envVars.includes(extra)) envVars.push(extra);
+    }
   }
 
   return envVars;

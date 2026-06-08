@@ -9,6 +9,7 @@ import type {
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
   PolymarketClobPostOrderRequest,
+  PolymarketClobPlaceOrderRequest,
   PolymarketClobPostOrdersRequest,
   PolymarketClobCancelOrderRequest,
   PolymarketClobCancelOrdersRequest,
@@ -38,6 +39,7 @@ export type {
   PolymarketClobBatchPricesHistoryRequest,
   PolymarketClobSignedOrder,
   PolymarketClobPostOrderRequest,
+  PolymarketClobPlaceOrderRequest,
   PolymarketClobPostOrdersRequest,
   PolymarketClobCancelOrderRequest,
   PolymarketClobCancelOrdersRequest,
@@ -691,6 +693,16 @@ export interface PolymarketClobPostOrderMethod {
   schema: z.ZodType<PolymarketClobPostOrderRequest>;
 }
 
+// Sign-and-submit a limit order from plain price/size — the provider builds and
+// EIP-712-signs the order locally using the configured wallet, then POSTs it.
+export interface PolymarketClobPlaceOrderMethod {
+  (
+    req: PolymarketClobPlaceOrderRequest,
+    signal?: AbortSignal
+  ): Promise<unknown>;
+  schema: z.ZodType<PolymarketClobPlaceOrderRequest>;
+}
+
 export interface PolymarketClobPostOrdersMethod {
   (
     req: PolymarketClobPostOrdersRequest,
@@ -823,6 +835,7 @@ export interface PolymarketClobOrdersScoringPostMethod {
 export interface PolymarketClobPostNamespace {
   auth: PolymarketClobAuthPostNamespace;
   order: PolymarketClobPostOrderMethod;
+  placeOrder: PolymarketClobPlaceOrderMethod;
   orders: PolymarketClobPostOrdersMethod;
   books: PolymarketClobBooksBatchMethod;
   prices: PolymarketClobPricesBatchMethod;

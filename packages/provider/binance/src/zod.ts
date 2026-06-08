@@ -16,3 +16,9 @@ export const BinanceExchangeInfoRequestSchema = z.object({
   showPermissionSets: z.boolean().optional(),
   symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
+
+export const BinanceDepthRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(5000).optional(),
+  symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
+});

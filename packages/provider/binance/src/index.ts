@@ -8,12 +8,16 @@ export type {
   BinanceGetNamespace,
   BinanceApiNamespace,
   BinanceApiV3Namespace,
+  BinanceDepthMethod,
+  BinanceDepthRequest,
+  BinanceDepthResponse,
   BinanceExchangeFilter,
   BinanceExchangeInfoMethod,
   BinanceExchangeInfoRequest,
   BinanceExchangeInfoResponse,
   BinancePingMethod,
   BinancePingResponse,
+  BinanceOrderBookLevel,
   BinanceRateLimit,
   BinanceSorInfo,
   BinanceSymbolInfo,
@@ -21,4 +25,7 @@ export type {
   BinanceTimeResponse,
 } from "./types";
 
-export { BinanceExchangeInfoRequestSchema } from "./zod";
+export {
+  BinanceDepthRequestSchema,
+  BinanceExchangeInfoRequestSchema,
+} from "./zod";

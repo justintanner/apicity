@@ -1,5 +1,7 @@
 import { BinanceError } from "./types";
 import type {
+  BinanceDepthRequest,
+  BinanceDepthResponse,
   BinanceExchangeInfoRequest,
   BinanceExchangeInfoResponse,
   BinanceOptions,
@@ -7,7 +9,10 @@ import type {
   BinanceProvider,
   BinanceTimeResponse,
 } from "./types";
-import { BinanceExchangeInfoRequestSchema } from "./zod";
+import {
+  BinanceDepthRequestSchema,
+  BinanceExchangeInfoRequestSchema,
+} from "./zod";
 
 type BinanceQueryValue =
   | string
@@ -182,8 +187,31 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceExchangeInfoRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/depth{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#order-book
+  const depth = Object.assign(
+    async (
+      req: BinanceDepthRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceDepthResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        limit: req.limit,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceDepthResponse>(
+        "GET",
+        `/api/v3/depth${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceDepthRequestSchema }
+  );
+
   const api = {
     v3: {
+      depth,
       exchangeInfo,
       ping,
       time,

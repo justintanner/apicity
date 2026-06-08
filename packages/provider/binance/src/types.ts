@@ -87,6 +87,20 @@ export interface BinanceExchangeInfoResponse {
   [key: string]: unknown;
 }
 
+export interface BinanceDepthRequest {
+  symbol: string;
+  limit?: number;
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
+}
+
+export type BinanceOrderBookLevel = [price: string, quantity: string];
+
+export interface BinanceDepthResponse {
+  lastUpdateId: number;
+  bids: BinanceOrderBookLevel[];
+  asks: BinanceOrderBookLevel[];
+}
+
 export interface BinancePingMethod {
   (signal?: AbortSignal): Promise<BinancePingResponse>;
   schema: undefined;
@@ -105,7 +119,16 @@ export interface BinanceExchangeInfoMethod {
   schema: typeof import("./zod").BinanceExchangeInfoRequestSchema;
 }
 
+export interface BinanceDepthMethod {
+  (
+    req: BinanceDepthRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceDepthResponse>;
+  schema: typeof import("./zod").BinanceDepthRequestSchema;
+}
+
 export interface BinanceApiV3Namespace {
+  depth: BinanceDepthMethod;
   exchangeInfo: BinanceExchangeInfoMethod;
   ping: BinancePingMethod;
   time: BinanceTimeMethod;

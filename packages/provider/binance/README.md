@@ -25,7 +25,24 @@ const binance = createBinance();
 
 ## API Reference
 
-3 endpoints across 3 groups. Each method mirrors an upstream URL path.
+4 endpoints across 4 groups. Each method mirrors an upstream URL path.
+
+### depth
+
+<details>
+<summary><code>GET</code> <b><code>binance.api.v3.depth</code></b></summary>
+
+<code>GET https://api.binance.com/api/v3/depth{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#order-book)
+
+```typescript
+const res = await binance.api.v3.depth({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
 
 ### exchangeInfo
 

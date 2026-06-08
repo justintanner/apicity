@@ -19,6 +19,8 @@ import type {
   BinanceProvider,
   BinanceTicker24hrRequest,
   BinanceTicker24hrResponse,
+  BinanceTickerBookTickerRequest,
+  BinanceTickerBookTickerResponse,
   BinanceTickerPriceRequest,
   BinanceTickerPriceResponse,
   BinanceTickerTradingDayRequest,
@@ -38,6 +40,7 @@ import {
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
   BinanceTicker24hrRequestSchema,
+  BinanceTickerBookTickerRequestSchema,
   BinanceTickerPriceRequestSchema,
   BinanceTickerTradingDayRequestSchema,
   BinanceTradesRequestSchema,
@@ -467,7 +470,30 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceTickerPriceRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/ticker/bookTicker{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-order-book-ticker
+  const tickerBookTicker = Object.assign(
+    async (
+      req: BinanceTickerBookTickerRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTickerBookTickerResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbols: req.symbols,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceTickerBookTickerResponse>(
+        "GET",
+        `/api/v3/ticker/bookTicker${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceTickerBookTickerRequestSchema }
+  );
+
   const ticker = {
+    bookTicker: tickerBookTicker,
     price: tickerPrice,
     tradingDay: tickerTradingDay,
     twentyFourHr: tickerTwentyFourHr,

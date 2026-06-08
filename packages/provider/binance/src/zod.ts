@@ -85,6 +85,12 @@ export const BinanceTickerPriceRequestSchema = z.object({
   symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
 
+export const BinanceTickerBookTickerRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  symbols: z.array(z.string().min(1)).optional(),
+  symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
+});
+
 export const BinanceTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   limit: z.number().int().positive().max(1000).optional(),

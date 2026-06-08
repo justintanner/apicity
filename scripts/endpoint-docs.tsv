@@ -20,6 +20,7 @@ binance	api.v3.avgPrice	GET	https://api.binance.com/api/v3/avgPrice{query}	https
 binance	api.v3.ticker.twentyFourHr	GET	https://api.binance.com/api/v3/ticker/24hr{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#24hr-ticker-price-change-statistics
 binance	api.v3.ticker.tradingDay	GET	https://api.binance.com/api/v3/ticker/tradingDay{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#trading-day-ticker
 binance	api.v3.ticker.price	GET	https://api.binance.com/api/v3/ticker/price{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-price-ticker
+binance	api.v3.ticker.bookTicker	GET	https://api.binance.com/api/v3/ticker/bookTicker{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-order-book-ticker
 anthropic	v1.files	POST	https://api.anthropic.com/v1/files	https://docs.anthropic.com/en/api
 anthropic	v1.files.content	GET	https://api.anthropic.com/v1/files/{fileId}/content	https://docs.anthropic.com/en/api
 anthropic	v1.files.del	DELETE	https://api.anthropic.com/v1/files/{fileId}	https://docs.anthropic.com/en/api

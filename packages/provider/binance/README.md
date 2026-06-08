@@ -25,7 +25,7 @@ const binance = createBinance();
 
 ## API Reference
 
-14 endpoints across 12 groups. Each method mirrors an upstream URL path.
+15 endpoints across 12 groups. Each method mirrors an upstream URL path.
 
 ### aggTrades
 
@@ -164,6 +164,21 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 </details>
 
 ### ticker
+
+<details>
+<summary><code>GET</code> <b><code>binance.api.v3.ticker.bookTicker</code></b></summary>
+
+<code>GET https://api.binance.com/api/v3/ticker/bookTicker{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#symbol-order-book-ticker)
+
+```typescript
+const res = await binance.api.v3.ticker.bookTicker({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>binance.api.v3.ticker.price</code></b></summary>

@@ -7,6 +7,7 @@ alibaba	api.v1.uploads	GET	https://dashscope.aliyuncs.com/api/v1/uploads	https:/
 alibaba	compatibleMode.v1.chat.completions	POST	https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions	https://help.aliyun.com/zh/model-studio
 alibaba	compatibleMode.v1.models	GET	https://dashscope.aliyuncs.com/compatible-mode/v1/models	https://help.aliyun.com/zh/model-studio
 binance	api.v3.ping	GET	https://api.binance.com/api/v3/ping	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity
+binance	api.v3.referencePrice	GET	https://api.binance.com/api/v3/referencePrice{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price
 binance	api.v3.exchangeInfo	GET	https://api.binance.com/api/v3/exchangeInfo{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#exchange-information
 binance	api.v3.time	GET	https://api.binance.com/api/v3/time	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#check-server-time
 binance	api.v3.depth	GET	https://api.binance.com/api/v3/depth{query}	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#order-book

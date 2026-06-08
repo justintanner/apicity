@@ -111,6 +111,17 @@ export interface BinanceAvgPriceResponse {
   closeTime: number;
 }
 
+export interface BinanceReferencePriceRequest {
+  symbol: string;
+}
+
+export interface BinanceReferencePriceResponse {
+  symbol: string;
+  referencePrice: string | null;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
 export interface BinanceAggTradesRequest {
   symbol: string;
   fromId?: number;
@@ -382,6 +393,14 @@ export interface BinanceAvgPriceMethod {
   schema: typeof import("./zod").BinanceAvgPriceRequestSchema;
 }
 
+export interface BinanceReferencePriceMethod {
+  (
+    req: BinanceReferencePriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceReferencePriceResponse>;
+  schema: typeof import("./zod").BinanceReferencePriceRequestSchema;
+}
+
 export interface BinanceAggTradesMethod {
   (
     req: BinanceAggTradesRequest,
@@ -479,11 +498,14 @@ export interface BinanceApiV3Namespace {
   historicalTrades: BinanceHistoricalTradesMethod;
   klines: BinanceKlinesMethod;
   ping: BinancePingMethod;
+  referencePrice: BinanceReferencePriceNamespace;
   time: BinanceTimeMethod;
   ticker: BinanceTickerNamespace;
   trades: BinanceTradesMethod;
   uiKlines: BinanceUiKlinesMethod;
 }
+
+export type BinanceReferencePriceNamespace = BinanceReferencePriceMethod;
 
 export interface BinanceTickerNamespace extends BinanceTickerMethod {
   bookTicker: BinanceTickerBookTickerMethod;

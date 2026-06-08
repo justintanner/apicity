@@ -17,6 +17,8 @@ import type {
   BinanceOptions,
   BinancePingResponse,
   BinanceProvider,
+  BinanceReferencePriceRequest,
+  BinanceReferencePriceResponse,
   BinanceTicker24hrRequest,
   BinanceTicker24hrResponse,
   BinanceTickerBookTickerRequest,
@@ -41,6 +43,7 @@ import {
   BinanceHistoricalBlockTradesRequestSchema,
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
+  BinanceReferencePriceRequestSchema,
   BinanceTicker24hrRequestSchema,
   BinanceTickerBookTickerRequestSchema,
   BinanceTickerPriceRequestSchema,
@@ -379,6 +382,26 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceAvgPriceRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/referencePrice{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#query-reference-price
+  const referencePrice = Object.assign(
+    async (
+      req: BinanceReferencePriceRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceReferencePriceResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+      });
+      return makeJsonRequest<BinanceReferencePriceResponse>(
+        "GET",
+        `/api/v3/referencePrice${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceReferencePriceRequestSchema }
+  );
+
   // GET https://api.binance.com/api/v3/uiKlines{query}
   // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#uiklines
   const uiKlines = Object.assign(
@@ -535,6 +558,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
       historicalTrades,
       klines,
       ping,
+      referencePrice,
       time,
       ticker,
       trades,

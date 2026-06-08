@@ -56,6 +56,11 @@ const PROVIDERS = [
     factoryNames: ["createAlibaba"],
   },
   {
+    name: "binance",
+    entryFiles: ["packages/provider/binance/src/binance.ts"],
+    factoryNames: ["createBinance"],
+  },
+  {
     name: "kie",
     entryFiles: [
       "packages/provider/kie/src/kie.ts",

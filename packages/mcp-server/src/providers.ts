@@ -110,6 +110,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/alibaba",
     factoryName: "createAlibaba",
   },
+  binance: {
+    envVar: "",
+    optionKey: "apiKey",
+    importPath: "@apicity/binance",
+    factoryName: "createBinance",
+  },
   elevenlabs: {
     envVar: "ELEVENLABS_API_KEY",
     optionKey: "apiKey",

@@ -1998,6 +1998,10 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  binance: {
+    noAuth: true,
+    showMiddleware: false,
+  },
   free: {
     noAuth: true,
     showMiddleware: false,
@@ -2016,6 +2020,8 @@ const PROVIDER_DOCS = {
     "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/reference/express-mode/rest/v1/publishers.models/generateContent",
   polymarket: "https://docs.polymarket.com/api-reference/introduction",
   telegram: "https://core.telegram.org/bots/api",
+  binance:
+    "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
 };
 
 const CANONICAL_FACTORY = {
@@ -2026,6 +2032,7 @@ const CANONICAL_FACTORY = {
   anthropic: "createAnthropic",
   fireworks: "createFireworks",
   alibaba: "createAlibaba",
+  binance: "createBinance",
   kimicoding: "createKimiCoding",
   kie: "createKie",
   "free-media-upload": "createFreeMediaUpload",

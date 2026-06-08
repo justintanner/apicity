@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/telegram, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/elevenlabs, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/telegram, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {
     "node": ">=18.12.0",
@@ -13,7 +13,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:google && pnpm run build:kimicoding && pnpm run build:cost && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:telegram && pnpm run build:mcp-server && pnpm run doc-gen",
+    "build": "pnpm run gen:examples && pnpm run build:youtube && pnpm run build:dolthub && pnpm run build:google && pnpm run build:kimicoding && pnpm run build:cost && pnpm run build:kie && pnpm run build:xai && pnpm run build:openai && pnpm run build:fal && pnpm run build:fireworks && pnpm run build:anthropic && pnpm run build:alibaba && pnpm run build:binance && pnpm run build:elevenlabs && pnpm run build:x && pnpm run build:meta && pnpm run build:polymarket && pnpm run build:free-media-upload && pnpm run build:telegram && pnpm run build:mcp-server && pnpm run doc-gen",
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
     "build:google": "pnpm --filter @apicity/google run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
@@ -24,6 +24,7 @@
     "build:fireworks": "pnpm --filter @apicity/fireworks run build",
     "build:anthropic": "pnpm --filter @apicity/anthropic run build",
     "build:alibaba": "pnpm --filter @apicity/alibaba run build",
+    "build:binance": "pnpm --filter @apicity/binance run build",
     "build:elevenlabs": "pnpm --filter @apicity/elevenlabs run build",
     "build:x": "pnpm --filter @apicity/x run build",
     "build:meta": "pnpm --filter @apicity/meta run build",
@@ -46,6 +47,7 @@
     "doc-gen:fal": "node scripts/doc-gen.mjs fal",
     "doc-gen:kimicoding": "node scripts/doc-gen.mjs kimicoding",
     "doc-gen:alibaba": "node scripts/doc-gen.mjs alibaba",
+    "doc-gen:binance": "node scripts/doc-gen.mjs binance",
     "doc-gen:elevenlabs": "node scripts/doc-gen.mjs elevenlabs",
     "doc-gen:kie": "node scripts/doc-gen.mjs kie",
     "doc-gen:polymarket": "node scripts/doc-gen.mjs polymarket",

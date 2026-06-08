@@ -36,6 +36,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
     "dashscope.console.aliyun.com",
     "www.alibabacloud.com",
   ],
+  binance: ["developers.binance.com"],
   free: [
     "tmpfiles.org",
     "uguu.se",

@@ -123,7 +123,7 @@ export function printHelp(): void {
       "FIREWORKS_API_KEY, FAL_API_KEY, GOOGLE_API_KEY, KIE_API_KEY,",
       "KIMI_CODING_API_KEY, DASHSCOPE_API_KEY, ELEVENLABS_API_KEY,",
       "X_ACCESS_TOKEN, IG_ACCESS_TOKEN, YOUTUBE_ACCESS_TOKEN, TELEGRAM_BOT_KEY.",
-      "The 'free-media-upload' provider needs none.",
+      "The 'binance' and 'free-media-upload' providers need none.",
     ].join("\n")
   );
 }

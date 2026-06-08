@@ -90,6 +90,7 @@ Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
 | [@apicity/google](packages/provider/google)                       | Google Gemini express-mode generateContent                         |
 | [@apicity/kie](packages/provider/kie)                             | KIE media generation for video, image, audio, Claude, Suno         |
 | [@apicity/alibaba](packages/provider/alibaba)                     | Alibaba DashScope/Qwen chat, image, and video workflows            |
+| [@apicity/binance](packages/provider/binance)                     | Binance Spot REST public/general endpoints                         |
 | [@apicity/fireworks](packages/provider/fireworks)                 | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
 | [@apicity/kimicoding](packages/provider/kimicoding)               | Kimi Coding messages, streaming, models, embeddings                |
 | [@apicity/elevenlabs](packages/provider/elevenlabs)               | ElevenLabs text-to-speech, sound effects, audio APIs               |

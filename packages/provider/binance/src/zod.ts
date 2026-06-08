@@ -23,6 +23,10 @@ export const BinanceDepthRequestSchema = z.object({
   symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
 
+export const BinanceAvgPriceRequestSchema = z.object({
+  symbol: z.string().min(1),
+});
+
 export const BinanceAggTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   fromId: z.number().int().nonnegative().optional(),

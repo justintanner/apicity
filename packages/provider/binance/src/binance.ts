@@ -2,6 +2,8 @@ import { BinanceError } from "./types";
 import type {
   BinanceAggTradesRequest,
   BinanceAggTradesResponse,
+  BinanceAvgPriceRequest,
+  BinanceAvgPriceResponse,
   BinanceDepthRequest,
   BinanceDepthResponse,
   BinanceExchangeInfoRequest,
@@ -23,6 +25,7 @@ import type {
 } from "./types";
 import {
   BinanceAggTradesRequestSchema,
+  BinanceAvgPriceRequestSchema,
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
   BinanceHistoricalBlockTradesRequestSchema,
@@ -341,6 +344,26 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceKlinesRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/avgPrice{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#current-average-price
+  const avgPrice = Object.assign(
+    async (
+      req: BinanceAvgPriceRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceAvgPriceResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+      });
+      return makeJsonRequest<BinanceAvgPriceResponse>(
+        "GET",
+        `/api/v3/avgPrice${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceAvgPriceRequestSchema }
+  );
+
   // GET https://api.binance.com/api/v3/uiKlines{query}
   // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#uiklines
   const uiKlines = Object.assign(
@@ -369,6 +392,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
   const api = {
     v3: {
       aggTrades,
+      avgPrice,
       depth,
       exchangeInfo,
       historicalBlockTrades,

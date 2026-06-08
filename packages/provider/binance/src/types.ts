@@ -101,6 +101,16 @@ export interface BinanceDepthResponse {
   asks: BinanceOrderBookLevel[];
 }
 
+export interface BinanceAvgPriceRequest {
+  symbol: string;
+}
+
+export interface BinanceAvgPriceResponse {
+  mins: number;
+  price: string;
+  closeTime: number;
+}
+
 export interface BinanceAggTradesRequest {
   symbol: string;
   fromId?: number;
@@ -236,6 +246,14 @@ export interface BinanceDepthMethod {
   schema: typeof import("./zod").BinanceDepthRequestSchema;
 }
 
+export interface BinanceAvgPriceMethod {
+  (
+    req: BinanceAvgPriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceAvgPriceResponse>;
+  schema: typeof import("./zod").BinanceAvgPriceRequestSchema;
+}
+
 export interface BinanceAggTradesMethod {
   (
     req: BinanceAggTradesRequest,
@@ -286,6 +304,7 @@ export interface BinanceHistoricalBlockTradesMethod {
 
 export interface BinanceApiV3Namespace {
   aggTrades: BinanceAggTradesMethod;
+  avgPrice: BinanceAvgPriceMethod;
   depth: BinanceDepthMethod;
   exchangeInfo: BinanceExchangeInfoMethod;
   historicalBlockTrades: BinanceHistoricalBlockTradesMethod;

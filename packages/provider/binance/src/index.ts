@@ -8,6 +8,9 @@ export type {
   BinanceAggTradesMethod,
   BinanceAggTradesRequest,
   BinanceAggTradesResponse,
+  BinanceAvgPriceMethod,
+  BinanceAvgPriceRequest,
+  BinanceAvgPriceResponse,
   BinanceBlockTrade,
   BinanceProvider,
   BinanceGetNamespace,
@@ -50,6 +53,7 @@ export type {
 
 export {
   BinanceAggTradesRequestSchema,
+  BinanceAvgPriceRequestSchema,
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
   BinanceHistoricalBlockTradesRequestSchema,

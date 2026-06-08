@@ -1,5 +1,7 @@
 import { BinanceError } from "./types";
 import type {
+  BinanceAggTradesRequest,
+  BinanceAggTradesResponse,
   BinanceDepthRequest,
   BinanceDepthResponse,
   BinanceExchangeInfoRequest,
@@ -14,6 +16,7 @@ import type {
   BinanceTradesResponse,
 } from "./types";
 import {
+  BinanceAggTradesRequestSchema,
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
   BinanceHistoricalTradesRequestSchema,
@@ -258,8 +261,33 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceHistoricalTradesRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/aggTrades{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#compressedaggregate-trades-list
+  const aggTrades = Object.assign(
+    async (
+      req: BinanceAggTradesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceAggTradesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        fromId: req.fromId,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceAggTradesResponse>(
+        "GET",
+        `/api/v3/aggTrades${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceAggTradesRequestSchema }
+  );
+
   const api = {
     v3: {
+      aggTrades,
       depth,
       exchangeInfo,
       historicalTrades,

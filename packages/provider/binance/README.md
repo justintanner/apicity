@@ -25,7 +25,24 @@ const binance = createBinance();
 
 ## API Reference
 
-6 endpoints across 6 groups. Each method mirrors an upstream URL path.
+7 endpoints across 7 groups. Each method mirrors an upstream URL path.
+
+### aggTrades
+
+<details>
+<summary><code>GET</code> <b><code>binance.api.v3.aggTrades</code></b></summary>
+
+<code>GET https://api.binance.com/api/v3/aggTrades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#compressedaggregate-trades-list)
+
+```typescript
+const res = await binance.api.v3.aggTrades({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
 
 ### depth
 

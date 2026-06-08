@@ -4,6 +4,10 @@ export { BinanceError } from "./types";
 export { BinanceOptionsSchema, type BinanceOptions } from "./zod";
 
 export type {
+  BinanceAggregateTrade,
+  BinanceAggTradesMethod,
+  BinanceAggTradesRequest,
+  BinanceAggTradesResponse,
   BinanceProvider,
   BinanceGetNamespace,
   BinanceApiNamespace,
@@ -33,6 +37,7 @@ export type {
 } from "./types";
 
 export {
+  BinanceAggTradesRequestSchema,
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
   BinanceHistoricalTradesRequestSchema,

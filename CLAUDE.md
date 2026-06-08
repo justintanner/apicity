@@ -53,6 +53,7 @@ pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
 pnpm run harness:report          # Generate PR-diff harness report directory (SPA shell + per-commit JSON)
+pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram HTML messages
 pnpm run harness:screenshot      # Generate + screenshot the full harness report locally
 pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing recordings
 
@@ -195,7 +196,11 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
    function that dispatches to multiple paths), comment the default path.
 6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
    using setupPolly/teardownPolly. Record fixtures, verify replay.
-7. **Commit and PR** — One endpoint per PR.
+7. **Telegram notification** — Endpoint PRs send one Telegram message per
+   changed recording through `pnpm run harness:telegram`. Use
+   `pnpm run harness:telegram -- --dry-run` to inspect the HTML-formatted
+   messages locally. Do not send `harness-summary-full.md` raw to Telegram.
+8. **Commit and PR** — One endpoint per PR.
 
 ## Development Workflow
 
@@ -207,10 +212,11 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 | 1 | Implement         | _(edit code — types, schema, factory, integration test)_         |
 | 2 | Record fixtures   | `pnpm run dev:record -- tests/integration/<file>.test.ts`        |
 | 3 | Verify replay     | `pnpm run test:run tests/integration/<file>.test.ts`             |
-| 4 | Pre-push          | `pnpm run dev:preflight`                                         |
-| 5 | CI dry-run        | `pnpm run ci:local`                                              |
-| 6 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
-| 7 | CI + harness diff | _(automatic — same 3 commands as `ci:local` + harness report)_   |
+| 4 | Telegram preview  | `pnpm run harness:telegram -- --dry-run`                         |
+| 5 | Pre-push          | `pnpm run dev:preflight`                                         |
+| 6 | CI dry-run        | `pnpm run ci:local`                                              |
+| 7 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
+| 8 | CI + harness diff | _(automatic — same 3 commands as `ci:local` + harness report)_   |
 
 **Escape hatches**
 
@@ -220,6 +226,9 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 - `pnpm run check:op` — confirm 1Password is resolving all 8 provider keys
   before recording.
 - `pnpm run harness` — local HAR viewer at `localhost:3475`.
+- `pnpm run harness:telegram -- --dry-run` — write
+  `harness-telegram-messages.json` without sending. CI sends the same
+  per-endpoint HTML messages when Telegram secrets are present.
 - `pnpm run harness:screenshot:media` — generate the same media-only PNG that
   the CI harness-report job attaches to PRs, useful when iterating on
   `har-viewer.html` rendering.

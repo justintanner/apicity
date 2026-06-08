@@ -60,6 +60,7 @@ pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run dev:preflight           # format + lint + test:run (run before git push)
 pnpm run ci:local                # build + lint + test:run (exact CI mirror)
+pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram HTML messages
 
 pnpm run check:op                # Verify 1Password service account is working
 pnpm run harness                 # Local HAR viewer at localhost:3475
@@ -84,7 +85,8 @@ When assigned an endpoint task (e.g. "Add openai POST /v1/embeddings"):
    Line 1 is `// {METHOD} {full upstream URL}` (must match the URL the factory actually hits). Line 2 is `// Docs: {upstream docs URL}` whose hostname is on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. Also add a `(provider, dotPath, method, fullUrl, docsUrl)` row to `scripts/endpoint-docs.tsv`. Both are enforced by `pnpm run lint:endpoints`. For overloaded endpoints, comment the default path.
 
 6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts` using `setupPolly` / `teardownPolly`. Record fixtures, verify replay.
-7. **Commit and PR** — One endpoint per PR.
+7. **Telegram notification** — Endpoint PRs send one Telegram message per changed recording through `pnpm run harness:telegram`. Use `pnpm run harness:telegram -- --dry-run` to inspect the HTML-formatted messages locally. Do not send `harness-summary-full.md` raw to Telegram.
+8. **Commit and PR** — One endpoint per PR.
 
 ## Integration Test Recording
 

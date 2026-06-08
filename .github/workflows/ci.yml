@@ -155,6 +155,19 @@ jobs:
           gh pr comment ${{ github.event.pull_request.number }} \
             --body-file harness-summary.md
 
+      - name: Send endpoint summaries to Telegram
+        if: steps.summary.outputs.has_changes == 'true'
+        env:
+          TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_KEY" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets are not configured; skipping."
+            exit 0
+          fi
+          pnpm run harness:telegram
+
       - name: Upload harness artifacts
         uses: actions/upload-artifact@v4
         with:

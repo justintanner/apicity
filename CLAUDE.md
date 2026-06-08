@@ -197,8 +197,8 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
    function that dispatches to multiple paths), comment the default path.
 6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
    using setupPolly/teardownPolly. Record fixtures, verify replay.
-7. **Telegram notification** — Endpoint PRs send one Telegram message per
-   changed recording through `pnpm run harness:telegram`. Use
+7. **Telegram notification** — Endpoint changes send one Telegram message per
+   changed recording through `pnpm run harness:telegram` in PR and push CI. Use
    `pnpm run harness:telegram -- --dry-run` to inspect the HTML-formatted
    messages locally. Do not send `harness-summary-full.md` raw to Telegram.
 8. **Commit and PR** — One endpoint per PR.
@@ -228,8 +228,8 @@ wired into `dev:preflight`, so you don't need a separate hook step.
   before recording.
 - `pnpm run harness` — local HAR viewer at `localhost:3475`.
 - `pnpm run harness:telegram -- --dry-run` — write
-  `harness-telegram-messages.json` without sending. CI sends the same
-  per-endpoint HTML messages when Telegram secrets are present.
+  `harness-telegram-messages.json` without sending. PR and push CI send the
+  same per-endpoint HTML messages when Telegram secrets are present.
 - `pnpm run harness:screenshot:media` — generate the same media-only PNG that
   the CI harness-report job attaches to PRs, useful when iterating on
   `har-viewer.html` rendering.

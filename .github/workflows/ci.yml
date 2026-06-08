@@ -174,3 +174,46 @@ jobs:
           name: harness-report
           path: tests/fixtures/harness-generated
           retention-days: 30
+
+  endpoint-telegram:
+    if: github.event_name == 'push'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Send endpoint summaries to Telegram
+        env:
+          TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PUSH_BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_KEY" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram secrets are not configured; skipping."
+            exit 0
+          fi
+
+          base="$PUSH_BEFORE"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="HEAD^"
+          fi
+
+          pnpm run harness:telegram -- --base "$base"

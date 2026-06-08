@@ -166,6 +166,9 @@ export type BinanceKline = [
 
 export type BinanceKlinesResponse = BinanceKline[];
 
+export type BinanceUiKlinesRequest = BinanceKlinesRequest;
+export type BinanceUiKlinesResponse = BinanceKlinesResponse;
+
 export interface BinanceTradesRequest {
   symbol: string;
   limit?: number;
@@ -249,6 +252,14 @@ export interface BinanceKlinesMethod {
   schema: typeof import("./zod").BinanceKlinesRequestSchema;
 }
 
+export interface BinanceUiKlinesMethod {
+  (
+    req: BinanceUiKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceUiKlinesResponse>;
+  schema: typeof import("./zod").BinanceUiKlinesRequestSchema;
+}
+
 export interface BinanceTradesMethod {
   (
     req: BinanceTradesRequest,
@@ -283,6 +294,7 @@ export interface BinanceApiV3Namespace {
   ping: BinancePingMethod;
   time: BinanceTimeMethod;
   trades: BinanceTradesMethod;
+  uiKlines: BinanceUiKlinesMethod;
 }
 
 export interface BinanceApiNamespace {

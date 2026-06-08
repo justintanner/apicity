@@ -43,6 +43,9 @@ export type {
   BinanceTradesMethod,
   BinanceTradesRequest,
   BinanceTradesResponse,
+  BinanceUiKlinesMethod,
+  BinanceUiKlinesRequest,
+  BinanceUiKlinesResponse,
 } from "./types";
 
 export {
@@ -54,4 +57,5 @@ export {
   BinanceKlineIntervalSchema,
   BinanceKlinesRequestSchema,
   BinanceTradesRequestSchema,
+  BinanceUiKlinesRequestSchema,
 } from "./zod";

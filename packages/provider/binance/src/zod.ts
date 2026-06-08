@@ -59,6 +59,8 @@ export const BinanceKlinesRequestSchema = z.object({
   limit: z.number().int().positive().max(1000).optional(),
 });
 
+export const BinanceUiKlinesRequestSchema = BinanceKlinesRequestSchema;
+
 export const BinanceTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   limit: z.number().int().positive().max(1000).optional(),

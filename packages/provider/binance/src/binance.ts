@@ -18,6 +18,8 @@ import type {
   BinanceTimeResponse,
   BinanceTradesRequest,
   BinanceTradesResponse,
+  BinanceUiKlinesRequest,
+  BinanceUiKlinesResponse,
 } from "./types";
 import {
   BinanceAggTradesRequestSchema,
@@ -27,6 +29,7 @@ import {
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
   BinanceTradesRequestSchema,
+  BinanceUiKlinesRequestSchema,
 } from "./zod";
 
 type BinanceQueryValue =
@@ -338,6 +341,31 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceKlinesRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/uiKlines{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#uiklines
+  const uiKlines = Object.assign(
+    async (
+      req: BinanceUiKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceUiKlinesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        timeZone: req.timeZone,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceUiKlinesResponse>(
+        "GET",
+        `/api/v3/uiKlines${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceUiKlinesRequestSchema }
+  );
+
   const api = {
     v3: {
       aggTrades,
@@ -349,6 +377,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
       ping,
       time,
       trades,
+      uiKlines,
     },
   };
 

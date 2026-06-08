@@ -379,7 +379,7 @@ gh auth status
 If `gh auth status` fails, STOP. Fix GitHub CLI authentication before
 continuing; do not skip the release page.
 
-**2. Build release notes from the changelog or git history:**
+**2. Build release notes from closed beads, with git as fallback:**
 ```bash
 notes="/tmp/apicity-github-release-v{{version}}.md"
 node <<'NODE' > "$notes"
@@ -388,20 +388,36 @@ const { execFileSync } = require("child_process");
 
 const version = "{{version}}";
 const distTag = "{{dist_tag}}";
+const releaseBead = "{{release_bead}}";
 const currentTag = `v${version}`;
-const changelog = fs.existsSync("CHANGELOG.md")
-  ? fs.readFileSync("CHANGELOG.md", "utf8")
-  : "";
 
-function git(args) {
+function run(command, args) {
   try {
-    return execFileSync("git", args, {
+    return execFileSync(command, args, {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
   } catch {
     return "";
   }
+}
+
+function runJson(command, args) {
+  const output = run(command, args);
+  if (!output) return null;
+  try {
+    return JSON.parse(output);
+  } catch {
+    return null;
+  }
+}
+
+function git(args) {
+  return run("git", args);
+}
+
+function bd(args) {
+  return runJson("bd", [...args, "--json"]);
 }
 
 function readPackages() {
@@ -443,6 +459,16 @@ function findPreviousTag() {
     .find((tag) => tag && tag !== currentTag) || "";
 }
 
+function tagDate(tag) {
+  const taggerDate = git([
+    "for-each-ref",
+    `refs/tags/${tag}`,
+    "--format=%(taggerdate:iso-strict)",
+  ]);
+  if (taggerDate) return taggerDate;
+  return git(["log", "-1", "--format=%cI", tag]);
+}
+
 function readCommits(previousTag) {
   const range = previousTag ? `${previousTag}..${currentTag}` : currentTag;
   return git(["log", "--format=%h%x09%s", range])
@@ -454,41 +480,172 @@ function readCommits(previousTag) {
     });
 }
 
-function printCommitList(commits) {
-  const limit = 40;
-  for (const commit of commits.slice(0, limit)) {
-    console.log(`- \`${commit.hash}\` ${commit.subject}`);
-  }
-  if (commits.length > limit) {
-    console.log(`- ...and ${commits.length - limit} more commits.`);
-  }
+function releaseVersionFromTag(tag) {
+  return tag.replace(/^v/, "");
 }
 
-function isReleaseMaintenance(commit) {
+function findPreviousReleaseIssue(previousTag) {
+  if (!previousTag) return null;
+
+  const needles = [previousTag, releaseVersionFromTag(previousTag)];
+  const byId = new Map();
+  for (const needle of needles) {
+    const rows = bd([
+      "list",
+      "--status=closed",
+      "--title",
+      needle,
+      "--limit",
+      "0",
+    ]);
+    if (Array.isArray(rows)) {
+      for (const issue of rows) byId.set(issue.id, issue);
+    }
+  }
+
+  return [...byId.values()]
+    .filter((issue) => isReleaseTrackingIssue(issue))
+    .sort((a, b) => {
+      const aTime = Date.parse(a.closed_at || "") || 0;
+      const bTime = Date.parse(b.closed_at || "") || 0;
+      return bTime - aTime;
+    })[0] || null;
+}
+
+function isReleaseTrackingIssue(issue) {
+  const title = String(issue.title || "");
+  const reason = String(issue.close_reason || "");
+  return (
+    /^release( apicity)? v?\d+\.\d+\.\d+/i.test(title) ||
+    /^release \d+\.\d+\.\d+/i.test(title) ||
+    /published apicity v?\d+\.\d+\.\d+/i.test(reason)
+  );
+}
+
+function isInfrastructureIssue(issue) {
+  const id = String(issue.id || "");
+  const parent = String(issue.parent || "");
+  const title = String(issue.title || "");
+  return (
+    /\bmol\b/i.test(id) ||
+    /\bmol\b/i.test(parent) ||
+    ["molecule", "gate", "convoy"].includes(issue.issue_type) ||
+    /^mol[-: ]/i.test(title) ||
+    /^(order|nudge):/i.test(title)
+  );
+}
+
+function isReleaseCommit(commit) {
   return (
     /^(chore|fix)\(release\):/i.test(commit.subject) ||
-    /\brelease formula\b/i.test(commit.subject) ||
-    /\brelease title\b/i.test(commit.subject)
+    /\b@apicity\/\*\s+(to|→)\s+\d/i.test(commit.subject)
   );
 }
 
-const section = changelog
-  .split(/^## /m)
-  .slice(1)
-  .find((part) =>
-    part.startsWith(`[${version}]`) ||
-    part.startsWith(`${version} `) ||
-    part.startsWith(`${version}\n`)
-  );
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
 
-const body = section
-  ? section.replace(/^[^\n]*\n?/, "").trim()
-  : "";
+function shippedInPreviousRelease(issue, previousTag) {
+  if (!previousTag) return false;
+  const previousVersion = releaseVersionFromTag(previousTag);
+  const text = [
+    issue.title,
+    issue.description,
+    issue.close_reason,
+    issue.notes,
+  ].map(normalize).join(" ");
+
+  return new RegExp(
+    `\\b(v?${escapeRegExp(previousVersion)}|@apicity/[^\\s]+@${escapeRegExp(previousVersion)})\\b`,
+    "i"
+  ).test(text);
+}
+
+function readClosedWork(previousRelease, previousTag, currentDate) {
+  const previousDate = previousRelease?.closed_at || tagDate(previousTag);
+  const args = ["list", "--status=closed", "--sort", "closed", "--limit", "0"];
+  if (previousDate) args.push("--closed-after", previousDate);
+  if (currentDate) args.push("--closed-before", currentDate);
+
+  const issues = bd(args);
+  const work = Array.isArray(issues) ? issues : [];
+  return {
+    previousDate,
+    work: work
+      .filter((issue) => issue.id !== releaseBead)
+      .filter((issue) => !isReleaseTrackingIssue(issue))
+      .filter((issue) => !isInfrastructureIssue(issue))
+      .filter((issue) => !shippedInPreviousRelease(issue, previousTag)),
+  };
+}
+
+function normalize(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function shorten(value, maxLength = 260) {
+  const text = normalize(value);
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength - 3).trimEnd()}...`;
+}
+
+function printWorkItems(items) {
+  const groups = [
+    ["Features", (issue) => issue.issue_type === "feature"],
+    ["Fixes", (issue) => issue.issue_type === "bug"],
+    ["Tasks", (issue) => issue.issue_type === "task"],
+    ["Chores", (issue) => issue.issue_type === "chore"],
+    [
+      "Other",
+      (issue) => !["feature", "bug", "task", "chore"].includes(issue.issue_type),
+    ],
+  ];
+
+  for (const [heading, predicate] of groups) {
+    const groupItems = items.filter(predicate);
+    if (!groupItems.length) continue;
+    console.log(`### ${heading}`);
+    console.log("");
+    for (const issue of groupItems) {
+      const title = normalize(issue.title);
+      const reason = shorten(issue.close_reason || issue.description);
+      const priority = Number.isInteger(issue.priority)
+        ? `P${issue.priority}`
+        : "P?";
+      const suffix = reason ? ` - ${reason}` : "";
+      console.log(`- **${title}** (\`${issue.id}\`, ${priority})${suffix}`);
+    }
+    console.log("");
+  }
+}
+
+function printCommitFallback(commits) {
+  const visible = commits.filter((commit) => !isReleaseCommit(commit));
+  if (!visible.length) return;
+
+  console.log("## Git Fallback");
+  console.log("");
+  console.log(
+    "No closed bead work was found for this release window, so these non-release commits are listed instead."
+  );
+  console.log("");
+  for (const commit of visible) {
+    console.log(`- \`${commit.hash}\` ${commit.subject}`);
+  }
+  console.log("");
+}
+
 const packages = readPackages();
 const previousTag = findPreviousTag();
+const previousRelease = findPreviousReleaseIssue(previousTag);
+const currentDate = tagDate(currentTag) || new Date().toISOString();
+const { previousDate, work } = readClosedWork(
+  previousRelease,
+  previousTag,
+  currentDate
+);
 const commits = readCommits(previousTag);
-const releaseMaintenance = commits.filter(isReleaseMaintenance);
-const changes = commits.filter((commit) => !isReleaseMaintenance(commit));
 
 console.log(`# Apicity v${version}`);
 console.log("");
@@ -500,34 +657,24 @@ console.log(`- Git tag: \`${currentTag}\``);
 if (previousTag) {
   console.log(`- Compare range: \`${previousTag}...${currentTag}\``);
 }
+if (previousRelease) {
+  console.log(
+    `- Previous release bead: \`${previousRelease.id}\` closed ${previousRelease.closed_at}`
+  );
+}
+if (previousDate) {
+  console.log(`- Beads window: \`${previousDate}\` to \`${currentDate}\``);
+}
 console.log("");
 
-if (body) {
-  console.log("## Changelog");
-  console.log("");
-  console.log(body);
+console.log("## Released Work");
+console.log("");
+if (work.length) {
+  printWorkItems(work);
 } else {
-  console.log("## What's Changed");
+  console.log("No closed non-release beads were found for this release window.");
   console.log("");
-  if (changes.length) {
-    printCommitList(changes);
-  } else if (previousTag) {
-    console.log(
-      `No non-release commits were found between \`${previousTag}\` and \`${currentTag}\`.`
-    );
-  } else {
-    console.log(
-      "No previous release tag was found and no commits were available for release notes."
-    );
-  }
-  console.log("");
-
-  if (releaseMaintenance.length) {
-    console.log("## Release Maintenance");
-    console.log("");
-    printCommitList(releaseMaintenance);
-    console.log("");
-  }
+  printCommitFallback(commits);
 }
 
 console.log("## Published Packages");
@@ -538,6 +685,10 @@ for (const pkg of packages) {
 NODE
 cat "$notes"
 ```
+
+Review the generated file before uploading it. It should summarize closed bead
+work under `Released Work`, and it should not include a `What's Changed` or
+`Release Maintenance` section for normal releases.
 
 **3. Create or update the release page:**
 ```bash
@@ -562,7 +713,7 @@ gh release view "v{{version}}"
 ```
 
 **Exit criteria:** GitHub release page for `v{{version}}` exists, has current
-notes, and is marked prerelease unless `dist_tag` is `latest`.'''
+bead-based notes, and is marked prerelease unless `dist_tag` is `latest`.'''
 
 [[steps]]
 id = "sync-main-release"
@@ -620,7 +771,8 @@ Record the release in beads memory and close the tracking bead.
 
 ```bash
 bd close {{release_bead}} --reason "Published Apicity v{{version}} on dist-tag {{dist_tag}}; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
-bd remember "apicity-last-release: v{{version}} on {{dist_tag}} ($(date +%Y-%m-%d))"
+bd remember --key apicity-last-release \
+  "version={{version}} tag=v{{version}} dist_tag={{dist_tag}} release_bead={{release_bead}} released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ```
 
 **Drain:**

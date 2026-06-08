@@ -58,7 +58,9 @@ The formula creates 13 chained beads. An agent (or you, manually) walks them:
 7. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
 8. **`publish`** — `pnpm publish --tag <dist_tag>` with `NPM_TOKEN` from the `apicity` 1Password vault
 9. `tag-and-push` — `git tag v<version>`, push `stable` + tag
-10. `update-github-release` — create or update the GitHub release page for `v<version>`
+10. `update-github-release` — create or update the GitHub release page for
+    `v<version>` from closed bead work since the previous release, excluding
+    release workflow noise
 11. `sync-main-release` — fast-forward `main` to the release commit and push it
 12. `smoke-install` — `npm install @apicity/openai@<dist_tag>` in `/tmp` and dynamic-import
 13. `close` — close the release bead, `bd remember` the version

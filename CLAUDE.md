@@ -150,8 +150,6 @@ Recordings are committed alongside source code and included in PRs. The CI harne
 
 API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run --env-file=.env`). The tracked `.env` file contains `op://` secret references (e.g., `op://Apicity/OPENAI_API_KEY/password`). Both `test:integration:record` and `test:integration:record-missing` use `op run` automatically.
 
-`.env.example` mirrors the env keys with blank values for local reference.
-
 ### CI
 
 GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, integration tests via Polly.js replay), harness-report (PR-only, posts Markdown summary of changed recordings as a PR comment + uploads paginated interactive HAR viewer directory as artifact). Runs on push/PR to main.

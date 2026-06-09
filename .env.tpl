@@ -1,3 +1,12 @@
+# Apicity environment template.
+#
+# Values are resolved from the Apicity 1Password vault. Use this file with:
+#   op run --env-file=.env.tpl -- <command>
+#
+# To materialize a local ignored .env file from the vault:
+#   pnpm run env:write
+
+# Core AI providers
 OPENAI_API_KEY=op://Apicity/OPENAI_API_KEY/password
 KIE_API_KEY=op://Apicity/KIE_API_KEY/password
 XAI_API_KEY=op://Apicity/XAI_API_KEY/password
@@ -11,29 +20,48 @@ GEMINI_API_KEY=op://Apicity/GEMINI_API_KEY/password
 ANTHROPIC_API_KEY=op://Apicity/ANTHROPIC_API_KEY/password
 DASHSCOPE_API_KEY=op://Apicity/DASHSCOPE_API_KEY/password
 ELEVENLABS_API_KEY=op://Apicity/ELEVENLABS_API_KEY/password
+
+# S3 fixture bucket
 S3_ACCESS_KEY_ID=op://Apicity/S3_ACCESS_KEY_ID/password
 S3_SECRET_ACCESS_KEY=op://Apicity/S3_SECRET_ACCESS_KEY/password
 S3_REGION=us-east-1
 S3_BUCKET=apicity-s3-fixtures
 S3_ENDPOINT=https://s3.us-east-1.amazonaws.com
+
+# Backblaze B2 fixture bucket
 B2_ACCESS_KEY_ID=op://Apicity/B2_ACCESS_KEY_ID/password
 B2_SECRET_ACCESS_KEY=op://Apicity/B2_SECRET_ACCESS_KEY/password
 B2_REGION=op://Apicity/B2_REGION/password
 B2_BUCKET=op://Apicity/B2_BUCKET/password
 B2_ENDPOINT=op://Apicity/B2_ENDPOINT/password
+
+# YouTube OAuth
 YOUTUBE_ACCESS_TOKEN=op://Apicity/YOUTUBE_ACCESS_TOKEN/password
-TELEGRAM_BOT_KEY=op://Apicity/TELEGRAM_BOT_KEY/password
-TELEGRAM_CHAT_ID=op://Apicity/TELEGRAM_CHAT_ID/password
+
+# Meta / Instagram OAuth
+IG_CLIENT_ID=op://Apicity/IG_CLIENT_ID/password
+IG_CLIENT_SECRET=op://Apicity/IG_CLIENT_SECRET/password
 IG_ACCESS_TOKEN=op://Apicity/IG_ACCESS_TOKEN/password
 IG_USER_ID=op://Apicity/IG_USER_ID/password
-# X social API credentials live in .env.x.tpl (separate file so missing
-# X_CLIENT_ID / X_ACCESS_TOKEN don't break `op run` for the rest of the suite).
+
+# X OAuth helper credentials
+X_CLIENT_ID=op://Apicity/X_CLIENT_ID/password
+X_CLIENT_SECRET=op://Apicity/X_CLIENT_SECRET/password
+# X_ACCESS_TOKEN is omitted until the Apicity vault has that item.
+# Generate it with scripts/x-oauth.mjs before recording user-context X tests.
+
+# Telegram harness notifications
+TELEGRAM_BOT_KEY=op://Apicity/TELEGRAM_BOT_KEY/password
+TELEGRAM_CHAT_ID=op://Apicity/TELEGRAM_CHAT_ID/password
+
+# Local dashboard credentials
 DASHBOARD_USER=op://Apicity/DASHBOARD_USER/password
 DASHBOARD_PASS=op://Apicity/DASHBOARD_PASS/password
-# DoltHub credentials keypair (private JWK) for beads -> DoltHub
-# (justintanner/superlzy) push. Public key registered on the
-# justintanner DoltHub account. See ~/superlzy/scripts/install-dolt-creds.sh.
+
+# DoltHub credentials keypair for beads data pushes
 DOLT_CREDS_JWK=op://Apicity/DOLT_CREDS_JWK/password
+
+# Polymarket CLOB credentials
 POLYMARKET_ADDRESS=op://Apicity/POLYMARKET_ADDRESS/password
 POLYMARKET_CLOB_API_KEY=op://Apicity/POLYMARKET_CLOB_API_KEY/password
 POLYMARKET_CLOB_API_SECRET=op://Apicity/POLYMARKET_CLOB_API_SECRET/password

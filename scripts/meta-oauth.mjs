@@ -5,9 +5,9 @@
  * Mints a long-lived (60-day) user access token + ig_user_id for the
  * @apicity/meta package. Run as:
  *
- *   op run --env-file=.env.meta.tpl -- node scripts/meta-oauth.mjs
+ *   op run --env-file=.env.tpl -- node scripts/meta-oauth.mjs
  *
- * Required env (resolved from 1Password via .env.meta.tpl):
+ * Required env (resolved from 1Password via .env.tpl):
  *   IG_CLIENT_ID, IG_CLIENT_SECRET
  *
  * On success it prints the long-lived access_token, user_id, and
@@ -38,7 +38,7 @@ const SCOPES = [
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error(
-    "Missing IG_CLIENT_ID or IG_CLIENT_SECRET. Did you run via `op run --env-file=.env.meta.tpl --`?"
+    "Missing IG_CLIENT_ID or IG_CLIENT_SECRET. Did you run via `op run --env-file=.env.tpl --`?"
   );
   process.exit(1);
 }

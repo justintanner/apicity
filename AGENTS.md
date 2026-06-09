@@ -109,7 +109,7 @@ pnpm run test:run tests/integration/<file>.test.ts
 
 **Pitfall:** `pnpm run dev:rerecord` without a file filter will refuse to run (by design). Do not set `POLLY_FORCE_ALL=1` to force it — prefer deleting the specific recording directory and re-running `dev:record` on that one test.
 
-API keys resolve at runtime via the 1Password CLI (`op run --env-file=.env.tpl`). No plaintext secrets on disk.
+API keys resolve at runtime via the 1Password CLI (`op run --env-file=.env.tpl`). The only tracked env file is `.env.tpl`; generated `.env` files must stay ignored.
 
 ## Code Conventions
 

@@ -148,9 +148,9 @@ Recordings are committed alongside source code and included in PRs. The CI harne
 
 **Secrets management:**
 
-API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run --env-file=.env.tpl`). The `.env.tpl` file contains `op://` secret references (e.g., `op://Apicity/OPENAI_API_KEY/password`) — no plaintext secrets are stored on disk. Both `test:integration:record` and `test:integration:record-missing` use `op run` automatically.
+API keys are resolved at runtime via the [1Password CLI](https://developer.1password.com/docs/cli/) (`op run --env-file=.env.tpl`). The `.env.tpl` file contains `op://` secret references (e.g., `op://Apicity/OPENAI_API_KEY/password`) and is the only tracked env file. Both `test:integration:record` and `test:integration:record-missing` use `op run` automatically.
 
-Alternatively, copy `.env.template` to `.env` and fill in your keys manually. Use `source .env` before running tests with `POLLY_MODE=record`.
+To create a local ignored `.env` from the Apicity vault, run `pnpm run env:write`. Do not commit `.env`.
 
 ### CI
 
@@ -224,7 +224,7 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 - `pnpm run dev:rerecord -- tests/integration/<file>.test.ts` — destructive
   re-record of an existing HAR. Requires a file filter (`POLLY_FORCE_ALL=1`
   overrides the guard).
-- `pnpm run check:op` — confirm 1Password is resolving all 8 provider keys
+- `pnpm run check:op` — confirm 1Password is resolving `.env.tpl`
   before recording.
 - `pnpm run harness` — local HAR viewer at `localhost:3475`.
 - `pnpm run harness:telegram -- --dry-run` — write

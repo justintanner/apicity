@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { createHmac } from "node:crypto";
 import { createPolymarket, PolymarketError } from "@apicity/polymarket";
+import { privateKeyToAccount } from "viem/accounts";
 
 const SIGNED_ORDER = {
   maker: "0x1234567890123456789012345678901234567890",
@@ -105,6 +106,124 @@ describe("polymarket clob authenticated structure", () => {
     expect(headers.get("POLY_API_KEY")).toBe("api-key");
     expect(headers.get("POLY_PASSPHRASE")).toBe("passphrase");
     expect(headers.get("POLY_TIMESTAMP")).toBe("1700000000");
+    expect(headers.get("POLY_SIGNATURE")).toBe(
+      expectedHmac(1_700_000_000, "POST", "/order", body)
+    );
+  });
+
+  it("builds and posts signed placeOrder payloads without the upstream clob client", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(1_700_000_000_000);
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+
+    const privateKey =
+      "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+    const account = privateKeyToAccount(privateKey);
+    const funder = "0x000000000000000000000000000000000000dead";
+    const capturedUrls: string[] = [];
+    let capturedOrderInit: RequestInit | undefined;
+
+    const fetchImpl: typeof fetch = async (url, init) => {
+      const u = String(url);
+      capturedUrls.push(u);
+      if (u.includes("/tick-size")) {
+        return new Response(JSON.stringify({ minimum_tick_size: 0.01 }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      if (u.includes("/neg-risk")) {
+        return new Response(JSON.stringify({ neg_risk: false }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+      capturedOrderInit = init;
+      return new Response(
+        JSON.stringify({
+          success: true,
+          orderID: "0xorder",
+          status: "live",
+          makingAmount: "6293400",
+          takingAmount: "12340000",
+          errorMsg: "",
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
+    };
+
+    const provider = createPolymarket({
+      clobAddress: account.address,
+      clobApiKey: "api-key",
+      clobApiSecret: "c2VjcmV0",
+      clobApiPassphrase: "passphrase",
+      clobPrivateKey: privateKey,
+      clobFunderAddress: funder,
+      fetch: fetchImpl,
+    });
+
+    await provider.post.clob.placeOrder({
+      tokenID: "123456789",
+      side: "BUY",
+      price: 0.51,
+      size: 12.34,
+      orderType: "GTD",
+      expiration: 1_700_003_600,
+    });
+
+    expect(capturedUrls).toEqual([
+      "https://clob.polymarket.com/tick-size?token_id=123456789",
+      "https://clob.polymarket.com/neg-risk?token_id=123456789",
+      "https://clob.polymarket.com/order",
+    ]);
+    const body = String(capturedOrderInit?.body);
+    const payload = JSON.parse(body) as {
+      order: {
+        salt: number;
+        maker: string;
+        signer: string;
+        tokenId: string;
+        makerAmount: string;
+        takerAmount: string;
+        side: string;
+        expiration: string;
+        timestamp: string;
+        metadata: string;
+        builder: string;
+        signature: string;
+        signatureType: number;
+      };
+      owner: string;
+      orderType: string;
+      deferExec: boolean;
+      postOnly: boolean;
+    };
+
+    expect(payload).toMatchObject({
+      owner: "api-key",
+      orderType: "GTD",
+      deferExec: false,
+      postOnly: false,
+      order: {
+        salt: 850_000_000_000,
+        maker: funder,
+        signer: account.address,
+        tokenId: "123456789",
+        makerAmount: "6293400",
+        takerAmount: "12340000",
+        side: "BUY",
+        expiration: "1700003600",
+        timestamp: "1700000000000",
+        metadata:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        builder:
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+        signatureType: 1,
+      },
+    });
+    expect(payload.order.signature).toMatch(/^0x[0-9a-f]{130}$/i);
+
+    const headers = new Headers(capturedOrderInit?.headers);
+    expect(capturedOrderInit?.method).toBe("POST");
     expect(headers.get("POLY_SIGNATURE")).toBe(
       expectedHmac(1_700_000_000, "POST", "/order", body)
     );

@@ -473,9 +473,9 @@ export function createClobProvider(
   const clobPlaceOrder = Object.assign(
     async (
       req: PolymarketClobPlaceOrderRequest,
-      _signal?: AbortSignal
+      signal?: AbortSignal
     ): Promise<unknown> => {
-      return trader.placeOrder(req);
+      return trader.placeOrder(req, clobPostOrder, signal);
     },
     { schema: PolymarketClobPlaceOrderRequestSchema }
   );

@@ -97,7 +97,6 @@
     "@pollyjs/adapter-fetch": "^6.0.6",
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister-fs": "^6.0.6",
-    "@polymarket/clob-client-v2": "^1.0.6",
     "@types/node": "^20.19.41",
     "@vitest/coverage-v8": "^4.1.0",
     "@vitest/ui": "^4.1.0",

@@ -1,6 +1,6 @@
 {
   "name": "@apicity/google",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Google Gemini provider for express-mode generateContent.",
   "license": "MIT",
   "repository": {

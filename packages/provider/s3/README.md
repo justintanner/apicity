@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-93 endpoints across 3 groups. Each method mirrors an upstream URL path.
+112 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -58,6 +58,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.createMetadataConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.buckets.createMetadataTableConfiguration</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataTableConfiguration.html)
+
+```typescript
+const res = await s3.buckets.createMetadataTableConfiguration({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -140,6 +155,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delIntelligentTiering</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketIntelligentTieringConfiguration.html)
+
+```typescript
+const res = await s3.buckets.delIntelligentTiering({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>DELETE</code> <b><code>s3.buckets.delInventory</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
@@ -178,6 +208,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.delMetadataConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delMetadataTableConfiguration</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataTableConfiguration.html)
+
+```typescript
+const res = await s3.buckets.delMetadataTableConfiguration({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -290,6 +335,51 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.buckets.getAbac</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?abac</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAbac.html)
+
+```typescript
+const res = await s3.buckets.getAbac({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getAccelerateConfiguration</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?accelerate</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAccelerateConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getAccelerateConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getAcl</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?acl</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAcl.html)
+
+```typescript
+const res = await s3.buckets.getAcl({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.buckets.getAnalytics</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
@@ -335,6 +425,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.buckets.getIntelligentTiering</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketIntelligentTieringConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getIntelligentTiering({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.buckets.getInventory</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
@@ -358,6 +463,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.getLifecycle({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getLifecycleLegacy</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycle.html)
+
+```typescript
+const res = await s3.buckets.getLifecycleLegacy({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -395,6 +515,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.buckets.getMetadataTableConfiguration</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataTableConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getMetadataTableConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.buckets.getMetrics</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
@@ -418,6 +553,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.getNotification({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getNotificationLegacy</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotification.html)
+
+```typescript
+const res = await s3.buckets.getNotificationLegacy({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -463,6 +613,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.getPolicy({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getPolicyStatus</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?policyStatus</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicyStatus.html)
+
+```typescript
+const res = await s3.buckets.getPolicyStatus({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -620,6 +785,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.buckets.listIntelligentTiering</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html)
+
+```typescript
+const res = await s3.buckets.listIntelligentTiering({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.buckets.listInventory</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
@@ -658,6 +838,51 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.location({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putAbac</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?abac</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAbac.html)
+
+```typescript
+const res = await s3.buckets.putAbac({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putAccelerateConfiguration</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?accelerate</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAccelerateConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putAccelerateConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putAcl</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?acl</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAcl.html)
+
+```typescript
+const res = await s3.buckets.putAcl({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -710,6 +935,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>PUT</code> <b><code>s3.buckets.putIntelligentTiering</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketIntelligentTieringConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putIntelligentTiering({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>PUT</code> <b><code>s3.buckets.putInventory</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
@@ -733,6 +973,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.putLifecycle({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putLifecycleLegacy</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html)
+
+```typescript
+const res = await s3.buckets.putLifecycleLegacy({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -778,6 +1033,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.putNotification({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putNotificationLegacy</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotification.html)
+
+```typescript
+const res = await s3.buckets.putNotificationLegacy({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -1217,6 +1487,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.list({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.listLegacy</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html)
+
+```typescript
+const res = await s3.objects.listLegacy({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

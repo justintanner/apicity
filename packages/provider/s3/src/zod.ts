@@ -130,6 +130,19 @@ export type S3ListObjectsV2Request = z.infer<
   typeof S3ListObjectsV2RequestSchema
 >;
 
+export const S3ListObjectsRequestSchema = z.object({
+  bucket: z.string().min(1),
+  delimiter: z.string().optional(),
+  encodingType: z.enum(["url"]).optional(),
+  marker: z.string().optional(),
+  maxKeys: z.number().int().positive().max(1000).optional(),
+  optionalObjectAttributes: z.array(z.enum(["RestoreStatus"])).optional(),
+  prefix: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3ListObjectsRequest = z.infer<typeof S3ListObjectsRequestSchema>;
+
 export const S3ListObjectVersionsRequestSchema = z.object({
   bucket: z.string().min(1),
   delimiter: z.string().optional(),
@@ -480,6 +493,15 @@ export type S3BucketConfigWithIdRequest = z.infer<
   typeof S3BucketConfigWithIdRequestSchema
 >;
 
+export const S3BucketConfigWithPayerRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    requestPayer: requestPayerSchema.optional(),
+  });
+
+export type S3BucketConfigWithPayerRequest = z.infer<
+  typeof S3BucketConfigWithPayerRequestSchema
+>;
+
 export const S3PutBucketXmlConfigRequestSchema =
   S3BucketConfigRequestSchema.extend({
     body: z.string(),
@@ -533,6 +555,22 @@ export const S3PutBucketRequestPaymentRequestSchema =
 export type S3PutBucketRequestPaymentRequest = z.infer<
   typeof S3PutBucketRequestPaymentRequestSchema
 >;
+
+export const S3PutBucketAclRequestSchema = S3BucketConfigRequestSchema.extend({
+  acl: z
+    .enum(["private", "public-read", "public-read-write", "authenticated-read"])
+    .optional(),
+  accessControlPolicy: z.string().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  contentMD5: z.string().optional(),
+  grantFullControl: z.string().optional(),
+  grantRead: z.string().optional(),
+  grantReadAcp: z.string().optional(),
+  grantWrite: z.string().optional(),
+  grantWriteAcp: z.string().optional(),
+});
+
+export type S3PutBucketAclRequest = z.infer<typeof S3PutBucketAclRequestSchema>;
 
 export const S3PutBucketMetadataConfigurationRequestSchema =
   S3BucketConfigRequestSchema.extend({

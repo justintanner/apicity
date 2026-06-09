@@ -7,6 +7,7 @@ import type {
   S3BucketConfigRequest,
   S3BucketConfigResponse,
   S3BucketConfigWithIdRequest,
+  S3BucketConfigWithPayerRequest,
   S3BucketRequest,
   S3ChecksumFields,
   S3CompleteMultipartUploadRequest,
@@ -27,8 +28,12 @@ import type {
   S3GetBucketVersioningRequest,
   S3GetBucketVersioningResponse,
   S3DeleteObjectTaggingResponse,
+  S3GetBucketAbacResponse,
+  S3GetBucketAccelerateConfigurationResponse,
+  S3GetBucketAclResponse,
   S3GetBucketConfigResponse,
   S3GetBucketLocationResponse,
+  S3GetBucketPolicyStatusResponse,
   S3GetBucketPolicyResponse,
   S3GetBucketRequestPaymentResponse,
   S3GetBucketTaggingResponse,
@@ -55,17 +60,22 @@ import type {
   S3ListMultipartUploadsResponse,
   S3ListObjectVersionsRequest,
   S3ListObjectVersionsResponse,
+  S3ListObjectsRequest,
+  S3ListObjectsResponse,
   S3ListObjectsV2Request,
   S3ListObjectsV2Response,
   S3ListPartsRequest,
   S3ListPartsResponse,
   S3ObjectTaggingRequest,
+  S3ObjectAclGrant,
   S3ObjectHeaders,
+  S3ObjectSummary,
   S3ObjectAttributesResponse,
   S3ObjectConfigResponse,
   S3ObjectGovernanceRequest,
   S3Options,
   S3Provider,
+  S3PutBucketAclRequest,
   S3PutBucketPolicyRequest,
   S3PutBucketMetadataConfigurationRequest,
   S3PutBucketRequestPaymentRequest,
@@ -103,6 +113,7 @@ import {
   S3AbortMultipartUploadRequestSchema,
   S3BucketConfigRequestSchema,
   S3BucketConfigWithIdRequestSchema,
+  S3BucketConfigWithPayerRequestSchema,
   S3BucketRequestSchema,
   S3CompleteMultipartUploadRequestSchema,
   S3CopyObjectRequestSchema,
@@ -120,10 +131,12 @@ import {
   S3ListDirectoryBucketsRequestSchema,
   S3ListMultipartUploadsRequestSchema,
   S3ListObjectVersionsRequestSchema,
+  S3ListObjectsRequestSchema,
   S3ListObjectsV2RequestSchema,
   S3ListPartsRequestSchema,
   S3ObjectGovernanceRequestSchema,
   S3ObjectTaggingRequestSchema,
+  S3PutBucketAclRequestSchema,
   S3PutBucketPolicyRequestSchema,
   S3PutBucketMetadataConfigurationRequestSchema,
   S3PutBucketRequestPaymentRequestSchema,
@@ -508,7 +521,7 @@ function numberOf(xml: string, tag: string): number | undefined {
 function boolOf(xml: string, tag: string): boolean | undefined {
   const text = textOf(xml, tag);
   if (text === undefined) return undefined;
-  return text === "true";
+  return text.toLowerCase() === "true";
 }
 
 function blocksOf(xml: string, tag: string): string[] {
@@ -616,6 +629,40 @@ function parseListObjectsV2(xml: string): S3ListObjectsV2Response {
     commonPrefixes: blocksOf(xml, "CommonPrefixes").map((block) => ({
       prefix: textOf(block, "Prefix") ?? "",
     })),
+    rawXml: xml,
+  };
+}
+
+function parseObjectSummary(block: string): S3ObjectSummary {
+  const ownerBlock = blocksOf(block, "Owner")[0];
+  return {
+    key: textOf(block, "Key") ?? "",
+    lastModified: textOf(block, "LastModified"),
+    eTag: textOf(block, "ETag"),
+    size: numberOf(block, "Size"),
+    storageClass: textOf(block, "StorageClass"),
+    owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+  };
+}
+
+function parseListObjects(
+  xml: string,
+  headers: Headers
+): S3ListObjectsResponse {
+  return {
+    name: textOf(xml, "Name"),
+    prefix: textOf(xml, "Prefix"),
+    delimiter: textOf(xml, "Delimiter"),
+    marker: textOf(xml, "Marker"),
+    nextMarker: textOf(xml, "NextMarker"),
+    maxKeys: numberOf(xml, "MaxKeys"),
+    encodingType: textOf(xml, "EncodingType"),
+    isTruncated: boolOf(xml, "IsTruncated") ?? false,
+    contents: blocksOf(xml, "Contents").map(parseObjectSummary),
+    commonPrefixes: blocksOf(xml, "CommonPrefixes").map((block) => ({
+      prefix: textOf(block, "Prefix") ?? "",
+    })),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
     rawXml: xml,
   };
 }
@@ -737,6 +784,36 @@ function parseBucketRequestPayment(
   };
 }
 
+function parseBucketAbac(
+  xml: string,
+  headers: Headers
+): S3GetBucketAbacResponse {
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    status: textOf(xml, "Status"),
+  };
+}
+
+function parseBucketAccelerateConfiguration(
+  xml: string,
+  headers: Headers
+): S3GetBucketAccelerateConfigurationResponse {
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    status: textOf(xml, "Status"),
+  };
+}
+
+function parseBucketPolicyStatus(
+  xml: string,
+  headers: Headers
+): S3GetBucketPolicyStatusResponse {
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    isPublic: boolOf(xml, "IsPublic"),
+  };
+}
+
 function parseBucketPolicy(
   policy: string,
   headers: Headers
@@ -804,24 +881,37 @@ function granteeTypeOf(xml: string): string | undefined {
   return xml.match(/(?:xsi:)?type="([^"]+)"/)?.[1];
 }
 
+function parseAclGrants(xml: string): S3ObjectAclGrant[] {
+  return blocksOf(xml, "Grant").map((block) => {
+    const granteeBlock = blocksOf(block, "Grantee")[0] ?? "";
+    return {
+      grantee: {
+        type: granteeTypeOf(block),
+        id: textOf(granteeBlock, "ID"),
+        displayName: textOf(granteeBlock, "DisplayName"),
+        uri: textOf(granteeBlock, "URI"),
+        emailAddress: textOf(granteeBlock, "EmailAddress"),
+      },
+      permission: textOf(block, "Permission"),
+    };
+  });
+}
+
+function parseBucketAcl(xml: string, headers: Headers): S3GetBucketAclResponse {
+  const ownerBlock = blocksOf(xml, "Owner")[0];
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+    grants: parseAclGrants(xml),
+  };
+}
+
 function parseObjectAcl(xml: string, headers: Headers): S3GetObjectAclResponse {
   const ownerBlock = blocksOf(xml, "Owner")[0];
   return {
     ...objectXmlConfigResponse(xml, headers),
     owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
-    grants: blocksOf(xml, "Grant").map((block) => {
-      const granteeBlock = blocksOf(block, "Grantee")[0] ?? "";
-      return {
-        grantee: {
-          type: granteeTypeOf(block),
-          id: textOf(granteeBlock, "ID"),
-          displayName: textOf(granteeBlock, "DisplayName"),
-          uri: textOf(granteeBlock, "URI"),
-          emailAddress: textOf(granteeBlock, "EmailAddress"),
-        },
-        permission: textOf(block, "Permission"),
-      };
-    }),
+    grants: parseAclGrants(xml),
   };
 }
 
@@ -1063,6 +1153,14 @@ function bucketConfigHeaders(
   req: S3BucketConfigRequest
 ): Record<string, string> {
   return bucketRequestHeaders(req.expectedBucketOwner);
+}
+
+function bucketConfigWithPayerHeaders(
+  req: S3BucketConfigWithPayerRequest
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  addOwnerAndPayerHeaders(headers, req.expectedBucketOwner, req.requestPayer);
+  return headers;
 }
 
 function bucketPutConfigHeaders(
@@ -2088,6 +2186,50 @@ export function createS3(opts: S3Options): S3Provider {
   );
 
   // sig-ok: action namespace over dynamic S3 bucket lifecycle path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycle.html
+  const bucketsGetLifecycleLegacy = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?lifecycle`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket lifecycle path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycle.html
+  const bucketsPutLifecycleLegacy = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?lifecycle`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket lifecycle path
   // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketLifecycle.html
   const bucketsDelLifecycle = Object.assign(
@@ -2237,6 +2379,26 @@ export function createS3(opts: S3Options): S3Provider {
         signal
       );
       return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket policy status path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?policyStatus
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicyStatus.html
+  const bucketsGetPolicyStatus = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketPolicyStatusResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?policyStatus`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseBucketPolicyStatus(await res.text(), res.headers);
     },
     { schema: S3BucketConfigRequestSchema }
   );
@@ -2586,6 +2748,50 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3PutBucketXmlConfigRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 bucket notification path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?notification
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotification.html
+  const bucketsGetNotificationLegacy = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?notification`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket notification path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?notification
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotification.html
+  const bucketsPutNotificationLegacy = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?notification`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
   // sig-ok: action namespace over dynamic S3 bucket replication path
   // GET https://s3.us-east-1.amazonaws.com/{bucket}?replication
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html
@@ -2695,6 +2901,162 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3PutBucketRequestPaymentRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 bucket ABAC path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?abac
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAbac.html
+  const bucketsGetAbac = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketAbacResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?abac`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseBucketAbac(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket ABAC path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?abac
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAbac.html
+  const bucketsPutAbac = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?abac`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket accelerate path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?accelerate
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAccelerateConfiguration.html
+  const bucketsGetAccelerateConfiguration = Object.assign(
+    async (
+      req: S3BucketConfigWithPayerRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketAccelerateConfigurationResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?accelerate`,
+        { bucket: req.bucket, headers: bucketConfigWithPayerHeaders(req) },
+        signal
+      );
+      return parseBucketAccelerateConfiguration(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigWithPayerRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket accelerate path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?accelerate
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAccelerateConfiguration.html
+  const bucketsPutAccelerateConfiguration = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?accelerate`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket ACL path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?acl
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAcl.html
+  const bucketsGetAcl = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketAclResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?acl`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseBucketAcl(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket ACL path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?acl
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAcl.html
+  const bucketsPutAcl = Object.assign(
+    async (
+      req: S3PutBucketAclRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const headers = bucketConfigHeaders(req);
+      if (req.acl) headers["x-amz-acl"] = req.acl;
+      if (req.grantFullControl) {
+        headers["x-amz-grant-full-control"] = req.grantFullControl;
+      }
+      if (req.grantRead) headers["x-amz-grant-read"] = req.grantRead;
+      if (req.grantReadAcp) {
+        headers["x-amz-grant-read-acp"] = req.grantReadAcp;
+      }
+      if (req.grantWrite) headers["x-amz-grant-write"] = req.grantWrite;
+      if (req.grantWriteAcp) {
+        headers["x-amz-grant-write-acp"] = req.grantWriteAcp;
+      }
+      if (req.accessControlPolicy !== undefined) {
+        headers["Content-MD5"] =
+          req.contentMD5 ??
+          md5Base64(new TextEncoder().encode(req.accessControlPolicy));
+        headers["Content-Type"] = "application/xml";
+      } else if (req.contentMD5) {
+        headers["Content-MD5"] = req.contentMD5;
+      }
+      if (req.checksumAlgorithm) {
+        headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?acl`,
+        {
+          bucket: req.bucket,
+          body: req.accessControlPolicy,
+          headers,
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketAclRequestSchema }
+  );
+
   // sig-ok: action namespace over dynamic S3 bucket metadata path
   // POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataConfiguration.html
@@ -2759,6 +3121,70 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3BucketConfigRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 bucket metadata table path
+  // POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataTableConfiguration.html
+  const bucketsCreateMetadataTableConfiguration = Object.assign(
+    async (
+      req: S3PutBucketMetadataConfigurationRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "POST",
+        `/${bucket}?metadataTable`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketMetadataConfigurationRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket metadata table path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataTableConfiguration.html
+  const bucketsGetMetadataTableConfiguration = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?metadataTable`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket metadata table path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataTableConfiguration.html
+  const bucketsDelMetadataTableConfiguration = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?metadataTable`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
   // sig-ok: action namespace over dynamic S3 bucket metadata inventory path
   // PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataInventoryTable
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataInventoryTableConfiguration.html
@@ -2805,6 +3231,97 @@ export function createS3(opts: S3Options): S3Provider {
       return bucketConfigResponse(res);
     },
     { schema: S3PutBucketMetadataConfigurationRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket intelligent-tiering path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html
+  const bucketsListIntelligentTiering = Object.assign(
+    async (
+      req: S3ListBucketConfigsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListBucketConfigsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery(
+        { "continuation-token": req.continuationToken },
+        "&"
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?intelligent-tiering${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3ListBucketConfigsRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket intelligent-tiering path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketIntelligentTieringConfiguration.html
+  const bucketsGetIntelligentTiering = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?intelligent-tiering${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket intelligent-tiering path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketIntelligentTieringConfiguration.html
+  const bucketsPutIntelligentTiering = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?intelligent-tiering${query}`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket intelligent-tiering path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketIntelligentTieringConfiguration.html
+  const bucketsDelIntelligentTiering = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?intelligent-tiering${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 bucket metrics path
@@ -3078,6 +3595,43 @@ export function createS3(opts: S3Options): S3Provider {
       return bucketConfigResponse(res);
     },
     { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html
+  const objectsListLegacy = Object.assign(
+    async (
+      req: S3ListObjectsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListObjectsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({
+        delimiter: req.delimiter,
+        "encoding-type": req.encodingType,
+        marker: req.marker,
+        "max-keys": req.maxKeys,
+        prefix: req.prefix,
+      });
+      const headers: Record<string, string> = {};
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      if (req.optionalObjectAttributes?.length) {
+        headers["x-amz-optional-object-attributes"] =
+          req.optionalObjectAttributes.join(",");
+      }
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseListObjects(await res.text(), res.headers);
+    },
+    { schema: S3ListObjectsRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 bucket path
@@ -4187,14 +4741,17 @@ export function createS3(opts: S3Options): S3Provider {
     buckets: {
       create: bucketsCreate,
       createMetadataConfiguration: bucketsCreateMetadataConfiguration,
+      createMetadataTableConfiguration: bucketsCreateMetadataTableConfiguration,
       createSession: bucketsCreateSession,
       del: bucketsDel,
       delAnalytics: bucketsDelAnalytics,
       delCors: bucketsDelCors,
       delEncryption: bucketsDelEncryption,
+      delIntelligentTiering: bucketsDelIntelligentTiering,
       delInventory: bucketsDelInventory,
       delLifecycle: bucketsDelLifecycle,
       delMetadataConfiguration: bucketsDelMetadataConfiguration,
+      delMetadataTableConfiguration: bucketsDelMetadataTableConfiguration,
       delMetrics: bucketsDelMetrics,
       delOwnershipControls: bucketsDelOwnershipControls,
       delPolicy: bucketsDelPolicy,
@@ -4202,18 +4759,26 @@ export function createS3(opts: S3Options): S3Provider {
       delReplication: bucketsDelReplication,
       delTagging: bucketsDelTagging,
       delWebsite: bucketsDelWebsite,
+      getAbac: bucketsGetAbac,
+      getAccelerateConfiguration: bucketsGetAccelerateConfiguration,
+      getAcl: bucketsGetAcl,
       getAnalytics: bucketsGetAnalytics,
       getCors: bucketsGetCors,
       getEncryption: bucketsGetEncryption,
+      getIntelligentTiering: bucketsGetIntelligentTiering,
       getInventory: bucketsGetInventory,
       getLifecycle: bucketsGetLifecycle,
+      getLifecycleLegacy: bucketsGetLifecycleLegacy,
       getLogging: bucketsGetLogging,
       getMetadataConfiguration: bucketsGetMetadataConfiguration,
+      getMetadataTableConfiguration: bucketsGetMetadataTableConfiguration,
       getMetrics: bucketsGetMetrics,
       getNotification: bucketsGetNotification,
+      getNotificationLegacy: bucketsGetNotificationLegacy,
       getObjectLockConfiguration: bucketsGetObjectLockConfiguration,
       getOwnershipControls: bucketsGetOwnershipControls,
       getPolicy: bucketsGetPolicy,
+      getPolicyStatus: bucketsGetPolicyStatus,
       getPublicAccessBlock: bucketsGetPublicAccessBlock,
       getReplication: bucketsGetReplication,
       getRequestPayment: bucketsGetRequestPayment,
@@ -4223,18 +4788,25 @@ export function createS3(opts: S3Options): S3Provider {
       head: bucketsHead,
       listAnalytics: bucketsListAnalytics,
       listDirectory: bucketsListDirectory,
+      listIntelligentTiering: bucketsListIntelligentTiering,
       listInventory: bucketsListInventory,
       list: bucketsList,
       listMetrics: bucketsListMetrics,
       location: bucketsLocation,
+      putAbac: bucketsPutAbac,
+      putAccelerateConfiguration: bucketsPutAccelerateConfiguration,
+      putAcl: bucketsPutAcl,
       putAnalytics: bucketsPutAnalytics,
       putCors: bucketsPutCors,
       putEncryption: bucketsPutEncryption,
+      putIntelligentTiering: bucketsPutIntelligentTiering,
       putInventory: bucketsPutInventory,
       putLifecycle: bucketsPutLifecycle,
+      putLifecycleLegacy: bucketsPutLifecycleLegacy,
       putLogging: bucketsPutLogging,
       putMetrics: bucketsPutMetrics,
       putNotification: bucketsPutNotification,
+      putNotificationLegacy: bucketsPutNotificationLegacy,
       putObjectLockConfiguration: bucketsPutObjectLockConfiguration,
       putOwnershipControls: bucketsPutOwnershipControls,
       putPolicy: bucketsPutPolicy,
@@ -4270,6 +4842,7 @@ export function createS3(opts: S3Options): S3Provider {
       listMultipartUploads: objectsListMultipartUploads,
       listVersions: objectsListVersions,
       list: objectsList,
+      listLegacy: objectsListLegacy,
       listParts: objectsListParts,
       put: objectsPut,
       putAcl: objectsPutAcl,

@@ -943,6 +943,9 @@ describe("s3 endpoints", () => {
       new Response(policy, { status: 200 }),
       new Response(null, { status: 204 }),
       new Response(null, { status: 204 }),
+      new Response("<PolicyStatus><IsPublic>FALSE</IsPublic></PolicyStatus>", {
+        status: 200,
+      }),
       new Response(null, { status: 200 }),
       new Response(requestPaymentXml, { status: 200 }),
     ];
@@ -960,6 +963,9 @@ describe("s3 endpoints", () => {
       confirmRemoveSelfBucketAccess: false,
     });
     await s3.buckets.delPolicy({ bucket: "test-bucket" });
+    const policyStatus = await s3.buckets.getPolicyStatus({
+      bucket: "test-bucket",
+    });
     await s3.buckets.putRequestPayment({
       bucket: "test-bucket",
       payer: "Requester",
@@ -969,6 +975,7 @@ describe("s3 endpoints", () => {
     });
 
     expect(gotPolicy.policy).toBe(policy);
+    expect(policyStatus.isPublic).toBe(false);
     expect(requestPayment.payer).toBe("Requester");
 
     const [putPolicyUrl, putPolicyInit] = fetch.mock.calls[1];
@@ -983,7 +990,13 @@ describe("s3 endpoints", () => {
       "false"
     );
 
-    const [paymentUrl, paymentInit] = fetch.mock.calls[3];
+    const [policyStatusUrl, policyStatusInit] = fetch.mock.calls[3];
+    expect(String(policyStatusUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?policyStatus"
+    );
+    expect(policyStatusInit?.method).toBe("GET");
+
+    const [paymentUrl, paymentInit] = fetch.mock.calls[4];
     expect(String(paymentUrl)).toBe(
       "https://s3.us-east-1.amazonaws.com/test-bucket?requestPayment"
     );
@@ -991,6 +1004,110 @@ describe("s3 endpoints", () => {
     expect(new TextDecoder().decode(paymentInit?.body as Uint8Array)).toContain(
       "<Payer>Requester</Payer>"
     );
+  });
+
+  it("handles bucket ABAC, acceleration, and ACL configurations", async () => {
+    const abacXml = "<AbacStatus><Status>Enabled</Status></AbacStatus>";
+    const accelerateXml = [
+      "<AccelerateConfiguration>",
+      "<Status>Suspended</Status>",
+      "</AccelerateConfiguration>",
+    ].join("");
+    const aclXml = [
+      "<AccessControlPolicy>",
+      "<Owner><ID>owner-id</ID><DisplayName>owner</DisplayName></Owner>",
+      "<AccessControlList>",
+      "<Grant>",
+      '<Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser">',
+      "<ID>grantee-id</ID><DisplayName>grantee</DisplayName>",
+      "</Grantee>",
+      "<Permission>FULL_CONTROL</Permission>",
+      "</Grant>",
+      "</AccessControlList>",
+      "</AccessControlPolicy>",
+    ].join("");
+    const responses = [
+      new Response(null, { status: 200 }),
+      new Response(abacXml, { status: 200 }),
+      new Response(null, { status: 200 }),
+      new Response(accelerateXml, { status: 200 }),
+      new Response(aclXml, { status: 200 }),
+      new Response(null, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+    const abacBody =
+      '<AbacStatus xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>Enabled</Status></AbacStatus>';
+    const accelerateBody =
+      '<AccelerateConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><Status>Suspended</Status></AccelerateConfiguration>';
+
+    await s3.buckets.putAbac({ bucket: "test-bucket", body: abacBody });
+    const abac = await s3.buckets.getAbac({ bucket: "test-bucket" });
+    await s3.buckets.putAccelerateConfiguration({
+      bucket: "test-bucket",
+      body: accelerateBody,
+    });
+    const accelerate = await s3.buckets.getAccelerateConfiguration({
+      bucket: "test-bucket",
+      requestPayer: "requester",
+    });
+    const acl = await s3.buckets.getAcl({ bucket: "test-bucket" });
+    await s3.buckets.putAcl({
+      bucket: "test-bucket",
+      acl: "private",
+      grantWrite: 'id="writer-id"',
+      expectedBucketOwner: "123456789012",
+    });
+
+    expect(abac.status).toBe("Enabled");
+    expect(accelerate.status).toBe("Suspended");
+    expect(acl.owner).toEqual({ id: "owner-id", displayName: "owner" });
+    expect(acl.grants[0]).toEqual({
+      grantee: {
+        type: "CanonicalUser",
+        id: "grantee-id",
+        displayName: "grantee",
+        uri: undefined,
+        emailAddress: undefined,
+      },
+      permission: "FULL_CONTROL",
+    });
+
+    expect(String(fetch.mock.calls[0][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?abac"
+    );
+    expect(fetch.mock.calls[0][1]?.method).toBe("PUT");
+    expect(String(fetch.mock.calls[1][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?abac"
+    );
+    expect(String(fetch.mock.calls[2][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?accelerate"
+    );
+    expect(String(fetch.mock.calls[3][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?accelerate"
+    );
+    const accelerateHeaders = fetch.mock.calls[3][1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(accelerateHeaders["x-amz-request-payer"]).toBe("requester");
+    expect(String(fetch.mock.calls[4][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?acl"
+    );
+    expect(String(fetch.mock.calls[5][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?acl"
+    );
+    const putAclHeaders = fetch.mock.calls[5][1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(putAclHeaders["x-amz-acl"]).toBe("private");
+    expect(putAclHeaders["x-amz-grant-write"]).toBe('id="writer-id"');
+    expect(putAclHeaders["x-amz-expected-bucket-owner"]).toBe("123456789012");
   });
 
   it("addresses list and id-based bucket configuration resources", async () => {
@@ -1009,12 +1126,27 @@ describe("s3 endpoints", () => {
       "<Id>inventory-1</Id>",
       "</InventoryConfiguration>",
     ].join("");
+    const intelligentTieringListXml = [
+      "<ListBucketIntelligentTieringConfigurationsOutput>",
+      "<IsTruncated>false</IsTruncated>",
+      "</ListBucketIntelligentTieringConfigurationsOutput>",
+    ].join("");
+    const intelligentTieringXml = [
+      "<IntelligentTieringConfiguration>",
+      "<Id>tiering-1</Id>",
+      "<Status>Enabled</Status>",
+      "</IntelligentTieringConfiguration>",
+    ].join("");
     const responses = [
       new Response(metricsXml, { status: 200 }),
       new Response(analyticsXml, { status: 200 }),
       new Response(null, { status: 200 }),
       new Response(null, { status: 204 }),
       new Response(inventoryXml, { status: 200 }),
+      new Response(intelligentTieringListXml, { status: 200 }),
+      new Response(intelligentTieringXml, { status: 200 }),
+      new Response(null, { status: 200 }),
+      new Response(null, { status: 204 }),
     ];
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       const response = responses.shift();
@@ -1041,10 +1173,34 @@ describe("s3 endpoints", () => {
       bucket: "test-bucket",
       id: "inventory-1",
     });
+    const intelligentTieringList = await s3.buckets.listIntelligentTiering({
+      bucket: "test-bucket",
+    });
+    const intelligentTiering = await s3.buckets.getIntelligentTiering({
+      bucket: "test-bucket",
+      id: "tiering-1",
+    });
+    await s3.buckets.putIntelligentTiering({
+      bucket: "test-bucket",
+      id: "tiering-1",
+      body: [
+        "<IntelligentTieringConfiguration>",
+        "<Id>tiering-1</Id>",
+        "<Status>Enabled</Status>",
+        "<Tiering><AccessTier>ARCHIVE_ACCESS</AccessTier><Days>90</Days></Tiering>",
+        "</IntelligentTieringConfiguration>",
+      ].join(""),
+    });
+    await s3.buckets.delIntelligentTiering({
+      bucket: "test-bucket",
+      id: "tiering-1",
+    });
 
     expect(metrics.rawXml).toBe(metricsXml);
     expect(analytics.rawXml).toBe(analyticsXml);
     expect(inventory.rawXml).toBe(inventoryXml);
+    expect(intelligentTieringList.rawXml).toBe(intelligentTieringListXml);
+    expect(intelligentTiering.rawXml).toBe(intelligentTieringXml);
 
     expect(String(fetch.mock.calls[0][0])).toBe(
       "https://s3.us-east-1.amazonaws.com/test-bucket?metrics"
@@ -1063,6 +1219,20 @@ describe("s3 endpoints", () => {
     expect(String(fetch.mock.calls[4][0])).toBe(
       "https://s3.us-east-1.amazonaws.com/test-bucket?inventory&id=inventory-1"
     );
+    expect(String(fetch.mock.calls[5][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?intelligent-tiering"
+    );
+    expect(String(fetch.mock.calls[6][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?intelligent-tiering&id=tiering-1"
+    );
+    expect(String(fetch.mock.calls[7][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?intelligent-tiering&id=tiering-1"
+    );
+    expect(fetch.mock.calls[7][1]?.method).toBe("PUT");
+    expect(String(fetch.mock.calls[8][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?intelligent-tiering&id=tiering-1"
+    );
+    expect(fetch.mock.calls[8][1]?.method).toBe("DELETE");
   });
 
   it("lists object versions and delete markers", async () => {
@@ -1297,6 +1467,62 @@ describe("s3 endpoints", () => {
     });
   });
 
+  it("parses ListObjects XML responses", async () => {
+    const xml = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+      "<Name>test-bucket</Name>",
+      "<Prefix>apicity-tests/</Prefix>",
+      "<Marker>apicity-tests/a.txt</Marker>",
+      "<NextMarker>apicity-tests/b.txt</NextMarker>",
+      "<MaxKeys>10</MaxKeys>",
+      "<IsTruncated>true</IsTruncated>",
+      "<Contents>",
+      "<Key>apicity-tests/object-core.txt</Key>",
+      "<LastModified>2026-06-08T00:00:00.000Z</LastModified>",
+      '<ETag>"etag"</ETag>',
+      "<Size>38</Size>",
+      "<StorageClass>STANDARD</StorageClass>",
+      "</Contents>",
+      "</ListBucketResult>",
+    ].join("");
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(xml, {
+        status: 200,
+        headers: { "x-amz-request-charged": "requester" },
+      });
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.objects.listLegacy({
+      bucket: "test-bucket",
+      prefix: "apicity-tests/",
+      marker: "apicity-tests/a.txt",
+      maxKeys: 10,
+      optionalObjectAttributes: ["RestoreStatus"],
+      requestPayer: "requester",
+    });
+
+    expect(result.name).toBe("test-bucket");
+    expect(result.marker).toBe("apicity-tests/a.txt");
+    expect(result.nextMarker).toBe("apicity-tests/b.txt");
+    expect(result.isTruncated).toBe(true);
+    expect(result.requestCharged).toBe("requester");
+    expect(result.contents[0]).toMatchObject({
+      key: "apicity-tests/object-core.txt",
+      size: 38,
+      storageClass: "STANDARD",
+    });
+
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?marker=apicity-tests%2Fa.txt&max-keys=10&prefix=apicity-tests%2F"
+    );
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["x-amz-request-payer"]).toBe("requester");
+    expect(headers["x-amz-optional-object-attributes"]).toBe("RestoreStatus");
+  });
+
   it("uses S3 Express hosts for directory bucket list and sessions", async () => {
     const responses = [
       new Response(
@@ -1388,6 +1614,12 @@ describe("s3 endpoints", () => {
       ),
       new Response(null, { status: 204 }),
       new Response(null, { status: 200 }),
+      new Response(
+        "<GetBucketMetadataTableConfigurationResult></GetBucketMetadataTableConfigurationResult>",
+        { status: 200 }
+      ),
+      new Response(null, { status: 204 }),
+      new Response(null, { status: 200 }),
       new Response(null, { status: 200 }),
     ];
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
@@ -1398,6 +1630,8 @@ describe("s3 endpoints", () => {
     const s3 = createTestS3(fetch);
     const metadataBody =
       '<MetadataConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></MetadataConfiguration>';
+    const metadataTableBody =
+      '<MetadataTableConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><S3TablesDestination><TableBucketArn>arn:aws:s3tables:us-east-1:123456789012:bucket/test-table-bucket</TableBucketArn><TableName>apicity_test</TableName></S3TablesDestination></MetadataTableConfiguration>';
     const inventoryBody =
       '<InventoryTableConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><ConfigurationState>ENABLED</ConfigurationState></InventoryTableConfiguration>';
     const journalBody =
@@ -1411,6 +1645,14 @@ describe("s3 endpoints", () => {
       bucket: "test-bucket",
     });
     await s3.buckets.delMetadataConfiguration({ bucket: "test-bucket" });
+    await s3.buckets.createMetadataTableConfiguration({
+      bucket: "test-bucket",
+      body: metadataTableBody,
+    });
+    const metadataTable = await s3.buckets.getMetadataTableConfiguration({
+      bucket: "test-bucket",
+    });
+    await s3.buckets.delMetadataTableConfiguration({ bucket: "test-bucket" });
     await s3.buckets.updateMetadataInventoryTable({
       bucket: "test-bucket",
       body: inventoryBody,
@@ -1421,7 +1663,10 @@ describe("s3 endpoints", () => {
     });
 
     expect(metadata.rawXml).toContain("GetBucketMetadataConfigurationResult");
-    expect(fetch).toHaveBeenCalledTimes(5);
+    expect(metadataTable.rawXml).toContain(
+      "GetBucketMetadataTableConfigurationResult"
+    );
+    expect(fetch).toHaveBeenCalledTimes(8);
     expect(String(fetch.mock.calls[0][0])).toBe(
       "https://s3.us-east-1.amazonaws.com/test-bucket?metadataConfiguration"
     );
@@ -1432,9 +1677,21 @@ describe("s3 endpoints", () => {
     expect(fetch.mock.calls[1][1]?.method).toBe("GET");
     expect(fetch.mock.calls[2][1]?.method).toBe("DELETE");
     expect(String(fetch.mock.calls[3][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metadataTable"
+    );
+    expect(fetch.mock.calls[3][1]?.method).toBe("POST");
+    expect(String(fetch.mock.calls[4][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metadataTable"
+    );
+    expect(fetch.mock.calls[4][1]?.method).toBe("GET");
+    expect(String(fetch.mock.calls[5][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metadataTable"
+    );
+    expect(fetch.mock.calls[5][1]?.method).toBe("DELETE");
+    expect(String(fetch.mock.calls[6][0])).toBe(
       "https://s3.us-east-1.amazonaws.com/test-bucket?metadataInventoryTable"
     );
-    expect(String(fetch.mock.calls[4][0])).toBe(
+    expect(String(fetch.mock.calls[7][0])).toBe(
       "https://s3.us-east-1.amazonaws.com/test-bucket?metadataJournalTable"
     );
   });

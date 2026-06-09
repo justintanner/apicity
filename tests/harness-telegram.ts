@@ -224,6 +224,8 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   const versioning = hasS3Subresource(entry, "versioning");
   const versions = hasS3Subresource(entry, "versions");
   const configId = hasS3Subresource(entry, "id");
+  const abac = hasS3Subresource(entry, "abac");
+  const accelerate = hasS3Subresource(entry, "accelerate");
   const acl = hasS3Subresource(entry, "acl");
   const attributes = hasS3Subresource(entry, "attributes");
   const legalHold = hasS3Subresource(entry, "legal-hold");
@@ -231,12 +233,15 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     entry,
     "metadataConfiguration"
   );
+  const metadataTable = hasS3Subresource(entry, "metadataTable");
   const metadataInventoryTable = hasS3Subresource(
     entry,
     "metadataInventoryTable"
   );
   const metadataJournalTable = hasS3Subresource(entry, "metadataJournalTable");
+  const intelligentTiering = hasS3Subresource(entry, "intelligent-tiering");
   const objectLock = hasS3Subresource(entry, "object-lock");
+  const policyStatus = hasS3Subresource(entry, "policyStatus");
   const renameObject = hasS3Subresource(entry, "renameObject");
   const restore = hasS3Subresource(entry, "restore");
   const retention = hasS3Subresource(entry, "retention");
@@ -245,6 +250,9 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   const encryption = hasS3Subresource(entry, "encryption");
   const bucketConfigSubresources = new Map<string, string>([
     ["analytics", "Analytics"],
+    ["abac", "Abac"],
+    ["accelerate", "AccelerateConfiguration"],
+    ["acl", "Acl"],
     ["cors", "Cors"],
     ["encryption", "Encryption"],
     ["inventory", "Inventory"],
@@ -254,6 +262,7 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     ["notification", "Notification"],
     ["ownershipControls", "OwnershipControls"],
     ["policy", "Policy"],
+    ["policyStatus", "PolicyStatus"],
     ["publicAccessBlock", "PublicAccessBlock"],
     ["replication", "Replication"],
     ["requestPayment", "RequestPayment"],
@@ -282,6 +291,12 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     case "buckets.getVersioning":
     case "buckets.putVersioning":
       return !objectRequest && versioning;
+    case "buckets.getLifecycleLegacy":
+    case "buckets.putLifecycleLegacy":
+      return !objectRequest && hasS3Subresource(entry, "lifecycle");
+    case "buckets.getNotificationLegacy":
+    case "buckets.putNotificationLegacy":
+      return !objectRequest && hasS3Subresource(entry, "notification");
     case "buckets.getObjectLockConfiguration":
     case "buckets.putObjectLockConfiguration":
       return !objectRequest && objectLock;
@@ -289,10 +304,20 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     case "buckets.getMetadataConfiguration":
     case "buckets.delMetadataConfiguration":
       return !objectRequest && metadataConfiguration;
+    case "buckets.createMetadataTableConfiguration":
+    case "buckets.getMetadataTableConfiguration":
+    case "buckets.delMetadataTableConfiguration":
+      return !objectRequest && metadataTable;
     case "buckets.updateMetadataInventoryTable":
       return !objectRequest && metadataInventoryTable;
     case "buckets.updateMetadataJournalTable":
       return !objectRequest && metadataJournalTable;
+    case "buckets.listIntelligentTiering":
+      return !objectRequest && !configId && intelligentTiering;
+    case "buckets.getIntelligentTiering":
+    case "buckets.putIntelligentTiering":
+    case "buckets.delIntelligentTiering":
+      return !objectRequest && configId && intelligentTiering;
     case "buckets.listAnalytics":
       return (
         !objectRequest && !configId && hasS3Subresource(entry, "analytics")
@@ -333,6 +358,22 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   switch (row.dotPath) {
     case "objects.list":
       return hasS3Subresource(entry, "list-type");
+    case "objects.listLegacy":
+      return (
+        !objectRequest &&
+        !versions &&
+        !multipartCreate &&
+        !bulkDelete &&
+        !abac &&
+        !accelerate &&
+        !acl &&
+        !intelligentTiering &&
+        !metadataConfiguration &&
+        !metadataTable &&
+        !objectLock &&
+        !policyStatus &&
+        !versioning
+      );
     case "objects.listVersions":
       return !objectRequest && versions;
     case "objects.delMany":
@@ -460,6 +501,47 @@ function findMatchingEndpointDoc(
   }
 
   return best;
+}
+
+function kebabDotPath(dotPath: string): string {
+  return dotPath
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+    .replace(/\./g, "-")
+    .toLowerCase();
+}
+
+function recordingDotPathHints(dotPath: string): string[] {
+  const kebab = kebabDotPath(dotPath);
+  return [
+    kebab,
+    kebab.replace(/^buckets-/, "bucket-"),
+    kebab.replace(/^objects-/, "object-"),
+  ];
+}
+
+function findHintedEndpointDoc(
+  recording: ChangedRecording,
+  entry: HarEntry,
+  rows: EndpointDocRow[]
+): EndpointDocRow | null {
+  const recordingName = recording.recordingName.toLowerCase();
+  let best: { length: number; row: EndpointDocRow } | null = null;
+
+  for (const row of rows) {
+    if (row.provider !== recording.provider) continue;
+    if (recording.provider === "s3" && !matchS3Endpoint(entry, row)) continue;
+    if (recording.provider !== "s3" && !matchStrict(entry, row)) continue;
+
+    const hint = recordingDotPathHints(row.dotPath)
+      .filter((candidate) => recordingName.includes(candidate))
+      .sort((a, b) => b.length - a.length)[0];
+    if (!hint) continue;
+    if (!best || hint.length > best.length) {
+      best = { length: hint.length, row };
+    }
+  }
+
+  return best?.row ?? null;
 }
 
 function parseEndpointDocs(tsvPath = ENDPOINT_DOCS_PATH): EndpointDocRow[] {
@@ -619,7 +701,9 @@ export function formatTelegramEndpointMessage(
   endpointDocs: EndpointDocRow[] = parseEndpointDocs()
 ): TelegramHarnessMessage {
   const entry = findEndpointEntry(recording);
-  const doc = findMatchingEndpointDoc(entry, endpointDocs, recording.provider);
+  const doc =
+    findHintedEndpointDoc(recording, entry, endpointDocs) ??
+    findMatchingEndpointDoc(entry, endpointDocs, recording.provider);
   const endpoint = `${entry.request.method} ${stripQuery(entry.request.url)}`;
   const status = `${entry.response.status} ${entry.response.statusText}`.trim();
   const apicityPath = apicityPathFor(recording, entry, doc);

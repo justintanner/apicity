@@ -39,6 +39,55 @@ const endpointDocs: EndpointDocRow[] = [
   },
   {
     provider: "s3",
+    dotPath: "buckets.getLifecycle",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycleConfiguration.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.getLifecycleLegacy",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycle.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.getNotification",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?notification",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotificationConfiguration.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.getNotificationLegacy",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?notification",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotification.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.getMetadataTableConfiguration",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?metadataTable",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataTableConfiguration.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.listIntelligentTiering",
+    method: "GET",
+    fullUrl:
+      "https://s3.us-east-1.amazonaws.com/{bucket}?intelligent-tiering{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketIntelligentTieringConfigurations.html",
+  },
+  {
+    provider: "s3",
     dotPath: "buckets.listMetrics",
     method: "GET",
     fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}",
@@ -69,6 +118,14 @@ const endpointDocs: EndpointDocRow[] = [
       "https://s3.us-east-1.amazonaws.com/{bucket}?metadataInventoryTable",
     docsUrl:
       "https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataInventoryTableConfiguration.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "objects.listLegacy",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjects.html",
   },
   {
     provider: "s3",
@@ -456,6 +513,39 @@ function s3MetadataInventoryRecording(): ChangedRecording {
   };
 }
 
+function s3BucketSubresourceRecording(
+  recordingName: string,
+  method: string,
+  query: string
+): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName,
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      `${recordingName.split("/")[1]}_123456789/recording.har`,
+    entries: [
+      {
+        request: {
+          method,
+          url: `https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/?${query}`,
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<Result></Result>",
+          },
+        },
+      },
+    ],
+  };
+}
+
 function s3RenameObjectRecording(): ChangedRecording {
   return {
     provider: "s3",
@@ -643,6 +733,43 @@ describe("harness Telegram messages", () => {
       "s3.objects.rename",
       "s3.objects.updateEncryption",
       "s3.objectLambda.writeGetObjectResponse",
+    ]);
+  });
+
+  it("matches S3 compatibility subresources and legacy aliases", () => {
+    const messages = buildTelegramHarnessMessages(
+      [
+        s3BucketSubresourceRecording(
+          "s3/bucket-get-metadata-table-configuration",
+          "GET",
+          "metadataTable"
+        ),
+        s3BucketSubresourceRecording(
+          "s3/bucket-list-intelligent-tiering",
+          "GET",
+          "intelligent-tiering"
+        ),
+        s3BucketSubresourceRecording(
+          "s3/bucket-get-lifecycle-legacy",
+          "GET",
+          "lifecycle"
+        ),
+        s3BucketSubresourceRecording(
+          "s3/bucket-get-notification-legacy",
+          "GET",
+          "notification"
+        ),
+        s3BucketSubresourceRecording("s3/list-objects", "GET", "max-keys=1"),
+      ],
+      endpointDocs
+    );
+
+    expect(messages.map((message) => message.apicityPath)).toEqual([
+      "s3.buckets.getMetadataTableConfiguration",
+      "s3.buckets.listIntelligentTiering",
+      "s3.buckets.getLifecycleLegacy",
+      "s3.buckets.getNotificationLegacy",
+      "s3.objects.listLegacy",
     ]);
   });
 });

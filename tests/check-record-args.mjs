@@ -34,7 +34,7 @@ const result = spawnSync(
   "op",
   [
     "run",
-    "--env-file=.env.tpl",
+    "--env-file=.env",
     "--",
     "env",
     "POLLY_MODE=record",

@@ -5,9 +5,9 @@
  * Mints a user-context access token + refresh token for the @apicity/x package.
  * Run as:
  *
- *   op run --env-file=.env.tpl -- node scripts/x-oauth.mjs
+ *   op run --env-file=.env -- node scripts/x-oauth.mjs
  *
- * Required env (resolved from 1Password via .env.tpl):
+ * Required env (resolved from 1Password via .env):
  *   X_CLIENT_ID, X_CLIENT_SECRET
  *
  * On success it prints the access_token / refresh_token / expires_in /
@@ -42,7 +42,7 @@ const SCOPES = [
 
 if (!CLIENT_ID || !CLIENT_SECRET) {
   console.error(
-    "Missing X_CLIENT_ID or X_CLIENT_SECRET. Did you run via `op run --env-file=.env.tpl --`?"
+    "Missing X_CLIENT_ID or X_CLIENT_SECRET. Did you run via `op run --env-file=.env --`?"
   );
   process.exit(1);
 }

@@ -8,7 +8,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PKG_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 REPO_ROOT="$(cd "$PKG_DIR/../.." && pwd)"
-ENV_FILE="${APICITY_ENV_FILE:-$REPO_ROOT/.env.tpl}"
+ENV_FILE="${APICITY_ENV_FILE:-$REPO_ROOT/.env}"
 BIN="$PKG_DIR/dist/src/bin.js"
 
 REQUIRED_KEYS=(

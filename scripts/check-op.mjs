@@ -2,7 +2,7 @@
 
 import { readFileSync } from "node:fs";
 
-const envTemplate = readFileSync(".env.tpl", "utf8");
+const envTemplate = readFileSync(".env", "utf8");
 const names = envTemplate
   .split(/\r?\n/)
   .map((line) => line.match(/^([A-Z_][A-Z0-9_]*)=op:\/\//)?.[1])
@@ -18,4 +18,4 @@ if (unresolved.length > 0) {
   process.exit(1);
 }
 
-console.log("1Password OK - all .env.tpl secret references resolved");
+console.log("1Password OK - all .env secret references resolved");

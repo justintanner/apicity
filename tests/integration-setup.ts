@@ -1,3 +1,21 @@
+const pollyMode = process.env.POLLY_MODE ?? "replay";
+
+for (const [name, value] of Object.entries(process.env)) {
+  if (!value?.startsWith("op://")) {
+    continue;
+  }
+
+  if (pollyMode === "replay") {
+    delete process.env[name];
+    continue;
+  }
+
+  throw new Error(
+    `Unresolved 1Password reference in ${name}. Run record mode with ` +
+      "`op run --env-file=.env --`."
+  );
+}
+
 // Polyfill FileReader for Node.js so Polly.js can serialize FormData blobs.
 if (typeof globalThis.FileReader === "undefined") {
   class FileReaderPolyfill extends EventTarget {

@@ -4,7 +4,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 // Run me via:
-//   op run --env-file=/Users/jwt/apicity/.env.tpl -- node packages/mcp-server/scripts/demo.mjs
+//   op run --env-file=/Users/jwt/apicity/.env -- node packages/mcp-server/scripts/demo.mjs
 // `op run` resolves the secrets into THIS process's env, then we pass them
 // into the spawned MCP server's env. We deliberately don't wrap the spawn in
 // `op run` because op buffers stdio and breaks the MCP framing.

@@ -14,7 +14,7 @@ for (let i = 0; i < args.length; i++) {
 const apiKey = process.env.XAI_API_KEY;
 if (!apiKey) {
   console.error(
-    "XAI_API_KEY is required. Run with: op run --env-file=.env.tpl pnpm run harness:voice"
+    "XAI_API_KEY is required. Run with: op run --env-file=.env pnpm run harness:voice"
   );
   process.exit(1);
 }

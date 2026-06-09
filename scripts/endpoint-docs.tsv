@@ -98,6 +98,7 @@ s3	objects.abortMultipartUpload	DELETE	https://s3.us-east-1.amazonaws.com/{bucke
 s3	objects.listParts	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html
 s3	objects.listMultipartUploads	GET	https://s3.us-east-1.amazonaws.com/{bucket}?uploads{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html
 s3	objects.get	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
+s3	objects.getStream	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
 s3	objects.head	HEAD	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html
 s3	objects.del	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html
 s3	objects.delMany	POST	https://s3.us-east-1.amazonaws.com/{bucket}?delete	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjects.html

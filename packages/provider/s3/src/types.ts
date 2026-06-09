@@ -26,6 +26,7 @@ export type {
   S3ObjectGovernanceRequest,
   S3ObjectTaggingRequest,
   S3Options,
+  S3PresignObjectRequest,
   S3PutBucketPolicyRequest,
   S3PutBucketRequestPaymentRequest,
   S3PutBucketTaggingRequest,
@@ -73,6 +74,7 @@ import type {
   S3ListPartsRequest,
   S3ObjectGovernanceRequest,
   S3ObjectTaggingRequest,
+  S3PresignObjectRequest,
   S3PutBucketPolicyRequest,
   S3PutBucketRequestPaymentRequest,
   S3PutBucketTaggingRequest,
@@ -253,6 +255,10 @@ export interface S3ObjectHeaders {
 
 export interface S3GetObjectResponse extends S3ObjectHeaders {
   body: ArrayBuffer;
+}
+
+export interface S3GetObjectStreamResponse extends S3ObjectHeaders {
+  body: ReadableStream<Uint8Array> | null;
 }
 
 export type S3HeadObjectResponse = S3ObjectHeaders;
@@ -646,6 +652,14 @@ export interface S3GetObjectMethod {
   schema: z.ZodType<S3GetObjectRequest>;
 }
 
+export interface S3GetObjectStreamMethod {
+  (
+    req: S3GetObjectRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectStreamResponse>;
+  schema: z.ZodType<S3GetObjectRequest>;
+}
+
 export interface S3HeadObjectMethod {
   (
     req: S3HeadObjectRequest,
@@ -1011,6 +1025,17 @@ export interface S3ListMultipartUploadsMethod {
   schema: z.ZodType<S3ListMultipartUploadsRequest>;
 }
 
+export interface S3PresignedUrl {
+  url: string;
+  headers: Record<string, string>;
+  expiresAt: string;
+}
+
+export interface S3PresignObjectMethod {
+  (req: S3PresignObjectRequest): S3PresignedUrl;
+  schema: z.ZodType<S3PresignObjectRequest>;
+}
+
 export interface S3BucketsNamespace {
   create: S3CreateBucketMethod;
   createMetadataConfiguration: S3CreateBucketMetadataConfigurationMethod;
@@ -1088,6 +1113,7 @@ export interface S3ObjectsNamespace {
   getAttributes: S3GetObjectAttributesMethod;
   getLegalHold: S3GetObjectLegalHoldMethod;
   getRetention: S3GetObjectRetentionMethod;
+  getStream: S3GetObjectStreamMethod;
   getTagging: S3GetObjectTaggingMethod;
   getTorrent: S3GetObjectTorrentMethod;
   head: S3HeadObjectMethod;
@@ -1112,8 +1138,16 @@ export interface S3ObjectLambdaNamespace {
   writeGetObjectResponse: S3WriteGetObjectResponseMethod;
 }
 
+export interface S3PresignNamespace {
+  deleteObject: S3PresignObjectMethod;
+  getObject: S3PresignObjectMethod;
+  headObject: S3PresignObjectMethod;
+  putObject: S3PresignObjectMethod;
+}
+
 export interface S3Provider {
   buckets: S3BucketsNamespace;
   objectLambda: S3ObjectLambdaNamespace;
   objects: S3ObjectsNamespace;
+  presign: S3PresignNamespace;
 }

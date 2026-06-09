@@ -34,6 +34,7 @@ import type {
   S3GetBucketTaggingResponse,
   S3GetObjectRequest,
   S3GetObjectResponse,
+  S3GetObjectStreamResponse,
   S3GetObjectAclResponse,
   S3GetObjectAttributesRequest,
   S3GetObjectLegalHoldResponse,
@@ -81,6 +82,8 @@ import type {
   S3PutObjectTaggingResponse,
   S3PutObjectRequest,
   S3PutObjectResponse,
+  S3PresignObjectRequest,
+  S3PresignedUrl,
   S3RenameObjectRequest,
   S3RenameObjectResponse,
   S3RestoreObjectRequest,
@@ -134,6 +137,7 @@ import {
   S3PutObjectRetentionRequestSchema,
   S3PutObjectTaggingRequestSchema,
   S3PutObjectRequestSchema,
+  S3PresignObjectRequestSchema,
   S3RenameObjectRequestSchema,
   S3RestoreObjectRequestSchema,
   S3SelectObjectContentRequestSchema,
@@ -150,6 +154,7 @@ interface SignedRequestConfig {
   bucket?: string;
   body?: string | Blob | ArrayBuffer | Uint8Array;
   headers?: Record<string, string>;
+  signingRegion?: string;
   signingService?: string;
 }
 
@@ -283,7 +288,8 @@ function signHeaders(
   headers: Record<string, string>,
   payloadHash: string,
   now: Date,
-  signingService = opts.signingService ?? "s3"
+  signingService = opts.signingService ?? "s3",
+  signingRegion = opts.region
 ): Record<string, string> {
   const { amzDate, dateStamp } = formatAmzDate(now);
   const headersForSigning: Record<string, string> = {
@@ -317,7 +323,7 @@ function signHeaders(
     signedHeaders,
     payloadHash,
   ].join("\n");
-  const credentialScope = `${dateStamp}/${opts.region}/${signingService}/aws4_request`;
+  const credentialScope = `${dateStamp}/${signingRegion}/${signingService}/aws4_request`;
   const stringToSign = [
     "AWS4-HMAC-SHA256",
     amzDate,
@@ -326,7 +332,7 @@ function signHeaders(
   ].join("\n");
   const signature = createHmac(
     "sha256",
-    signingKey(opts.secretAccessKey, dateStamp, opts.region, signingService)
+    signingKey(opts.secretAccessKey, dateStamp, signingRegion, signingService)
   )
     .update(stringToSign, "utf8")
     .digest("hex");
@@ -476,9 +482,18 @@ function xmlEscape(value: string): string {
     .replace(/'/g, "&apos;");
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function xmlTagPattern(tag: string): string {
+  return `(?:[A-Za-z_][\\w.-]*:)?${escapeRegExp(tag)}`;
+}
+
 function textOf(xml: string, tag: string): string | undefined {
+  const tagPattern = xmlTagPattern(tag);
   const match = xml.match(
-    new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`)
+    new RegExp(`<${tagPattern}(?:\\s[^>]*)?>([\\s\\S]*?)</${tagPattern}>`)
   );
   return decodeXml(match?.[1]);
 }
@@ -498,7 +513,11 @@ function boolOf(xml: string, tag: string): boolean | undefined {
 
 function blocksOf(xml: string, tag: string): string[] {
   const blocks: string[] = [];
-  const regex = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`, "g");
+  const tagPattern = xmlTagPattern(tag);
+  const regex = new RegExp(
+    `<${tagPattern}(?:\\s[^>]*)?>([\\s\\S]*?)</${tagPattern}>`,
+    "g"
+  );
   let match: RegExpExecArray | null;
   while ((match = regex.exec(xml)) !== null) {
     blocks.push(match[1]);
@@ -1295,6 +1314,56 @@ function addChecksumRequestHeaders(
   if (req.checksumType) headers["x-amz-checksum-type"] = req.checksumType;
 }
 
+function presignQuery(req: S3PresignObjectRequest, method: HttpMethod): string {
+  if (method !== "GET" && method !== "HEAD") {
+    return queryForVersion(req.versionId);
+  }
+  return buildQuery({
+    versionId: req.versionId,
+    "response-cache-control": req.responseCacheControl,
+    "response-content-disposition": req.responseContentDisposition,
+    "response-content-encoding": req.responseContentEncoding,
+    "response-content-language": req.responseContentLanguage,
+    "response-content-type": req.responseContentType,
+    "response-expires": req.responseExpires,
+  });
+}
+
+function presignHeaders(
+  req: S3PresignObjectRequest,
+  method: HttpMethod
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (method === "GET" || method === "HEAD") {
+    if (req.range) headers.Range = req.range;
+    return headers;
+  }
+  if (method === "PUT") {
+    addObjectContentHeaders(headers, req);
+    if (req.storageClass) headers["x-amz-storage-class"] = req.storageClass;
+    addMetadataHeaders(headers, req.metadata);
+    addChecksumRequestHeaders(headers, req);
+  }
+  return headers;
+}
+
+function canonicalPresignHeaders(
+  headers: Record<string, string>,
+  url: URL
+): { canonicalHeaders: string; signedHeaders: string } {
+  const values: Record<string, string> = { host: url.host };
+  for (const [name, value] of Object.entries(headers)) {
+    values[name.toLowerCase()] = value;
+  }
+  const names = Object.keys(values).sort();
+  return {
+    canonicalHeaders: names
+      .map((name) => `${name}:${normalizeHeaderValue(values[name])}\n`)
+      .join(""),
+    signedHeaders: names.join(";"),
+  };
+}
+
 function createBucketBody(locationConstraint: string | undefined): string {
   if (!locationConstraint) return "";
   return [
@@ -1438,13 +1507,7 @@ export function createS3(opts: S3Options): S3Provider {
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
-  async function readError(res: Response): Promise<S3Error> {
-    let body = "";
-    try {
-      body = await res.text();
-    } catch {
-      // ignore parse errors
-    }
+  function readErrorFromBody(res: Response, body: string): S3Error {
     const parsed = parseS3Error(body);
     return new S3Error(
       formatErrorMessage(res.status, parsed),
@@ -1454,6 +1517,24 @@ export function createS3(opts: S3Options): S3Provider {
       parsed.requestId,
       parsed.hostId
     );
+  }
+
+  async function readError(res: Response): Promise<S3Error> {
+    let body = "";
+    try {
+      body = await res.text();
+    } catch {
+      // ignore parse errors
+    }
+    return readErrorFromBody(res, body);
+  }
+
+  function shouldRetryWithBucketRegion(
+    res: Response,
+    config: SignedRequestConfig
+  ): boolean {
+    if (!config.bucket || config.baseOverride || opts.endpoint) return false;
+    return res.status === 301 || res.status === 307 || res.status === 400;
   }
 
   async function makeSignedRequest(
@@ -1472,29 +1553,46 @@ export function createS3(opts: S3Options): S3Provider {
     try {
       const bodyBytes = await bodyToBytes(config.body);
       const payloadHash = bodyBytes ? sha256Hex(bodyBytes) : EMPTY_HASH;
-      const url = buildRequestUrl(
-        config.baseOverride ?? endpoint,
-        path,
-        config.bucket,
-        opts.forcePathStyle
-      );
-      const headers = signHeaders(
-        opts,
-        method,
-        url,
-        config.headers ?? {},
-        payloadHash,
-        new Date(),
-        config.signingService
-      );
-      const init: RequestInit = {
-        method,
-        headers,
-        signal: controller.signal,
+      const send = async (
+        requestEndpoint: string,
+        signingRegion?: string
+      ): Promise<Response> => {
+        const url = buildRequestUrl(
+          requestEndpoint,
+          path,
+          config.bucket,
+          opts.forcePathStyle
+        );
+        const headers = signHeaders(
+          opts,
+          method,
+          url,
+          config.headers ?? {},
+          payloadHash,
+          new Date(),
+          config.signingService,
+          signingRegion ?? config.signingRegion
+        );
+        const init: RequestInit = {
+          method,
+          headers,
+          signal: controller.signal,
+        };
+        if (bodyBytes) init.body = bodyBytes as BodyInit;
+        return doFetch(url, init);
       };
-      if (bodyBytes) init.body = bodyBytes as BodyInit;
 
-      const res = await doFetch(url, init);
+      let res = await send(config.baseOverride ?? endpoint);
+      if (!res.ok && shouldRetryWithBucketRegion(res, config)) {
+        const redirectRegion = getHeader(res.headers, "x-amz-bucket-region");
+        if (redirectRegion && redirectRegion !== opts.region) {
+          res = await send(
+            endpointForRegion(redirectRegion, baseURL),
+            redirectRegion
+          );
+        }
+      }
+
       clearTimeout(timeoutId);
 
       if (!res.ok) {
@@ -1507,6 +1605,77 @@ export function createS3(opts: S3Options): S3Provider {
       if (error instanceof S3Error) throw error;
       throw new S3Error(`S3 request failed: ${error}`, 500);
     }
+  }
+
+  function presignObjectUrl(
+    method: HttpMethod,
+    req: S3PresignObjectRequest
+  ): S3PresignedUrl {
+    const expiresIn = req.expiresIn ?? 900;
+    if (!Number.isInteger(expiresIn) || expiresIn < 1 || expiresIn > 604800) {
+      throw new S3Error(
+        "S3 presigned URLs require expiresIn from 1 to 604800 seconds.",
+        400
+      );
+    }
+
+    const bucket = awsEncode(req.bucket);
+    const key = encodeS3Key(req.key);
+    const url = buildRequestUrl(
+      endpoint,
+      `/${bucket}/${key}${presignQuery(req, method)}`,
+      req.bucket,
+      opts.forcePathStyle
+    );
+    const now = new Date();
+    const { amzDate, dateStamp } = formatAmzDate(now);
+    const signingService = opts.signingService ?? "s3";
+    const credentialScope = `${dateStamp}/${opts.region}/${signingService}/aws4_request`;
+    const headers = presignHeaders(req, method);
+    const { canonicalHeaders, signedHeaders } = canonicalPresignHeaders(
+      headers,
+      url
+    );
+
+    url.searchParams.set("X-Amz-Algorithm", "AWS4-HMAC-SHA256");
+    url.searchParams.set(
+      "X-Amz-Credential",
+      `${opts.accessKeyId}/${credentialScope}`
+    );
+    url.searchParams.set("X-Amz-Date", amzDate);
+    url.searchParams.set("X-Amz-Expires", String(expiresIn));
+    url.searchParams.set("X-Amz-SignedHeaders", signedHeaders);
+    if (opts.sessionToken) {
+      url.searchParams.set("X-Amz-Security-Token", opts.sessionToken);
+    }
+
+    const canonicalRequest = [
+      method,
+      url.pathname || "/",
+      canonicalQuery(url),
+      canonicalHeaders,
+      signedHeaders,
+      "UNSIGNED-PAYLOAD",
+    ].join("\n");
+    const stringToSign = [
+      "AWS4-HMAC-SHA256",
+      amzDate,
+      credentialScope,
+      sha256Hex(new TextEncoder().encode(canonicalRequest)),
+    ].join("\n");
+    const signature = createHmac(
+      "sha256",
+      signingKey(opts.secretAccessKey, dateStamp, opts.region, signingService)
+    )
+      .update(stringToSign, "utf8")
+      .digest("hex");
+    url.searchParams.set("X-Amz-Signature", signature);
+
+    return {
+      expiresAt: new Date(now.getTime() + expiresIn * 1000).toISOString(),
+      headers,
+      url: url.toString(),
+    };
   }
 
   // sig-ok: action namespace over S3 service root
@@ -2993,19 +3162,10 @@ export function createS3(opts: S3Options): S3Provider {
       const headers: Record<string, string> = {};
       const bodyType = req.body instanceof Blob ? req.body.type : undefined;
       const contentType = req.contentType ?? bodyType;
-      if (contentType) headers["Content-Type"] = contentType;
-      if (req.cacheControl) headers["Cache-Control"] = req.cacheControl;
-      if (req.contentDisposition) {
-        headers["Content-Disposition"] = req.contentDisposition;
-      }
-      if (req.contentEncoding)
-        headers["Content-Encoding"] = req.contentEncoding;
-      if (req.contentLanguage)
-        headers["Content-Language"] = req.contentLanguage;
+      addObjectContentHeaders(headers, { ...req, contentType });
       if (req.storageClass) headers["x-amz-storage-class"] = req.storageClass;
-      for (const [name, value] of Object.entries(req.metadata ?? {})) {
-        headers[`x-amz-meta-${name.toLowerCase()}`] = value;
-      }
+      addMetadataHeaders(headers, req.metadata);
+      addChecksumRequestHeaders(headers, req);
       const res = await makeSignedRequest(
         "PUT",
         `/${bucket}/${key}`,
@@ -3042,15 +3202,7 @@ export function createS3(opts: S3Options): S3Provider {
           req.sourceVersionId
         ),
       };
-      if (req.contentType) headers["Content-Type"] = req.contentType;
-      if (req.cacheControl) headers["Cache-Control"] = req.cacheControl;
-      if (req.contentDisposition) {
-        headers["Content-Disposition"] = req.contentDisposition;
-      }
-      if (req.contentEncoding)
-        headers["Content-Encoding"] = req.contentEncoding;
-      if (req.contentLanguage)
-        headers["Content-Language"] = req.contentLanguage;
+      addObjectContentHeaders(headers, req);
       const hasReplacementMetadata =
         req.contentType !== undefined ||
         req.cacheControl !== undefined ||
@@ -3075,8 +3227,9 @@ export function createS3(opts: S3Options): S3Provider {
         headers["x-amz-source-expected-bucket-owner"] =
           req.sourceExpectedBucketOwner;
       }
-      for (const [name, value] of Object.entries(req.metadata ?? {})) {
-        headers[`x-amz-meta-${name.toLowerCase()}`] = value;
+      addMetadataHeaders(headers, req.metadata);
+      if (req.checksumAlgorithm) {
+        headers["x-amz-checksum-algorithm"] = req.checksumAlgorithm;
       }
       const res = await makeSignedRequest(
         "PUT",
@@ -3142,6 +3295,33 @@ export function createS3(opts: S3Options): S3Provider {
       return {
         ...objectHeaders(res),
         body: await res.arrayBuffer(),
+      };
+    },
+    { schema: S3GetObjectRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
+  const objectsGetStream = Object.assign(
+    async (
+      req: S3GetObjectRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectStreamResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const headers: Record<string, string> = {};
+      if (req.range) headers.Range = req.range;
+      const query = queryForVersion(req.versionId);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return {
+        ...objectHeaders(res),
+        body: res.body,
       };
     },
     { schema: S3GetObjectRequestSchema }
@@ -3979,6 +4159,30 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3WriteGetObjectResponseRequestSchema }
   );
 
+  const presignGetObject = Object.assign(
+    (req: S3PresignObjectRequest): S3PresignedUrl =>
+      presignObjectUrl("GET", req),
+    { schema: S3PresignObjectRequestSchema }
+  );
+
+  const presignPutObject = Object.assign(
+    (req: S3PresignObjectRequest): S3PresignedUrl =>
+      presignObjectUrl("PUT", req),
+    { schema: S3PresignObjectRequestSchema }
+  );
+
+  const presignHeadObject = Object.assign(
+    (req: S3PresignObjectRequest): S3PresignedUrl =>
+      presignObjectUrl("HEAD", req),
+    { schema: S3PresignObjectRequestSchema }
+  );
+
+  const presignDeleteObject = Object.assign(
+    (req: S3PresignObjectRequest): S3PresignedUrl =>
+      presignObjectUrl("DELETE", req),
+    { schema: S3PresignObjectRequestSchema }
+  );
+
   return {
     buckets: {
       create: bucketsCreate,
@@ -4059,6 +4263,7 @@ export function createS3(opts: S3Options): S3Provider {
       getAttributes: objectsGetAttributes,
       getLegalHold: objectsGetLegalHold,
       getRetention: objectsGetRetention,
+      getStream: objectsGetStream,
       getTagging: objectsGetTagging,
       getTorrent: objectsGetTorrent,
       head: objectsHead,
@@ -4077,6 +4282,12 @@ export function createS3(opts: S3Options): S3Provider {
       updateEncryption: objectsUpdateEncryption,
       uploadPart: objectsUploadPart,
       uploadPartCopy: objectsUploadPartCopy,
+    },
+    presign: {
+      deleteObject: presignDeleteObject,
+      getObject: presignGetObject,
+      headObject: presignHeadObject,
+      putObject: presignPutObject,
     },
   };
 }

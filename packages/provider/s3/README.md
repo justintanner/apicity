@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-92 endpoints across 3 groups. Each method mirrors an upstream URL path.
+93 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -1142,6 +1142,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.getRetention({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.getStream</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html)
+
+```typescript
+const res = await s3.objects.getStream({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

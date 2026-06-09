@@ -157,6 +157,9 @@ export const S3PutObjectRequestSchema = z.object({
   ...objectContentFieldsSchema,
   metadata: objectMetadataSchema,
   storageClass: z.string().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  contentMD5: z.string().optional(),
+  ...checksumFieldsSchema,
 });
 
 export type S3PutObjectRequest = z.infer<typeof S3PutObjectRequestSchema>;
@@ -172,11 +175,36 @@ export const S3CopyObjectRequestSchema = z.object({
   metadataDirective: z.enum(["COPY", "REPLACE"]).optional(),
   taggingDirective: z.enum(["COPY", "REPLACE"]).optional(),
   storageClass: z.string().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
   ...expectedOwnerFieldsSchema,
   sourceExpectedBucketOwner: z.string().optional(),
 });
 
 export type S3CopyObjectRequest = z.infer<typeof S3CopyObjectRequestSchema>;
+
+export const S3PresignObjectRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  expiresIn: z.number().int().min(1).max(604800).optional(),
+  versionId: z.string().optional(),
+  range: z.string().optional(),
+  ...objectContentFieldsSchema,
+  metadata: objectMetadataSchema,
+  storageClass: z.string().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  contentMD5: z.string().optional(),
+  ...checksumFieldsSchema,
+  responseCacheControl: z.string().optional(),
+  responseContentDisposition: z.string().optional(),
+  responseContentEncoding: z.string().optional(),
+  responseContentLanguage: z.string().optional(),
+  responseContentType: z.string().optional(),
+  responseExpires: z.string().optional(),
+});
+
+export type S3PresignObjectRequest = z.infer<
+  typeof S3PresignObjectRequestSchema
+>;
 
 export const S3GetObjectRequestSchema = z.object({
   bucket: z.string().min(1),

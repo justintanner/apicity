@@ -134,6 +134,9 @@ describe("s3 endpoints", () => {
       key: "folder/a b.txt",
       body: "hello",
       contentType: "text/plain",
+      contentMD5: "aGVsbG8=",
+      checksumAlgorithm: "SHA256",
+      checksumSHA256: "sha256-checksum",
       metadata: { source: "unit" },
     });
 
@@ -149,6 +152,9 @@ describe("s3 endpoints", () => {
     expect(headers["x-amz-content-sha256"]).toBe(sha256Hex("hello"));
     expect(headers["x-amz-date"]).toMatch(/^\d{8}T\d{6}Z$/);
     expect(headers["Content-Type"]).toBe("text/plain");
+    expect(headers["Content-MD5"]).toBe("aGVsbG8=");
+    expect(headers["x-amz-checksum-algorithm"]).toBe("SHA256");
+    expect(headers["x-amz-checksum-sha256"]).toBe("sha256-checksum");
     expect(headers["x-amz-meta-source"]).toBe("unit");
   });
 
@@ -174,6 +180,7 @@ describe("s3 endpoints", () => {
       key: "copy.txt",
       sourceBucket: "source-bucket",
       sourceKey: "folder/a b.txt",
+      checksumAlgorithm: "SHA256",
       metadata: { copied: "yes" },
     });
 
@@ -190,6 +197,7 @@ describe("s3 endpoints", () => {
     );
     expect(headers["x-amz-metadata-directive"]).toBe("REPLACE");
     expect(headers["x-amz-meta-copied"]).toBe("yes");
+    expect(headers["x-amz-checksum-algorithm"]).toBe("SHA256");
   });
 
   it("sets, reads, and deletes object tagging requests", async () => {
@@ -1137,23 +1145,136 @@ describe("s3 endpoints", () => {
     expect(init?.method).toBe("HEAD");
   });
 
+  it("streams object bodies without buffering", async () => {
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(new Uint8Array([1, 2, 3]));
+        controller.close();
+      },
+    });
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(body, {
+        status: 200,
+        headers: {
+          "content-type": "application/octet-stream",
+          "x-amz-meta-source": "unit",
+        },
+      });
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.objects.getStream({
+      bucket: "test-bucket",
+      key: "large.bin",
+      range: "bytes=0-2",
+    });
+
+    expect(result.contentType).toBe("application/octet-stream");
+    expect(result.metadata.source).toBe("unit");
+    const reader = result.body?.getReader();
+    const chunk = await reader?.read();
+    expect(chunk?.value).toEqual(new Uint8Array([1, 2, 3]));
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/large.bin"
+    );
+    expect(init?.method).toBe("GET");
+    const headers = init?.headers as Record<string, string>;
+    expect(headers.Range).toBe("bytes=0-2");
+  });
+
+  it("creates SigV4 presigned object URLs", () => {
+    const s3 = createTestS3(vi.fn<typeof globalThis.fetch>());
+
+    const result = s3.presign.putObject({
+      bucket: "test-bucket",
+      key: "folder/a b.txt",
+      expiresIn: 900,
+      contentType: "text/plain",
+      contentMD5: "aGVsbG8=",
+      checksumAlgorithm: "SHA256",
+      metadata: { source: "unit" },
+    });
+
+    const url = new URL(result.url);
+    expect(url.origin).toBe("https://s3.us-east-1.amazonaws.com");
+    expect(url.pathname).toBe("/test-bucket/folder/a%20b.txt");
+    expect(url.searchParams.get("X-Amz-Algorithm")).toBe("AWS4-HMAC-SHA256");
+    expect(url.searchParams.get("X-Amz-Credential")).toContain(
+      "/us-east-1/s3/aws4_request"
+    );
+    expect(url.searchParams.get("X-Amz-Expires")).toBe("900");
+    expect(url.searchParams.get("X-Amz-SignedHeaders")).toBe(
+      "content-md5;content-type;host;x-amz-checksum-algorithm;x-amz-meta-source"
+    );
+    expect(url.searchParams.get("X-Amz-Signature")).toMatch(/^[0-9a-f]{64}$/);
+    expect(result.headers).toEqual({
+      "Content-MD5": "aGVsbG8=",
+      "Content-Type": "text/plain",
+      "x-amz-checksum-algorithm": "SHA256",
+      "x-amz-meta-source": "unit",
+    });
+    expect(Date.parse(result.expiresAt)).toBeGreaterThan(Date.now());
+  });
+
+  it("retries AWS bucket-region redirects with the corrected signer region", async () => {
+    const responses = [
+      new Response(null, {
+        status: 301,
+        headers: { "x-amz-bucket-region": "us-west-2" },
+      }),
+      new Response(null, {
+        status: 200,
+        headers: { "x-amz-bucket-region": "us-west-2" },
+      }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createS3({
+      accessKeyId: "test-access-key",
+      secretAccessKey: "test-secret-key",
+      region: "us-east-1",
+      forcePathStyle: true,
+      fetch,
+    });
+
+    const result = await s3.buckets.head({ bucket: "test-bucket" });
+
+    expect(result.bucketRegion).toBe("us-west-2");
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(String(fetch.mock.calls[0][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket"
+    );
+    expect(String(fetch.mock.calls[1][0])).toBe(
+      "https://s3.us-west-2.amazonaws.com/test-bucket"
+    );
+    const retryHeaders = fetch.mock.calls[1][1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(retryHeaders.Authorization).toContain("/us-west-2/s3/aws4_request");
+  });
+
   it("parses ListObjectsV2 XML responses", async () => {
     const xml = [
       '<?xml version="1.0" encoding="UTF-8"?>',
-      '<ListBucketResult xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
-      "<Name>test-bucket</Name>",
-      "<Prefix>apicity-tests/</Prefix>",
-      "<KeyCount>1</KeyCount>",
-      "<MaxKeys>10</MaxKeys>",
-      "<IsTruncated>false</IsTruncated>",
-      "<Contents>",
-      "<Key>apicity-tests/object-core.txt</Key>",
-      "<LastModified>2026-06-08T00:00:00.000Z</LastModified>",
-      '<ETag>"etag"</ETag>',
-      "<Size>38</Size>",
-      "<StorageClass>STANDARD</StorageClass>",
-      "</Contents>",
-      "</ListBucketResult>",
+      '<s3:ListBucketResult xmlns:s3="http://s3.amazonaws.com/doc/2006-03-01/">',
+      "<s3:Name>test-bucket</s3:Name>",
+      "<s3:Prefix>apicity-tests/</s3:Prefix>",
+      "<s3:KeyCount>1</s3:KeyCount>",
+      "<s3:MaxKeys>10</s3:MaxKeys>",
+      "<s3:IsTruncated>false</s3:IsTruncated>",
+      "<s3:Contents>",
+      "<s3:Key>apicity-tests/object-core.txt</s3:Key>",
+      "<s3:LastModified>2026-06-08T00:00:00.000Z</s3:LastModified>",
+      '<s3:ETag>"etag"</s3:ETag>',
+      "<s3:Size>38</s3:Size>",
+      "<s3:StorageClass>STANDARD</s3:StorageClass>",
+      "</s3:Contents>",
+      "</s3:ListBucketResult>",
     ].join("");
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       return new Response(xml, { status: 200 });

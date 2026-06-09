@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-25 endpoints across 2 groups. Each method mirrors an upstream URL path.
+70 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -65,6 +65,396 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delAnalytics</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html)
+
+```typescript
+const res = await s3.buckets.delAnalytics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delCors</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?cors</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketCors.html)
+
+```typescript
+const res = await s3.buckets.delCors({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delEncryption</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?encryption</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketEncryption.html)
+
+```typescript
+const res = await s3.buckets.delEncryption({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delInventory</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketInventoryConfiguration.html)
+
+```typescript
+const res = await s3.buckets.delInventory({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delLifecycle</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketLifecycle.html)
+
+```typescript
+const res = await s3.buckets.delLifecycle({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delMetrics</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html)
+
+```typescript
+const res = await s3.buckets.delMetrics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delOwnershipControls</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketOwnershipControls.html)
+
+```typescript
+const res = await s3.buckets.delOwnershipControls({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delPolicy</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?policy</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketPolicy.html)
+
+```typescript
+const res = await s3.buckets.delPolicy({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delPublicAccessBlock</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html)
+
+```typescript
+const res = await s3.buckets.delPublicAccessBlock({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delReplication</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?replication</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html)
+
+```typescript
+const res = await s3.buckets.delReplication({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delTagging</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?tagging</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketTagging.html)
+
+```typescript
+const res = await s3.buckets.delTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delWebsite</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?website</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketWebsite.html)
+
+```typescript
+const res = await s3.buckets.delWebsite({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getAnalytics</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAnalyticsConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getAnalytics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getCors</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?cors</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketCors.html)
+
+```typescript
+const res = await s3.buckets.getCors({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getEncryption</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?encryption</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketEncryption.html)
+
+```typescript
+const res = await s3.buckets.getEncryption({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getInventory</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketInventoryConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getInventory({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getLifecycle</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycleConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getLifecycle({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getLogging</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?logging</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLogging.html)
+
+```typescript
+const res = await s3.buckets.getLogging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getMetrics</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getMetrics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getNotification</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotificationConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getNotification({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getOwnershipControls</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketOwnershipControls.html)
+
+```typescript
+const res = await s3.buckets.getOwnershipControls({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getPolicy</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?policy</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicy.html)
+
+```typescript
+const res = await s3.buckets.getPolicy({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getPublicAccessBlock</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html)
+
+```typescript
+const res = await s3.buckets.getPublicAccessBlock({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getReplication</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?replication</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html)
+
+```typescript
+const res = await s3.buckets.getReplication({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getRequestPayment</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?requestPayment</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketRequestPayment.html)
+
+```typescript
+const res = await s3.buckets.getRequestPayment({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getTagging</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?tagging</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketTagging.html)
+
+```typescript
+const res = await s3.buckets.getTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.buckets.getVersioning</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?versioning</code>
@@ -73,6 +463,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.getVersioning({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getWebsite</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?website</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketWebsite.html)
+
+```typescript
+const res = await s3.buckets.getWebsite({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -110,6 +515,51 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.buckets.listAnalytics</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html)
+
+```typescript
+const res = await s3.buckets.listAnalytics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.listInventory</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketInventoryConfigurations.html)
+
+```typescript
+const res = await s3.buckets.listInventory({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.listMetrics</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html)
+
+```typescript
+const res = await s3.buckets.listMetrics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.buckets.location</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}?location</code>
@@ -125,6 +575,216 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>PUT</code> <b><code>s3.buckets.putAnalytics</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putAnalytics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putCors</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?cors</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html)
+
+```typescript
+const res = await s3.buckets.putCors({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putEncryption</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?encryption</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketEncryption.html)
+
+```typescript
+const res = await s3.buckets.putEncryption({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putInventory</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketInventoryConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putInventory({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putLifecycle</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putLifecycle({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putLogging</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?logging</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLogging.html)
+
+```typescript
+const res = await s3.buckets.putLogging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putMetrics</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putMetrics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putNotification</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?notification</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotificationConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putNotification({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putOwnershipControls</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketOwnershipControls.html)
+
+```typescript
+const res = await s3.buckets.putOwnershipControls({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putPolicy</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?policy</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketPolicy.html)
+
+```typescript
+const res = await s3.buckets.putPolicy({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putPublicAccessBlock</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutPublicAccessBlock.html)
+
+```typescript
+const res = await s3.buckets.putPublicAccessBlock({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putReplication</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?replication</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html)
+
+```typescript
+const res = await s3.buckets.putReplication({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putRequestPayment</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?requestPayment</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketRequestPayment.html)
+
+```typescript
+const res = await s3.buckets.putRequestPayment({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putTagging</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?tagging</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketTagging.html)
+
+```typescript
+const res = await s3.buckets.putTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>PUT</code> <b><code>s3.buckets.putVersioning</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?versioning</code>
@@ -133,6 +793,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.putVersioning({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putWebsite</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?website</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html)
+
+```typescript
+const res = await s3.buckets.putWebsite({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

@@ -219,6 +219,24 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   const bulkDelete = hasS3Subresource(entry, "delete");
   const versioning = hasS3Subresource(entry, "versioning");
   const versions = hasS3Subresource(entry, "versions");
+  const configId = hasS3Subresource(entry, "id");
+  const bucketConfigSubresources = new Map<string, string>([
+    ["analytics", "Analytics"],
+    ["cors", "Cors"],
+    ["encryption", "Encryption"],
+    ["inventory", "Inventory"],
+    ["lifecycle", "Lifecycle"],
+    ["logging", "Logging"],
+    ["metrics", "Metrics"],
+    ["notification", "Notification"],
+    ["ownershipControls", "OwnershipControls"],
+    ["policy", "Policy"],
+    ["publicAccessBlock", "PublicAccessBlock"],
+    ["replication", "Replication"],
+    ["requestPayment", "RequestPayment"],
+    ["tagging", "Tagging"],
+    ["website", "Website"],
+  ]);
 
   switch (row.dotPath) {
     case "buckets.list":
@@ -236,6 +254,44 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     case "buckets.getVersioning":
     case "buckets.putVersioning":
       return !objectRequest && versioning;
+    case "buckets.listAnalytics":
+      return (
+        !objectRequest && !configId && hasS3Subresource(entry, "analytics")
+      );
+    case "buckets.listInventory":
+      return (
+        !objectRequest && !configId && hasS3Subresource(entry, "inventory")
+      );
+    case "buckets.listMetrics":
+      return !objectRequest && !configId && hasS3Subresource(entry, "metrics");
+    case "buckets.getAnalytics":
+    case "buckets.putAnalytics":
+    case "buckets.delAnalytics":
+      return !objectRequest && configId && hasS3Subresource(entry, "analytics");
+    case "buckets.getInventory":
+    case "buckets.putInventory":
+    case "buckets.delInventory":
+      return !objectRequest && configId && hasS3Subresource(entry, "inventory");
+    case "buckets.getMetrics":
+    case "buckets.putMetrics":
+    case "buckets.delMetrics":
+      return !objectRequest && configId && hasS3Subresource(entry, "metrics");
+    default:
+      if (row.dotPath.startsWith("buckets.")) {
+        for (const [subresource, suffix] of bucketConfigSubresources) {
+          if (
+            row.dotPath.endsWith(suffix) &&
+            !objectRequest &&
+            hasS3Subresource(entry, subresource)
+          ) {
+            return true;
+          }
+        }
+      }
+      break;
+  }
+
+  switch (row.dotPath) {
     case "objects.list":
       return hasS3Subresource(entry, "list-type");
     case "objects.listVersions":
@@ -344,8 +400,15 @@ function isCreditEntry(entry: HarEntry): boolean {
 }
 
 function findEndpointEntry(recording: ChangedRecording): HarEntry {
-  const operation = recording.entries.find((entry) => !isCreditEntry(entry));
-  return operation ?? recording.entries[0];
+  const operations = recording.entries.filter((entry) => !isCreditEntry(entry));
+  return (
+    operations.find(
+      (entry) => entry.response.status < 400 && responsePreview(entry)
+    ) ??
+    operations.find((entry) => responsePreview(entry)) ??
+    operations[0] ??
+    recording.entries[0]
+  );
 }
 
 function prettyBody(raw: string | undefined): string {

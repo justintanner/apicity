@@ -31,6 +31,30 @@ const endpointDocs: EndpointDocRow[] = [
   },
   {
     provider: "s3",
+    dotPath: "buckets.getCors",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?cors",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketCors.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.listMetrics",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.getMetrics",
+    method: "GET",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html",
+  },
+  {
+    provider: "s3",
     dotPath: "objects.put",
     method: "PUT",
     fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}/{key}",
@@ -176,6 +200,77 @@ function s3PutObjectRecording(): ChangedRecording {
   };
 }
 
+function s3BucketCorsRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/bucket-config",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "bucket-config_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/?cors",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [],
+          content: {},
+        },
+      },
+      {
+        request: {
+          method: "GET",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/?cors",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<CORSConfiguration></CORSConfiguration>",
+          },
+        },
+      },
+    ],
+  };
+}
+
+function s3BucketMetricsRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/bucket-config",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "bucket-config_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "GET",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/?metrics&id=metrics-1",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<MetricsConfiguration></MetricsConfiguration>",
+          },
+        },
+      },
+    ],
+  };
+}
+
 function s3CopyObjectRecording(): ChangedRecording {
   return {
     provider: "s3",
@@ -275,5 +370,19 @@ describe("harness Telegram messages", () => {
 
     expect(putMessage.apicityPath).toBe("s3.objects.put");
     expect(copyMessage.apicityPath).toBe("s3.objects.copy");
+  });
+
+  it("matches S3 bucket configuration requests", () => {
+    const [corsMessage] = buildTelegramHarnessMessages(
+      [s3BucketCorsRecording()],
+      endpointDocs
+    );
+    const [metricsMessage] = buildTelegramHarnessMessages(
+      [s3BucketMetricsRecording()],
+      endpointDocs
+    );
+
+    expect(corsMessage.apicityPath).toBe("s3.buckets.getCors");
+    expect(metricsMessage.apicityPath).toBe("s3.buckets.getMetrics");
   });
 });

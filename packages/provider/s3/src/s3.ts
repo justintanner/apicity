@@ -4,6 +4,9 @@ import { S3Error } from "./types";
 import type {
   S3AbortMultipartUploadRequest,
   S3AbortMultipartUploadResponse,
+  S3BucketConfigRequest,
+  S3BucketConfigResponse,
+  S3BucketConfigWithIdRequest,
   S3BucketRequest,
   S3ChecksumFields,
   S3CompleteMultipartUploadRequest,
@@ -22,13 +25,19 @@ import type {
   S3GetBucketVersioningRequest,
   S3GetBucketVersioningResponse,
   S3DeleteObjectTaggingResponse,
+  S3GetBucketConfigResponse,
   S3GetBucketLocationResponse,
+  S3GetBucketPolicyResponse,
+  S3GetBucketRequestPaymentResponse,
+  S3GetBucketTaggingResponse,
   S3GetObjectRequest,
   S3GetObjectResponse,
   S3GetObjectTaggingResponse,
   S3HeadBucketResponse,
   S3HeadObjectRequest,
   S3HeadObjectResponse,
+  S3ListBucketConfigsRequest,
+  S3ListBucketConfigsResponse,
   S3ListBucketsRequest,
   S3ListBucketsResponse,
   S3ListMultipartUploadsRequest,
@@ -43,8 +52,13 @@ import type {
   S3ObjectHeaders,
   S3Options,
   S3Provider,
+  S3PutBucketPolicyRequest,
+  S3PutBucketRequestPaymentRequest,
+  S3PutBucketTaggingRequest,
   S3PutBucketVersioningRequest,
   S3PutBucketVersioningResponse,
+  S3PutBucketXmlConfigRequest,
+  S3PutBucketXmlConfigWithIdRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectTaggingResponse,
   S3PutObjectRequest,
@@ -56,6 +70,8 @@ import type {
 } from "./types";
 import {
   S3AbortMultipartUploadRequestSchema,
+  S3BucketConfigRequestSchema,
+  S3BucketConfigWithIdRequestSchema,
   S3BucketRequestSchema,
   S3CompleteMultipartUploadRequestSchema,
   S3CopyObjectRequestSchema,
@@ -66,13 +82,19 @@ import {
   S3GetBucketVersioningRequestSchema,
   S3GetObjectRequestSchema,
   S3HeadObjectRequestSchema,
+  S3ListBucketConfigsRequestSchema,
   S3ListBucketsRequestSchema,
   S3ListMultipartUploadsRequestSchema,
   S3ListObjectVersionsRequestSchema,
   S3ListObjectsV2RequestSchema,
   S3ListPartsRequestSchema,
   S3ObjectTaggingRequestSchema,
+  S3PutBucketPolicyRequestSchema,
+  S3PutBucketRequestPaymentRequestSchema,
+  S3PutBucketTaggingRequestSchema,
   S3PutBucketVersioningRequestSchema,
+  S3PutBucketXmlConfigRequestSchema,
+  S3PutBucketXmlConfigWithIdRequestSchema,
   S3PutObjectTaggingRequestSchema,
   S3PutObjectRequestSchema,
   S3UploadPartCopyRequestSchema,
@@ -575,6 +597,53 @@ function parseBucketVersioning(xml: string): S3GetBucketVersioningResponse {
   };
 }
 
+function bucketConfigResponse(res: Response): S3BucketConfigResponse {
+  return { headers: collectHeaders(res.headers) };
+}
+
+function bucketXmlConfigResponse(
+  xml: string,
+  headers: Headers
+): S3GetBucketConfigResponse {
+  return {
+    rawXml: xml,
+    headers: collectHeaders(headers),
+  };
+}
+
+function parseBucketTagging(
+  xml: string,
+  headers: Headers
+): S3GetBucketTaggingResponse {
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    tagSet: blocksOf(xml, "Tag").map((block) => ({
+      key: textOf(block, "Key") ?? "",
+      value: textOf(block, "Value") ?? "",
+    })),
+  };
+}
+
+function parseBucketRequestPayment(
+  xml: string,
+  headers: Headers
+): S3GetBucketRequestPaymentResponse {
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    payer: textOf(xml, "Payer"),
+  };
+}
+
+function parseBucketPolicy(
+  policy: string,
+  headers: Headers
+): S3GetBucketPolicyResponse {
+  return {
+    policy,
+    headers: collectHeaders(headers),
+  };
+}
+
 function parseCopyObject(xml: string, headers: Headers): S3CopyObjectResponse {
   return {
     eTag: textOf(xml, "ETag"),
@@ -793,6 +862,34 @@ function bucketRequestHeaders(
   return { "x-amz-expected-bucket-owner": expectedBucketOwner };
 }
 
+function bucketConfigHeaders(
+  req: S3BucketConfigRequest
+): Record<string, string> {
+  return bucketRequestHeaders(req.expectedBucketOwner);
+}
+
+function bucketPutConfigHeaders(
+  req: {
+    checksumAlgorithm?: string;
+    contentMD5?: string;
+    expectedBucketOwner?: string;
+  },
+  body: string,
+  contentType: string
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-MD5": req.contentMD5 ?? md5Base64(new TextEncoder().encode(body)),
+    "Content-Type": contentType,
+  };
+  if (req.expectedBucketOwner) {
+    headers["x-amz-expected-bucket-owner"] = req.expectedBucketOwner;
+  }
+  if (req.checksumAlgorithm) {
+    headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+  }
+  return headers;
+}
+
 function addOwnerAndPayerHeaders(
   headers: Record<string, string>,
   expectedBucketOwner: string | undefined,
@@ -958,6 +1055,16 @@ function createTaggingBody(
     tags,
     "</TagSet>",
     "</Tagging>",
+  ].join("");
+}
+
+function createRequestPaymentBody(
+  req: S3PutBucketRequestPaymentRequest
+): string {
+  return [
+    '<RequestPaymentConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    `<Payer>${xmlEscape(req.payer)}</Payer>`,
+    "</RequestPaymentConfiguration>",
   ].join("");
 }
 
@@ -1247,6 +1354,995 @@ export function createS3(opts: S3Options): S3Provider {
       };
     },
     { schema: S3PutBucketVersioningRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket CORS path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?cors
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketCors.html
+  const bucketsGetCors = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?cors`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket CORS path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?cors
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html
+  const bucketsPutCors = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?cors`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket CORS path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?cors
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketCors.html
+  const bucketsDelCors = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?cors`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket lifecycle path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLifecycleConfiguration.html
+  const bucketsGetLifecycle = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?lifecycle`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket lifecycle path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLifecycleConfiguration.html
+  const bucketsPutLifecycle = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?lifecycle`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket lifecycle path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketLifecycle.html
+  const bucketsDelLifecycle = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?lifecycle`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket encryption path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?encryption
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketEncryption.html
+  const bucketsGetEncryption = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?encryption`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket encryption path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?encryption
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketEncryption.html
+  const bucketsPutEncryption = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?encryption`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket encryption path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?encryption
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketEncryption.html
+  const bucketsDelEncryption = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?encryption`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket policy path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?policy
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketPolicy.html
+  const bucketsGetPolicy = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketPolicyResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?policy`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseBucketPolicy(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket policy path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?policy
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketPolicy.html
+  const bucketsPutPolicy = Object.assign(
+    async (
+      req: S3PutBucketPolicyRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const headers = bucketPutConfigHeaders(
+        req,
+        req.policy,
+        "application/json"
+      );
+      if (req.confirmRemoveSelfBucketAccess !== undefined) {
+        headers["x-amz-confirm-remove-self-bucket-access"] = String(
+          req.confirmRemoveSelfBucketAccess
+        );
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?policy`,
+        { bucket: req.bucket, body: req.policy, headers },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketPolicyRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket policy path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?policy
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketPolicy.html
+  const bucketsDelPolicy = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?policy`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket tagging path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?tagging
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketTagging.html
+  const bucketsGetTagging = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketTaggingResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?tagging`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseBucketTagging(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket tagging path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?tagging
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketTagging.html
+  const bucketsPutTagging = Object.assign(
+    async (
+      req: S3PutBucketTaggingRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const body = createTaggingBody(req.tagSet);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?tagging`,
+        {
+          bucket: req.bucket,
+          body,
+          headers: bucketPutConfigHeaders(req, body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketTaggingRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket tagging path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?tagging
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketTagging.html
+  const bucketsDelTagging = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?tagging`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket public access block path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetPublicAccessBlock.html
+  const bucketsGetPublicAccessBlock = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?publicAccessBlock`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket public access block path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutPublicAccessBlock.html
+  const bucketsPutPublicAccessBlock = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?publicAccessBlock`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket public access block path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?publicAccessBlock
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeletePublicAccessBlock.html
+  const bucketsDelPublicAccessBlock = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?publicAccessBlock`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket ownership controls path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketOwnershipControls.html
+  const bucketsGetOwnershipControls = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?ownershipControls`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket ownership controls path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketOwnershipControls.html
+  const bucketsPutOwnershipControls = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?ownershipControls`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket ownership controls path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketOwnershipControls.html
+  const bucketsDelOwnershipControls = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?ownershipControls`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket website path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?website
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketWebsite.html
+  const bucketsGetWebsite = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?website`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket website path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?website
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketWebsite.html
+  const bucketsPutWebsite = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?website`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket website path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?website
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketWebsite.html
+  const bucketsDelWebsite = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?website`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket logging path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?logging
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLogging.html
+  const bucketsGetLogging = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?logging`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket logging path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?logging
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLogging.html
+  const bucketsPutLogging = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?logging`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket notification path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?notification
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketNotificationConfiguration.html
+  const bucketsGetNotification = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?notification`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket notification path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?notification
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketNotificationConfiguration.html
+  const bucketsPutNotification = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?notification`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket replication path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?replication
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketReplication.html
+  const bucketsGetReplication = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?replication`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket replication path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?replication
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html
+  const bucketsPutReplication = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?replication`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket replication path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?replication
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html
+  const bucketsDelReplication = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?replication`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket request payment path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?requestPayment
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketRequestPayment.html
+  const bucketsGetRequestPayment = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketRequestPaymentResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?requestPayment`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseBucketRequestPayment(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket request payment path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?requestPayment
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketRequestPayment.html
+  const bucketsPutRequestPayment = Object.assign(
+    async (
+      req: S3PutBucketRequestPaymentRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const body = createRequestPaymentBody(req);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?requestPayment`,
+        {
+          bucket: req.bucket,
+          body,
+          headers: bucketPutConfigHeaders(req, body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketRequestPaymentRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket metrics path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html
+  const bucketsListMetrics = Object.assign(
+    async (
+      req: S3ListBucketConfigsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListBucketConfigsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery(
+        { "continuation-token": req.continuationToken },
+        "&"
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?metrics${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3ListBucketConfigsRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket metrics path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetricsConfiguration.html
+  const bucketsGetMetrics = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?metrics${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket metrics path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html
+  const bucketsPutMetrics = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?metrics${query}`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket metrics path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metrics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html
+  const bucketsDelMetrics = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?metrics${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket inventory path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketInventoryConfigurations.html
+  const bucketsListInventory = Object.assign(
+    async (
+      req: S3ListBucketConfigsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListBucketConfigsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery(
+        { "continuation-token": req.continuationToken },
+        "&"
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?inventory${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3ListBucketConfigsRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket inventory path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketInventoryConfiguration.html
+  const bucketsGetInventory = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?inventory${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket inventory path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketInventoryConfiguration.html
+  const bucketsPutInventory = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?inventory${query}`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket inventory path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?inventory{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketInventoryConfiguration.html
+  const bucketsDelInventory = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?inventory${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket analytics path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html
+  const bucketsListAnalytics = Object.assign(
+    async (
+      req: S3ListBucketConfigsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListBucketConfigsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery(
+        { "continuation-token": req.continuationToken },
+        "&"
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?analytics${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3ListBucketConfigsRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket analytics path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketAnalyticsConfiguration.html
+  const bucketsGetAnalytics = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?analytics${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketXmlConfigResponse(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket analytics path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html
+  const bucketsPutAnalytics = Object.assign(
+    async (
+      req: S3PutBucketXmlConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?analytics${query}`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers: bucketPutConfigHeaders(req, req.body, "application/xml"),
+        },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutBucketXmlConfigWithIdRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket analytics path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}?analytics{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html
+  const bucketsDelAnalytics = Object.assign(
+    async (
+      req: S3BucketConfigWithIdRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery({ id: req.id }, "&");
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}?analytics${query}`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3BucketConfigWithIdRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 bucket path
@@ -1944,11 +3040,56 @@ export function createS3(opts: S3Options): S3Provider {
     buckets: {
       create: bucketsCreate,
       del: bucketsDel,
+      delAnalytics: bucketsDelAnalytics,
+      delCors: bucketsDelCors,
+      delEncryption: bucketsDelEncryption,
+      delInventory: bucketsDelInventory,
+      delLifecycle: bucketsDelLifecycle,
+      delMetrics: bucketsDelMetrics,
+      delOwnershipControls: bucketsDelOwnershipControls,
+      delPolicy: bucketsDelPolicy,
+      delPublicAccessBlock: bucketsDelPublicAccessBlock,
+      delReplication: bucketsDelReplication,
+      delTagging: bucketsDelTagging,
+      delWebsite: bucketsDelWebsite,
+      getAnalytics: bucketsGetAnalytics,
+      getCors: bucketsGetCors,
+      getEncryption: bucketsGetEncryption,
+      getInventory: bucketsGetInventory,
+      getLifecycle: bucketsGetLifecycle,
+      getLogging: bucketsGetLogging,
+      getMetrics: bucketsGetMetrics,
+      getNotification: bucketsGetNotification,
+      getOwnershipControls: bucketsGetOwnershipControls,
+      getPolicy: bucketsGetPolicy,
+      getPublicAccessBlock: bucketsGetPublicAccessBlock,
+      getReplication: bucketsGetReplication,
+      getRequestPayment: bucketsGetRequestPayment,
+      getTagging: bucketsGetTagging,
       getVersioning: bucketsGetVersioning,
+      getWebsite: bucketsGetWebsite,
       head: bucketsHead,
+      listAnalytics: bucketsListAnalytics,
+      listInventory: bucketsListInventory,
       list: bucketsList,
+      listMetrics: bucketsListMetrics,
       location: bucketsLocation,
+      putAnalytics: bucketsPutAnalytics,
+      putCors: bucketsPutCors,
+      putEncryption: bucketsPutEncryption,
+      putInventory: bucketsPutInventory,
+      putLifecycle: bucketsPutLifecycle,
+      putLogging: bucketsPutLogging,
+      putMetrics: bucketsPutMetrics,
+      putNotification: bucketsPutNotification,
+      putOwnershipControls: bucketsPutOwnershipControls,
+      putPolicy: bucketsPutPolicy,
+      putPublicAccessBlock: bucketsPutPublicAccessBlock,
+      putReplication: bucketsPutReplication,
+      putRequestPayment: bucketsPutRequestPayment,
+      putTagging: bucketsPutTagging,
       putVersioning: bucketsPutVersioning,
+      putWebsite: bucketsPutWebsite,
     },
     objects: {
       abortMultipartUpload: objectsAbortMultipartUpload,

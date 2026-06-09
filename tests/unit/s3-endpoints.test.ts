@@ -573,6 +573,258 @@ describe("s3 endpoints", () => {
     expect(headers["x-amz-expected-bucket-owner"]).toBe("123456789012");
   });
 
+  it("sets, reads, and deletes bucket tagging requests", async () => {
+    const responses = [
+      new Response(null, { status: 200 }),
+      new Response(
+        [
+          '<Tagging xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+          "<TagSet>",
+          "<Tag><Key>kind</Key><Value>bucket</Value></Tag>",
+          "<Tag><Key>escaped</Key><Value>a &amp; b</Value></Tag>",
+          "</TagSet>",
+          "</Tagging>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(null, { status: 204 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    await s3.buckets.putTagging({
+      bucket: "test-bucket",
+      tagSet: [
+        { key: "kind", value: "bucket" },
+        { key: "escaped", value: "a & b" },
+      ],
+      expectedBucketOwner: "123456789012",
+    });
+    const tags = await s3.buckets.getTagging({ bucket: "test-bucket" });
+    await s3.buckets.delTagging({ bucket: "test-bucket" });
+
+    expect(tags.tagSet).toEqual([
+      { key: "kind", value: "bucket" },
+      { key: "escaped", value: "a & b" },
+    ]);
+
+    const [putUrl, putInit] = fetch.mock.calls[0];
+    expect(String(putUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?tagging"
+    );
+    expect(putInit?.method).toBe("PUT");
+    const putBody = new TextDecoder().decode(putInit?.body as Uint8Array);
+    expect(putBody).toContain("<Value>a &amp; b</Value>");
+    const putHeaders = putInit?.headers as Record<string, string>;
+    expect(putHeaders["Content-MD5"]).toBe(md5Base64(putBody));
+    expect(putHeaders["x-amz-expected-bucket-owner"]).toBe("123456789012");
+
+    const [getUrl, getInit] = fetch.mock.calls[1];
+    expect(String(getUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?tagging"
+    );
+    expect(getInit?.method).toBe("GET");
+
+    const [deleteUrl, deleteInit] = fetch.mock.calls[2];
+    expect(String(deleteUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?tagging"
+    );
+    expect(deleteInit?.method).toBe("DELETE");
+  });
+
+  it("reads, writes, and deletes raw XML bucket configurations", async () => {
+    const corsXml = [
+      '<CORSConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+      "<CORSRule>",
+      "<AllowedOrigin>https://example.com</AllowedOrigin>",
+      "<AllowedMethod>GET</AllowedMethod>",
+      "</CORSRule>",
+      "</CORSConfiguration>",
+    ].join("");
+    const responses = [
+      new Response(null, { status: 200 }),
+      new Response(corsXml, { status: 200 }),
+      new Response(null, { status: 204 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    await s3.buckets.putCors({
+      bucket: "test-bucket",
+      body: corsXml,
+      checksumAlgorithm: "SHA256",
+    });
+    const cors = await s3.buckets.getCors({ bucket: "test-bucket" });
+    await s3.buckets.delCors({ bucket: "test-bucket" });
+
+    expect(cors.rawXml).toBe(corsXml);
+
+    const [putUrl, putInit] = fetch.mock.calls[0];
+    expect(String(putUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?cors"
+    );
+    expect(putInit?.method).toBe("PUT");
+    const putHeaders = putInit?.headers as Record<string, string>;
+    expect(putHeaders["Content-MD5"]).toBe(md5Base64(corsXml));
+    expect(putHeaders["x-amz-sdk-checksum-algorithm"]).toBe("SHA256");
+
+    const [getUrl, getInit] = fetch.mock.calls[1];
+    expect(String(getUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?cors"
+    );
+    expect(getInit?.method).toBe("GET");
+
+    const [deleteUrl, deleteInit] = fetch.mock.calls[2];
+    expect(String(deleteUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?cors"
+    );
+    expect(deleteInit?.method).toBe("DELETE");
+  });
+
+  it("handles bucket policy and request payment configurations", async () => {
+    const policy = JSON.stringify({
+      Version: "2012-10-17",
+      Statement: [],
+    });
+    const requestPaymentXml = [
+      '<RequestPaymentConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+      "<Payer>Requester</Payer>",
+      "</RequestPaymentConfiguration>",
+    ].join("");
+    const responses = [
+      new Response(policy, { status: 200 }),
+      new Response(null, { status: 204 }),
+      new Response(null, { status: 204 }),
+      new Response(null, { status: 200 }),
+      new Response(requestPaymentXml, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    const gotPolicy = await s3.buckets.getPolicy({ bucket: "test-bucket" });
+    await s3.buckets.putPolicy({
+      bucket: "test-bucket",
+      policy,
+      confirmRemoveSelfBucketAccess: false,
+    });
+    await s3.buckets.delPolicy({ bucket: "test-bucket" });
+    await s3.buckets.putRequestPayment({
+      bucket: "test-bucket",
+      payer: "Requester",
+    });
+    const requestPayment = await s3.buckets.getRequestPayment({
+      bucket: "test-bucket",
+    });
+
+    expect(gotPolicy.policy).toBe(policy);
+    expect(requestPayment.payer).toBe("Requester");
+
+    const [putPolicyUrl, putPolicyInit] = fetch.mock.calls[1];
+    expect(String(putPolicyUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?policy"
+    );
+    expect(putPolicyInit?.method).toBe("PUT");
+    const policyHeaders = putPolicyInit?.headers as Record<string, string>;
+    expect(policyHeaders["Content-Type"]).toBe("application/json");
+    expect(policyHeaders["Content-MD5"]).toBe(md5Base64(policy));
+    expect(policyHeaders["x-amz-confirm-remove-self-bucket-access"]).toBe(
+      "false"
+    );
+
+    const [paymentUrl, paymentInit] = fetch.mock.calls[3];
+    expect(String(paymentUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?requestPayment"
+    );
+    expect(paymentInit?.method).toBe("PUT");
+    expect(new TextDecoder().decode(paymentInit?.body as Uint8Array)).toContain(
+      "<Payer>Requester</Payer>"
+    );
+  });
+
+  it("addresses list and id-based bucket configuration resources", async () => {
+    const metricsXml = [
+      "<ListMetricsConfigurationsResult>",
+      "<IsTruncated>false</IsTruncated>",
+      "</ListMetricsConfigurationsResult>",
+    ].join("");
+    const analyticsXml = [
+      "<AnalyticsConfiguration>",
+      "<Id>analytics-1</Id>",
+      "</AnalyticsConfiguration>",
+    ].join("");
+    const inventoryXml = [
+      "<InventoryConfiguration>",
+      "<Id>inventory-1</Id>",
+      "</InventoryConfiguration>",
+    ].join("");
+    const responses = [
+      new Response(metricsXml, { status: 200 }),
+      new Response(analyticsXml, { status: 200 }),
+      new Response(null, { status: 200 }),
+      new Response(null, { status: 204 }),
+      new Response(inventoryXml, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    const metrics = await s3.buckets.listMetrics({ bucket: "test-bucket" });
+    const analytics = await s3.buckets.getAnalytics({
+      bucket: "test-bucket",
+      id: "analytics-1",
+    });
+    await s3.buckets.putMetrics({
+      bucket: "test-bucket",
+      id: "metrics-1",
+      body: "<MetricsConfiguration><Id>metrics-1</Id></MetricsConfiguration>",
+    });
+    await s3.buckets.delMetrics({
+      bucket: "test-bucket",
+      id: "metrics-1",
+    });
+    const inventory = await s3.buckets.getInventory({
+      bucket: "test-bucket",
+      id: "inventory-1",
+    });
+
+    expect(metrics.rawXml).toBe(metricsXml);
+    expect(analytics.rawXml).toBe(analyticsXml);
+    expect(inventory.rawXml).toBe(inventoryXml);
+
+    expect(String(fetch.mock.calls[0][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metrics"
+    );
+    expect(String(fetch.mock.calls[1][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?analytics&id=analytics-1"
+    );
+    expect(String(fetch.mock.calls[2][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metrics&id=metrics-1"
+    );
+    expect(fetch.mock.calls[2][1]?.method).toBe("PUT");
+    expect(String(fetch.mock.calls[3][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metrics&id=metrics-1"
+    );
+    expect(fetch.mock.calls[3][1]?.method).toBe("DELETE");
+    expect(String(fetch.mock.calls[4][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?inventory&id=inventory-1"
+    );
+  });
+
   it("lists object versions and delete markers", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       return new Response(

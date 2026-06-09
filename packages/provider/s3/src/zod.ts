@@ -237,6 +237,82 @@ export type S3PutBucketVersioningRequest = z.infer<
   typeof S3PutBucketVersioningRequestSchema
 >;
 
+export const S3BucketConfigRequestSchema = S3BucketRequestSchema;
+
+export type S3BucketConfigRequest = z.infer<typeof S3BucketConfigRequestSchema>;
+
+export const S3ListBucketConfigsRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    continuationToken: z.string().optional(),
+  });
+
+export type S3ListBucketConfigsRequest = z.infer<
+  typeof S3ListBucketConfigsRequestSchema
+>;
+
+export const S3BucketConfigWithIdRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    id: z.string().min(1),
+  });
+
+export type S3BucketConfigWithIdRequest = z.infer<
+  typeof S3BucketConfigWithIdRequestSchema
+>;
+
+export const S3PutBucketXmlConfigRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    body: z.string(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3PutBucketXmlConfigRequest = z.infer<
+  typeof S3PutBucketXmlConfigRequestSchema
+>;
+
+export const S3PutBucketXmlConfigWithIdRequestSchema =
+  S3BucketConfigWithIdRequestSchema.extend({
+    body: z.string(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3PutBucketXmlConfigWithIdRequest = z.infer<
+  typeof S3PutBucketXmlConfigWithIdRequestSchema
+>;
+
+export const S3PutBucketPolicyRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    policy: z.string().min(1),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    confirmRemoveSelfBucketAccess: z.boolean().optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3PutBucketPolicyRequest = z.infer<
+  typeof S3PutBucketPolicyRequestSchema
+>;
+
+export const S3PutBucketTaggingRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    tagSet: z.array(objectTagSchema).max(50),
+  });
+
+export type S3PutBucketTaggingRequest = z.infer<
+  typeof S3PutBucketTaggingRequestSchema
+>;
+
+export const S3PutBucketRequestPaymentRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    payer: z.enum(["Requester", "BucketOwner"]),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3PutBucketRequestPaymentRequest = z.infer<
+  typeof S3PutBucketRequestPaymentRequestSchema
+>;
+
 export const S3CreateMultipartUploadRequestSchema = z.object({
   bucket: z.string().min(1),
   key: z.string().min(1),

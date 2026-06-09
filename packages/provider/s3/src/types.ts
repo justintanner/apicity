@@ -2,6 +2,8 @@ import type { z } from "zod";
 
 export type {
   S3AbortMultipartUploadRequest,
+  S3BucketConfigRequest,
+  S3BucketConfigWithIdRequest,
   S3BucketRequest,
   S3CompleteMultipartUploadRequest,
   S3CopyObjectRequest,
@@ -12,6 +14,7 @@ export type {
   S3GetObjectRequest,
   S3GetBucketVersioningRequest,
   S3HeadObjectRequest,
+  S3ListBucketConfigsRequest,
   S3ListBucketsRequest,
   S3ListMultipartUploadsRequest,
   S3ListObjectVersionsRequest,
@@ -19,7 +22,12 @@ export type {
   S3ListPartsRequest,
   S3ObjectTaggingRequest,
   S3Options,
+  S3PutBucketPolicyRequest,
+  S3PutBucketRequestPaymentRequest,
+  S3PutBucketTaggingRequest,
   S3PutBucketVersioningRequest,
+  S3PutBucketXmlConfigRequest,
+  S3PutBucketXmlConfigWithIdRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
   S3UploadPartCopyRequest,
@@ -28,6 +36,8 @@ export type {
 
 import type {
   S3AbortMultipartUploadRequest,
+  S3BucketConfigRequest,
+  S3BucketConfigWithIdRequest,
   S3BucketRequest,
   S3CompleteMultipartUploadRequest,
   S3CopyObjectRequest,
@@ -38,13 +48,19 @@ import type {
   S3GetBucketVersioningRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
+  S3ListBucketConfigsRequest,
   S3ListBucketsRequest,
   S3ListMultipartUploadsRequest,
   S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
   S3ListPartsRequest,
   S3ObjectTaggingRequest,
+  S3PutBucketPolicyRequest,
+  S3PutBucketRequestPaymentRequest,
+  S3PutBucketTaggingRequest,
   S3PutBucketVersioningRequest,
+  S3PutBucketXmlConfigRequest,
+  S3PutBucketXmlConfigWithIdRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
   S3UploadPartCopyRequest,
@@ -226,6 +242,32 @@ export interface S3GetBucketVersioningResponse {
 export interface S3PutBucketVersioningResponse {
   requestCharged?: string;
   headers: Record<string, string>;
+}
+
+export interface S3BucketConfigResponse {
+  headers: Record<string, string>;
+}
+
+export interface S3GetBucketConfigResponse extends S3BucketConfigResponse {
+  rawXml: string;
+}
+
+export type S3ListBucketConfigsResponse = S3GetBucketConfigResponse;
+
+export type S3PutBucketConfigResponse = S3BucketConfigResponse;
+
+export type S3DeleteBucketConfigResponse = S3BucketConfigResponse;
+
+export interface S3GetBucketPolicyResponse extends S3BucketConfigResponse {
+  policy: string;
+}
+
+export interface S3GetBucketTaggingResponse extends S3GetBucketConfigResponse {
+  tagSet: S3ObjectTag[];
+}
+
+export interface S3GetBucketRequestPaymentResponse extends S3GetBucketConfigResponse {
+  payer?: string;
 }
 
 export interface S3ChecksumFields {
@@ -500,6 +542,110 @@ export interface S3PutBucketVersioningMethod {
   schema: z.ZodType<S3PutBucketVersioningRequest>;
 }
 
+export interface S3GetBucketConfigMethod {
+  (
+    req: S3BucketConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketConfigResponse>;
+  schema: z.ZodType<S3BucketConfigRequest>;
+}
+
+export interface S3PutBucketXmlConfigMethod {
+  (
+    req: S3PutBucketXmlConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutBucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketXmlConfigRequest>;
+}
+
+export interface S3DeleteBucketConfigMethod {
+  (
+    req: S3BucketConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3DeleteBucketConfigResponse>;
+  schema: z.ZodType<S3BucketConfigRequest>;
+}
+
+export interface S3GetBucketPolicyMethod {
+  (
+    req: S3BucketConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketPolicyResponse>;
+  schema: z.ZodType<S3BucketConfigRequest>;
+}
+
+export interface S3PutBucketPolicyMethod {
+  (
+    req: S3PutBucketPolicyRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutBucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketPolicyRequest>;
+}
+
+export interface S3GetBucketTaggingMethod {
+  (
+    req: S3BucketConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketTaggingResponse>;
+  schema: z.ZodType<S3BucketConfigRequest>;
+}
+
+export interface S3PutBucketTaggingMethod {
+  (
+    req: S3PutBucketTaggingRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutBucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketTaggingRequest>;
+}
+
+export interface S3GetBucketRequestPaymentMethod {
+  (
+    req: S3BucketConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketRequestPaymentResponse>;
+  schema: z.ZodType<S3BucketConfigRequest>;
+}
+
+export interface S3PutBucketRequestPaymentMethod {
+  (
+    req: S3PutBucketRequestPaymentRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutBucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketRequestPaymentRequest>;
+}
+
+export interface S3ListBucketConfigsMethod {
+  (
+    req: S3ListBucketConfigsRequest,
+    signal?: AbortSignal
+  ): Promise<S3ListBucketConfigsResponse>;
+  schema: z.ZodType<S3ListBucketConfigsRequest>;
+}
+
+export interface S3GetBucketConfigWithIdMethod {
+  (
+    req: S3BucketConfigWithIdRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketConfigResponse>;
+  schema: z.ZodType<S3BucketConfigWithIdRequest>;
+}
+
+export interface S3PutBucketXmlConfigWithIdMethod {
+  (
+    req: S3PutBucketXmlConfigWithIdRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutBucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketXmlConfigWithIdRequest>;
+}
+
+export interface S3DeleteBucketConfigWithIdMethod {
+  (
+    req: S3BucketConfigWithIdRequest,
+    signal?: AbortSignal
+  ): Promise<S3DeleteBucketConfigResponse>;
+  schema: z.ZodType<S3BucketConfigWithIdRequest>;
+}
+
 export interface S3ListObjectVersionsMethod {
   (
     req: S3ListObjectVersionsRequest,
@@ -588,11 +734,56 @@ export interface S3ListMultipartUploadsMethod {
 export interface S3BucketsNamespace {
   create: S3CreateBucketMethod;
   del: S3DeleteBucketMethod;
+  delAnalytics: S3DeleteBucketConfigWithIdMethod;
+  delCors: S3DeleteBucketConfigMethod;
+  delEncryption: S3DeleteBucketConfigMethod;
+  delInventory: S3DeleteBucketConfigWithIdMethod;
+  delLifecycle: S3DeleteBucketConfigMethod;
+  delMetrics: S3DeleteBucketConfigWithIdMethod;
+  delOwnershipControls: S3DeleteBucketConfigMethod;
+  delPolicy: S3DeleteBucketConfigMethod;
+  delPublicAccessBlock: S3DeleteBucketConfigMethod;
+  delReplication: S3DeleteBucketConfigMethod;
+  delTagging: S3DeleteBucketConfigMethod;
+  delWebsite: S3DeleteBucketConfigMethod;
+  getAnalytics: S3GetBucketConfigWithIdMethod;
+  getCors: S3GetBucketConfigMethod;
+  getEncryption: S3GetBucketConfigMethod;
+  getInventory: S3GetBucketConfigWithIdMethod;
+  getLifecycle: S3GetBucketConfigMethod;
+  getLogging: S3GetBucketConfigMethod;
+  getMetrics: S3GetBucketConfigWithIdMethod;
+  getNotification: S3GetBucketConfigMethod;
+  getOwnershipControls: S3GetBucketConfigMethod;
+  getPolicy: S3GetBucketPolicyMethod;
+  getPublicAccessBlock: S3GetBucketConfigMethod;
+  getReplication: S3GetBucketConfigMethod;
+  getRequestPayment: S3GetBucketRequestPaymentMethod;
+  getTagging: S3GetBucketTaggingMethod;
   getVersioning: S3GetBucketVersioningMethod;
+  getWebsite: S3GetBucketConfigMethod;
   head: S3HeadBucketMethod;
+  listAnalytics: S3ListBucketConfigsMethod;
+  listInventory: S3ListBucketConfigsMethod;
   list: S3ListBucketsMethod;
+  listMetrics: S3ListBucketConfigsMethod;
   location: S3GetBucketLocationMethod;
+  putAnalytics: S3PutBucketXmlConfigWithIdMethod;
+  putCors: S3PutBucketXmlConfigMethod;
+  putEncryption: S3PutBucketXmlConfigMethod;
+  putInventory: S3PutBucketXmlConfigWithIdMethod;
+  putLifecycle: S3PutBucketXmlConfigMethod;
+  putLogging: S3PutBucketXmlConfigMethod;
+  putMetrics: S3PutBucketXmlConfigWithIdMethod;
+  putNotification: S3PutBucketXmlConfigMethod;
+  putOwnershipControls: S3PutBucketXmlConfigMethod;
+  putPolicy: S3PutBucketPolicyMethod;
+  putPublicAccessBlock: S3PutBucketXmlConfigMethod;
+  putReplication: S3PutBucketXmlConfigMethod;
+  putRequestPayment: S3PutBucketRequestPaymentMethod;
+  putTagging: S3PutBucketTaggingMethod;
   putVersioning: S3PutBucketVersioningMethod;
+  putWebsite: S3PutBucketXmlConfigMethod;
 }
 
 export interface S3ObjectsNamespace {

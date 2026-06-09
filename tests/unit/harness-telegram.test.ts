@@ -69,6 +69,15 @@ const endpointDocs: EndpointDocRow[] = [
     docsUrl:
       "https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html",
   },
+  {
+    provider: "s3",
+    dotPath: "objects.getAttributes",
+    method: "GET",
+    fullUrl:
+      "https://s3.us-east-1.amazonaws.com/{bucket}/{key}?attributes{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html",
+  },
 ];
 
 function seedSpeechRecording(): ChangedRecording {
@@ -306,6 +315,48 @@ function s3CopyObjectRecording(): ChangedRecording {
   };
 }
 
+function s3ObjectAttributesRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/object-governance",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "object-governance_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/apicity-tests/object-governance.csv",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "etag", value: '"etag"' }],
+          content: {},
+        },
+      },
+      {
+        request: {
+          method: "GET",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/apicity-tests/object-governance.csv?attributes",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<GetObjectAttributesResponse></GetObjectAttributesResponse>",
+          },
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -384,5 +435,16 @@ describe("harness Telegram messages", () => {
 
     expect(corsMessage.apicityPath).toBe("s3.buckets.getCors");
     expect(metricsMessage.apicityPath).toBe("s3.buckets.getMetrics");
+  });
+
+  it("prefers S3 response bodies and matches object subresources", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [s3ObjectAttributesRecording()],
+      endpointDocs
+    );
+
+    expect(message.apicityPath).toBe("s3.objects.getAttributes");
+    expect(message.text).toContain("<b>Response</b>");
+    expect(message.text).toContain("GetObjectAttributesResponse");
   });
 });

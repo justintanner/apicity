@@ -32,7 +32,13 @@ import type {
   S3GetBucketTaggingResponse,
   S3GetObjectRequest,
   S3GetObjectResponse,
+  S3GetObjectAclResponse,
+  S3GetObjectAttributesRequest,
+  S3GetObjectLegalHoldResponse,
+  S3GetObjectLockConfigurationResponse,
+  S3GetObjectRetentionResponse,
   S3GetObjectTaggingResponse,
+  S3GetObjectTorrentResponse,
   S3HeadBucketResponse,
   S3HeadObjectRequest,
   S3HeadObjectResponse,
@@ -50,6 +56,9 @@ import type {
   S3ListPartsResponse,
   S3ObjectTaggingRequest,
   S3ObjectHeaders,
+  S3ObjectAttributesResponse,
+  S3ObjectConfigResponse,
+  S3ObjectGovernanceRequest,
   S3Options,
   S3Provider,
   S3PutBucketPolicyRequest,
@@ -59,10 +68,18 @@ import type {
   S3PutBucketVersioningResponse,
   S3PutBucketXmlConfigRequest,
   S3PutBucketXmlConfigWithIdRequest,
+  S3PutObjectAclRequest,
+  S3PutObjectLegalHoldRequest,
+  S3PutObjectLockConfigurationRequest,
+  S3PutObjectRetentionRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectTaggingResponse,
   S3PutObjectRequest,
   S3PutObjectResponse,
+  S3RestoreObjectRequest,
+  S3RestoreObjectResponse,
+  S3SelectObjectContentRequest,
+  S3SelectObjectContentResponse,
   S3UploadPartCopyRequest,
   S3UploadPartCopyResponse,
   S3UploadPartRequest,
@@ -81,6 +98,7 @@ import {
   S3DeleteObjectsRequestSchema,
   S3GetBucketVersioningRequestSchema,
   S3GetObjectRequestSchema,
+  S3GetObjectAttributesRequestSchema,
   S3HeadObjectRequestSchema,
   S3ListBucketConfigsRequestSchema,
   S3ListBucketsRequestSchema,
@@ -88,6 +106,7 @@ import {
   S3ListObjectVersionsRequestSchema,
   S3ListObjectsV2RequestSchema,
   S3ListPartsRequestSchema,
+  S3ObjectGovernanceRequestSchema,
   S3ObjectTaggingRequestSchema,
   S3PutBucketPolicyRequestSchema,
   S3PutBucketRequestPaymentRequestSchema,
@@ -95,8 +114,14 @@ import {
   S3PutBucketVersioningRequestSchema,
   S3PutBucketXmlConfigRequestSchema,
   S3PutBucketXmlConfigWithIdRequestSchema,
+  S3PutObjectAclRequestSchema,
+  S3PutObjectLegalHoldRequestSchema,
+  S3PutObjectLockConfigurationRequestSchema,
+  S3PutObjectRetentionRequestSchema,
   S3PutObjectTaggingRequestSchema,
   S3PutObjectRequestSchema,
+  S3RestoreObjectRequestSchema,
+  S3SelectObjectContentRequestSchema,
   S3UploadPartCopyRequestSchema,
   S3UploadPartRequestSchema,
 } from "./zod";
@@ -678,6 +703,100 @@ function parseObjectTagging(
   };
 }
 
+function objectConfigResponse(res: Response): S3ObjectConfigResponse {
+  return {
+    requestCharged: getHeader(res.headers, "x-amz-request-charged"),
+    headers: collectHeaders(res.headers),
+  };
+}
+
+function objectXmlConfigResponse(
+  xml: string,
+  headers: Headers
+): S3ObjectConfigResponse & { rawXml: string; versionId?: string } {
+  return {
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    rawXml: xml,
+    versionId: getHeader(headers, "x-amz-version-id"),
+    headers: collectHeaders(headers),
+  };
+}
+
+function granteeTypeOf(xml: string): string | undefined {
+  return xml.match(/(?:xsi:)?type="([^"]+)"/)?.[1];
+}
+
+function parseObjectAcl(xml: string, headers: Headers): S3GetObjectAclResponse {
+  const ownerBlock = blocksOf(xml, "Owner")[0];
+  return {
+    ...objectXmlConfigResponse(xml, headers),
+    owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+    grants: blocksOf(xml, "Grant").map((block) => {
+      const granteeBlock = blocksOf(block, "Grantee")[0] ?? "";
+      return {
+        grantee: {
+          type: granteeTypeOf(block),
+          id: textOf(granteeBlock, "ID"),
+          displayName: textOf(granteeBlock, "DisplayName"),
+          uri: textOf(granteeBlock, "URI"),
+          emailAddress: textOf(granteeBlock, "EmailAddress"),
+        },
+        permission: textOf(block, "Permission"),
+      };
+    }),
+  };
+}
+
+function parseObjectAttributes(
+  xml: string,
+  headers: Headers
+): S3ObjectAttributesResponse {
+  return {
+    ...checksumFieldsFromXml(xml),
+    deleteMarker: booleanHeader(headers, "x-amz-delete-marker"),
+    eTag: textOf(xml, "ETag"),
+    lastModified: getHeader(headers, "last-modified"),
+    objectParts: blocksOf(xml, "ObjectParts")[0],
+    objectSize: numberOf(xml, "ObjectSize"),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    storageClass: textOf(xml, "StorageClass"),
+    versionId: getHeader(headers, "x-amz-version-id"),
+    rawXml: xml,
+    headers: collectHeaders(headers),
+  };
+}
+
+function parseObjectLegalHold(
+  xml: string,
+  headers: Headers
+): S3GetObjectLegalHoldResponse {
+  return {
+    ...objectXmlConfigResponse(xml, headers),
+    status: textOf(xml, "Status"),
+  };
+}
+
+function parseObjectRetention(
+  xml: string,
+  headers: Headers
+): S3GetObjectRetentionResponse {
+  return {
+    ...objectXmlConfigResponse(xml, headers),
+    mode: textOf(xml, "Mode"),
+    retainUntilDate: textOf(xml, "RetainUntilDate"),
+  };
+}
+
+function parseObjectLockConfiguration(
+  xml: string,
+  headers: Headers
+): S3GetObjectLockConfigurationResponse {
+  return {
+    ...bucketXmlConfigResponse(xml, headers),
+    objectLockEnabled: textOf(xml, "ObjectLockEnabled"),
+  };
+}
+
 function parseDeleteObjects(
   xml: string,
   headers: Headers
@@ -890,6 +1009,55 @@ function bucketPutConfigHeaders(
   return headers;
 }
 
+function objectGovernanceHeaders(
+  req: S3ObjectGovernanceRequest
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  addOwnerAndPayerHeaders(headers, req.expectedBucketOwner, req.requestPayer);
+  return headers;
+}
+
+function objectPutConfigHeaders(
+  req: {
+    checksumAlgorithm?: string;
+    contentMD5?: string;
+    expectedBucketOwner?: string;
+    requestPayer?: string;
+  },
+  body: string
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-MD5": req.contentMD5 ?? md5Base64(new TextEncoder().encode(body)),
+    "Content-Type": "application/xml",
+  };
+  addOwnerAndPayerHeaders(headers, req.expectedBucketOwner, req.requestPayer);
+  if (req.checksumAlgorithm) {
+    headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+  }
+  return headers;
+}
+
+function addSseCustomerHeaders(
+  headers: Record<string, string>,
+  req: {
+    sseCustomerAlgorithm?: string;
+    sseCustomerKey?: string;
+    sseCustomerKeyMD5?: string;
+  }
+): void {
+  if (req.sseCustomerAlgorithm) {
+    headers["x-amz-server-side-encryption-customer-algorithm"] =
+      req.sseCustomerAlgorithm;
+  }
+  if (req.sseCustomerKey) {
+    headers["x-amz-server-side-encryption-customer-key"] = req.sseCustomerKey;
+  }
+  if (req.sseCustomerKeyMD5) {
+    headers["x-amz-server-side-encryption-customer-key-MD5"] =
+      req.sseCustomerKeyMD5;
+  }
+}
+
 function addOwnerAndPayerHeaders(
   headers: Record<string, string>,
   expectedBucketOwner: string | undefined,
@@ -1065,6 +1233,23 @@ function createRequestPaymentBody(
     '<RequestPaymentConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
     `<Payer>${xmlEscape(req.payer)}</Payer>`,
     "</RequestPaymentConfiguration>",
+  ].join("");
+}
+
+function createLegalHoldBody(req: S3PutObjectLegalHoldRequest): string {
+  return [
+    '<LegalHold xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    `<Status>${xmlEscape(req.status)}</Status>`,
+    "</LegalHold>",
+  ].join("");
+}
+
+function createRetentionBody(req: S3PutObjectRetentionRequest): string {
+  return [
+    '<Retention xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    `<Mode>${xmlEscape(req.mode)}</Mode>`,
+    `<RetainUntilDate>${xmlEscape(req.retainUntilDate)}</RetainUntilDate>`,
+    "</Retention>",
   ].join("");
 }
 
@@ -1354,6 +1539,50 @@ export function createS3(opts: S3Options): S3Provider {
       };
     },
     { schema: S3PutBucketVersioningRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket object lock path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?object-lock
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLockConfiguration.html
+  const bucketsGetObjectLockConfiguration = Object.assign(
+    async (
+      req: S3BucketConfigRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectLockConfigurationResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?object-lock`,
+        { bucket: req.bucket, headers: bucketConfigHeaders(req) },
+        signal
+      );
+      return parseObjectLockConfiguration(await res.text(), res.headers);
+    },
+    { schema: S3BucketConfigRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket object lock path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?object-lock
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLockConfiguration.html
+  const bucketsPutObjectLockConfiguration = Object.assign(
+    async (
+      req: S3PutObjectLockConfigurationRequest,
+      signal?: AbortSignal
+    ): Promise<S3BucketConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const headers = objectPutConfigHeaders(req, req.body);
+      if (req.objectLockToken) {
+        headers["x-amz-bucket-object-lock-token"] = req.objectLockToken;
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?object-lock`,
+        { bucket: req.bucket, body: req.body, headers },
+        signal
+      );
+      return bucketConfigResponse(res);
+    },
+    { schema: S3PutObjectLockConfigurationRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 bucket CORS path
@@ -2724,6 +2953,298 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3ObjectTaggingRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 object ACL path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html
+  const objectsGetAcl = Object.assign(
+    async (
+      req: S3ObjectGovernanceRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectAclResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}?acl${query}`,
+        { bucket: req.bucket, headers: objectGovernanceHeaders(req) },
+        signal
+      );
+      return parseObjectAcl(await res.text(), res.headers);
+    },
+    { schema: S3ObjectGovernanceRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object ACL path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html
+  const objectsPutAcl = Object.assign(
+    async (
+      req: S3PutObjectAclRequest,
+      signal?: AbortSignal
+    ): Promise<S3ObjectConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const headers = objectGovernanceHeaders(req);
+      if (req.acl) headers["x-amz-acl"] = req.acl;
+      if (req.grantFullControl) {
+        headers["x-amz-grant-full-control"] = req.grantFullControl;
+      }
+      if (req.grantRead) headers["x-amz-grant-read"] = req.grantRead;
+      if (req.grantReadAcp) {
+        headers["x-amz-grant-read-acp"] = req.grantReadAcp;
+      }
+      if (req.grantWriteAcp) {
+        headers["x-amz-grant-write-acp"] = req.grantWriteAcp;
+      }
+      if (req.accessControlPolicy !== undefined) {
+        headers["Content-MD5"] =
+          req.contentMD5 ??
+          md5Base64(new TextEncoder().encode(req.accessControlPolicy));
+        headers["Content-Type"] = "application/xml";
+      } else if (req.contentMD5) {
+        headers["Content-MD5"] = req.contentMD5;
+      }
+      if (req.checksumAlgorithm) {
+        headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}?acl${query}`,
+        {
+          bucket: req.bucket,
+          body: req.accessControlPolicy,
+          headers,
+        },
+        signal
+      );
+      return objectConfigResponse(res);
+    },
+    { schema: S3PutObjectAclRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object attributes path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?attributes{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html
+  const objectsGetAttributes = Object.assign(
+    async (
+      req: S3GetObjectAttributesRequest,
+      signal?: AbortSignal
+    ): Promise<S3ObjectAttributesResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery(
+        {
+          versionId: req.versionId,
+          "max-parts": req.maxParts,
+          "part-number-marker": req.partNumberMarker,
+        },
+        "&"
+      );
+      const headers = objectGovernanceHeaders(req);
+      headers["x-amz-object-attributes"] = req.objectAttributes.join(",");
+      addSseCustomerHeaders(headers, req);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}?attributes${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseObjectAttributes(await res.text(), res.headers);
+    },
+    { schema: S3GetObjectAttributesRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object restore path
+  // POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?restore{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html
+  const objectsRestore = Object.assign(
+    async (
+      req: S3RestoreObjectRequest,
+      signal?: AbortSignal
+    ): Promise<S3RestoreObjectResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const headers = objectGovernanceHeaders(req);
+      if (req.body !== undefined) {
+        headers["Content-MD5"] =
+          req.contentMD5 ?? md5Base64(new TextEncoder().encode(req.body));
+        headers["Content-Type"] = "application/xml";
+      } else if (req.contentMD5) {
+        headers["Content-MD5"] = req.contentMD5;
+      }
+      if (req.checksumAlgorithm) {
+        headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+      }
+      const res = await makeSignedRequest(
+        "POST",
+        `/${bucket}/${key}?restore${query}`,
+        { bucket: req.bucket, body: req.body, headers },
+        signal
+      );
+      return objectConfigResponse(res);
+    },
+    { schema: S3RestoreObjectRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object legal hold path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLegalHold.html
+  const objectsGetLegalHold = Object.assign(
+    async (
+      req: S3ObjectGovernanceRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectLegalHoldResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}?legal-hold${query}`,
+        { bucket: req.bucket, headers: objectGovernanceHeaders(req) },
+        signal
+      );
+      return parseObjectLegalHold(await res.text(), res.headers);
+    },
+    { schema: S3ObjectGovernanceRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object legal hold path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html
+  const objectsPutLegalHold = Object.assign(
+    async (
+      req: S3PutObjectLegalHoldRequest,
+      signal?: AbortSignal
+    ): Promise<S3ObjectConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const body = createLegalHoldBody(req);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}?legal-hold${query}`,
+        {
+          bucket: req.bucket,
+          body,
+          headers: objectPutConfigHeaders(req, body),
+        },
+        signal
+      );
+      return objectConfigResponse(res);
+    },
+    { schema: S3PutObjectLegalHoldRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object retention path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectRetention.html
+  const objectsGetRetention = Object.assign(
+    async (
+      req: S3ObjectGovernanceRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectRetentionResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}?retention${query}`,
+        { bucket: req.bucket, headers: objectGovernanceHeaders(req) },
+        signal
+      );
+      return parseObjectRetention(await res.text(), res.headers);
+    },
+    { schema: S3ObjectGovernanceRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object retention path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectRetention.html
+  const objectsPutRetention = Object.assign(
+    async (
+      req: S3PutObjectRetentionRequest,
+      signal?: AbortSignal
+    ): Promise<S3ObjectConfigResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const body = createRetentionBody(req);
+      const headers = objectPutConfigHeaders(req, body);
+      if (req.bypassGovernanceRetention !== undefined) {
+        headers["x-amz-bypass-governance-retention"] = String(
+          req.bypassGovernanceRetention
+        );
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}?retention${query}`,
+        { bucket: req.bucket, body, headers },
+        signal
+      );
+      return objectConfigResponse(res);
+    },
+    { schema: S3PutObjectRetentionRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object torrent path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?torrent{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTorrent.html
+  const objectsGetTorrent = Object.assign(
+    async (
+      req: S3ObjectGovernanceRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectTorrentResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}?torrent${query}`,
+        { bucket: req.bucket, headers: objectGovernanceHeaders(req) },
+        signal
+      );
+      return {
+        ...objectConfigResponse(res),
+        body: await res.arrayBuffer(),
+      };
+    },
+    { schema: S3ObjectGovernanceRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object select path
+  // POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?select&select-type=2
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_SelectObjectContent.html
+  const objectsSelectContent = Object.assign(
+    async (
+      req: S3SelectObjectContentRequest,
+      signal?: AbortSignal
+    ): Promise<S3SelectObjectContentResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const headers: Record<string, string> = {
+        "Content-Type": "application/xml",
+      };
+      if (req.expectedBucketOwner) {
+        headers["x-amz-expected-bucket-owner"] = req.expectedBucketOwner;
+      }
+      addSseCustomerHeaders(headers, req);
+      const res = await makeSignedRequest(
+        "POST",
+        `/${bucket}/${key}?select&select-type=2`,
+        { bucket: req.bucket, body: req.body, headers },
+        signal
+      );
+      return {
+        ...objectConfigResponse(res),
+        body: await res.arrayBuffer(),
+      };
+    },
+    { schema: S3SelectObjectContentRequestSchema }
+  );
+
   // sig-ok: action namespace over dynamic S3 multipart object path
   // POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?uploads
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
@@ -3060,6 +3581,7 @@ export function createS3(opts: S3Options): S3Provider {
       getLogging: bucketsGetLogging,
       getMetrics: bucketsGetMetrics,
       getNotification: bucketsGetNotification,
+      getObjectLockConfiguration: bucketsGetObjectLockConfiguration,
       getOwnershipControls: bucketsGetOwnershipControls,
       getPolicy: bucketsGetPolicy,
       getPublicAccessBlock: bucketsGetPublicAccessBlock,
@@ -3082,6 +3604,7 @@ export function createS3(opts: S3Options): S3Provider {
       putLogging: bucketsPutLogging,
       putMetrics: bucketsPutMetrics,
       putNotification: bucketsPutNotification,
+      putObjectLockConfiguration: bucketsPutObjectLockConfiguration,
       putOwnershipControls: bucketsPutOwnershipControls,
       putPolicy: bucketsPutPolicy,
       putPublicAccessBlock: bucketsPutPublicAccessBlock,
@@ -3100,14 +3623,24 @@ export function createS3(opts: S3Options): S3Provider {
       delMany: objectsDelMany,
       delTagging: objectsDelTagging,
       get: objectsGet,
+      getAcl: objectsGetAcl,
+      getAttributes: objectsGetAttributes,
+      getLegalHold: objectsGetLegalHold,
+      getRetention: objectsGetRetention,
       getTagging: objectsGetTagging,
+      getTorrent: objectsGetTorrent,
       head: objectsHead,
       listMultipartUploads: objectsListMultipartUploads,
       listVersions: objectsListVersions,
       list: objectsList,
       listParts: objectsListParts,
       put: objectsPut,
+      putAcl: objectsPutAcl,
+      putLegalHold: objectsPutLegalHold,
+      putRetention: objectsPutRetention,
       putTagging: objectsPutTagging,
+      restore: objectsRestore,
+      selectContent: objectsSelectContent,
       uploadPart: objectsUploadPart,
       uploadPartCopy: objectsUploadPartCopy,
     },

@@ -12,6 +12,7 @@ export type {
   S3DeleteObjectRequest,
   S3DeleteObjectsRequest,
   S3GetObjectRequest,
+  S3GetObjectAttributesRequest,
   S3GetBucketVersioningRequest,
   S3HeadObjectRequest,
   S3ListBucketConfigsRequest,
@@ -20,6 +21,7 @@ export type {
   S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
   S3ListPartsRequest,
+  S3ObjectGovernanceRequest,
   S3ObjectTaggingRequest,
   S3Options,
   S3PutBucketPolicyRequest,
@@ -28,8 +30,14 @@ export type {
   S3PutBucketVersioningRequest,
   S3PutBucketXmlConfigRequest,
   S3PutBucketXmlConfigWithIdRequest,
+  S3PutObjectAclRequest,
+  S3PutObjectLegalHoldRequest,
+  S3PutObjectLockConfigurationRequest,
+  S3PutObjectRetentionRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
+  S3RestoreObjectRequest,
+  S3SelectObjectContentRequest,
   S3UploadPartCopyRequest,
   S3UploadPartRequest,
 } from "./zod";
@@ -47,6 +55,7 @@ import type {
   S3DeleteObjectsRequest,
   S3GetBucketVersioningRequest,
   S3GetObjectRequest,
+  S3GetObjectAttributesRequest,
   S3HeadObjectRequest,
   S3ListBucketConfigsRequest,
   S3ListBucketsRequest,
@@ -54,6 +63,7 @@ import type {
   S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
   S3ListPartsRequest,
+  S3ObjectGovernanceRequest,
   S3ObjectTaggingRequest,
   S3PutBucketPolicyRequest,
   S3PutBucketRequestPaymentRequest,
@@ -61,8 +71,14 @@ import type {
   S3PutBucketVersioningRequest,
   S3PutBucketXmlConfigRequest,
   S3PutBucketXmlConfigWithIdRequest,
+  S3PutObjectAclRequest,
+  S3PutObjectLegalHoldRequest,
+  S3PutObjectLockConfigurationRequest,
+  S3PutObjectRetentionRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
+  S3RestoreObjectRequest,
+  S3SelectObjectContentRequest,
   S3UploadPartCopyRequest,
   S3UploadPartRequest,
 } from "./zod";
@@ -341,6 +357,77 @@ export interface S3PutObjectTaggingResponse {
 
 export interface S3DeleteObjectTaggingResponse {
   versionId?: string;
+}
+
+export interface S3ObjectConfigResponse {
+  requestCharged?: string;
+  headers: Record<string, string>;
+}
+
+export interface S3GetObjectXmlConfigResponse extends S3ObjectConfigResponse {
+  rawXml: string;
+  versionId?: string;
+}
+
+export interface S3ObjectAclGrantee {
+  type?: string;
+  id?: string;
+  displayName?: string;
+  uri?: string;
+  emailAddress?: string;
+}
+
+export interface S3ObjectAclGrant {
+  grantee: S3ObjectAclGrantee;
+  permission?: string;
+}
+
+export interface S3GetObjectAclResponse extends S3GetObjectXmlConfigResponse {
+  owner?: S3Owner;
+  grants: S3ObjectAclGrant[];
+}
+
+export type S3PutObjectAclResponse = S3ObjectConfigResponse;
+
+export interface S3ObjectAttributesResponse
+  extends S3ChecksumFields, S3ObjectConfigResponse {
+  deleteMarker?: boolean;
+  eTag?: string;
+  lastModified?: string;
+  objectParts?: string;
+  objectSize?: number;
+  storageClass?: string;
+  versionId?: string;
+  rawXml: string;
+}
+
+export type S3RestoreObjectResponse = S3ObjectConfigResponse;
+
+export interface S3GetObjectLegalHoldResponse extends S3GetObjectXmlConfigResponse {
+  status?: string;
+}
+
+export type S3PutObjectLegalHoldResponse = S3ObjectConfigResponse;
+
+export interface S3GetObjectRetentionResponse extends S3GetObjectXmlConfigResponse {
+  mode?: string;
+  retainUntilDate?: string;
+}
+
+export type S3PutObjectRetentionResponse = S3ObjectConfigResponse;
+
+export interface S3GetObjectLockConfigurationResponse extends S3GetBucketConfigResponse {
+  objectLockEnabled?: string;
+}
+
+export type S3PutObjectLockConfigurationResponse = S3BucketConfigResponse;
+
+export interface S3GetObjectTorrentResponse extends S3ObjectConfigResponse {
+  body: ArrayBuffer;
+}
+
+export interface S3SelectObjectContentResponse extends S3ObjectConfigResponse {
+  body: ArrayBuffer;
 }
 
 export interface S3CreateMultipartUploadResponse extends S3ChecksumFields {
@@ -678,6 +765,102 @@ export interface S3DeleteObjectTaggingMethod {
   schema: z.ZodType<S3ObjectTaggingRequest>;
 }
 
+export interface S3GetObjectAclMethod {
+  (
+    req: S3ObjectGovernanceRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectAclResponse>;
+  schema: z.ZodType<S3ObjectGovernanceRequest>;
+}
+
+export interface S3PutObjectAclMethod {
+  (
+    req: S3PutObjectAclRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutObjectAclResponse>;
+  schema: z.ZodType<S3PutObjectAclRequest>;
+}
+
+export interface S3GetObjectAttributesMethod {
+  (
+    req: S3GetObjectAttributesRequest,
+    signal?: AbortSignal
+  ): Promise<S3ObjectAttributesResponse>;
+  schema: z.ZodType<S3GetObjectAttributesRequest>;
+}
+
+export interface S3RestoreObjectMethod {
+  (
+    req: S3RestoreObjectRequest,
+    signal?: AbortSignal
+  ): Promise<S3RestoreObjectResponse>;
+  schema: z.ZodType<S3RestoreObjectRequest>;
+}
+
+export interface S3GetObjectLegalHoldMethod {
+  (
+    req: S3ObjectGovernanceRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectLegalHoldResponse>;
+  schema: z.ZodType<S3ObjectGovernanceRequest>;
+}
+
+export interface S3PutObjectLegalHoldMethod {
+  (
+    req: S3PutObjectLegalHoldRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutObjectLegalHoldResponse>;
+  schema: z.ZodType<S3PutObjectLegalHoldRequest>;
+}
+
+export interface S3GetObjectRetentionMethod {
+  (
+    req: S3ObjectGovernanceRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectRetentionResponse>;
+  schema: z.ZodType<S3ObjectGovernanceRequest>;
+}
+
+export interface S3PutObjectRetentionMethod {
+  (
+    req: S3PutObjectRetentionRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutObjectRetentionResponse>;
+  schema: z.ZodType<S3PutObjectRetentionRequest>;
+}
+
+export interface S3GetObjectLockConfigurationMethod {
+  (
+    req: S3BucketConfigRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectLockConfigurationResponse>;
+  schema: z.ZodType<S3BucketConfigRequest>;
+}
+
+export interface S3PutObjectLockConfigurationMethod {
+  (
+    req: S3PutObjectLockConfigurationRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutObjectLockConfigurationResponse>;
+  schema: z.ZodType<S3PutObjectLockConfigurationRequest>;
+}
+
+export interface S3GetObjectTorrentMethod {
+  (
+    req: S3ObjectGovernanceRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectTorrentResponse>;
+  schema: z.ZodType<S3ObjectGovernanceRequest>;
+}
+
+export interface S3SelectObjectContentMethod {
+  (
+    req: S3SelectObjectContentRequest,
+    signal?: AbortSignal
+  ): Promise<S3SelectObjectContentResponse>;
+  schema: z.ZodType<S3SelectObjectContentRequest>;
+}
+
 export interface S3CreateMultipartUploadMethod {
   (
     req: S3CreateMultipartUploadRequest,
@@ -754,6 +937,7 @@ export interface S3BucketsNamespace {
   getLogging: S3GetBucketConfigMethod;
   getMetrics: S3GetBucketConfigWithIdMethod;
   getNotification: S3GetBucketConfigMethod;
+  getObjectLockConfiguration: S3GetObjectLockConfigurationMethod;
   getOwnershipControls: S3GetBucketConfigMethod;
   getPolicy: S3GetBucketPolicyMethod;
   getPublicAccessBlock: S3GetBucketConfigMethod;
@@ -776,6 +960,7 @@ export interface S3BucketsNamespace {
   putLogging: S3PutBucketXmlConfigMethod;
   putMetrics: S3PutBucketXmlConfigWithIdMethod;
   putNotification: S3PutBucketXmlConfigMethod;
+  putObjectLockConfiguration: S3PutObjectLockConfigurationMethod;
   putOwnershipControls: S3PutBucketXmlConfigMethod;
   putPolicy: S3PutBucketPolicyMethod;
   putPublicAccessBlock: S3PutBucketXmlConfigMethod;
@@ -795,14 +980,24 @@ export interface S3ObjectsNamespace {
   delMany: S3DeleteObjectsMethod;
   delTagging: S3DeleteObjectTaggingMethod;
   get: S3GetObjectMethod;
+  getAcl: S3GetObjectAclMethod;
+  getAttributes: S3GetObjectAttributesMethod;
+  getLegalHold: S3GetObjectLegalHoldMethod;
+  getRetention: S3GetObjectRetentionMethod;
   getTagging: S3GetObjectTaggingMethod;
+  getTorrent: S3GetObjectTorrentMethod;
   head: S3HeadObjectMethod;
   listMultipartUploads: S3ListMultipartUploadsMethod;
   listVersions: S3ListObjectVersionsMethod;
   list: S3ListObjectsV2Method;
   listParts: S3ListPartsMethod;
   put: S3PutObjectMethod;
+  putAcl: S3PutObjectAclMethod;
+  putLegalHold: S3PutObjectLegalHoldMethod;
+  putRetention: S3PutObjectRetentionMethod;
   putTagging: S3PutObjectTaggingMethod;
+  restore: S3RestoreObjectMethod;
+  selectContent: S3SelectObjectContentMethod;
   uploadPart: S3UploadPartMethod;
   uploadPartCopy: S3UploadPartCopyMethod;
 }

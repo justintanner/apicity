@@ -31,6 +31,8 @@ s3	buckets.head	HEAD	https://s3.us-east-1.amazonaws.com/{bucket}	https://docs.aw
 s3	buckets.location	GET	https://s3.us-east-1.amazonaws.com/{bucket}?location	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
 s3	buckets.getVersioning	GET	https://s3.us-east-1.amazonaws.com/{bucket}?versioning	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html
 s3	buckets.putVersioning	PUT	https://s3.us-east-1.amazonaws.com/{bucket}?versioning	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketVersioning.html
+s3	buckets.getObjectLockConfiguration	GET	https://s3.us-east-1.amazonaws.com/{bucket}?object-lock	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLockConfiguration.html
+s3	buckets.putObjectLockConfiguration	PUT	https://s3.us-east-1.amazonaws.com/{bucket}?object-lock	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLockConfiguration.html
 s3	buckets.getCors	GET	https://s3.us-east-1.amazonaws.com/{bucket}?cors	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketCors.html
 s3	buckets.putCors	PUT	https://s3.us-east-1.amazonaws.com/{bucket}?cors	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html
 s3	buckets.delCors	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}?cors	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketCors.html
@@ -94,6 +96,16 @@ s3	objects.delMany	POST	https://s3.us-east-1.amazonaws.com/{bucket}?delete	https
 s3	objects.getTagging	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html
 s3	objects.putTagging	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html
 s3	objects.delTagging	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html
+s3	objects.getAcl	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html
+s3	objects.putAcl	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html
+s3	objects.getAttributes	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?attributes{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html
+s3	objects.restore	POST	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?restore{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html
+s3	objects.getLegalHold	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLegalHold.html
+s3	objects.putLegalHold	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html
+s3	objects.getRetention	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectRetention.html
+s3	objects.putRetention	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectRetention.html
+s3	objects.getTorrent	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?torrent{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTorrent.html
+s3	objects.selectContent	POST	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?select&select-type=2	https://docs.aws.amazon.com/AmazonS3/latest/API/API_SelectObjectContent.html
 anthropic	v1.files	POST	https://api.anthropic.com/v1/files	https://docs.anthropic.com/en/api
 anthropic	v1.files.content	GET	https://api.anthropic.com/v1/files/{fileId}/content	https://docs.anthropic.com/en/api
 anthropic	v1.files.del	DELETE	https://api.anthropic.com/v1/files/{fileId}	https://docs.anthropic.com/en/api

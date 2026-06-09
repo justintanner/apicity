@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-70 endpoints across 2 groups. Each method mirrors an upstream URL path.
+82 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -358,6 +358,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.getNotification({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getObjectLockConfiguration</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?object-lock</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLockConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getObjectLockConfiguration({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -695,6 +710,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>PUT</code> <b><code>s3.buckets.putObjectLockConfiguration</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?object-lock</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLockConfiguration.html)
+
+```typescript
+const res = await s3.buckets.putObjectLockConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>PUT</code> <b><code>s3.buckets.putOwnershipControls</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?ownershipControls</code>
@@ -937,6 +967,66 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.objects.getAcl</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAcl.html)
+
+```typescript
+const res = await s3.objects.getAcl({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.getAttributes</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?attributes{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html)
+
+```typescript
+const res = await s3.objects.getAttributes({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.getLegalHold</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectLegalHold.html)
+
+```typescript
+const res = await s3.objects.getLegalHold({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.getRetention</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectRetention.html)
+
+```typescript
+const res = await s3.objects.getRetention({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.objects.getTagging</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
@@ -945,6 +1035,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.getTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.getTorrent</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?torrent{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTorrent.html)
+
+```typescript
+const res = await s3.objects.getTorrent({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -1042,6 +1147,51 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>PUT</code> <b><code>s3.objects.putAcl</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?acl{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html)
+
+```typescript
+const res = await s3.objects.putAcl({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.objects.putLegalHold</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?legal-hold{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectLegalHold.html)
+
+```typescript
+const res = await s3.objects.putLegalHold({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.objects.putRetention</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?retention{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectRetention.html)
+
+```typescript
+const res = await s3.objects.putRetention({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>PUT</code> <b><code>s3.objects.putTagging</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
@@ -1050,6 +1200,36 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.putTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.objects.restore</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?restore{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_RestoreObject.html)
+
+```typescript
+const res = await s3.objects.restore({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.objects.selectContent</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?select&select-type=2</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_SelectObjectContent.html)
+
+```typescript
+const res = await s3.objects.selectContent({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

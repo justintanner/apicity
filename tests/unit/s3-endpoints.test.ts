@@ -260,6 +260,238 @@ describe("s3 endpoints", () => {
     expect(deleteInit?.method).toBe("DELETE");
   });
 
+  it("gets and puts object ACL requests", async () => {
+    const aclXml = [
+      "<AccessControlPolicy>",
+      "<Owner><ID>owner-id</ID><DisplayName>owner</DisplayName></Owner>",
+      "<AccessControlList>",
+      "<Grant>",
+      '<Grantee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CanonicalUser">',
+      "<ID>grantee-id</ID><DisplayName>grantee</DisplayName>",
+      "</Grantee>",
+      "<Permission>READ</Permission>",
+      "</Grant>",
+      "</AccessControlList>",
+      "</AccessControlPolicy>",
+    ].join("");
+    const responses = [
+      new Response(aclXml, { status: 200 }),
+      new Response(null, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    const acl = await s3.objects.getAcl({
+      bucket: "test-bucket",
+      key: "governed.txt",
+      versionId: "v1",
+    });
+    await s3.objects.putAcl({
+      bucket: "test-bucket",
+      key: "governed.txt",
+      acl: "bucket-owner-full-control",
+      expectedBucketOwner: "123456789012",
+    });
+
+    expect(acl.owner).toEqual({ id: "owner-id", displayName: "owner" });
+    expect(acl.grants[0]).toEqual({
+      grantee: {
+        type: "CanonicalUser",
+        id: "grantee-id",
+        displayName: "grantee",
+        uri: undefined,
+        emailAddress: undefined,
+      },
+      permission: "READ",
+    });
+
+    const [getUrl, getInit] = fetch.mock.calls[0];
+    expect(String(getUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/governed.txt?acl&versionId=v1"
+    );
+    expect(getInit?.method).toBe("GET");
+
+    const [putUrl, putInit] = fetch.mock.calls[1];
+    expect(String(putUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/governed.txt?acl"
+    );
+    expect(putInit?.method).toBe("PUT");
+    const headers = putInit?.headers as Record<string, string>;
+    expect(headers["x-amz-acl"]).toBe("bucket-owner-full-control");
+    expect(headers["x-amz-expected-bucket-owner"]).toBe("123456789012");
+  });
+
+  it("gets object attributes with requested attribute headers", async () => {
+    const attributesXml = [
+      "<GetObjectAttributesResponse>",
+      '<ETag>"etag"</ETag>',
+      "<Checksum><ChecksumSHA256>sha256</ChecksumSHA256></Checksum>",
+      "<ObjectSize>42</ObjectSize>",
+      "<StorageClass>STANDARD</StorageClass>",
+      "<ObjectParts><TotalPartsCount>1</TotalPartsCount></ObjectParts>",
+      "</GetObjectAttributesResponse>",
+    ].join("");
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(attributesXml, {
+        status: 200,
+        headers: {
+          "last-modified": "Tue, 09 Jun 2026 00:00:00 GMT",
+          "x-amz-version-id": "v1",
+        },
+      });
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.objects.getAttributes({
+      bucket: "test-bucket",
+      key: "governed.txt",
+      versionId: "v1",
+      maxParts: 100,
+      objectAttributes: ["ETag", "Checksum", "ObjectSize", "StorageClass"],
+    });
+
+    expect(result).toMatchObject({
+      eTag: '"etag"',
+      checksumSHA256: "sha256",
+      objectSize: 42,
+      storageClass: "STANDARD",
+      versionId: "v1",
+    });
+
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/governed.txt?attributes&versionId=v1&max-parts=100"
+    );
+    expect(init?.method).toBe("GET");
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["x-amz-object-attributes"]).toBe(
+      "ETag,Checksum,ObjectSize,StorageClass"
+    );
+  });
+
+  it("handles object lock, retention, restore, torrent, and select requests", async () => {
+    const responses = [
+      new Response("<LegalHold><Status>ON</Status></LegalHold>", {
+        status: 200,
+      }),
+      new Response(null, { status: 200 }),
+      new Response(
+        [
+          "<Retention>",
+          "<Mode>GOVERNANCE</Mode>",
+          "<RetainUntilDate>2026-06-10T00:00:00.000Z</RetainUntilDate>",
+          "</Retention>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(null, { status: 200 }),
+      new Response(
+        "<ObjectLockConfiguration><ObjectLockEnabled>Enabled</ObjectLockEnabled></ObjectLockConfiguration>",
+        { status: 200 }
+      ),
+      new Response(null, { status: 200 }),
+      new Response(null, { status: 202 }),
+      new Response(new Uint8Array([1, 2, 3]), { status: 200 }),
+      new Response(new Uint8Array([4, 5, 6]), { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+    const restoreBody = [
+      "<RestoreRequest>",
+      "<Days>1</Days>",
+      "<GlacierJobParameters><Tier>Bulk</Tier></GlacierJobParameters>",
+      "</RestoreRequest>",
+    ].join("");
+    const selectBody = [
+      "<SelectObjectContentRequest>",
+      "<Expression>SELECT * FROM S3Object</Expression>",
+      "<ExpressionType>SQL</ExpressionType>",
+      "<InputSerialization><CSV /></InputSerialization>",
+      "<OutputSerialization><CSV /></OutputSerialization>",
+      "</SelectObjectContentRequest>",
+    ].join("");
+
+    const legalHold = await s3.objects.getLegalHold({
+      bucket: "test-bucket",
+      key: "locked.txt",
+    });
+    await s3.objects.putLegalHold({
+      bucket: "test-bucket",
+      key: "locked.txt",
+      status: "ON",
+    });
+    const retention = await s3.objects.getRetention({
+      bucket: "test-bucket",
+      key: "locked.txt",
+    });
+    await s3.objects.putRetention({
+      bucket: "test-bucket",
+      key: "locked.txt",
+      mode: "GOVERNANCE",
+      retainUntilDate: "2026-06-10T00:00:00.000Z",
+      bypassGovernanceRetention: true,
+    });
+    const objectLock = await s3.buckets.getObjectLockConfiguration({
+      bucket: "test-bucket",
+    });
+    await s3.buckets.putObjectLockConfiguration({
+      bucket: "test-bucket",
+      body: objectLock.rawXml,
+      objectLockToken: "token",
+    });
+    await s3.objects.restore({
+      bucket: "test-bucket",
+      key: "archived.txt",
+      body: restoreBody,
+    });
+    const torrent = await s3.objects.getTorrent({
+      bucket: "test-bucket",
+      key: "public.txt",
+    });
+    const selected = await s3.objects.selectContent({
+      bucket: "test-bucket",
+      key: "data.csv",
+      body: selectBody,
+    });
+
+    expect(legalHold.status).toBe("ON");
+    expect(retention.mode).toBe("GOVERNANCE");
+    expect(objectLock.objectLockEnabled).toBe("Enabled");
+    expect(new Uint8Array(torrent.body)).toEqual(new Uint8Array([1, 2, 3]));
+    expect(new Uint8Array(selected.body)).toEqual(new Uint8Array([4, 5, 6]));
+
+    const putLegalHoldBody = new TextDecoder().decode(
+      fetch.mock.calls[1][1]?.body as Uint8Array
+    );
+    expect(putLegalHoldBody).toContain("<Status>ON</Status>");
+    const putLegalHoldHeaders = fetch.mock.calls[1][1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(putLegalHoldHeaders["Content-MD5"]).toBe(
+      md5Base64(putLegalHoldBody)
+    );
+
+    expect(String(fetch.mock.calls[6][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/archived.txt?restore"
+    );
+    expect(fetch.mock.calls[6][1]?.method).toBe("POST");
+    expect(String(fetch.mock.calls[7][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/public.txt?torrent"
+    );
+    expect(String(fetch.mock.calls[8][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/data.csv?select&select-type=2"
+    );
+  });
+
   it("creates, uploads, lists, and completes multipart uploads", async () => {
     const responses = [
       new Response(

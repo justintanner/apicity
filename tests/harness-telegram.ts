@@ -220,6 +220,14 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   const versioning = hasS3Subresource(entry, "versioning");
   const versions = hasS3Subresource(entry, "versions");
   const configId = hasS3Subresource(entry, "id");
+  const acl = hasS3Subresource(entry, "acl");
+  const attributes = hasS3Subresource(entry, "attributes");
+  const legalHold = hasS3Subresource(entry, "legal-hold");
+  const objectLock = hasS3Subresource(entry, "object-lock");
+  const restore = hasS3Subresource(entry, "restore");
+  const retention = hasS3Subresource(entry, "retention");
+  const select = hasS3Subresource(entry, "select");
+  const torrent = hasS3Subresource(entry, "torrent");
   const bucketConfigSubresources = new Map<string, string>([
     ["analytics", "Analytics"],
     ["cors", "Cors"],
@@ -254,6 +262,9 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     case "buckets.getVersioning":
     case "buckets.putVersioning":
       return !objectRequest && versioning;
+    case "buckets.getObjectLockConfiguration":
+    case "buckets.putObjectLockConfiguration":
+      return !objectRequest && objectLock;
     case "buckets.listAnalytics":
       return (
         !objectRequest && !configId && hasS3Subresource(entry, "analytics")
@@ -335,16 +346,46 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
         !multipartCreate &&
         !multipartUpload &&
         !bulkDelete &&
+        !acl &&
+        !legalHold &&
+        !retention &&
         !requestHeader(entry, "x-amz-copy-source")
       );
     case "objects.get":
     case "objects.head":
     case "objects.del":
-      return objectRequest && !tagging && !multipartUpload;
+      return (
+        objectRequest &&
+        !tagging &&
+        !multipartUpload &&
+        !acl &&
+        !attributes &&
+        !legalHold &&
+        !retention &&
+        !select &&
+        !torrent
+      );
     case "objects.getTagging":
     case "objects.putTagging":
     case "objects.delTagging":
       return objectRequest && tagging;
+    case "objects.getAcl":
+    case "objects.putAcl":
+      return objectRequest && acl;
+    case "objects.getAttributes":
+      return objectRequest && attributes;
+    case "objects.restore":
+      return objectRequest && restore;
+    case "objects.getLegalHold":
+    case "objects.putLegalHold":
+      return objectRequest && legalHold;
+    case "objects.getRetention":
+    case "objects.putRetention":
+      return objectRequest && retention;
+    case "objects.getTorrent":
+      return objectRequest && torrent;
+    case "objects.selectContent":
+      return objectRequest && select;
     default:
       return false;
   }
@@ -402,6 +443,9 @@ function isCreditEntry(entry: HarEntry): boolean {
 function findEndpointEntry(recording: ChangedRecording): HarEntry {
   const operations = recording.entries.filter((entry) => !isCreditEntry(entry));
   return (
+    operations.find(
+      (entry) => entry.response.status < 400 && responseBody(entry)
+    ) ??
     operations.find(
       (entry) => entry.response.status < 400 && responsePreview(entry)
     ) ??

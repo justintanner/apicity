@@ -186,6 +186,130 @@ export type S3PutObjectTaggingRequest = z.infer<
   typeof S3PutObjectTaggingRequestSchema
 >;
 
+const objectGovernanceFieldsSchema = {
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  versionId: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+};
+
+export const S3ObjectGovernanceRequestSchema = z.object(
+  objectGovernanceFieldsSchema
+);
+
+export type S3ObjectGovernanceRequest = z.infer<
+  typeof S3ObjectGovernanceRequestSchema
+>;
+
+export const S3PutObjectAclRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    acl: z
+      .enum([
+        "private",
+        "public-read",
+        "public-read-write",
+        "authenticated-read",
+        "aws-exec-read",
+        "bucket-owner-read",
+        "bucket-owner-full-control",
+      ])
+      .optional(),
+    accessControlPolicy: z.string().optional(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+    grantFullControl: z.string().optional(),
+    grantRead: z.string().optional(),
+    grantReadAcp: z.string().optional(),
+    grantWriteAcp: z.string().optional(),
+  });
+
+export type S3PutObjectAclRequest = z.infer<typeof S3PutObjectAclRequestSchema>;
+
+export const S3GetObjectAttributesRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    objectAttributes: z
+      .array(
+        z.enum([
+          "ETag",
+          "Checksum",
+          "ObjectParts",
+          "StorageClass",
+          "ObjectSize",
+        ])
+      )
+      .min(1),
+    maxParts: z.number().int().positive().max(1000).optional(),
+    partNumberMarker: z.number().int().min(0).optional(),
+    sseCustomerAlgorithm: z.string().optional(),
+    sseCustomerKey: z.string().optional(),
+    sseCustomerKeyMD5: z.string().optional(),
+  });
+
+export type S3GetObjectAttributesRequest = z.infer<
+  typeof S3GetObjectAttributesRequestSchema
+>;
+
+export const S3RestoreObjectRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    body: z.string().optional(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3RestoreObjectRequest = z.infer<
+  typeof S3RestoreObjectRequestSchema
+>;
+
+export const S3PutObjectLegalHoldRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+    status: z.enum(["ON", "OFF"]),
+  });
+
+export type S3PutObjectLegalHoldRequest = z.infer<
+  typeof S3PutObjectLegalHoldRequestSchema
+>;
+
+export const S3PutObjectRetentionRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    bypassGovernanceRetention: z.boolean().optional(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+    mode: z.enum(["GOVERNANCE", "COMPLIANCE"]),
+    retainUntilDate: z.string(),
+  });
+
+export type S3PutObjectRetentionRequest = z.infer<
+  typeof S3PutObjectRetentionRequestSchema
+>;
+
+export const S3PutObjectLockConfigurationRequestSchema = z.object({
+  bucket: z.string().min(1),
+  body: z.string(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  contentMD5: z.string().optional(),
+  expectedBucketOwner: z.string().optional(),
+  objectLockToken: z.string().optional(),
+  requestPayer: requestPayerSchema.optional(),
+});
+
+export type S3PutObjectLockConfigurationRequest = z.infer<
+  typeof S3PutObjectLockConfigurationRequestSchema
+>;
+
+export const S3SelectObjectContentRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    body: z.string(),
+    sseCustomerAlgorithm: z.string().optional(),
+    sseCustomerKey: z.string().optional(),
+    sseCustomerKeyMD5: z.string().optional(),
+  });
+
+export type S3SelectObjectContentRequest = z.infer<
+  typeof S3SelectObjectContentRequestSchema
+>;
+
 export const S3DeleteObjectRequestSchema = z.object({
   bucket: z.string().min(1),
   key: z.string().min(1),

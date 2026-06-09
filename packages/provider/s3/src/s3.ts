@@ -2,10 +2,16 @@ import { createHash, createHmac } from "node:crypto";
 
 import { S3Error } from "./types";
 import type {
+  S3BucketRequest,
+  S3CreateBucketRequest,
+  S3CreateBucketResponse,
+  S3DeleteBucketResponse,
   S3DeleteObjectRequest,
   S3DeleteObjectResponse,
+  S3GetBucketLocationResponse,
   S3GetObjectRequest,
   S3GetObjectResponse,
+  S3HeadBucketResponse,
   S3HeadObjectRequest,
   S3HeadObjectResponse,
   S3ListBucketsRequest,
@@ -19,6 +25,8 @@ import type {
   S3PutObjectResponse,
 } from "./types";
 import {
+  S3BucketRequestSchema,
+  S3CreateBucketRequestSchema,
   S3DeleteObjectRequestSchema,
   S3GetObjectRequestSchema,
   S3HeadObjectRequestSchema,
@@ -330,7 +338,9 @@ function decodeXml(text: string | undefined): string | undefined {
 }
 
 function textOf(xml: string, tag: string): string | undefined {
-  const match = xml.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
+  const match = xml.match(
+    new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`)
+  );
   return decodeXml(match?.[1]);
 }
 
@@ -409,6 +419,33 @@ function parseListObjectsV2(xml: string): S3ListObjectsV2Response {
     })),
     rawXml: xml,
   };
+}
+
+function parseBucketLocation(xml: string): S3GetBucketLocationResponse {
+  const locationConstraint = textOf(xml, "LocationConstraint");
+  return {
+    locationConstraint:
+      locationConstraint && locationConstraint.length > 0
+        ? locationConstraint
+        : undefined,
+    rawXml: xml,
+  };
+}
+
+function bucketRequestHeaders(
+  expectedBucketOwner: string | undefined
+): Record<string, string> {
+  if (!expectedBucketOwner) return {};
+  return { "x-amz-expected-bucket-owner": expectedBucketOwner };
+}
+
+function createBucketBody(locationConstraint: string | undefined): string {
+  if (!locationConstraint) return "";
+  return [
+    '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    `<LocationConstraint>${locationConstraint}</LocationConstraint>`,
+    "</CreateBucketConfiguration>",
+  ].join("");
 }
 
 function formatErrorMessage(status: number, parsed: ParsedS3Error): string {
@@ -511,6 +548,133 @@ export function createS3(opts: S3Options): S3Provider {
       return parseListBuckets(await res.text());
     },
     { schema: S3ListBucketsRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html
+  const bucketsCreate = Object.assign(
+    async (
+      req: S3CreateBucketRequest,
+      signal?: AbortSignal
+    ): Promise<S3CreateBucketResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const locationConstraint =
+        req.locationConstraint ??
+        (opts.region === "us-east-1" ? undefined : opts.region);
+      const body = createBucketBody(locationConstraint);
+      const headers: Record<string, string> = {};
+      if (body) headers["Content-Type"] = "application/xml";
+      if (req.acl) headers["x-amz-acl"] = req.acl;
+      if (req.objectOwnership) {
+        headers["x-amz-object-ownership"] = req.objectOwnership;
+      }
+      if (req.objectLockEnabledForBucket !== undefined) {
+        headers["x-amz-bucket-object-lock-enabled"] = String(
+          req.objectLockEnabledForBucket
+        );
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}`,
+        {
+          bucket: req.bucket,
+          body: body || undefined,
+          headers,
+        },
+        signal
+      );
+      return {
+        location: getHeader(res.headers, "location"),
+        headers: collectHeaders(res.headers),
+      };
+    },
+    { schema: S3CreateBucketRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html
+  const bucketsDel = Object.assign(
+    async (
+      req: S3BucketRequest,
+      signal?: AbortSignal
+    ): Promise<S3DeleteBucketResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}`,
+        {
+          bucket: req.bucket,
+          headers: bucketRequestHeaders(req.expectedBucketOwner),
+        },
+        signal
+      );
+      return { headers: collectHeaders(res.headers) };
+    },
+    { schema: S3BucketRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket path
+  // HEAD https://s3.us-east-1.amazonaws.com/{bucket}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html
+  const bucketsHead = Object.assign(
+    async (
+      req: S3BucketRequest,
+      signal?: AbortSignal
+    ): Promise<S3HeadBucketResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "HEAD",
+        `/${bucket}`,
+        {
+          bucket: req.bucket,
+          headers: bucketRequestHeaders(req.expectedBucketOwner),
+        },
+        signal
+      );
+      return {
+        bucketArn: getHeader(res.headers, "x-amz-bucket-arn"),
+        bucketLocationType: getHeader(
+          res.headers,
+          "x-amz-bucket-location-type"
+        ),
+        bucketLocationName: getHeader(
+          res.headers,
+          "x-amz-bucket-location-name"
+        ),
+        bucketRegion: getHeader(res.headers, "x-amz-bucket-region"),
+        accessPointAlias: booleanHeader(
+          res.headers,
+          "x-amz-access-point-alias"
+        ),
+        headers: collectHeaders(res.headers),
+      };
+    },
+    { schema: S3BucketRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket location path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?location
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
+  const bucketsLocation = Object.assign(
+    async (
+      req: S3BucketRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketLocationResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?location`,
+        {
+          bucket: req.bucket,
+          headers: bucketRequestHeaders(req.expectedBucketOwner),
+        },
+        signal
+      );
+      return parseBucketLocation(await res.text());
+    },
+    { schema: S3BucketRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 bucket path
@@ -669,7 +833,11 @@ export function createS3(opts: S3Options): S3Provider {
 
   return {
     buckets: {
+      create: bucketsCreate,
+      del: bucketsDel,
+      head: bucketsHead,
       list: bucketsList,
+      location: bucketsLocation,
     },
     objects: {
       del: objectsDel,

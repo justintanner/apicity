@@ -19,6 +19,103 @@ function createTestS3(fetch: typeof globalThis.fetch, forcePathStyle = true) {
 }
 
 describe("s3 endpoints", () => {
+  it("signs and creates a bucket with a location constraint", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(null, {
+        status: 200,
+        headers: { location: "/test-bucket" },
+      });
+    });
+    const s3 = createS3({
+      accessKeyId: "test-access-key",
+      secretAccessKey: "test-secret-key",
+      region: "us-west-2",
+      endpoint: "https://s3.us-west-2.amazonaws.com",
+      forcePathStyle: true,
+      fetch,
+    });
+
+    const result = await s3.buckets.create({
+      bucket: "test-bucket",
+      objectOwnership: "BucketOwnerEnforced",
+    });
+
+    expect(result.location).toBe("/test-bucket");
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe("https://s3.us-west-2.amazonaws.com/test-bucket");
+    expect(init?.method).toBe("PUT");
+    const headers = init?.headers as Record<string, string>;
+    expect(headers.Authorization).toMatch(/^AWS4-HMAC-SHA256 Credential=/);
+    expect(headers["Content-Type"]).toBe("application/xml");
+    expect(headers["x-amz-object-ownership"]).toBe("BucketOwnerEnforced");
+    expect(new TextDecoder().decode(init?.body as Uint8Array)).toContain(
+      "<LocationConstraint>us-west-2</LocationConstraint>"
+    );
+  });
+
+  it("signs and deletes a bucket request", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(null, { status: 204 });
+    });
+    const s3 = createTestS3(fetch);
+
+    await s3.buckets.del({
+      bucket: "test-bucket",
+      expectedBucketOwner: "123456789012",
+    });
+
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe("https://s3.us-east-1.amazonaws.com/test-bucket");
+    expect(init?.method).toBe("DELETE");
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["x-amz-expected-bucket-owner"]).toBe("123456789012");
+  });
+
+  it("parses HeadBucket response headers", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(null, {
+        status: 200,
+        headers: {
+          "x-amz-bucket-region": "us-east-1",
+          "x-amz-access-point-alias": "false",
+        },
+      });
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.buckets.head({ bucket: "test-bucket" });
+
+    expect(result.bucketRegion).toBe("us-east-1");
+    expect(result.accessPointAlias).toBe(false);
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe("https://s3.us-east-1.amazonaws.com/test-bucket");
+    expect(init?.method).toBe("HEAD");
+  });
+
+  it("parses GetBucketLocation XML responses", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(
+        [
+          '<?xml version="1.0" encoding="UTF-8"?>',
+          '<LocationConstraint xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+          "us-west-2",
+          "</LocationConstraint>",
+        ].join(""),
+        { status: 200 }
+      );
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.buckets.location({ bucket: "test-bucket" });
+
+    expect(result.locationConstraint).toBe("us-west-2");
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?location"
+    );
+    expect(init?.method).toBe("GET");
+  });
+
   it("signs and PUTs a path-style object request", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       return new Response(null, {

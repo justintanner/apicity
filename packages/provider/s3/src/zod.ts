@@ -24,6 +24,27 @@ export const S3ListBucketsRequestSchema = z.object({}).optional();
 
 export type S3ListBucketsRequest = z.infer<typeof S3ListBucketsRequestSchema>;
 
+export const S3CreateBucketRequestSchema = z.object({
+  bucket: z.string().min(1),
+  locationConstraint: z.string().min(1).optional(),
+  acl: z
+    .enum(["private", "public-read", "public-read-write", "authenticated-read"])
+    .optional(),
+  objectOwnership: z
+    .enum(["BucketOwnerPreferred", "ObjectWriter", "BucketOwnerEnforced"])
+    .optional(),
+  objectLockEnabledForBucket: z.boolean().optional(),
+});
+
+export type S3CreateBucketRequest = z.infer<typeof S3CreateBucketRequestSchema>;
+
+export const S3BucketRequestSchema = z.object({
+  bucket: z.string().min(1),
+  expectedBucketOwner: z.string().optional(),
+});
+
+export type S3BucketRequest = z.infer<typeof S3BucketRequestSchema>;
+
 export const S3ListObjectsV2RequestSchema = z.object({
   bucket: z.string().min(1),
   prefix: z.string().optional(),

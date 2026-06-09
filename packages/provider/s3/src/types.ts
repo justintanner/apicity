@@ -1,6 +1,8 @@
 import type { z } from "zod";
 
 export type {
+  S3BucketRequest,
+  S3CreateBucketRequest,
   S3DeleteObjectRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
@@ -11,6 +13,8 @@ export type {
 } from "./zod";
 
 import type {
+  S3BucketRequest,
+  S3CreateBucketRequest,
   S3DeleteObjectRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
@@ -58,6 +62,29 @@ export interface S3ListBucketsResponse {
   buckets: S3Bucket[];
   owner?: S3Owner;
   rawXml: string;
+}
+
+export interface S3CreateBucketResponse {
+  location?: string;
+  headers: Record<string, string>;
+}
+
+export interface S3HeadBucketResponse {
+  bucketArn?: string;
+  bucketLocationType?: string;
+  bucketLocationName?: string;
+  bucketRegion?: string;
+  accessPointAlias?: boolean;
+  headers: Record<string, string>;
+}
+
+export interface S3GetBucketLocationResponse {
+  locationConstraint?: string;
+  rawXml: string;
+}
+
+export interface S3DeleteBucketResponse {
+  headers: Record<string, string>;
 }
 
 export interface S3ObjectSummary {
@@ -131,6 +158,32 @@ export interface S3ListBucketsMethod {
   schema: z.ZodType<S3ListBucketsRequest>;
 }
 
+export interface S3CreateBucketMethod {
+  (
+    req: S3CreateBucketRequest,
+    signal?: AbortSignal
+  ): Promise<S3CreateBucketResponse>;
+  schema: z.ZodType<S3CreateBucketRequest>;
+}
+
+export interface S3HeadBucketMethod {
+  (req: S3BucketRequest, signal?: AbortSignal): Promise<S3HeadBucketResponse>;
+  schema: z.ZodType<S3BucketRequest>;
+}
+
+export interface S3GetBucketLocationMethod {
+  (
+    req: S3BucketRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketLocationResponse>;
+  schema: z.ZodType<S3BucketRequest>;
+}
+
+export interface S3DeleteBucketMethod {
+  (req: S3BucketRequest, signal?: AbortSignal): Promise<S3DeleteBucketResponse>;
+  schema: z.ZodType<S3BucketRequest>;
+}
+
 export interface S3ListObjectsV2Method {
   (
     req: S3ListObjectsV2Request,
@@ -166,7 +219,11 @@ export interface S3DeleteObjectMethod {
 }
 
 export interface S3BucketsNamespace {
+  create: S3CreateBucketMethod;
+  del: S3DeleteBucketMethod;
+  head: S3HeadBucketMethod;
   list: S3ListBucketsMethod;
+  location: S3GetBucketLocationMethod;
 }
 
 export interface S3ObjectsNamespace {

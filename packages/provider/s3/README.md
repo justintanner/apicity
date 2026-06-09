@@ -30,9 +30,54 @@ const s3 = createS3({
 
 ## API Reference
 
-6 endpoints across 2 groups. Each method mirrors an upstream URL path.
+10 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### buckets
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.create</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html)
+
+```typescript
+const res = await s3.buckets.create({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.del</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucket.html)
+
+```typescript
+const res = await s3.buckets.del({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>HEAD</code> <b><code>s3.buckets.head</code></b></summary>
+
+<code>HEAD https://s3.us-east-1.amazonaws.com/{bucket}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html)
+
+```typescript
+const res = await s3.buckets.head({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>s3.buckets.list</code></b></summary>
@@ -43,6 +88,21 @@ const s3 = createS3({
 
 ```typescript
 const res = await s3.buckets.list({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.location</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?location</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html)
+
+```typescript
+const res = await s3.buckets.location({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

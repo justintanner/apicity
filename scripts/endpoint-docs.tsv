@@ -32,6 +32,13 @@ s3	buckets.location	GET	https://s3.us-east-1.amazonaws.com/{bucket}?location	htt
 s3	objects.list	GET	https://s3.us-east-1.amazonaws.com/{bucket}?list-type=2{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
 s3	objects.put	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html
 s3	objects.copy	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html
+s3	objects.createMultipartUpload	POST	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?uploads	https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
+s3	objects.uploadPart	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html
+s3	objects.uploadPartCopy	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html
+s3	objects.completeMultipartUpload	POST	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
+s3	objects.abortMultipartUpload	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html
+s3	objects.listParts	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html
+s3	objects.listMultipartUploads	GET	https://s3.us-east-1.amazonaws.com/{bucket}?uploads{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html
 s3	objects.get	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
 s3	objects.head	HEAD	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html
 s3	objects.del	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html

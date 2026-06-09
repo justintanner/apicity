@@ -256,6 +256,210 @@ describe("s3 endpoints", () => {
     expect(deleteInit?.method).toBe("DELETE");
   });
 
+  it("creates, uploads, lists, and completes multipart uploads", async () => {
+    const responses = [
+      new Response(
+        [
+          "<InitiateMultipartUploadResult>",
+          "<Bucket>test-bucket</Bucket>",
+          "<Key>large.txt</Key>",
+          "<UploadId>upload-1</UploadId>",
+          "</InitiateMultipartUploadResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(null, {
+        status: 200,
+        headers: { etag: '"part-1"' },
+      }),
+      new Response(
+        [
+          "<ListPartsResult>",
+          "<Bucket>test-bucket</Bucket>",
+          "<Key>large.txt</Key>",
+          "<UploadId>upload-1</UploadId>",
+          "<IsTruncated>false</IsTruncated>",
+          "<Part>",
+          "<PartNumber>1</PartNumber>",
+          '<ETag>"part-1"</ETag>',
+          "<Size>11</Size>",
+          "</Part>",
+          "</ListPartsResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(
+        [
+          "<CompleteMultipartUploadResult>",
+          "<Location>https://test-bucket.s3.amazonaws.com/large.txt</Location>",
+          "<Bucket>test-bucket</Bucket>",
+          "<Key>large.txt</Key>",
+          '<ETag>"complete"</ETag>',
+          "</CompleteMultipartUploadResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    const created = await s3.objects.createMultipartUpload({
+      bucket: "test-bucket",
+      key: "large.txt",
+      contentType: "text/plain",
+      metadata: { source: "unit" },
+      checksumAlgorithm: "SHA256",
+    });
+    const part = await s3.objects.uploadPart({
+      bucket: "test-bucket",
+      key: "large.txt",
+      uploadId: created.uploadId,
+      partNumber: 1,
+      body: "hello world",
+    });
+    const listed = await s3.objects.listParts({
+      bucket: "test-bucket",
+      key: "large.txt",
+      uploadId: created.uploadId,
+    });
+    const complete = await s3.objects.completeMultipartUpload({
+      bucket: "test-bucket",
+      key: "large.txt",
+      uploadId: created.uploadId,
+      parts: [{ partNumber: 1, eTag: part.eTag ?? "" }],
+    });
+
+    expect(created.uploadId).toBe("upload-1");
+    expect(listed.parts[0]).toMatchObject({
+      partNumber: 1,
+      eTag: '"part-1"',
+      size: 11,
+    });
+    expect(complete.eTag).toBe('"complete"');
+    expect(fetch).toHaveBeenCalledTimes(4);
+
+    const [createUrl, createInit] = fetch.mock.calls[0];
+    expect(String(createUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/large.txt?uploads"
+    );
+    expect(createInit?.method).toBe("POST");
+    const createHeaders = createInit?.headers as Record<string, string>;
+    expect(createHeaders["Content-Type"]).toBe("text/plain");
+    expect(createHeaders["x-amz-meta-source"]).toBe("unit");
+    expect(createHeaders["x-amz-checksum-algorithm"]).toBe("SHA256");
+
+    const [partUrl, partInit] = fetch.mock.calls[1];
+    expect(String(partUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/large.txt?partNumber=1&uploadId=upload-1"
+    );
+    expect(partInit?.method).toBe("PUT");
+    expect(part.eTag).toBe('"part-1"');
+
+    const [listUrl, listInit] = fetch.mock.calls[2];
+    expect(String(listUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/large.txt?uploadId=upload-1"
+    );
+    expect(listInit?.method).toBe("GET");
+
+    const [completeUrl, completeInit] = fetch.mock.calls[3];
+    expect(String(completeUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/large.txt?uploadId=upload-1"
+    );
+    expect(completeInit?.method).toBe("POST");
+    expect(
+      new TextDecoder().decode(completeInit?.body as Uint8Array)
+    ).toContain("<PartNumber>1</PartNumber>");
+  });
+
+  it("copies parts, lists active multipart uploads, and aborts them", async () => {
+    const responses = [
+      new Response(
+        [
+          "<CopyPartResult>",
+          "<LastModified>2026-06-09T00:00:00.000Z</LastModified>",
+          '<ETag>"copy-part"</ETag>',
+          "</CopyPartResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(
+        [
+          "<ListMultipartUploadsResult>",
+          "<Bucket>test-bucket</Bucket>",
+          "<IsTruncated>false</IsTruncated>",
+          "<Upload>",
+          "<Key>copy.txt</Key>",
+          "<UploadId>upload-copy</UploadId>",
+          "<StorageClass>STANDARD</StorageClass>",
+          "<Initiated>2026-06-09T00:00:00.000Z</Initiated>",
+          "</Upload>",
+          "</ListMultipartUploadsResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(null, { status: 204 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    const copied = await s3.objects.uploadPartCopy({
+      bucket: "test-bucket",
+      key: "copy.txt",
+      uploadId: "upload-copy",
+      partNumber: 1,
+      sourceBucket: "source-bucket",
+      sourceKey: "folder/source.txt",
+      copySourceRange: "bytes=0-10",
+    });
+    const uploads = await s3.objects.listMultipartUploads({
+      bucket: "test-bucket",
+      prefix: "copy",
+    });
+    await s3.objects.abortMultipartUpload({
+      bucket: "test-bucket",
+      key: "copy.txt",
+      uploadId: "upload-copy",
+    });
+
+    expect(copied.eTag).toBe('"copy-part"');
+    expect(uploads.uploads[0]).toMatchObject({
+      key: "copy.txt",
+      uploadId: "upload-copy",
+      storageClass: "STANDARD",
+    });
+
+    const [copyUrl, copyInit] = fetch.mock.calls[0];
+    expect(String(copyUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/copy.txt?partNumber=1&uploadId=upload-copy"
+    );
+    expect(copyInit?.method).toBe("PUT");
+    const copyHeaders = copyInit?.headers as Record<string, string>;
+    expect(copyHeaders["x-amz-copy-source"]).toBe(
+      "/source-bucket/folder/source.txt"
+    );
+    expect(copyHeaders["x-amz-copy-source-range"]).toBe("bytes=0-10");
+
+    const [listUrl, listInit] = fetch.mock.calls[1];
+    expect(String(listUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?uploads&prefix=copy"
+    );
+    expect(listInit?.method).toBe("GET");
+
+    const [abortUrl, abortInit] = fetch.mock.calls[2];
+    expect(String(abortUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/copy.txt?uploadId=upload-copy"
+    );
+    expect(abortInit?.method).toBe("DELETE");
+  });
+
   it("uses virtual-hosted URLs by default for AWS-compatible bucket names", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       return new Response(null, { status: 200 });

@@ -7,6 +7,47 @@ const objectBodySchema = z.union([
   z.instanceof(Uint8Array),
 ]);
 
+const requestPayerSchema = z.enum(["requester"]);
+
+const checksumAlgorithmSchema = z.enum([
+  "CRC32",
+  "CRC32C",
+  "CRC64NVME",
+  "SHA1",
+  "SHA256",
+  "SHA512",
+]);
+
+const checksumTypeSchema = z.enum(["COMPOSITE", "FULL_OBJECT"]);
+
+const checksumFieldsSchema = {
+  checksumCRC32: z.string().optional(),
+  checksumCRC32C: z.string().optional(),
+  checksumCRC64NVME: z.string().optional(),
+  checksumSHA1: z.string().optional(),
+  checksumSHA256: z.string().optional(),
+  checksumSHA512: z.string().optional(),
+  checksumMD5: z.string().optional(),
+  checksumType: checksumTypeSchema.optional(),
+};
+
+const objectContentFieldsSchema = {
+  contentType: z.string().optional(),
+  cacheControl: z.string().optional(),
+  contentDisposition: z.string().optional(),
+  contentEncoding: z.string().optional(),
+  contentLanguage: z.string().optional(),
+};
+
+const objectMetadataSchema = z.record(z.string(), z.string()).optional();
+
+const expectedOwnerFieldsSchema = {
+  expectedBucketOwner: z.string().optional(),
+  requestPayer: requestPayerSchema.optional(),
+};
+
+const multipartPartNumberSchema = z.number().int().min(1).max(10000);
+
 export const S3OptionsSchema = z.object({
   accessKeyId: z.string().min(1),
   secretAccessKey: z.string().min(1),
@@ -69,12 +110,8 @@ export const S3PutObjectRequestSchema = z.object({
   bucket: z.string().min(1),
   key: z.string().min(1),
   body: objectBodySchema,
-  contentType: z.string().optional(),
-  cacheControl: z.string().optional(),
-  contentDisposition: z.string().optional(),
-  contentEncoding: z.string().optional(),
-  contentLanguage: z.string().optional(),
-  metadata: z.record(z.string(), z.string()).optional(),
+  ...objectContentFieldsSchema,
+  metadata: objectMetadataSchema,
   storageClass: z.string().optional(),
 });
 
@@ -86,16 +123,12 @@ export const S3CopyObjectRequestSchema = z.object({
   sourceBucket: z.string().min(1),
   sourceKey: z.string().min(1),
   sourceVersionId: z.string().optional(),
-  contentType: z.string().optional(),
-  cacheControl: z.string().optional(),
-  contentDisposition: z.string().optional(),
-  contentEncoding: z.string().optional(),
-  contentLanguage: z.string().optional(),
-  metadata: z.record(z.string(), z.string()).optional(),
+  ...objectContentFieldsSchema,
+  metadata: objectMetadataSchema,
   metadataDirective: z.enum(["COPY", "REPLACE"]).optional(),
   taggingDirective: z.enum(["COPY", "REPLACE"]).optional(),
   storageClass: z.string().optional(),
-  expectedBucketOwner: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
   sourceExpectedBucketOwner: z.string().optional(),
 });
 
@@ -141,3 +174,128 @@ export const S3DeleteObjectRequestSchema = z.object({
 });
 
 export type S3DeleteObjectRequest = z.infer<typeof S3DeleteObjectRequestSchema>;
+
+export const S3CreateMultipartUploadRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  ...objectContentFieldsSchema,
+  metadata: objectMetadataSchema,
+  acl: z
+    .enum(["private", "public-read", "public-read-write", "authenticated-read"])
+    .optional(),
+  bucketKeyEnabled: z.boolean().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  checksumType: checksumTypeSchema.optional(),
+  objectLockLegalHold: z.enum(["ON", "OFF"]).optional(),
+  objectLockMode: z.enum(["GOVERNANCE", "COMPLIANCE"]).optional(),
+  objectLockRetainUntilDate: z.string().optional(),
+  serverSideEncryption: z.string().optional(),
+  sseKmsEncryptionContext: z.string().optional(),
+  sseKmsKeyId: z.string().optional(),
+  storageClass: z.string().optional(),
+  tagging: z.string().optional(),
+  websiteRedirectLocation: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3CreateMultipartUploadRequest = z.infer<
+  typeof S3CreateMultipartUploadRequestSchema
+>;
+
+export const S3UploadPartRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  uploadId: z.string().min(1),
+  partNumber: multipartPartNumberSchema,
+  body: objectBodySchema,
+  contentMD5: z.string().optional(),
+  ...checksumFieldsSchema,
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3UploadPartRequest = z.infer<typeof S3UploadPartRequestSchema>;
+
+export const S3UploadPartCopyRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  uploadId: z.string().min(1),
+  partNumber: multipartPartNumberSchema,
+  sourceBucket: z.string().min(1),
+  sourceKey: z.string().min(1),
+  sourceVersionId: z.string().optional(),
+  copySourceIfMatch: z.string().optional(),
+  copySourceIfModifiedSince: z.string().optional(),
+  copySourceIfNoneMatch: z.string().optional(),
+  copySourceIfUnmodifiedSince: z.string().optional(),
+  copySourceRange: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+  sourceExpectedBucketOwner: z.string().optional(),
+});
+
+export type S3UploadPartCopyRequest = z.infer<
+  typeof S3UploadPartCopyRequestSchema
+>;
+
+const completedMultipartPartSchema = z.object({
+  partNumber: multipartPartNumberSchema,
+  eTag: z.string().min(1),
+  checksumCRC32: z.string().optional(),
+  checksumCRC32C: z.string().optional(),
+  checksumCRC64NVME: z.string().optional(),
+  checksumSHA1: z.string().optional(),
+  checksumSHA256: z.string().optional(),
+  checksumSHA512: z.string().optional(),
+});
+
+export const S3CompleteMultipartUploadRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  uploadId: z.string().min(1),
+  parts: z.array(completedMultipartPartSchema).min(1).max(10000),
+  ifMatch: z.string().optional(),
+  ifNoneMatch: z.string().optional(),
+  mpuObjectSize: z.number().int().nonnegative().optional(),
+  ...checksumFieldsSchema,
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3CompleteMultipartUploadRequest = z.infer<
+  typeof S3CompleteMultipartUploadRequestSchema
+>;
+
+export const S3AbortMultipartUploadRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  uploadId: z.string().min(1),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3AbortMultipartUploadRequest = z.infer<
+  typeof S3AbortMultipartUploadRequestSchema
+>;
+
+export const S3ListPartsRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  uploadId: z.string().min(1),
+  maxParts: z.number().int().positive().max(1000).optional(),
+  partNumberMarker: z.number().int().min(0).optional(),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3ListPartsRequest = z.infer<typeof S3ListPartsRequestSchema>;
+
+export const S3ListMultipartUploadsRequestSchema = z.object({
+  bucket: z.string().min(1),
+  delimiter: z.string().optional(),
+  encodingType: z.enum(["url"]).optional(),
+  keyMarker: z.string().optional(),
+  maxUploads: z.number().int().positive().max(1000).optional(),
+  prefix: z.string().optional(),
+  uploadIdMarker: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3ListMultipartUploadsRequest = z.infer<
+  typeof S3ListMultipartUploadsRequestSchema
+>;

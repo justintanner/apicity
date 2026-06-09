@@ -213,6 +213,9 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
 
   const objectRequest = isS3ObjectRequest(entry);
   const tagging = hasS3Subresource(entry, "tagging");
+  const multipartCreate = hasS3Subresource(entry, "uploads");
+  const multipartUpload = hasS3Subresource(entry, "uploadId");
+  const multipartPart = hasS3Subresource(entry, "partNumber");
 
   switch (row.dotPath) {
     case "buckets.list":
@@ -230,15 +233,47 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     case "objects.list":
       return hasS3Subresource(entry, "list-type");
     case "objects.copy":
-      return objectRequest && !!requestHeader(entry, "x-amz-copy-source");
+      return (
+        objectRequest &&
+        !multipartUpload &&
+        !!requestHeader(entry, "x-amz-copy-source")
+      );
+    case "objects.createMultipartUpload":
+      return objectRequest && multipartCreate;
+    case "objects.uploadPart":
+      return (
+        objectRequest &&
+        multipartUpload &&
+        multipartPart &&
+        !requestHeader(entry, "x-amz-copy-source")
+      );
+    case "objects.uploadPartCopy":
+      return (
+        objectRequest &&
+        multipartUpload &&
+        multipartPart &&
+        !!requestHeader(entry, "x-amz-copy-source")
+      );
+    case "objects.completeMultipartUpload":
+      return objectRequest && multipartUpload;
+    case "objects.abortMultipartUpload":
+      return objectRequest && multipartUpload;
+    case "objects.listParts":
+      return objectRequest && multipartUpload;
+    case "objects.listMultipartUploads":
+      return !objectRequest && multipartCreate;
     case "objects.put":
       return (
-        objectRequest && !tagging && !requestHeader(entry, "x-amz-copy-source")
+        objectRequest &&
+        !tagging &&
+        !multipartCreate &&
+        !multipartUpload &&
+        !requestHeader(entry, "x-amz-copy-source")
       );
     case "objects.get":
     case "objects.head":
     case "objects.del":
-      return objectRequest && !tagging;
+      return objectRequest && !tagging && !multipartUpload;
     case "objects.getTagging":
     case "objects.putTagging":
     case "objects.delTagging":

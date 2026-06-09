@@ -2,9 +2,16 @@ import { createHash, createHmac } from "node:crypto";
 
 import { S3Error } from "./types";
 import type {
+  S3AbortMultipartUploadRequest,
+  S3AbortMultipartUploadResponse,
   S3BucketRequest,
+  S3ChecksumFields,
+  S3CompleteMultipartUploadRequest,
+  S3CompleteMultipartUploadResponse,
   S3CopyObjectRequest,
   S3CopyObjectResponse,
+  S3CreateMultipartUploadRequest,
+  S3CreateMultipartUploadResponse,
   S3CreateBucketRequest,
   S3CreateBucketResponse,
   S3DeleteBucketResponse,
@@ -20,8 +27,12 @@ import type {
   S3HeadObjectResponse,
   S3ListBucketsRequest,
   S3ListBucketsResponse,
+  S3ListMultipartUploadsRequest,
+  S3ListMultipartUploadsResponse,
   S3ListObjectsV2Request,
   S3ListObjectsV2Response,
+  S3ListPartsRequest,
+  S3ListPartsResponse,
   S3ObjectTaggingRequest,
   S3ObjectHeaders,
   S3Options,
@@ -30,22 +41,33 @@ import type {
   S3PutObjectTaggingResponse,
   S3PutObjectRequest,
   S3PutObjectResponse,
+  S3UploadPartCopyRequest,
+  S3UploadPartCopyResponse,
+  S3UploadPartRequest,
+  S3UploadPartResponse,
 } from "./types";
 import {
+  S3AbortMultipartUploadRequestSchema,
   S3BucketRequestSchema,
+  S3CompleteMultipartUploadRequestSchema,
   S3CopyObjectRequestSchema,
+  S3CreateMultipartUploadRequestSchema,
   S3CreateBucketRequestSchema,
   S3DeleteObjectRequestSchema,
   S3GetObjectRequestSchema,
   S3HeadObjectRequestSchema,
   S3ListBucketsRequestSchema,
+  S3ListMultipartUploadsRequestSchema,
   S3ListObjectsV2RequestSchema,
+  S3ListPartsRequestSchema,
   S3ObjectTaggingRequestSchema,
   S3PutObjectTaggingRequestSchema,
   S3PutObjectRequestSchema,
+  S3UploadPartCopyRequestSchema,
+  S3UploadPartRequestSchema,
 } from "./zod";
 
-type HttpMethod = "GET" | "PUT" | "DELETE" | "HEAD";
+type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "HEAD";
 
 interface SignedRequestConfig {
   bucket?: string;
@@ -396,6 +418,13 @@ function blocksOf(xml: string, tag: string): string[] {
   return blocks;
 }
 
+function textsOf(xml: string, tag: string): string[] {
+  return blocksOf(xml, tag).flatMap((text) => {
+    const decoded = decodeXml(text);
+    return decoded === undefined ? [] : [decoded];
+  });
+}
+
 function parseOwner(xml: string): { id?: string; displayName?: string } {
   return {
     id: textOf(xml, "ID"),
@@ -495,11 +524,236 @@ function parseObjectTagging(
   };
 }
 
+function checksumFieldsFromXml(xml: string): S3ChecksumFields {
+  return {
+    checksumCRC32: textOf(xml, "ChecksumCRC32"),
+    checksumCRC32C: textOf(xml, "ChecksumCRC32C"),
+    checksumCRC64NVME: textOf(xml, "ChecksumCRC64NVME"),
+    checksumMD5: textOf(xml, "ChecksumMD5"),
+    checksumSHA1: textOf(xml, "ChecksumSHA1"),
+    checksumSHA256: textOf(xml, "ChecksumSHA256"),
+    checksumSHA512: textOf(xml, "ChecksumSHA512"),
+    checksumType: textOf(xml, "ChecksumType"),
+  };
+}
+
+function checksumFieldsFromHeaders(headers: Headers): S3ChecksumFields {
+  return {
+    checksumCRC32: getHeader(headers, "x-amz-checksum-crc32"),
+    checksumCRC32C: getHeader(headers, "x-amz-checksum-crc32c"),
+    checksumCRC64NVME: getHeader(headers, "x-amz-checksum-crc64nvme"),
+    checksumMD5: getHeader(headers, "x-amz-checksum-md5"),
+    checksumSHA1: getHeader(headers, "x-amz-checksum-sha1"),
+    checksumSHA256: getHeader(headers, "x-amz-checksum-sha256"),
+    checksumSHA512: getHeader(headers, "x-amz-checksum-sha512"),
+    checksumType: getHeader(headers, "x-amz-checksum-type"),
+  };
+}
+
+function parseCreateMultipartUpload(
+  xml: string,
+  headers: Headers
+): S3CreateMultipartUploadResponse {
+  return {
+    ...checksumFieldsFromHeaders(headers),
+    bucket: textOf(xml, "Bucket"),
+    key: textOf(xml, "Key"),
+    uploadId: textOf(xml, "UploadId") ?? "",
+    abortDate: getHeader(headers, "x-amz-abort-date"),
+    abortRuleId: getHeader(headers, "x-amz-abort-rule-id"),
+    bucketKeyEnabled: booleanHeader(
+      headers,
+      "x-amz-server-side-encryption-bucket-key-enabled"
+    ),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    serverSideEncryption: getHeader(headers, "x-amz-server-side-encryption"),
+    sseKmsKeyId: getHeader(
+      headers,
+      "x-amz-server-side-encryption-aws-kms-key-id"
+    ),
+    rawXml: xml,
+  };
+}
+
+function parseUploadPartCopy(
+  xml: string,
+  headers: Headers
+): S3UploadPartCopyResponse {
+  return {
+    ...checksumFieldsFromXml(xml),
+    eTag: textOf(xml, "ETag"),
+    lastModified: textOf(xml, "LastModified"),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    rawXml: xml,
+  };
+}
+
+function parseCompleteMultipartUpload(
+  xml: string,
+  headers: Headers
+): S3CompleteMultipartUploadResponse {
+  return {
+    ...checksumFieldsFromXml(xml),
+    location: textOf(xml, "Location"),
+    bucket: textOf(xml, "Bucket"),
+    key: textOf(xml, "Key"),
+    eTag: textOf(xml, "ETag"),
+    bucketKeyEnabled: booleanHeader(
+      headers,
+      "x-amz-server-side-encryption-bucket-key-enabled"
+    ),
+    expiration: getHeader(headers, "x-amz-expiration"),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    serverSideEncryption: getHeader(headers, "x-amz-server-side-encryption"),
+    sseKmsKeyId: getHeader(
+      headers,
+      "x-amz-server-side-encryption-aws-kms-key-id"
+    ),
+    versionId: getHeader(headers, "x-amz-version-id"),
+    rawXml: xml,
+  };
+}
+
+function parseListParts(xml: string, headers: Headers): S3ListPartsResponse {
+  const initiatorBlock = blocksOf(xml, "Initiator")[0];
+  const ownerBlock = blocksOf(xml, "Owner")[0];
+  return {
+    bucket: textOf(xml, "Bucket"),
+    key: textOf(xml, "Key"),
+    uploadId: textOf(xml, "UploadId"),
+    partNumberMarker: numberOf(xml, "PartNumberMarker"),
+    nextPartNumberMarker: numberOf(xml, "NextPartNumberMarker"),
+    maxParts: numberOf(xml, "MaxParts"),
+    isTruncated: boolOf(xml, "IsTruncated") ?? false,
+    initiator: initiatorBlock ? parseOwner(initiatorBlock) : undefined,
+    owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+    storageClass: textOf(xml, "StorageClass"),
+    abortDate: getHeader(headers, "x-amz-abort-date"),
+    abortRuleId: getHeader(headers, "x-amz-abort-rule-id"),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    parts: blocksOf(xml, "Part").map((block) => ({
+      ...checksumFieldsFromXml(block),
+      partNumber: numberOf(block, "PartNumber") ?? 0,
+      lastModified: textOf(block, "LastModified"),
+      eTag: textOf(block, "ETag"),
+      size: numberOf(block, "Size"),
+    })),
+    rawXml: xml,
+  };
+}
+
+function parseListMultipartUploads(
+  xml: string,
+  headers: Headers
+): S3ListMultipartUploadsResponse {
+  return {
+    bucket: textOf(xml, "Bucket"),
+    keyMarker: textOf(xml, "KeyMarker"),
+    uploadIdMarker: textOf(xml, "UploadIdMarker"),
+    nextKeyMarker: textOf(xml, "NextKeyMarker"),
+    nextUploadIdMarker: textOf(xml, "NextUploadIdMarker"),
+    delimiter: textOf(xml, "Delimiter"),
+    prefix: textOf(xml, "Prefix"),
+    encodingType: textOf(xml, "EncodingType"),
+    maxUploads: numberOf(xml, "MaxUploads"),
+    isTruncated: boolOf(xml, "IsTruncated") ?? false,
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    uploads: blocksOf(xml, "Upload").map((block) => {
+      const initiatorBlock = blocksOf(block, "Initiator")[0];
+      const ownerBlock = blocksOf(block, "Owner")[0];
+      return {
+        key: textOf(block, "Key") ?? "",
+        uploadId: textOf(block, "UploadId") ?? "",
+        initiated: textOf(block, "Initiated"),
+        initiator: initiatorBlock ? parseOwner(initiatorBlock) : undefined,
+        owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+        storageClass: textOf(block, "StorageClass"),
+        checksumAlgorithms: textsOf(block, "ChecksumAlgorithm"),
+        checksumType: textOf(block, "ChecksumType"),
+      };
+    }),
+    commonPrefixes: blocksOf(xml, "CommonPrefixes").map((block) => ({
+      prefix: textOf(block, "Prefix") ?? "",
+    })),
+    rawXml: xml,
+  };
+}
+
 function bucketRequestHeaders(
   expectedBucketOwner: string | undefined
 ): Record<string, string> {
   if (!expectedBucketOwner) return {};
   return { "x-amz-expected-bucket-owner": expectedBucketOwner };
+}
+
+function addOwnerAndPayerHeaders(
+  headers: Record<string, string>,
+  expectedBucketOwner: string | undefined,
+  requestPayer: string | undefined
+): void {
+  if (expectedBucketOwner) {
+    headers["x-amz-expected-bucket-owner"] = expectedBucketOwner;
+  }
+  if (requestPayer) {
+    headers["x-amz-request-payer"] = requestPayer;
+  }
+}
+
+function addObjectContentHeaders(
+  headers: Record<string, string>,
+  req: {
+    cacheControl?: string;
+    contentDisposition?: string;
+    contentEncoding?: string;
+    contentLanguage?: string;
+    contentType?: string;
+  }
+): void {
+  if (req.contentType) headers["Content-Type"] = req.contentType;
+  if (req.cacheControl) headers["Cache-Control"] = req.cacheControl;
+  if (req.contentDisposition) {
+    headers["Content-Disposition"] = req.contentDisposition;
+  }
+  if (req.contentEncoding) headers["Content-Encoding"] = req.contentEncoding;
+  if (req.contentLanguage) headers["Content-Language"] = req.contentLanguage;
+}
+
+function addMetadataHeaders(
+  headers: Record<string, string>,
+  metadata: Record<string, string> | undefined
+): void {
+  for (const [name, value] of Object.entries(metadata ?? {})) {
+    headers[`x-amz-meta-${name.toLowerCase()}`] = value;
+  }
+}
+
+function addChecksumRequestHeaders(
+  headers: Record<string, string>,
+  req: S3ChecksumFields & {
+    checksumAlgorithm?: string;
+    contentMD5?: string;
+  }
+): void {
+  if (req.contentMD5) headers["Content-MD5"] = req.contentMD5;
+  if (req.checksumAlgorithm) {
+    headers["x-amz-checksum-algorithm"] = req.checksumAlgorithm;
+  }
+  if (req.checksumCRC32) headers["x-amz-checksum-crc32"] = req.checksumCRC32;
+  if (req.checksumCRC32C) {
+    headers["x-amz-checksum-crc32c"] = req.checksumCRC32C;
+  }
+  if (req.checksumCRC64NVME) {
+    headers["x-amz-checksum-crc64nvme"] = req.checksumCRC64NVME;
+  }
+  if (req.checksumMD5) headers["x-amz-checksum-md5"] = req.checksumMD5;
+  if (req.checksumSHA1) headers["x-amz-checksum-sha1"] = req.checksumSHA1;
+  if (req.checksumSHA256) {
+    headers["x-amz-checksum-sha256"] = req.checksumSHA256;
+  }
+  if (req.checksumSHA512) {
+    headers["x-amz-checksum-sha512"] = req.checksumSHA512;
+  }
+  if (req.checksumType) headers["x-amz-checksum-type"] = req.checksumType;
 }
 
 function createBucketBody(locationConstraint: string | undefined): string {
@@ -508,6 +762,34 @@ function createBucketBody(locationConstraint: string | undefined): string {
     '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
     `<LocationConstraint>${xmlEscape(locationConstraint)}</LocationConstraint>`,
     "</CreateBucketConfiguration>",
+  ].join("");
+}
+
+function createCompleteMultipartUploadBody(
+  parts: S3CompleteMultipartUploadRequest["parts"]
+): string {
+  const body = parts
+    .map((part) => {
+      const fields = [
+        ["ChecksumCRC32", part.checksumCRC32],
+        ["ChecksumCRC32C", part.checksumCRC32C],
+        ["ChecksumCRC64NVME", part.checksumCRC64NVME],
+        ["ChecksumSHA1", part.checksumSHA1],
+        ["ChecksumSHA256", part.checksumSHA256],
+        ["ChecksumSHA512", part.checksumSHA512],
+        ["ETag", part.eTag],
+        ["PartNumber", String(part.partNumber)],
+      ]
+        .filter(([, value]) => value !== undefined)
+        .map(([tag, value]) => `<${tag}>${xmlEscape(value ?? "")}</${tag}>`)
+        .join("");
+      return `<Part>${fields}</Part>`;
+    })
+    .join("");
+  return [
+    '<CompleteMultipartUpload xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    body,
+    "</CompleteMultipartUpload>",
   ].join("");
 }
 
@@ -1064,6 +1346,318 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3ObjectTaggingRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 multipart object path
+  // POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?uploads
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html
+  const objectsCreateMultipartUpload = Object.assign(
+    async (
+      req: S3CreateMultipartUploadRequest,
+      signal?: AbortSignal
+    ): Promise<S3CreateMultipartUploadResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const headers: Record<string, string> = {};
+      addObjectContentHeaders(headers, req);
+      addMetadataHeaders(headers, req.metadata);
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      addChecksumRequestHeaders(headers, req);
+      if (req.acl) headers["x-amz-acl"] = req.acl;
+      if (req.bucketKeyEnabled !== undefined) {
+        headers["x-amz-server-side-encryption-bucket-key-enabled"] = String(
+          req.bucketKeyEnabled
+        );
+      }
+      if (req.objectLockLegalHold) {
+        headers["x-amz-object-lock-legal-hold"] = req.objectLockLegalHold;
+      }
+      if (req.objectLockMode) {
+        headers["x-amz-object-lock-mode"] = req.objectLockMode;
+      }
+      if (req.objectLockRetainUntilDate) {
+        headers["x-amz-object-lock-retain-until-date"] =
+          req.objectLockRetainUntilDate;
+      }
+      if (req.serverSideEncryption) {
+        headers["x-amz-server-side-encryption"] = req.serverSideEncryption;
+      }
+      if (req.sseKmsEncryptionContext) {
+        headers["x-amz-server-side-encryption-context"] =
+          req.sseKmsEncryptionContext;
+      }
+      if (req.sseKmsKeyId) {
+        headers["x-amz-server-side-encryption-aws-kms-key-id"] =
+          req.sseKmsKeyId;
+      }
+      if (req.storageClass) headers["x-amz-storage-class"] = req.storageClass;
+      if (req.tagging) headers["x-amz-tagging"] = req.tagging;
+      if (req.websiteRedirectLocation) {
+        headers["x-amz-website-redirect-location"] =
+          req.websiteRedirectLocation;
+      }
+      const res = await makeSignedRequest(
+        "POST",
+        `/${bucket}/${key}?uploads`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseCreateMultipartUpload(await res.text(), res.headers);
+    },
+    { schema: S3CreateMultipartUploadRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 multipart object path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html
+  const objectsUploadPart = Object.assign(
+    async (
+      req: S3UploadPartRequest,
+      signal?: AbortSignal
+    ): Promise<S3UploadPartResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({
+        partNumber: req.partNumber,
+        uploadId: req.uploadId,
+      });
+      const headers: Record<string, string> = {};
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      addChecksumRequestHeaders(headers, req);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}${query}`,
+        {
+          bucket: req.bucket,
+          body: req.body,
+          headers,
+        },
+        signal
+      );
+      return {
+        ...checksumFieldsFromHeaders(res.headers),
+        eTag: getHeader(res.headers, "etag"),
+        requestCharged: getHeader(res.headers, "x-amz-request-charged"),
+        serverSideEncryption: getHeader(
+          res.headers,
+          "x-amz-server-side-encryption"
+        ),
+        sseKmsKeyId: getHeader(
+          res.headers,
+          "x-amz-server-side-encryption-aws-kms-key-id"
+        ),
+      };
+    },
+    { schema: S3UploadPartRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 multipart object path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html
+  const objectsUploadPartCopy = Object.assign(
+    async (
+      req: S3UploadPartCopyRequest,
+      signal?: AbortSignal
+    ): Promise<S3UploadPartCopyResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({
+        partNumber: req.partNumber,
+        uploadId: req.uploadId,
+      });
+      const headers: Record<string, string> = {
+        "x-amz-copy-source": encodeCopySource(
+          req.sourceBucket,
+          req.sourceKey,
+          req.sourceVersionId
+        ),
+      };
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      if (req.copySourceIfMatch) {
+        headers["x-amz-copy-source-if-match"] = req.copySourceIfMatch;
+      }
+      if (req.copySourceIfModifiedSince) {
+        headers["x-amz-copy-source-if-modified-since"] =
+          req.copySourceIfModifiedSince;
+      }
+      if (req.copySourceIfNoneMatch) {
+        headers["x-amz-copy-source-if-none-match"] = req.copySourceIfNoneMatch;
+      }
+      if (req.copySourceIfUnmodifiedSince) {
+        headers["x-amz-copy-source-if-unmodified-since"] =
+          req.copySourceIfUnmodifiedSince;
+      }
+      if (req.copySourceRange) {
+        headers["x-amz-copy-source-range"] = req.copySourceRange;
+      }
+      if (req.sourceExpectedBucketOwner) {
+        headers["x-amz-source-expected-bucket-owner"] =
+          req.sourceExpectedBucketOwner;
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseUploadPartCopy(await res.text(), res.headers);
+    },
+    { schema: S3UploadPartCopyRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 multipart object path
+  // POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html
+  const objectsCompleteMultipartUpload = Object.assign(
+    async (
+      req: S3CompleteMultipartUploadRequest,
+      signal?: AbortSignal
+    ): Promise<S3CompleteMultipartUploadResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ uploadId: req.uploadId });
+      const headers: Record<string, string> = {
+        "Content-Type": "application/xml",
+      };
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      addChecksumRequestHeaders(headers, req);
+      if (req.ifMatch) headers["If-Match"] = req.ifMatch;
+      if (req.ifNoneMatch) headers["If-None-Match"] = req.ifNoneMatch;
+      if (req.mpuObjectSize !== undefined) {
+        headers["x-amz-mp-object-size"] = String(req.mpuObjectSize);
+      }
+      const res = await makeSignedRequest(
+        "POST",
+        `/${bucket}/${key}${query}`,
+        {
+          bucket: req.bucket,
+          body: createCompleteMultipartUploadBody(req.parts),
+          headers,
+        },
+        signal
+      );
+      return parseCompleteMultipartUpload(await res.text(), res.headers);
+    },
+    { schema: S3CompleteMultipartUploadRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 multipart object path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html
+  const objectsAbortMultipartUpload = Object.assign(
+    async (
+      req: S3AbortMultipartUploadRequest,
+      signal?: AbortSignal
+    ): Promise<S3AbortMultipartUploadResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ uploadId: req.uploadId });
+      const headers: Record<string, string> = {};
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}/${key}${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return {
+        requestCharged: getHeader(res.headers, "x-amz-request-charged"),
+        headers: collectHeaders(res.headers),
+      };
+    },
+    { schema: S3AbortMultipartUploadRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 multipart object path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html
+  const objectsListParts = Object.assign(
+    async (
+      req: S3ListPartsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListPartsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery(
+        {
+          uploadId: req.uploadId,
+          "max-parts": req.maxParts,
+          "part-number-marker": req.partNumberMarker,
+        },
+        "?"
+      );
+      const headers: Record<string, string> = {};
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseListParts(await res.text(), res.headers);
+    },
+    { schema: S3ListPartsRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket multipart path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?uploads{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html
+  const objectsListMultipartUploads = Object.assign(
+    async (
+      req: S3ListMultipartUploadsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListMultipartUploadsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery(
+        {
+          delimiter: req.delimiter,
+          "encoding-type": req.encodingType,
+          "key-marker": req.keyMarker,
+          "max-uploads": req.maxUploads,
+          prefix: req.prefix,
+          "upload-id-marker": req.uploadIdMarker,
+        },
+        "&"
+      );
+      const headers: Record<string, string> = {};
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?uploads${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseListMultipartUploads(await res.text(), res.headers);
+    },
+    { schema: S3ListMultipartUploadsRequestSchema }
+  );
+
   return {
     buckets: {
       create: bucketsCreate,
@@ -1073,15 +1667,22 @@ export function createS3(opts: S3Options): S3Provider {
       location: bucketsLocation,
     },
     objects: {
+      abortMultipartUpload: objectsAbortMultipartUpload,
+      completeMultipartUpload: objectsCompleteMultipartUpload,
       copy: objectsCopy,
+      createMultipartUpload: objectsCreateMultipartUpload,
       del: objectsDel,
       delTagging: objectsDelTagging,
       get: objectsGet,
       getTagging: objectsGetTagging,
       head: objectsHead,
+      listMultipartUploads: objectsListMultipartUploads,
       list: objectsList,
+      listParts: objectsListParts,
       put: objectsPut,
       putTagging: objectsPutTagging,
+      uploadPart: objectsUploadPart,
+      uploadPartCopy: objectsUploadPartCopy,
     },
   };
 }

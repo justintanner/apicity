@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-14 endpoints across 2 groups. Each method mirrors an upstream URL path.
+21 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -112,6 +112,36 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 ### objects
 
 <details>
+<summary><code>DELETE</code> <b><code>s3.objects.abortMultipartUpload</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_AbortMultipartUpload.html)
+
+```typescript
+const res = await s3.objects.abortMultipartUpload({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.objects.completeMultipartUpload</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CompleteMultipartUpload.html)
+
+```typescript
+const res = await s3.objects.completeMultipartUpload({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>PUT</code> <b><code>s3.objects.copy</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}</code>
@@ -120,6 +150,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.copy({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.objects.createMultipartUpload</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?uploads</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateMultipartUpload.html)
+
+```typescript
+const res = await s3.objects.createMultipartUpload({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -217,6 +262,36 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>s3.objects.listMultipartUploads</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?uploads{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListMultipartUploads.html)
+
+```typescript
+const res = await s3.objects.listMultipartUploads({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.listParts</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListParts.html)
+
+```typescript
+const res = await s3.objects.listParts({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>PUT</code> <b><code>s3.objects.put</code></b></summary>
 
 <code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}</code>
@@ -240,6 +315,36 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.putTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.objects.uploadPart</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPart.html)
+
+```typescript
+const res = await s3.objects.uploadPart({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.objects.uploadPartCopy</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UploadPartCopy.html)
+
+```typescript
+const res = await s3.objects.uploadPartCopy({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

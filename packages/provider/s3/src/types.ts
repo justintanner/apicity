@@ -1,32 +1,46 @@
 import type { z } from "zod";
 
 export type {
+  S3AbortMultipartUploadRequest,
   S3BucketRequest,
+  S3CompleteMultipartUploadRequest,
   S3CopyObjectRequest,
+  S3CreateMultipartUploadRequest,
   S3CreateBucketRequest,
   S3DeleteObjectRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
   S3ListBucketsRequest,
+  S3ListMultipartUploadsRequest,
   S3ListObjectsV2Request,
+  S3ListPartsRequest,
   S3ObjectTaggingRequest,
   S3Options,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
+  S3UploadPartCopyRequest,
+  S3UploadPartRequest,
 } from "./zod";
 
 import type {
+  S3AbortMultipartUploadRequest,
   S3BucketRequest,
+  S3CompleteMultipartUploadRequest,
   S3CopyObjectRequest,
+  S3CreateMultipartUploadRequest,
   S3CreateBucketRequest,
   S3DeleteObjectRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
   S3ListBucketsRequest,
+  S3ListMultipartUploadsRequest,
   S3ListObjectsV2Request,
+  S3ListPartsRequest,
   S3ObjectTaggingRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
+  S3UploadPartCopyRequest,
+  S3UploadPartRequest,
 } from "./zod";
 
 export class S3Error extends Error {
@@ -193,6 +207,116 @@ export interface S3DeleteObjectTaggingResponse {
   versionId?: string;
 }
 
+export interface S3ChecksumFields {
+  checksumCRC32?: string;
+  checksumCRC32C?: string;
+  checksumCRC64NVME?: string;
+  checksumMD5?: string;
+  checksumSHA1?: string;
+  checksumSHA256?: string;
+  checksumSHA512?: string;
+  checksumType?: string;
+}
+
+export interface S3CreateMultipartUploadResponse extends S3ChecksumFields {
+  bucket?: string;
+  key?: string;
+  uploadId: string;
+  abortDate?: string;
+  abortRuleId?: string;
+  bucketKeyEnabled?: boolean;
+  requestCharged?: string;
+  serverSideEncryption?: string;
+  sseKmsKeyId?: string;
+  rawXml: string;
+}
+
+export interface S3UploadPartResponse extends S3ChecksumFields {
+  eTag?: string;
+  requestCharged?: string;
+  serverSideEncryption?: string;
+  sseKmsKeyId?: string;
+}
+
+export interface S3UploadPartCopyResponse extends S3ChecksumFields {
+  eTag?: string;
+  lastModified?: string;
+  requestCharged?: string;
+  rawXml: string;
+}
+
+export interface S3CompleteMultipartUploadResponse extends S3ChecksumFields {
+  location?: string;
+  bucket?: string;
+  key?: string;
+  eTag?: string;
+  bucketKeyEnabled?: boolean;
+  expiration?: string;
+  requestCharged?: string;
+  serverSideEncryption?: string;
+  sseKmsKeyId?: string;
+  versionId?: string;
+  rawXml: string;
+}
+
+export interface S3AbortMultipartUploadResponse {
+  requestCharged?: string;
+  headers: Record<string, string>;
+}
+
+export interface S3MultipartUploadPart extends S3ChecksumFields {
+  partNumber: number;
+  lastModified?: string;
+  eTag?: string;
+  size?: number;
+}
+
+export interface S3ListPartsResponse {
+  bucket?: string;
+  key?: string;
+  uploadId?: string;
+  partNumberMarker?: number;
+  nextPartNumberMarker?: number;
+  maxParts?: number;
+  isTruncated: boolean;
+  initiator?: S3Owner;
+  owner?: S3Owner;
+  storageClass?: string;
+  abortDate?: string;
+  abortRuleId?: string;
+  requestCharged?: string;
+  parts: S3MultipartUploadPart[];
+  rawXml: string;
+}
+
+export interface S3MultipartUploadSummary {
+  key: string;
+  uploadId: string;
+  initiated?: string;
+  initiator?: S3Owner;
+  owner?: S3Owner;
+  storageClass?: string;
+  checksumAlgorithms: string[];
+  checksumType?: string;
+}
+
+export interface S3ListMultipartUploadsResponse {
+  bucket?: string;
+  keyMarker?: string;
+  uploadIdMarker?: string;
+  nextKeyMarker?: string;
+  nextUploadIdMarker?: string;
+  delimiter?: string;
+  prefix?: string;
+  encodingType?: string;
+  maxUploads?: number;
+  isTruncated: boolean;
+  requestCharged?: string;
+  uploads: S3MultipartUploadSummary[];
+  commonPrefixes: S3CommonPrefix[];
+  rawXml: string;
+}
+
 export interface S3ListBucketsMethod {
   (
     req?: S3ListBucketsRequest,
@@ -293,6 +417,59 @@ export interface S3DeleteObjectTaggingMethod {
   schema: z.ZodType<S3ObjectTaggingRequest>;
 }
 
+export interface S3CreateMultipartUploadMethod {
+  (
+    req: S3CreateMultipartUploadRequest,
+    signal?: AbortSignal
+  ): Promise<S3CreateMultipartUploadResponse>;
+  schema: z.ZodType<S3CreateMultipartUploadRequest>;
+}
+
+export interface S3UploadPartMethod {
+  (
+    req: S3UploadPartRequest,
+    signal?: AbortSignal
+  ): Promise<S3UploadPartResponse>;
+  schema: z.ZodType<S3UploadPartRequest>;
+}
+
+export interface S3UploadPartCopyMethod {
+  (
+    req: S3UploadPartCopyRequest,
+    signal?: AbortSignal
+  ): Promise<S3UploadPartCopyResponse>;
+  schema: z.ZodType<S3UploadPartCopyRequest>;
+}
+
+export interface S3CompleteMultipartUploadMethod {
+  (
+    req: S3CompleteMultipartUploadRequest,
+    signal?: AbortSignal
+  ): Promise<S3CompleteMultipartUploadResponse>;
+  schema: z.ZodType<S3CompleteMultipartUploadRequest>;
+}
+
+export interface S3AbortMultipartUploadMethod {
+  (
+    req: S3AbortMultipartUploadRequest,
+    signal?: AbortSignal
+  ): Promise<S3AbortMultipartUploadResponse>;
+  schema: z.ZodType<S3AbortMultipartUploadRequest>;
+}
+
+export interface S3ListPartsMethod {
+  (req: S3ListPartsRequest, signal?: AbortSignal): Promise<S3ListPartsResponse>;
+  schema: z.ZodType<S3ListPartsRequest>;
+}
+
+export interface S3ListMultipartUploadsMethod {
+  (
+    req: S3ListMultipartUploadsRequest,
+    signal?: AbortSignal
+  ): Promise<S3ListMultipartUploadsResponse>;
+  schema: z.ZodType<S3ListMultipartUploadsRequest>;
+}
+
 export interface S3BucketsNamespace {
   create: S3CreateBucketMethod;
   del: S3DeleteBucketMethod;
@@ -302,15 +479,22 @@ export interface S3BucketsNamespace {
 }
 
 export interface S3ObjectsNamespace {
+  abortMultipartUpload: S3AbortMultipartUploadMethod;
+  completeMultipartUpload: S3CompleteMultipartUploadMethod;
   copy: S3CopyObjectMethod;
+  createMultipartUpload: S3CreateMultipartUploadMethod;
   del: S3DeleteObjectMethod;
   delTagging: S3DeleteObjectTaggingMethod;
   get: S3GetObjectMethod;
   getTagging: S3GetObjectTaggingMethod;
   head: S3HeadObjectMethod;
+  listMultipartUploads: S3ListMultipartUploadsMethod;
   list: S3ListObjectsV2Method;
+  listParts: S3ListPartsMethod;
   put: S3PutObjectMethod;
   putTagging: S3PutObjectTaggingMethod;
+  uploadPart: S3UploadPartMethod;
+  uploadPartCopy: S3UploadPartCopyMethod;
 }
 
 export interface S3Provider {

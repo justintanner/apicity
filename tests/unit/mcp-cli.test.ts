@@ -161,6 +161,14 @@ describe("1Password credential resolution", () => {
     ]);
   });
 
+  it("returns all required B2 env vars", () => {
+    expect(getProviderEnvVars(["b2"])).toEqual([
+      "B2_ACCESS_KEY_ID",
+      "B2_SECRET_ACCESS_KEY",
+      "B2_REGION",
+    ]);
+  });
+
   it("rejects unknown providers", () => {
     expect(() => getProviderEnvVars(["openai", "missing"])).toThrow(
       "Unknown provider in --providers: missing"

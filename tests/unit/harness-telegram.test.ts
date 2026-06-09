@@ -179,6 +179,23 @@ const endpointDocs: EndpointDocRow[] = [
     docsUrl:
       "https://docs.aws.amazon.com/AmazonS3/latest/API/API_WriteGetObjectResponse.html",
   },
+  {
+    provider: "b2",
+    dotPath: "objects.listLegacy",
+    method: "GET",
+    fullUrl: "https://s3.us-west-004.backblazeb2.com/{bucket}{query}",
+    docsUrl:
+      "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
+  },
+  {
+    provider: "b2",
+    dotPath: "objects.list",
+    method: "GET",
+    fullUrl:
+      "https://s3.us-west-004.backblazeb2.com/{bucket}?list-type=2{query}",
+    docsUrl:
+      "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
+  },
 ];
 
 function seedSpeechRecording(): ChangedRecording {
@@ -624,6 +641,35 @@ function s3ObjectLambdaRecording(): ChangedRecording {
   };
 }
 
+function b2ListObjectsV2Recording(): ChangedRecording {
+  return {
+    provider: "b2",
+    recordingName: "b2/object-core",
+    changeType: "new",
+    filePath:
+      "tests/recordings/b2_2402036085/" +
+      "object-core_2379895886/recording.har",
+    entries: [
+      {
+        request: {
+          method: "GET",
+          url: "https://s3.us-west-004.backblazeb2.com/apicity?list-type=2&max-keys=10&prefix=apicity-tests%2F",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<ListBucketResult></ListBucketResult>",
+          },
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -771,5 +817,15 @@ describe("harness Telegram messages", () => {
       "s3.buckets.getNotificationLegacy",
       "s3.objects.listLegacy",
     ]);
+  });
+
+  it("matches B2 S3-compatible endpoint rows", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [b2ListObjectsV2Recording()],
+      endpointDocs
+    );
+
+    expect(message.apicityPath).toBe("b2.objects.list");
+    expect(message.text).toContain("backblaze.com/docs");
   });
 });

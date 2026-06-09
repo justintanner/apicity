@@ -32,7 +32,7 @@ export const POLYMARKET_ENV_VARS = [
 ];
 
 export const S3_ENV_VARS = ["S3_SECRET_ACCESS_KEY"];
-export const B2_ENV_VARS = ["B2_SECRET_ACCESS_KEY"];
+export const B2_ENV_VARS = ["B2_SECRET_ACCESS_KEY", "B2_REGION"];
 
 function polymarketOptionsFromEnv(): Record<string, unknown> {
   const signatureType = process.env.POLYMARKET_SIGNATURE_TYPE;

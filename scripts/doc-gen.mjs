@@ -20,15 +20,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..");
 const TSV_PATH = path.join(__dirname, "endpoint-docs.tsv");
+const TSV_ONLY_PROVIDERS = ["b2"];
 
-function loadDocsTsv() {
-  const docs = new Map();
-  if (!fsSync.existsSync(TSV_PATH)) return docs;
+function loadEndpointDocsRows() {
+  const rows = [];
+  if (!fsSync.existsSync(TSV_PATH)) return rows;
   const text = fsSync.readFileSync(TSV_PATH, "utf8");
   const lines = text.split("\n").filter(Boolean);
   for (let i = 1; i < lines.length; i++) {
-    const [provider, dotPath, method, , docsUrl] = lines[i].split("\t");
-    docs.set(`${provider}\t${dotPath}\t${method}`, docsUrl ?? "");
+    const [provider, dotPath, method, fullUrl, docsUrl] = lines[i].split("\t");
+    rows.push({
+      provider,
+      dotPath,
+      method,
+      fullUrl,
+      docsUrl: docsUrl ?? "",
+    });
+  }
+  return rows;
+}
+
+function loadDocsTsv() {
+  const docs = new Map();
+  for (const row of loadEndpointDocsRows()) {
+    docs.set(`${row.provider}\t${row.dotPath}\t${row.method}`, row.docsUrl);
   }
   return docs;
 }
@@ -40,6 +55,18 @@ async function collectEndpointsByProvider() {
     const list = byProvider.get(ep.provider) ?? [];
     list.push(ep);
     byProvider.set(ep.provider, list);
+  }
+  for (const provider of TSV_ONLY_PROVIDERS) {
+    const endpoints = loadEndpointDocsRows()
+      .filter((row) => row.provider === provider)
+      .map((row) => ({
+        ...row,
+        file: `packages/provider/${provider}/src/${provider}.ts`,
+        factory: CANONICAL_FACTORY[provider],
+        fullDotPath: row.dotPath,
+        path: row.fullUrl,
+      }));
+    byProvider.set(provider, endpoints);
   }
   return byProvider;
 }
@@ -2005,6 +2032,9 @@ const PROVIDER_AUTH = {
   s3: {
     showMiddleware: false,
   },
+  b2: {
+    showMiddleware: false,
+  },
   free: {
     noAuth: true,
     showMiddleware: false,
@@ -2026,6 +2056,7 @@ const PROVIDER_DOCS = {
   binance:
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
+  b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
 };
 
 const CANONICAL_FACTORY = {
@@ -2038,6 +2069,7 @@ const CANONICAL_FACTORY = {
   alibaba: "createAlibaba",
   binance: "createBinance",
   s3: "createS3",
+  b2: "createB2",
   kimicoding: "createKimiCoding",
   kie: "createKie",
   "free-media-upload": "createFreeMediaUpload",
@@ -2107,6 +2139,13 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push('  region: process.env.S3_REGION ?? "us-east-1",');
     sections.push("  endpoint: process.env.S3_ENDPOINT,");
     sections.push("});");
+  } else if (providerName === "b2") {
+    sections.push(`const ${providerName} = ${factory}({`);
+    sections.push("  accessKeyId: process.env.B2_ACCESS_KEY_ID!,");
+    sections.push("  secretAccessKey: process.env.B2_SECRET_ACCESS_KEY!,");
+    sections.push("  region: process.env.B2_REGION!,");
+    sections.push("  endpoint: process.env.B2_ENDPOINT,");
+    sections.push("});");
   } else if (noAuth) {
     sections.push(`const ${providerName} = ${factory}();`);
   } else {
@@ -2161,6 +2200,13 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "telegram") {
     sections.push(renderTelegramSetup());
+  }
+
+  if (providerName === "b2") {
+    sections.push(
+      "`@apicity/b2` delegates signing, transport, response parsing, and schemas to `@apicity/s3` while exposing only Backblaze-supported S3-compatible calls.",
+      ""
+    );
   }
 
   sections.push(renderApiReference(providerName, endpoints));
@@ -2219,7 +2265,9 @@ async function main() {
 
   let providers;
   if (args.length === 0) {
-    providers = PROVIDERS.map((p) => p.name);
+    providers = [
+      ...new Set([...PROVIDERS.map((p) => p.name), ...TSV_ONLY_PROVIDERS]),
+    ];
   } else {
     const raw = args[0];
     const providerName = raw.startsWith("packages/")

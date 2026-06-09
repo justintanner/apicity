@@ -50,7 +50,33 @@ describe("apicity-mcp provider registry", () => {
       else process.env.DOLTHUB_API_KEY = previous;
     }
   });
+
+  it("resolves all B2 endpoint rows", async () => {
+    const previous = {
+      accessKeyId: process.env.B2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.B2_SECRET_ACCESS_KEY,
+      region: process.env.B2_REGION,
+    };
+    process.env.B2_ACCESS_KEY_ID = "dummy-access-key";
+    process.env.B2_SECRET_ACCESS_KEY = "dummy-secret-key";
+    process.env.B2_REGION = "us-west-004";
+
+    try {
+      const endpoints = await buildRegistry({ enabledProviders: ["b2"] });
+
+      expect(endpoints).toHaveLength(providerEndpointCount("b2"));
+    } finally {
+      restoreEnv("B2_ACCESS_KEY_ID", previous.accessKeyId);
+      restoreEnv("B2_SECRET_ACCESS_KEY", previous.secretAccessKey);
+      restoreEnv("B2_REGION", previous.region);
+    }
+  });
 });
+
+function restoreEnv(key: string, value: string | undefined): void {
+  if (value === undefined) delete process.env[key];
+  else process.env[key] = value;
+}
 
 function providerEndpointCount(provider: string): number {
   return endpointProvidersFromRows().filter((name) => name === provider).length;

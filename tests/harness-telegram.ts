@@ -185,6 +185,10 @@ function isS3PathStyleHost(hostname: string): boolean {
   return hostname === "s3.amazonaws.com" || /^s3[.-]/.test(hostname);
 }
 
+function isS3CompatibleProvider(provider: string): boolean {
+  return provider === "s3" || provider === "b2";
+}
+
 function isS3ExpressControlHost(hostname: string): boolean {
   return /^s3express-control[.-]/.test(hostname);
 }
@@ -210,13 +214,14 @@ function hasS3Subresource(entry: HarEntry, name: string): boolean {
 }
 
 function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
-  if (row.provider !== "s3") return false;
+  if (!isS3CompatibleProvider(row.provider)) return false;
   if (entry.request.method.toUpperCase() !== row.method.toUpperCase()) {
     return false;
   }
 
   const objectRequest = isS3ObjectRequest(entry);
   const tagging = hasS3Subresource(entry, "tagging");
+  const listType = hasS3Subresource(entry, "list-type");
   const multipartCreate = hasS3Subresource(entry, "uploads");
   const multipartUpload = hasS3Subresource(entry, "uploadId");
   const multipartPart = hasS3Subresource(entry, "partNumber");
@@ -357,10 +362,11 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
 
   switch (row.dotPath) {
     case "objects.list":
-      return hasS3Subresource(entry, "list-type");
+      return listType;
     case "objects.listLegacy":
       return (
         !objectRequest &&
+        !listType &&
         !versions &&
         !multipartCreate &&
         !bulkDelete &&
@@ -475,7 +481,7 @@ function findMatchingEndpointDoc(
   rows: EndpointDocRow[],
   provider: string
 ): EndpointDocRow | null {
-  if (provider === "s3") {
+  if (isS3CompatibleProvider(provider)) {
     for (const row of rows) {
       if (matchS3Endpoint(entry, row)) return row;
     }
@@ -529,8 +535,18 @@ function findHintedEndpointDoc(
 
   for (const row of rows) {
     if (row.provider !== recording.provider) continue;
-    if (recording.provider === "s3" && !matchS3Endpoint(entry, row)) continue;
-    if (recording.provider !== "s3" && !matchStrict(entry, row)) continue;
+    if (
+      isS3CompatibleProvider(recording.provider) &&
+      !matchS3Endpoint(entry, row)
+    ) {
+      continue;
+    }
+    if (
+      !isS3CompatibleProvider(recording.provider) &&
+      !matchStrict(entry, row)
+    ) {
+      continue;
+    }
 
     const hint = recordingDotPathHints(row.dotPath)
       .filter((candidate) => recordingName.includes(candidate))

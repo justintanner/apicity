@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import mcpPackage from "../../packages/mcp-server/package.json";
-import { buildRegistry } from "../../packages/mcp-server/src/registry";
+import {
+  buildRegistry,
+  extractPathParams,
+} from "../../packages/mcp-server/src/registry";
 import { PROVIDERS } from "../../packages/mcp-server/src/providers";
 
 function endpointProviders(): string[] {
@@ -36,6 +39,38 @@ describe("apicity-mcp provider registry", () => {
     const endpoints = await buildRegistry({ enabledProviders: ["polymarket"] });
 
     expect(endpoints).toHaveLength(providerEndpointCount("polymarket"));
+  });
+
+  // Regression: `{query}` is a query-string placeholder, not a path segment.
+  // Treating it as a path param made the MCP call `fn(queryString, body)` instead
+  // of `fn(req, signal)`, dropping every filter and crashing on a body
+  // (`signal.addEventListener is not a function`). It must never be a path param.
+  it("excludes the reserved {query} placeholder from path params", () => {
+    expect(
+      extractPathParams("https://api.binance.com/api/v3/klines{query}")
+    ).toEqual([]);
+    expect(
+      extractPathParams("https://clob.polymarket.com/balance-allowance{query}")
+    ).toEqual([]);
+    // Real path params are still extracted.
+    expect(
+      extractPathParams("https://clob.polymarket.com/data/order/{orderID}")
+    ).toEqual(["orderID"]);
+  });
+
+  it("registers no endpoint with a `query` path param", async () => {
+    const tsv = readFileSync("scripts/endpoint-docs.tsv", "utf8");
+    const withQueryPlaceholder = tsv
+      .trim()
+      .split("\n")
+      .slice(1)
+      .filter((line) => line.split("\t")[3]?.includes("{query}"));
+    // Guard the fixture itself: this is the bug's blast radius.
+    expect(withQueryPlaceholder.length).toBeGreaterThan(0);
+    for (const line of withQueryPlaceholder) {
+      const fullUrl = line.split("\t")[3];
+      expect(extractPathParams(fullUrl)).not.toContain("query");
+    }
   });
 
   it("resolves all DoltHub endpoint rows", async () => {

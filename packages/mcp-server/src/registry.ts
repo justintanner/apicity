@@ -207,9 +207,22 @@ function walkPathOrMethodLeaf(
   return typeof methodLeaf === "function" ? (methodLeaf as EndpointFn) : null;
 }
 
-function extractPathParams(url: string): string[] {
+// `{query}` is not a path segment: across every provider it is the placeholder
+// for the query string that the endpoint function builds internally from its
+// request object (`const query = buildQuery({...}); `...${query}``). Treating it
+// as a path param made the MCP call `fn(queryString, body)` instead of
+// `fn(req, signal)`, which dropped all filters and routed the body into the
+// AbortSignal slot (`signal.addEventListener is not a function`). Skip it so the
+// request fields are exposed at the top level and passed straight through as the
+// request object.
+const RESERVED_QUERY_PARAM = "query";
+
+export function extractPathParams(url: string): string[] {
   const out: string[] = [];
-  for (const match of url.matchAll(PATH_PARAM_RE)) out.push(match[1]);
+  for (const match of url.matchAll(PATH_PARAM_RE)) {
+    if (match[1] === RESERVED_QUERY_PARAM) continue;
+    out.push(match[1]);
+  }
   return out;
 }
 

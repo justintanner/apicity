@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-82 endpoints across 2 groups. Each method mirrors an upstream URL path.
+92 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -43,6 +43,36 @@ const s3 = createS3({
 
 ```typescript
 const res = await s3.buckets.create({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.buckets.createMetadataConfiguration</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucketMetadataConfiguration.html)
+
+```typescript
+const res = await s3.buckets.createMetadataConfiguration({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.createSession</code></b></summary>
+
+<code>GET https://s3express-{param}.{param}.amazonaws.com/{bucket}?session</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateSession.html)
+
+```typescript
+const res = await s3.buckets.createSession({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -133,6 +163,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.delLifecycle({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>s3.buckets.delMetadataConfiguration</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetadataConfiguration.html)
+
+```typescript
+const res = await s3.buckets.delMetadataConfiguration({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -328,6 +373,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.getLogging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getMetadataConfiguration</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?metadataConfiguration</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketMetadataConfiguration.html)
+
+```typescript
+const res = await s3.buckets.getMetadataConfiguration({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -538,6 +598,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.listAnalytics({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.listDirectory</code></b></summary>
+
+<code>GET https://s3express-control.{param}.amazonaws.com/{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListDirectoryBuckets.html)
+
+```typescript
+const res = await s3.buckets.listDirectory({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -838,6 +913,53 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.putWebsite({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.updateMetadataInventoryTable</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataInventoryTable</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataInventoryTableConfiguration.html)
+
+```typescript
+const res = await s3.buckets.updateMetadataInventoryTable({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.updateMetadataJournalTable</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?metadataJournalTable</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataJournalTableConfiguration.html)
+
+```typescript
+const res = await s3.buckets.updateMetadataJournalTable({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+### objectLambda
+
+<details>
+<summary><code>POST</code> <b><code>s3.objectLambda.writeGetObjectResponse</code></b></summary>
+
+<code>POST https://{param}.s3-object-lambda.{param}.amazonaws.com/WriteGetObjectResponse</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_WriteGetObjectResponse.html)
+
+```typescript
+const res = await s3.objectLambda.writeGetObjectResponse({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -1207,6 +1329,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>PUT</code> <b><code>s3.objects.rename</code></b></summary>
+
+<code>PUT https://s3express-{param}.{param}.amazonaws.com/{bucket}/{key}?renameObject</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_RenameObject.html)
+
+```typescript
+const res = await s3.objects.rename({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>s3.objects.restore</code></b></summary>
 
 <code>POST https://s3.us-east-1.amazonaws.com/{bucket}/{key}?restore{query}</code>
@@ -1230,6 +1367,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.selectContent({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.objects.updateEncryption</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?encryption{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateObjectEncryption.html)
+
+```typescript
+const res = await s3.objects.updateEncryption({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

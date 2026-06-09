@@ -55,6 +55,23 @@ const endpointDocs: EndpointDocRow[] = [
   },
   {
     provider: "s3",
+    dotPath: "buckets.listDirectory",
+    method: "GET",
+    fullUrl: "https://s3express-control.{param}.amazonaws.com/{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListDirectoryBuckets.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "buckets.updateMetadataInventoryTable",
+    method: "PUT",
+    fullUrl:
+      "https://s3.us-east-1.amazonaws.com/{bucket}?metadataInventoryTable",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateBucketMetadataInventoryTableConfiguration.html",
+  },
+  {
+    provider: "s3",
     dotPath: "objects.put",
     method: "PUT",
     fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}/{key}",
@@ -71,12 +88,39 @@ const endpointDocs: EndpointDocRow[] = [
   },
   {
     provider: "s3",
+    dotPath: "objects.rename",
+    method: "PUT",
+    fullUrl:
+      "https://s3express-{param}.{param}.amazonaws.com/{bucket}/{key}?renameObject",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_RenameObject.html",
+  },
+  {
+    provider: "s3",
     dotPath: "objects.getAttributes",
     method: "GET",
     fullUrl:
       "https://s3.us-east-1.amazonaws.com/{bucket}/{key}?attributes{query}",
     docsUrl:
       "https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectAttributes.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "objects.updateEncryption",
+    method: "PUT",
+    fullUrl:
+      "https://s3.us-east-1.amazonaws.com/{bucket}/{key}?encryption{query}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_UpdateObjectEncryption.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "objectLambda.writeGetObjectResponse",
+    method: "POST",
+    fullUrl:
+      "https://{param}.s3-object-lambda.{param}.amazonaws.com/WriteGetObjectResponse",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_WriteGetObjectResponse.html",
   },
 ];
 
@@ -357,6 +401,139 @@ function s3ObjectAttributesRecording(): ChangedRecording {
   };
 }
 
+function s3DirectoryBucketsRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/directory-buckets",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "directory-buckets_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "GET",
+          url: "https://s3express-control.us-east-1.amazonaws.com/?max-directory-buckets=1",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<ListAllMyDirectoryBucketsResult></ListAllMyDirectoryBucketsResult>",
+          },
+        },
+      },
+    ],
+  };
+}
+
+function s3MetadataInventoryRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/metadata-inventory",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "metadata-inventory_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/?metadataInventoryTable",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "x-amz-request-charged", value: "requester" }],
+          content: {},
+        },
+      },
+    ],
+  };
+}
+
+function s3RenameObjectRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/rename-object",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "rename-object_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://demo--use1-az1--x-s3.s3express-use1-az1.us-east-1.amazonaws.com/dest.txt?renameObject",
+          headers: [{ name: "x-amz-rename-source", value: "/source.txt" }],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [],
+          content: {},
+        },
+      },
+    ],
+  };
+}
+
+function s3UpdateObjectEncryptionRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/update-object-encryption",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "update-object-encryption_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/apicity-tests/secure.txt?encryption&versionId=v1",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "x-amz-request-charged", value: "requester" }],
+          content: {},
+        },
+      },
+    ],
+  };
+}
+
+function s3ObjectLambdaRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/object-lambda",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "object-lambda_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "POST",
+          url: "https://route-1.s3-object-lambda.us-east-1.amazonaws.com/WriteGetObjectResponse",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [],
+          content: {},
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -446,5 +623,26 @@ describe("harness Telegram messages", () => {
     expect(message.apicityPath).toBe("s3.objects.getAttributes");
     expect(message.text).toContain("<b>Response</b>");
     expect(message.text).toContain("GetObjectAttributesResponse");
+  });
+
+  it("matches specialized S3 endpoint recordings", () => {
+    const messages = buildTelegramHarnessMessages(
+      [
+        s3DirectoryBucketsRecording(),
+        s3MetadataInventoryRecording(),
+        s3RenameObjectRecording(),
+        s3UpdateObjectEncryptionRecording(),
+        s3ObjectLambdaRecording(),
+      ],
+      endpointDocs
+    );
+
+    expect(messages.map((message) => message.apicityPath)).toEqual([
+      "s3.buckets.listDirectory",
+      "s3.buckets.updateMetadataInventoryTable",
+      "s3.objects.rename",
+      "s3.objects.updateEncryption",
+      "s3.objectLambda.writeGetObjectResponse",
+    ]);
   });
 });

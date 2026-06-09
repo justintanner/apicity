@@ -539,10 +539,18 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
       if (HTTP_METHODS.includes(first) && args.length > 1) {
         const p = extractPath(args[1]);
         if (p) {
+          let baseOverride = null;
+          for (let i = args.length - 1; i >= 2; i--) {
+            const bo = extractBaseOverride(args[i]);
+            if (bo) {
+              baseOverride = bo;
+              break;
+            }
+          }
           return {
             method: first,
             path: p,
-            baseOverride: HELPER_BASE_URLS[name] ?? null,
+            baseOverride: baseOverride ?? HELPER_BASE_URLS[name] ?? null,
           };
         }
       }
@@ -768,16 +776,43 @@ function extractBaseOverride(optionsNode) {
     if (name !== "baseOverride") continue;
     const init = prop.getInitializer();
     if (!init) continue;
-    // Direct string literal
-    if (init.getKind() === SyntaxKind.StringLiteral) {
-      return init.getLiteralText();
-    }
+    const evaluated = evalUrlLikeExpr(init);
+    if (evaluated) return evaluated;
     // Identifier like nativeBaseURL — resolve it if possible
     if (init.getKind() === SyntaxKind.Identifier) {
       const idName = init.getText();
       if (BASE_URL_IDENTIFIERS.has(idName)) {
         return `{${idName}}`;
       }
+    }
+  }
+  return null;
+}
+
+function evalUrlLikeExpr(node) {
+  if (!node) return null;
+  const k = node.getKind();
+  if (
+    k === SyntaxKind.StringLiteral ||
+    k === SyntaxKind.NoSubstitutionTemplateLiteral ||
+    k === SyntaxKind.TemplateExpression
+  ) {
+    return extractPath(node);
+  }
+  if (k === SyntaxKind.ParenthesizedExpression) {
+    return evalUrlLikeExpr(node.getExpression());
+  }
+  if (k === SyntaxKind.BinaryExpression) {
+    const op = node.getOperatorToken().getText();
+    if (op === "??" || op === "||") {
+      return (
+        evalUrlLikeExpr(node.getRight()) ?? evalUrlLikeExpr(node.getLeft())
+      );
+    }
+    if (op === "+") {
+      const l = evalUrlLikeExpr(node.getLeft()) ?? "";
+      const r = evalUrlLikeExpr(node.getRight()) ?? "";
+      return l || r ? l + r : null;
     }
   }
   return null;

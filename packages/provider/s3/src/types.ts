@@ -9,6 +9,7 @@ export type {
   S3CopyObjectRequest,
   S3CreateMultipartUploadRequest,
   S3CreateBucketRequest,
+  S3CreateSessionRequest,
   S3DeleteObjectRequest,
   S3DeleteObjectsRequest,
   S3GetObjectRequest,
@@ -17,6 +18,7 @@ export type {
   S3HeadObjectRequest,
   S3ListBucketConfigsRequest,
   S3ListBucketsRequest,
+  S3ListDirectoryBucketsRequest,
   S3ListMultipartUploadsRequest,
   S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
@@ -27,6 +29,7 @@ export type {
   S3PutBucketPolicyRequest,
   S3PutBucketRequestPaymentRequest,
   S3PutBucketTaggingRequest,
+  S3PutBucketMetadataConfigurationRequest,
   S3PutBucketVersioningRequest,
   S3PutBucketXmlConfigRequest,
   S3PutBucketXmlConfigWithIdRequest,
@@ -36,10 +39,13 @@ export type {
   S3PutObjectRetentionRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
+  S3RenameObjectRequest,
   S3RestoreObjectRequest,
   S3SelectObjectContentRequest,
+  S3UpdateObjectEncryptionRequest,
   S3UploadPartCopyRequest,
   S3UploadPartRequest,
+  S3WriteGetObjectResponseRequest,
 } from "./zod";
 
 import type {
@@ -51,6 +57,7 @@ import type {
   S3CopyObjectRequest,
   S3CreateMultipartUploadRequest,
   S3CreateBucketRequest,
+  S3CreateSessionRequest,
   S3DeleteObjectRequest,
   S3DeleteObjectsRequest,
   S3GetBucketVersioningRequest,
@@ -59,6 +66,7 @@ import type {
   S3HeadObjectRequest,
   S3ListBucketConfigsRequest,
   S3ListBucketsRequest,
+  S3ListDirectoryBucketsRequest,
   S3ListMultipartUploadsRequest,
   S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
@@ -68,6 +76,7 @@ import type {
   S3PutBucketPolicyRequest,
   S3PutBucketRequestPaymentRequest,
   S3PutBucketTaggingRequest,
+  S3PutBucketMetadataConfigurationRequest,
   S3PutBucketVersioningRequest,
   S3PutBucketXmlConfigRequest,
   S3PutBucketXmlConfigWithIdRequest,
@@ -77,10 +86,13 @@ import type {
   S3PutObjectRetentionRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
+  S3RenameObjectRequest,
   S3RestoreObjectRequest,
   S3SelectObjectContentRequest,
+  S3UpdateObjectEncryptionRequest,
   S3UploadPartCopyRequest,
   S3UploadPartRequest,
+  S3WriteGetObjectResponseRequest,
 } from "./zod";
 
 export class S3Error extends Error {
@@ -124,9 +136,32 @@ export interface S3ListBucketsResponse {
   rawXml: string;
 }
 
+export interface S3DirectoryBucket extends S3Bucket {
+  bucketArn?: string;
+  bucketRegion?: string;
+}
+
+export interface S3ListDirectoryBucketsResponse {
+  buckets: S3DirectoryBucket[];
+  continuationToken?: string;
+  rawXml: string;
+}
+
 export interface S3CreateBucketResponse {
   location?: string;
   headers: Record<string, string>;
+}
+
+export interface S3CreateSessionCredentials {
+  accessKeyId?: string;
+  secretAccessKey?: string;
+  sessionToken?: string;
+  expiration?: string;
+}
+
+export interface S3CreateSessionResponse extends S3BucketConfigResponse {
+  credentials?: S3CreateSessionCredentials;
+  rawXml: string;
 }
 
 export interface S3HeadBucketResponse {
@@ -430,6 +465,12 @@ export interface S3SelectObjectContentResponse extends S3ObjectConfigResponse {
   body: ArrayBuffer;
 }
 
+export type S3RenameObjectResponse = S3ObjectConfigResponse;
+
+export type S3UpdateObjectEncryptionResponse = S3ObjectConfigResponse;
+
+export type S3WriteGetObjectResponseResult = S3ObjectConfigResponse;
+
 export interface S3CreateMultipartUploadResponse extends S3ChecksumFields {
   bucket?: string;
   key?: string;
@@ -537,12 +578,28 @@ export interface S3ListBucketsMethod {
   schema: z.ZodType<S3ListBucketsRequest>;
 }
 
+export interface S3ListDirectoryBucketsMethod {
+  (
+    req?: S3ListDirectoryBucketsRequest,
+    signal?: AbortSignal
+  ): Promise<S3ListDirectoryBucketsResponse>;
+  schema: z.ZodType<S3ListDirectoryBucketsRequest>;
+}
+
 export interface S3CreateBucketMethod {
   (
     req: S3CreateBucketRequest,
     signal?: AbortSignal
   ): Promise<S3CreateBucketResponse>;
   schema: z.ZodType<S3CreateBucketRequest>;
+}
+
+export interface S3CreateSessionMethod {
+  (
+    req: S3CreateSessionRequest,
+    signal?: AbortSignal
+  ): Promise<S3CreateSessionResponse>;
+  schema: z.ZodType<S3CreateSessionRequest>;
 }
 
 export interface S3HeadBucketMethod {
@@ -699,6 +756,22 @@ export interface S3PutBucketRequestPaymentMethod {
     signal?: AbortSignal
   ): Promise<S3PutBucketConfigResponse>;
   schema: z.ZodType<S3PutBucketRequestPaymentRequest>;
+}
+
+export interface S3CreateBucketMetadataConfigurationMethod {
+  (
+    req: S3PutBucketMetadataConfigurationRequest,
+    signal?: AbortSignal
+  ): Promise<S3BucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketMetadataConfigurationRequest>;
+}
+
+export interface S3UpdateBucketMetadataTableMethod {
+  (
+    req: S3PutBucketMetadataConfigurationRequest,
+    signal?: AbortSignal
+  ): Promise<S3BucketConfigResponse>;
+  schema: z.ZodType<S3PutBucketMetadataConfigurationRequest>;
 }
 
 export interface S3ListBucketConfigsMethod {
@@ -861,6 +934,30 @@ export interface S3SelectObjectContentMethod {
   schema: z.ZodType<S3SelectObjectContentRequest>;
 }
 
+export interface S3RenameObjectMethod {
+  (
+    req: S3RenameObjectRequest,
+    signal?: AbortSignal
+  ): Promise<S3RenameObjectResponse>;
+  schema: z.ZodType<S3RenameObjectRequest>;
+}
+
+export interface S3UpdateObjectEncryptionMethod {
+  (
+    req: S3UpdateObjectEncryptionRequest,
+    signal?: AbortSignal
+  ): Promise<S3UpdateObjectEncryptionResponse>;
+  schema: z.ZodType<S3UpdateObjectEncryptionRequest>;
+}
+
+export interface S3WriteGetObjectResponseMethod {
+  (
+    req: S3WriteGetObjectResponseRequest,
+    signal?: AbortSignal
+  ): Promise<S3WriteGetObjectResponseResult>;
+  schema: z.ZodType<S3WriteGetObjectResponseRequest>;
+}
+
 export interface S3CreateMultipartUploadMethod {
   (
     req: S3CreateMultipartUploadRequest,
@@ -916,12 +1013,15 @@ export interface S3ListMultipartUploadsMethod {
 
 export interface S3BucketsNamespace {
   create: S3CreateBucketMethod;
+  createMetadataConfiguration: S3CreateBucketMetadataConfigurationMethod;
+  createSession: S3CreateSessionMethod;
   del: S3DeleteBucketMethod;
   delAnalytics: S3DeleteBucketConfigWithIdMethod;
   delCors: S3DeleteBucketConfigMethod;
   delEncryption: S3DeleteBucketConfigMethod;
   delInventory: S3DeleteBucketConfigWithIdMethod;
   delLifecycle: S3DeleteBucketConfigMethod;
+  delMetadataConfiguration: S3DeleteBucketConfigMethod;
   delMetrics: S3DeleteBucketConfigWithIdMethod;
   delOwnershipControls: S3DeleteBucketConfigMethod;
   delPolicy: S3DeleteBucketConfigMethod;
@@ -935,6 +1035,7 @@ export interface S3BucketsNamespace {
   getInventory: S3GetBucketConfigWithIdMethod;
   getLifecycle: S3GetBucketConfigMethod;
   getLogging: S3GetBucketConfigMethod;
+  getMetadataConfiguration: S3GetBucketConfigMethod;
   getMetrics: S3GetBucketConfigWithIdMethod;
   getNotification: S3GetBucketConfigMethod;
   getObjectLockConfiguration: S3GetObjectLockConfigurationMethod;
@@ -948,6 +1049,7 @@ export interface S3BucketsNamespace {
   getWebsite: S3GetBucketConfigMethod;
   head: S3HeadBucketMethod;
   listAnalytics: S3ListBucketConfigsMethod;
+  listDirectory: S3ListDirectoryBucketsMethod;
   listInventory: S3ListBucketConfigsMethod;
   list: S3ListBucketsMethod;
   listMetrics: S3ListBucketConfigsMethod;
@@ -969,6 +1071,8 @@ export interface S3BucketsNamespace {
   putTagging: S3PutBucketTaggingMethod;
   putVersioning: S3PutBucketVersioningMethod;
   putWebsite: S3PutBucketXmlConfigMethod;
+  updateMetadataInventoryTable: S3UpdateBucketMetadataTableMethod;
+  updateMetadataJournalTable: S3UpdateBucketMetadataTableMethod;
 }
 
 export interface S3ObjectsNamespace {
@@ -996,13 +1100,20 @@ export interface S3ObjectsNamespace {
   putLegalHold: S3PutObjectLegalHoldMethod;
   putRetention: S3PutObjectRetentionMethod;
   putTagging: S3PutObjectTaggingMethod;
+  rename: S3RenameObjectMethod;
   restore: S3RestoreObjectMethod;
   selectContent: S3SelectObjectContentMethod;
+  updateEncryption: S3UpdateObjectEncryptionMethod;
   uploadPart: S3UploadPartMethod;
   uploadPartCopy: S3UploadPartCopyMethod;
 }
 
+export interface S3ObjectLambdaNamespace {
+  writeGetObjectResponse: S3WriteGetObjectResponseMethod;
+}
+
 export interface S3Provider {
   buckets: S3BucketsNamespace;
+  objectLambda: S3ObjectLambdaNamespace;
   objects: S3ObjectsNamespace;
 }

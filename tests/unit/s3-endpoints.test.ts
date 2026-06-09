@@ -1176,6 +1176,238 @@ describe("s3 endpoints", () => {
     });
   });
 
+  it("uses S3 Express hosts for directory bucket list and sessions", async () => {
+    const responses = [
+      new Response(
+        [
+          "<ListAllMyDirectoryBucketsResult>",
+          "<Buckets>",
+          "<Bucket>",
+          "<Name>demo--use1-az1--x-s3</Name>",
+          "<BucketArn>arn:aws:s3express:us-east-1:123456789012:bucket/demo--use1-az1--x-s3</BucketArn>",
+          "<BucketRegion>us-east-1</BucketRegion>",
+          "<CreationDate>2026-06-09T00:00:00.000Z</CreationDate>",
+          "</Bucket>",
+          "</Buckets>",
+          "<ContinuationToken>next-token</ContinuationToken>",
+          "</ListAllMyDirectoryBucketsResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(
+        [
+          "<CreateSessionResult>",
+          "<Credentials>",
+          "<AccessKeyId>session-access</AccessKeyId>",
+          "<SecretAccessKey>session-secret</SecretAccessKey>",
+          "<SessionToken>session-token</SessionToken>",
+          "<Expiration>2026-06-09T00:05:00Z</Expiration>",
+          "</Credentials>",
+          "</CreateSessionResult>",
+        ].join(""),
+        { status: 200 }
+      ),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createS3({
+      accessKeyId: "test-access-key",
+      secretAccessKey: "test-secret-key",
+      region: "us-east-1",
+      fetch,
+    });
+
+    const directoryBuckets = await s3.buckets.listDirectory({
+      maxDirectoryBuckets: 10,
+    });
+    const session = await s3.buckets.createSession({
+      bucket: "demo--use1-az1--x-s3",
+      sessionMode: "ReadWrite",
+    });
+
+    expect(directoryBuckets.buckets[0]).toMatchObject({
+      name: "demo--use1-az1--x-s3",
+      bucketRegion: "us-east-1",
+    });
+    expect(directoryBuckets.continuationToken).toBe("next-token");
+    expect(session.credentials).toMatchObject({
+      accessKeyId: "session-access",
+      sessionToken: "session-token",
+    });
+
+    const [listUrl, listInit] = fetch.mock.calls[0];
+    expect(String(listUrl)).toBe(
+      "https://s3express-control.us-east-1.amazonaws.com/?max-directory-buckets=10"
+    );
+    expect(listInit?.method).toBe("GET");
+    expect(
+      (listInit?.headers as Record<string, string>).Authorization
+    ).toContain("/us-east-1/s3express/aws4_request");
+
+    const [sessionUrl, sessionInit] = fetch.mock.calls[1];
+    expect(String(sessionUrl)).toBe(
+      "https://demo--use1-az1--x-s3.s3express-use1-az1.us-east-1.amazonaws.com/?session"
+    );
+    const sessionHeaders = sessionInit?.headers as Record<string, string>;
+    expect(sessionHeaders["x-amz-create-session-mode"]).toBe("ReadWrite");
+    expect(sessionHeaders.Authorization).toContain(
+      "/us-east-1/s3express/aws4_request"
+    );
+  });
+
+  it("handles S3 metadata table configuration endpoints", async () => {
+    const responses = [
+      new Response(null, { status: 200 }),
+      new Response(
+        "<GetBucketMetadataConfigurationResult></GetBucketMetadataConfigurationResult>",
+        { status: 200 }
+      ),
+      new Response(null, { status: 204 }),
+      new Response(null, { status: 200 }),
+      new Response(null, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+    const metadataBody =
+      '<MetadataConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"></MetadataConfiguration>';
+    const inventoryBody =
+      '<InventoryTableConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><ConfigurationState>ENABLED</ConfigurationState></InventoryTableConfiguration>';
+    const journalBody =
+      '<JournalTableConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/"><RecordExpiration><Expiration>DISABLED</Expiration></RecordExpiration></JournalTableConfiguration>';
+
+    await s3.buckets.createMetadataConfiguration({
+      bucket: "test-bucket",
+      body: metadataBody,
+    });
+    const metadata = await s3.buckets.getMetadataConfiguration({
+      bucket: "test-bucket",
+    });
+    await s3.buckets.delMetadataConfiguration({ bucket: "test-bucket" });
+    await s3.buckets.updateMetadataInventoryTable({
+      bucket: "test-bucket",
+      body: inventoryBody,
+    });
+    await s3.buckets.updateMetadataJournalTable({
+      bucket: "test-bucket",
+      body: journalBody,
+    });
+
+    expect(metadata.rawXml).toContain("GetBucketMetadataConfigurationResult");
+    expect(fetch).toHaveBeenCalledTimes(5);
+    expect(String(fetch.mock.calls[0][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metadataConfiguration"
+    );
+    expect(fetch.mock.calls[0][1]?.method).toBe("POST");
+    expect(
+      (fetch.mock.calls[0][1]?.headers as Record<string, string>)["Content-MD5"]
+    ).toBe(md5Base64(metadataBody));
+    expect(fetch.mock.calls[1][1]?.method).toBe("GET");
+    expect(fetch.mock.calls[2][1]?.method).toBe("DELETE");
+    expect(String(fetch.mock.calls[3][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metadataInventoryTable"
+    );
+    expect(String(fetch.mock.calls[4][0])).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?metadataJournalTable"
+    );
+  });
+
+  it("signs specialized object and Object Lambda requests", async () => {
+    const responses = [
+      new Response(null, { status: 200 }),
+      new Response(null, {
+        status: 200,
+        headers: { "x-amz-request-charged": "requester" },
+      }),
+      new Response(null, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createS3({
+      accessKeyId: "test-access-key",
+      secretAccessKey: "test-secret-key",
+      region: "us-east-1",
+      fetch,
+    });
+    const encryptionBody = [
+      '<ObjectEncryption xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+      "<SSE-KMS><BucketKeyEnabled>true</BucketKeyEnabled>",
+      "<KMSKeyArn>arn:aws:kms:us-east-1:123456789012:key/key-id</KMSKeyArn>",
+      "</SSE-KMS></ObjectEncryption>",
+    ].join("");
+
+    await s3.objects.rename({
+      bucket: "demo--use1-az1--x-s3",
+      key: "dest.txt",
+      sourceKey: "source file.txt",
+      destinationIfNoneMatch: "*",
+      s3SessionToken: "directory-session-token",
+    });
+    const updated = await s3.objects.updateEncryption({
+      bucket: "test-bucket",
+      key: "secure.txt",
+      versionId: "v1",
+      body: encryptionBody,
+      requestPayer: "requester",
+    });
+    await s3.objectLambda.writeGetObjectResponse({
+      requestRoute: "route-1",
+      requestToken: "token-1",
+      body: "transformed",
+      statusCode: 206,
+      headers: { "Content-Type": "text/plain" },
+      metadata: { source: "unit" },
+    });
+
+    expect(updated.requestCharged).toBe("requester");
+
+    const [renameUrl, renameInit] = fetch.mock.calls[0];
+    expect(String(renameUrl)).toBe(
+      "https://demo--use1-az1--x-s3.s3express-use1-az1.us-east-1.amazonaws.com/dest.txt?renameObject"
+    );
+    const renameHeaders = renameInit?.headers as Record<string, string>;
+    expect(renameHeaders["x-amz-rename-source"]).toBe("/source%20file.txt");
+    expect(renameHeaders["If-None-Match"]).toBe("*");
+    expect(renameHeaders["x-amz-s3session-token"]).toBe(
+      "directory-session-token"
+    );
+    expect(renameHeaders.Authorization).toContain(
+      "/us-east-1/s3express/aws4_request"
+    );
+
+    const [encryptionUrl, encryptionInit] = fetch.mock.calls[1];
+    expect(String(encryptionUrl)).toBe(
+      "https://test-bucket.s3.us-east-1.amazonaws.com/secure.txt?encryption&versionId=v1"
+    );
+    expect(encryptionInit?.method).toBe("PUT");
+    const encryptionHeaders = encryptionInit?.headers as Record<string, string>;
+    expect(encryptionHeaders["x-amz-request-payer"]).toBe("requester");
+    expect(encryptionHeaders["Content-MD5"]).toBe(md5Base64(encryptionBody));
+
+    const [lambdaUrl, lambdaInit] = fetch.mock.calls[2];
+    expect(String(lambdaUrl)).toBe(
+      "https://route-1.s3-object-lambda.us-east-1.amazonaws.com/WriteGetObjectResponse"
+    );
+    const lambdaHeaders = lambdaInit?.headers as Record<string, string>;
+    expect(lambdaHeaders["x-amz-request-route"]).toBe("route-1");
+    expect(lambdaHeaders["x-amz-request-token"]).toBe("token-1");
+    expect(lambdaHeaders["x-amz-fwd-status"]).toBe("206");
+    expect(lambdaHeaders["x-amz-fwd-header-Content-Type"]).toBe("text/plain");
+    expect(lambdaHeaders["x-amz-fwd-header-x-amz-meta-source"]).toBe("unit");
+    expect(lambdaHeaders.Authorization).toContain(
+      "/us-east-1/s3-object-lambda/aws4_request"
+    );
+  });
+
   it("throws S3Error with parsed XML error details", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       return new Response(

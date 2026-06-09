@@ -58,6 +58,7 @@ export const S3OptionsSchema = z.object({
   sessionToken: z.string().min(1).optional(),
   region: z.string().min(1),
   endpoint: z.string().url().optional(),
+  signingService: z.string().min(1).optional(),
   forcePathStyle: z.boolean().optional(),
   timeout: z.number().int().positive().optional(),
   fetch: z.custom<typeof fetch>().optional(),
@@ -68,6 +69,17 @@ export type S3Options = z.infer<typeof S3OptionsSchema>;
 export const S3ListBucketsRequestSchema = z.object({}).optional();
 
 export type S3ListBucketsRequest = z.infer<typeof S3ListBucketsRequestSchema>;
+
+export const S3ListDirectoryBucketsRequestSchema = z
+  .object({
+    continuationToken: z.string().optional(),
+    maxDirectoryBuckets: z.number().int().min(0).max(1000).optional(),
+  })
+  .optional();
+
+export type S3ListDirectoryBucketsRequest = z.infer<
+  typeof S3ListDirectoryBucketsRequestSchema
+>;
 
 export const S3CreateBucketRequestSchema = z.object({
   bucket: z.string().min(1),
@@ -82,6 +94,19 @@ export const S3CreateBucketRequestSchema = z.object({
 });
 
 export type S3CreateBucketRequest = z.infer<typeof S3CreateBucketRequestSchema>;
+
+export const S3CreateSessionRequestSchema = z.object({
+  bucket: z.string().min(1),
+  sessionMode: z.enum(["ReadOnly", "ReadWrite"]).optional(),
+  serverSideEncryption: z.string().optional(),
+  sseKmsEncryptionContext: z.string().optional(),
+  sseKmsKeyId: z.string().optional(),
+  bucketKeyEnabled: z.boolean().optional(),
+});
+
+export type S3CreateSessionRequest = z.infer<
+  typeof S3CreateSessionRequestSchema
+>;
 
 export const S3BucketRequestSchema = z.object({
   bucket: z.string().min(1),
@@ -310,6 +335,50 @@ export type S3SelectObjectContentRequest = z.infer<
   typeof S3SelectObjectContentRequestSchema
 >;
 
+export const S3RenameObjectRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  sourceKey: z.string().min(1),
+  clientToken: z.string().min(1).max(64).optional(),
+  s3SessionToken: z.string().optional(),
+  destinationIfMatch: z.string().optional(),
+  destinationIfModifiedSince: z.string().optional(),
+  destinationIfNoneMatch: z.string().optional(),
+  destinationIfUnmodifiedSince: z.string().optional(),
+  sourceIfMatch: z.string().optional(),
+  sourceIfModifiedSince: z.string().optional(),
+  sourceIfNoneMatch: z.string().optional(),
+  sourceIfUnmodifiedSince: z.string().optional(),
+});
+
+export type S3RenameObjectRequest = z.infer<typeof S3RenameObjectRequestSchema>;
+
+export const S3UpdateObjectEncryptionRequestSchema =
+  S3ObjectGovernanceRequestSchema.extend({
+    body: z.string(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3UpdateObjectEncryptionRequest = z.infer<
+  typeof S3UpdateObjectEncryptionRequestSchema
+>;
+
+export const S3WriteGetObjectResponseRequestSchema = z.object({
+  requestRoute: z.string().min(1),
+  requestToken: z.string().min(1),
+  body: objectBodySchema.optional(),
+  statusCode: z.number().int().min(100).max(599).optional(),
+  errorCode: z.string().optional(),
+  errorMessage: z.string().optional(),
+  headers: z.record(z.string(), z.string()).optional(),
+  metadata: z.record(z.string(), z.string()).optional(),
+});
+
+export type S3WriteGetObjectResponseRequest = z.infer<
+  typeof S3WriteGetObjectResponseRequestSchema
+>;
+
 export const S3DeleteObjectRequestSchema = z.object({
   bucket: z.string().min(1),
   key: z.string().min(1),
@@ -435,6 +504,17 @@ export const S3PutBucketRequestPaymentRequestSchema =
 
 export type S3PutBucketRequestPaymentRequest = z.infer<
   typeof S3PutBucketRequestPaymentRequestSchema
+>;
+
+export const S3PutBucketMetadataConfigurationRequestSchema =
+  S3BucketConfigRequestSchema.extend({
+    body: z.string(),
+    checksumAlgorithm: checksumAlgorithmSchema.optional(),
+    contentMD5: z.string().optional(),
+  });
+
+export type S3PutBucketMetadataConfigurationRequest = z.infer<
+  typeof S3PutBucketMetadataConfigurationRequestSchema
 >;
 
 export const S3CreateMultipartUploadRequestSchema = z.object({

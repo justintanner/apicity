@@ -185,6 +185,10 @@ function isS3PathStyleHost(hostname: string): boolean {
   return hostname === "s3.amazonaws.com" || /^s3[.-]/.test(hostname);
 }
 
+function isS3ExpressControlHost(hostname: string): boolean {
+  return /^s3express-control[.-]/.test(hostname);
+}
+
 function isS3ObjectRequest(entry: HarEntry): boolean {
   try {
     const url = new URL(entry.request.url);
@@ -223,11 +227,22 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   const acl = hasS3Subresource(entry, "acl");
   const attributes = hasS3Subresource(entry, "attributes");
   const legalHold = hasS3Subresource(entry, "legal-hold");
+  const metadataConfiguration = hasS3Subresource(
+    entry,
+    "metadataConfiguration"
+  );
+  const metadataInventoryTable = hasS3Subresource(
+    entry,
+    "metadataInventoryTable"
+  );
+  const metadataJournalTable = hasS3Subresource(entry, "metadataJournalTable");
   const objectLock = hasS3Subresource(entry, "object-lock");
+  const renameObject = hasS3Subresource(entry, "renameObject");
   const restore = hasS3Subresource(entry, "restore");
   const retention = hasS3Subresource(entry, "retention");
   const select = hasS3Subresource(entry, "select");
   const torrent = hasS3Subresource(entry, "torrent");
+  const encryption = hasS3Subresource(entry, "encryption");
   const bucketConfigSubresources = new Map<string, string>([
     ["analytics", "Analytics"],
     ["cors", "Cors"],
@@ -251,12 +266,17 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
       return (
         row.method === "GET" &&
         !objectRequest &&
-        !entry.request.url.includes("?")
+        !entry.request.url.includes("?") &&
+        !isS3ExpressControlHost(new URL(entry.request.url).hostname)
       );
+    case "buckets.listDirectory":
+      return isS3ExpressControlHost(new URL(entry.request.url).hostname);
     case "buckets.create":
     case "buckets.del":
     case "buckets.head":
       return !objectRequest && !entry.request.url.includes("?");
+    case "buckets.createSession":
+      return !objectRequest && hasS3Subresource(entry, "session");
     case "buckets.location":
       return !objectRequest && hasS3Subresource(entry, "location");
     case "buckets.getVersioning":
@@ -265,6 +285,14 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
     case "buckets.getObjectLockConfiguration":
     case "buckets.putObjectLockConfiguration":
       return !objectRequest && objectLock;
+    case "buckets.createMetadataConfiguration":
+    case "buckets.getMetadataConfiguration":
+    case "buckets.delMetadataConfiguration":
+      return !objectRequest && metadataConfiguration;
+    case "buckets.updateMetadataInventoryTable":
+      return !objectRequest && metadataInventoryTable;
+    case "buckets.updateMetadataJournalTable":
+      return !objectRequest && metadataJournalTable;
     case "buckets.listAnalytics":
       return (
         !objectRequest && !configId && hasS3Subresource(entry, "analytics")
@@ -347,7 +375,9 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
         !multipartUpload &&
         !bulkDelete &&
         !acl &&
+        !encryption &&
         !legalHold &&
+        !renameObject &&
         !retention &&
         !requestHeader(entry, "x-amz-copy-source")
       );
@@ -360,7 +390,9 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
         !multipartUpload &&
         !acl &&
         !attributes &&
+        !encryption &&
         !legalHold &&
+        !renameObject &&
         !retention &&
         !select &&
         !torrent
@@ -386,6 +418,12 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
       return objectRequest && torrent;
     case "objects.selectContent":
       return objectRequest && select;
+    case "objects.rename":
+      return objectRequest && renameObject;
+    case "objects.updateEncryption":
+      return objectRequest && encryption;
+    case "objectLambda.writeGetObjectResponse":
+      return stripQuery(entry.request.url).endsWith("/WriteGetObjectResponse");
     default:
       return false;
   }

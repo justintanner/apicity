@@ -102,6 +102,9 @@ importers:
       '@apicity/anthropic':
         specifier: workspace:*
         version: link:../provider/anthropic
+      '@apicity/b2':
+        specifier: workspace:*
+        version: link:../provider/b2
       '@apicity/binance':
         specifier: workspace:*
         version: link:../provider/binance
@@ -168,6 +171,15 @@ importers:
 
   packages/provider/anthropic:
     dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/b2:
+    dependencies:
+      '@apicity/s3':
+        specifier: workspace:*
+        version: link:../s3
       zod:
         specifier: ^3.24.0
         version: 3.25.76

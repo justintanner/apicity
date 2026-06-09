@@ -87,6 +87,7 @@ credentials from 1Password.
 | `binance`    | _(none — public APIs)_                      |
 | `elevenlabs` | `ELEVENLABS_API_KEY`                        |
 | `s3`         | `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY` |
+| `b2`         | `B2_ACCESS_KEY_ID` + `B2_SECRET_ACCESS_KEY` + `B2_REGION` |
 | `google`     | `GOOGLE_API_KEY`                            |
 | `x`          | `X_ACCESS_TOKEN`                            |
 | `ig`         | `IG_ACCESS_TOKEN`                           |

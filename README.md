@@ -94,6 +94,8 @@ Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
 | [@apicity/fireworks](packages/provider/fireworks)                 | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
 | [@apicity/kimicoding](packages/provider/kimicoding)               | Kimi Coding messages, streaming, models, embeddings                |
 | [@apicity/elevenlabs](packages/provider/elevenlabs)               | ElevenLabs text-to-speech, sound effects, audio APIs               |
+| [@apicity/s3](packages/provider/s3)                               | S3-compatible object storage                                       |
+| [@apicity/b2](packages/provider/b2)                               | Backblaze B2 S3-compatible object storage                          |
 | [@apicity/free-media-upload](packages/provider/free-media-upload) | Public file upload/hosting services                                |
 | [@apicity/x](packages/provider/x)                                 | X API posting and media upload                                     |
 | [@apicity/meta](packages/provider/meta)                           | Instagram Graph API reel publishing                                |

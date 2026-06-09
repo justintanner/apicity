@@ -32,6 +32,7 @@ export const POLYMARKET_ENV_VARS = [
 ];
 
 export const S3_ENV_VARS = ["S3_SECRET_ACCESS_KEY"];
+export const B2_ENV_VARS = ["B2_SECRET_ACCESS_KEY"];
 
 function polymarketOptionsFromEnv(): Record<string, unknown> {
   const signatureType = process.env.POLYMARKET_SIGNATURE_TYPE;
@@ -131,6 +132,13 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     factoryName: "createS3",
     extraEnvVars: S3_ENV_VARS,
   },
+  b2: {
+    envVar: "B2_ACCESS_KEY_ID",
+    optionKey: "accessKeyId",
+    importPath: "@apicity/b2",
+    factoryName: "createB2",
+    extraEnvVars: B2_ENV_VARS,
+  },
   x: {
     envVar: "X_ACCESS_TOKEN",
     optionKey: "accessToken",
@@ -208,6 +216,20 @@ export async function instantiateProvider(
         secretAccessKey,
         region: process.env.S3_REGION ?? "us-east-1",
         endpoint: process.env.S3_ENDPOINT,
+      }
+    );
+  }
+  if (name === "b2") {
+    const accessKeyId = process.env.B2_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.B2_SECRET_ACCESS_KEY;
+    const region = process.env.B2_REGION;
+    if (!accessKeyId || !secretAccessKey || !region) return null;
+    return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
+      {
+        accessKeyId,
+        secretAccessKey,
+        region,
+        endpoint: process.env.B2_ENDPOINT,
       }
     );
   }

@@ -52,6 +52,7 @@
   "dependencies": {
     "@apicity/alibaba": "workspace:*",
     "@apicity/anthropic": "workspace:*",
+    "@apicity/b2": "workspace:*",
     "@apicity/binance": "workspace:*",
     "@apicity/cost": "workspace:*",
     "@apicity/dolthub": "workspace:*",

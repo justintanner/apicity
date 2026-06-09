@@ -182,6 +182,7 @@ test-branch-protection.txt
 !.beads/config.yaml
 !.beads/metadata.json
 !.beads/issues.jsonl
+!.beads/PRIME.md
 !.beads/formulas/
 !.beads/formulas/**
 

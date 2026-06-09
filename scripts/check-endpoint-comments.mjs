@@ -37,6 +37,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
     "www.alibabacloud.com",
   ],
   binance: ["developers.binance.com"],
+  s3: ["docs.aws.amazon.com"],
   free: [
     "tmpfiles.org",
     "uguu.se",

@@ -2002,6 +2002,9 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  s3: {
+    showMiddleware: false,
+  },
   free: {
     noAuth: true,
     showMiddleware: false,
@@ -2022,6 +2025,7 @@ const PROVIDER_DOCS = {
   telegram: "https://core.telegram.org/bots/api",
   binance:
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
+  s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
 };
 
 const CANONICAL_FACTORY = {
@@ -2033,6 +2037,7 @@ const CANONICAL_FACTORY = {
   fireworks: "createFireworks",
   alibaba: "createAlibaba",
   binance: "createBinance",
+  s3: "createS3",
   kimicoding: "createKimiCoding",
   kie: "createKie",
   "free-media-upload": "createFreeMediaUpload",
@@ -2095,7 +2100,14 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("```typescript");
   sections.push(`import { ${factory} } from "${pkgName}";`);
   sections.push("");
-  if (noAuth) {
+  if (providerName === "s3") {
+    sections.push(`const ${providerName} = ${factory}({`);
+    sections.push("  accessKeyId: process.env.S3_ACCESS_KEY_ID!,");
+    sections.push("  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,");
+    sections.push('  region: process.env.S3_REGION ?? "us-east-1",');
+    sections.push("  endpoint: process.env.S3_ENDPOINT,");
+    sections.push("});");
+  } else if (noAuth) {
     sections.push(`const ${providerName} = ${factory}();`);
   } else {
     sections.push(

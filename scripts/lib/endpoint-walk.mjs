@@ -61,6 +61,11 @@ const PROVIDERS = [
     factoryNames: ["createBinance"],
   },
   {
+    name: "s3",
+    entryFiles: ["packages/provider/s3/src/s3.ts"],
+    factoryNames: ["createS3"],
+  },
+  {
     name: "kie",
     entryFiles: [
       "packages/provider/kie/src/kie.ts",
@@ -873,13 +878,13 @@ function methodFromPathStack(pathStack) {
   return null;
 }
 
-function logicalDotPath(pathStack) {
+function logicalDotPath(pathStack, providerName) {
   // Drop HTTP-method segments from the user-facing dotted path.
   // Also drop "stream"/"ws"/"run" pseudo-method segments.
   const keys = pathStack.map((s) => String(s.key));
   const filtered = keys.filter((k) => {
     const l = k.toLowerCase();
-    if (METHOD_KEYS.has(l)) return false;
+    if (providerName !== "s3" && METHOD_KEYS.has(l)) return false;
     if (STREAM_KEYS.has(l)) return false;
     return true;
   });
@@ -961,7 +966,7 @@ async function* walkAllEndpointsRaw(project) {
           const methodFromPath = methodFromPathStack(dotPath);
           const method = methodFromPath || methodFromBody;
           const pth = rawPath;
-          const logical = logicalDotPath(dotPath);
+          const logical = logicalDotPath(dotPath, provider.name);
           const full = fullDotPath(dotPath);
           let fullUrl;
           if (!pth) {

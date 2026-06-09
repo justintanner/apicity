@@ -78,6 +78,11 @@ export default defineConfig({
         __dirname,
         "../packages/provider/binance/src"
       ),
+      "@apicity/s3/zod": path.resolve(
+        __dirname,
+        "../packages/provider/s3/src/zod"
+      ),
+      "@apicity/s3": path.resolve(__dirname, "../packages/provider/s3/src"),
       "@apicity/google/zod": path.resolve(
         __dirname,
         "../packages/provider/google/src/zod"

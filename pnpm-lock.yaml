@@ -141,6 +141,9 @@ importers:
       '@apicity/polymarket':
         specifier: workspace:*
         version: link:../provider/polymarket
+      '@apicity/s3':
+        specifier: workspace:*
+        version: link:../provider/s3
       '@apicity/telegram':
         specifier: workspace:*
         version: link:../provider/telegram
@@ -248,6 +251,12 @@ importers:
       '@polymarket/clob-client-v2':
         specifier: ^1.0.6
         version: 1.0.6(typescript@5.9.3)(zod@3.25.76)
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/s3:
+    dependencies:
       zod:
         specifier: ^3.24.0
         version: 3.25.76

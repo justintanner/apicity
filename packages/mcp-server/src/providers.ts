@@ -9,7 +9,7 @@ import { PAID_ENDPOINTS } from "@apicity/cost";
 
 export interface ProviderSpec {
   envVar: string;
-  optionKey: "apiKey" | "apiToken" | "accessToken" | "botToken";
+  optionKey: "apiKey" | "apiToken" | "accessKeyId" | "accessToken" | "botToken";
   importPath: string;
   factoryName: string;
   // Extra env vars (beyond `envVar`) this provider needs resolved from the
@@ -30,6 +30,8 @@ export const POLYMARKET_ENV_VARS = [
   "POLYMARKET_FUNDER_ADDRESS",
   "POLYMARKET_SIGNATURE_TYPE",
 ];
+
+export const S3_ENV_VARS = ["S3_SECRET_ACCESS_KEY"];
 
 function polymarketOptionsFromEnv(): Record<string, unknown> {
   const signatureType = process.env.POLYMARKET_SIGNATURE_TYPE;
@@ -122,6 +124,13 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/elevenlabs",
     factoryName: "createElevenLabs",
   },
+  s3: {
+    envVar: "S3_ACCESS_KEY_ID",
+    optionKey: "accessKeyId",
+    importPath: "@apicity/s3",
+    factoryName: "createS3",
+    extraEnvVars: S3_ENV_VARS,
+  },
   x: {
     envVar: "X_ACCESS_TOKEN",
     optionKey: "accessToken",
@@ -187,6 +196,19 @@ export async function instantiateProvider(
     // trading endpoints pick up the wallet/credential bundle when present.
     return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
       polymarketOptionsFromEnv()
+    );
+  }
+  if (name === "s3") {
+    const accessKeyId = process.env.S3_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY;
+    if (!accessKeyId || !secretAccessKey) return null;
+    return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(
+      {
+        accessKeyId,
+        secretAccessKey,
+        region: process.env.S3_REGION ?? "us-east-1",
+        endpoint: process.env.S3_ENDPOINT,
+      }
     );
   }
   const credential = spec.envVar ? process.env[spec.envVar] : undefined;

@@ -155,6 +155,8 @@ export function setupPollyForFileUploads(recordingName: string): PollyContext {
           "xi-api-key",
           "x-dashscope-ossresourceresolve",
           "x-goog-api-key",
+          "x-amz-date",
+          "x-amz-security-token",
         ],
       },
       body: false,
@@ -176,6 +178,8 @@ export function setupPollyIgnoringBody(recordingName: string): PollyContext {
           "xi-api-key",
           "x-dashscope-ossresourceresolve",
           "x-goog-api-key",
+          "x-amz-date",
+          "x-amz-security-token",
         ],
       },
       body: false,
@@ -214,6 +218,8 @@ function setupPollyWithOptions(
         "xi-api-key",
         "x-dashscope-ossresourceresolve",
         "x-goog-api-key",
+        "x-amz-date",
+        "x-amz-security-token",
       ],
     },
   };
@@ -252,6 +258,9 @@ function setupPollyWithOptions(
         header.value = "***";
       }
       if (header.name?.toLowerCase() === "x-goog-api-key") {
+        header.value = "***";
+      }
+      if (header.name?.toLowerCase() === "x-amz-security-token") {
         header.value = "***";
       }
     }

@@ -33,6 +33,18 @@ const CREDIT_URL_PATTERNS = [
 const MEDIA_URL_EXT =
   /\.(mp4|webm|mov|png|jpe?g|gif|webp|wav|mp3|ogg|flac|m4a)(?:\?|$)/i;
 
+const RESPONSE_HEADER_PREVIEW_EXCLUDES = new Set([
+  "connection",
+  "content-length",
+  "date",
+  "server",
+  "transfer-encoding",
+  "via",
+  "x-amz-id-2",
+  "x-amz-request-id",
+  "x-cache",
+]);
+
 export interface EndpointDocRow {
   provider: string;
   dotPath: string;
@@ -152,11 +164,101 @@ function matchLenient(entry: HarEntry, row: EndpointDocRow): boolean {
   );
 }
 
+function requestHeader(entry: HarEntry, name: string): string | undefined {
+  const lowerName = name.toLowerCase();
+  return entry.request.headers.find(
+    (header) => header.name.toLowerCase() === lowerName
+  )?.value;
+}
+
+function s3PathSegments(entry: HarEntry): string[] {
+  try {
+    return new URL(entry.request.url).pathname
+      .split("/")
+      .filter((segment) => segment.length > 0);
+  } catch {
+    return pathSegments(entry.request.url);
+  }
+}
+
+function isS3PathStyleHost(hostname: string): boolean {
+  return hostname === "s3.amazonaws.com" || /^s3[.-]/.test(hostname);
+}
+
+function isS3ObjectRequest(entry: HarEntry): boolean {
+  try {
+    const url = new URL(entry.request.url);
+    const segments = s3PathSegments(entry);
+    return isS3PathStyleHost(url.hostname)
+      ? segments.length >= 2
+      : segments.length >= 1;
+  } catch {
+    return false;
+  }
+}
+
+function hasS3Subresource(entry: HarEntry, name: string): boolean {
+  try {
+    return new URL(entry.request.url).searchParams.has(name);
+  } catch {
+    return false;
+  }
+}
+
+function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
+  if (row.provider !== "s3") return false;
+  if (entry.request.method.toUpperCase() !== row.method.toUpperCase()) {
+    return false;
+  }
+
+  const objectRequest = isS3ObjectRequest(entry);
+  const tagging = hasS3Subresource(entry, "tagging");
+
+  switch (row.dotPath) {
+    case "buckets.list":
+      return (
+        row.method === "GET" &&
+        !objectRequest &&
+        !entry.request.url.includes("?")
+      );
+    case "buckets.create":
+    case "buckets.del":
+    case "buckets.head":
+      return !objectRequest && !entry.request.url.includes("?");
+    case "buckets.location":
+      return !objectRequest && hasS3Subresource(entry, "location");
+    case "objects.list":
+      return hasS3Subresource(entry, "list-type");
+    case "objects.copy":
+      return objectRequest && !!requestHeader(entry, "x-amz-copy-source");
+    case "objects.put":
+      return (
+        objectRequest && !tagging && !requestHeader(entry, "x-amz-copy-source")
+      );
+    case "objects.get":
+    case "objects.head":
+    case "objects.del":
+      return objectRequest && !tagging;
+    case "objects.getTagging":
+    case "objects.putTagging":
+    case "objects.delTagging":
+      return objectRequest && tagging;
+    default:
+      return false;
+  }
+}
+
 function findMatchingEndpointDoc(
   entry: HarEntry,
   rows: EndpointDocRow[],
   provider: string
 ): EndpointDocRow | null {
+  if (provider === "s3") {
+    for (const row of rows) {
+      if (matchS3Endpoint(entry, row)) return row;
+    }
+  }
+
   for (const row of rows) {
     if (matchStrict(entry, row)) return row;
   }
@@ -217,6 +319,25 @@ function responseBody(entry: HarEntry): string {
   }
 
   return prettyBody(entry.response.content?.text);
+}
+
+function responseHeaders(entry: HarEntry): string {
+  const headers: Record<string, string> = {};
+
+  for (const header of entry.response.headers) {
+    const name = header.name.toLowerCase();
+    if (RESPONSE_HEADER_PREVIEW_EXCLUDES.has(name)) continue;
+    if (name.startsWith("x-amz-cf-")) continue;
+    headers[name] = header.value;
+  }
+
+  return Object.keys(headers).length > 0
+    ? JSON.stringify({ headers }, null, 2)
+    : "";
+}
+
+function responsePreview(entry: HarEntry): string {
+  return responseBody(entry) || responseHeaders(entry);
 }
 
 function collectMediaUrls(value: unknown, urls: Set<string>): void {
@@ -314,7 +435,7 @@ export function formatTelegramEndpointMessage(
   const mediaUrls = extractMediaUrls(recording.entries);
 
   const request = prettyBody(getRequestBodyText(entry) ?? undefined);
-  const response = responseBody(entry);
+  const response = responsePreview(entry);
 
   const lines: string[] = [
     "<b>Apicity endpoint</b>",

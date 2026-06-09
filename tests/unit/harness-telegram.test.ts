@@ -21,6 +21,30 @@ const endpointDocs: EndpointDocRow[] = [
     docsUrl:
       "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#exchange-information",
   },
+  {
+    provider: "s3",
+    dotPath: "buckets.head",
+    method: "HEAD",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "objects.put",
+    method: "PUT",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}/{key}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html",
+  },
+  {
+    provider: "s3",
+    dotPath: "objects.copy",
+    method: "PUT",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}/{key}",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html",
+  },
 ];
 
 function seedSpeechRecording(): ChangedRecording {
@@ -97,6 +121,96 @@ function binanceExchangeInfoRecording(): ChangedRecording {
   };
 }
 
+function s3HeadBucketRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/bucket-read",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" + "bucket-read_992866278/recording.har",
+    entries: [
+      {
+        request: {
+          method: "HEAD",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [
+            { name: "x-amz-bucket-region", value: "us-east-1" },
+            { name: "x-amz-access-point-alias", value: "false" },
+            { name: "x-amz-request-id", value: "redacted-noise" },
+          ],
+          content: {},
+        },
+      },
+    ],
+  };
+}
+
+function s3PutObjectRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/object-management",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "object-management_1494981478/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/apicity-tests/object-management-source.txt",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "etag", value: '"etag"' }],
+          content: {},
+        },
+      },
+    ],
+  };
+}
+
+function s3CopyObjectRecording(): ChangedRecording {
+  return {
+    provider: "s3",
+    recordingName: "s3/object-management",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "object-management_1494981478/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/apicity-tests/object-management-copy.txt",
+          headers: [
+            {
+              name: "x-amz-copy-source",
+              value:
+                "/apicity-s3-fixtures/apicity-tests/object-management-source.txt",
+            },
+          ],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          content: {
+            mimeType: "application/xml",
+            text: "<CopyObjectResult></CopyObjectResult>",
+          },
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -134,5 +248,32 @@ describe("harness Telegram messages", () => {
     expect(message.text).toContain(
       "developers.binance.com/docs/binance-spot-api-docs"
     );
+  });
+
+  it("renders response headers when the endpoint has no response body", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [s3HeadBucketRecording()],
+      endpointDocs
+    );
+
+    expect(message.apicityPath).toBe("s3.buckets.head");
+    expect(message.text).toContain("<b>Response</b>");
+    expect(message.text).toContain("x-amz-bucket-region");
+    expect(message.text).toContain("us-east-1");
+    expect(message.text).not.toContain("redacted-noise");
+  });
+
+  it("matches S3 virtual-hosted object requests", () => {
+    const [putMessage] = buildTelegramHarnessMessages(
+      [s3PutObjectRecording()],
+      endpointDocs
+    );
+    const [copyMessage] = buildTelegramHarnessMessages(
+      [s3CopyObjectRecording()],
+      endpointDocs
+    );
+
+    expect(putMessage.apicityPath).toBe("s3.objects.put");
+    expect(copyMessage.apicityPath).toBe("s3.objects.copy");
   });
 });

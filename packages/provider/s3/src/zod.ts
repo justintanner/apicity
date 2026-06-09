@@ -60,6 +60,11 @@ export type S3ListObjectsV2Request = z.infer<
   typeof S3ListObjectsV2RequestSchema
 >;
 
+const objectTagSchema = z.object({
+  key: z.string().min(1),
+  value: z.string(),
+});
+
 export const S3PutObjectRequestSchema = z.object({
   bucket: z.string().min(1),
   key: z.string().min(1),
@@ -75,6 +80,27 @@ export const S3PutObjectRequestSchema = z.object({
 
 export type S3PutObjectRequest = z.infer<typeof S3PutObjectRequestSchema>;
 
+export const S3CopyObjectRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  sourceBucket: z.string().min(1),
+  sourceKey: z.string().min(1),
+  sourceVersionId: z.string().optional(),
+  contentType: z.string().optional(),
+  cacheControl: z.string().optional(),
+  contentDisposition: z.string().optional(),
+  contentEncoding: z.string().optional(),
+  contentLanguage: z.string().optional(),
+  metadata: z.record(z.string(), z.string()).optional(),
+  metadataDirective: z.enum(["COPY", "REPLACE"]).optional(),
+  taggingDirective: z.enum(["COPY", "REPLACE"]).optional(),
+  storageClass: z.string().optional(),
+  expectedBucketOwner: z.string().optional(),
+  sourceExpectedBucketOwner: z.string().optional(),
+});
+
+export type S3CopyObjectRequest = z.infer<typeof S3CopyObjectRequestSchema>;
+
 export const S3GetObjectRequestSchema = z.object({
   bucket: z.string().min(1),
   key: z.string().min(1),
@@ -87,6 +113,26 @@ export type S3GetObjectRequest = z.infer<typeof S3GetObjectRequestSchema>;
 export const S3HeadObjectRequestSchema = S3GetObjectRequestSchema;
 
 export type S3HeadObjectRequest = z.infer<typeof S3HeadObjectRequestSchema>;
+
+export const S3ObjectTaggingRequestSchema = z.object({
+  bucket: z.string().min(1),
+  key: z.string().min(1),
+  versionId: z.string().optional(),
+  expectedBucketOwner: z.string().optional(),
+});
+
+export type S3ObjectTaggingRequest = z.infer<
+  typeof S3ObjectTaggingRequestSchema
+>;
+
+export const S3PutObjectTaggingRequestSchema =
+  S3ObjectTaggingRequestSchema.extend({
+    tagSet: z.array(objectTagSchema).max(10),
+  });
+
+export type S3PutObjectTaggingRequest = z.infer<
+  typeof S3PutObjectTaggingRequestSchema
+>;
 
 export const S3DeleteObjectRequestSchema = z.object({
   bucket: z.string().min(1),

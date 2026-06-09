@@ -148,6 +148,114 @@ describe("s3 endpoints", () => {
     expect(headers["x-amz-meta-source"]).toBe("unit");
   });
 
+  it("signs and copies an object request", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(
+        [
+          "<CopyObjectResult>",
+          '<ETag>"copy-etag"</ETag>',
+          "<LastModified>2026-06-09T00:00:00.000Z</LastModified>",
+          "</CopyObjectResult>",
+        ].join(""),
+        {
+          status: 200,
+          headers: { "x-amz-copy-source-version-id": "source-version" },
+        }
+      );
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.objects.copy({
+      bucket: "dest-bucket",
+      key: "copy.txt",
+      sourceBucket: "source-bucket",
+      sourceKey: "folder/a b.txt",
+      metadata: { copied: "yes" },
+    });
+
+    expect(result.eTag).toBe('"copy-etag"');
+    expect(result.copySourceVersionId).toBe("source-version");
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/dest-bucket/copy.txt"
+    );
+    expect(init?.method).toBe("PUT");
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["x-amz-copy-source"]).toBe(
+      "/source-bucket/folder/a%20b.txt"
+    );
+    expect(headers["x-amz-metadata-directive"]).toBe("REPLACE");
+    expect(headers["x-amz-meta-copied"]).toBe("yes");
+  });
+
+  it("sets, reads, and deletes object tagging requests", async () => {
+    const responses = [
+      new Response(null, { status: 200 }),
+      new Response(
+        [
+          '<Tagging xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+          "<TagSet>",
+          "<Tag><Key>kind</Key><Value>unit</Value></Tag>",
+          "<Tag><Key>escaped</Key><Value>a &amp; b</Value></Tag>",
+          "</TagSet>",
+          "</Tagging>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(null, { status: 204 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    await s3.objects.putTagging({
+      bucket: "test-bucket",
+      key: "tags.txt",
+      tagSet: [
+        { key: "kind", value: "unit" },
+        { key: "escaped", value: "a & b" },
+      ],
+    });
+    const tags = await s3.objects.getTagging({
+      bucket: "test-bucket",
+      key: "tags.txt",
+    });
+    await s3.objects.delTagging({
+      bucket: "test-bucket",
+      key: "tags.txt",
+    });
+
+    expect(tags.tagSet).toEqual([
+      { key: "kind", value: "unit" },
+      { key: "escaped", value: "a & b" },
+    ]);
+    expect(fetch).toHaveBeenCalledTimes(3);
+
+    const [putUrl, putInit] = fetch.mock.calls[0];
+    expect(String(putUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/tags.txt?tagging"
+    );
+    expect(putInit?.method).toBe("PUT");
+    expect(new TextDecoder().decode(putInit?.body as Uint8Array)).toContain(
+      "<Value>a &amp; b</Value>"
+    );
+
+    const [getUrl, getInit] = fetch.mock.calls[1];
+    expect(String(getUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/tags.txt?tagging"
+    );
+    expect(getInit?.method).toBe("GET");
+
+    const [deleteUrl, deleteInit] = fetch.mock.calls[2];
+    expect(String(deleteUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket/tags.txt?tagging"
+    );
+    expect(deleteInit?.method).toBe("DELETE");
+  });
+
   it("uses virtual-hosted URLs by default for AWS-compatible bucket names", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () => {
       return new Response(null, { status: 200 });

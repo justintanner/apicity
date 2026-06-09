@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-10 endpoints across 2 groups. Each method mirrors an upstream URL path.
+14 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -112,6 +112,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 ### objects
 
 <details>
+<summary><code>PUT</code> <b><code>s3.objects.copy</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html)
+
+```typescript
+const res = await s3.objects.copy({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>DELETE</code> <b><code>s3.objects.del</code></b></summary>
 
 <code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
@@ -127,6 +142,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 </details>
 
 <details>
+<summary><code>DELETE</code> <b><code>s3.objects.delTagging</code></b></summary>
+
+<code>DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html)
+
+```typescript
+const res = await s3.objects.delTagging({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>s3.objects.get</code></b></summary>
 
 <code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}</code>
@@ -135,6 +165,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.get({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.getTagging</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html)
+
+```typescript
+const res = await s3.objects.getTagging({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -180,6 +225,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.put({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.objects.putTagging</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html)
+
+```typescript
+const res = await s3.objects.putTagging({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

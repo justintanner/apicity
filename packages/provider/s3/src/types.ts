@@ -2,24 +2,30 @@ import type { z } from "zod";
 
 export type {
   S3BucketRequest,
+  S3CopyObjectRequest,
   S3CreateBucketRequest,
   S3DeleteObjectRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
   S3ListBucketsRequest,
   S3ListObjectsV2Request,
+  S3ObjectTaggingRequest,
   S3Options,
+  S3PutObjectTaggingRequest,
   S3PutObjectRequest,
 } from "./zod";
 
 import type {
   S3BucketRequest,
+  S3CopyObjectRequest,
   S3CreateBucketRequest,
   S3DeleteObjectRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
   S3ListBucketsRequest,
   S3ListObjectsV2Request,
+  S3ObjectTaggingRequest,
+  S3PutObjectTaggingRequest,
   S3PutObjectRequest,
 } from "./zod";
 
@@ -120,6 +126,24 @@ export interface S3PutObjectResponse {
   requestCharged?: string;
 }
 
+export interface S3CopyObjectResponse {
+  eTag?: string;
+  lastModified?: string;
+  checksumCRC32?: string;
+  checksumCRC32C?: string;
+  checksumCRC64NVME?: string;
+  checksumSHA1?: string;
+  checksumSHA256?: string;
+  checksumSHA512?: string;
+  checksumMD5?: string;
+  checksumType?: string;
+  versionId?: string;
+  copySourceVersionId?: string;
+  serverSideEncryption?: string;
+  requestCharged?: string;
+  rawXml: string;
+}
+
 export interface S3ObjectHeaders {
   acceptRanges?: string;
   cacheControl?: string;
@@ -148,6 +172,25 @@ export interface S3DeleteObjectResponse {
   deleteMarker?: boolean;
   versionId?: string;
   requestCharged?: string;
+}
+
+export interface S3ObjectTag {
+  key: string;
+  value: string;
+}
+
+export interface S3GetObjectTaggingResponse {
+  tagSet: S3ObjectTag[];
+  versionId?: string;
+  rawXml: string;
+}
+
+export interface S3PutObjectTaggingResponse {
+  versionId?: string;
+}
+
+export interface S3DeleteObjectTaggingResponse {
+  versionId?: string;
 }
 
 export interface S3ListBucketsMethod {
@@ -197,6 +240,14 @@ export interface S3PutObjectMethod {
   schema: z.ZodType<S3PutObjectRequest>;
 }
 
+export interface S3CopyObjectMethod {
+  (
+    req: S3CopyObjectRequest,
+    signal?: AbortSignal
+  ): Promise<S3CopyObjectResponse>;
+  schema: z.ZodType<S3CopyObjectRequest>;
+}
+
 export interface S3GetObjectMethod {
   (req: S3GetObjectRequest, signal?: AbortSignal): Promise<S3GetObjectResponse>;
   schema: z.ZodType<S3GetObjectRequest>;
@@ -218,6 +269,30 @@ export interface S3DeleteObjectMethod {
   schema: z.ZodType<S3DeleteObjectRequest>;
 }
 
+export interface S3GetObjectTaggingMethod {
+  (
+    req: S3ObjectTaggingRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetObjectTaggingResponse>;
+  schema: z.ZodType<S3ObjectTaggingRequest>;
+}
+
+export interface S3PutObjectTaggingMethod {
+  (
+    req: S3PutObjectTaggingRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutObjectTaggingResponse>;
+  schema: z.ZodType<S3PutObjectTaggingRequest>;
+}
+
+export interface S3DeleteObjectTaggingMethod {
+  (
+    req: S3ObjectTaggingRequest,
+    signal?: AbortSignal
+  ): Promise<S3DeleteObjectTaggingResponse>;
+  schema: z.ZodType<S3ObjectTaggingRequest>;
+}
+
 export interface S3BucketsNamespace {
   create: S3CreateBucketMethod;
   del: S3DeleteBucketMethod;
@@ -227,11 +302,15 @@ export interface S3BucketsNamespace {
 }
 
 export interface S3ObjectsNamespace {
+  copy: S3CopyObjectMethod;
   del: S3DeleteObjectMethod;
+  delTagging: S3DeleteObjectTaggingMethod;
   get: S3GetObjectMethod;
+  getTagging: S3GetObjectTaggingMethod;
   head: S3HeadObjectMethod;
   list: S3ListObjectsV2Method;
   put: S3PutObjectMethod;
+  putTagging: S3PutObjectTaggingMethod;
 }
 
 export interface S3Provider {

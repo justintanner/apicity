@@ -3,14 +3,18 @@ import { createHash, createHmac } from "node:crypto";
 import { S3Error } from "./types";
 import type {
   S3BucketRequest,
+  S3CopyObjectRequest,
+  S3CopyObjectResponse,
   S3CreateBucketRequest,
   S3CreateBucketResponse,
   S3DeleteBucketResponse,
   S3DeleteObjectRequest,
   S3DeleteObjectResponse,
+  S3DeleteObjectTaggingResponse,
   S3GetBucketLocationResponse,
   S3GetObjectRequest,
   S3GetObjectResponse,
+  S3GetObjectTaggingResponse,
   S3HeadBucketResponse,
   S3HeadObjectRequest,
   S3HeadObjectResponse,
@@ -18,20 +22,26 @@ import type {
   S3ListBucketsResponse,
   S3ListObjectsV2Request,
   S3ListObjectsV2Response,
+  S3ObjectTaggingRequest,
   S3ObjectHeaders,
   S3Options,
   S3Provider,
+  S3PutObjectTaggingRequest,
+  S3PutObjectTaggingResponse,
   S3PutObjectRequest,
   S3PutObjectResponse,
 } from "./types";
 import {
   S3BucketRequestSchema,
+  S3CopyObjectRequestSchema,
   S3CreateBucketRequestSchema,
   S3DeleteObjectRequestSchema,
   S3GetObjectRequestSchema,
   S3HeadObjectRequestSchema,
   S3ListBucketsRequestSchema,
   S3ListObjectsV2RequestSchema,
+  S3ObjectTaggingRequestSchema,
+  S3PutObjectTaggingRequestSchema,
   S3PutObjectRequestSchema,
 } from "./zod";
 
@@ -78,6 +88,16 @@ function awsEncode(value: string): string {
 
 function encodeS3Key(key: string): string {
   return key.split("/").map(awsEncode).join("/");
+}
+
+function encodeCopySource(
+  bucket: string,
+  key: string,
+  versionId: string | undefined
+): string {
+  const source = `/${awsEncode(bucket)}/${encodeS3Key(key)}`;
+  const query = queryForVersion(versionId);
+  return query ? `${source}${query}` : source;
 }
 
 function buildQuery(
@@ -337,6 +357,15 @@ function decodeXml(text: string | undefined): string | undefined {
     .replace(/&amp;/g, "&");
 }
 
+function xmlEscape(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 function textOf(xml: string, tag: string): string | undefined {
   const match = xml.match(
     new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`)
@@ -359,7 +388,7 @@ function boolOf(xml: string, tag: string): boolean | undefined {
 
 function blocksOf(xml: string, tag: string): string[] {
   const blocks: string[] = [];
-  const regex = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "g");
+  const regex = new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)</${tag}>`, "g");
   let match: RegExpExecArray | null;
   while ((match = regex.exec(xml)) !== null) {
     blocks.push(match[1]);
@@ -432,6 +461,40 @@ function parseBucketLocation(xml: string): S3GetBucketLocationResponse {
   };
 }
 
+function parseCopyObject(xml: string, headers: Headers): S3CopyObjectResponse {
+  return {
+    eTag: textOf(xml, "ETag"),
+    lastModified: textOf(xml, "LastModified"),
+    checksumCRC32: textOf(xml, "ChecksumCRC32"),
+    checksumCRC32C: textOf(xml, "ChecksumCRC32C"),
+    checksumCRC64NVME: textOf(xml, "ChecksumCRC64NVME"),
+    checksumSHA1: textOf(xml, "ChecksumSHA1"),
+    checksumSHA256: textOf(xml, "ChecksumSHA256"),
+    checksumSHA512: textOf(xml, "ChecksumSHA512"),
+    checksumMD5: textOf(xml, "ChecksumMD5"),
+    checksumType: textOf(xml, "ChecksumType"),
+    versionId: getHeader(headers, "x-amz-version-id"),
+    copySourceVersionId: getHeader(headers, "x-amz-copy-source-version-id"),
+    serverSideEncryption: getHeader(headers, "x-amz-server-side-encryption"),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    rawXml: xml,
+  };
+}
+
+function parseObjectTagging(
+  xml: string,
+  headers: Headers
+): S3GetObjectTaggingResponse {
+  return {
+    tagSet: blocksOf(xml, "Tag").map((block) => ({
+      key: textOf(block, "Key") ?? "",
+      value: textOf(block, "Value") ?? "",
+    })),
+    versionId: getHeader(headers, "x-amz-version-id"),
+    rawXml: xml,
+  };
+}
+
 function bucketRequestHeaders(
   expectedBucketOwner: string | undefined
 ): Record<string, string> {
@@ -443,8 +506,30 @@ function createBucketBody(locationConstraint: string | undefined): string {
   if (!locationConstraint) return "";
   return [
     '<CreateBucketConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
-    `<LocationConstraint>${locationConstraint}</LocationConstraint>`,
+    `<LocationConstraint>${xmlEscape(locationConstraint)}</LocationConstraint>`,
     "</CreateBucketConfiguration>",
+  ].join("");
+}
+
+function createTaggingBody(
+  tagSet: S3PutObjectTaggingRequest["tagSet"]
+): string {
+  const tags = tagSet
+    .map((tag) =>
+      [
+        "<Tag>",
+        `<Key>${xmlEscape(tag.key)}</Key>`,
+        `<Value>${xmlEscape(tag.value)}</Value>`,
+        "</Tag>",
+      ].join("")
+    )
+    .join("");
+  return [
+    '<Tagging xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    "<TagSet>",
+    tags,
+    "</TagSet>",
+    "</Tagging>",
   ].join("");
 }
 
@@ -755,6 +840,70 @@ export function createS3(opts: S3Options): S3Provider {
   );
 
   // sig-ok: action namespace over dynamic S3 object path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html
+  const objectsCopy = Object.assign(
+    async (
+      req: S3CopyObjectRequest,
+      signal?: AbortSignal
+    ): Promise<S3CopyObjectResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const headers: Record<string, string> = {
+        "x-amz-copy-source": encodeCopySource(
+          req.sourceBucket,
+          req.sourceKey,
+          req.sourceVersionId
+        ),
+      };
+      if (req.contentType) headers["Content-Type"] = req.contentType;
+      if (req.cacheControl) headers["Cache-Control"] = req.cacheControl;
+      if (req.contentDisposition) {
+        headers["Content-Disposition"] = req.contentDisposition;
+      }
+      if (req.contentEncoding)
+        headers["Content-Encoding"] = req.contentEncoding;
+      if (req.contentLanguage)
+        headers["Content-Language"] = req.contentLanguage;
+      const hasReplacementMetadata =
+        req.contentType !== undefined ||
+        req.cacheControl !== undefined ||
+        req.contentDisposition !== undefined ||
+        req.contentEncoding !== undefined ||
+        req.contentLanguage !== undefined ||
+        Object.keys(req.metadata ?? {}).length > 0;
+      const metadataDirective =
+        req.metadataDirective ??
+        (hasReplacementMetadata ? "REPLACE" : undefined);
+      if (metadataDirective) {
+        headers["x-amz-metadata-directive"] = metadataDirective;
+      }
+      if (req.taggingDirective) {
+        headers["x-amz-tagging-directive"] = req.taggingDirective;
+      }
+      if (req.storageClass) headers["x-amz-storage-class"] = req.storageClass;
+      if (req.expectedBucketOwner) {
+        headers["x-amz-expected-bucket-owner"] = req.expectedBucketOwner;
+      }
+      if (req.sourceExpectedBucketOwner) {
+        headers["x-amz-source-expected-bucket-owner"] =
+          req.sourceExpectedBucketOwner;
+      }
+      for (const [name, value] of Object.entries(req.metadata ?? {})) {
+        headers[`x-amz-meta-${name.toLowerCase()}`] = value;
+      }
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseCopyObject(await res.text(), res.headers);
+    },
+    { schema: S3CopyObjectRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object path
   // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
   const objectsGet = Object.assign(
@@ -831,6 +980,90 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3DeleteObjectRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 object tagging path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html
+  const objectsGetTagging = Object.assign(
+    async (
+      req: S3ObjectTaggingRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetObjectTaggingResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}/${key}?tagging${query}`,
+        {
+          bucket: req.bucket,
+          headers: bucketRequestHeaders(req.expectedBucketOwner),
+        },
+        signal
+      );
+      return parseObjectTagging(await res.text(), res.headers);
+    },
+    { schema: S3ObjectTaggingRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object tagging path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html
+  const objectsPutTagging = Object.assign(
+    async (
+      req: S3PutObjectTaggingRequest,
+      signal?: AbortSignal
+    ): Promise<S3PutObjectTaggingResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const body = createTaggingBody(req.tagSet);
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}/${key}?tagging${query}`,
+        {
+          bucket: req.bucket,
+          body,
+          headers: {
+            "Content-Type": "application/xml",
+            ...bucketRequestHeaders(req.expectedBucketOwner),
+          },
+        },
+        signal
+      );
+      return {
+        versionId: getHeader(res.headers, "x-amz-version-id"),
+      };
+    },
+    { schema: S3PutObjectTaggingRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 object tagging path
+  // DELETE https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html
+  const objectsDelTagging = Object.assign(
+    async (
+      req: S3ObjectTaggingRequest,
+      signal?: AbortSignal
+    ): Promise<S3DeleteObjectTaggingResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const key = encodeS3Key(req.key);
+      const query = buildQuery({ versionId: req.versionId }, "&");
+      const res = await makeSignedRequest(
+        "DELETE",
+        `/${bucket}/${key}?tagging${query}`,
+        {
+          bucket: req.bucket,
+          headers: bucketRequestHeaders(req.expectedBucketOwner),
+        },
+        signal
+      );
+      return {
+        versionId: getHeader(res.headers, "x-amz-version-id"),
+      };
+    },
+    { schema: S3ObjectTaggingRequestSchema }
+  );
+
   return {
     buckets: {
       create: bucketsCreate,
@@ -840,11 +1073,15 @@ export function createS3(opts: S3Options): S3Provider {
       location: bucketsLocation,
     },
     objects: {
+      copy: objectsCopy,
       del: objectsDel,
+      delTagging: objectsDelTagging,
       get: objectsGet,
+      getTagging: objectsGetTagging,
       head: objectsHead,
       list: objectsList,
       put: objectsPut,
+      putTagging: objectsPutTagging,
     },
   };
 }

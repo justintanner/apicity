@@ -31,9 +31,13 @@ s3	buckets.head	HEAD	https://s3.us-east-1.amazonaws.com/{bucket}	https://docs.aw
 s3	buckets.location	GET	https://s3.us-east-1.amazonaws.com/{bucket}?location	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketLocation.html
 s3	objects.list	GET	https://s3.us-east-1.amazonaws.com/{bucket}?list-type=2{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
 s3	objects.put	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html
+s3	objects.copy	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_CopyObject.html
 s3	objects.get	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObject.html
 s3	objects.head	HEAD	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadObject.html
 s3	objects.del	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}/{key}{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObject.html
+s3	objects.getTagging	GET	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetObjectTagging.html
+s3	objects.putTagging	PUT	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectTagging.html
+s3	objects.delTagging	DELETE	https://s3.us-east-1.amazonaws.com/{bucket}/{key}?tagging{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjectTagging.html
 anthropic	v1.files	POST	https://api.anthropic.com/v1/files	https://docs.anthropic.com/en/api
 anthropic	v1.files.content	GET	https://api.anthropic.com/v1/files/{fileId}/content	https://docs.anthropic.com/en/api
 anthropic	v1.files.del	DELETE	https://api.anthropic.com/v1/files/{fileId}	https://docs.anthropic.com/en/api

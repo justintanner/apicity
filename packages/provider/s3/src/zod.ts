@@ -13,9 +13,13 @@ const checksumAlgorithmSchema = z.enum([
   "CRC32",
   "CRC32C",
   "CRC64NVME",
+  "MD5",
   "SHA1",
   "SHA256",
   "SHA512",
+  "XXHASH3",
+  "XXHASH64",
+  "XXHASH128",
 ]);
 
 const checksumTypeSchema = z.enum(["COMPOSITE", "FULL_OBJECT"]);
@@ -101,6 +105,21 @@ export type S3ListObjectsV2Request = z.infer<
   typeof S3ListObjectsV2RequestSchema
 >;
 
+export const S3ListObjectVersionsRequestSchema = z.object({
+  bucket: z.string().min(1),
+  delimiter: z.string().optional(),
+  encodingType: z.enum(["url"]).optional(),
+  keyMarker: z.string().optional(),
+  maxKeys: z.number().int().positive().max(1000).optional(),
+  prefix: z.string().optional(),
+  versionIdMarker: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3ListObjectVersionsRequest = z.infer<
+  typeof S3ListObjectVersionsRequestSchema
+>;
+
 const objectTagSchema = z.object({
   key: z.string().min(1),
   value: z.string(),
@@ -174,6 +193,49 @@ export const S3DeleteObjectRequestSchema = z.object({
 });
 
 export type S3DeleteObjectRequest = z.infer<typeof S3DeleteObjectRequestSchema>;
+
+const objectIdentifierSchema = z.object({
+  key: z.string().min(1),
+  versionId: z.string().optional(),
+  eTag: z.string().optional(),
+  lastModifiedTime: z.string().optional(),
+  size: z.number().int().nonnegative().optional(),
+});
+
+export const S3DeleteObjectsRequestSchema = z.object({
+  bucket: z.string().min(1),
+  objects: z.array(objectIdentifierSchema).min(1).max(1000),
+  quiet: z.boolean().optional(),
+  bypassGovernanceRetention: z.boolean().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  contentMD5: z.string().optional(),
+  mfa: z.string().optional(),
+  ...expectedOwnerFieldsSchema,
+});
+
+export type S3DeleteObjectsRequest = z.infer<
+  typeof S3DeleteObjectsRequestSchema
+>;
+
+export const S3GetBucketVersioningRequestSchema = S3BucketRequestSchema;
+
+export type S3GetBucketVersioningRequest = z.infer<
+  typeof S3GetBucketVersioningRequestSchema
+>;
+
+export const S3PutBucketVersioningRequestSchema = z.object({
+  bucket: z.string().min(1),
+  status: z.enum(["Enabled", "Suspended"]).optional(),
+  mfaDelete: z.enum(["Enabled", "Disabled"]).optional(),
+  mfa: z.string().optional(),
+  checksumAlgorithm: checksumAlgorithmSchema.optional(),
+  contentMD5: z.string().optional(),
+  expectedBucketOwner: z.string().optional(),
+});
+
+export type S3PutBucketVersioningRequest = z.infer<
+  typeof S3PutBucketVersioningRequestSchema
+>;
 
 export const S3CreateMultipartUploadRequestSchema = z.object({
   bucket: z.string().min(1),

@@ -216,6 +216,9 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
   const multipartCreate = hasS3Subresource(entry, "uploads");
   const multipartUpload = hasS3Subresource(entry, "uploadId");
   const multipartPart = hasS3Subresource(entry, "partNumber");
+  const bulkDelete = hasS3Subresource(entry, "delete");
+  const versioning = hasS3Subresource(entry, "versioning");
+  const versions = hasS3Subresource(entry, "versions");
 
   switch (row.dotPath) {
     case "buckets.list":
@@ -230,8 +233,15 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
       return !objectRequest && !entry.request.url.includes("?");
     case "buckets.location":
       return !objectRequest && hasS3Subresource(entry, "location");
+    case "buckets.getVersioning":
+    case "buckets.putVersioning":
+      return !objectRequest && versioning;
     case "objects.list":
       return hasS3Subresource(entry, "list-type");
+    case "objects.listVersions":
+      return !objectRequest && versions;
+    case "objects.delMany":
+      return !objectRequest && bulkDelete;
     case "objects.copy":
       return (
         objectRequest &&
@@ -268,6 +278,7 @@ function matchS3Endpoint(entry: HarEntry, row: EndpointDocRow): boolean {
         !tagging &&
         !multipartCreate &&
         !multipartUpload &&
+        !bulkDelete &&
         !requestHeader(entry, "x-amz-copy-source")
       );
     case "objects.get":

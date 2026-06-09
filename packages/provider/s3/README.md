@@ -30,7 +30,7 @@ const s3 = createS3({
 
 ## API Reference
 
-21 endpoints across 2 groups. Each method mirrors an upstream URL path.
+25 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### buckets
 
@@ -58,6 +58,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.del({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.buckets.getVersioning</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?versioning</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html)
+
+```typescript
+const res = await s3.buckets.getVersioning({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -103,6 +118,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.buckets.location({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>s3.buckets.putVersioning</code></b></summary>
+
+<code>PUT https://s3.us-east-1.amazonaws.com/{bucket}?versioning</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketVersioning.html)
+
+```typescript
+const res = await s3.buckets.putVersioning({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -180,6 +210,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.del({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>s3.objects.delMany</code></b></summary>
+
+<code>POST https://s3.us-east-1.amazonaws.com/{bucket}?delete</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjects.html)
+
+```typescript
+const res = await s3.objects.delMany({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
@@ -285,6 +330,21 @@ Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
 
 ```typescript
 const res = await s3.objects.listParts({ /* ... */ });
+```
+
+Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>s3.objects.listVersions</code></b></summary>
+
+<code>GET https://s3.us-east-1.amazonaws.com/{bucket}?versions{query}</code>
+
+[Upstream docs ↗](https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectVersions.html)
+
+```typescript
+const res = await s3.objects.listVersions({ /* ... */ });
 ```
 
 Source: [`packages/provider/s3/src/s3.ts`](src/s3.ts)

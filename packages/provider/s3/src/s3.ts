@@ -17,6 +17,10 @@ import type {
   S3DeleteBucketResponse,
   S3DeleteObjectRequest,
   S3DeleteObjectResponse,
+  S3DeleteObjectsRequest,
+  S3DeleteObjectsResponse,
+  S3GetBucketVersioningRequest,
+  S3GetBucketVersioningResponse,
   S3DeleteObjectTaggingResponse,
   S3GetBucketLocationResponse,
   S3GetObjectRequest,
@@ -29,6 +33,8 @@ import type {
   S3ListBucketsResponse,
   S3ListMultipartUploadsRequest,
   S3ListMultipartUploadsResponse,
+  S3ListObjectVersionsRequest,
+  S3ListObjectVersionsResponse,
   S3ListObjectsV2Request,
   S3ListObjectsV2Response,
   S3ListPartsRequest,
@@ -37,6 +43,8 @@ import type {
   S3ObjectHeaders,
   S3Options,
   S3Provider,
+  S3PutBucketVersioningRequest,
+  S3PutBucketVersioningResponse,
   S3PutObjectTaggingRequest,
   S3PutObjectTaggingResponse,
   S3PutObjectRequest,
@@ -54,13 +62,17 @@ import {
   S3CreateMultipartUploadRequestSchema,
   S3CreateBucketRequestSchema,
   S3DeleteObjectRequestSchema,
+  S3DeleteObjectsRequestSchema,
+  S3GetBucketVersioningRequestSchema,
   S3GetObjectRequestSchema,
   S3HeadObjectRequestSchema,
   S3ListBucketsRequestSchema,
   S3ListMultipartUploadsRequestSchema,
+  S3ListObjectVersionsRequestSchema,
   S3ListObjectsV2RequestSchema,
   S3ListPartsRequestSchema,
   S3ObjectTaggingRequestSchema,
+  S3PutBucketVersioningRequestSchema,
   S3PutObjectTaggingRequestSchema,
   S3PutObjectRequestSchema,
   S3UploadPartCopyRequestSchema,
@@ -152,6 +164,10 @@ async function bodyToBytes(
 
 function sha256Hex(data: Uint8Array): string {
   return createHash("sha256").update(data).digest("hex");
+}
+
+function md5Base64(data: Uint8Array): string {
+  return createHash("md5").update(data).digest("base64");
 }
 
 function hmac(key: Buffer | string, data: string): Buffer {
@@ -479,6 +495,67 @@ function parseListObjectsV2(xml: string): S3ListObjectsV2Response {
   };
 }
 
+function parseRestoreStatus(xml: string): {
+  isRestoreInProgress?: boolean;
+  restoreExpiryDate?: string;
+} {
+  return {
+    isRestoreInProgress: boolOf(xml, "IsRestoreInProgress"),
+    restoreExpiryDate: textOf(xml, "RestoreExpiryDate"),
+  };
+}
+
+function parseListObjectVersions(
+  xml: string,
+  headers: Headers
+): S3ListObjectVersionsResponse {
+  return {
+    name: textOf(xml, "Name"),
+    prefix: textOf(xml, "Prefix"),
+    delimiter: textOf(xml, "Delimiter"),
+    keyMarker: textOf(xml, "KeyMarker"),
+    versionIdMarker: textOf(xml, "VersionIdMarker"),
+    nextKeyMarker: textOf(xml, "NextKeyMarker"),
+    nextVersionIdMarker: textOf(xml, "NextVersionIdMarker"),
+    maxKeys: numberOf(xml, "MaxKeys"),
+    encodingType: textOf(xml, "EncodingType"),
+    isTruncated: boolOf(xml, "IsTruncated") ?? false,
+    versions: blocksOf(xml, "Version").map((block) => {
+      const ownerBlock = blocksOf(block, "Owner")[0];
+      const restoreBlock = blocksOf(block, "RestoreStatus")[0];
+      return {
+        ...checksumFieldsFromXml(block),
+        key: textOf(block, "Key") ?? "",
+        versionId: textOf(block, "VersionId"),
+        isLatest: boolOf(block, "IsLatest"),
+        lastModified: textOf(block, "LastModified"),
+        eTag: textOf(block, "ETag"),
+        size: numberOf(block, "Size"),
+        storageClass: textOf(block, "StorageClass"),
+        owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+        restoreStatus: restoreBlock
+          ? parseRestoreStatus(restoreBlock)
+          : undefined,
+      };
+    }),
+    deleteMarkers: blocksOf(xml, "DeleteMarker").map((block) => {
+      const ownerBlock = blocksOf(block, "Owner")[0];
+      return {
+        key: textOf(block, "Key") ?? "",
+        versionId: textOf(block, "VersionId"),
+        isLatest: boolOf(block, "IsLatest"),
+        lastModified: textOf(block, "LastModified"),
+        owner: ownerBlock ? parseOwner(ownerBlock) : undefined,
+      };
+    }),
+    commonPrefixes: blocksOf(xml, "CommonPrefixes").map((block) => ({
+      prefix: textOf(block, "Prefix") ?? "",
+    })),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
+    rawXml: xml,
+  };
+}
+
 function parseBucketLocation(xml: string): S3GetBucketLocationResponse {
   const locationConstraint = textOf(xml, "LocationConstraint");
   return {
@@ -486,6 +563,14 @@ function parseBucketLocation(xml: string): S3GetBucketLocationResponse {
       locationConstraint && locationConstraint.length > 0
         ? locationConstraint
         : undefined,
+    rawXml: xml,
+  };
+}
+
+function parseBucketVersioning(xml: string): S3GetBucketVersioningResponse {
+  return {
+    status: textOf(xml, "Status"),
+    mfaDelete: textOf(xml, "MfaDelete"),
     rawXml: xml,
   };
 }
@@ -520,6 +605,28 @@ function parseObjectTagging(
       value: textOf(block, "Value") ?? "",
     })),
     versionId: getHeader(headers, "x-amz-version-id"),
+    rawXml: xml,
+  };
+}
+
+function parseDeleteObjects(
+  xml: string,
+  headers: Headers
+): S3DeleteObjectsResponse {
+  return {
+    deleted: blocksOf(xml, "Deleted").map((block) => ({
+      key: textOf(block, "Key") ?? "",
+      versionId: textOf(block, "VersionId"),
+      deleteMarker: boolOf(block, "DeleteMarker"),
+      deleteMarkerVersionId: textOf(block, "DeleteMarkerVersionId"),
+    })),
+    errors: blocksOf(xml, "Error").map((block) => ({
+      key: textOf(block, "Key") ?? "",
+      versionId: textOf(block, "VersionId"),
+      code: textOf(block, "Code"),
+      message: textOf(block, "Message"),
+    })),
+    requestCharged: getHeader(headers, "x-amz-request-charged"),
     rawXml: xml,
   };
 }
@@ -793,6 +900,45 @@ function createCompleteMultipartUploadBody(
   ].join("");
 }
 
+function createDeleteObjectsBody(req: S3DeleteObjectsRequest): string {
+  const objects = req.objects
+    .map((object) => {
+      const fields = [
+        ["ETag", object.eTag],
+        ["Key", object.key],
+        ["LastModifiedTime", object.lastModifiedTime],
+        ["Size", object.size === undefined ? undefined : String(object.size)],
+        ["VersionId", object.versionId],
+      ]
+        .filter(([, value]) => value !== undefined)
+        .map(([tag, value]) => `<${tag}>${xmlEscape(value ?? "")}</${tag}>`)
+        .join("");
+      return `<Object>${fields}</Object>`;
+    })
+    .join("");
+  const quiet =
+    req.quiet === undefined ? "" : `<Quiet>${String(req.quiet)}</Quiet>`;
+  return [
+    '<Delete xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    objects,
+    quiet,
+    "</Delete>",
+  ].join("");
+}
+
+function createBucketVersioningBody(req: S3PutBucketVersioningRequest): string {
+  const status = req.status ? `<Status>${xmlEscape(req.status)}</Status>` : "";
+  const mfaDelete = req.mfaDelete
+    ? `<MfaDelete>${xmlEscape(req.mfaDelete)}</MfaDelete>`
+    : "";
+  return [
+    '<VersioningConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">',
+    status,
+    mfaDelete,
+    "</VersioningConfiguration>",
+  ].join("");
+}
+
 function createTaggingBody(
   tagSet: S3PutObjectTaggingRequest["tagSet"]
 ): string {
@@ -1044,6 +1190,65 @@ export function createS3(opts: S3Options): S3Provider {
     { schema: S3BucketRequestSchema }
   );
 
+  // sig-ok: action namespace over dynamic S3 bucket versioning path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?versioning
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_GetBucketVersioning.html
+  const bucketsGetVersioning = Object.assign(
+    async (
+      req: S3GetBucketVersioningRequest,
+      signal?: AbortSignal
+    ): Promise<S3GetBucketVersioningResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?versioning`,
+        {
+          bucket: req.bucket,
+          headers: bucketRequestHeaders(req.expectedBucketOwner),
+        },
+        signal
+      );
+      return parseBucketVersioning(await res.text());
+    },
+    { schema: S3GetBucketVersioningRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket versioning path
+  // PUT https://s3.us-east-1.amazonaws.com/{bucket}?versioning
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketVersioning.html
+  const bucketsPutVersioning = Object.assign(
+    async (
+      req: S3PutBucketVersioningRequest,
+      signal?: AbortSignal
+    ): Promise<S3PutBucketVersioningResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const body = createBucketVersioningBody(req);
+      const headers: Record<string, string> = {
+        "Content-MD5":
+          req.contentMD5 ?? md5Base64(new TextEncoder().encode(body)),
+        "Content-Type": "application/xml",
+      };
+      if (req.expectedBucketOwner) {
+        headers["x-amz-expected-bucket-owner"] = req.expectedBucketOwner;
+      }
+      if (req.checksumAlgorithm) {
+        headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+      }
+      if (req.mfa) headers["x-amz-mfa"] = req.mfa;
+      const res = await makeSignedRequest(
+        "PUT",
+        `/${bucket}?versioning`,
+        { bucket: req.bucket, body, headers },
+        signal
+      );
+      return {
+        requestCharged: getHeader(res.headers, "x-amz-request-charged"),
+        headers: collectHeaders(res.headers),
+      };
+    },
+    { schema: S3PutBucketVersioningRequestSchema }
+  );
+
   // sig-ok: action namespace over dynamic S3 bucket path
   // GET https://s3.us-east-1.amazonaws.com/{bucket}?list-type=2{query}
   // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectsV2.html
@@ -1074,6 +1279,43 @@ export function createS3(opts: S3Options): S3Provider {
       return parseListObjectsV2(await res.text());
     },
     { schema: S3ListObjectsV2RequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket versions path
+  // GET https://s3.us-east-1.amazonaws.com/{bucket}?versions{query}
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListObjectVersions.html
+  const objectsListVersions = Object.assign(
+    async (
+      req: S3ListObjectVersionsRequest,
+      signal?: AbortSignal
+    ): Promise<S3ListObjectVersionsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const query = buildQuery(
+        {
+          delimiter: req.delimiter,
+          "encoding-type": req.encodingType,
+          "key-marker": req.keyMarker,
+          "max-keys": req.maxKeys,
+          prefix: req.prefix,
+          "version-id-marker": req.versionIdMarker,
+        },
+        "&"
+      );
+      const headers: Record<string, string> = {};
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      const res = await makeSignedRequest(
+        "GET",
+        `/${bucket}?versions${query}`,
+        { bucket: req.bucket, headers },
+        signal
+      );
+      return parseListObjectVersions(await res.text(), res.headers);
+    },
+    { schema: S3ListObjectVersionsRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 object path
@@ -1260,6 +1502,46 @@ export function createS3(opts: S3Options): S3Provider {
       };
     },
     { schema: S3DeleteObjectRequestSchema }
+  );
+
+  // sig-ok: action namespace over dynamic S3 bucket delete path
+  // POST https://s3.us-east-1.amazonaws.com/{bucket}?delete
+  // Docs: https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteObjects.html
+  const objectsDelMany = Object.assign(
+    async (
+      req: S3DeleteObjectsRequest,
+      signal?: AbortSignal
+    ): Promise<S3DeleteObjectsResponse> => {
+      const bucket = awsEncode(req.bucket);
+      const body = createDeleteObjectsBody(req);
+      const bodyBytes = new TextEncoder().encode(body);
+      const headers: Record<string, string> = {
+        "Content-MD5": req.contentMD5 ?? md5Base64(bodyBytes),
+        "Content-Type": "application/xml",
+      };
+      addOwnerAndPayerHeaders(
+        headers,
+        req.expectedBucketOwner,
+        req.requestPayer
+      );
+      if (req.bypassGovernanceRetention !== undefined) {
+        headers["x-amz-bypass-governance-retention"] = String(
+          req.bypassGovernanceRetention
+        );
+      }
+      if (req.checksumAlgorithm) {
+        headers["x-amz-sdk-checksum-algorithm"] = req.checksumAlgorithm;
+      }
+      if (req.mfa) headers["x-amz-mfa"] = req.mfa;
+      const res = await makeSignedRequest(
+        "POST",
+        `/${bucket}?delete`,
+        { bucket: req.bucket, body: bodyBytes, headers },
+        signal
+      );
+      return parseDeleteObjects(await res.text(), res.headers);
+    },
+    { schema: S3DeleteObjectsRequestSchema }
   );
 
   // sig-ok: action namespace over dynamic S3 object tagging path
@@ -1662,9 +1944,11 @@ export function createS3(opts: S3Options): S3Provider {
     buckets: {
       create: bucketsCreate,
       del: bucketsDel,
+      getVersioning: bucketsGetVersioning,
       head: bucketsHead,
       list: bucketsList,
       location: bucketsLocation,
+      putVersioning: bucketsPutVersioning,
     },
     objects: {
       abortMultipartUpload: objectsAbortMultipartUpload,
@@ -1672,11 +1956,13 @@ export function createS3(opts: S3Options): S3Provider {
       copy: objectsCopy,
       createMultipartUpload: objectsCreateMultipartUpload,
       del: objectsDel,
+      delMany: objectsDelMany,
       delTagging: objectsDelTagging,
       get: objectsGet,
       getTagging: objectsGetTagging,
       head: objectsHead,
       listMultipartUploads: objectsListMultipartUploads,
+      listVersions: objectsListVersions,
       list: objectsList,
       listParts: objectsListParts,
       put: objectsPut,

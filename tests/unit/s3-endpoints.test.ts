@@ -7,6 +7,10 @@ function sha256Hex(value: string): string {
   return createHash("sha256").update(value).digest("hex");
 }
 
+function md5Base64(value: string): string {
+  return createHash("md5").update(value).digest("base64");
+}
+
 function createTestS3(fetch: typeof globalThis.fetch, forcePathStyle = true) {
   return createS3({
     accessKeyId: "test-access-key",
@@ -458,6 +462,180 @@ describe("s3 endpoints", () => {
       "https://s3.us-east-1.amazonaws.com/test-bucket/copy.txt?uploadId=upload-copy"
     );
     expect(abortInit?.method).toBe("DELETE");
+  });
+
+  it("bulk deletes objects with Content-MD5 and parses delete results", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(
+        [
+          "<DeleteResult>",
+          "<Deleted>",
+          "<Key>missing-a.txt</Key>",
+          "<VersionId>null</VersionId>",
+          "</Deleted>",
+          "<Error>",
+          "<Key>locked.txt</Key>",
+          "<VersionId>v1</VersionId>",
+          "<Code>AccessDenied</Code>",
+          "<Message>denied</Message>",
+          "</Error>",
+          "</DeleteResult>",
+        ].join(""),
+        { status: 200 }
+      );
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.objects.delMany({
+      bucket: "test-bucket",
+      objects: [
+        { key: "missing-a.txt", versionId: "null" },
+        { key: "locked.txt", versionId: "v1" },
+      ],
+      quiet: false,
+      expectedBucketOwner: "123456789012",
+    });
+
+    expect(result.deleted).toEqual([
+      { key: "missing-a.txt", versionId: "null" },
+    ]);
+    expect(result.errors).toEqual([
+      {
+        key: "locked.txt",
+        versionId: "v1",
+        code: "AccessDenied",
+        message: "denied",
+      },
+    ]);
+
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?delete"
+    );
+    expect(init?.method).toBe("POST");
+    const body = new TextDecoder().decode(init?.body as Uint8Array);
+    expect(body).toContain("<Key>missing-a.txt</Key>");
+    expect(body).toContain("<Quiet>false</Quiet>");
+    const headers = init?.headers as Record<string, string>;
+    expect(headers["Content-MD5"]).toBe(md5Base64(body));
+    expect(headers["x-amz-expected-bucket-owner"]).toBe("123456789012");
+  });
+
+  it("gets and puts bucket versioning configuration", async () => {
+    const responses = [
+      new Response(
+        [
+          "<VersioningConfiguration>",
+          "<Status>Suspended</Status>",
+          "<MfaDelete>Disabled</MfaDelete>",
+          "</VersioningConfiguration>",
+        ].join(""),
+        { status: 200 }
+      ),
+      new Response(null, { status: 200 }),
+    ];
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      const response = responses.shift();
+      if (!response) throw new Error("unexpected request");
+      return response;
+    });
+    const s3 = createTestS3(fetch);
+
+    const versioning = await s3.buckets.getVersioning({
+      bucket: "test-bucket",
+    });
+    await s3.buckets.putVersioning({
+      bucket: "test-bucket",
+      status: "Suspended",
+      expectedBucketOwner: "123456789012",
+    });
+
+    expect(versioning).toMatchObject({
+      status: "Suspended",
+      mfaDelete: "Disabled",
+    });
+
+    const [getUrl, getInit] = fetch.mock.calls[0];
+    expect(String(getUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?versioning"
+    );
+    expect(getInit?.method).toBe("GET");
+
+    const [putUrl, putInit] = fetch.mock.calls[1];
+    expect(String(putUrl)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?versioning"
+    );
+    expect(putInit?.method).toBe("PUT");
+    const body = new TextDecoder().decode(putInit?.body as Uint8Array);
+    expect(body).toContain("<Status>Suspended</Status>");
+    const headers = putInit?.headers as Record<string, string>;
+    expect(headers["Content-MD5"]).toBe(md5Base64(body));
+    expect(headers["x-amz-expected-bucket-owner"]).toBe("123456789012");
+  });
+
+  it("lists object versions and delete markers", async () => {
+    const fetch = vi.fn<typeof globalThis.fetch>(async () => {
+      return new Response(
+        [
+          "<ListVersionsResult>",
+          "<Name>test-bucket</Name>",
+          "<Prefix>versions/</Prefix>",
+          "<KeyMarker>versions/a.txt</KeyMarker>",
+          "<VersionIdMarker>v1</VersionIdMarker>",
+          "<NextKeyMarker>versions/b.txt</NextKeyMarker>",
+          "<NextVersionIdMarker>v2</NextVersionIdMarker>",
+          "<MaxKeys>2</MaxKeys>",
+          "<IsTruncated>true</IsTruncated>",
+          "<Version>",
+          "<Key>versions/a.txt</Key>",
+          "<VersionId>v1</VersionId>",
+          "<IsLatest>true</IsLatest>",
+          "<LastModified>2026-06-09T00:00:00.000Z</LastModified>",
+          '<ETag>"etag"</ETag>',
+          "<Size>12</Size>",
+          "<StorageClass>STANDARD</StorageClass>",
+          "<ChecksumAlgorithm>SHA256</ChecksumAlgorithm>",
+          "</Version>",
+          "<DeleteMarker>",
+          "<Key>versions/deleted.txt</Key>",
+          "<VersionId>marker-1</VersionId>",
+          "<IsLatest>false</IsLatest>",
+          "</DeleteMarker>",
+          "<CommonPrefixes><Prefix>versions/folder/</Prefix></CommonPrefixes>",
+          "</ListVersionsResult>",
+        ].join(""),
+        { status: 200 }
+      );
+    });
+    const s3 = createTestS3(fetch);
+
+    const result = await s3.objects.listVersions({
+      bucket: "test-bucket",
+      prefix: "versions/",
+      maxKeys: 2,
+      keyMarker: "versions/a.txt",
+      versionIdMarker: "v1",
+    });
+
+    expect(result.isTruncated).toBe(true);
+    expect(result.versions[0]).toMatchObject({
+      key: "versions/a.txt",
+      versionId: "v1",
+      isLatest: true,
+      size: 12,
+    });
+    expect(result.deleteMarkers[0]).toMatchObject({
+      key: "versions/deleted.txt",
+      versionId: "marker-1",
+      isLatest: false,
+    });
+    expect(result.commonPrefixes).toEqual([{ prefix: "versions/folder/" }]);
+
+    const [url, init] = fetch.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://s3.us-east-1.amazonaws.com/test-bucket?versions&key-marker=versions%2Fa.txt&max-keys=2&prefix=versions%2F&version-id-marker=v1"
+    );
+    expect(init?.method).toBe("GET");
   });
 
   it("uses virtual-hosted URLs by default for AWS-compatible bucket names", async () => {

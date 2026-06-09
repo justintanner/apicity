@@ -8,14 +8,18 @@ export type {
   S3CreateMultipartUploadRequest,
   S3CreateBucketRequest,
   S3DeleteObjectRequest,
+  S3DeleteObjectsRequest,
   S3GetObjectRequest,
+  S3GetBucketVersioningRequest,
   S3HeadObjectRequest,
   S3ListBucketsRequest,
   S3ListMultipartUploadsRequest,
+  S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
   S3ListPartsRequest,
   S3ObjectTaggingRequest,
   S3Options,
+  S3PutBucketVersioningRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
   S3UploadPartCopyRequest,
@@ -30,13 +34,17 @@ import type {
   S3CreateMultipartUploadRequest,
   S3CreateBucketRequest,
   S3DeleteObjectRequest,
+  S3DeleteObjectsRequest,
+  S3GetBucketVersioningRequest,
   S3GetObjectRequest,
   S3HeadObjectRequest,
   S3ListBucketsRequest,
   S3ListMultipartUploadsRequest,
+  S3ListObjectVersionsRequest,
   S3ListObjectsV2Request,
   S3ListPartsRequest,
   S3ObjectTaggingRequest,
+  S3PutBucketVersioningRequest,
   S3PutObjectTaggingRequest,
   S3PutObjectRequest,
   S3UploadPartCopyRequest,
@@ -188,6 +196,92 @@ export interface S3DeleteObjectResponse {
   requestCharged?: string;
 }
 
+export interface S3DeletedObject {
+  key: string;
+  versionId?: string;
+  deleteMarker?: boolean;
+  deleteMarkerVersionId?: string;
+}
+
+export interface S3DeleteObjectError {
+  key: string;
+  versionId?: string;
+  code?: string;
+  message?: string;
+}
+
+export interface S3DeleteObjectsResponse {
+  deleted: S3DeletedObject[];
+  errors: S3DeleteObjectError[];
+  requestCharged?: string;
+  rawXml: string;
+}
+
+export interface S3GetBucketVersioningResponse {
+  status?: string;
+  mfaDelete?: string;
+  rawXml: string;
+}
+
+export interface S3PutBucketVersioningResponse {
+  requestCharged?: string;
+  headers: Record<string, string>;
+}
+
+export interface S3ChecksumFields {
+  checksumCRC32?: string;
+  checksumCRC32C?: string;
+  checksumCRC64NVME?: string;
+  checksumMD5?: string;
+  checksumSHA1?: string;
+  checksumSHA256?: string;
+  checksumSHA512?: string;
+  checksumType?: string;
+}
+
+export interface S3RestoreStatus {
+  isRestoreInProgress?: boolean;
+  restoreExpiryDate?: string;
+}
+
+export interface S3ObjectVersion extends S3ChecksumFields {
+  key: string;
+  versionId?: string;
+  isLatest?: boolean;
+  lastModified?: string;
+  eTag?: string;
+  size?: number;
+  storageClass?: string;
+  owner?: S3Owner;
+  restoreStatus?: S3RestoreStatus;
+}
+
+export interface S3ObjectDeleteMarker {
+  key: string;
+  versionId?: string;
+  isLatest?: boolean;
+  lastModified?: string;
+  owner?: S3Owner;
+}
+
+export interface S3ListObjectVersionsResponse {
+  name?: string;
+  prefix?: string;
+  delimiter?: string;
+  keyMarker?: string;
+  versionIdMarker?: string;
+  nextKeyMarker?: string;
+  nextVersionIdMarker?: string;
+  maxKeys?: number;
+  encodingType?: string;
+  isTruncated: boolean;
+  versions: S3ObjectVersion[];
+  deleteMarkers: S3ObjectDeleteMarker[];
+  commonPrefixes: S3CommonPrefix[];
+  requestCharged?: string;
+  rawXml: string;
+}
+
 export interface S3ObjectTag {
   key: string;
   value: string;
@@ -205,17 +299,6 @@ export interface S3PutObjectTaggingResponse {
 
 export interface S3DeleteObjectTaggingResponse {
   versionId?: string;
-}
-
-export interface S3ChecksumFields {
-  checksumCRC32?: string;
-  checksumCRC32C?: string;
-  checksumCRC64NVME?: string;
-  checksumMD5?: string;
-  checksumSHA1?: string;
-  checksumSHA256?: string;
-  checksumSHA512?: string;
-  checksumType?: string;
 }
 
 export interface S3CreateMultipartUploadResponse extends S3ChecksumFields {
@@ -393,6 +476,38 @@ export interface S3DeleteObjectMethod {
   schema: z.ZodType<S3DeleteObjectRequest>;
 }
 
+export interface S3DeleteObjectsMethod {
+  (
+    req: S3DeleteObjectsRequest,
+    signal?: AbortSignal
+  ): Promise<S3DeleteObjectsResponse>;
+  schema: z.ZodType<S3DeleteObjectsRequest>;
+}
+
+export interface S3GetBucketVersioningMethod {
+  (
+    req: S3GetBucketVersioningRequest,
+    signal?: AbortSignal
+  ): Promise<S3GetBucketVersioningResponse>;
+  schema: z.ZodType<S3GetBucketVersioningRequest>;
+}
+
+export interface S3PutBucketVersioningMethod {
+  (
+    req: S3PutBucketVersioningRequest,
+    signal?: AbortSignal
+  ): Promise<S3PutBucketVersioningResponse>;
+  schema: z.ZodType<S3PutBucketVersioningRequest>;
+}
+
+export interface S3ListObjectVersionsMethod {
+  (
+    req: S3ListObjectVersionsRequest,
+    signal?: AbortSignal
+  ): Promise<S3ListObjectVersionsResponse>;
+  schema: z.ZodType<S3ListObjectVersionsRequest>;
+}
+
 export interface S3GetObjectTaggingMethod {
   (
     req: S3ObjectTaggingRequest,
@@ -473,9 +588,11 @@ export interface S3ListMultipartUploadsMethod {
 export interface S3BucketsNamespace {
   create: S3CreateBucketMethod;
   del: S3DeleteBucketMethod;
+  getVersioning: S3GetBucketVersioningMethod;
   head: S3HeadBucketMethod;
   list: S3ListBucketsMethod;
   location: S3GetBucketLocationMethod;
+  putVersioning: S3PutBucketVersioningMethod;
 }
 
 export interface S3ObjectsNamespace {
@@ -484,11 +601,13 @@ export interface S3ObjectsNamespace {
   copy: S3CopyObjectMethod;
   createMultipartUpload: S3CreateMultipartUploadMethod;
   del: S3DeleteObjectMethod;
+  delMany: S3DeleteObjectsMethod;
   delTagging: S3DeleteObjectTaggingMethod;
   get: S3GetObjectMethod;
   getTagging: S3GetObjectTaggingMethod;
   head: S3HeadObjectMethod;
   listMultipartUploads: S3ListMultipartUploadsMethod;
+  listVersions: S3ListObjectVersionsMethod;
   list: S3ListObjectsV2Method;
   listParts: S3ListPartsMethod;
   put: S3PutObjectMethod;

@@ -7,6 +7,16 @@
       "prompt_influence": 0.3
     }
   },
+  "POST v1.voices.pvc.samples": {
+    "source": "elevenlabs/voice-pvc-sample-update",
+    "payload": {
+      "remove_background_noise": false,
+      "selected_speaker_ids": null,
+      "trim_start_time": null,
+      "trim_end_time": null,
+      "file_name": "apicity-sample.wav"
+    }
+  },
   "POST v1.workspace.analytics.query.usageByProductOverTime": {
     "source": "elevenlabs/workspace-usage-by-product-over-time",
     "payload": {

@@ -7,6 +7,7 @@ import type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
+  ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
 } from "./zod";
@@ -20,6 +21,7 @@ export type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
+  ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
 } from "./zod";
@@ -368,6 +370,10 @@ export interface ElevenLabsSpeakerAudioResponse {
   duration_secs: number;
 }
 
+export interface ElevenLabsUpdatePvcVoiceSampleResponse {
+  voice_id: string;
+}
+
 // -- Model response shapes ---------------------------------------------------
 
 export interface ElevenLabsModelLanguage {
@@ -587,6 +593,17 @@ export interface ElevenLabsStartSpeakerSeparationMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsUpdatePvcVoiceSampleMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    req?: ElevenLabsUpdatePvcVoiceSampleRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdatePvcVoiceSampleResponse>;
+  schema: z.ZodType<ElevenLabsUpdatePvcVoiceSampleRequest>;
+  separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
+}
+
 export interface ElevenLabsListVoicesMethod {
   (
     req?: ElevenLabsListVoicesRequest,
@@ -688,8 +705,7 @@ export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace {
   audio: ElevenLabsGetSeparatedSpeakerAudioMethod;
 }
 
-export interface ElevenLabsPvcVoiceSamplesNamespace {
-  separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
+export interface ElevenLabsPvcVoiceSamplesNamespace extends ElevenLabsUpdatePvcVoiceSampleMethod {
   speakers: ElevenLabsPvcVoiceSamplesSpeakersNamespace;
 }
 
@@ -728,9 +744,8 @@ export interface ElevenLabsPostV1VoicesPvcNamespace {
   samples: ElevenLabsPostV1VoicesPvcSamplesNamespace;
 }
 
-export interface ElevenLabsPostV1VoicesPvcSamplesNamespace {
-  separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
-}
+export type ElevenLabsPostV1VoicesPvcSamplesNamespace =
+  ElevenLabsUpdatePvcVoiceSampleMethod;
 
 export interface ElevenLabsPostNamespace {
   v1: ElevenLabsPostV1Namespace;

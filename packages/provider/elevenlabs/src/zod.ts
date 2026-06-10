@@ -86,6 +86,22 @@ export type ElevenLabsPvcVoiceCaptchaRequest = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/voices/pvc/:voice_id/samples/:sample_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdatePvcVoiceSampleRequestSchema = z.object({
+  remove_background_noise: z.boolean().optional(),
+  selected_speaker_ids: z.array(z.string()).nullable().optional(),
+  trim_start_time: z.number().int().nullable().optional(),
+  trim_end_time: z.number().int().nullable().optional(),
+  file_name: z.string().nullable().optional(),
+});
+
+export type ElevenLabsUpdatePvcVoiceSampleRequest = z.infer<
+  typeof ElevenLabsUpdatePvcVoiceSampleRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/sound-generation
 // ---------------------------------------------------------------------------
 

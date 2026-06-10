@@ -45,7 +45,7 @@ Credentials come from one of two modes:
 ### Claude Code
 
 ```bash
-claude mcp add --scope user apicity -- \
+claude mcp add apicity -- \
   npx -y @apicity/mcp-server@latest \
   --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
@@ -53,7 +53,7 @@ claude mcp add --scope user apicity -- \
 Or with a .env file instead of 1Password:
 
 ```bash
-claude mcp add --scope user apicity -- \
+claude mcp add apicity -- \
   npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
 ```
 

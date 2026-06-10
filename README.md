@@ -111,12 +111,12 @@ Every endpoint as an MCP tool. Install with a 1Password vault holding the
 provider keys, or a plain `.env` file:
 
 ```bash
-claude mcp add --scope user apicity -- \
+claude mcp add apicity -- \
   npx -y @apicity/mcp-server@latest \
   --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 
 # or
-claude mcp add --scope user apicity -- \
+claude mcp add apicity -- \
   npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
 ```
 

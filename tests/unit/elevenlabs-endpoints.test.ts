@@ -160,6 +160,51 @@ describe("ElevenLabs endpoint wiring", () => {
     expect(provider.get.v1.voices.settings).toBe(provider.v1.voices.settings);
   });
 
+  it("gets separated speaker audio for a PVC sample speaker", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          audio_base_64: "YWJj",
+          media_type: "audio/mpeg",
+          duration_secs: 5,
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    const result = await provider.v1.voices.pvc.samples.speakers.audio(
+      "voice/123",
+      "sample 456",
+      "speaker/789"
+    );
+
+    expect(result).toEqual({
+      audio_base_64: "YWJj",
+      media_type: "audio/mpeg",
+      duration_secs: 5,
+    });
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe(
+      "https://api.elevenlabs.io/v1/voices/pvc/voice%2F123/samples/sample%20456/speakers/speaker%2F789/audio"
+    );
+    expect(init.method).toBe("GET");
+    expect(init.headers).toEqual({
+      "xi-api-key": "el-test",
+    });
+    expect(init.body).toBeUndefined();
+    expect(provider.get.v1.voices.pvc.samples.speakers.audio).toBe(
+      provider.v1.voices.pvc.samples.speakers.audio
+    );
+  });
+
   it("gets v2 voices with search and pagination query parameters", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(

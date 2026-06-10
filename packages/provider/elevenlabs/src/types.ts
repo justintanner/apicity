@@ -362,6 +362,12 @@ export interface ElevenLabsPvcVoiceCaptchaResponse {
 
 export type ElevenLabsGetPvcVoiceCaptchaResponse = Record<string, unknown>;
 
+export interface ElevenLabsSpeakerAudioResponse {
+  audio_base_64: string;
+  media_type: string;
+  duration_secs: number;
+}
+
 // -- Model response shapes ---------------------------------------------------
 
 export interface ElevenLabsModelLanguage {
@@ -621,6 +627,15 @@ export interface ElevenLabsGetPvcVoiceCaptchaMethod {
   ): Promise<ElevenLabsGetPvcVoiceCaptchaResponse>;
 }
 
+export interface ElevenLabsGetSeparatedSpeakerAudioMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    speakerId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSpeakerAudioResponse>;
+}
+
 export interface ElevenLabsPvcVoiceNamespace {
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPvcVoiceSamplesNamespace;
@@ -669,8 +684,13 @@ export interface ElevenLabsWorkspaceNamespace {
   analytics: ElevenLabsWorkspaceAnalyticsNamespace;
 }
 
+export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace {
+  audio: ElevenLabsGetSeparatedSpeakerAudioMethod;
+}
+
 export interface ElevenLabsPvcVoiceSamplesNamespace {
   separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
+  speakers: ElevenLabsPvcVoiceSamplesSpeakersNamespace;
 }
 
 export type ElevenLabsPvcVoicesNamespace = ElevenLabsPvcVoiceNamespace;
@@ -700,7 +720,16 @@ export interface ElevenLabsPostV1Namespace {
 }
 
 export interface ElevenLabsPostV1VoicesNamespace {
-  pvc: ElevenLabsPvcVoiceNamespace;
+  pvc: ElevenLabsPostV1VoicesPvcNamespace;
+}
+
+export interface ElevenLabsPostV1VoicesPvcNamespace {
+  captcha: ElevenLabsPvcVoiceCaptchaMethod;
+  samples: ElevenLabsPostV1VoicesPvcSamplesNamespace;
+}
+
+export interface ElevenLabsPostV1VoicesPvcSamplesNamespace {
+  separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
 }
 
 export interface ElevenLabsPostNamespace {

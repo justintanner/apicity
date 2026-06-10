@@ -8,6 +8,7 @@ import {
   ElevenLabsOptions,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcVoiceCaptchaResponse,
+  ElevenLabsSpeakerAudioResponse,
   ElevenLabsSoundGenerationRequest,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
@@ -471,6 +472,29 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/speakers/{speakerId}/audio
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/get-separated-speaker-audio
+  const getSeparatedSpeakerAudio = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      speakerId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSpeakerAudioResponse> => {
+      return makeJsonRequest<ElevenLabsSpeakerAudioResponse>(
+        "GET",
+        `/v1/voices/pvc/${encodeURIComponent(
+          voiceId
+        )}/samples/${encodeURIComponent(
+          sampleId
+        )}/speakers/${encodeURIComponent(speakerId)}/audio`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v2/voices
   // Docs: https://elevenlabs.io/docs/api-reference/voices/search
   const voices = Object.assign(
@@ -632,14 +656,25 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const user = {
     subscription: userSubscription,
   };
+  const pvcSamplesSpeakers = {
+    audio: getSeparatedSpeakerAudio,
+  };
   const pvcVoiceSamples = {
     separateSpeakers: startSpeakerSeparation,
+    speakers: pvcSamplesSpeakers,
   };
+  const pvcVoiceCaptchaWithGet = Object.assign(pvcVoiceCaptcha, {
+    get: getPvcVoiceCaptcha,
+  });
   const pvcVoices = {
-    captcha: Object.assign(pvcVoiceCaptcha, {
-      get: getPvcVoiceCaptcha,
-    }),
+    captcha: pvcVoiceCaptchaWithGet,
     samples: pvcVoiceSamples,
+  };
+  const postPvcVoices = {
+    captcha: pvcVoiceCaptchaWithGet,
+    samples: {
+      separateSpeakers: startSpeakerSeparation,
+    },
   };
   const workspace = {
     analytics: {
@@ -662,7 +697,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToDialogue,
     speechToText,
     voices: {
-      pvc: pvcVoices,
+      pvc: postPvcVoices,
     },
     workspace,
   };

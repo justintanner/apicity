@@ -48,7 +48,7 @@ pnpm run test                    # Run tests in watch mode
 
 # Dev workflow (discrete per-phase aliases)
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
-pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by check-record-args.mjs)
+pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
 pnpm run dev:preflight           # format + lint + test:run (run before `git push`)
 pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 

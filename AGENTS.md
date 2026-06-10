@@ -95,7 +95,7 @@ All tests use Polly.js HTTP record/replay — no mocks. Recordings live under `t
 Two recording modes:
 
 - **`record-missing` (default, safe)** — Only records tests whose HAR files don't exist yet. Existing recordings replay from disk. Use this when _adding_ a new test. Safe without a file filter.
-- **`record` (destructive)** — Overwrites existing HAR files. Use only when intentionally re-recording. **Hard-errors if run without a test file filter** (`tests/check-record-args.mjs` enforces this). Override with `POLLY_FORCE_ALL=1` only if you really mean to re-record everything.
+- **`record` (destructive)** — Overwrites existing HAR files. Use only when intentionally re-recording. **Hard-errors if run without a test file filter** (`tests/record.mjs` enforces this). Override with `POLLY_FORCE_ALL=1` only if you really mean to re-record everything.
 
 Workflow for a new test:
 

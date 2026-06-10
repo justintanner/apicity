@@ -208,6 +208,7 @@ dolthub	v1alpha1.sql.read	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{data
 dolthub	v1alpha1.sql.write	POST	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write/{fromBranch}/{toBranch}{query}	https://www.dolthub.com/docs/products/dolthub/api/sql
 dolthub	v1alpha1.sql.writePoll	GET	https://www.dolthub.com/api/v1alpha1/{owner}/{database}/write{query}	https://www.dolthub.com/docs/products/dolthub/api/sql
 dolthub	v1alpha1.user	GET	https://www.dolthub.com/api/v1alpha1/user	
+elevenlabs	v1.models	GET	https://api.elevenlabs.io/v1/models	https://elevenlabs.io/docs/api-reference/models/list
 elevenlabs	v1.voices	GET	https://api.elevenlabs.io/v1/voices/{voiceId}	https://elevenlabs.io/docs/api-reference/voices/get
 elevenlabs	v1.voices.settings	GET	https://api.elevenlabs.io/v1/voices/{voiceId}/settings	https://elevenlabs.io/docs/api-reference/voices/get-settings
 elevenlabs	v1.soundGeneration	POST	https://api.elevenlabs.io/v1/sound-generation	https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert

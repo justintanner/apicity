@@ -350,6 +350,42 @@ export interface ElevenLabsListVoicesResponse {
   next_page_token?: string | null;
 }
 
+// -- Model response shapes ---------------------------------------------------
+
+export interface ElevenLabsModelLanguage {
+  language_id: string;
+  name: string;
+}
+
+export interface ElevenLabsModelRates {
+  character_cost_multiplier?: number;
+  cost_discount_multiplier?: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsModel {
+  model_id: string;
+  name: string;
+  can_be_finetuned?: boolean;
+  can_do_text_to_speech?: boolean;
+  can_do_voice_conversion?: boolean;
+  can_use_style?: boolean;
+  can_use_speaker_boost?: boolean;
+  serves_pro_voices?: boolean;
+  token_cost_factor?: number;
+  description?: string;
+  requires_alpha_access?: boolean;
+  max_characters_request_free_user?: number;
+  max_characters_request_subscribed_user?: number;
+  maximum_text_length_per_request?: number;
+  languages?: ElevenLabsModelLanguage[];
+  model_rates?: ElevenLabsModelRates;
+  concurrency_group?: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsListModelsResponse = ElevenLabsModel[];
+
 // -- User/subscription response shapes ---------------------------------------
 
 export interface ElevenLabsMoneyAmount {
@@ -476,6 +512,10 @@ export interface ElevenLabsUserSubscriptionMethod {
   (signal?: AbortSignal): Promise<ElevenLabsUserSubscriptionResponse>;
 }
 
+export interface ElevenLabsListModelsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsListModelsResponse>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsUserNamespace {
@@ -483,6 +523,7 @@ export interface ElevenLabsUserNamespace {
 }
 
 export interface ElevenLabsV1Namespace {
+  models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
@@ -507,6 +548,7 @@ export interface ElevenLabsPostNamespace {
 }
 
 export interface ElevenLabsGetV1Namespace {
+  models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
   user: ElevenLabsUserNamespace;
 }

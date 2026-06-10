@@ -142,7 +142,24 @@ for (const w of result.words) {
 
 ## API Reference
 
-8 endpoints across 6 groups. Each method mirrors an upstream URL path.
+9 endpoints across 7 groups. Each method mirrors an upstream URL path.
+
+### models
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.models</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/models</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/models/list)
+
+```typescript
+const res = await elevenlabs.v1.models();
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
 
 ### soundGeneration
 

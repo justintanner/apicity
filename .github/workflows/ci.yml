@@ -11,42 +11,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build packages
-        run: pnpm run build
-
-      - name: Verify provider artifacts
-        run: |
-          test -f packages/provider/kimicoding/dist/src/index.js
-          test -f packages/provider/kimicoding/dist/src/index.d.ts
-          test -f packages/provider/kie/dist/src/index.js
-          test -f packages/provider/kie/dist/src/index.d.ts
-          test -f packages/provider/alibaba/dist/src/index.js
-          test -f packages/provider/alibaba/dist/src/index.d.ts
-
   test:
-    needs: build
     runs-on: ubuntu-latest
+    env:
+      # The explicit build step below provides dist/; skip the prelint /
+      # pretest:run hook rebuilds that would compile everything two more times.
+      npm_config_enable_pre_post_scripts: "false"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -72,6 +42,15 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
+      - name: Verify provider artifacts
+        run: |
+          test -f packages/provider/kimicoding/dist/src/index.js
+          test -f packages/provider/kimicoding/dist/src/index.d.ts
+          test -f packages/provider/kie/dist/src/index.js
+          test -f packages/provider/kie/dist/src/index.d.ts
+          test -f packages/provider/alibaba/dist/src/index.js
+          test -f packages/provider/alibaba/dist/src/index.d.ts
+
       - name: Lint
         run: pnpm run lint
 
@@ -80,7 +59,7 @@ jobs:
 
   harness-report:
     if: github.event_name == 'pull_request'
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -177,7 +156,7 @@ jobs:
 
   endpoint-telegram:
     if: github.event_name == 'push'
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

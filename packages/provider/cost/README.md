@@ -1,8 +1,14 @@
 # @apicity/cost
 
-Cross-provider cost & token estimation for the [apicity](https://github.com/justintanner/apicity) monorepo. Returns a USD figure for a planned API call across the billed apicity providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie, elevenlabs — see [Coverage](#coverage)) — computed purely locally from bundled rate tables, with no keys and no network.
+Cross-provider cost & token estimation for the
+[apicity](https://github.com/justintanner/apicity) monorepo: a USD figure for a
+planned API call to the billed providers (openai, anthropic, xai, kimicoding,
+fireworks, alibaba, kie, elevenlabs — see [Coverage](#coverage)), computed
+purely locally from bundled rate tables — no keys, no network.
 
-This package has zero dependencies and is not a wrapper for any single upstream API — it's a deliberate cross-provider helper. Other workspace packages depend on _it_: `@apicity/kie` and `@apicity/xai` use its `withPaidGate` to gate paid endpoints.
+Zero dependencies, and not a wrapper for any single upstream API — a deliberate
+cross-provider helper. Other workspace packages depend on _it_: `@apicity/kie`
+and `@apicity/xai` use its `withPaidGate` to gate paid endpoints.
 
 ## Install
 
@@ -14,12 +20,15 @@ pnpm add @apicity/cost
 
 ## Usage
 
-`c.estimate(req)` accepts the **exact JSON body you would POST to upstream**. The package lightly parses the payload to extract the fields that affect price (model, resolution, duration, message contents, etc.) — so the same object you build for the real generation call doubles as the input to the cost estimate.
+`c.estimate(req)` takes the **exact JSON body you would POST upstream** and
+lightly parses out the price-affecting fields (model, resolution, duration,
+message contents, etc.) — the object you build for the real call doubles as
+the estimate input.
 
 ```ts
 import { createCost } from "@apicity/cost";
 
-const c = createCost(); // no options, no keys — every estimate is pure local math
+const c = createCost(); // no options, no keys — pure local math
 
 // openai chat — same body you'd POST to /v1/chat/completions
 const a = c.estimate({
@@ -32,7 +41,7 @@ const a = c.estimate({
 });
 // → { usd: 0.01..., source: "tokens-heuristic+table", breakdown: { inputTokens: 8, outputTokens: 1000, ... } }
 
-// kie — the same body you'd POST to /api/v1/jobs/createTask
+// kie — same body you'd POST to /api/v1/jobs/createTask
 const k = c.estimate({
   provider: "kie",
   payload: {
@@ -67,7 +76,7 @@ const e = c.estimate({
 const z = c.estimate({ provider: "free-media-upload" });
 ```
 
-`estimate()` is synchronous — there is nothing to await.
+`estimate()` is synchronous — nothing to await.
 
 ## Return shape
 
@@ -99,65 +108,75 @@ interface CostEstimate {
 }
 ```
 
-`source` is the load-bearing field: `per-unit-table` is exact when the bundled rate is current; `tokens-heuristic+table` is rougher — chars/4 ≈ tokens, so treat it as ±20%. Every estimate is computed locally; nothing calls upstream.
+`source` is the load-bearing field: `per-unit-table` is exact when the bundled
+rate is current; `tokens-heuristic+table` (chars/4 ≈ tokens) is rougher —
+treat it as ±20%. Nothing calls upstream.
 
 ## How payloads are parsed
 
-Each provider has a small extractor in `src/extract/` that walks the payload looking for the fields the rate table discriminates on. Unrecognized payloads return `usd: 0` plus a warning rather than throwing — so a missing `input.resolution` on a kie seedance payload, or a model not in the bundled table, produces a diagnosable `CostEstimate` rather than an exception.
+Each provider has a small extractor in `src/extract/` that pulls the fields
+the rate table discriminates on. Unrecognized payloads return `usd: 0` plus a
+warning instead of throwing — a missing `input.resolution` on a kie seedance
+payload, or a model not in the bundled table, yields a diagnosable
+`CostEstimate`, never an exception.
 
-For text providers (openai / anthropic / xai / kimicoding / fireworks / alibaba), the extractor flattens the chat `messages` array (or `input` / `prompt` / `text`) into a single string for token counting; non-text content parts (images, audio, tool calls) are dropped.
+Text providers (openai / anthropic / xai / kimicoding / fireworks / alibaba):
+the extractor flattens the chat `messages` array (or `input` / `prompt` /
+`text`) into one string for token counting; non-text content parts (images,
+audio, tool calls) are dropped.
 
-For per-unit providers (kie / elevenlabs), the payload-shape knowledge lives in each rate entry's closures in `src/pricing/kie.ts` / `src/pricing/elevenlabs.ts`: `units(payload)` derives the billable quantity (seconds, characters, images) and ordered `select` pickers resolve the rate variant from fields like `input.resolution` and `input.first_frame_url` (i2v vs t2v). Image models price per image; resolution-tiered families require `input.resolution`. Endpoint-keyed pricing (e.g. Suno) uses the `EstimateRequest.endpoint` discriminator instead of `payload.model`.
+Per-unit providers (kie / elevenlabs): payload-shape knowledge lives in each
+rate entry's closures in `src/pricing/kie.ts` / `src/pricing/elevenlabs.ts` —
+`units(payload)` derives the billable quantity (seconds, characters, images)
+and ordered `select` pickers resolve the rate variant from fields like
+`input.resolution` and `input.first_frame_url` (i2v vs t2v). Image models
+price per image; resolution-tiered families require `input.resolution`;
+endpoint-keyed pricing (e.g. Suno) uses the `EstimateRequest.endpoint`
+discriminator instead of `payload.model`.
 
 ## Bundled pricing
 
-Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual entries may carry their own as-of date) and shipped in `src/pricing/` as per-provider modules. They cover the most common models on each provider; calling `estimate()` with an unknown model returns `usd: 0` plus a warning, never throws.
-
-To inspect what's bundled:
+Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual
+entries may carry their own as-of date) and shipped in `src/pricing/` as
+per-provider modules covering each provider's most common models. Unknown
+models return `usd: 0` plus a warning, never throw.
 
 ```ts
 import { PRICING, PRICING_AS_OF } from "@apicity/cost";
 ```
 
-Maintenance is manual: re-fetch each upstream's pricing page, edit the provider's module in `src/pricing/`, bump `PRICING_AS_OF`.
+Maintenance is manual: re-fetch the upstream pricing page, edit the provider's
+module in `src/pricing/`, bump `PRICING_AS_OF`.
 
 ## Coverage
 
-| Provider     | source                   | Notes                                                                               |
-| ------------ | ------------------------ | ----------------------------------------------------------------------------------- |
-| `openai`     | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `anthropic`  | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `xai`        | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `kimicoding` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `fireworks`  | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `alibaba`    | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
-| `elevenlabs` | `per-unit-table`         | priced per character                                                                |
-| `kie`        | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
-| `free`       | `free`                   | always $0                                                                           |
+| Provider                                                           | source                   | Notes                                                                               |
+| ------------------------------------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------- |
+| `openai`, `anthropic`, `xai`, `kimicoding`, `fireworks`, `alibaba` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `elevenlabs`                                                       | `per-unit-table`         | priced per character                                                                |
+| `kie`                                                              | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
+| `free`                                                             | `free`                   | always $0                                                                           |
 
 ## Paid endpoint guard (OTP pay gate)
 
-Some endpoints have a direct marginal compute cost (e.g. video generation).
-The cost package maintains a small, explicit **paid-endpoint registry**.
-Endpoints that are **not** in the registry are assumed free and require no
-caller changes.
+The cost package keeps a small, explicit **paid-endpoint registry** for
+endpoints with direct marginal compute cost (e.g. video generation).
+Endpoints **not** in the registry are assumed free and need no caller changes.
 
 Paid endpoints require a **single-use OTP** (one-time password) minted from a
 shared **HMAC secret**. The gate is fail-closed and does **no** cost
-estimation — it is pure authorization: a paid call cannot fire unless the
-provider was constructed with the secret **and** the caller presents a valid,
+estimation — pure authorization: a paid call cannot fire unless the provider
+was constructed with the secret **and** the caller presents a valid,
 request-bound OTP. The autonomous caller never holds the secret, so it cannot
-self-approve; only the human or the code client that holds the secret can mint.
-
+self-approve; only the human or code client that holds the secret can mint.
 There are **no environment variables and no key files** — the secret is passed
 in via factory options (or the MCP server's `--paygate-secret-file`).
 
 ### Registry model
 
-- `PAID_ENDPOINTS` is the canonical list. Every entry is an exact triple of
-  `(provider, method, dotPath)` — there is no regex, prefix, wildcard, or
-  inferred matching.
-- Unlisted endpoints are free and pass through without OTP or configuration.
+- `PAID_ENDPOINTS` is the canonical list: exact `(provider, method, dotPath)`
+  triples — no regex, prefix, wildcard, or inferred matching.
+- Unlisted endpoints pass through free, with no OTP or configuration.
 - Listed endpoints block unless a valid OTP is supplied.
 
 ### Token format
@@ -227,18 +246,17 @@ const otp = mintOtp(secret, {
 
 ### Request canonicalization
 
-Before hashing, the request payload is canonicalized: serialized to JSON with
-**sorted object keys** (recursive), preserving array order, rejecting non-JSON
-values (functions, undefined, circular references). The canonical string is
-SHA-256 hashed and prefixed with `sha256:`. Change any byte of the request and
-verification fails.
+Before hashing, the payload is canonicalized — serialized to JSON with
+recursively **sorted object keys**, array order preserved, non-JSON values
+(functions, undefined, circular references) rejected — then SHA-256 hashed and
+prefixed `sha256:`. Change any byte of the request and verification fails.
 
 ### Replay protection
 
 Each OTP `jti` is single-use. The default `ReplayStore` is an in-process Set
-scoped to one provider instance (no files, no `XDG_STATE_HOME`). Pass a custom
-`replayStore` for cross-process or persistent protection. The `jti` is consumed
-**before** dispatch — see [Retry semantics](#retry-semantics).
+scoped to one provider instance (no files, no `XDG_STATE_HOME`); pass a custom
+`replayStore` for cross-process or persistent protection. The `jti` is
+consumed **before** dispatch — see [Retry semantics](#retry-semantics).
 
 ### Public interface
 
@@ -269,20 +287,20 @@ const task = await provider.post.api.v1.jobs.createTask(
 
 ### Guard behavior
 
-1. **Preflight** — if the endpoint is not in `PAID_ENDPOINTS`, dispatch runs
-   immediately.
-2. **Configuration** — a paid endpoint with no `paygate.secret` throws
-   `PayGateError` (`paygate-not-configured`).
-3. **OTP presence** — paid endpoints require `approval.otp`; if omitted the call
-   throws `PayGateError` (`otp-missing`).
-4. **Signature** — the payload segment's HMAC is verified (constant-time)
-   against the secret; mismatch throws `PayGateError` (`otp-invalid-signature`).
-5. **Expiration** — `exp` in the past throws `PayGateError` (`otp-expired`).
-6. **Request binding** — `provider`, `method`, `dotPath`, and `requestHash` must
-   match the actual call, else `PayGateError` (`otp-mismatched-request`).
-7. **Replay check** — a `jti` already in the store throws `PayGateError`
-   (`otp-replayed`).
-8. **Consume + dispatch** — the `jti` is recorded, then the HTTP request fires.
+Each failed check throws `PayGateError` with the code shown:
+
+1. **Preflight** — endpoints not in `PAID_ENDPOINTS` dispatch immediately.
+2. **Configuration** — paid endpoint with no `paygate.secret` →
+   `paygate-not-configured`.
+3. **OTP presence** — missing `approval.otp` → `otp-missing`.
+4. **Signature** — constant-time HMAC check of the payload segment →
+   `otp-invalid-signature` on mismatch.
+5. **Expiration** — `exp` in the past → `otp-expired`.
+6. **Request binding** — `provider`, `method`, `dotPath`, and `requestHash`
+   must match the actual call → `otp-mismatched-request`.
+7. **Replay check** — `jti` already in the store → `otp-replayed`.
+8. **Consume + dispatch** — the `jti` is recorded, then the HTTP request
+   fires.
 
 ```ts
 import { PayGateError } from "@apicity/cost";
@@ -326,14 +344,13 @@ apicity-paygate otp mint \
 
 ### Wiring the gate into a provider
 
-Providers apply the gate at the bottom of their factory using `withPaidGate`.
+Providers apply the gate at the bottom of their factory with `withPaidGate`.
 The walker descends the HTTP-method roots (`post`, `get`, `delete`, `patch`,
 `put`) and routes every leaf whose `(provider, method, dotPath)` is in
-`PAID_ENDPOINTS` through `dispatchWithPaidGate`. Free leaves pass through
-unchanged; schema records and other non-route properties are returned by
-reference. Providers with paid sub-provider roots wrap those sub-provider trees
-explicitly and pass the same config so one replay store covers the provider
-instance:
+`PAID_ENDPOINTS` through `dispatchWithPaidGate`; free leaves pass through
+unchanged, and schema records and other non-route properties are returned by
+reference. Providers with paid sub-provider roots wrap those trees explicitly
+with the same config so one replay store covers the provider instance:
 
 ```ts
 import { createReplayStore, withPaidGate } from "@apicity/cost";
@@ -360,40 +377,33 @@ export function createKie(opts: KieOptions): KieProvider {
 }
 ```
 
-The gate is generic — `xai` and other providers opt in simply by adding a
+The gate is generic — `xai` and other providers opt in by adding a
 `PAID_ENDPOINTS` entry and threading `{ config: opts.paygate }` through their
 factory.
 
 ### Retry semantics
 
-The OTP `jti` is consumed **before** `dispatch()` runs. If dispatch later fails
-(network error, upstream 5xx, abort), the `jti` stays consumed and the caller
-must mint a fresh OTP to retry. This is intentional — without it, a hostile
-caller could replay a single OTP on every transient failure. Treat each OTP as
+The OTP `jti` is consumed **before** `dispatch()` runs: if dispatch later
+fails (network error, upstream 5xx, abort), it stays consumed and the caller
+must mint a fresh OTP to retry. This is intentional — otherwise a hostile
+caller could replay a single OTP on every transient failure. Each OTP is
 single-use authority for one network attempt.
 
 ### MCP server
 
-The `@apicity/mcp-server` is the code client: start it with
-`--paygate-secret-file <path>` and it holds the secret to **verify** OTPs (it
-never mints). A human mints an OTP out-of-band (same secret) and the caller
-passes it as the paid tool's `otp` argument — so an AI driving the tool cannot
-self-approve.
+`@apicity/mcp-server` is the code client: started with
+`--paygate-secret-file <path>`, it holds the secret to **verify** OTPs (it
+never mints). A human mints an OTP out-of-band with the same secret and the
+caller passes it as the paid tool's `otp` argument — an AI driving the tool
+cannot self-approve.
 
 ### Minimal operator workflow
 
 1. **Generate a secret** (one-time) and store it (secret manager / file).
 2. **Prepare a request** JSON file.
-3. **Mint an OTP**:
-   ```bash
-   apicity-paygate otp mint \
-     --secret-file ./paygate.secret \
-     --dot-path api.v1.jobs.createTask \
-     --payload-file request.json \
-     --ttl 10m
-   ```
+3. **Mint an OTP** with the [CLI above](#cli-minting-otps).
 4. **Pass the OTP to the caller** (copy-paste, secrets manager, etc.).
-5. **Caller uses the OTP**:
+5. **Caller uses it**:
    ```ts
    await provider.post.api.v1.jobs.createTask({ ... }, { otp: "<paste>" });
    ```

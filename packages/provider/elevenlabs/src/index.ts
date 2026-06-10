@@ -52,6 +52,7 @@ export type {
   ElevenLabsRecordingQuality,
   ElevenLabsLabellingStatus,
   ElevenLabsVoice,
+  ElevenLabsDeleteVoiceSampleResponse,
   ElevenLabsModelLanguage,
   ElevenLabsModelRates,
   ElevenLabsModel,
@@ -73,6 +74,7 @@ export type {
   ElevenLabsUpdatePvcVoiceSampleMethod,
   ElevenLabsStartSpeakerSeparationResponse,
   ElevenLabsStartSpeakerSeparationMethod,
+  ElevenLabsDeletePvcVoiceSampleMethod,
   ElevenLabsTranscript,
   ElevenLabsTranscriptWord,
   ElevenLabsTranscriptWordType,
@@ -117,5 +119,7 @@ export type {
   ElevenLabsGetV1Namespace,
   ElevenLabsGetV2Namespace,
   ElevenLabsGetNamespace,
+  ElevenLabsDeleteV1Namespace,
+  ElevenLabsDeleteNamespace,
   ElevenLabsProvider,
 } from "./types";

@@ -133,7 +133,8 @@ function formatUsageSnippet(providerName, dotPath) {
   }
   if (
     providerName === "elevenlabs" &&
-    (dotPath === "v1.voices.pvc.samples.separateSpeakers" ||
+    (dotPath === "v1.voices.pvc.samples.delete" ||
+      dotPath === "v1.voices.pvc.samples.separateSpeakers" ||
       dotPath === "v1.voices.pvc.samples.waveform")
   ) {
     return `const res = await ${call}("voice_id", "sample_id");`;

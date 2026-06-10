@@ -1,5 +1,6 @@
 import {
   ElevenLabsCreatePvcVoiceResponse,
+  ElevenLabsDeleteVoiceSampleResponse,
   ElevenLabsDocsRedirectResponse,
   ElevenLabsGetPvcVoiceCaptchaResponse,
   ElevenLabsGetVoiceRequest,
@@ -162,7 +163,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   }
 
   async function makeJsonRequest<T>(
-    method: "GET" | "POST",
+    method: "GET" | "POST" | "DELETE",
     path: string,
     body?: unknown,
     signal?: AbortSignal,
@@ -566,6 +567,26 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // DELETE https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/delete
+  const deletePvcVoiceSample = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteVoiceSampleResponse> => {
+      return makeJsonRequest<ElevenLabsDeleteVoiceSampleResponse>(
+        "DELETE",
+        `/v1/voices/pvc/${encodeURIComponent(
+          voiceId
+        )}/samples/${encodeURIComponent(sampleId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/train
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/train
   const pvcTrain = Object.assign(
@@ -773,6 +794,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     audio: getSeparatedSpeakerAudio,
   };
   const pvcVoiceSamples = Object.assign(updatePvcVoiceSample, {
+    delete: deletePvcVoiceSample,
     separateSpeakers: startSpeakerSeparation,
     speakers: pvcSamplesSpeakers,
     waveform: getPvcVoiceSampleWaveform,
@@ -820,6 +842,15 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     workspace,
   };
+  const deleteV1 = {
+    voices: {
+      pvc: {
+        samples: {
+          delete: deletePvcVoiceSample,
+        },
+      },
+    },
+  };
   const v1 = {
     models,
     voices: v1Voices,
@@ -837,5 +868,6 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     v2,
     get: { docs, v1: { models, voices: v1Voices, user }, v2 },
     post: { v1: postV1 },
+    delete: { v1: deleteV1 },
   });
 }

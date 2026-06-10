@@ -397,6 +397,10 @@ export interface ElevenLabsPvcTrainResponse {
   status: string;
 }
 
+export interface ElevenLabsDeleteVoiceSampleResponse {
+  status: string;
+}
+
 // -- Model response shapes ---------------------------------------------------
 
 export interface ElevenLabsModelLanguage {
@@ -635,6 +639,15 @@ export interface ElevenLabsUpdatePvcVoiceSampleMethod {
   separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
 }
 
+export interface ElevenLabsDeletePvcVoiceSampleMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteVoiceSampleResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsPvcManualVerificationMethod {
   (
     voiceId: string,
@@ -770,6 +783,7 @@ export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace {
 }
 
 export interface ElevenLabsPvcVoiceSamplesNamespace extends ElevenLabsUpdatePvcVoiceSampleMethod {
+  delete: ElevenLabsDeletePvcVoiceSampleMethod;
   speakers: ElevenLabsPvcVoiceSamplesSpeakersNamespace;
   waveform: ElevenLabsPvcVoiceSampleWaveformMethod;
 }
@@ -839,10 +853,25 @@ export interface ElevenLabsGetNamespace {
   v2: ElevenLabsGetV2Namespace;
 }
 
+export interface ElevenLabsDeleteV1Namespace {
+  voices: {
+    pvc: {
+      samples: {
+        delete: ElevenLabsDeletePvcVoiceSampleMethod;
+      };
+    };
+  };
+}
+
+export interface ElevenLabsDeleteNamespace {
+  v1: ElevenLabsDeleteV1Namespace;
+}
+
 export interface ElevenLabsProvider {
   docs: ElevenLabsDocsMethod;
   v1: ElevenLabsV1Namespace;
   v2: ElevenLabsV2Namespace;
   post: ElevenLabsPostNamespace;
   get: ElevenLabsGetNamespace;
+  delete: ElevenLabsDeleteNamespace;
 }

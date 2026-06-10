@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { startServer } from "./server.js";
 import { fillOnePasswordEnv } from "./one-password.js";
+import { loadEnvFile } from "./env-file.js";
 
 export interface ParsedArgs {
   outputDir?: string;
@@ -8,6 +9,7 @@ export interface ParsedArgs {
   paygateSecretFile?: string;
   opVault?: string;
   opServiceToken?: string;
+  envFile?: string;
   help: boolean;
 }
 
@@ -35,10 +37,18 @@ export function parseArgs(argv: string[]): ParsedArgs {
       out.opVault = argv[++i];
     } else if (a.startsWith("--op-vault=")) {
       out.opVault = a.slice(11);
+    } else if (a === "--op-token") {
+      out.opServiceToken = argv[++i];
+    } else if (a.startsWith("--op-token=")) {
+      out.opServiceToken = a.slice(11);
     } else if (a === "--op-service-token") {
       out.opServiceToken = argv[++i];
     } else if (a.startsWith("--op-service-token=")) {
       out.opServiceToken = a.slice(19);
+    } else if (a === "--env-file") {
+      out.envFile = argv[++i];
+    } else if (a.startsWith("--env-file=")) {
+      out.envFile = a.slice(11);
     } else {
       throw new Error(`unknown arg: ${a}`);
     }
@@ -77,17 +87,24 @@ export function resolveOpServiceToken(
   return env[tokenOrRef] ?? tokenOrRef;
 }
 
-export function resolveRequiredOnePasswordOptions(
-  args: Pick<ParsedArgs, "opVault" | "opServiceToken">,
+export function resolveOnePasswordOptions(
+  args: Pick<ParsedArgs, "opVault" | "opServiceToken" | "envFile">,
   env: NodeJS.ProcessEnv = process.env
-): ResolvedOnePasswordOptions {
+): ResolvedOnePasswordOptions | undefined {
   const vault = resolveOpVault(args.opVault, env);
-  if (!vault) {
-    throw new Error("--op-vault is required.");
-  }
   const serviceAccountToken = resolveOpServiceToken(args.opServiceToken, env);
+  if (!vault && !serviceAccountToken) {
+    if (args.envFile) return undefined;
+    throw new Error(
+      "Credentials are required: pass --op-vault and --op-token, " +
+        "or --env-file <path>."
+    );
+  }
+  if (!vault) {
+    throw new Error("--op-vault is required when --op-token is set.");
+  }
   if (!serviceAccountToken) {
-    throw new Error("--op-service-token is required.");
+    throw new Error("--op-token is required when --op-vault is set.");
   }
   return { vault, serviceAccountToken };
 }
@@ -98,19 +115,23 @@ export function printHelp(): void {
       "apicity-mcp — MCP server exposing every @apicity provider endpoint as a tool.",
       "",
       "Usage:",
-      "  apicity-mcp --op-vault <vault> --op-service-token <token|env:VAR>",
+      "  apicity-mcp --op-vault <vault> --op-token <token|env:VAR>",
+      "              [--output-dir <path>] [--providers <csv>]",
+      "  apicity-mcp --env-file <path>",
       "              [--output-dir <path>] [--providers <csv>]",
       "",
       "Options:",
-      "  --op-vault <vault>   Required. Resolve missing provider credentials from 1Password.",
+      "  --op-vault <vault>   Resolve missing provider credentials from 1Password.",
       "                       Looks for op://<vault>/<ENV_VAR>/password.",
       "                       Can also be set with APICITY_OP_VAULT.",
-      "  --op-service-token <token|env:VAR>",
-      "                       Required. Use a 1Password service-account token for",
-      "                       non-interactive credential reads. Literal tokens, env:VAR,",
-      "                       $VAR, or an existing env var name are accepted.",
-      "                       Can also be set with",
-      "                       APICITY_OP_SERVICE_TOKEN.",
+      "  --op-token <token|env:VAR>",
+      "                       1Password service-account token for non-interactive",
+      "                       credential reads. Literal tokens, env:VAR, $VAR, or an",
+      "                       existing env var name are accepted. Can also be set with",
+      "                       APICITY_OP_SERVICE_TOKEN. --op-service-token is an alias.",
+      "  --env-file <path>    Load provider credentials from a dotenv-style file",
+      "                       (KEY=VALUE lines) instead of 1Password. Vars already set",
+      "                       in the environment win; op:// values are skipped.",
       "  --output-dir <path>  Directory to write binary results and downloaded media URLs.",
       "                       Defaults to CLAUDE_PROJECT_DIR, then the current directory.",
       "  --providers <csv>    Comma-separated provider allow-list (e.g. openai,xai,anthropic).",
@@ -135,12 +156,17 @@ export async function runCli(argv = process.argv.slice(2)): Promise<void> {
     return;
   }
 
-  const onePassword = resolveRequiredOnePasswordOptions(args);
-  await fillOnePasswordEnv({
-    vault: onePassword.vault,
-    enabledProviders: args.enabledProviders,
-    serviceAccountToken: onePassword.serviceAccountToken,
-  });
+  if (args.envFile) {
+    loadEnvFile(args.envFile);
+  }
+  const onePassword = resolveOnePasswordOptions(args);
+  if (onePassword) {
+    await fillOnePasswordEnv({
+      vault: onePassword.vault,
+      enabledProviders: args.enabledProviders,
+      serviceAccountToken: onePassword.serviceAccountToken,
+    });
+  }
 
   const paygateSecret = args.paygateSecretFile
     ? readFileSync(args.paygateSecretFile, "utf8").trim()

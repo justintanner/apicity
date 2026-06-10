@@ -4,10 +4,11 @@ export {
   resolveOpServiceToken,
   resolveOpVault,
   resolveOutputDir,
-  resolveRequiredOnePasswordOptions,
+  resolveOnePasswordOptions,
   type ParsedArgs,
   type ResolvedOnePasswordOptions,
 } from "./cli.js";
+export { loadEnvFile, parseEnvFile } from "./env-file.js";
 export {
   fillOnePasswordEnv,
   getProviderEnvVars,

@@ -105,6 +105,24 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/cost](packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)                        | MCP server exposing provider endpoints as tools                    |
 
+## MCP server
+
+Every endpoint as an MCP tool. Install with a 1Password vault holding the
+provider keys, or a plain `.env` file:
+
+```bash
+claude mcp add --scope user apicity -- \
+  npx -y @apicity/mcp-server@latest \
+  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
+
+# or
+claude mcp add --scope user apicity -- \
+  npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+```
+
+Codex: same command after `codex mcp add apicity --`. Details in
+[@apicity/mcp-server](packages/mcp-server).
+
 ## Middleware
 
 Every endpoint is a plain `(req, signal?) => Promise<T>` function, and every

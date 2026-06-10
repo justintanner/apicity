@@ -19,46 +19,54 @@ pnpm add @apicity/mcp-server
 
 ```bash
 # Stdio server. Logs to stderr; stdout is reserved for MCP framing.
-OP_SERVICE_ACCOUNT_TOKEN=ops_... \
-  npx -y @apicity/mcp-server@latest \
-  --op-vault apicity \
-  --op-service-token env:OP_SERVICE_ACCOUNT_TOKEN
+
+# 1Password mode
+npx -y @apicity/mcp-server@latest \
+  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
+
+# .env file mode (no 1Password)
+npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
 ```
 
 Use `@latest` with `npx`; bare `npx -y @apicity/mcp-server` can reuse an older
 cached package that does not understand newer flags.
 
-The CLI requires both `--op-vault` and `--op-service-token`. Put each provider
-secret in a 1Password item named after the env var (`OPENAI_API_KEY`,
-`ANTHROPIC_API_KEY`, etc.) with the value in the `password` field, then pass
-the vault name and a 1Password service-account token. `--op-service-token`
-accepts a literal token, `env:VAR`, `$VAR`, or an existing env var name;
-`APICITY_OP_VAULT` and `APICITY_OP_SERVICE_TOKEN` work instead of the flags.
+Credentials come from one of two modes:
+
+- **1Password** — put each provider secret in a 1Password item named after the
+  env var (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.) with the value in the
+  `password` field, then pass the vault name and a service-account token.
+  `--op-token` accepts a literal token, `env:VAR`, `$VAR`, or an existing env
+  var name; `APICITY_OP_VAULT` and `APICITY_OP_SERVICE_TOKEN` work instead of
+  the flags.
+- **.env file** — a plain dotenv file of `KEY=VALUE` provider credentials.
+  Vars already set in the environment win; `op://` values are skipped.
 
 ### Claude Code
 
 ```bash
-claude mcp add --scope user apicity \
-  -e OP_SERVICE_ACCOUNT_TOKEN="$OP_SERVICE_ACCOUNT_TOKEN" \
-  -- \
+claude mcp add --scope user apicity -- \
   npx -y @apicity/mcp-server@latest \
-  --op-vault apicity \
-  --op-service-token env:OP_SERVICE_ACCOUNT_TOKEN
+  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
-`-e` is required: the MCP subprocess uses Claude's stored server environment,
-and `env:OP_SERVICE_ACCOUNT_TOKEN` tells `apicity-mcp` to read that stored
-value before it starts resolving provider credentials from 1Password.
+Or with a .env file instead of 1Password:
+
+```bash
+claude mcp add --scope user apicity -- \
+  npx -y @apicity/mcp-server@latest --env-file ~/.config/apicity/.env
+```
+
+The shell expands `"$OP_SERVICE_ACCOUNT_TOKEN"` when the `add` command runs,
+so the token is stored as a literal in the client's MCP config — no `-e` env
+plumbing needed.
 
 ### Codex
 
 ```bash
-codex mcp add apicity \
-  --env OP_SERVICE_ACCOUNT_TOKEN="$OP_SERVICE_ACCOUNT_TOKEN" \
-  -- \
+codex mcp add apicity -- \
   npx -y @apicity/mcp-server@latest \
-  --op-vault apicity \
-  --op-service-token env:OP_SERVICE_ACCOUNT_TOKEN
+  --op-vault apicity --op-token "$OP_SERVICE_ACCOUNT_TOKEN"
 ```
 
 Or add it to `~/.codex/config.toml` directly:
@@ -71,12 +79,9 @@ args = [
   "@apicity/mcp-server@latest",
   "--op-vault",
   "apicity",
-  "--op-service-token",
-  "env:OP_SERVICE_ACCOUNT_TOKEN",
+  "--op-token",
+  "ops_...",
 ]
-
-[mcp_servers.apicity.env]
-OP_SERVICE_ACCOUNT_TOKEN = "ops_..."
 ```
 
 ### Claude Desktop
@@ -91,12 +96,9 @@ OP_SERVICE_ACCOUNT_TOKEN = "ops_..."
         "@apicity/mcp-server@latest",
         "--op-vault",
         "apicity",
-        "--op-service-token",
-        "env:OP_SERVICE_ACCOUNT_TOKEN"
-      ],
-      "env": {
-        "OP_SERVICE_ACCOUNT_TOKEN": "ops_..."
-      }
+        "--op-token",
+        "ops_..."
+      ]
     }
   }
 }
@@ -104,14 +106,17 @@ OP_SERVICE_ACCOUNT_TOKEN = "ops_..."
 
 ### Flags
 
-| Flag                           | Description                                                                                                    |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `--op-vault <vault>`           | Required. Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or `APICITY_OP_VAULT`). |
-| `--op-service-token <token>`   | Required. 1Password service-account token, `env:VAR`, `$VAR`, or env var name (or `APICITY_OP_SERVICE_TOKEN`). |
-| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.      |
-| `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                             |
-| `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)). |
-| `--help`                       | Print usage.                                                                                                   |
+One of `--op-vault` + `--op-token`, or `--env-file`, is required.
+
+| Flag                           | Description                                                                                                                            |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `--op-vault <vault>`           | Resolve missing provider credentials from `op://<vault>/<ENV_VAR>/password` (or `APICITY_OP_VAULT`).                                   |
+| `--op-token <token>`           | 1Password service-account token, `env:VAR`, `$VAR`, or env var name (or `APICITY_OP_SERVICE_TOKEN`). `--op-service-token` is an alias. |
+| `--env-file <path>`            | Load provider credentials from a dotenv-style file instead of 1Password. Set env vars win; `op://` values skip.                        |
+| `--output-dir <path>`          | Override where binary results and downloaded media URLs land. Defaults to `CLAUDE_PROJECT_DIR`, then cwd.                              |
+| `--providers <csv>`            | Allow-list of providers (default: every one with its env var set).                                                                     |
+| `--paygate-secret-file <path>` | File holding the shared HMAC secret used to verify paid-endpoint OTPs (see [Paid endpoints](#paid-endpoints)).                         |
+| `--help`                       | Print usage.                                                                                                                           |
 
 ### Credentials
 
@@ -138,11 +143,13 @@ OP_SERVICE_ACCOUNT_TOKEN = "ops_..."
 | `telegram`   | `TELEGRAM_BOT_KEY`                                        |
 | `free`       | _(none — public APIs)_                                    |
 
-Before the server starts, the CLI lists the vault once and resolves existing
-provider secrets in one batch, with `OP_SERVICE_ACCOUNT_TOKEN` scoped to the
-child `op` process. Provider env vars already set are left untouched. With
-`--providers`, a missing requested secret is a startup error; without it,
-missing vault items are skipped.
+In 1Password mode, the CLI lists the vault once before the server starts and
+resolves existing provider secrets in one batch, with
+`OP_SERVICE_ACCOUNT_TOKEN` scoped to the child `op` process. Provider env vars
+already set are left untouched. With `--providers`, a missing requested secret
+is a startup error; without it, missing vault items are skipped. With
+`--env-file`, 1Password is skipped entirely (unless the op flags are also
+given, in which case 1Password fills whatever the file left missing).
 
 ## Tool naming
 

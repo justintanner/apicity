@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   parseArgs,
+  resolveOnePasswordOptions,
   resolveOpServiceToken,
   resolveOpVault,
   resolveOutputDir,
-  resolveRequiredOnePasswordOptions,
 } from "../../packages/mcp-server/src/cli";
 import {
   fillOnePasswordEnv,
@@ -55,6 +55,28 @@ describe("apicity-mcp CLI parsing", () => {
       enabledProviders: ["openai", "anthropic"],
       outputDir: "/tmp/out",
       paygateSecretFile: "/tmp/secret",
+    });
+  });
+
+  it("parses --op-token as an alias for --op-service-token", () => {
+    expect(parseArgs(["--op-token", "ops_abc"])).toEqual({
+      help: false,
+      opServiceToken: "ops_abc",
+    });
+    expect(parseArgs(["--op-token=ops_abc"])).toEqual({
+      help: false,
+      opServiceToken: "ops_abc",
+    });
+  });
+
+  it("parses --env-file", () => {
+    expect(parseArgs(["--env-file", "/tmp/apicity.env"])).toEqual({
+      help: false,
+      envFile: "/tmp/apicity.env",
+    });
+    expect(parseArgs(["--env-file=/tmp/apicity.env"])).toEqual({
+      help: false,
+      envFile: "/tmp/apicity.env",
     });
   });
 
@@ -125,20 +147,45 @@ describe("apicity-mcp 1Password options", () => {
     );
   });
 
-  it("requires a vault and service token together", () => {
-    expect(() => resolveRequiredOnePasswordOptions({}, {})).toThrow(
-      "--op-vault is required."
+  it("requires either 1Password options or an env file", () => {
+    expect(() => resolveOnePasswordOptions({}, {})).toThrow(
+      "Credentials are required: pass --op-vault and --op-token, " +
+        "or --env-file <path>."
+    );
+  });
+
+  it("rejects partial 1Password options", () => {
+    expect(() => resolveOnePasswordOptions({ opVault: "Apicity" }, {})).toThrow(
+      "--op-token is required when --op-vault is set."
     );
     expect(() =>
-      resolveRequiredOnePasswordOptions({ opVault: "Apicity" }, {})
-    ).toThrow("--op-service-token is required.");
+      resolveOnePasswordOptions({ opServiceToken: "op-token" }, {})
+    ).toThrow("--op-vault is required when --op-token is set.");
+  });
+
+  it("skips 1Password when only an env file is given", () => {
     expect(
-      resolveRequiredOnePasswordOptions(
+      resolveOnePasswordOptions({ envFile: "/tmp/apicity.env" }, {})
+    ).toBeUndefined();
+  });
+
+  it("resolves complete 1Password options", () => {
+    expect(
+      resolveOnePasswordOptions(
         {},
         {
           APICITY_OP_VAULT: "Apicity",
           APICITY_OP_SERVICE_TOKEN: "op-token",
         }
+      )
+    ).toEqual({
+      vault: "Apicity",
+      serviceAccountToken: "op-token",
+    });
+    expect(
+      resolveOnePasswordOptions(
+        { opVault: "Apicity", opServiceToken: "op-token" },
+        {}
       )
     ).toEqual({
       vault: "Apicity",

@@ -183,7 +183,7 @@ in via factory options (or the MCP server's `--paygate-secret-file`).
 
 OTP tokens are a dependency-free compact envelope:
 
-```
+```text
 <base64url(payloadJson)>.<base64url(HMAC-SHA256(payloadSegment, secret))>
 ```
 

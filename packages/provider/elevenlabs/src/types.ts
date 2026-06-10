@@ -8,6 +8,7 @@ import type {
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
+  ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
 } from "./zod";
 
 export type {
@@ -20,6 +21,7 @@ export type {
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
+  ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -517,7 +519,7 @@ export interface ElevenLabsWorkspaceAnalyticsColumnFilter {
   values: ElevenLabsWorkspaceAnalyticsCellValue[];
 }
 
-export interface ElevenLabsWorkspaceAnalyticsRequestsResponse {
+export interface ElevenLabsWorkspaceAnalyticsQueryResponse {
   columns: string[];
   column_types: ElevenLabsWorkspaceAnalyticsColumnType[];
   rows: ElevenLabsWorkspaceAnalyticsCellValue[][];
@@ -527,6 +529,9 @@ export interface ElevenLabsWorkspaceAnalyticsRequestsResponse {
 export interface ElevenLabsStartSpeakerSeparationResponse {
   status: string;
 }
+
+export type ElevenLabsWorkspaceAnalyticsRequestsResponse =
+  ElevenLabsWorkspaceAnalyticsQueryResponse;
 
 // -- Method interfaces -------------------------------------------------------
 
@@ -637,14 +642,27 @@ export interface ElevenLabsWorkspaceAnalyticsRequestsMethod {
   schema: z.ZodType<ElevenLabsWorkspaceAnalyticsRequestsRequest>;
 }
 
+export interface ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeMethod {
+  (
+    req: ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWorkspaceAnalyticsQueryResponse>;
+  schema: z.ZodType<ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsUserNamespace {
   subscription: ElevenLabsUserSubscriptionMethod;
 }
 
+export interface ElevenLabsWorkspaceAnalyticsQueryNamespace {
+  usageByProductOverTime: ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeMethod;
+}
+
 export interface ElevenLabsWorkspaceAnalyticsNamespace {
   requests: ElevenLabsWorkspaceAnalyticsRequestsMethod;
+  query: ElevenLabsWorkspaceAnalyticsQueryNamespace;
 }
 
 export interface ElevenLabsWorkspaceNamespace {

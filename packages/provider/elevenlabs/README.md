@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-14 endpoints across 9 groups. Each method mirrors an upstream URL path.
+15 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### docs
 
@@ -356,6 +356,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 ### workspace
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.analytics.query.usageByProductOverTime</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/analytics/query/usage-by-product-over-time</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/usage/get-usage-by-product-over-time)
+
+```typescript
+const res = await elevenlabs.v1.workspace.analytics.query.usageByProductOverTime({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.workspace.analytics.requests</code></b></summary>

@@ -17,8 +17,10 @@ import {
   ElevenLabsUserSubscriptionResponse,
   ElevenLabsVoice,
   ElevenLabsVoiceSettings,
+  ElevenLabsWorkspaceAnalyticsQueryResponse,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsRequestsResponse,
+  ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -31,6 +33,7 @@ import {
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
+  ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -566,6 +569,25 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSpeechToTextRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/workspace/analytics/query/usage-by-product-over-time
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/usage/get-usage-by-product-over-time
+  const usageByProductOverTime = Object.assign(
+    async (
+      req: ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsWorkspaceAnalyticsQueryResponse> => {
+      return makeJsonRequest<ElevenLabsWorkspaceAnalyticsQueryResponse>(
+        "POST",
+        "/v1/workspace/analytics/query/usage-by-product-over-time",
+        req,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema,
+    }
+  );
+
   // GET https://api.elevenlabs.io/v1/user/subscription
   // Docs: https://elevenlabs.io/docs/api-reference/user/subscription/get
   const userSubscription = Object.assign(
@@ -622,6 +644,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const workspace = {
     analytics: {
       requests: workspaceAnalyticsRequests,
+      query: {
+        usageByProductOverTime,
+      },
     },
   };
   const v1Voices = Object.assign(getVoice, {

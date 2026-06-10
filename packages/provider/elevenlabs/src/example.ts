@@ -19,6 +19,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt_influence": 0.3
     }
   },
+  "POST v1.workspace.analytics.query.usageByProductOverTime": {
+    "source": "elevenlabs/workspace-usage-by-product-over-time",
+    "payload": {
+      "start_time": 1767225600000,
+      "end_time": 1767312000000,
+      "interval_seconds": 86400,
+      "group_by": [
+        "product_type"
+      ],
+      "time_zone": "UTC"
+    }
+  },
   "POST v1.workspace.analytics.requests": {
     "source": "elevenlabs/workspace-analytics-requests",
     "payload": {

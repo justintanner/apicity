@@ -232,14 +232,43 @@ export type ElevenLabsSpeechToTextRequest = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
-// POST /v1/workspace/analytics/requests
+// Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
+
+const ElevenLabsWorkspaceAnalyticsGroupBySchema = z.enum([
+  "product_type",
+  "model",
+  "voice_id",
+  "user_id",
+  "fiat_currency",
+  "fiat_charge_type",
+  "region",
+  "reporting_workspace_id",
+  "request_source",
+  "resource_id",
+  "subresource_id",
+  "request_queue_type",
+  "voice_multiplier",
+  "hashed_xi_api_key",
+  "billing_group_id",
+]);
+
+const ElevenLabsWorkspaceAnalyticsFilterValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.null(),
+]);
 
 export const ElevenLabsWorkspaceAnalyticsColumnFilterSchema = z.object({
   column: z.string(),
   operation: z.enum(["in", "not_in", "le", "ge", "lt", "gt", "eq", "neq"]),
-  values: z.array(z.union([z.string(), z.number(), z.boolean(), z.null()])),
+  values: z.array(ElevenLabsWorkspaceAnalyticsFilterValueSchema),
 });
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/analytics/requests
+// ---------------------------------------------------------------------------
 
 export const ElevenLabsWorkspaceAnalyticsRequestsRequestSchema = z
   .object({
@@ -265,4 +294,28 @@ export const ElevenLabsWorkspaceAnalyticsRequestsRequestSchema = z
 
 export type ElevenLabsWorkspaceAnalyticsRequestsRequest = z.infer<
   typeof ElevenLabsWorkspaceAnalyticsRequestsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/analytics/query/usage-by-product-over-time
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema =
+  z.object({
+    start_time: z.number().int().min(1577836800000),
+    end_time: z.number().int().min(1577836800000),
+    interval_seconds: z.number().int().min(1).optional(),
+    group_by: z
+      .array(ElevenLabsWorkspaceAnalyticsGroupBySchema)
+      .nullable()
+      .optional(),
+    filters: z
+      .array(ElevenLabsWorkspaceAnalyticsColumnFilterSchema)
+      .nullable()
+      .optional(),
+    time_zone: z.string().optional(),
+  });
+
+export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest = z.infer<
+  typeof ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema
 >;

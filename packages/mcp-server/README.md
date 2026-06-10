@@ -73,28 +73,28 @@ credentials from 1Password.
 
 ### Credentials
 
-| Provider     | Env var                                     |
-| ------------ | ------------------------------------------- |
-| `openai`     | `OPENAI_API_KEY`                            |
-| `xai`        | `XAI_API_KEY`                               |
-| `anthropic`  | `ANTHROPIC_API_KEY`                         |
-| `fireworks`  | `FIREWORKS_API_KEY`                         |
-| `fal`        | `FAL_API_KEY`                               |
-| `dolthub`    | `DOLTHUB_API_KEY`                           |
-| `kie`        | `KIE_API_KEY`                               |
-| `kimicoding` | `KIMI_CODING_API_KEY`                       |
-| `alibaba`    | `DASHSCOPE_API_KEY`                         |
-| `binance`    | _(none — public APIs)_                      |
-| `elevenlabs` | `ELEVENLABS_API_KEY`                        |
-| `s3`         | `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY` |
+| Provider     | Env var                                                   |
+| ------------ | --------------------------------------------------------- |
+| `openai`     | `OPENAI_API_KEY`                                          |
+| `xai`        | `XAI_API_KEY`                                             |
+| `anthropic`  | `ANTHROPIC_API_KEY`                                       |
+| `fireworks`  | `FIREWORKS_API_KEY`                                       |
+| `fal`        | `FAL_API_KEY`                                             |
+| `dolthub`    | `DOLTHUB_API_KEY`                                         |
+| `kie`        | `KIE_API_KEY`                                             |
+| `kimicoding` | `KIMI_CODING_API_KEY`                                     |
+| `alibaba`    | `DASHSCOPE_API_KEY`                                       |
+| `binance`    | _(none — public APIs)_                                    |
+| `elevenlabs` | `ELEVENLABS_API_KEY`                                      |
+| `s3`         | `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY`               |
 | `b2`         | `B2_ACCESS_KEY_ID` + `B2_SECRET_ACCESS_KEY` + `B2_REGION` |
-| `google`     | `GOOGLE_API_KEY`                            |
-| `x`          | `X_ACCESS_TOKEN`                            |
-| `ig`         | `IG_ACCESS_TOKEN`                           |
-| `polymarket` | _(none for public data)_                    |
-| `youtube`    | `YOUTUBE_ACCESS_TOKEN`                      |
-| `telegram`   | `TELEGRAM_BOT_KEY`                          |
-| `free`       | _(none — public APIs)_                      |
+| `google`     | `GOOGLE_API_KEY`                                          |
+| `x`          | `X_ACCESS_TOKEN`                                          |
+| `ig`         | `IG_ACCESS_TOKEN`                                         |
+| `polymarket` | _(none for public data)_                                  |
+| `youtube`    | `YOUTUBE_ACCESS_TOKEN`                                    |
+| `telegram`   | `TELEGRAM_BOT_KEY`                                        |
+| `free`       | _(none — public APIs)_                                    |
 
 Before the MCP server starts, the CLI lists the vault once and resolves
 existing provider secrets in one batch using `OP_SERVICE_ACCOUNT_TOKEN` scoped

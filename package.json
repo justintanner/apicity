@@ -58,6 +58,8 @@
     "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free",
     "doc-gen:youtube": "node scripts/doc-gen.mjs youtube",
     "doc-gen:telegram": "node scripts/doc-gen.mjs telegram",
+    "doc-gen:x": "node scripts/doc-gen.mjs x",
+    "doc-gen:meta": "node scripts/doc-gen.mjs meta",
     "clean": "rm -rf packages/provider/*/dist",
     "prelint": "pnpm run build",
     "pretest:run": "pnpm run build",

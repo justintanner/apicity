@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone AI provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/binance`, `@apicity/free-media-upload`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 `@apicity/cost` is a deliberate exception — a cross-provider helper that depends on the per-provider workspace packages to expose each upstream's pre-execution estimate endpoint behind one factory.
+
+`@apicity/mcp-server` (under `packages/mcp-server`, not `packages/provider/`) is an optional MCP server that exposes every provider endpoint as an MCP tool.
 
 ## Package Naming
 
@@ -34,7 +36,7 @@ over raw `vitest` / `op run` invocations.
 # Build / lint / format
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
-pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:free)
+pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
 pnpm run lint                    # Lint (runs build first via prelint)
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
@@ -100,7 +102,18 @@ packages/provider/<name>/
 **fireworks** — Chat, completions, embeddings, rerank, messages, workflows, audio, models, deployments, training
 **alibaba** — Chat (Qwen3), streaming, models
 **binance** — Spot REST public/general endpoints
+**elevenlabs** — Sound effect generation, text-to-speech, voices, user/subscription
+**s3** — S3-compatible object storage (signing, buckets, objects)
+**b2** — Backblaze B2 S3-compatible storage; thin wrapper delegating signing/transport/schemas to `@apicity/s3` (docs-only in `endpoint-docs.tsv`, excluded from the endpoint-walk lint)
+**dolthub** — DoltHub API: SQL execution and Dolt database management
+**polymarket** — Gamma, Data, and CLOB market-data/trading endpoints
+**meta** — Instagram Graph API: posting reels via the public-URL flow (graph.instagram.com)
+**telegram** — Telegram Bot API: send text, photo, video, audio messages
+**x** — X (Twitter) social API for posting content (api.x.com)
+**youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)
+**cost** — Cross-provider USD cost/token estimation (depends on the other workspace packages)
+**mcp-server** — MCP server exposing every provider endpoint as an MCP tool (`packages/mcp-server`)
 
 ### Testing
 

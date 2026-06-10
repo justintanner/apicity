@@ -38,7 +38,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   ],
   binance: ["developers.binance.com"],
   s3: ["docs.aws.amazon.com"],
-  free: [
+  "free-media-upload": [
     "tmpfiles.org",
     "uguu.se",
     "catbox.moe",
@@ -50,7 +50,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   ],
   elevenlabs: ["elevenlabs.io"],
   x: ["docs.x.com"],
-  ig: ["developers.facebook.com"],
+  meta: ["developers.facebook.com"],
   polymarket: ["docs.polymarket.com"],
   youtube: ["developers.google.com", "github.com"],
   telegram: ["core.telegram.org"],

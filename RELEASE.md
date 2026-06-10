@@ -3,7 +3,8 @@
 Apicity ships public `@apicity/*` workspace packages in lockstep — providers
 under `packages/provider/*` plus `packages/mcp-server`. The release workflow
 discovers the package set from package manifests so newly added packages ship
-with the rest. All share one version and one npm dist-tag per release.
+with the rest. All releases use one three-part `X.Y.Z` version and publish to
+the npm `latest` tag.
 
 ## Branch model
 
@@ -15,21 +16,19 @@ with the rest. All share one version and one npm dist-tag per release.
 The release flow is: feature work → green `main` tests and CI →
 fast-forward `stable` → publish.
 
-## Versioning + dist-tags
+## Versioning
 
-Prereleases ship under prerelease dist-tags. Stable releases ship under
-`latest`. Order of stability:
+Use only standard three-part semver versions:
 
 ```
-0.1.0-alpha.N   →  --tag alpha
-0.1.0-beta.N    →  --tag beta
-0.1.0-rc.N      →  --tag next
-0.1.0           →  --tag latest    (first stable)
+0.4.1
+0.5.0
+1.0.0
 ```
 
 Bump in lockstep across all public `@apicity/*` packages. Don't drift one
 package's version without bumping the rest — the formula's `bump-versions`
-step enforces this.
+step enforces this. Do not use suffix identifiers or alternate npm tags.
 
 ## How to release
 
@@ -38,14 +37,13 @@ fresh tracking bead:
 
 ```bash
 # 1. File a release tracking bead
-bd create --title="Release Apicity v0.1.0-alpha.N" --type=task --priority=2
+bd create --title="Release Apicity v0.4.1" --type=task --priority=2
 # → returns na-XXX
 
 # 2. Pour the formula
 bd mol pour mol-apicity-release \
   --var release_bead=na-XXX \
-  --var version=0.1.0-alpha.N \
-  --var dist_tag=alpha
+  --var version=0.4.1
 ```
 
 The formula creates 13 chained beads. An agent (or you, manually) walks them:
@@ -58,13 +56,13 @@ The formula creates 13 chained beads. An agent (or you, manually) walks them:
 5. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
 6. `bump-versions` — write `version` to all package manifests, commit
 7. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
-8. **`publish`** — `pnpm publish --tag <dist_tag>` with `NPM_TOKEN` from the `apicity` 1Password vault
+8. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the `apicity` 1Password vault
 9. `tag-and-push` — `git tag v<version>`, push `stable` + tag
 10. `update-github-release` — create or update the GitHub release page for
     `v<version>` with a flat Summary list of closed bead work since the
     previous release, excluding release workflow noise
 11. `sync-main-release` — fast-forward `main` to the release commit and push it
-12. `smoke-install` — `npm install @apicity/openai@<dist_tag>` in `/tmp` and dynamic-import
+12. `smoke-install` — `npm install @apicity/openai@latest` in `/tmp` and dynamic-import
 13. `close` — close the release bead, `bd remember` the version
 
 ## What the formula does NOT do automatically
@@ -89,8 +87,7 @@ itself or for sanity-checking tarball contents on a feature branch.
 ```bash
 bd mol pour mol-apicity-release \
   --var release_bead=na-XXX \
-  --var version=0.1.0-alpha.999 \
-  --var dist_tag=alpha \
+  --var version=0.4.1 \
   --var dry_run=true
 ```
 
@@ -98,7 +95,7 @@ bd mol pour mol-apicity-release \
 
 `pnpm -r publish` is not atomic. If publish fails partway (network blip,
 expired OTP), some packages may already be live. npm rejects re-publishing
-the same version, so simply retrying `pnpm publish --tag <dist_tag>` is
+the same version, so simply retrying `pnpm publish --tag latest` is
 safe — it'll skip the already-published packages and try the rest.
 
 If a published version is broken, `npm deprecate @apicity/<pkg>@<version>

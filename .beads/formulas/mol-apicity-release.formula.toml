@@ -12,8 +12,7 @@ current `origin/main` passes local tests, the local CI mirror, and GitHub CI.
 The formula publishes every public @apicity/* workspace package in one go:
 providers under packages/provider/* plus packages/mcp-server. The package set
 is discovered from package manifests so newly added packages ship with the
-rest. All ship under one version and one dist-tag (alpha / beta / next /
-latest).
+rest. All ship under one three-part version and the npm `latest` tag.
 
 The `publish` step uses the `NPM_TOKEN` item in the `apicity` 1Password vault
 (`op://apicity/NPM_TOKEN/password`) through a temporary npm user config. The
@@ -23,8 +22,7 @@ token must have publish access for the `@apicity` scope.
 
 | Variable     | Source | Default | Description                                    |
 |--------------|--------|---------|------------------------------------------------|
-| version      | caller | —       | Semver to publish, e.g. 0.1.0-alpha.1          |
-| dist_tag     | caller | alpha   | npm dist-tag (alpha / beta / next / latest)    |
+| version      | caller | —       | Three-part semver to publish, e.g. 0.4.1       |
 | dry_run      | caller | false   | If "true", stop after publish-dry-run          |
 | release_bead | caller | —       | Tracking bead this release closes              |
 """
@@ -33,12 +31,8 @@ version = 1
 
 [vars]
 [vars.version]
-description = "Semver string to publish, e.g. 0.1.0-alpha.1. Must be a valid pre-release identifier when dist_tag != latest."
+description = "Three-part semver string to publish, e.g. 0.4.1."
 required = true
-
-[vars.dist_tag]
-description = "npm dist-tag for this release (alpha / beta / next / latest). Use alpha for pre-1.0."
-default = "alpha"
 
 [vars.dry_run]
 description = 'If "true", stop after publish-dry-run; do not run real publish or git push.'
@@ -69,7 +63,7 @@ cat /Users/jwt/apicity/RELEASE.md   # release process doc (if present)
 ```bash
 git fetch --all --prune
 # bd commands auto-stage .beads/issues.jsonl — commit any pending bead delta first:
-git diff --quiet --cached .beads/issues.jsonl || git commit -m "chore(beads): pre-release sync" -- .beads/issues.jsonl
+git diff --quiet --cached .beads/issues.jsonl || git commit -m "chore(beads): release sync" -- .beads/issues.jsonl
 git status --porcelain   # MUST be empty
 ```
 
@@ -82,9 +76,21 @@ You are about to publish every public `@apicity/*` workspace package to the
 public npm registry. Once `latest`-tagged versions are out, they cannot be
 unpublished after 72h. Read the values:
 
-  - version  = {{version}}
-  - dist_tag = {{dist_tag}}
-  - dry_run  = {{dry_run}}
+  - version = {{version}}
+  - npm tag = latest
+  - dry_run = {{dry_run}}
+
+Validate the version before continuing:
+
+```bash
+node -e '
+const version = process.argv[1];
+if (!/^[0-9]+\\.[0-9]+\\.[0-9]+$/.test(version)) {
+  console.error(`Release version must be X.Y.Z, got ${version}`);
+  process.exit(1);
+}
+' "{{version}}"
+```
 
 **Exit criteria:** Working tree clean, vars confirmed, release bead read."""
 
@@ -167,9 +173,8 @@ git merge --ff-only origin/main
 ```
 
 **If `merge --ff-only` fails:** `stable` has diverged from `main`. STOP. This
-is a human decision — either rebase `stable` onto `main` (rewrites stable
-history; usually fine for an alpha) or cherry-pick the missing commits. Mail
-Witness with the divergence summary; do not improvise.
+is a human decision — either rebase `stable` onto `main` or cherry-pick the
+missing commits. Mail Witness with the divergence summary; do not improvise.
 
 **Exit criteria:** Local `stable` is at `origin/main` HEAD."""
 
@@ -318,7 +323,7 @@ Preview every tarball before sending real bytes. This catches:
   - mcp-server's `bin.js` not present or missing shebang
 
 ```bash
-pnpm -r --filter "@apicity/*" publish --dry-run --tag {{dist_tag}} --no-git-checks 2>&1 | tee /tmp/apicity-dry-run.log
+pnpm -r --filter "@apicity/*" publish --dry-run --tag latest --no-git-checks 2>&1 | tee /tmp/apicity-dry-run.log
 ```
 
 **Sanity-check the log manually:**
@@ -367,7 +372,7 @@ If `op read` or `npm whoami` errors, STOP. Fix 1Password access or the
 
 **2. Publish all public `@apicity/*` packages:**
 ```bash
-NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag {{dist_tag}} --no-git-checks
+NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag latest --no-git-checks
 ```
 
 `--no-git-checks` is required because we're publishing from a release commit
@@ -376,7 +381,7 @@ next).
 
 **3. Verify on the registry:**
 ```bash
-npm view @apicity/openai dist-tags    # expect {{dist_tag}}: {{version}}
+npm view @apicity/openai dist-tags    # expect latest: {{version}}
 npm view @apicity/mcp-server dist-tags
 ```
 
@@ -386,7 +391,7 @@ packages that didn't get through with the same `NPM_CONFIG_USERCONFIG`
 environment. npm rejects re-publishing the same version, so it's safe to retry
 the whole filter.
 
-**Exit criteria:** Every public `@apicity/*` package is visible at `{{version}}` under `{{dist_tag}}`."""
+**Exit criteria:** Every public `@apicity/*` package is visible at `{{version}}` under `latest`."""
 
 [[steps]]
 id = "tag-and-push"
@@ -396,7 +401,7 @@ description = """
 Annotate the release commit and propagate to the remote.
 
 ```bash
-git tag -a v{{version}} -m "Release Apicity v{{version}} ({{dist_tag}})"
+git tag -a v{{version}} -m "Release Apicity v{{version}}"
 git push origin stable
 git push origin v{{version}}
 ```
@@ -427,7 +432,6 @@ const fs = require("fs");
 const { execFileSync } = require("child_process");
 
 const version = "{{version}}";
-const distTag = "{{dist_tag}}";
 const releaseBead = "{{release_bead}}";
 const currentTag = `v${version}`;
 
@@ -696,27 +700,15 @@ Work`, `What's Changed`, `Release Maintenance`, or type grouping headings.
 **3. Create or update the release page:**
 ```bash
 if gh release view "v{{version}}" >/dev/null 2>&1; then
-  edit_flags=(--title "v{{version}}" --notes-file "$notes")
-  if [ "{{dist_tag}}" = "latest" ]; then
-    edit_flags+=(--latest)
-  else
-    edit_flags+=(--prerelease --latest=false)
-  fi
-  gh release edit "v{{version}}" "${edit_flags[@]}"
+  gh release edit "v{{version}}" --title "v{{version}}" --notes-file "$notes" --latest
 else
-  flags=(--verify-tag --title "v{{version}}" --notes-file "$notes")
-  if [ "{{dist_tag}}" = "latest" ]; then
-    flags+=(--latest)
-  else
-    flags+=(--prerelease --latest=false)
-  fi
-  gh release create "v{{version}}" "${flags[@]}"
+  gh release create "v{{version}}" --verify-tag --title "v{{version}}" --notes-file "$notes" --latest
 fi
 gh release view "v{{version}}"
 ```
 
 **Exit criteria:** GitHub release page for `v{{version}}` exists, has current
-bead-based notes, and is marked prerelease unless `dist_tag` is `latest`.'''
+bead-based notes, and is marked as the latest release.'''
 
 [[steps]]
 id = "sync-main-release"
@@ -753,7 +745,7 @@ artifact and the entrypoint loads.
 SMOKE=$(mktemp -d)
 cd "$SMOKE"
 npm init -y >/dev/null
-npm install @apicity/openai@{{dist_tag}}
+npm install @apicity/openai@latest
 node -e 'import("@apicity/openai").then(m => console.log("✓ exports:", Object.keys(m).slice(0, 5)))'
 cd - >/dev/null
 rm -rf "$SMOKE"
@@ -773,9 +765,9 @@ description = """
 Record the release in beads memory and close the tracking bead.
 
 ```bash
-bd close {{release_bead}} --reason "Published Apicity v{{version}} on dist-tag {{dist_tag}}; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
+bd close {{release_bead}} --reason "Published Apicity v{{version}} on npm latest; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
 bd remember --key apicity-last-release \
-  "version={{version}} tag=v{{version}} dist_tag={{dist_tag}} release_bead={{release_bead}} released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  "version={{version}} tag=v{{version}} npm_tag=latest release_bead={{release_bead}} released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ```
 
 **Drain:**

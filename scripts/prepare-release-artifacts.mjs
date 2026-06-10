@@ -171,10 +171,10 @@ if (!fs.existsSync(rootChangelogPath)) {
     "- Integration-test harness with Polly.js record/replay.",
     "- Endpoint documentation with upstream docs links.",
     "",
-    "## 0.1.0-alpha.0 - 2026-05-09",
+    "## 0.1.0 - 2026-05-16",
     "",
     "### Added",
-    "- First alpha release of the @apicity/* monorepo.",
+    "- First stable release of the @apicity/* monorepo.",
     "",
   ];
   fs.writeFileSync(rootChangelogPath, rootLines.join("\n"));

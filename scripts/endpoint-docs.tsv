@@ -216,6 +216,7 @@ elevenlabs	v1.voices.pvc.captcha	POST	https://api.elevenlabs.io/v1/voices/pvc/{v
 elevenlabs	v1.voices.pvc.captcha.get	GET	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha	https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha
 elevenlabs	v1.voices.pvc.samples	POST	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}	https://elevenlabs.io/docs/api-reference/voices/pvc/samples/update
 elevenlabs	v1.voices.pvc.samples.waveform	GET	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/waveform	https://elevenlabs.io/docs/api-reference/voices/pvc/samples/get-waveform
+elevenlabs	v1.voices.pvc.verification	POST	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/verification	https://elevenlabs.io/docs/api-reference/voices/pvc/verification/request
 elevenlabs	v1.voices.settings	GET	https://api.elevenlabs.io/v1/voices/{voiceId}/settings	https://elevenlabs.io/docs/api-reference/voices/get-settings
 elevenlabs	v1.voices.pvc.samples.separateSpeakers	POST	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/separate-speakers	https://elevenlabs.io/docs/api-reference/voices/pvc/samples/separate-speakers
 elevenlabs	v1.voices.pvc.samples.speakers.audio	GET	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/speakers/{speakerId}/audio	https://elevenlabs.io/docs/api-reference/voices/pvc/samples/get-separated-speaker-audio

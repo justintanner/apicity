@@ -350,3 +350,16 @@ export const ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema =
 export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest = z.infer<
   typeof ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /v1/voices/pvc/:voice_id/verification
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsPvcManualVerificationRequestSchema = z.object({
+  files: z.array(z.custom<Blob>((value) => value instanceof Blob)).min(1),
+  extra_text: z.string().nullable().optional(),
+});
+
+export type ElevenLabsPvcManualVerificationRequest = z.infer<
+  typeof ElevenLabsPvcManualVerificationRequestSchema
+>;

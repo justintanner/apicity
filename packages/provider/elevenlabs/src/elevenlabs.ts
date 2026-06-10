@@ -10,6 +10,8 @@ import {
   ElevenLabsCreatePvcVoiceRequest,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcVoiceCaptchaResponse,
+  ElevenLabsPvcManualVerificationRequest,
+  ElevenLabsPvcManualVerificationResponse,
   ElevenLabsPvcVoiceSampleWaveformResponse,
   ElevenLabsSpeakerAudioResponse,
   ElevenLabsSoundGenerationRequest,
@@ -35,6 +37,7 @@ import {
   ElevenLabsGetVoiceRequestSchema,
   ElevenLabsListVoicesRequestSchema,
   ElevenLabsPvcVoiceCaptchaRequestSchema,
+  ElevenLabsPvcManualVerificationRequestSchema,
   ElevenLabsSoundGenerationRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
@@ -677,6 +680,30 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   );
 
+  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/verification
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/verification/request
+  const pvcManualVerification = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsPvcManualVerificationRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPvcManualVerificationResponse> => {
+      const form = new FormData();
+      for (const file of req.files) {
+        form.append("files", file);
+      }
+      appendFormField(form, "extra_text", req.extra_text);
+
+      return makeMultipartJsonRequest<ElevenLabsPvcManualVerificationResponse>(
+        `/v1/voices/pvc/${encodeURIComponent(voiceId)}/verification`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsPvcManualVerificationRequestSchema }
+  );
+
   // GET https://api.elevenlabs.io/v1/user/subscription
   // Docs: https://elevenlabs.io/docs/api-reference/user/subscription/get
   const userSubscription = Object.assign(
@@ -738,10 +765,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const pvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: pvcVoiceSamples,
+    verification: pvcManualVerification,
   });
   const postPvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: postPvcVoiceSamples,
+    verification: pvcManualVerification,
   });
   const workspace = {
     analytics: {

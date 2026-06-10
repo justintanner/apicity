@@ -20,13 +20,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST v1.voices.pvc": {
-    "source": "elevenlabs/voice-pvc-update",
+    "source": "elevenlabs/pvc-voice-create",
     "payload": {
-      "name": "Apicity PVC Voice",
+      "name": "Apicity PVC route test",
       "language": "en",
       "description": null,
       "labels": {
-        "accent": "neutral"
+        "language": "en",
+        "accent": "en-US"
       }
     }
   },

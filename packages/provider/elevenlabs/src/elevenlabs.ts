@@ -23,8 +23,6 @@ import {
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
   ElevenLabsStartSpeakerSeparationResponse,
-  ElevenLabsUpdatePvcVoiceRequest,
-  ElevenLabsUpdatePvcVoiceResponse,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleResponse,
   ElevenLabsUserSubscriptionResponse,
@@ -48,7 +46,6 @@ import {
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
-  ElevenLabsUpdatePvcVoiceRequestSchema,
   ElevenLabsUpdatePvcVoiceSampleRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema,
@@ -469,47 +466,6 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsPvcVoiceCaptchaRequestSchema }
   );
 
-  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}
-  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/update
-  const updatePvcVoice = Object.assign(
-    async (
-      voiceId: string,
-      req: ElevenLabsUpdatePvcVoiceRequest = {},
-      signal?: AbortSignal
-    ): Promise<ElevenLabsUpdatePvcVoiceResponse> => {
-      return makeJsonRequest<ElevenLabsUpdatePvcVoiceResponse>(
-        "POST",
-        `/v1/voices/pvc/${encodeURIComponent(voiceId)}`,
-        req,
-        signal
-      );
-    },
-    { schema: ElevenLabsUpdatePvcVoiceRequestSchema }
-  );
-
-  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}
-  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/update
-  const pvcVoice = Object.assign(
-    async (
-      reqOrVoiceId: ElevenLabsCreatePvcVoiceRequest | string,
-      reqOrSignal?: ElevenLabsUpdatePvcVoiceRequest | AbortSignal,
-      signal?: AbortSignal
-    ): Promise<
-      ElevenLabsCreatePvcVoiceResponse | ElevenLabsUpdatePvcVoiceResponse
-    > => {
-      if (typeof reqOrVoiceId === "string") {
-        return updatePvcVoice(
-          reqOrVoiceId,
-          reqOrSignal as ElevenLabsUpdatePvcVoiceRequest | undefined,
-          signal
-        );
-      }
-
-      return createPvcVoice(reqOrVoiceId, reqOrSignal as AbortSignal);
-    },
-    { schema: ElevenLabsCreatePvcVoiceRequestSchema }
-  );
-
   // GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha
   const getPvcVoiceCaptcha = Object.assign(
@@ -849,13 +805,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const pvcVoiceCaptchaWithGet = Object.assign(pvcVoiceCaptcha, {
     get: getPvcVoiceCaptcha,
   });
-  const pvcVoices = Object.assign(pvcVoice, {
+  const pvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: pvcVoiceSamples,
     train: pvcTrain,
     verification: pvcManualVerification,
   });
-  const postPvcVoices = Object.assign(pvcVoice, {
+  const postPvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: postPvcVoiceSamples,
     train: pvcTrain,

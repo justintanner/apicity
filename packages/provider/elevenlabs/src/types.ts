@@ -10,7 +10,6 @@ import type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
-  ElevenLabsUpdatePvcVoiceRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -28,7 +27,6 @@ export type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
-  ElevenLabsUpdatePvcVoiceRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -386,10 +384,6 @@ export interface ElevenLabsSpeakerAudioResponse {
   duration_secs: number;
 }
 
-export interface ElevenLabsUpdatePvcVoiceResponse {
-  voice_id: string;
-}
-
 export interface ElevenLabsUpdatePvcVoiceSampleResponse {
   voice_id: string;
 }
@@ -634,15 +628,6 @@ export interface ElevenLabsCreatePvcVoiceMethod {
   schema: z.ZodType<ElevenLabsCreatePvcVoiceRequest>;
 }
 
-export interface ElevenLabsUpdatePvcVoiceMethod {
-  (
-    voiceId: string,
-    req?: ElevenLabsUpdatePvcVoiceRequest,
-    signal?: AbortSignal
-  ): Promise<ElevenLabsUpdatePvcVoiceResponse>;
-  schema: z.ZodType<ElevenLabsUpdatePvcVoiceRequest>;
-}
-
 export interface ElevenLabsUpdatePvcVoiceSampleMethod {
   (
     voiceId: string,
@@ -744,11 +729,6 @@ export interface ElevenLabsPvcVoiceNamespace {
     signal?: AbortSignal
   ): Promise<ElevenLabsCreatePvcVoiceResponse>;
   schema: z.ZodType<ElevenLabsCreatePvcVoiceRequest>;
-  (
-    voiceId: string,
-    req?: ElevenLabsUpdatePvcVoiceRequest,
-    signal?: AbortSignal
-  ): Promise<ElevenLabsUpdatePvcVoiceResponse>;
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPvcVoiceSamplesNamespace;
   train: ElevenLabsPvcTrainMethod;
@@ -844,11 +824,6 @@ export interface ElevenLabsPostV1VoicesPvcNamespace {
     signal?: AbortSignal
   ): Promise<ElevenLabsCreatePvcVoiceResponse>;
   schema: z.ZodType<ElevenLabsCreatePvcVoiceRequest>;
-  (
-    voiceId: string,
-    req?: ElevenLabsUpdatePvcVoiceRequest,
-    signal?: AbortSignal
-  ): Promise<ElevenLabsUpdatePvcVoiceResponse>;
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPostV1VoicesPvcSamplesNamespace;
   train: ElevenLabsPvcTrainMethod;

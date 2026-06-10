@@ -218,6 +218,20 @@ export function createClobProvider(
     return `?next_cursor=${encodeURIComponent(params.next_cursor)}`;
   }
 
+  // The CLOB `/balance-allowance` endpoints resolve *which* wallet's balance to
+  // return from `signature_type`: omit it and the server assumes type 0 (the EOA
+  // signer in POLY_ADDRESS), which for proxy/funder setups (types 1/2/3) reads an
+  // empty signer instead of the funded proxy. The configured `clobSignatureType`
+  // is the right default (mirrors orders, which already use it); an explicit
+  // caller value still wins.
+  function withDefaultSignatureType(
+    params: PolymarketClobBalanceAllowanceQuery
+  ): PolymarketClobBalanceAllowanceQuery {
+    if (params?.signature_type !== undefined) return params;
+    if (opts.clobSignatureType === undefined) return params;
+    return { ...params, signature_type: opts.clobSignatureType };
+  }
+
   function buildQuery(params?: Record<string, unknown>): string {
     if (!params) return "";
     const usp = new URLSearchParams();
@@ -617,7 +631,7 @@ export function createClobProvider(
     params: PolymarketClobBalanceAllowanceQuery,
     signal?: AbortSignal
   ): Promise<PolymarketClobBalanceAllowanceResponse> {
-    const query = buildQuery(params);
+    const query = buildQuery(withDefaultSignatureType(params));
     return makeAuthenticatedRequest<PolymarketClobBalanceAllowanceResponse>(
       "GET",
       `${baseURL}/balance-allowance${query}`,
@@ -632,7 +646,7 @@ export function createClobProvider(
     params: PolymarketClobBalanceAllowanceQuery,
     signal?: AbortSignal
   ): Promise<PolymarketClobBalanceAllowanceResponse> {
-    const query = buildQuery(params);
+    const query = buildQuery(withDefaultSignatureType(params));
     return makeAuthenticatedRequest<PolymarketClobBalanceAllowanceResponse>(
       "GET",
       `${baseURL}/balance-allowance/update${query}`,
@@ -651,7 +665,7 @@ export function createClobProvider(
     params: PolymarketClobBalanceAllowanceQuery,
     signal?: AbortSignal
   ): Promise<Record<string, unknown>> {
-    const query = buildQuery(params);
+    const query = buildQuery(withDefaultSignatureType(params));
     return makeAuthenticatedRequest<Record<string, unknown>>(
       "PUT",
       `${baseURL}/balance-allowance${query}`,

@@ -7,6 +7,8 @@ export type {
   ElevenLabsGetVoiceRequest,
   ElevenLabsGetVoiceMethod,
   ElevenLabsGetVoiceSettingsMethod,
+  ElevenLabsGetPvcVoiceCaptchaResponse,
+  ElevenLabsGetPvcVoiceCaptchaMethod,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcVoiceCaptchaResponse,
   ElevenLabsPvcVoiceCaptchaMethod,

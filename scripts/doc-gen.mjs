@@ -122,6 +122,12 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "elevenlabs" && dotPath === "v1.voices.pvc.captcha") {
     return `const res = await ${call}("voice_id", { recording });`;
   }
+  if (
+    providerName === "elevenlabs" &&
+    dotPath === "v1.voices.pvc.captcha.get"
+  ) {
+    return `const res = await ${call}("voice_id");`;
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.models") {
     return `const res = await ${call}();`;
   }
@@ -135,7 +141,18 @@ function formatUsageSnippet(providerName, dotPath) {
 }
 
 function displayDotPath(providerName, ep) {
-  if (providerName !== "kie") return ep.dotPath;
+  if (providerName !== "kie") {
+    if (
+      providerName === "elevenlabs" &&
+      ep.fullDotPath &&
+      ep.dotPath &&
+      ep.fullDotPath.startsWith(`${ep.dotPath}.`)
+    ) {
+      const suffix = ep.fullDotPath.slice(ep.dotPath.length + 1);
+      if (REST_ALIAS_SUFFIXES.has(suffix)) return ep.fullDotPath;
+    }
+    return ep.dotPath;
+  }
 
   if (ep.file.endsWith("/suno.ts")) return `suno.${ep.fullDotPath}`;
   if (ep.file.endsWith("/veo.ts")) return `veo.${ep.fullDotPath}`;
@@ -143,6 +160,18 @@ function displayDotPath(providerName, ep) {
   if (ep.file.endsWith("/claude.ts")) return ep.fullDotPath;
   return ep.fullDotPath ?? ep.dotPath;
 }
+
+const REST_ALIAS_SUFFIXES = new Set([
+  "list",
+  "retrieve",
+  "create",
+  "del",
+  "delete",
+  "update",
+  "cancel",
+  "get",
+  "results",
+]);
 
 function renderEndpointDetails(ep, providerName, docsUrl) {
   const method = ep.method ?? "";
@@ -207,8 +236,10 @@ function renderApiReference(providerName, endpoints) {
   for (const [group, list] of groups) {
     sections.push(`### ${group}`, "");
     for (const ep of list) {
-      const key = `${ep.provider}\t${ep.dotPath}\t${ep.method ?? "?"}`;
-      const docsUrl = docs.get(key) ?? "";
+      const displayPath = displayDotPath(providerName, ep);
+      const displayKey = `${ep.provider}\t${displayPath}\t${ep.method ?? "?"}`;
+      const logicalKey = `${ep.provider}\t${ep.dotPath}\t${ep.method ?? "?"}`;
+      const docsUrl = docs.get(displayKey) ?? docs.get(logicalKey) ?? "";
       sections.push(renderEndpointDetails(ep, providerName, docsUrl));
     }
   }

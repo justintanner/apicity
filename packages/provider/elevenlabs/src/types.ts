@@ -358,6 +358,8 @@ export interface ElevenLabsPvcVoiceCaptchaResponse {
   status: string;
 }
 
+export type ElevenLabsGetPvcVoiceCaptchaResponse = Record<string, unknown>;
+
 // -- Model response shapes ---------------------------------------------------
 
 export interface ElevenLabsModelLanguage {
@@ -591,6 +593,14 @@ export interface ElevenLabsPvcVoiceCaptchaMethod {
     signal?: AbortSignal
   ): Promise<ElevenLabsPvcVoiceCaptchaResponse>;
   schema: z.ZodType<ElevenLabsPvcVoiceCaptchaRequest>;
+  get: ElevenLabsGetPvcVoiceCaptchaMethod;
+}
+
+export interface ElevenLabsGetPvcVoiceCaptchaMethod {
+  (
+    voiceId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetPvcVoiceCaptchaResponse>;
 }
 
 export interface ElevenLabsPvcVoiceNamespace {

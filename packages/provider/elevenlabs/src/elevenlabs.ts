@@ -1,5 +1,6 @@
 import {
   ElevenLabsDocsRedirectResponse,
+  ElevenLabsGetPvcVoiceCaptchaResponse,
   ElevenLabsGetVoiceRequest,
   ElevenLabsListModelsResponse,
   ElevenLabsListVoicesRequest,
@@ -429,6 +430,23 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsPvcVoiceCaptchaRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha
+  const getPvcVoiceCaptcha = Object.assign(
+    async (
+      voiceId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetPvcVoiceCaptchaResponse> => {
+      return makeJsonRequest<ElevenLabsGetPvcVoiceCaptchaResponse>(
+        "GET",
+        `/v1/voices/pvc/${encodeURIComponent(voiceId)}/captcha`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v2/voices
   // Docs: https://elevenlabs.io/docs/api-reference/voices/search
   const voices = Object.assign(
@@ -572,7 +590,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     subscription: userSubscription,
   };
   const pvcVoices = {
-    captcha: pvcVoiceCaptcha,
+    captcha: Object.assign(pvcVoiceCaptcha, {
+      get: getPvcVoiceCaptcha,
+    }),
   };
   const workspace = {
     analytics: {

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import {
   createElevenLabs,
   ElevenLabsError,
@@ -9,17 +9,18 @@ import {
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
 describe("elevenlabs v1.voices.pvc.captcha", () => {
-  let ctx: PollyContext;
-
-  beforeEach(() => {
-    ctx = setupPolly("elevenlabs/pvc-voice-captcha");
-  });
+  let ctx: PollyContext | undefined;
 
   afterEach(async () => {
-    await teardownPolly(ctx);
+    if (ctx) {
+      await teardownPolly(ctx);
+      ctx = undefined;
+    }
   });
 
   it("submits a recording for PVC captcha verification", async () => {
+    ctx = setupPolly("elevenlabs/pvc-voice-captcha");
+
     const mp3Path = resolve(__dirname, "../fixtures/tone.mp3");
     const recording = new Blob([readFileSync(mp3Path)], { type: "audio/mp3" });
 
@@ -52,5 +53,24 @@ describe("elevenlabs v1.voices.pvc.captcha", () => {
 
     const response: ElevenLabsPvcVoiceCaptchaResponse = outcome.response;
     expect(response.status).toBe("ok");
+  });
+
+  it("gets PVC captcha challenge metadata", async () => {
+    ctx = setupPolly("elevenlabs/pvc-voice-captcha-get");
+
+    const provider = createElevenLabs({
+      apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
+    });
+
+    expect(provider.get.v1.voices.pvc.captcha.get).toBe(
+      provider.v1.voices.pvc.captcha.get
+    );
+
+    await expect(
+      provider.v1.voices.pvc.captcha.get("apicity-test-nonexistent-pvc-voice")
+    ).rejects.toMatchObject({
+      status: 400,
+      code: "invalid_uid",
+    });
   });
 });

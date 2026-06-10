@@ -6,16 +6,28 @@
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](package.json)
 [![Minimal Dependencies](https://img.shields.io/badge/provider_deps-zod_only-blue)](package.json)
 
-A thin wrapper for many APIs covering AI image generation, video generation, all major social media APIs, and more.
+A thin wrapper for many APIs: AI image and video generation, all major social
+media APIs, and more.
 
 ## Features
 
-- **OTP pay gate — no bypass.** Paid endpoints (media generation, etc.) only fire with a human- or code-client-minted, single-use OTP bound to the exact request. An autonomous agent driving the API can't self-approve and can't run up your bill. [Details ↓](#paid-endpoints-otp-pay-gate)
-- **Pre-flight cost estimates.** Pure, local USD estimates for calls to the billed providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie, elevenlabs) — no keys, no network.
-- **Schemas for agents.** Every POST endpoint ships a zod request schema (`endpoint.schema`), so hosts and agents can catch a hallucinated call locally instead of at the API — the MCP server exposes it as the tool's input schema.
+- **OTP pay gate — no bypass.** Paid endpoints (media generation, etc.) fire
+  only with a human- or code-client-minted, single-use OTP bound to the exact
+  request. An autonomous agent can't self-approve or run up your bill.
+  [Details ↓](#paid-endpoints-otp-pay-gate)
+- **Pre-flight cost estimates.** Pure local USD estimates for the billed
+  providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie,
+  elevenlabs) — no keys, no network.
+- **Schemas for agents.** Every POST endpoint ships a zod request schema
+  (`endpoint.schema`) — hosts and agents catch a hallucinated call locally
+  instead of at the API; the MCP server uses it as the tool's input schema.
 - **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
-- **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as plain function wrappers.
-- **Minimal provider dependencies.** Each provider depends only on `zod` for its endpoint schemas — plus `viem` in `@apicity/polymarket` (order signing), `@apicity/s3` in `@apicity/b2`, and `@apicity/cost` in `@apicity/kie`/`@apicity/xai` (pay-gate). ESM, strict TypeScript.
+- **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
+  plain function wrappers.
+- **Minimal provider dependencies.** Providers depend only on `zod` — plus
+  `viem` in `@apicity/polymarket` (order signing), `@apicity/s3` in
+  `@apicity/b2`, and `@apicity/cost` in `@apicity/kie`/`@apicity/xai`
+  (pay-gate). ESM, strict TypeScript.
 
 ## Example
 
@@ -26,8 +38,8 @@ single-use OTP the call fails closed — an autonomous caller cannot bypass it.
 import { createKie } from "@apicity/kie";
 import { mintOtp, createCost } from "@apicity/cost";
 
-// The code client holds the pay-gate secret (from your secret manager / config).
-// The autonomous caller never sees it, so it can never self-approve a paid call.
+// The code client holds the pay-gate secret (from your secret manager /
+// config). The autonomous caller never sees it, so it can't self-approve.
 const secret = loadSecret();
 const kie = createKie({
   apiKey: process.env.KIE_API_KEY!,
@@ -44,39 +56,38 @@ const payload = {
   },
 };
 
-// Pure, local cost preview — no keys, no network, sync.
+// Pure local cost preview — no keys, no network, sync.
 const estimate = createCost().estimate({ provider: "kie", payload });
 // estimate.usd === 0.08
 
-// Paid endpoint with no approval → fails closed. No bypass.
+// No OTP → fails closed. No bypass.
 await kie.post.api.v1.jobs.createTask(payload);
 // ❌ throws PayGateError { code: "otp-missing" }
 
-// A human (or the code client) mints a single-use OTP, bound to THIS request.
+// A human (or the code client) mints a single-use OTP bound to THIS request.
 const otp = mintOtp(secret, {
   dotPath: "api.v1.jobs.createTask",
   request: payload,
   ttl: "10m",
 });
 
-// Approved — the generation runs once. Replaying the OTP, or changing any byte
-// of the payload, fails verification.
+// Approved — runs once. Replaying the OTP, or changing any byte of the
+// payload, fails verification.
 const task = await kie.post.api.v1.jobs.createTask(payload, { otp });
 ```
 
-Direct KIE VEO calls are gated separately from `createTask`. For
-`kie.veo.post.api.v1.veo.generate`, mint the OTP with
-`dotPath: "api.v1.veo.generate"`; for
-`kie.veo.post.api.v1.veo.extend`, use `dotPath: "api.v1.veo.extend"`.
+Direct KIE VEO calls are gated separately from `createTask`: for
+`kie.veo.post.api.v1.veo.generate` mint with `dotPath: "api.v1.veo.generate"`,
+for `kie.veo.post.api.v1.veo.extend` use `dotPath: "api.v1.veo.extend"`.
 Upload, status, and helper endpoints are unlisted and remain free.
 
 ## Motivation
 
-Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
+Mitigate the predictable mistakes AI agents make when calling APIs:
 
-- Hallicinating JSON payloads or URLs
-- Calling APIs from weird locations and times
-- Wasting your expensive video and image gen tokens
+- Hallucinated JSON payloads or URLs
+- Calls from weird locations and times
+- Wasted video and image generation tokens
 - And more
 
 ## Packages
@@ -107,13 +118,14 @@ Mitigate the predicatble mistakes that AI Agents make when calls APIs such as:
 ## Middleware
 
 Every endpoint is a plain `(req, signal?) => Promise<T>` function, and every
-package exports generic, function-level wrappers — `withRetry`, `withFallback`,
-and `withRateLimit` — that compose naturally. (`@apicity/kimicoding` also ships
-`withStreamRetry` / `withStreamFallback` for streamed async iterables.)
+package exports `withRetry`, `withFallback`, and `withRateLimit` — generic
+wrappers that compose, or you can pass endpoint functions into your own
+orchestration layer. (`@apicity/kimicoding` also ships `withStreamRetry` /
+`withStreamFallback` for streamed async iterables.)
 
 ### `withRetry` — exponential backoff
 
-Retries transient errors (HTTP 429 and 5xx) with configurable backoff.
+Retries transient errors (HTTP 429 and 5xx) with configurable backoff:
 
 ```ts
 import { createOpenAi, withRetry } from "@apicity/openai";
@@ -130,8 +142,7 @@ const chat = withRetry(openai.v1.chat.completions, {
 
 ### `withFallback` — multi-provider failover
 
-Tries each function in order; the next picks up when one fails. Wrappers return
-the same signature, so they nest:
+Tries each function in order; wrappers keep the same signature, so they nest:
 
 ```ts
 import { createXai, withFallback, withRetry } from "@apicity/xai";
@@ -168,33 +179,34 @@ const limiter = createRateLimiter({ rpm: 60, concurrent: 5 });
 const chat = withRateLimit(openai.v1.chat.completions, limiter);
 ```
 
-Use the wrappers each provider ships, or pass endpoint functions into your own
-orchestration layer.
-
 ## Development
 
 - **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
-- **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`. Integration tests record/replay via Polly.js (no keys needed for replay).
-- **Validate before sending** — every POST endpoint exposes a `.schema`: `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a hallucinated call locally instead of at the API.
+- **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
+  Integration tests record/replay via Polly.js (no keys needed for replay).
+- **Validate before sending** — every POST endpoint exposes a `.schema`:
+  `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
+  hallucinated call locally instead of at the API.
 
 ## Paid endpoints (OTP pay gate)
 
-Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask` and
-direct VEO calls under `kie.veo.post.api.v1.veo.*`) are listed in
+Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`
+and direct VEO calls under `kie.veo.post.api.v1.veo.*`) are listed in
 `PAID_ENDPOINTS` and gated behind a single-use OTP — the flow is the
-[example above](#example). The gate is **fail-closed**: a paid call cannot fire
-unless the provider was built with a pay-gate secret **and** the caller presents
-a valid OTP minted from that same secret. The autonomous caller never sees the
-secret, so it cannot self-approve. Unlisted endpoints are free.
+[example above](#example). The gate is **fail-closed**: a paid call needs both
+a pay-gate secret at provider construction **and** a valid OTP minted from
+that same secret. The autonomous caller never sees the secret, so it cannot
+self-approve. Unlisted endpoints are free.
 
 The OTP is signed with a single shared **HMAC secret** — no key files, no
-environment variables, no cost coupling. It commits to the exact `(provider,
-method, dotPath, requestHash, exp)` tuple: change any byte of the payload and
-verification fails. The `jti` is consumed before dispatch, so a failed network
-call still burns the token — mint a fresh OTP for any retry.
+environment variables, no cost coupling — and commits to the exact
+`(provider, method, dotPath, requestHash, exp)` tuple: change any byte of the
+payload and verification fails. The `jti` is consumed before dispatch, so a
+failed network call still burns the token — mint a fresh OTP for any retry.
 
 Operators (or the code client) mint OTPs with `mintOtp(secret, { dotPath,
-request, ttl })` or the CLI — the secret is read from a file, never an env var:
+request, ttl })` or the CLI — the secret is read from a file, never an env
+var:
 
 ```bash
 apicity-paygate otp mint \
@@ -210,8 +222,8 @@ A blocked call throws `PayGateError` whose `.code` is one of
 `otp-replayed`.
 
 The gate is generic — `xai` and others opt in by adding a `PAID_ENDPOINTS`
-entry. See [@apicity/cost](packages/provider/cost) for the full spec and the MCP
-server's `--paygate-secret-file` wiring.
+entry. See [@apicity/cost](packages/provider/cost) for the full spec and the
+MCP server's `--paygate-secret-file` wiring.
 
 ## License
 

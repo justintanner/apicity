@@ -283,12 +283,12 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 <details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.voices.pvc</code></b></summary>
 
-<code>POST https://api.elevenlabs.io/v1/voices/pvc</code>
+<code>POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}</code>
 
-[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/pvc/create)
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/pvc/update)
 
 ```typescript
-const res = await elevenlabs.v1.voices.pvc({ /* ... */ });
+const res = await elevenlabs.v1.voices.pvc("voice_id", { /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

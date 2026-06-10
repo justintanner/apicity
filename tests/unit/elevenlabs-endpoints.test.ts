@@ -160,6 +160,55 @@ describe("ElevenLabs endpoint wiring", () => {
     expect(provider.get.v1.voices.settings).toBe(provider.v1.voices.settings);
   });
 
+  it("updates PVC voice metadata by voice id", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          voice_id: "voice/123",
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    const result = await provider.v1.voices.pvc("voice/123", {
+      name: "Narrator",
+      language: "en",
+      description: null,
+      labels: {
+        accent: "neutral",
+      },
+    });
+
+    expect(result.voice_id).toBe("voice/123");
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.elevenlabs.io/v1/voices/pvc/voice%2F123");
+    expect(init.method).toBe("POST");
+    expect(init.headers).toEqual({
+      "xi-api-key": "el-test",
+      "Content-Type": "application/json",
+    });
+    expect(JSON.parse(init.body as string)).toEqual({
+      name: "Narrator",
+      language: "en",
+      description: null,
+      labels: {
+        accent: "neutral",
+      },
+    });
+    expect(provider.post.v1.voices.pvc).toBe(provider.v1.voices.pvc);
+    expect(
+      provider.v1.voices.pvc.schema.safeParse({ name: "x".repeat(101) }).success
+    ).toBe(false);
+  });
+
   it("gets separated speaker audio for a PVC sample speaker", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(

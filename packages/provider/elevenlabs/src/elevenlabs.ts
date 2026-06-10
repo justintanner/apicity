@@ -8,6 +8,8 @@ import {
   ElevenLabsListVoicesResponse,
   ElevenLabsOptions,
   ElevenLabsCreatePvcVoiceRequest,
+  ElevenLabsPvcTrainRequest,
+  ElevenLabsPvcTrainResponse,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcVoiceCaptchaResponse,
   ElevenLabsPvcManualVerificationRequest,
@@ -36,6 +38,7 @@ import {
   ElevenLabsCreatePvcVoiceRequestSchema,
   ElevenLabsGetVoiceRequestSchema,
   ElevenLabsListVoicesRequestSchema,
+  ElevenLabsPvcTrainRequestSchema,
   ElevenLabsPvcVoiceCaptchaRequestSchema,
   ElevenLabsPvcManualVerificationRequestSchema,
   ElevenLabsSoundGenerationRequestSchema,
@@ -563,6 +566,24 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/train
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/train
+  const pvcTrain = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsPvcTrainRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPvcTrainResponse> => {
+      return makeJsonRequest<ElevenLabsPvcTrainResponse>(
+        "POST",
+        `/v1/voices/pvc/${encodeURIComponent(voiceId)}/train`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsPvcTrainRequestSchema }
+  );
+
   // GET https://api.elevenlabs.io/v2/voices
   // Docs: https://elevenlabs.io/docs/api-reference/voices/search
   const voices = Object.assign(
@@ -765,11 +786,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const pvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: pvcVoiceSamples,
+    train: pvcTrain,
     verification: pvcManualVerification,
   });
   const postPvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: postPvcVoiceSamples,
+    train: pvcTrain,
     verification: pvcManualVerification,
   });
   const workspace = {

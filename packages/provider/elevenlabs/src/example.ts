@@ -41,6 +41,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "file_name": "apicity-sample.wav"
     }
   },
+  "POST v1.voices.pvc.train": {
+    "source": "elevenlabs/pvc-train",
+    "payload": {
+      "model_id": "eleven_turbo_v2"
+    }
+  },
   "POST v1.workspace.analytics.query.usageByProductOverTime": {
     "source": "elevenlabs/workspace-usage-by-product-over-time",
     "payload": {

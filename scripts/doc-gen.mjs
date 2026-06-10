@@ -146,7 +146,8 @@ function formatUsageSnippet(providerName, dotPath) {
   }
   if (
     providerName === "elevenlabs" &&
-    dotPath === "v1.voices.pvc.verification"
+    (dotPath === "v1.voices.pvc.train" ||
+      dotPath === "v1.voices.pvc.verification")
   ) {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }

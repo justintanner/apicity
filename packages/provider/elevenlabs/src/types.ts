@@ -3,6 +3,7 @@ import type {
   ElevenLabsCreatePvcVoiceRequest,
   ElevenLabsGetVoiceRequest,
   ElevenLabsListVoicesRequest,
+  ElevenLabsPvcTrainRequest,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcManualVerificationRequest,
   ElevenLabsSoundGenerationRequest,
@@ -19,6 +20,7 @@ export type {
   ElevenLabsCreatePvcVoiceRequest,
   ElevenLabsGetVoiceRequest,
   ElevenLabsListVoicesRequest,
+  ElevenLabsPvcTrainRequest,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcManualVerificationRequest,
   ElevenLabsSoundGenerationRequest,
@@ -391,6 +393,10 @@ export interface ElevenLabsPvcVoiceSampleWaveformResponse {
   visual_waveform: number[];
 }
 
+export interface ElevenLabsPvcTrainResponse {
+  status: string;
+}
+
 // -- Model response shapes ---------------------------------------------------
 
 export interface ElevenLabsModelLanguage {
@@ -695,6 +701,15 @@ export interface ElevenLabsPvcVoiceSampleWaveformMethod {
   ): Promise<ElevenLabsPvcVoiceSampleWaveformResponse>;
 }
 
+export interface ElevenLabsPvcTrainMethod {
+  (
+    voiceId: string,
+    req?: ElevenLabsPvcTrainRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPvcTrainResponse>;
+  schema: z.ZodType<ElevenLabsPvcTrainRequest>;
+}
+
 export interface ElevenLabsPvcVoiceNamespace {
   (
     req: ElevenLabsCreatePvcVoiceRequest,
@@ -703,6 +718,7 @@ export interface ElevenLabsPvcVoiceNamespace {
   schema: z.ZodType<ElevenLabsCreatePvcVoiceRequest>;
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPvcVoiceSamplesNamespace;
+  train: ElevenLabsPvcTrainMethod;
   verification: ElevenLabsPvcManualVerificationMethod;
 }
 
@@ -796,6 +812,7 @@ export interface ElevenLabsPostV1VoicesPvcNamespace {
   schema: z.ZodType<ElevenLabsCreatePvcVoiceRequest>;
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPostV1VoicesPvcSamplesNamespace;
+  train: ElevenLabsPvcTrainMethod;
   verification: ElevenLabsPvcManualVerificationMethod;
 }
 

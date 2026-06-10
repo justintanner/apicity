@@ -117,6 +117,18 @@ export type ElevenLabsUpdatePvcVoiceSampleRequest = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/voices/pvc/:voice_id/train
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsPvcTrainRequestSchema = z.object({
+  model_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsPvcTrainRequest = z.infer<
+  typeof ElevenLabsPvcTrainRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/sound-generation
 // ---------------------------------------------------------------------------
 

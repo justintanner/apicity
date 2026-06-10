@@ -4,6 +4,9 @@ export { ElevenLabsError } from "./types";
 
 export type {
   ElevenLabsOptions,
+  ElevenLabsCreatePvcVoiceRequest,
+  ElevenLabsCreatePvcVoiceResponse,
+  ElevenLabsCreatePvcVoiceMethod,
   ElevenLabsGetVoiceRequest,
   ElevenLabsGetVoiceMethod,
   ElevenLabsGetVoiceSettingsMethod,

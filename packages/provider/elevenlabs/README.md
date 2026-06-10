@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-18 endpoints across 9 groups. Each method mirrors an upstream URL path.
+19 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### docs
 
@@ -274,6 +274,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.voices("voice_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.pvc</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/pvc</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/pvc/create)
+
+```typescript
+const res = await elevenlabs.v1.voices.pvc({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

@@ -19,6 +19,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt_influence": 0.3
     }
   },
+  "POST v1.voices.pvc": {
+    "source": "elevenlabs/pvc-voice-create",
+    "payload": {
+      "name": "Apicity PVC route test",
+      "language": "en",
+      "description": null,
+      "labels": {
+        "language": "en",
+        "accent": "en-US"
+      }
+    }
+  },
   "POST v1.voices.pvc.samples": {
     "source": "elevenlabs/voice-pvc-sample-update",
     "payload": {

@@ -211,6 +211,7 @@ dolthub	v1alpha1.user	GET	https://www.dolthub.com/api/v1alpha1/user
 elevenlabs	docs	GET	https://api.elevenlabs.io/docs	https://elevenlabs.io/docs/api-reference/text-to-speech
 elevenlabs	v1.models	GET	https://api.elevenlabs.io/v1/models	https://elevenlabs.io/docs/api-reference/models/list
 elevenlabs	v1.voices	GET	https://api.elevenlabs.io/v1/voices/{voiceId}	https://elevenlabs.io/docs/api-reference/voices/get
+elevenlabs	v1.voices.pvc	POST	https://api.elevenlabs.io/v1/voices/pvc	https://elevenlabs.io/docs/api-reference/voices/pvc/create
 elevenlabs	v1.voices.pvc.captcha	POST	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha	https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha/verify
 elevenlabs	v1.voices.pvc.captcha.get	GET	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha	https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha
 elevenlabs	v1.voices.pvc.samples	POST	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}	https://elevenlabs.io/docs/api-reference/voices/pvc/samples/update

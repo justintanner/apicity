@@ -1,4 +1,5 @@
 import {
+  ElevenLabsCreatePvcVoiceResponse,
   ElevenLabsDocsRedirectResponse,
   ElevenLabsGetPvcVoiceCaptchaResponse,
   ElevenLabsGetVoiceRequest,
@@ -6,6 +7,7 @@ import {
   ElevenLabsListVoicesRequest,
   ElevenLabsListVoicesResponse,
   ElevenLabsOptions,
+  ElevenLabsCreatePvcVoiceRequest,
   ElevenLabsPvcVoiceCaptchaRequest,
   ElevenLabsPvcVoiceCaptchaResponse,
   ElevenLabsPvcVoiceSampleWaveformResponse,
@@ -29,6 +31,7 @@ import {
   ElevenLabsError,
 } from "./types";
 import {
+  ElevenLabsCreatePvcVoiceRequestSchema,
   ElevenLabsGetVoiceRequestSchema,
   ElevenLabsListVoicesRequestSchema,
   ElevenLabsPvcVoiceCaptchaRequestSchema,
@@ -418,6 +421,23 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // POST https://api.elevenlabs.io/v1/voices/pvc
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/create
+  const createPvcVoice = Object.assign(
+    async (
+      req: ElevenLabsCreatePvcVoiceRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreatePvcVoiceResponse> => {
+      return makeJsonRequest<ElevenLabsCreatePvcVoiceResponse>(
+        "POST",
+        "/v1/voices/pvc",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreatePvcVoiceRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha/verify
   const pvcVoiceCaptcha = Object.assign(
@@ -715,14 +735,14 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const pvcVoiceCaptchaWithGet = Object.assign(pvcVoiceCaptcha, {
     get: getPvcVoiceCaptcha,
   });
-  const pvcVoices = {
+  const pvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: pvcVoiceSamples,
-  };
-  const postPvcVoices = {
+  });
+  const postPvcVoices = Object.assign(createPvcVoice, {
     captcha: pvcVoiceCaptchaWithGet,
     samples: postPvcVoiceSamples,
-  };
+  });
   const workspace = {
     analytics: {
       requests: workspaceAnalyticsRequests,

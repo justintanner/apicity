@@ -74,6 +74,21 @@ export type ElevenLabsGetVoiceRequest = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/voices/pvc
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreatePvcVoiceRequestSchema = z.object({
+  name: z.string().max(100),
+  language: z.string(),
+  description: z.string().max(500).nullable().optional(),
+  labels: z.record(z.string(), z.string()).nullable().optional(),
+});
+
+export type ElevenLabsCreatePvcVoiceRequest = z.infer<
+  typeof ElevenLabsCreatePvcVoiceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/voices/pvc/:voice_id/captcha
 // ---------------------------------------------------------------------------
 

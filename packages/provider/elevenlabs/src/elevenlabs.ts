@@ -1,5 +1,6 @@
 import {
   ElevenLabsGetVoiceRequest,
+  ElevenLabsListModelsResponse,
   ElevenLabsListVoicesRequest,
   ElevenLabsListVoicesResponse,
   ElevenLabsOptions,
@@ -291,6 +292,20 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
 
   // -- Endpoints -------------------------------------------------------------
 
+  // GET https://api.elevenlabs.io/v1/models
+  // Docs: https://elevenlabs.io/docs/api-reference/models/list
+  const models = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsListModelsResponse> => {
+      return makeJsonRequest<ElevenLabsListModelsResponse>(
+        "GET",
+        "/v1/models",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v1/voices/{voiceId}
   // Docs: https://elevenlabs.io/docs/api-reference/voices/get
   const getVoice = Object.assign(
@@ -465,6 +480,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     speechToText,
   };
   const v1 = {
+    models,
     voices: v1Voices,
     soundGeneration,
     textToSpeech,
@@ -476,7 +492,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   return attachExamples({
     v1,
     v2,
-    get: { v1: { voices: v1Voices, user }, v2 },
+    get: { v1: { models, voices: v1Voices, user }, v2 },
     post: { v1: postV1 },
   });
 }

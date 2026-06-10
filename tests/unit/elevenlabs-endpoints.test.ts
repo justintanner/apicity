@@ -3,6 +3,45 @@ import { describe, expect, it, vi } from "vitest";
 import { createElevenLabs } from "../../packages/provider/elevenlabs/src";
 
 describe("ElevenLabs endpoint wiring", () => {
+  it("gets v1 models", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify([
+          {
+            model_id: "eleven_multilingual_v2",
+            name: "Eleven Multilingual v2",
+            can_do_text_to_speech: true,
+            model_rates: {
+              character_cost_multiplier: 1,
+              cost_discount_multiplier: 1,
+            },
+          },
+        ]),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    const result = await provider.v1.models();
+
+    expect(result[0]?.model_id).toBe("eleven_multilingual_v2");
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.elevenlabs.io/v1/models");
+    expect(init.method).toBe("GET");
+    expect(init.headers).toEqual({
+      "xi-api-key": "el-test",
+    });
+    expect(init.body).toBeUndefined();
+    expect(provider.get.v1.models).toBe(provider.v1.models);
+  });
+
   it("gets v1 voice metadata by voice id", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(

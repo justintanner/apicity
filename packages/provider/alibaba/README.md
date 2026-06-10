@@ -1,10 +1,14 @@
 # @apicity/alibaba
 
 [![npm](https://img.shields.io/npm/v/@apicity/alibaba?color=cb0000)](https://www.npmjs.com/package/@apicity/alibaba)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 Alibaba Cloud Model Studio provider for chat completions, image generation, and streaming.
+
+Runtime dependencies:
+
+- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

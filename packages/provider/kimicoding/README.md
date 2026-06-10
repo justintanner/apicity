@@ -1,10 +1,14 @@
 # @apicity/kimicoding
 
 [![npm](https://img.shields.io/npm/v/@apicity/kimicoding?color=cb0000)](https://www.npmjs.com/package/@apicity/kimicoding)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 Kimi for Coding provider for Apicity - completely standalone with Anthropic Messages API format, streaming-first, and built-in middleware.
+
+Runtime dependencies:
+
+- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

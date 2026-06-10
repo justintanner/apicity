@@ -1,11 +1,16 @@
 # @apicity/polymarket
 
 [![npm](https://img.shields.io/npm/v/@apicity/polymarket?color=cb0000)](https://www.npmjs.com/package/@apicity/polymarket)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-2-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 [![docs](https://img.shields.io/badge/docs-docs.polymarket.com-blue)](https://docs.polymarket.com/api-reference/introduction)
 
 Polymarket API provider — Gamma, Data, and CLOB market-data/trading endpoints.
+
+Runtime dependencies:
+
+- `viem@^2.52.2` — EIP-712 order signing for the CLOB trading endpoints
+- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

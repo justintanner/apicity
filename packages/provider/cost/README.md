@@ -1,8 +1,8 @@
 # @apicity/cost
 
-Cross-provider cost & token estimation for the [apicity](https://github.com/justintanner/apicity) monorepo. Returns a USD figure for a planned API call across **every** apicity provider — using the upstream estimate endpoint where one exists, and a bundled hardcoded rate table otherwise.
+Cross-provider cost & token estimation for the [apicity](https://github.com/justintanner/apicity) monorepo. Returns a USD figure for a planned API call across the billed apicity providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie, elevenlabs — see [Coverage](#coverage)) — computed purely locally from bundled rate tables, with no keys and no network.
 
-This is the only `@apicity/*` package that depends on other workspace packages — it's a deliberate cross-provider helper, not a wrapper for any single upstream API.
+This package has zero dependencies and is not a wrapper for any single upstream API — it's a deliberate cross-provider helper. Other workspace packages depend on _it_: `@apicity/kie` and `@apicity/xai` use its `withPaidGate` to gate paid endpoints.
 
 ## Install
 
@@ -17,17 +17,12 @@ pnpm add @apicity/cost
 `c.estimate(req)` accepts the **exact JSON body you would POST to upstream**. The package lightly parses the payload to extract the fields that affect price (model, resolution, duration, message contents, etc.) — so the same object you build for the real generation call doubles as the input to the cost estimate.
 
 ```ts
-import { cost } from "@apicity/cost";
+import { createCost } from "@apicity/cost";
 
-const c = cost({
-  openai: { apiKey: process.env.OPENAI_API_KEY! },
-  anthropic: { apiKey: process.env.ANTHROPIC_API_KEY! },
-  fal: { apiKey: process.env.FAL_API_KEY! },
-  // fireworks / alibaba / elevenlabs / kie / free need NO opts — pure local math
-});
+const c = createCost(); // no options, no keys — every estimate is pure local math
 
 // openai chat — same body you'd POST to /v1/chat/completions
-const a = await c.estimate({
+const a = c.estimate({
   provider: "openai",
   payload: {
     model: "gpt-5",
@@ -35,25 +30,10 @@ const a = await c.estimate({
     max_tokens: 1000,
   },
 });
-// → { usd: 0.01..., source: "tokens-api+table", breakdown: { inputTokens: 7, outputTokens: 1000, ... } }
-
-// Skip the network call — use chars/4 heuristic
-const a2 = await c.estimate({
-  provider: "openai",
-  payload: { model: "gpt-5", messages: [...], max_tokens: 1000 },
-  useHeuristic: true,
-});
-
-// fal — payload is whatever the chosen endpoint expects; defers to upstream USD endpoint
-const f = await c.estimate({
-  provider: "fal",
-  endpoint_id: "fal-ai/flux/dev",
-  payload: { unit_quantity: 100 },
-});
-// → { usd: ..., source: "upstream-usd", rateAsOf: null }
+// → { usd: 0.01..., source: "tokens-heuristic+table", breakdown: { inputTokens: 8, outputTokens: 1000, ... } }
 
 // kie — the same body you'd POST to /api/v1/jobs/createTask
-const k = await c.estimate({
+const k = c.estimate({
   provider: "kie",
   payload: {
     model: "bytedance/seedance-2",
@@ -66,18 +46,28 @@ const k = await c.estimate({
     },
   },
 });
-// extractor reads model + input.resolution + first_frame_url presence (i2v)
+// rate entry reads model + input.resolution + first_frame_url presence (i2v)
 // + input.duration → seedance-2-720p-i2v rate × 8 seconds
 
+// kie endpoints whose pricing isn't keyed by payload.model (e.g. Suno) take
+// an explicit `endpoint` discriminator that wins the pricing lookup
+const s = c.estimate({
+  provider: "kie",
+  endpoint: "suno/generate",
+  payload: { model: "V5_5", prompt: "..." },
+});
+
 // elevenlabs TTS — payload is the /v1/text-to-speech body
-const e = await c.estimate({
+const e = c.estimate({
   provider: "elevenlabs",
   payload: { model_id: "eleven_flash_v2_5", text: "Hello world" },
 });
 
 // free → always $0
-const z = await c.estimate({ provider: "free-media-upload" });
+const z = c.estimate({ provider: "free-media-upload" });
 ```
+
+`estimate()` is synchronous — there is nothing to await.
 
 ## Return shape
 
@@ -86,26 +76,30 @@ interface CostEstimate {
   usd: number;
   currency: "USD";
   source:
-    | "upstream-usd" // fal — exact USD from upstream
-    | "tokens-api+table" // openai/anthropic/xai — exact tokens × bundled rate
-    | "tokens-heuristic+table" // useHeuristic:true, plus fireworks/alibaba/kimicoding (always heuristic)
+    | "tokens-heuristic+table" // openai/anthropic/xai/kimicoding/fireworks/alibaba — chars/4 ≈ tokens × bundled rate
     | "per-unit-table" // elevenlabs/kie — payload-derived units × bundled rate
     | "free";
   breakdown: {
     inputTokens?: number;
     outputTokens?: number;
     units?: number;
-    unit?: "tokens" | "characters" | "seconds" | "images" | "songs";
+    unit?:
+      | "tokens"
+      | "characters"
+      | "seconds"
+      | "images"
+      | "songs"
+      | "generations";
     inputUsdPerMillion?: number;
     outputUsdPerMillion?: number;
     perUnitUsd?: number;
   };
-  rateAsOf: string | null; // YYYY-MM-DD; null when source=upstream-usd
+  rateAsOf: string | null; // YYYY-MM-DD — the rate entry's as-of date, falling back to PRICING_AS_OF
   warnings: string[]; // non-empty when fallback fired (unknown model, missing max_tokens, missing duration, etc.)
 }
 ```
 
-`source` is the load-bearing field: callers who want guarantees check `source === "upstream-usd"`. Callers who tolerate ±20% can accept `tokens-api+table` and `per-unit-table`. Heuristic mode (`tokens-heuristic+table`) is rougher — chars/4 ≈ tokens.
+`source` is the load-bearing field: `per-unit-table` is exact when the bundled rate is current; `tokens-heuristic+table` is rougher — chars/4 ≈ tokens, so treat it as ±20%. Every estimate is computed locally; nothing calls upstream.
 
 ## How payloads are parsed
 
@@ -113,34 +107,33 @@ Each provider has a small extractor in `src/extract/` that walks the payload loo
 
 For text providers (openai / anthropic / xai / kimicoding / fireworks / alibaba), the extractor flattens the chat `messages` array (or `input` / `prompt` / `text`) into a single string for token counting; non-text content parts (images, audio, tool calls) are dropped.
 
-For kie, the rate table keys are not 1:1 with the payload's `model` field — the extractor rebuilds them from the payload's `input.resolution`, `input.first_frame_url` (i2v vs t2v), and the marketplace model slug. See `src/extract/kie.ts` for the full mapping. Image models (nano-banana-2, gpt-image-2, qwen2, seedream/5-lite, wan/2-7-image) price per image; resolution-tiered families require `input.resolution`.
+For per-unit providers (kie / elevenlabs), the payload-shape knowledge lives in each rate entry's closures in `src/pricing/kie.ts` / `src/pricing/elevenlabs.ts`: `units(payload)` derives the billable quantity (seconds, characters, images) and ordered `select` pickers resolve the rate variant from fields like `input.resolution` and `input.first_frame_url` (i2v vs t2v). Image models price per image; resolution-tiered families require `input.resolution`. Endpoint-keyed pricing (e.g. Suno) uses the `EstimateRequest.endpoint` discriminator instead of `payload.model`.
 
 ## Bundled pricing
 
-Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`) and shipped in `src/pricing.ts`. They cover the most common model on each provider; calling `estimate()` with an unknown model returns `usd: 0` plus a warning, never throws.
+Rates are frozen at `PRICING_AS_OF` (currently `2026-04-30`; individual entries may carry their own as-of date) and shipped in `src/pricing/` as per-provider modules. They cover the most common models on each provider; calling `estimate()` with an unknown model returns `usd: 0` plus a warning, never throws.
 
 To inspect what's bundled:
 
 ```ts
-import { TOKEN_RATES, PER_UNIT_RATES, PRICING_AS_OF } from "@apicity/cost";
+import { PRICING, PRICING_AS_OF } from "@apicity/cost";
 ```
 
-Maintenance is manual: re-fetch each upstream's pricing page, edit `pricing.ts`, bump `PRICING_AS_OF`.
+Maintenance is manual: re-fetch each upstream's pricing page, edit the provider's module in `src/pricing/`, bump `PRICING_AS_OF`.
 
 ## Coverage
 
-| Provider     | source                   | Notes                                                                 |
-| ------------ | ------------------------ | --------------------------------------------------------------------- |
-| `openai`     | `tokens-api+table`       | wraps `POST /v1/responses/input_tokens`                               |
-| `anthropic`  | `tokens-api+table`       | wraps `POST /v1/messages/count_tokens`                                |
-| `xai`        | `tokens-api+table`       | wraps `POST /v1/tokenize-text`                                        |
-| `kimicoding` | `tokens-heuristic+table` | upstream `/coding/v1/tokens/count` returns 404 — local heuristic only |
-| `fireworks`  | `tokens-heuristic+table` | no upstream estimate endpoint                                         |
-| `alibaba`    | `tokens-heuristic+table` | no upstream estimate endpoint                                         |
-| `fal`        | `upstream-usd`           | wraps `POST /v1/models/pricing/estimate`                              |
-| `elevenlabs` | `per-unit-table`         | priced per character                                                  |
-| `kie`        | `per-unit-table`         | priced per second of video / per image                                |
-| `free`       | `free`                   | always $0                                                             |
+| Provider     | source                   | Notes                                                                               |
+| ------------ | ------------------------ | ----------------------------------------------------------------------------------- |
+| `openai`     | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `anthropic`  | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `xai`        | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `kimicoding` | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `fireworks`  | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `alibaba`    | `tokens-heuristic+table` | chars/4 ≈ tokens — no upstream call                                                 |
+| `elevenlabs` | `per-unit-table`         | priced per character                                                                |
+| `kie`        | `per-unit-table`         | per second of video / per image / per generation; `endpoint` discriminator for Suno |
+| `free`       | `free`                   | always $0                                                                           |
 
 ## Paid endpoint guard (OTP pay gate)
 

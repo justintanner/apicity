@@ -2083,6 +2083,15 @@ const CANONICAL_FACTORY = {
   telegram: "createTelegram",
 };
 
+// One-line explanation per runtime dependency, rendered under the badges so
+// the README states what each dependency is actually for.
+const DEP_NOTES = {
+  zod: "request schemas attached to every POST endpoint as `.schema`",
+  viem: "EIP-712 order signing for the CLOB trading endpoints",
+  "@apicity/s3": "core S3 implementation this package wraps",
+  "@apicity/cost": "OTP pay-gate (`withPaidGate`) for paid endpoints",
+};
+
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
   const pkgName = pkg.name || `@apicity/${providerName}`;
@@ -2101,8 +2110,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push(
     `[![npm](https://img.shields.io/npm/v/${pkgName}?color=cb0000)](https://www.npmjs.com/package/${pkgName})`
   );
+  const runtimeDeps = Object.entries(pkg.dependencies ?? {});
+  const depBadgeColor = runtimeDeps.length === 0 ? "brightgreen" : "blue";
   sections.push(
-    "[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)"
+    `[![dependencies](https://img.shields.io/badge/dependencies-${runtimeDeps.length}-${depBadgeColor})](package.json)`
   );
   sections.push(
     "[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)"
@@ -2117,6 +2128,16 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("");
   sections.push(pkg.description || `${providerName} provider for apicity.`);
   sections.push("");
+
+  if (runtimeDeps.length > 0) {
+    sections.push("Runtime dependencies:");
+    sections.push("");
+    for (const [depName, depRange] of runtimeDeps) {
+      const note = DEP_NOTES[depName];
+      sections.push(`- \`${depName}@${depRange}\`${note ? ` — ${note}` : ""}`);
+    }
+    sections.push("");
+  }
 
   sections.push("## Installation");
   sections.push("");

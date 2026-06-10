@@ -4,18 +4,18 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.base.json)
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](package.json)
-[![Zero Dependencies](https://img.shields.io/badge/provider_deps-0-brightgreen)](package.json)
+[![Minimal Dependencies](https://img.shields.io/badge/provider_deps-zod_only-blue)](package.json)
 
 A thin wrapper for many APIs covering AI image generation, video generation, all major social media APIs, and more.
 
 ## Features
 
 - **OTP pay gate — no bypass.** Paid endpoints (media generation, etc.) only fire with a human- or code-client-minted, single-use OTP bound to the exact request. An autonomous agent driving the API can't self-approve and can't run up your bill. [Details ↓](#paid-endpoints-otp-pay-gate)
-- **Pre-flight cost estimates.** Pure, local USD estimates for any call across every provider — no keys, no network.
-- **Schemas for agents.** Every POST endpoint validates its payload before sending, so a hallucinated call fails locally instead of at the API.
+- **Pre-flight cost estimates.** Pure, local USD estimates for calls to the billed providers (openai, anthropic, xai, kimicoding, fireworks, alibaba, kie, elevenlabs) — no keys, no network.
+- **Schemas for agents.** Every POST endpoint ships a zod request schema (`endpoint.schema`), so hosts and agents can catch a hallucinated call locally instead of at the API — the MCP server exposes it as the tool's input schema.
 - **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
 - **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as plain function wrappers.
-- **Zero provider dependencies.** Self-contained packages, ESM, strict TypeScript.
+- **Minimal provider dependencies.** Each provider depends only on `zod` for its endpoint schemas — plus `viem` in `@apicity/polymarket` (order signing), `@apicity/s3` in `@apicity/b2`, and `@apicity/cost` in `@apicity/kie`/`@apicity/xai` (pay-gate). ESM, strict TypeScript.
 
 ## Example
 

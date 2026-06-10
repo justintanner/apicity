@@ -1,10 +1,14 @@
 # @apicity/fireworks
 
 [![npm](https://img.shields.io/npm/v/@apicity/fireworks?color=cb0000)](https://www.npmjs.com/package/@apicity/fireworks)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 Fireworks AI provider for chat completions, completions, and embeddings.
+
+Runtime dependencies:
+
+- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

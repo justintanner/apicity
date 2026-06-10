@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package has zero external dependencies and is completely self-contained. Based on [TetherAI](https://github.com/nbursa/TetherAI).
+Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and a few carry one more — `viem` in polymarket (EIP-712 order signing), `@apicity/s3` in b2 (the S3 core it wraps), and `@apicity/cost` in kie and xai (pay-gate). Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
-`@apicity/cost` is a deliberate exception — a cross-provider helper that depends on the per-provider workspace packages to expose each upstream's pre-execution estimate endpoint behind one factory.
+`@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the OTP pay-gate (`withPaidGate`) that kie and xai use to gate paid endpoints.
 
 `@apicity/mcp-server` (under `packages/mcp-server`, not `packages/provider/`) is an optional MCP server that exposes every provider endpoint as an MCP tool.
 
@@ -25,7 +25,7 @@ URL path:     /api/v1/common/download-url →  kie.api.v1.common.downloadUrl()
 URL path:     /v1/tokenize-text          →  xai.v1.tokenizeText()
 ```
 
-POST endpoints expose `.payloadSchema` and `.validatePayload(data)` for runtime validation.
+POST endpoints expose a zod request schema as `.schema` (defined in the provider's `src/zod.ts`, attached via `Object.assign`). Providers do not validate payloads at runtime; the schema is metadata for consumers — the MCP server converts it to tool input JSON Schema, and callers can `.schema.safeParse(data)` themselves.
 
 ## Commands
 
@@ -79,7 +79,7 @@ npx tsx tests/harness-serve.ts --git-approve <paths>   # Enable approve button (
 
 ### Provider Pattern
 
-All providers follow the same factory function pattern — a function that takes an options object (containing `apiKey`, optional `baseURL`, `timeout`, `fetch`) and returns a provider object whose method paths mirror the upstream API endpoint paths (e.g., `provider.v1.chat.completions()` for `/v1/chat/completions`). Callable namespaces (via `Object.assign`) serve dual purposes — e.g., `v1.models(params)` is callable and also has child methods like `v1.models.pricing(params)`. POST endpoints expose `.payloadSchema` (hardcoded schema object) and `.validatePayload(data)` for runtime validation.
+All providers follow the same factory function pattern — a function that takes an options object (containing `apiKey`, optional `baseURL`, `timeout`, `fetch`) and returns a provider object whose method paths mirror the upstream API endpoint paths (e.g., `provider.v1.chat.completions()` for `/v1/chat/completions`). Callable namespaces (via `Object.assign`) serve dual purposes — e.g., `v1.models(params)` is callable and also has child methods like `v1.models.pricing(params)`. POST endpoints expose a zod request schema as `.schema`, attached via `Object.assign`.
 
 ```
 packages/provider/<name>/
@@ -89,7 +89,7 @@ packages/provider/<name>/
     <name>.ts      # Factory function + core implementation
     sse.ts         # SSE stream parsing (kimicoding, kie, fireworks, anthropic)
     middleware.ts  # withRetry, withFallback (all providers)
-    schemas.ts     # Payload schemas + validatePayload (all providers)
+    zod.ts         # Zod request schemas, attached to endpoints as .schema (all providers)
 ```
 
 **openai** — Chat, embeddings, images, files, models, moderations, batches, responses, audio, fine-tuning
@@ -186,8 +186,8 @@ When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
    endpoint in the same provider for patterns (types, schema, factory wiring, tests).
 2. **Types** — Add request/response interfaces to `types.ts` (PascalCase).
    Update the provider interface. Export from `index.ts`.
-3. **Schema** — Add PayloadSchema to `schemas.ts`. Add validatePayload via
-   Object.assign on the endpoint function.
+3. **Schema** — Add a zod request schema to `zod.ts`. Attach it to the
+   endpoint function as `.schema` via Object.assign.
 4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`.
    Use Object.assign for callable namespaces.
 5. **URL comment (required)** — Place a 2-line comment immediately above the

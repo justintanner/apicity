@@ -1,10 +1,15 @@
 # @apicity/kie
 
 [![npm](https://img.shields.io/npm/v/@apicity/kie?color=cb0000)](https://www.npmjs.com/package/@apicity/kie)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-2-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 Kie provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).
+
+Runtime dependencies:
+
+- `@apicity/cost@workspace:*` — OTP pay-gate (`withPaidGate`) for paid endpoints
+- `zod@^4.0.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

@@ -1,10 +1,14 @@
 # @apicity/free-media-upload
 
 [![npm](https://img.shields.io/npm/v/@apicity/free-media-upload?color=cb0000)](https://www.npmjs.com/package/@apicity/free-media-upload)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 Zero-auth file hosting wrapper for catbox, gofile, uguu, filebin, litterbox, tempsh, tflink, and tmpfiles — eight providers behind one typed surface.
+
+Runtime dependencies:
+
+- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

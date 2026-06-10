@@ -1,10 +1,14 @@
 # @apicity/anthropic
 
 [![npm](https://img.shields.io/npm/v/@apicity/anthropic?color=cb0000)](https://www.npmjs.com/package/@apicity/anthropic)
-[![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 Anthropic / Claude provider for messages, batches, models, files, and admin APIs.
+
+Runtime dependencies:
+
+- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

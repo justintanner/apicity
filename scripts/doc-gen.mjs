@@ -122,6 +122,9 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "elevenlabs" && dotPath === "v1.models") {
     return `const res = await ${call}();`;
   }
+  if (providerName === "elevenlabs" && dotPath === "docs") {
+    return `const res = await ${call}();`;
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.user.subscription") {
     return `const res = await ${call}();`;
   }

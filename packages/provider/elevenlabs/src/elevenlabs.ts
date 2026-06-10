@@ -1,4 +1,5 @@
 import {
+  ElevenLabsDocsRedirectResponse,
   ElevenLabsGetVoiceRequest,
   ElevenLabsListModelsResponse,
   ElevenLabsListVoicesRequest,
@@ -241,6 +242,56 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   }
 
+  async function makeRedirectRequest(
+    method: "GET",
+    path: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDocsRedirectResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method,
+        headers: {
+          "xi-api-key": opts.apiKey,
+        },
+        redirect: "manual",
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok && (res.status < 300 || res.status >= 400)) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return {
+        status: res.status,
+        location: res.headers.get("location"),
+      };
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
   function appendFormField(form: FormData, key: string, value: unknown): void {
     if (value === undefined || value === null) return;
     if (value instanceof Blob) {
@@ -291,6 +342,15 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   }
 
   // -- Endpoints -------------------------------------------------------------
+
+  // GET https://api.elevenlabs.io/docs
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech
+  const docs = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsDocsRedirectResponse> => {
+      return makeRedirectRequest("GET", "/docs", signal);
+    },
+    { schema: undefined }
+  );
 
   // GET https://api.elevenlabs.io/v1/models
   // Docs: https://elevenlabs.io/docs/api-reference/models/list
@@ -490,9 +550,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   };
 
   return attachExamples({
+    docs,
     v1,
     v2,
-    get: { v1: { models, voices: v1Voices, user }, v2 },
+    get: { docs, v1: { models, voices: v1Voices, user }, v2 },
     post: { v1: postV1 },
   });
 }

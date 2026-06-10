@@ -40,6 +40,8 @@ export type {
   ElevenLabsModel,
   ElevenLabsListModelsResponse,
   ElevenLabsListModelsMethod,
+  ElevenLabsDocsRedirectResponse,
+  ElevenLabsDocsMethod,
   ElevenLabsSoundGenerationRequest,
   ElevenLabsSoundGenerationMethod,
   ElevenLabsTextToDialogueRequest,

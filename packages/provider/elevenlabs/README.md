@@ -142,7 +142,24 @@ for (const w of result.words) {
 
 ## API Reference
 
-9 endpoints across 7 groups. Each method mirrors an upstream URL path.
+10 endpoints across 8 groups. Each method mirrors an upstream URL path.
+
+### docs
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.docs</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/docs</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech)
+
+```typescript
+const res = await elevenlabs.docs();
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
 
 ### models
 

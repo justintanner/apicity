@@ -451,7 +451,18 @@ export interface ElevenLabsSubscription {
 
 export type ElevenLabsUserSubscriptionResponse = ElevenLabsSubscription;
 
+// -- Docs redirect response shape -------------------------------------------
+
+export interface ElevenLabsDocsRedirectResponse {
+  status: number;
+  location: string | null;
+}
+
 // -- Method interfaces -------------------------------------------------------
+
+export interface ElevenLabsDocsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsDocsRedirectResponse>;
+}
 
 export interface ElevenLabsSoundGenerationMethod {
   (
@@ -558,11 +569,13 @@ export interface ElevenLabsGetV2Namespace {
 }
 
 export interface ElevenLabsGetNamespace {
+  docs: ElevenLabsDocsMethod;
   v1: ElevenLabsGetV1Namespace;
   v2: ElevenLabsGetV2Namespace;
 }
 
 export interface ElevenLabsProvider {
+  docs: ElevenLabsDocsMethod;
   v1: ElevenLabsV1Namespace;
   v2: ElevenLabsV2Namespace;
   post: ElevenLabsPostNamespace;

@@ -3,6 +3,38 @@ import { describe, expect, it, vi } from "vitest";
 import { createElevenLabs } from "../../packages/provider/elevenlabs/src";
 
 describe("ElevenLabs endpoint wiring", () => {
+  it("gets docs redirect metadata", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 301,
+        headers: {
+          location: "https://elevenlabs.io/docs/api-reference/text-to-speech",
+        },
+      })
+    );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    const result = await provider.docs();
+
+    expect(result).toEqual({
+      status: 301,
+      location: "https://elevenlabs.io/docs/api-reference/text-to-speech",
+    });
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.elevenlabs.io/docs");
+    expect(init.method).toBe("GET");
+    expect(init.headers).toEqual({
+      "xi-api-key": "el-test",
+    });
+    expect(init.redirect).toBe("manual");
+    expect(init.body).toBeUndefined();
+    expect(provider.get.docs).toBe(provider.docs);
+  });
+
   it("gets v1 models", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(

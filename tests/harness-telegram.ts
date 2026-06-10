@@ -1,9 +1,16 @@
 /**
  * Sends one Telegram message per changed endpoint recording.
  *
- * The PR harness summary is GitHub-flavored Markdown. Telegram renders that
- * poorly, so this script emits compact HTML messages with escaped request and
- * response previews.
+ * Each recording becomes a glanceable HTML message: a summary header
+ * (status, apicity path, endpoint) followed by the full request/response
+ * headers and bodies inside collapsed <blockquote expandable> sections.
+ * Content that exceeds Telegram's 4096-char message limit spills into
+ * numbered follow-up messages. Media found in the recording (base64
+ * response bodies or recorded media URLs) is uploaded inline via
+ * sendPhoto/sendVideo/sendAudio after the text.
+ *
+ * Default mode posts only recordings changed vs --base; pass --all
+ * [pattern...] to post any recording on demand.
  */
 
 import fs from "node:fs";
@@ -12,15 +19,24 @@ import { pathToFileURL } from "node:url";
 import {
   type ChangedRecording,
   type HarEntry,
+  extractProvider,
   getBaseBranch,
   getChangedRecordings,
   getRequestBodyText,
+  parseHarDir,
 } from "./har-data.js";
 
 const ENDPOINT_DOCS_PATH = "scripts/endpoint-docs.tsv";
 const DEFAULT_OUT_PATH = "harness-telegram-messages.json";
+const RECORDINGS_DIR = "tests/recordings";
 const MAX_MESSAGE_LEN = 4096;
-const MAX_BLOCK_LEN = 900;
+const MAX_CHUNKS_PER_RECORDING = 6;
+const MAX_CAPTION_LEN = 1024;
+const MAX_MEDIA_ITEMS = 5;
+const MAX_MEDIA_BYTES = 45 * 1024 * 1024;
+const MEDIA_DOWNLOAD_TIMEOUT_MS = 30_000;
+// Telegram allows ~1 message/second per chat.
+const SEND_SPACING_MS = 1100;
 
 const CREDIT_URL_PATTERNS = [
   /\/credit/i,
@@ -38,12 +54,26 @@ const RESPONSE_HEADER_PREVIEW_EXCLUDES = new Set([
   "content-length",
   "date",
   "server",
+  // set-cookie carries real session values that Polly does not redact.
+  "set-cookie",
   "transfer-encoding",
   "via",
   "x-amz-id-2",
   "x-amz-request-id",
   "x-cache",
 ]);
+
+const REQUEST_HEADER_PREVIEW_EXCLUDES = new Set([
+  "connection",
+  "content-length",
+  "cookie",
+]);
+
+// Belt and braces on top of Polly's recording-time redaction: never post a
+// header value that looks credential-shaped, even if a new recording path
+// misses the redaction hook.
+const SENSITIVE_HEADER_PATTERN =
+  /authorization|api-key|apikey|token|secret|cookie|signature|credential/i;
 
 export interface EndpointDocRow {
   provider: string;
@@ -57,6 +87,20 @@ interface CliOptions {
   dryRun: boolean;
   outPath: string;
   baseBranch: string;
+  all: boolean;
+  filters: string[];
+}
+
+export type TelegramMediaSource =
+  | { type: "base64"; data: string }
+  | { type: "url"; url: string };
+
+export interface TelegramMediaItem {
+  kind: "photo" | "video" | "audio" | "document";
+  mime: string;
+  filename: string;
+  caption: string;
+  source: TelegramMediaSource;
 }
 
 export interface TelegramHarnessMessage {
@@ -66,13 +110,17 @@ export interface TelegramHarnessMessage {
   endpoint: string;
   apicityPath: string;
   status: string;
+  /** HTML messages, each within Telegram's 4096-char limit, sent in order. */
+  chunks: string[];
+  /** First chunk; kept so dry-run JSON consumers can preview one field. */
   text: string;
+  media: TelegramMediaItem[];
   parse_mode: "HTML";
 }
 
-function truncate(text: string, max: number): string {
-  if (text.length <= max) return text;
-  return text.slice(0, Math.max(0, max - 15)) + "\n...(truncated)";
+interface Section {
+  title: string;
+  body: string;
 }
 
 function escapeHtml(text: string): string {
@@ -591,38 +639,113 @@ function findEndpointEntry(recording: ChangedRecording): HarEntry {
   );
 }
 
+const DATA_URI_PATTERN = /^data:([a-z]+\/[a-z0-9.+-]+);base64,([\s\S]+)$/i;
+// Strings longer than this that look like raw base64 get summarized — a
+// payload dump of encoded bytes is unreadable and floods the chat.
+const LONG_BASE64_CHARS = 1024;
+const BASE64ISH_PATTERN = /^[A-Za-z0-9+/=\r\n]+$/;
+
+function base64ByteSize(base64: string): number {
+  return Math.floor((base64.replace(/[\r\n=]/g, "").length * 3) / 4);
+}
+
+function summarizeEncodedString(value: string): string {
+  const dataUri = value.match(DATA_URI_PATTERN);
+  if (dataUri) {
+    const size = formatByteSize(base64ByteSize(dataUri[2]));
+    const uploaded = kindFromMime(dataUri[1]) ? " — sent below as media" : "";
+    return `(data:${dataUri[1]} base64, ${size}${uploaded})`;
+  }
+  if (value.length > LONG_BASE64_CHARS && BASE64ISH_PATTERN.test(value)) {
+    return `(base64, ${formatByteSize(base64ByteSize(value))})`;
+  }
+  return value;
+}
+
+function summarizeEncodedStrings(value: unknown): unknown {
+  if (typeof value === "string") return summarizeEncodedString(value);
+  if (Array.isArray(value)) return value.map(summarizeEncodedStrings);
+  if (typeof value === "object" && value !== null) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, item]) => [
+        key,
+        summarizeEncodedStrings(item),
+      ])
+    );
+  }
+  return value;
+}
+
 function prettyBody(raw: string | undefined): string {
   if (!raw) return "";
 
   try {
-    return JSON.stringify(JSON.parse(raw), null, 2);
+    return JSON.stringify(summarizeEncodedStrings(JSON.parse(raw)), null, 2);
   } catch {
-    return raw;
+    return summarizeEncodedString(raw);
   }
+}
+
+function isBinaryContent(entry: HarEntry): boolean {
+  const mime = entry.response.content?.mimeType ?? "";
+  return (
+    entry.response.content?.encoding === "base64" ||
+    /^(audio|image|video)\//i.test(mime)
+  );
+}
+
+function formatByteSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function decodedByteLength(content: {
+  text?: string;
+  encoding?: string;
+}): number {
+  const text = content.text ?? "";
+  return content.encoding === "base64"
+    ? Buffer.from(text, "base64").length
+    : Buffer.byteLength(text);
 }
 
 function responseBody(entry: HarEntry): string {
-  const mime = entry.response.content?.mimeType ?? "";
-  if (/^(audio|image|video)\//i.test(mime)) {
-    return `(binary ${mime})`;
+  const content = entry.response.content;
+  if (!content) return "";
+
+  if (isBinaryContent(entry)) {
+    const mime = content.mimeType ?? "application/octet-stream";
+    const size = formatByteSize(decodedByteLength(content));
+    const isMedia = /^(audio|image|video)\//i.test(mime);
+    return isMedia
+      ? `(binary ${mime}, ${size} — sent below as media)`
+      : `(binary ${mime}, ${size})`;
   }
 
-  return prettyBody(entry.response.content?.text);
+  return prettyBody(content.text);
+}
+
+function headerLines(
+  headers: Array<{ name: string; value: string }>,
+  excludes: Set<string>
+): string {
+  return headers
+    .filter((header) => {
+      const name = header.name.toLowerCase();
+      return !excludes.has(name) && !name.startsWith("x-amz-cf-");
+    })
+    .map((header) => {
+      const value = SENSITIVE_HEADER_PATTERN.test(header.name)
+        ? "***"
+        : header.value;
+      return `${header.name}: ${value}`;
+    })
+    .join("\n");
 }
 
 function responseHeaders(entry: HarEntry): string {
-  const headers: Record<string, string> = {};
-
-  for (const header of entry.response.headers) {
-    const name = header.name.toLowerCase();
-    if (RESPONSE_HEADER_PREVIEW_EXCLUDES.has(name)) continue;
-    if (name.startsWith("x-amz-cf-")) continue;
-    headers[name] = header.value;
-  }
-
-  return Object.keys(headers).length > 0
-    ? JSON.stringify({ headers }, null, 2)
-    : "";
+  return headerLines(entry.response.headers, RESPONSE_HEADER_PREVIEW_EXCLUDES);
 }
 
 function responsePreview(entry: HarEntry): string {
@@ -671,10 +794,149 @@ function extractMediaUrls(entries: HarEntry[]): string[] {
   return [...urls];
 }
 
-function mediaLabel(url: string): string {
+function kindFromMime(mime: string): TelegramMediaItem["kind"] | null {
+  const lower = mime.toLowerCase();
+  // sendPhoto rejects animated gifs; send them as documents instead.
+  if (lower === "image/gif") return "document";
+  if (lower.startsWith("image/")) return "photo";
+  if (lower.startsWith("video/")) return "video";
+  if (lower.startsWith("audio/")) return "audio";
+  return null;
+}
+
+function kindFromUrl(url: string): TelegramMediaItem["kind"] {
+  if (/\.gif(?:\?|$)/i.test(url)) return "document";
   if (/\.(mp4|webm|mov)(?:\?|$)/i.test(url)) return "video";
   if (/\.(wav|mp3|ogg|flac|m4a)(?:\?|$)/i.test(url)) return "audio";
-  return "image";
+  return "photo";
+}
+
+const MIME_BY_EXT: Record<string, string> = {
+  mp4: "video/mp4",
+  webm: "video/webm",
+  mov: "video/quicktime",
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  wav: "audio/wav",
+  mp3: "audio/mpeg",
+  ogg: "audio/ogg",
+  flac: "audio/flac",
+  m4a: "audio/mp4",
+};
+
+const EXT_BY_MIME: Record<string, string> = Object.fromEntries(
+  Object.entries(MIME_BY_EXT).map(([ext, mime]) => [mime, ext])
+);
+
+function urlExtension(url: string): string {
+  const match = url.match(/\.([a-z0-9]+)(?:\?|$)/i);
+  return match ? match[1].toLowerCase() : "";
+}
+
+function urlFilename(url: string): string {
+  try {
+    const base = path.basename(new URL(url).pathname);
+    if (base) return base;
+  } catch {
+    // fall through to the generic name below
+  }
+  return `media.${urlExtension(url) || "bin"}`;
+}
+
+function mediaCaption(
+  recording: ChangedRecording,
+  apicityPath: string
+): string {
+  const caption = `${recordingHeading(recording)} — ${apicityPath}`;
+  return caption.length <= MAX_CAPTION_LEN
+    ? caption
+    : caption.slice(0, MAX_CAPTION_LEN - 1) + "…";
+}
+
+function collectDataUris(
+  value: unknown,
+  found: Array<{ mime: string; data: string }>
+): void {
+  if (typeof value === "string") {
+    const match = value.match(DATA_URI_PATTERN);
+    if (match) found.push({ mime: match[1].toLowerCase(), data: match[2] });
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectDataUris(item, found);
+    return;
+  }
+  if (typeof value === "object" && value !== null) {
+    for (const item of Object.values(value)) collectDataUris(item, found);
+  }
+}
+
+function entryDataUris(entry: HarEntry): Array<{ mime: string; data: string }> {
+  const found: Array<{ mime: string; data: string }> = [];
+  const texts = [getRequestBodyText(entry)];
+  if (entry.response.content?.encoding !== "base64") {
+    texts.push(entry.response.content?.text ?? null);
+  }
+
+  for (const text of texts) {
+    if (!text) continue;
+    try {
+      collectDataUris(JSON.parse(text), found);
+    } catch {
+      collectDataUris(text, found);
+    }
+  }
+  return found;
+}
+
+export function collectMedia(
+  recording: ChangedRecording,
+  apicityPath: string
+): TelegramMediaItem[] {
+  const caption = mediaCaption(recording, apicityPath);
+  const items: TelegramMediaItem[] = [];
+  const slug = recording.recordingName.split("/").pop() ?? "recording";
+  let base64Count = 0;
+
+  const pushBase64 = (mime: string, data: string): void => {
+    const kind = kindFromMime(mime);
+    if (!kind) return;
+    base64Count += 1;
+    items.push({
+      kind,
+      mime,
+      filename: `${slug}-${base64Count}.${EXT_BY_MIME[mime.toLowerCase()] ?? "bin"}`,
+      caption,
+      source: { type: "base64", data },
+    });
+  };
+
+  for (const entry of recording.entries) {
+    // Binary response bodies (Polly stores them base64-encoded in the HAR).
+    const content = entry.response.content;
+    if (content?.encoding === "base64" && content.text) {
+      pushBase64(content.mimeType ?? "", content.text);
+    }
+    // data: URIs embedded in request/response JSON (e.g. image-edit inputs).
+    for (const dataUri of entryDataUris(entry)) {
+      pushBase64(dataUri.mime, dataUri.data);
+    }
+  }
+
+  for (const url of extractMediaUrls(recording.entries)) {
+    items.push({
+      kind: kindFromUrl(url),
+      mime: MIME_BY_EXT[urlExtension(url)] ?? "application/octet-stream",
+      filename: urlFilename(url),
+      caption,
+      source: { type: "url", url },
+    });
+  }
+
+  return items.slice(0, MAX_MEDIA_ITEMS);
 }
 
 function recordingHeading(recording: ChangedRecording): string {
@@ -702,14 +964,198 @@ function apicityPathFor(
   return `${recording.provider}.${row.dotPath}`;
 }
 
-function compactMessage(lines: string[]): string {
-  const text = lines.join("\n");
-  if (text.length <= MAX_MESSAGE_LEN) return text;
+function headerCount(
+  headers: Array<{ name: string; value: string }>,
+  excludes: Set<string>
+): number {
+  return headers.filter((header) => {
+    const name = header.name.toLowerCase();
+    return !excludes.has(name) && !name.startsWith("x-amz-cf-");
+  }).length;
+}
 
-  return lines
-    .filter((line) => !line.startsWith("<pre>"))
-    .concat("", "<i>Request/response previews omitted for Telegram size.</i>")
-    .join("\n");
+export function buildSections(entry: HarEntry): Section[] {
+  const sections: Section[] = [];
+
+  const requestHeaders = headerLines(
+    entry.request.headers,
+    REQUEST_HEADER_PREVIEW_EXCLUDES
+  );
+  if (requestHeaders) {
+    const count = headerCount(
+      entry.request.headers,
+      REQUEST_HEADER_PREVIEW_EXCLUDES
+    );
+    sections.push({
+      title: `Request headers (${count})`,
+      body: requestHeaders,
+    });
+  }
+
+  const requestBody = prettyBody(getRequestBodyText(entry) ?? undefined);
+  if (requestBody) {
+    sections.push({
+      title: `Request body (${formatByteSize(Buffer.byteLength(requestBody))})`,
+      body: requestBody,
+    });
+  }
+
+  const respHeaders = responseHeaders(entry);
+  if (respHeaders) {
+    const count = headerCount(
+      entry.response.headers,
+      RESPONSE_HEADER_PREVIEW_EXCLUDES
+    );
+    sections.push({
+      title: `Response headers (${count})`,
+      body: respHeaders,
+    });
+  }
+
+  const respBody = responseBody(entry);
+  if (respBody) {
+    const label = isBinaryContent(entry)
+      ? `Response body`
+      : `Response body (${formatByteSize(Buffer.byteLength(respBody))})`;
+    sections.push({ title: label, body: respBody });
+  }
+
+  return sections;
+}
+
+function renderSectionBlock(title: string, escapedBody: string): string {
+  return `<b>${escapeHtml(title)}</b>\n<blockquote expandable>${escapedBody}</blockquote>`;
+}
+
+// Split a single escaped line that exceeds `size`, never cutting through an
+// HTML entity (escaped text only contains entities of the form &…; within a
+// few chars of the ampersand).
+function entitySafeSlices(line: string, size: number): string[] {
+  const slices: string[] = [];
+  let rest = line;
+  while (rest.length > size) {
+    let cut = size;
+    const amp = rest.lastIndexOf("&", cut - 1);
+    if (amp > 0 && rest.indexOf(";", amp) >= cut) cut = amp;
+    slices.push(rest.slice(0, cut));
+    rest = rest.slice(cut);
+  }
+  slices.push(rest);
+  return slices;
+}
+
+// Render one section into one or more self-contained HTML blocks, splitting
+// the (already escaped) body at newline boundaries when it can't fit a
+// single chunk. Tags always open and close within a block, so chunks built
+// from whole blocks can never split a tag, entity, or blockquote.
+function sectionBlocks(section: Section, budget: number): string[] {
+  const escaped = escapeHtml(section.body);
+  const whole = renderSectionBlock(section.title, escaped);
+  if (whole.length <= budget) return [whole];
+
+  const overhead = renderSectionBlock(
+    `${section.title} — part 99/99`,
+    ""
+  ).length;
+  const capacity = Math.max(256, budget - overhead);
+
+  const bodies: string[] = [];
+  let part = "";
+  for (const line of escaped.split("\n")) {
+    for (const piece of entitySafeSlices(line, capacity)) {
+      if (part && part.length + 1 + piece.length > capacity) {
+        bodies.push(part);
+        part = piece;
+      } else {
+        part = part ? `${part}\n${piece}` : piece;
+      }
+    }
+  }
+  if (part) bodies.push(part);
+
+  return bodies.map((body, index) =>
+    renderSectionBlock(
+      `${section.title} — part ${index + 1}/${bodies.length}`,
+      body
+    )
+  );
+}
+
+// Pack the header and section blocks into HTML messages of at most maxLen
+// chars. Follow-up chunks get a "(part i/N)" heading so they stay
+// attributable when other recordings' messages interleave in the chat.
+export function chunkMessage(
+  header: string,
+  heading: string,
+  sections: Section[],
+  maxLen = MAX_MESSAGE_LEN
+): string[] {
+  const continuation = `<b>${escapeHtml(heading)}</b> <i>(part 99/99)</i>\n\n`;
+  const budget = maxLen - continuation.length;
+
+  const blocks = sections.flatMap((section) => sectionBlocks(section, budget));
+
+  let chunks: string[] = [];
+  let current = header;
+  for (const block of blocks) {
+    if (current.length + 2 + block.length <= budget) {
+      current = `${current}\n\n${block}`;
+    } else {
+      chunks.push(current);
+      current = block;
+    }
+  }
+  chunks.push(current);
+
+  // Even with base64 payloads summarized, a recording can carry more text
+  // than is readable in a chat. Cap the spill and say what was dropped.
+  if (chunks.length > MAX_CHUNKS_PER_RECORDING) {
+    const omitted = chunks.length - (MAX_CHUNKS_PER_RECORDING - 1);
+    chunks = chunks.slice(0, MAX_CHUNKS_PER_RECORDING - 1);
+    chunks.push(
+      `<i>${omitted} more part(s) omitted — too long for Telegram. ` +
+        `Open the recording in the harness viewer for the full content.</i>`
+    );
+  }
+
+  if (chunks.length === 1) return chunks;
+  return chunks.map((chunk, index) =>
+    index === 0
+      ? chunk
+      : `<b>${escapeHtml(heading)}</b> <i>(part ${index + 1}/${chunks.length})</i>\n\n${chunk}`
+  );
+}
+
+function renderHeader(
+  recording: ChangedRecording,
+  entry: HarEntry,
+  doc: EndpointDocRow | null,
+  endpoint: string,
+  apicityPath: string,
+  status: string
+): string {
+  const ok = entry.response.status < 400;
+  const lines: string[] = [
+    `${ok ? "✅" : "❌"} <b>${escapeHtml(recordingHeading(recording))}</b>`,
+    `<code>${escapeHtml(apicityPath)}</code>`,
+    "",
+    `<code>${escapeHtml(endpoint)}</code> → <code>${escapeHtml(status)}</code>`,
+    `<b>Recording</b>: <code>${escapeHtml(recording.filePath)}</code>`,
+  ];
+
+  if (doc?.docsUrl) {
+    lines.push(
+      `<b>Docs</b>: <a href="${escapeHtmlAttr(doc.docsUrl)}">upstream</a>`
+    );
+  }
+
+  if (recording.entries.length > 1) {
+    lines.push(
+      `<i>${recording.entries.length} API calls in this recording; showing the primary one.</i>`
+    );
+  }
+
+  return lines.join("\n");
 }
 
 export function formatTelegramEndpointMessage(
@@ -723,56 +1169,20 @@ export function formatTelegramEndpointMessage(
   const endpoint = `${entry.request.method} ${stripQuery(entry.request.url)}`;
   const status = `${entry.response.status} ${entry.response.statusText}`.trim();
   const apicityPath = apicityPathFor(recording, entry, doc);
-  const mediaUrls = extractMediaUrls(recording.entries);
 
-  const request = prettyBody(getRequestBodyText(entry) ?? undefined);
-  const response = responsePreview(entry);
-
-  const lines: string[] = [
-    "<b>Apicity endpoint</b>",
-    `<b>${escapeHtml(recordingHeading(recording))}</b>`,
-    "",
-    `<b>Endpoint</b>: <code>${escapeHtml(endpoint)}</code>`,
-    `<b>Apicity path</b>: <code>${escapeHtml(apicityPath)}</code>`,
-    `<b>Status</b>: <code>${escapeHtml(status)}</code>`,
-    `<b>Recording</b>: <code>${escapeHtml(recording.filePath)}</code>`,
-  ];
-
-  if (doc?.docsUrl) {
-    lines.push(
-      `<b>Docs</b>: <a href="${escapeHtmlAttr(doc.docsUrl)}">upstream</a>`
-    );
-  }
-
-  if (recording.entries.length > 1) {
-    lines.push(
-      `<i>${recording.entries.length} API calls in this recording.</i>`
-    );
-  }
-
-  if (request) {
-    lines.push(
-      "",
-      "<b>Request</b>",
-      `<pre>${escapeHtml(truncate(request, MAX_BLOCK_LEN))}</pre>`
-    );
-  }
-
-  if (response) {
-    lines.push(
-      "",
-      "<b>Response</b>",
-      `<pre>${escapeHtml(truncate(response, MAX_BLOCK_LEN))}</pre>`
-    );
-  }
-
-  if (mediaUrls.length > 0) {
-    const links = mediaUrls.slice(0, 3).map((url) => {
-      const label = mediaLabel(url);
-      return `<a href="${escapeHtmlAttr(url)}">${label}</a>`;
-    });
-    lines.push("", `<b>Output</b>: ${links.join(" | ")}`);
-  }
+  const header = renderHeader(
+    recording,
+    entry,
+    doc,
+    endpoint,
+    apicityPath,
+    status
+  );
+  const chunks = chunkMessage(
+    header,
+    recordingHeading(recording),
+    buildSections(entry)
+  );
 
   return {
     provider: recording.provider,
@@ -781,7 +1191,9 @@ export function formatTelegramEndpointMessage(
     endpoint,
     apicityPath,
     status,
-    text: compactMessage(lines),
+    chunks,
+    text: chunks[0],
+    media: collectMedia(recording, apicityPath),
     parse_mode: "HTML",
   };
 }
@@ -795,29 +1207,142 @@ export function buildTelegramHarnessMessages(
     .map((recording) => formatTelegramEndpointMessage(recording, endpointDocs));
 }
 
-async function sendTelegramMessage(
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function telegramApi(
+  botToken: string,
+  method: string,
+  payload: FormData | Record<string, unknown>,
+  attempt = 0
+): Promise<Response> {
+  const url = `https://api.telegram.org/bot${botToken}/${method}`;
+  const init: RequestInit =
+    payload instanceof FormData
+      ? { method: "POST", body: payload }
+      : {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        };
+
+  const response = await fetch(url, init);
+
+  if (response.status === 429 && attempt < 2) {
+    const body = (await response.json().catch(() => null)) as {
+      parameters?: { retry_after?: number };
+    } | null;
+    const retryAfter = body?.parameters?.retry_after ?? 5;
+    await sleep((retryAfter + 1) * 1000);
+    return telegramApi(botToken, method, payload, attempt + 1);
+  }
+
+  return response;
+}
+
+async function sendChunk(
   botToken: string,
   chatId: string,
-  message: TelegramHarnessMessage
+  recordingName: string,
+  chunk: string
 ): Promise<void> {
-  const response = await fetch(
-    `https://api.telegram.org/bot${botToken}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message.text,
-        parse_mode: message.parse_mode,
-      }),
-    }
-  );
+  const response = await telegramApi(botToken, "sendMessage", {
+    chat_id: chatId,
+    text: chunk,
+    parse_mode: "HTML",
+  });
 
   if (!response.ok) {
     const body = await response.text();
     throw new Error(
-      `Telegram send failed for ${message.recordingName}: ` +
-        `${response.status} ${body}`
+      `Telegram send failed for ${recordingName}: ${response.status} ${body}`
+    );
+  }
+}
+
+async function resolveMediaBuffer(item: TelegramMediaItem): Promise<Buffer> {
+  if (item.source.type === "base64") {
+    return Buffer.from(item.source.data, "base64");
+  }
+
+  const response = await fetch(item.source.url, {
+    signal: AbortSignal.timeout(MEDIA_DOWNLOAD_TIMEOUT_MS),
+  });
+  if (!response.ok) {
+    throw new Error(`download failed: ${response.status}`);
+  }
+
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length > MAX_MEDIA_BYTES) {
+    throw new Error(
+      `media too large for Telegram upload (${formatByteSize(bytes.length)})`
+    );
+  }
+  return bytes;
+}
+
+const SEND_METHOD_BY_KIND: Record<TelegramMediaItem["kind"], string> = {
+  photo: "sendPhoto",
+  video: "sendVideo",
+  audio: "sendAudio",
+  document: "sendDocument",
+};
+
+async function sendMediaItem(
+  botToken: string,
+  chatId: string,
+  item: TelegramMediaItem
+): Promise<void> {
+  const bytes = await resolveMediaBuffer(item);
+  const form = new FormData();
+  form.append("chat_id", chatId);
+  form.append("caption", item.caption);
+  form.append(
+    item.kind,
+    new Blob([new Uint8Array(bytes)], { type: item.mime }),
+    item.filename
+  );
+
+  const response = await telegramApi(
+    botToken,
+    SEND_METHOD_BY_KIND[item.kind],
+    form
+  );
+  if (!response.ok) {
+    throw new Error(`${response.status} ${await response.text()}`);
+  }
+}
+
+// Media must never fail the run: recorded URLs expire (fal.media, kie) and a
+// dead link is not a reason to go red in CI. Fall back to a plain message.
+async function sendMediaWithFallback(
+  botToken: string,
+  chatId: string,
+  recordingName: string,
+  item: TelegramMediaItem
+): Promise<void> {
+  try {
+    await sendMediaItem(botToken, chatId, item);
+    return;
+  } catch (error) {
+    console.warn(
+      `Media upload failed for ${recordingName} (${item.filename}): ` +
+        `${error instanceof Error ? error.message : String(error)}`
+    );
+  }
+
+  const fallback =
+    item.source.type === "url"
+      ? `${escapeHtml(item.caption)}\n<a href="${escapeHtmlAttr(item.source.url)}">${escapeHtml(item.kind)}</a> <i>(upload failed; original URL)</i>`
+      : `${escapeHtml(item.caption)}\n<i>(${escapeHtml(item.mime)} attachment could not be uploaded)</i>`;
+
+  try {
+    await sendChunk(botToken, chatId, recordingName, fallback);
+  } catch (error) {
+    console.warn(
+      `Media fallback message failed for ${recordingName}: ` +
+        `${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -827,8 +1352,22 @@ export async function sendTelegramHarnessMessages(
   chatId: string,
   messages: TelegramHarnessMessage[]
 ): Promise<void> {
+  let first = true;
   for (const message of messages) {
-    await sendTelegramMessage(botToken, chatId, message);
+    for (const chunk of message.chunks) {
+      if (!first) await sleep(SEND_SPACING_MS);
+      first = false;
+      await sendChunk(botToken, chatId, message.recordingName, chunk);
+    }
+    for (const item of message.media) {
+      await sleep(SEND_SPACING_MS);
+      await sendMediaWithFallback(
+        botToken,
+        chatId,
+        message.recordingName,
+        item
+      );
+    }
   }
 }
 
@@ -836,11 +1375,15 @@ function parseCliOptions(args: string[]): CliOptions {
   let dryRun = false;
   let outPath = DEFAULT_OUT_PATH;
   let baseBranch = getBaseBranch();
+  let all = false;
+  const filters: string[] = [];
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === "--dry-run") {
       dryRun = true;
+    } else if (arg === "--all") {
+      all = true;
     } else if (arg === "--out") {
       outPath = args[++i] ?? outPath;
     } else if (arg.startsWith("--out=")) {
@@ -849,18 +1392,69 @@ function parseCliOptions(args: string[]): CliOptions {
       baseBranch = args[++i] ?? baseBranch;
     } else if (arg.startsWith("--base=")) {
       baseBranch = arg.slice("--base=".length);
+    } else if (!arg.startsWith("-")) {
+      filters.push(arg);
     }
   }
 
-  return { dryRun, outPath, baseBranch };
+  return { dryRun, outPath, baseBranch, all, filters };
+}
+
+// --all mode: walk tests/recordings/ instead of the git diff, optionally
+// narrowed by substring filters on the recording name or file path.
+function allRecordings(filters: string[]): ChangedRecording[] {
+  const recordings = parseHarDir(RECORDINGS_DIR).map(
+    (rec): ChangedRecording => ({
+      filePath: path.relative(process.cwd(), rec.source),
+      changeType: "modified",
+      provider: extractProvider(rec.source),
+      recordingName: rec.name,
+      entries: rec.entries,
+    })
+  );
+
+  if (filters.length === 0) return recordings;
+  return recordings.filter((rec) =>
+    filters.some(
+      (filter) =>
+        rec.filePath.includes(filter) ||
+        rec.recordingName.includes(filter) ||
+        recordingHeading(rec).includes(filter)
+    )
+  );
+}
+
+// The dry-run JSON is for human inspection and the CI message-count check;
+// replace base64 payloads with their byte length so the file stays small.
+function jsonSafeMessages(messages: TelegramHarnessMessage[]): unknown[] {
+  return messages.map((message) => ({
+    ...message,
+    media: message.media.map((item) =>
+      item.source.type === "base64"
+        ? {
+            ...item,
+            source: {
+              type: "base64",
+              byteLength: Buffer.from(item.source.data, "base64").length,
+            },
+          }
+        : item
+    ),
+  }));
 }
 
 async function main(): Promise<void> {
   const opts = parseCliOptions(process.argv.slice(2));
-  const recordings = getChangedRecordings(opts.baseBranch);
+  const recordings = opts.all
+    ? allRecordings(opts.filters)
+    : getChangedRecordings(opts.baseBranch);
   const messages = buildTelegramHarnessMessages(recordings);
 
-  fs.writeFileSync(opts.outPath, JSON.stringify(messages, null, 2), "utf-8");
+  fs.writeFileSync(
+    opts.outPath,
+    JSON.stringify(jsonSafeMessages(messages), null, 2),
+    "utf-8"
+  );
 
   if (opts.dryRun || messages.length === 0) {
     console.log(

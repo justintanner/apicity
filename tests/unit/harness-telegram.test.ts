@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import type { ChangedRecording } from "../har-data";
 import {
   buildTelegramHarnessMessages,
+  chunkMessage,
+  collectMedia,
   type EndpointDocRow,
 } from "../harness-telegram";
 
@@ -682,16 +684,33 @@ describe("harness Telegram messages", () => {
       "POST https://fal.run/fal-ai/bytedance/seed-speech/tts/v2"
     );
     expect(message.apicityPath).toBe("fal.run.bytedance.seedSpeech.tts.v2");
-    expect(message.text).toContain("<b>Apicity endpoint</b>");
+    expect(message.text).toContain(
+      "✅ <b>fal/bytedance-seed-speech-tts-v2</b>"
+    );
     expect(message.text).toContain(
       "<code>fal.run.bytedance.seedSpeech.tts.v2</code>"
     );
-    expect(message.text).toContain("<pre>{");
-    expect(message.text).toContain(
-      '<a href="https://v3b.fal.media/files/b/audio.mp3">audio</a>'
-    );
+    expect(message.text).toContain("<blockquote expandable>");
+    expect(message.text).toContain("Request body");
+    expect(message.text).toContain("Response body");
+    // Full body content, untruncated, inside the expandable sections.
+    expect(message.text).toContain("Hello from Apicity.");
+    expect(message.text).toContain("v3b.fal.media/files/b/audio.mp3");
+    expect(message.text).not.toContain("(truncated)");
     expect(message.text).not.toContain("```");
     expect(message.text).not.toContain("###");
+    expect(message.chunks).toEqual([message.text]);
+    // The recorded media URL becomes an inline upload, not a link.
+    expect(message.media).toEqual([
+      {
+        kind: "audio",
+        mime: "audio/mpeg",
+        filename: "audio.mp3",
+        caption:
+          "fal/bytedance-seed-speech-tts-v2 — fal.run.bytedance.seedSpeech.tts.v2",
+        source: { type: "url", url: "https://v3b.fal.media/files/b/audio.mp3" },
+      },
+    ]);
   });
 
   it("matches endpoint docs rows that use the {query} URL marker", () => {
@@ -716,7 +735,7 @@ describe("harness Telegram messages", () => {
     );
 
     expect(message.apicityPath).toBe("s3.buckets.head");
-    expect(message.text).toContain("<b>Response</b>");
+    expect(message.text).toContain("Response headers");
     expect(message.text).toContain("x-amz-bucket-region");
     expect(message.text).toContain("us-east-1");
     expect(message.text).not.toContain("redacted-noise");
@@ -757,7 +776,7 @@ describe("harness Telegram messages", () => {
     );
 
     expect(message.apicityPath).toBe("s3.objects.getAttributes");
-    expect(message.text).toContain("<b>Response</b>");
+    expect(message.text).toContain("Response body");
     expect(message.text).toContain("GetObjectAttributesResponse");
   });
 
@@ -827,5 +846,101 @@ describe("harness Telegram messages", () => {
 
     expect(message.apicityPath).toBe("b2.objects.list");
     expect(message.text).toContain("backblaze.com/docs");
+  });
+
+  it("redacts credential-shaped headers and drops cookies", () => {
+    const recording = seedSpeechRecording();
+    recording.entries[0].request.headers = [
+      { name: "authorization", value: "Bearer real-key-leak" },
+      { name: "x-custom-token", value: "real-token-leak" },
+      { name: "cookie", value: "session=real-cookie-leak" },
+      { name: "accept", value: "application/json" },
+    ];
+    recording.entries[0].response.headers = [
+      { name: "set-cookie", value: "PHPSESSID=real-session-leak" },
+      { name: "content-type", value: "application/json" },
+    ];
+
+    const [message] = buildTelegramHarnessMessages([recording], endpointDocs);
+    const all = message.chunks.join("\n");
+
+    expect(all).toContain("accept: application/json");
+    expect(all).toContain("authorization: ***");
+    expect(all).toContain("x-custom-token: ***");
+    expect(all).not.toContain("real-key-leak");
+    expect(all).not.toContain("real-token-leak");
+    expect(all).not.toContain("real-cookie-leak");
+    expect(all).not.toContain("real-session-leak");
+  });
+
+  it("splits oversized content into chunks under Telegram's limit", () => {
+    const bigJson = JSON.stringify(
+      { rows: Array.from({ length: 400 }, (_, i) => `value & <tag> ${i}`) },
+      null,
+      2
+    );
+    const chunks = chunkMessage(
+      "✅ <b>fal/huge-response</b>",
+      "fal/huge-response",
+      [
+        { title: "Request body (1 KB)", body: '{"prompt":"hi"}' },
+        { title: "Response body (20 KB)", body: bigJson },
+      ]
+    );
+
+    expect(chunks.length).toBeGreaterThan(1);
+    for (const chunk of chunks) {
+      expect(chunk.length).toBeLessThanOrEqual(4096);
+      // Blockquotes always open and close within a single chunk.
+      expect(chunk.split("<blockquote expandable>").length).toBe(
+        chunk.split("</blockquote>").length
+      );
+      // No raw angle brackets from the body escaped content.
+      expect(chunk).not.toContain("<tag>");
+    }
+    expect(chunks[0]).toContain("✅ <b>fal/huge-response</b>");
+    expect(chunks[1]).toContain("<b>fal/huge-response</b> <i>(part 2/");
+    expect(chunks.join("")).toContain("— part 1/");
+  });
+
+  it("collects base64 response bodies as inline media uploads", () => {
+    const recording = seedSpeechRecording();
+    recording.entries[0].response.content = {
+      mimeType: "audio/mpeg",
+      encoding: "base64",
+      text: Buffer.from("fake-mp3-bytes").toString("base64"),
+    };
+
+    const items = collectMedia(
+      recording,
+      "fal.run.bytedance.seedSpeech.tts.v2"
+    );
+
+    expect(items).toHaveLength(1);
+    expect(items[0].kind).toBe("audio");
+    expect(items[0].mime).toBe("audio/mpeg");
+    expect(items[0].filename).toBe("bytedance-seed-speech-tts-v2-1.mp3");
+    expect(items[0].source).toEqual({
+      type: "base64",
+      data: Buffer.from("fake-mp3-bytes").toString("base64"),
+    });
+    expect(items[0].caption.length).toBeLessThanOrEqual(1024);
+  });
+
+  it("marks binary response bodies as sent below instead of dumping bytes", () => {
+    const recording = seedSpeechRecording();
+    recording.entries[0].response.content = {
+      mimeType: "audio/mpeg",
+      encoding: "base64",
+      text: Buffer.from("fake-mp3-bytes").toString("base64"),
+    };
+
+    const [message] = buildTelegramHarnessMessages([recording], endpointDocs);
+
+    expect(message.text).toContain("binary audio/mpeg");
+    expect(message.text).toContain("sent below as media");
+    expect(message.text).not.toContain(
+      Buffer.from("fake-mp3-bytes").toString("base64")
+    );
   });
 });

@@ -26,7 +26,7 @@ export interface HarEntry {
     status: number;
     statusText: string;
     headers: Array<{ name: string; value: string }>;
-    content: { text?: string; mimeType?: string };
+    content: { text?: string; mimeType?: string; encoding?: string };
   };
 }
 

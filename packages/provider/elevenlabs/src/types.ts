@@ -374,6 +374,11 @@ export interface ElevenLabsUpdatePvcVoiceSampleResponse {
   voice_id: string;
 }
 
+export interface ElevenLabsPvcVoiceSampleWaveformResponse {
+  sample_id: string;
+  visual_waveform: number[];
+}
+
 // -- Model response shapes ---------------------------------------------------
 
 export interface ElevenLabsModelLanguage {
@@ -653,6 +658,14 @@ export interface ElevenLabsGetSeparatedSpeakerAudioMethod {
   ): Promise<ElevenLabsSpeakerAudioResponse>;
 }
 
+export interface ElevenLabsPvcVoiceSampleWaveformMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPvcVoiceSampleWaveformResponse>;
+}
+
 export interface ElevenLabsPvcVoiceNamespace {
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPvcVoiceSamplesNamespace;
@@ -707,6 +720,7 @@ export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace {
 
 export interface ElevenLabsPvcVoiceSamplesNamespace extends ElevenLabsUpdatePvcVoiceSampleMethod {
   speakers: ElevenLabsPvcVoiceSamplesSpeakersNamespace;
+  waveform: ElevenLabsPvcVoiceSampleWaveformMethod;
 }
 
 export type ElevenLabsPvcVoicesNamespace = ElevenLabsPvcVoiceNamespace;

@@ -1,0 +1,216 @@
+description = """
+Apicity add-endpoint formula — implement one new provider endpoint, record
+its HAR fixture, verify replay, and land it as a single PR.
+
+Strict conventions enforced by lint:
+  - Method paths mirror the upstream URL segment-by-segment
+    (kebab-case → camelCase): /v1/language-models → xai.v1.languageModels()
+  - A 2-line URL comment above the endpoint in the factory:
+      // {METHOD} {full upstream URL}
+      // Docs: {upstream docs URL}
+  - A matching row in scripts/endpoint-docs.tsv
+  - One endpoint per PR
+
+## Variables
+
+| Variable      | Source | Default | Description                                     |
+|---------------|--------|---------|-------------------------------------------------|
+| provider      | caller | —       | Provider package name, e.g. openai              |
+| method        | caller | —       | HTTP method, e.g. POST                          |
+| endpoint_path | caller | —       | Upstream URL path, e.g. /v1/embeddings          |
+| docs_url      | caller | —       | Upstream API docs URL for the endpoint          |
+| bead          | caller | —       | Tracking bead this endpoint closes              |
+| test_slug     | caller | derived | Test file slug; defaults from endpoint_path     |
+"""
+formula = "mol-add-endpoint"
+version = 1
+
+[vars]
+[vars.provider]
+description = "Provider package name under packages/provider/, e.g. openai, xai, fal."
+required = true
+
+[vars.method]
+description = "HTTP method of the upstream endpoint, e.g. GET or POST."
+required = true
+
+[vars.endpoint_path]
+description = "Upstream URL path, e.g. /v1/embeddings. Determines the apicity dot-path."
+required = true
+
+[vars.docs_url]
+description = "Upstream API documentation URL. Its hostname must be on the provider's allow-list in scripts/check-endpoint-comments.mjs."
+required = true
+
+[vars.bead]
+description = "The tracking bead for this endpoint. Claimed at the start, closed in the final step."
+required = true
+
+[vars.test_slug]
+description = "Slug for the integration test file name (tests/integration/{{provider}}-<slug>.test.ts). Derive from endpoint_path if not given, e.g. /v1/embeddings → embeddings."
+default = ""
+
+[[steps]]
+id = "load-context"
+title = "Load context and claim the bead"
+description = """
+**1. Prime and claim:**
+```bash
+bd prime
+bd show {{bead}}
+bd update {{bead}} --claim --json
+```
+
+**2. Verify a clean tree and branch off main:**
+```bash
+git checkout main && git pull --ff-only
+git status --porcelain   # MUST be empty
+git checkout -b feat/{{provider}}-endpoint
+```
+
+**Exit criteria:** Bead claimed, clean feature branch off up-to-date main."""
+
+[[steps]]
+id = "research"
+title = "Research the upstream endpoint and provider patterns"
+needs = ["load-context"]
+description = """
+**1. Read the upstream docs:** {{docs_url}}
+Note the request/response shapes, auth, and required vs optional fields.
+
+**2. Study one existing endpoint in the same provider** to copy its exact
+patterns — types, zod schema, factory wiring, integration test:
+```bash
+ls packages/provider/{{provider}}/src/
+grep -rn "Object.assign" packages/provider/{{provider}}/src/{{provider}}.ts | head
+ls tests/integration/{{provider}}-*.test.ts
+```
+
+**Exit criteria:** You can describe the request/response types and which
+existing endpoint you are mirroring."""
+
+[[steps]]
+id = "implement"
+title = "Types, schema, factory wiring, URL comment, TSV row"
+needs = ["research"]
+description = """
+All edits in packages/provider/{{provider}}/src/ unless noted. Mirror the
+endpoint you studied in the research step.
+
+1. **types.ts** — PascalCase request/response interfaces; update the provider
+   interface; export new types from index.ts.
+2. **zod.ts** — request schema for {{method}} endpoints; attach it to the
+   endpoint function as `.schema` via Object.assign (metadata only — no
+   runtime validation).
+3. **{{provider}}.ts** — wire `{{endpoint_path}}` into the factory. Kebab-case
+   URL segments become camelCase properties. Directly above the endpoint
+   property add the required 2-line comment:
+   ```typescript
+   // {{method}} <full upstream URL for {{endpoint_path}}>
+   // Docs: {{docs_url}}
+   ```
+4. **scripts/endpoint-docs.tsv** — add the
+   (provider, dotPath, method, fullUrl, docsUrl) row.
+
+**Gate:**
+```bash
+pnpm run lint:endpoints
+```
+
+**Exit criteria:** `pnpm run lint:endpoints` passes; build compiles
+(`pnpm run build:{{provider}}`)."""
+
+[[steps]]
+id = "test-and-record"
+title = "Integration test, record fixture, verify replay"
+needs = ["implement"]
+description = """
+**1. Write the test** in tests/integration/{{provider}}-{{test_slug}}.test.ts
+using setupPolly/teardownPolly from tests/harness.ts (copy an existing
+{{provider}} test).
+
+**2. Record the fixture** (record-missing — only the new test hits the
+network; 1Password resolves keys):
+```bash
+pnpm run dev:record -- tests/integration/{{provider}}-{{test_slug}}.test.ts
+```
+
+**3. Verify pure replay (no network):**
+```bash
+pnpm run test:run tests/integration/{{provider}}-{{test_slug}}.test.ts
+```
+
+Never re-record existing HARs here; `pnpm run dev:rerecord -- <file>` is the
+deliberate, guarded escape hatch for that.
+
+**Exit criteria:** Test passes in replay mode; new recording.har staged."""
+
+[[steps]]
+id = "telegram-preview"
+title = "Preview the endpoint's Telegram message"
+needs = ["test-and-record"]
+description = """
+CI posts one Telegram message per changed recording (full headers, payloads,
+response, inline media). Preview locally:
+
+```bash
+pnpm run harness:telegram -- --dry-run
+```
+
+Inspect harness-telegram-messages.json: chunks within limits, sections
+readable, secrets masked (***), media detected.
+
+**Exit criteria:** Dry-run message for the new recording looks right and
+leaks no credentials."""
+
+[[steps]]
+id = "preflight"
+title = "Run the full local gates"
+needs = ["telegram-preview"]
+description = """
+```bash
+pnpm run dev:preflight   # format + lint + full replay suite
+pnpm run ci:local        # exact CI mirror (audit + build + lint + test:run)
+```
+
+Fix anything red before continuing.
+
+**Exit criteria:** Both commands green; `git status` shows only intended
+changes (source, zod, types, test, recording, endpoint-docs.tsv, regenerated
+README from doc-gen)."""
+
+[[steps]]
+id = "commit-pr"
+title = "Commit, push, open the PR"
+needs = ["preflight"]
+description = """
+One endpoint per PR.
+
+```bash
+git add -A
+git commit -m "feat({{provider}}): add {{method}} {{endpoint_path}}"
+git push -u origin HEAD
+gh pr create --fill
+```
+
+CI re-runs the gates and the harness-report job posts the recording diff as
+a PR comment and sends the per-endpoint Telegram message. Merge to main once
+CI is green (maintainer authority applies for normal endpoint work).
+
+**Exit criteria:** PR open and CI green (or merged)."""
+
+[[steps]]
+id = "close"
+title = "Close the bead and sync"
+needs = ["commit-pr"]
+description = """
+```bash
+bd close {{bead}} --reason="Added {{method}} {{endpoint_path}} to {{provider}}; PR merged" --json
+bd dolt push
+git checkout main && git pull --rebase && git status --branch --short
+```
+
+File follow-up beads (with --deps discovered-from:{{bead}}) for anything
+noticed but not done.
+
+**Exit criteria:** Bead closed, bead data pushed, main up to date."""

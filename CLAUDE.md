@@ -55,7 +55,8 @@ pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
 pnpm run harness:report          # Generate PR-diff harness report directory (SPA shell + per-commit JSON)
-pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram HTML messages
+pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
+pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 pnpm run harness:screenshot      # Generate + screenshot the full harness report locally
 pnpm run harness:screenshot:media # Generate + screenshot ONLY media-bearing recordings
 
@@ -180,39 +181,38 @@ GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifa
 
 ### Adding a New Endpoint
 
-When assigned an endpoint task (e.g., "Add openai POST /v1/embeddings"):
+The full workflow (research → types/schema/factory → record → replay →
+telegram preview → gates → PR → close bead) is encoded in the
+`mol-add-endpoint` beads formula. Run it instead of working from a checklist:
 
-1. **Research** — Fetch the upstream API docs for the endpoint. Study an existing
-   endpoint in the same provider for patterns (types, schema, factory wiring, tests).
-2. **Types** — Add request/response interfaces to `types.ts` (PascalCase).
-   Update the provider interface. Export from `index.ts`.
-3. **Schema** — Add a zod request schema to `zod.ts`. Attach it to the
-   endpoint function as `.schema` via Object.assign.
-4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`.
-   Use Object.assign for callable namespaces.
-5. **URL comment (required)** — Place a 2-line comment immediately above the
-   endpoint property in the factory:
+```bash
+# Inspect the steps
+bd formula show mol-add-endpoint
 
-   ```typescript
-   // POST https://api.openai.com/v1/chat/completions
-   // Docs: https://platform.openai.com/docs/api-reference/chat/create
-   completions: Object.assign(async (req) => { ... }, { schema: ... })
-   ```
+# Instantiate for a task (or dispatch with: gc sling <rig> mol-add-endpoint --formula --var ...)
+bd cook mol-add-endpoint \
+  --var provider=openai --var method=POST --var endpoint_path=/v1/embeddings \
+  --var docs_url=https://platform.openai.com/docs/api-reference/embeddings \
+  --var bead=<tracking-bead>
+```
 
-   Line 1 is `// {METHOD} {full upstream URL}` (must match the URL the factory
-   actually hits). Line 2 is `// Docs: {upstream docs URL}` whose hostname is
-   on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. Also
-   add a `(provider, dotPath, method, fullUrl, docsUrl)` row to
-   `scripts/endpoint-docs.tsv` (the source of truth for docs URLs). Both are
-   enforced by `pnpm run lint:endpoints`. For overloaded endpoints (one async
-   function that dispatches to multiple paths), comment the default path.
-6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts`
-   using setupPolly/teardownPolly. Record fixtures, verify replay.
-7. **Telegram notification** — Endpoint changes send one Telegram message per
-   changed recording through `pnpm run harness:telegram` in PR and push CI. Use
-   `pnpm run harness:telegram -- --dry-run` to inspect the HTML-formatted
-   messages locally. Do not send `harness-summary-full.md` raw to Telegram.
-8. **Commit and PR** — One endpoint per PR.
+Two invariants worth knowing outside the formula:
+
+- **URL comment (lint-enforced)** — a 2-line comment immediately above each
+  endpoint property in the factory, plus a matching
+  `(provider, dotPath, method, fullUrl, docsUrl)` row in
+  `scripts/endpoint-docs.tsv`. Checked by `pnpm run lint:endpoints`; the docs
+  hostname must be on the provider's allow-list in
+  `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the
+  default path.
+
+  ```typescript
+  // POST https://api.openai.com/v1/chat/completions
+  // Docs: https://platform.openai.com/docs/api-reference/chat/create
+  completions: Object.assign(async (req) => { ... }, { schema: ... })
+  ```
+
+- **One endpoint per PR.**
 
 ## Development Workflow
 

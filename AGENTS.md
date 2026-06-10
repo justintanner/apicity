@@ -60,7 +60,8 @@ pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run dev:preflight           # format + lint + test:run (run before git push)
 pnpm run ci:local                # build + lint + test:run (exact CI mirror)
-pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram HTML messages
+pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
+pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 
 pnpm run check:op                # Verify 1Password service account is working
 pnpm run harness                 # Local HAR viewer at localhost:3475
@@ -68,25 +69,23 @@ pnpm run harness                 # Local HAR viewer at localhost:3475
 
 ## Adding a New Endpoint
 
-When assigned an endpoint task (e.g. "Add openai POST /v1/embeddings"):
+The workflow is encoded in the `mol-add-endpoint` beads formula
+(`.beads/formulas/mol-add-endpoint.formula.toml`):
 
-1. **Research** — Fetch upstream API docs. Study an existing endpoint in the same provider for patterns (types, schema, factory wiring, tests).
-2. **Types** — Add request/response interfaces to `types.ts` (PascalCase). Update the provider interface. Export from `index.ts`.
-3. **Schema** — Add PayloadSchema to `schemas.ts`. Add `validatePayload` via `Object.assign` on the endpoint function.
-4. **Factory** — Wire the endpoint into the factory function in `<provider>.ts`. Use `Object.assign` for callable namespaces.
-5. **URL comment (required)** — Place a 2-line comment immediately above the endpoint property in the factory:
+```bash
+bd formula show mol-add-endpoint
+bd cook mol-add-endpoint \
+  --var provider=openai --var method=POST --var endpoint_path=/v1/embeddings \
+  --var docs_url=https://platform.openai.com/docs/api-reference/embeddings \
+  --var bead=<tracking-bead>
+```
 
-   ```typescript
-   // POST https://api.openai.com/v1/chat/completions
-   // Docs: https://platform.openai.com/docs/api-reference/chat/create
-   completions: Object.assign(async (req) => { ... }, { schema: ... })
-   ```
+Or dispatch it: `gc sling <rig> mol-add-endpoint --formula --var ...`.
 
-   Line 1 is `// {METHOD} {full upstream URL}` (must match the URL the factory actually hits). Line 2 is `// Docs: {upstream docs URL}` whose hostname is on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. Also add a `(provider, dotPath, method, fullUrl, docsUrl)` row to `scripts/endpoint-docs.tsv`. Both are enforced by `pnpm run lint:endpoints`. For overloaded endpoints, comment the default path.
+Two invariants worth knowing outside the formula:
 
-6. **Integration test** — Write `tests/integration/<provider>-<slug>.test.ts` using `setupPolly` / `teardownPolly`. Record fixtures, verify replay.
-7. **Telegram notification** — Endpoint changes send one Telegram message per changed recording through `pnpm run harness:telegram` in PR and push CI. Use `pnpm run harness:telegram -- --dry-run` to inspect the HTML-formatted messages locally. Do not send `harness-summary-full.md` raw to Telegram.
-8. **Commit and PR** — One endpoint per PR.
+- **URL comment (lint-enforced)** — a 2-line comment immediately above each endpoint property in the factory (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`), plus a matching `(provider, dotPath, method, fullUrl, docsUrl)` row in `scripts/endpoint-docs.tsv`. Checked by `pnpm run lint:endpoints`; the docs hostname must be on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the default path.
+- **One endpoint per PR.**
 
 ## Integration Test Recording
 

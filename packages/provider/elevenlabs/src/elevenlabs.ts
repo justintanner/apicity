@@ -5,6 +5,8 @@ import {
   ElevenLabsListVoicesRequest,
   ElevenLabsListVoicesResponse,
   ElevenLabsOptions,
+  ElevenLabsPvcVoiceCaptchaRequest,
+  ElevenLabsPvcVoiceCaptchaResponse,
   ElevenLabsSoundGenerationRequest,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
@@ -19,6 +21,7 @@ import {
 import {
   ElevenLabsGetVoiceRequestSchema,
   ElevenLabsListVoicesRequestSchema,
+  ElevenLabsPvcVoiceCaptchaRequestSchema,
   ElevenLabsSoundGenerationRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
@@ -402,6 +405,27 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha/verify
+  const pvcVoiceCaptcha = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsPvcVoiceCaptchaRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPvcVoiceCaptchaResponse> => {
+      const form = new FormData();
+      appendFormField(form, "recording", req.recording);
+
+      return makeMultipartJsonRequest<ElevenLabsPvcVoiceCaptchaResponse>(
+        `/v1/voices/pvc/${encodeURIComponent(voiceId)}/captcha`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsPvcVoiceCaptchaRequestSchema }
+  );
+
   // GET https://api.elevenlabs.io/v2/voices
   // Docs: https://elevenlabs.io/docs/api-reference/voices/search
   const voices = Object.assign(
@@ -527,8 +551,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const user = {
     subscription: userSubscription,
   };
+  const pvcVoices = {
+    captcha: pvcVoiceCaptcha,
+  };
   const v1Voices = Object.assign(getVoice, {
     settings: getVoiceSettings,
+    pvc: pvcVoices,
   });
   const v2 = {
     voices,
@@ -538,6 +566,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToSpeech,
     textToDialogue,
     speechToText,
+    voices: {
+      pvc: pvcVoices,
+    },
   };
   const v1 = {
     models,

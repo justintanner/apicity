@@ -74,6 +74,18 @@ export type ElevenLabsGetVoiceRequest = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/voices/pvc/:voice_id/captcha
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsPvcVoiceCaptchaRequestSchema = z.object({
+  recording: z.custom<Blob>((value) => value instanceof Blob),
+});
+
+export type ElevenLabsPvcVoiceCaptchaRequest = z.infer<
+  typeof ElevenLabsPvcVoiceCaptchaRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/sound-generation
 // ---------------------------------------------------------------------------
 

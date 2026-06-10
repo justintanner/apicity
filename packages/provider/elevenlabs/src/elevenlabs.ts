@@ -13,6 +13,7 @@ import {
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
+  ElevenLabsStartSpeakerSeparationResponse,
   ElevenLabsUserSubscriptionResponse,
   ElevenLabsVoice,
   ElevenLabsVoiceSettings,
@@ -447,6 +448,26 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/separate-speakers
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/separate-speakers
+  const startSpeakerSeparation = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsStartSpeakerSeparationResponse> => {
+      return makeJsonRequest<ElevenLabsStartSpeakerSeparationResponse>(
+        "POST",
+        `/v1/voices/pvc/${encodeURIComponent(
+          voiceId
+        )}/samples/${encodeURIComponent(sampleId)}/separate-speakers`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v2/voices
   // Docs: https://elevenlabs.io/docs/api-reference/voices/search
   const voices = Object.assign(
@@ -589,10 +610,14 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const user = {
     subscription: userSubscription,
   };
+  const pvcVoiceSamples = {
+    separateSpeakers: startSpeakerSeparation,
+  };
   const pvcVoices = {
     captcha: Object.assign(pvcVoiceCaptcha, {
       get: getPvcVoiceCaptcha,
     }),
+    samples: pvcVoiceSamples,
   };
   const workspace = {
     analytics: {

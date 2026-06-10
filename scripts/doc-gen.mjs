@@ -128,6 +128,12 @@ function formatUsageSnippet(providerName, dotPath) {
   ) {
     return `const res = await ${call}("voice_id");`;
   }
+  if (
+    providerName === "elevenlabs" &&
+    dotPath === "v1.voices.pvc.samples.separateSpeakers"
+  ) {
+    return `const res = await ${call}("voice_id", "sample_id");`;
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.models") {
     return `const res = await ${call}();`;
   }

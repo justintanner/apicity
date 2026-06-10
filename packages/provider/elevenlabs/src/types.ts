@@ -524,6 +524,10 @@ export interface ElevenLabsWorkspaceAnalyticsRequestsResponse {
   column_units: (ElevenLabsWorkspaceAnalyticsColumnUnit | null)[];
 }
 
+export interface ElevenLabsStartSpeakerSeparationResponse {
+  status: string;
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface ElevenLabsDocsMethod {
@@ -561,6 +565,15 @@ export interface ElevenLabsSpeechToTextMethod {
     signal?: AbortSignal
   ): Promise<ElevenLabsSpeechToTextResponse>;
   schema: z.ZodType<ElevenLabsSpeechToTextRequest>;
+}
+
+export interface ElevenLabsStartSpeakerSeparationMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStartSpeakerSeparationResponse>;
+  schema: undefined;
 }
 
 export interface ElevenLabsListVoicesMethod {
@@ -605,6 +618,7 @@ export interface ElevenLabsGetPvcVoiceCaptchaMethod {
 
 export interface ElevenLabsPvcVoiceNamespace {
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
+  samples: ElevenLabsPvcVoiceSamplesNamespace;
 }
 
 export interface ElevenLabsUserSubscriptionMethod {
@@ -636,6 +650,12 @@ export interface ElevenLabsWorkspaceAnalyticsNamespace {
 export interface ElevenLabsWorkspaceNamespace {
   analytics: ElevenLabsWorkspaceAnalyticsNamespace;
 }
+
+export interface ElevenLabsPvcVoiceSamplesNamespace {
+  separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
+}
+
+export type ElevenLabsPvcVoicesNamespace = ElevenLabsPvcVoiceNamespace;
 
 export interface ElevenLabsV1Namespace {
   models: ElevenLabsListModelsMethod;

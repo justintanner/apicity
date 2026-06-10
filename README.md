@@ -4,7 +4,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.base.json)
 [![Node](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=nodedotjs&logoColor=white)](package.json)
-[![Minimal Dependencies](https://img.shields.io/badge/provider_deps-zod_only-blue)](package.json)
 
 A thin wrapper for many APIs: AI image and video generation, all major social
 media APIs, and more.
@@ -80,15 +79,6 @@ Direct KIE VEO calls are gated separately from `createTask`: for
 `kie.veo.post.api.v1.veo.generate` mint with `dotPath: "api.v1.veo.generate"`,
 for `kie.veo.post.api.v1.veo.extend` use `dotPath: "api.v1.veo.extend"`.
 Upload, status, and helper endpoints are unlisted and remain free.
-
-## Motivation
-
-Mitigate the predictable mistakes AI agents make when calling APIs:
-
-- Hallucinated JSON payloads or URLs
-- Calls from weird locations and times
-- Wasted video and image generation tokens
-- And more
 
 ## Packages
 
@@ -179,15 +169,6 @@ const limiter = createRateLimiter({ rpm: 60, concurrent: 5 });
 const chat = withRateLimit(openai.v1.chat.completions, limiter);
 ```
 
-## Development
-
-- **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
-- **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
-  Integration tests record/replay via Polly.js (no keys needed for replay).
-- **Validate before sending** — every POST endpoint exposes a `.schema`:
-  `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
-  hallucinated call locally instead of at the API.
-
 ## Paid endpoints (OTP pay gate)
 
 Endpoints with direct marginal cost (e.g. `kie.post.api.v1.jobs.createTask`
@@ -224,6 +205,15 @@ A blocked call throws `PayGateError` whose `.code` is one of
 The gate is generic — `xai` and others opt in by adding a `PAID_ENDPOINTS`
 entry. See [@apicity/cost](packages/provider/cost) for the full spec and the
 MCP server's `--paygate-secret-file` wiring.
+
+## Development
+
+- **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
+- **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
+  Integration tests record/replay via Polly.js (no keys needed for replay).
+- **Validate before sending** — every POST endpoint exposes a `.schema`:
+  `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
+  hallucinated call locally instead of at the API.
 
 ## License
 

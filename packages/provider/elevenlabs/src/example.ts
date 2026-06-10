@@ -18,6 +18,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration_seconds": 0.5,
       "prompt_influence": 0.3
     }
+  },
+  "POST v1.workspace.analytics.requests": {
+    "source": "elevenlabs/workspace-analytics-requests",
+    "payload": {
+      "start_time": 4102444800000,
+      "limit": 1,
+      "sort": "asc"
+    }
   }
 };
 

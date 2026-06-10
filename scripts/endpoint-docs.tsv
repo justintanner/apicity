@@ -218,6 +218,7 @@ elevenlabs	v1.speechToText	POST	https://api.elevenlabs.io/v1/speech-to-text	http
 elevenlabs	v1.textToDialogue	POST	https://api.elevenlabs.io/v1/text-to-dialogue	https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert
 elevenlabs	v1.textToSpeech	POST	https://api.elevenlabs.io/v1/text-to-speech/{voiceId}	https://elevenlabs.io/docs/api-reference/text-to-speech/convert
 elevenlabs	v1.user.subscription	GET	https://api.elevenlabs.io/v1/user/subscription	https://elevenlabs.io/docs/api-reference/user/subscription/get
+elevenlabs	v1.workspace.analytics.requests	POST	https://api.elevenlabs.io/v1/workspace/analytics/requests	https://elevenlabs.io/docs/api-reference/workspace/analytics/requests/get
 elevenlabs	v2.voices	GET	https://api.elevenlabs.io/v2/voices	https://elevenlabs.io/docs/api-reference/voices/search
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video	

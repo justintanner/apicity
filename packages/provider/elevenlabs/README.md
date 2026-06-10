@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-11 endpoints across 8 groups. Each method mirrors an upstream URL path.
+12 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### docs
 
@@ -319,6 +319,23 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v2.voices({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### workspace
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.analytics.requests</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/analytics/requests</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/analytics/requests/get)
+
+```typescript
+const res = await elevenlabs.v1.workspace.analytics.requests({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

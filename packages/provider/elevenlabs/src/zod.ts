@@ -230,3 +230,39 @@ export const ElevenLabsSpeechToTextRequestSchema = z.object({
 export type ElevenLabsSpeechToTextRequest = z.infer<
   typeof ElevenLabsSpeechToTextRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/analytics/requests
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsWorkspaceAnalyticsColumnFilterSchema = z.object({
+  column: z.string(),
+  operation: z.enum(["in", "not_in", "le", "ge", "lt", "gt", "eq", "neq"]),
+  values: z.array(z.union([z.string(), z.number(), z.boolean(), z.null()])),
+});
+
+export const ElevenLabsWorkspaceAnalyticsRequestsRequestSchema = z
+  .object({
+    start_time: z.number().int().min(1577836800000).nullable().optional(),
+    end_time: z.number().int().min(1577836800000).nullable().optional(),
+    limit: z.number().int().min(1).max(1000).optional(),
+    sort: z.enum(["asc", "desc"]).nullable().optional(),
+    filters: z
+      .array(ElevenLabsWorkspaceAnalyticsColumnFilterSchema)
+      .nullable()
+      .optional(),
+    search: z.string().nullable().optional(),
+  })
+  .superRefine((req, ctx) => {
+    if (req.start_time == null && req.end_time == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one of start_time or end_time is required.",
+        path: ["start_time"],
+      });
+    }
+  });
+
+export type ElevenLabsWorkspaceAnalyticsRequestsRequest = z.infer<
+  typeof ElevenLabsWorkspaceAnalyticsRequestsRequestSchema
+>;

@@ -7,6 +7,7 @@ import type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
+  ElevenLabsWorkspaceAnalyticsRequestsRequest,
 } from "./zod";
 
 export type {
@@ -18,6 +19,7 @@ export type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
+  ElevenLabsWorkspaceAnalyticsRequestsRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -464,6 +466,62 @@ export interface ElevenLabsDocsRedirectResponse {
   location: string | null;
 }
 
+// -- Workspace analytics response shapes ------------------------------------
+
+export type ElevenLabsWorkspaceAnalyticsSortDirection = "asc" | "desc";
+
+export type ElevenLabsWorkspaceAnalyticsFilterOperation =
+  | "in"
+  | "not_in"
+  | "le"
+  | "ge"
+  | "lt"
+  | "gt"
+  | "eq"
+  | "neq";
+
+export type ElevenLabsWorkspaceAnalyticsColumnType =
+  | "String"
+  | "Float"
+  | "DateTime"
+  | "Int"
+  | "Bool"
+  | "JSON"
+  | "Map";
+
+export type ElevenLabsWorkspaceAnalyticsColumnUnit =
+  | ""
+  | "ms"
+  | "s"
+  | "min"
+  | "duration"
+  | "credits"
+  | "usd"
+  | "eur"
+  | "inr"
+  | "pln"
+  | "ratio"
+  | "rating";
+
+export type ElevenLabsWorkspaceAnalyticsCellValue =
+  | string
+  | number
+  | boolean
+  | null;
+
+export interface ElevenLabsWorkspaceAnalyticsColumnFilter {
+  column: string;
+  operation: ElevenLabsWorkspaceAnalyticsFilterOperation;
+  values: ElevenLabsWorkspaceAnalyticsCellValue[];
+}
+
+export interface ElevenLabsWorkspaceAnalyticsRequestsResponse {
+  columns: string[];
+  column_types: ElevenLabsWorkspaceAnalyticsColumnType[];
+  rows: ElevenLabsWorkspaceAnalyticsCellValue[][];
+  column_units: (ElevenLabsWorkspaceAnalyticsColumnUnit | null)[];
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface ElevenLabsDocsMethod {
@@ -547,10 +605,26 @@ export interface ElevenLabsListModelsMethod {
   (signal?: AbortSignal): Promise<ElevenLabsListModelsResponse>;
 }
 
+export interface ElevenLabsWorkspaceAnalyticsRequestsMethod {
+  (
+    req: ElevenLabsWorkspaceAnalyticsRequestsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWorkspaceAnalyticsRequestsResponse>;
+  schema: z.ZodType<ElevenLabsWorkspaceAnalyticsRequestsRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsUserNamespace {
   subscription: ElevenLabsUserSubscriptionMethod;
+}
+
+export interface ElevenLabsWorkspaceAnalyticsNamespace {
+  requests: ElevenLabsWorkspaceAnalyticsRequestsMethod;
+}
+
+export interface ElevenLabsWorkspaceNamespace {
+  analytics: ElevenLabsWorkspaceAnalyticsNamespace;
 }
 
 export interface ElevenLabsV1Namespace {
@@ -561,6 +635,7 @@ export interface ElevenLabsV1Namespace {
   textToDialogue: ElevenLabsTextToDialogueMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   user: ElevenLabsUserNamespace;
+  workspace: ElevenLabsWorkspaceNamespace;
 }
 
 export interface ElevenLabsV2Namespace {
@@ -573,6 +648,7 @@ export interface ElevenLabsPostV1Namespace {
   textToDialogue: ElevenLabsTextToDialogueMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   voices: ElevenLabsPostV1VoicesNamespace;
+  workspace: ElevenLabsWorkspaceNamespace;
 }
 
 export interface ElevenLabsPostV1VoicesNamespace {

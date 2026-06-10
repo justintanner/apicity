@@ -15,6 +15,8 @@ import {
   ElevenLabsUserSubscriptionResponse,
   ElevenLabsVoice,
   ElevenLabsVoiceSettings,
+  ElevenLabsWorkspaceAnalyticsRequestsRequest,
+  ElevenLabsWorkspaceAnalyticsRequestsResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -26,6 +28,7 @@ import {
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
+  ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -548,11 +551,33 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // POST https://api.elevenlabs.io/v1/workspace/analytics/requests
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/analytics/requests/get
+  const workspaceAnalyticsRequests = Object.assign(
+    async (
+      req: ElevenLabsWorkspaceAnalyticsRequestsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsWorkspaceAnalyticsRequestsResponse> => {
+      return makeJsonRequest<ElevenLabsWorkspaceAnalyticsRequestsResponse>(
+        "POST",
+        "/v1/workspace/analytics/requests",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsWorkspaceAnalyticsRequestsRequestSchema }
+  );
+
   const user = {
     subscription: userSubscription,
   };
   const pvcVoices = {
     captcha: pvcVoiceCaptcha,
+  };
+  const workspace = {
+    analytics: {
+      requests: workspaceAnalyticsRequests,
+    },
   };
   const v1Voices = Object.assign(getVoice, {
     settings: getVoiceSettings,
@@ -569,6 +594,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     voices: {
       pvc: pvcVoices,
     },
+    workspace,
   };
   const v1 = {
     models,
@@ -578,6 +604,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToDialogue,
     speechToText,
     user,
+    workspace,
   };
 
   return attachExamples({

@@ -257,6 +257,72 @@ describe("ElevenLabs endpoint wiring", () => {
     );
   });
 
+  it("posts workspace analytics requests filters", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          columns: ["request_id", "timestamp", "success"],
+          column_types: ["String", "DateTime", "Bool"],
+          rows: [["req_123", "2026-06-01T12:00:00Z", true]],
+          column_units: [null, null, null],
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    const result = await provider.v1.workspace.analytics.requests({
+      start_time: 1764547200000,
+      limit: 10,
+      sort: "asc",
+      filters: [
+        {
+          column: "success",
+          operation: "eq",
+          values: [true],
+        },
+      ],
+      search: "text-to-speech",
+    });
+
+    expect(result.columns).toEqual(["request_id", "timestamp", "success"]);
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe(
+      "https://api.elevenlabs.io/v1/workspace/analytics/requests"
+    );
+    expect(init.method).toBe("POST");
+    expect(init.headers).toEqual({
+      "xi-api-key": "el-test",
+      "Content-Type": "application/json",
+    });
+    expect(JSON.parse(init.body as string)).toEqual({
+      start_time: 1764547200000,
+      limit: 10,
+      sort: "asc",
+      filters: [
+        {
+          column: "success",
+          operation: "eq",
+          values: [true],
+        },
+      ],
+      search: "text-to-speech",
+    });
+    expect(provider.post.v1.workspace.analytics.requests).toBe(
+      provider.v1.workspace.analytics.requests
+    );
+    expect(
+      provider.v1.workspace.analytics.requests.schema.safeParse({}).success
+    ).toBe(false);
+  });
+
   it("posts text-to-speech requests to the voice-specific create endpoint", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(new Uint8Array([1, 2, 3]), {

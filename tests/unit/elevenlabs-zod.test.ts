@@ -5,6 +5,7 @@ import {
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
+  ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
 } from "../../packages/provider/elevenlabs/src/zod";
 
 describe("ElevenLabs Zod schema validation", () => {
@@ -356,6 +357,56 @@ describe("ElevenLabs Zod schema validation", () => {
 
       expect(result.success).toBe(false);
       expect(result.error?.issues.some((i) => i.path.includes("inputs"))).toBe(
+        true
+      );
+    });
+  });
+
+  describe("workspace analytics requests schema", () => {
+    it("should validate request filters and search", () => {
+      const result =
+        ElevenLabsWorkspaceAnalyticsRequestsRequestSchema.safeParse({
+          start_time: 1764547200000,
+          limit: 100,
+          sort: "desc",
+          filters: [
+            {
+              column: "success",
+              operation: "eq",
+              values: [true],
+            },
+          ],
+          search: "text-to-speech",
+        });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject requests without a time bound", () => {
+      const result =
+        ElevenLabsWorkspaceAnalyticsRequestsRequestSchema.safeParse({
+          limit: 10,
+        });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("start_time"))
+      ).toBe(true);
+    });
+
+    it("should reject invalid limit and sort values", () => {
+      const result =
+        ElevenLabsWorkspaceAnalyticsRequestsRequestSchema.safeParse({
+          end_time: 1764547200000,
+          limit: 1001,
+          sort: "newest",
+        });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("limit"))).toBe(
+        true
+      );
+      expect(result.error?.issues.some((i) => i.path.includes("sort"))).toBe(
         true
       );
     });

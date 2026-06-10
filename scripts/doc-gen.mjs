@@ -62,7 +62,7 @@ async function collectEndpointsByProvider() {
       .map((row) => ({
         ...row,
         file: `packages/provider/${provider}/src/${provider}.ts`,
-        factory: CANONICAL_FACTORY[provider],
+        factory: resolveFactory(provider),
         fullDotPath: row.dotPath,
         path: row.fullUrl,
       }));
@@ -215,10 +215,6 @@ async function extractProviderMetadata(providerDir) {
     // Ignore
   }
   return { pkg };
-}
-
-function capitalize(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function renderXaiRateLimiting() {
@@ -2059,29 +2055,35 @@ const PROVIDER_DOCS = {
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
 };
 
-const CANONICAL_FACTORY = {
-  openai: "createOpenAi",
-  xai: "createXai",
-  fal: "createFal",
-  google: "createGoogle",
-  anthropic: "createAnthropic",
-  fireworks: "createFireworks",
-  alibaba: "createAlibaba",
-  binance: "createBinance",
-  s3: "createS3",
-  b2: "createB2",
-  kimicoding: "createKimiCoding",
-  kie: "createKie",
-  "free-media-upload": "createFreeMediaUpload",
-  cost: "createCost",
-  elevenlabs: "createElevenLabs",
-  meta: "createMeta",
-  x: "createX",
-  youtube: "createYouTube",
-  dolthub: "createDoltHub",
-  polymarket: "createPolymarket",
-  telegram: "createTelegram",
-};
+// Resolve the provider's factory function from the create* identifiers in
+// its src/index.ts: the one matching "create" + the provider name with
+// hyphens removed, case-insensitive (free-media-upload ->
+// createFreeMediaUpload). Throws when no export matches, so a new provider
+// with a nonstandard factory name fails the build instead of silently
+// generating READMEs with a guessed (wrong) factory.
+function resolveFactory(providerName) {
+  const indexPath = path.join(
+    REPO_ROOT,
+    "packages",
+    "provider",
+    providerName,
+    "src",
+    "index.ts"
+  );
+  const source = fsSync.readFileSync(indexPath, "utf8");
+  const identifiers = new Set(source.match(/\bcreate[A-Za-z0-9_]*/g) ?? []);
+  const expected = `create${providerName.replace(/-/g, "")}`.toLowerCase();
+  const match = [...identifiers].find(
+    (name) => name.toLowerCase() === expected
+  );
+  if (match) return match;
+  if (identifiers.size === 1) return [...identifiers][0];
+  throw new Error(
+    `Cannot determine factory for "${providerName}": no create* export in ` +
+      `${path.relative(REPO_ROOT, indexPath)} matches "${expected}" ` +
+      `(found: ${[...identifiers].join(", ") || "none"})`
+  );
+}
 
 // One-line explanation per runtime dependency, rendered under the badges so
 // the README states what each dependency is actually for.
@@ -2095,8 +2097,7 @@ const DEP_NOTES = {
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
   const pkgName = pkg.name || `@apicity/${providerName}`;
-  const factory =
-    CANONICAL_FACTORY[providerName] ?? `create${capitalize(providerName)}`;
+  const factory = resolveFactory(providerName);
   const auth = PROVIDER_AUTH[providerName] ?? {};
   const authField = auth.field ?? "apiKey";
   const envKey = auth.env ?? `${providerName.toUpperCase()}_API_KEY`;

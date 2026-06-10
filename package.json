@@ -55,7 +55,7 @@
     "doc-gen:b2": "node scripts/doc-gen.mjs b2",
     "doc-gen:kie": "node scripts/doc-gen.mjs kie",
     "doc-gen:polymarket": "node scripts/doc-gen.mjs polymarket",
-    "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free",
+    "doc-gen:free-media-upload": "node scripts/doc-gen.mjs free-media-upload",
     "doc-gen:youtube": "node scripts/doc-gen.mjs youtube",
     "doc-gen:telegram": "node scripts/doc-gen.mjs telegram",
     "doc-gen:x": "node scripts/doc-gen.mjs x",

@@ -3,13 +3,16 @@ import type {
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
   XTweetCreateRequest,
+  XOAuthTokenRequest,
 } from "./zod";
 
 export type {
   XOptions,
+  XOAuthOptions,
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
   XTweetCreateRequest,
+  XOAuthTokenRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -69,6 +72,17 @@ export interface XTweetCreateResponse {
   };
 }
 
+// refresh_token is present on authorization_code grants that requested the
+// offline.access scope; refresh grants may rotate it or omit it (keep the
+// old one when omitted).
+export interface XOAuthTokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  expires_in: number;
+  token_type?: string;
+  scope?: string;
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface XMediaUploadInitializeMethod {
@@ -102,6 +116,11 @@ export interface XTweetCreateMethod {
     signal?: AbortSignal
   ): Promise<XTweetCreateResponse>;
   schema: z.ZodType<XTweetCreateRequest>;
+}
+
+export interface XOAuthTokenMethod {
+  (req: XOAuthTokenRequest, signal?: AbortSignal): Promise<XOAuthTokenResponse>;
+  schema: z.ZodType<XOAuthTokenRequest>;
 }
 
 // -- Namespace interfaces ----------------------------------------------------
@@ -140,4 +159,20 @@ export interface XGetNamespace {
 export interface XProvider {
   post: XPostNamespace;
   get: XGetNamespace;
+}
+
+export interface XOAuth2Namespace {
+  token: XOAuthTokenMethod;
+}
+
+export interface XOAuthPostV2Namespace {
+  oauth2: XOAuth2Namespace;
+}
+
+export interface XOAuthPostNamespace {
+  v2: XOAuthPostV2Namespace;
+}
+
+export interface XOAuthProvider {
+  post: XOAuthPostNamespace;
 }

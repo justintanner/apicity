@@ -6,8 +6,9 @@ import { z } from "zod";
 
 // X requires a user-context OAuth 2.0 access token to post or upload media.
 // App-only Bearer tokens are read-only and rejected by the upload + tweets
-// endpoints. The caller obtains the access token via the PKCE flow externally
-// and supplies it here; this package does not implement the OAuth dance.
+// endpoints. The caller runs the browser authorize step (PKCE) externally,
+// then uses `createXOAuth` to exchange the code and refresh tokens, and
+// supplies the resulting access token here.
 export const XOptionsSchema = z.object({
   accessToken: z.string().min(1),
   baseURL: z.string().optional(),
@@ -17,6 +18,19 @@ export const XOptionsSchema = z.object({
 
 export type XOptions = z.infer<typeof XOptionsSchema>;
 
+// Options for the OAuth token client (`createXOAuth`). Authenticates as a
+// confidential client with Basic clientId:clientSecret — no access token,
+// since this is how access tokens are obtained in the first place.
+export const XOAuthOptionsSchema = z.object({
+  clientId: z.string().min(1),
+  clientSecret: z.string().min(1),
+  baseURL: z.string().optional(),
+  timeout: z.number().optional(),
+  fetch: z.custom<typeof fetch>().optional(),
+});
+
+export type XOAuthOptions = z.infer<typeof XOAuthOptionsSchema>;
+
 // ---------------------------------------------------------------------------
 // Shared building blocks
 // ---------------------------------------------------------------------------
@@ -24,6 +38,29 @@ export type XOptions = z.infer<typeof XOptionsSchema>;
 // X v2 represents IDs as numeric strings (≤ 19 digits) to avoid 64-bit
 // precision loss in JS — every id field on this surface uses this pattern.
 const XIdStringSchema = z.string().regex(/^[0-9]{1,19}$/);
+
+// ---------------------------------------------------------------------------
+// POST /2/oauth2/token
+// ---------------------------------------------------------------------------
+
+// One endpoint, two grants (RFC 6749): authorization_code finishes the PKCE
+// flow started in a browser; refresh_token rotates an expiring access token.
+// The body is form-encoded by the factory — the schema validates the typed
+// request object.
+export const XOAuthTokenRequestSchema = z.discriminatedUnion("grant_type", [
+  z.object({
+    grant_type: z.literal("authorization_code"),
+    code: z.string().min(1),
+    redirect_uri: z.string().min(1),
+    code_verifier: z.string().min(1),
+  }),
+  z.object({
+    grant_type: z.literal("refresh_token"),
+    refresh_token: z.string().min(1),
+  }),
+]);
+
+export type XOAuthTokenRequest = z.infer<typeof XOAuthTokenRequestSchema>;
 
 // ---------------------------------------------------------------------------
 // POST /2/media/upload/initialize

@@ -4,6 +4,7 @@ import {
   XMediaUploadInitializeRequestSchema,
   XMediaUploadAppendRequestSchema,
   XTweetCreateRequestSchema,
+  XOAuthTokenRequestSchema,
 } from "../../packages/provider/x/src/zod";
 
 describe("X Zod schema validation", () => {
@@ -391,6 +392,53 @@ describe("X Zod schema validation", () => {
       const result = XTweetCreateRequestSchema.safeParse(undefined);
       expect(result.success).toBe(false);
       expect(result.error?.issues.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("oauth token schema", () => {
+    it("should validate an authorization_code grant", () => {
+      const result = XOAuthTokenRequestSchema.safeParse({
+        grant_type: "authorization_code",
+        code: "abc",
+        redirect_uri: "http://127.0.0.1:8765/callback",
+        code_verifier: "verifier",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should validate a refresh_token grant", () => {
+      const result = XOAuthTokenRequestSchema.safeParse({
+        grant_type: "refresh_token",
+        refresh_token: "rt-1",
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject an authorization_code grant missing code_verifier", () => {
+      const result = XOAuthTokenRequestSchema.safeParse({
+        grant_type: "authorization_code",
+        code: "abc",
+        redirect_uri: "http://127.0.0.1:8765/callback",
+      });
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("code_verifier"))
+      ).toBe(true);
+    });
+
+    it("should reject a refresh_token grant with empty refresh_token", () => {
+      const result = XOAuthTokenRequestSchema.safeParse({
+        grant_type: "refresh_token",
+        refresh_token: "",
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it("should reject unknown grant types", () => {
+      const result = XOAuthTokenRequestSchema.safeParse({
+        grant_type: "client_credentials",
+      });
+      expect(result.success).toBe(false);
     });
   });
 });

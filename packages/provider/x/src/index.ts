@@ -1,4 +1,5 @@
 export { createX } from "./x";
+export { createXOAuth } from "./oauth";
 
 export { XError } from "./types";
 
@@ -27,4 +28,12 @@ export type {
   XGetV2Namespace,
   XGetNamespace,
   XProvider,
+  XOAuthOptions,
+  XOAuthTokenRequest,
+  XOAuthTokenResponse,
+  XOAuthTokenMethod,
+  XOAuth2Namespace,
+  XOAuthPostV2Namespace,
+  XOAuthPostNamespace,
+  XOAuthProvider,
 } from "./types";

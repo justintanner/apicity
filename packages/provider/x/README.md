@@ -72,11 +72,12 @@ token + refresh token. Access tokens last 2 hours; the refresh token
 re-authorizing.
 
 <details>
-<summary><code>mint-x-token.mjs</code> — zero-dep OAuth 2.0 PKCE helper</summary>
+<summary><code>mint-x-token.mjs</code> — OAuth 2.0 PKCE helper</summary>
 
 ```javascript
 import http from "node:http";
 import crypto from "node:crypto";
+import { createXOAuth } from "@apicity/x";
 
 const CLIENT_ID = process.env.X_CLIENT_ID;
 const CLIENT_SECRET = process.env.X_CLIENT_SECRET;
@@ -124,23 +125,16 @@ const server = http.createServer(async (req, res) => {
     server.close();
     process.exit(1);
   }
-  const basic = Buffer.from(
-    `${CLIENT_ID}:${CLIENT_SECRET}`
-  ).toString("base64");
-  const tokenRes = await fetch("https://api.x.com/2/oauth2/token", {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${basic}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams({
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: REDIRECT,
-      code_verifier: verifier,
-    }),
+  const oauth = createXOAuth({
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
   });
-  const tok = await tokenRes.json();
+  const tok = await oauth.post.v2.oauth2.token({
+    grant_type: "authorization_code",
+    code,
+    redirect_uri: REDIRECT,
+    code_verifier: verifier,
+  });
   console.log(JSON.stringify(tok, null, 2));
   res.writeHead(200).end("Authorized — check your terminal.");
   server.close();
@@ -160,6 +154,27 @@ const x = createX({ accessToken: process.env.X_ACCESS_TOKEN });
 
 await x.post.v2.tweets({
   text: "hello from @apicity/x",
+});
+```
+
+### 5. Refresh the token
+
+Access tokens expire after 2 hours. Use `createXOAuth` with the refresh
+token from step 3 to mint a fresh one without re-authorizing. Refresh
+tokens may rotate — persist `refresh_token` from the response when X
+returns one, and keep the old one when it's omitted.
+
+```typescript
+import { createXOAuth } from "@apicity/x";
+
+const oauth = createXOAuth({
+  clientId: process.env.X_CLIENT_ID!,
+  clientSecret: process.env.X_CLIENT_SECRET!,
+});
+
+const tok = await oauth.post.v2.oauth2.token({
+  grant_type: "refresh_token",
+  refresh_token: storedRefreshToken,
 });
 ```
 

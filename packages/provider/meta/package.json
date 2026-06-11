@@ -1,6 +1,6 @@
 {
   "name": "@apicity/meta",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Instagram Graph API provider for posting reels via the public-URL flow (graph.instagram.com).",
   "license": "MIT",
   "repository": {

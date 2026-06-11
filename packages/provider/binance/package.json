@@ -1,6 +1,6 @@
 {
   "name": "@apicity/binance",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Binance Spot REST API provider.",
   "license": "MIT",
   "repository": {

@@ -1,4 +1,5 @@
 import type { z } from "zod";
+import type { XaiGrokImagineVideo15ImageToVideoRequest } from "./zod";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -11,12 +12,14 @@ export type {
   XaiTool,
   XaiImageReference,
   XaiVideoReference,
+  XaiVideoReferenceInput,
   XaiChunkConfiguration,
   XaiFieldDefinition,
   XaiChatRequest,
   XaiImageGenerateRequest,
   XaiImageEditRequest,
   XaiVideoGenerateRequest,
+  XaiGrokImagineVideo15ImageToVideoRequest,
   XaiVideoEditRequest,
   XaiVideoExtendRequest,
   XaiBatchCreateRequest,
@@ -141,6 +144,11 @@ export interface XaiVideoData {
   respect_moderation: boolean;
 }
 
+export interface XaiVideoUsage {
+  cost_in_usd_ticks?: number;
+  [key: string]: unknown;
+}
+
 // Video result (returned from polling)
 export interface XaiVideoResult {
   status: "pending" | "done" | "expired" | "failed";
@@ -148,6 +156,14 @@ export interface XaiVideoResult {
   request_id?: string;
   video?: XaiVideoData;
   model?: string;
+  usage?: XaiVideoUsage;
+}
+
+export interface XaiGrokImagineVideo15ImageToVideoResponse extends XaiVideoResult {
+  status: "done";
+  request_id: string;
+  video: XaiVideoData;
+  model: string;
 }
 
 // Model info (GET /v1/models)
@@ -1041,6 +1057,15 @@ interface XaiVideoGenerationsMethod {
     signal?: AbortSignal
   ): Promise<XaiVideoAsyncResponse>;
   schema: z.ZodType<XaiVideoGenerateRequest>;
+  imageToVideo: XaiGrokImagineVideo15ImageToVideoMethod;
+}
+
+interface XaiGrokImagineVideo15ImageToVideoMethod {
+  (
+    req: XaiGrokImagineVideo15ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<XaiGrokImagineVideo15ImageToVideoResponse>;
+  schema: z.ZodType<XaiGrokImagineVideo15ImageToVideoRequest>;
 }
 
 interface XaiVideoEditsMethod {

@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW =
+  "grok-imagine-video-1.5-preview";
+
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
@@ -25,9 +28,19 @@ export const XaiImageReferenceSchema = z.object({
   type: z.enum(["image_url"]).optional(),
 });
 
-export const XaiVideoReferenceSchema = z.object({
-  url: z.string(),
-});
+export const XaiVideoReferenceSchema = z
+  .object({
+    url: z.string().min(1).optional(),
+    file_id: z.string().min(1).optional(),
+  })
+  .refine((value) => value.url !== undefined || value.file_id !== undefined, {
+    message: "Either url or file_id is required",
+  });
+
+export const XaiVideoReferenceInputSchema = z.union([
+  z.string().min(1),
+  XaiVideoReferenceSchema,
+]);
 
 export const XaiChunkConfigurationSchema = z.object({
   chars_configuration: z
@@ -159,17 +172,38 @@ export const XaiImageEditRequestSchema = z.object({
 // Videos
 // ---------------------------------------------------------------------------
 
+const XaiVideoAspectRatioSchema = z.enum([
+  "1:1",
+  "16:9",
+  "9:16",
+  "4:3",
+  "3:4",
+  "3:2",
+  "2:3",
+]);
+
+const XaiVideoResolutionSchema = z.enum(["480p", "720p"]);
+
 export const XaiVideoGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.string().optional(),
   duration: z.number().optional(),
-  aspect_ratio: z
-    .enum(["1:1", "16:9", "9:16", "4:3", "3:4", "3:2", "2:3"])
-    .optional(),
-  resolution: z.enum(["480p", "720p"]).optional(),
+  aspect_ratio: XaiVideoAspectRatioSchema.optional(),
+  resolution: XaiVideoResolutionSchema.optional(),
   image: XaiVideoReferenceSchema.optional(),
   video: XaiVideoReferenceSchema.optional(),
   reference_images: z.array(XaiVideoReferenceSchema).optional(),
+});
+
+export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z.object({
+  prompt: z.string().min(1),
+  model: z.literal(XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW).optional(),
+  image: XaiVideoReferenceInputSchema,
+  duration: z.number().int().min(1).max(15).optional(),
+  aspect_ratio: XaiVideoAspectRatioSchema.optional(),
+  resolution: XaiVideoResolutionSchema.optional(),
+  pollIntervalMs: z.number().int().min(0).optional(),
+  maxPolls: z.number().int().positive().optional(),
 });
 
 export const XaiVideoEditRequestSchema = z.object({
@@ -554,6 +588,9 @@ export type XaiToolFunction = z.infer<typeof XaiToolFunctionSchema>;
 export type XaiTool = z.infer<typeof XaiToolSchema>;
 export type XaiImageReference = z.infer<typeof XaiImageReferenceSchema>;
 export type XaiVideoReference = z.infer<typeof XaiVideoReferenceSchema>;
+export type XaiVideoReferenceInput = z.infer<
+  typeof XaiVideoReferenceInputSchema
+>;
 export type XaiChunkConfiguration = z.infer<typeof XaiChunkConfigurationSchema>;
 export type XaiFieldDefinition = z.infer<typeof XaiFieldDefinitionSchema>;
 export type XaiChatRequest = z.infer<typeof XaiChatRequestSchema>;
@@ -563,6 +600,9 @@ export type XaiImageGenerateRequest = z.infer<
 export type XaiImageEditRequest = z.infer<typeof XaiImageEditRequestSchema>;
 export type XaiVideoGenerateRequest = z.infer<
   typeof XaiVideoGenerateRequestSchema
+>;
+export type XaiGrokImagineVideo15ImageToVideoRequest = z.infer<
+  typeof XaiGrokImagineVideo15ImageToVideoRequestSchema
 >;
 export type XaiVideoEditRequest = z.infer<typeof XaiVideoEditRequestSchema>;
 export type XaiVideoExtendRequest = z.infer<typeof XaiVideoExtendRequestSchema>;

@@ -48,6 +48,9 @@ describe("paid-endpoint registry", () => {
       lookupPaidEndpoint("kie", "POST", "api.v1.veo.extend")
     ).toBeDefined();
     expect(
+      lookupPaidEndpoint("xai", "POST", "v1.videos.generations.imageToVideo")
+    ).toBeDefined();
+    expect(
       lookupPaidEndpoint("kie", "POST", "api.v1.elevenlabs.textToSpeechTurbo25")
     ).toBeUndefined();
   });
@@ -92,6 +95,9 @@ describe("paid-endpoint registry", () => {
     ).toBe(false);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.generate")).toBe(true);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.extend")).toBe(true);
+    expect(
+      isPaidEndpoint("xai", "POST", "v1.videos.generations.imageToVideo")
+    ).toBe(true);
   });
 
   it("isPaidEndpoint returns false for unlisted endpoints", () => {

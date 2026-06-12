@@ -110,6 +110,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
     key: {
       provider: "xai",
       method: "POST",
+      dotPath: "v1.videos.generations.imageToVideo",
+    },
+    info: {
+      reason:
+        "Grok Imagine image-to-video generation incurs direct compute cost",
+      costNotes:
+        "Billed per video generation based on duration, resolution, and input image",
+    },
+  },
+  {
+    key: {
+      provider: "xai",
+      method: "POST",
       dotPath: "v1.videos.edits",
     },
     info: {

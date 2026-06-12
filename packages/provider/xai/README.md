@@ -144,7 +144,7 @@ console.log(result.usage);
 
 ## API Reference
 
-45 endpoints across 18 groups. Each method mirrors an upstream URL path.
+46 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### apiKey
 
@@ -851,6 +851,21 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 ```typescript
 const res = await xai.v1.videos.generations({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.videos.generations.imageToVideo</code></b></summary>
+
+<code>POST https://api.x.ai/v1/videos/generations</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/video/image-to-video)
+
+```typescript
+const res = await xai.v1.videos.generations.imageToVideo({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)

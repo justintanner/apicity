@@ -417,6 +417,7 @@ describe("xAI provider core", () => {
       expect(provider.post.v1.images.generations).toBeDefined();
       expect(provider.post.v1.images.edits).toBeDefined();
       expect(provider.post.v1.videos.generations).toBeDefined();
+      expect(provider.post.v1.videos.generations.imageToVideo).toBeDefined();
       expect(provider.post.v1.videos.edits).toBeDefined();
       expect(provider.post.v1.videos.extensions).toBeDefined();
       expect(provider.post.v1.files).toBeDefined();

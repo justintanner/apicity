@@ -7,8 +7,12 @@ import {
   XaiImageEditRequest,
   XaiImageResponse,
   XaiVideoGenerateRequest,
+  XaiGrokImagineVideo15ImageToVideoRequest,
+  XaiGrokImagineVideo15ImageToVideoResponse,
   XaiVideoEditRequest,
   XaiVideoExtendRequest,
+  XaiVideoReference,
+  XaiVideoReferenceInput,
   XaiVideoAsyncResponse,
   XaiVideoResult,
   XaiFileObject,
@@ -73,6 +77,7 @@ import {
   XaiImageGenerateRequestSchema,
   XaiImageEditRequestSchema,
   XaiVideoGenerateRequestSchema,
+  XaiGrokImagineVideo15ImageToVideoRequestSchema,
   XaiVideoEditRequestSchema,
   XaiVideoExtendRequestSchema,
   XaiBatchCreateRequestSchema,
@@ -86,6 +91,7 @@ import {
   XaiSttRequestSchema,
   XaiCustomVoiceCreateRequestSchema,
   XaiBillingUsageRequestSchema,
+  XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
 } from "./zod";
 import { attachExamples } from "./example";
 import { withPaidGate } from "@apicity/cost";
@@ -104,6 +110,35 @@ function attachAbortHandler(
     // Already aborted, abort our controller too
     controller.abort();
   }
+}
+
+const DEFAULT_VIDEO_POLL_INTERVAL_MS = 5000;
+const DEFAULT_VIDEO_MAX_POLLS = 60;
+
+function normalizeVideoReference(
+  image: XaiVideoReferenceInput
+): XaiVideoReference {
+  if (typeof image === "string") return { url: image };
+  return image;
+}
+
+function waitForPollInterval(ms: number, signal?: AbortSignal): Promise<void> {
+  if (ms <= 0) return Promise.resolve();
+  if (signal?.aborted) {
+    return Promise.reject(new XaiError("XAI request aborted", 499));
+  }
+
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, ms);
+    const onAbort = () => {
+      clearTimeout(timeoutId);
+      reject(new XaiError("XAI request aborted", 499));
+    };
+    signal?.addEventListener("abort", onAbort, { once: true });
+  });
 }
 
 export function createXai(opts: XaiOptions): XaiProvider {
@@ -182,6 +217,98 @@ export function createXai(opts: XaiOptions): XaiProvider {
       }
     }
     return parts.length > 0 ? `?${parts.join("&")}` : "";
+  }
+
+  // sig-ok image-to-video helper polls the same generation endpoint.
+  // POST https://api.x.ai/v1/videos/generations
+  // Docs: https://docs.x.ai/developers/model-capabilities/video/image-to-video
+  async function imageToVideo(
+    req: XaiGrokImagineVideo15ImageToVideoRequest,
+    signal?: AbortSignal
+  ): Promise<XaiGrokImagineVideo15ImageToVideoResponse> {
+    if (
+      req.model !== undefined &&
+      req.model !== XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW
+    ) {
+      throw new XaiError(
+        `Grok Imagine image-to-video uses ${XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW}`,
+        400,
+        { model: req.model }
+      );
+    }
+
+    const {
+      pollIntervalMs = DEFAULT_VIDEO_POLL_INTERVAL_MS,
+      maxPolls = DEFAULT_VIDEO_MAX_POLLS,
+      image,
+    } = req;
+    const generationRequest: XaiVideoGenerateRequest = {
+      prompt: req.prompt,
+      model: XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
+      image: normalizeVideoReference(image),
+    };
+    if (req.duration !== undefined) generationRequest.duration = req.duration;
+    if (req.aspect_ratio !== undefined) {
+      generationRequest.aspect_ratio = req.aspect_ratio;
+    }
+    if (req.resolution !== undefined) {
+      generationRequest.resolution = req.resolution;
+    }
+    const start = await makeRequest<XaiVideoAsyncResponse>(
+      "POST",
+      "/videos/generations",
+      generationRequest,
+      signal
+    );
+    let lastStatus: XaiVideoResult | undefined;
+
+    for (let poll = 0; poll < maxPolls; poll++) {
+      const status = await makeRequest<XaiVideoResult>(
+        "GET",
+        `/videos/${encodeURIComponent(start.request_id)}`,
+        undefined,
+        signal
+      );
+      lastStatus = {
+        ...status,
+        request_id: status.request_id ?? start.request_id,
+      };
+
+      if (status.status === "done") {
+        if (!status.video?.url) {
+          throw new XaiError(
+            `XAI video generation completed without a video URL: ${start.request_id}`,
+            502,
+            lastStatus
+          );
+        }
+        return {
+          ...status,
+          status: "done",
+          request_id: start.request_id,
+          video: status.video,
+          model: status.model ?? XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
+        };
+      }
+
+      if (status.status === "failed" || status.status === "expired") {
+        throw new XaiError(
+          `XAI video generation ${status.status}: ${start.request_id}`,
+          500,
+          lastStatus
+        );
+      }
+
+      if (poll < maxPolls - 1) {
+        await waitForPollInterval(pollIntervalMs, signal);
+      }
+    }
+
+    throw new XaiError(
+      `XAI video generation timed out after ${maxPolls} polls: ${start.request_id}`,
+      408,
+      lastStatus ?? { request_id: start.request_id }
+    );
   }
 
   async function makeManagementRequest<T>(
@@ -884,6 +1011,9 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 },
                 {
                   schema: XaiVideoGenerateRequestSchema,
+                  imageToVideo: Object.assign(imageToVideo, {
+                    schema: XaiGrokImagineVideo15ImageToVideoRequestSchema,
+                  }),
                 }
               ),
               // POST https://api.x.ai/v1/videos/edits

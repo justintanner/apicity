@@ -608,6 +608,7 @@ xai	v1.videos	GET	https://api.x.ai/v1/videos/{requestId}	https://docs.x.ai/docs/
 xai	v1.videos.edits	POST	https://api.x.ai/v1/videos/edits	https://docs.x.ai/docs/api-reference
 xai	v1.videos.extensions	POST	https://api.x.ai/v1/videos/extensions	https://docs.x.ai/docs/api-reference
 xai	v1.videos.generations	POST	https://api.x.ai/v1/videos/generations	https://docs.x.ai/docs/api-reference
+xai	v1.videos.generations.imageToVideo	POST	https://api.x.ai/v1/videos/generations	https://docs.x.ai/developers/model-capabilities/video/image-to-video
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list
 youtube	transcripts	GET	https://www.youtube.com/watch?v={videoId}	
 youtube	videoMetadata	?	?	https://developers.google.com/youtube/player_parameters

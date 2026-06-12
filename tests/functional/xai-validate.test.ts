@@ -75,7 +75,7 @@ describe("xAI Zod schema validation", () => {
     it("accepts valid image generation request", () => {
       const result = XaiImageGenerateRequestSchema.safeParse({
         prompt: "A red apple",
-        model: "grok-imagine-image",
+        model: "grok-imagine-image-quality",
         n: 2,
         response_format: "url",
         aspect_ratio: "16:9",
@@ -115,7 +115,7 @@ describe("xAI Zod schema validation", () => {
     it("accepts valid image edit request", () => {
       const result = XaiImageEditRequestSchema.safeParse({
         prompt: "Make it blue",
-        model: "grok-imagine-image",
+        model: "grok-imagine-image-quality",
         image: { url: "https://example.com/image.jpg", type: "image_url" },
         n: 1,
       });

@@ -392,7 +392,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/images/edits</code>
 
-[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
 
 ```typescript
 const res = await xai.v1.images.edits({ /* ... */ });
@@ -407,7 +407,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 <code>POST https://api.x.ai/v1/images/generations</code>
 
-[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+[Upstream docs ↗](https://docs.x.ai/developers/rest-api-reference/inference/images)
 
 ```typescript
 const res = await xai.v1.images.generations({ /* ... */ });

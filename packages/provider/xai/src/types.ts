@@ -102,11 +102,28 @@ export interface XaiChatResponse {
 }
 
 // Single generated image data
+export interface XaiImageFileOutput {
+  file_id?: string;
+  filename?: string;
+  expires_at?: string;
+  public_url?: string;
+  public_url_error?: unknown;
+  public_url_expires_at?: string;
+}
+
 export interface XaiGeneratedImage {
   url?: string;
   b64_json?: string;
+  mime_type?: string;
   revised_prompt?: string;
   respect_moderation?: boolean;
+  file_output?: XaiImageFileOutput;
+  storage_error?: unknown;
+}
+
+export interface XaiImageUsage {
+  cost_in_usd_ticks?: number;
+  [key: string]: unknown;
 }
 
 // Image response
@@ -114,6 +131,7 @@ export interface XaiImageResponse {
   created?: number;
   model?: string;
   data: XaiGeneratedImage[];
+  usage?: XaiImageUsage;
 }
 
 // File upload response

@@ -5,6 +5,7 @@ import {
   XaiDeferredChatCompletionResult,
   XaiImageGenerateRequest,
   XaiImageEditRequest,
+  XaiImageReference,
   XaiImageResponse,
   XaiVideoGenerateRequest,
   XaiGrokImagineVideo15ImageToVideoRequest,
@@ -114,6 +115,25 @@ function attachAbortHandler(
 
 const DEFAULT_VIDEO_POLL_INTERVAL_MS = 5000;
 const DEFAULT_VIDEO_MAX_POLLS = 60;
+
+function normalizeImageReference(image: XaiImageReference): XaiImageReference {
+  const { image_url, ...rest } = image;
+  if (rest.url === undefined && image_url !== undefined) {
+    return { ...rest, url: image_url };
+  }
+  return rest;
+}
+
+function normalizeImageEditRequest(
+  req: XaiImageEditRequest
+): XaiImageEditRequest {
+  return {
+    ...req,
+    image:
+      req.image === undefined ? undefined : normalizeImageReference(req.image),
+    images: req.images?.map(normalizeImageReference),
+  };
+}
 
 function normalizeVideoReference(
   image: XaiVideoReferenceInput
@@ -958,7 +978,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
             },
             images: {
               // POST https://api.x.ai/v1/images/generations
-              // Docs: https://docs.x.ai/docs/api-reference
+              // Docs: https://docs.x.ai/developers/rest-api-reference/inference/images
               generations: Object.assign(
                 async function generations(
                   req: XaiImageGenerateRequest,
@@ -976,7 +996,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 }
               ),
               // POST https://api.x.ai/v1/images/edits
-              // Docs: https://docs.x.ai/docs/api-reference
+              // Docs: https://docs.x.ai/developers/rest-api-reference/inference/images
               edits: Object.assign(
                 async function edits(
                   req: XaiImageEditRequest,
@@ -985,7 +1005,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                   return await makeRequest(
                     "POST",
                     "/images/edits",
-                    req,
+                    normalizeImageEditRequest(req),
                     signal
                   );
                 },

@@ -67,7 +67,7 @@ describe("xAI validation error integration", () => {
     const provider = createXai({ apiKey: "sk-test-key" });
 
     const result = provider.post.v1.images.generations.schema.safeParse({
-      model: "grok-imagine-image",
+      model: "grok-imagine-image-quality",
     });
 
     expect(result.success).toBe(false);

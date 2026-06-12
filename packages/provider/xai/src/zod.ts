@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW =
   "grok-imagine-video-1.5-preview";
+export const XAI_GROK_IMAGINE_IMAGE_QUALITY = "grok-imagine-image-quality";
 
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
@@ -23,10 +24,22 @@ export const XaiToolSchema = z.object({
   function: XaiToolFunctionSchema,
 });
 
-export const XaiImageReferenceSchema = z.object({
-  url: z.string(),
-  type: z.enum(["image_url"]).optional(),
-});
+export const XaiImageReferenceSchema = z
+  .object({
+    url: z.string().min(1).optional(),
+    image_url: z.string().min(1).optional(),
+    file_id: z.string().min(1).optional(),
+    type: z.enum(["image_url"]).optional(),
+  })
+  .refine(
+    (value) =>
+      value.url !== undefined ||
+      value.image_url !== undefined ||
+      value.file_id !== undefined,
+    {
+      message: "Either url, image_url, or file_id is required",
+    }
+  );
 
 export const XaiVideoReferenceSchema = z
   .object({
@@ -152,21 +165,30 @@ const XaiImageAspectRatioSchema = z.enum([
 export const XaiImageGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.string().optional(),
-  n: z.number().int().min(1).optional(),
+  n: z.number().int().min(1).max(10).optional(),
   response_format: z.enum(["url", "b64_json"]).optional(),
   aspect_ratio: XaiImageAspectRatioSchema.optional(),
   resolution: z.enum(["1k", "2k"]).optional(),
+  storage_options: z.record(z.string(), z.unknown()).optional(),
+  user: z.string().optional(),
 });
 
-export const XaiImageEditRequestSchema = z.object({
-  prompt: z.string().min(1),
-  model: z.string().optional(),
-  image: XaiImageReferenceSchema.optional(),
-  images: z.array(XaiImageReferenceSchema).optional(),
-  n: z.number().int().min(1).optional(),
-  response_format: z.enum(["url", "b64_json"]).optional(),
-  aspect_ratio: XaiImageAspectRatioSchema.optional(),
-});
+export const XaiImageEditRequestSchema = z
+  .object({
+    prompt: z.string().min(1),
+    model: z.string().optional(),
+    image: XaiImageReferenceSchema.optional(),
+    images: z.array(XaiImageReferenceSchema).min(1).max(3).optional(),
+    n: z.number().int().min(1).max(10).optional(),
+    response_format: z.enum(["url", "b64_json"]).optional(),
+    aspect_ratio: XaiImageAspectRatioSchema.optional(),
+    resolution: z.enum(["1k", "2k"]).optional(),
+    storage_options: z.record(z.string(), z.unknown()).optional(),
+    user: z.string().optional(),
+  })
+  .refine((value) => value.image !== undefined || value.images !== undefined, {
+    message: "Either image or images is required",
+  });
 
 // ---------------------------------------------------------------------------
 // Videos

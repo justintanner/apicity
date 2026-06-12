@@ -592,8 +592,8 @@ xai	v1.files	DELETE	https://api.x.ai/v1/files/{fileId}	https://docs.x.ai/docs/ap
 xai	v1.files	GET	https://api.x.ai/v1/files/{fileIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.files	POST	https://api.x.ai/v1/files	https://docs.x.ai/docs/api-reference
 xai	v1.imageGenerationModels	GET	https://api.x.ai/v1/image-generation-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
-xai	v1.images.edits	POST	https://api.x.ai/v1/images/edits	https://docs.x.ai/docs/api-reference
-xai	v1.images.generations	POST	https://api.x.ai/v1/images/generations	https://docs.x.ai/docs/api-reference
+xai	v1.images.edits	POST	https://api.x.ai/v1/images/edits	https://docs.x.ai/developers/rest-api-reference/inference/images
+xai	v1.images.generations	POST	https://api.x.ai/v1/images/generations	https://docs.x.ai/developers/rest-api-reference/inference/images
 xai	v1.languageModels	GET	https://api.x.ai/v1/language-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.models	GET	https://api.x.ai/v1/models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.realtime.clientSecrets	POST	https://api.x.ai/v1/realtime/client_secrets	https://docs.x.ai/docs/api-reference

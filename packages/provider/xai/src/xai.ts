@@ -95,7 +95,7 @@ import {
   XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
 } from "./zod";
 import { attachExamples } from "./example";
-import { withPaidGate } from "@apicity/cost";
+import { withPaidGate } from "./with-paid-gate";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(

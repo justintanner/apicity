@@ -1,4 +1,4 @@
-import { createS3 } from "@apicity/s3";
+import { createS3 } from "./s3";
 
 import { attachExamples } from "./example";
 import type { B2Options, B2Provider } from "./types";

@@ -1,7 +1,7 @@
 # @apicity/b2
 
 [![npm](https://img.shields.io/npm/v/@apicity/b2?color=cb0000)](https://www.npmjs.com/package/@apicity/b2)
-[![dependencies](https://img.shields.io/badge/dependencies-2-blue)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 [![docs](https://img.shields.io/badge/docs-backblaze.com-blue)](https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api)
 
@@ -9,7 +9,6 @@ Backblaze B2 S3-compatible object storage provider.
 
 Runtime dependencies:
 
-- `@apicity/s3@workspace:*` — core S3 implementation this package wraps
 - `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
@@ -33,7 +32,7 @@ const b2 = createB2({
 });
 ```
 
-`@apicity/b2` delegates signing, transport, response parsing, and schemas to `@apicity/s3` while exposing only Backblaze-supported S3-compatible calls.
+`@apicity/b2` bundles its S3-compatible signing, transport, response parsing, and schemas locally while exposing only Backblaze-supported calls.
 
 ## API Reference
 

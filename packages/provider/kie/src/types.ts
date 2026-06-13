@@ -177,8 +177,8 @@ import type {
   GeminiOmniAudioCreateRequest,
 } from "./zod";
 
-export type { PayGateApproval as KieApproval } from "@apicity/cost";
-import type { PayGateApproval as KieApproval } from "@apicity/cost";
+export type { PayGateApproval as KieApproval } from "./paygate";
+import type { PayGateApproval as KieApproval } from "./paygate";
 
 interface KieCreateTaskMethod {
   (req: MediaGenerationRequest, approval?: KieApproval): Promise<TaskResponse>;

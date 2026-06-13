@@ -70,18 +70,6 @@ export class PayGateError extends Error {
     | "otp-mismatched-request"
     | "otp-replayed";
 
-  static [Symbol.hasInstance](value: unknown): boolean {
-    if (typeof value !== "object" || value === null) return false;
-    const record = value as Record<string, unknown>;
-    return (
-      record.name === "PayGateError" &&
-      typeof record.provider === "string" &&
-      typeof record.method === "string" &&
-      typeof record.dotPath === "string" &&
-      typeof record.code === "string"
-    );
-  }
-
   constructor(
     provider: string,
     method: string,

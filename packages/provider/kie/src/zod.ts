@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { PayGateConfig } from "@apicity/cost";
+import type { PayGateConfig } from "./paygate";
 
 // ---------------------------------------------------------------------------
 // Enums / named union types

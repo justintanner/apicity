@@ -1,4 +1,4 @@
-import { S3OptionsSchema } from "@apicity/s3";
+import { S3OptionsSchema } from "./s3-zod";
 import type { z } from "zod";
 
 import type { B2Options } from "./types";
@@ -32,7 +32,7 @@ export {
   S3PutObjectRequestSchema,
   S3UploadPartCopyRequestSchema,
   S3UploadPartRequestSchema,
-} from "@apicity/s3";
+} from "./s3-zod";
 
 export const B2OptionsSchema: z.ZodType<B2Options> = S3OptionsSchema.pick({
   accessKeyId: true,

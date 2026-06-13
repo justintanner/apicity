@@ -9,4 +9,4 @@ export type {
   B2Provider,
 } from "./types";
 
-export type * from "@apicity/s3";
+export type * from "./s3-types";

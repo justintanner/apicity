@@ -1,14 +1,13 @@
 # @apicity/xai
 
 [![npm](https://img.shields.io/npm/v/@apicity/xai?color=cb0000)](https://www.npmjs.com/package/@apicity/xai)
-[![dependencies](https://img.shields.io/badge/dependencies-2-blue)](package.json)
+[![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
 X.AI / Grok provider for chat and search.
 
 Runtime dependencies:
 
-- `@apicity/cost@workspace:*` — OTP pay-gate (`withPaidGate`) for paid endpoints
 - `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation

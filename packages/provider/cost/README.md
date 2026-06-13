@@ -7,8 +7,9 @@ fireworks, alibaba, kie, elevenlabs — see [Coverage](#coverage)), computed
 purely locally from bundled rate tables — no keys, no network.
 
 Zero dependencies, and not a wrapper for any single upstream API — a deliberate
-cross-provider helper. Other workspace packages depend on _it_: `@apicity/kie`
-and `@apicity/xai` use its `withPaidGate` to gate paid endpoints.
+cross-provider helper. Provider packages keep their runtime pay-gate verifier
+bundled locally; this package remains the canonical place to estimate costs,
+mint OTPs, and document the shared OTP format.
 
 ## Install
 
@@ -159,9 +160,10 @@ module in `src/pricing/`, bump `PRICING_AS_OF`.
 
 ## Paid endpoint guard (OTP pay gate)
 
-The cost package keeps a small, explicit **paid-endpoint registry** for
-endpoints with direct marginal compute cost (e.g. video generation).
-Endpoints **not** in the registry are assumed free and need no caller changes.
+The cost package keeps a small, explicit **paid-endpoint registry** used for
+OTP minting and documentation. Provider packages bundle the matching runtime
+registry for their own paid endpoints. Endpoints **not** in the registry are
+assumed free and need no caller changes.
 
 Paid endpoints require a **single-use OTP** (one-time password) minted from a
 shared **HMAC secret**. The gate is fail-closed and does **no** cost
@@ -342,15 +344,16 @@ apicity-paygate otp mint \
   --ttl 10m
 ```
 
-### Wiring the gate into a provider
+### Wiring the gate into a custom provider
 
-Providers apply the gate at the bottom of their factory with `withPaidGate`.
-The walker descends the HTTP-method roots (`post`, `get`, `delete`, `patch`,
-`put`) and routes every leaf whose `(provider, method, dotPath)` is in
+`@apicity/kie` and `@apicity/xai` bundle their runtime gate locally so the
+provider packages stay standalone. This package still exports `withPaidGate`
+and `dispatchWithPaidGate` for custom provider trees that want the same
+behavior. The walker descends the HTTP-method roots (`post`, `get`, `delete`,
+`patch`, `put`) and routes every leaf whose `(provider, method, dotPath)` is in
 `PAID_ENDPOINTS` through `dispatchWithPaidGate`; free leaves pass through
 unchanged, and schema records and other non-route properties are returned by
-reference. Providers with paid sub-provider roots wrap those trees explicitly
-with the same config so one replay store covers the provider instance:
+reference.
 
 ```ts
 import { createReplayStore, withPaidGate } from "@apicity/cost";
@@ -377,9 +380,8 @@ export function createKie(opts: KieOptions): KieProvider {
 }
 ```
 
-The gate is generic — `xai` and other providers opt in by adding a
-`PAID_ENDPOINTS` entry and threading `{ config: opts.paygate }` through their
-factory.
+The gate is generic for custom trees, but published provider packages should
+not depend on `@apicity/cost` for runtime gating.
 
 ### Retry semantics
 

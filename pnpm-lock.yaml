@@ -174,9 +174,6 @@ importers:
 
   packages/provider/b2:
     dependencies:
-      '@apicity/s3':
-        specifier: workspace:*
-        version: link:../s3
       zod:
         specifier: ^3.24.0
         version: 3.25.76
@@ -227,9 +224,6 @@ importers:
 
   packages/provider/kie:
     dependencies:
-      '@apicity/cost':
-        specifier: workspace:*
-        version: link:../cost
       zod:
         specifier: ^4.0.0
         version: 4.4.2
@@ -281,9 +275,6 @@ importers:
 
   packages/provider/xai:
     dependencies:
-      '@apicity/cost':
-        specifier: workspace:*
-        version: link:../cost
       zod:
         specifier: ^3.24.0
         version: 3.25.76

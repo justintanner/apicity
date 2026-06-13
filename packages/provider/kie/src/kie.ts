@@ -29,7 +29,8 @@ import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { attachExamples } from "./example";
-import { createReplayStore, withPaidGate } from "@apicity/cost";
+import { createReplayStore } from "./paygate";
+import { withPaidGate } from "./with-paid-gate";
 import { kieRequest } from "./request";
 
 const MIME_TYPES: Record<string, string> = {

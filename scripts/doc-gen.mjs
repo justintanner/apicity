@@ -2169,8 +2169,6 @@ function resolveFactory(providerName) {
 const DEP_NOTES = {
   zod: "request schemas attached to every POST endpoint as `.schema`",
   viem: "EIP-712 order signing for the CLOB trading endpoints",
-  "@apicity/s3": "core S3 implementation this package wraps",
-  "@apicity/cost": "OTP pay-gate (`withPaidGate`) for paid endpoints",
 };
 
 async function generateReadme(providerDir, providerName, endpoints) {
@@ -2305,7 +2303,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "b2") {
     sections.push(
-      "`@apicity/b2` delegates signing, transport, response parsing, and schemas to `@apicity/s3` while exposing only Backblaze-supported S3-compatible calls.",
+      "`@apicity/b2` bundles its S3-compatible signing, transport, response parsing, and schemas locally while exposing only Backblaze-supported calls.",
       ""
     );
   }

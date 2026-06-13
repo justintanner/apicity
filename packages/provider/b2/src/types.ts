@@ -2,9 +2,9 @@ import type {
   S3BucketsNamespace,
   S3ObjectsNamespace,
   S3PresignNamespace,
-} from "@apicity/s3";
+} from "./s3-types";
 
-export { S3Error, S3Error as B2Error } from "@apicity/s3";
+export { S3Error, S3Error as B2Error } from "./s3-types";
 
 export interface B2Options {
   accessKeyId: string;

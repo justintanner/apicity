@@ -1,6 +1,6 @@
 import { kieRequest } from "./request";
 import { VeoGenerateRequestSchema, VeoExtendRequestSchema } from "./zod";
-import type { PayGateApproval } from "@apicity/cost";
+import type { PayGateApproval } from "./paygate";
 import type { z } from "zod";
 
 export type VeoModel = "veo3" | "veo3_fast";

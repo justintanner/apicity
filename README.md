@@ -24,9 +24,9 @@ media APIs, and more.
 - **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
   plain function wrappers.
 - **Minimal provider dependencies.** Providers depend only on `zod` — plus
-  `viem` in `@apicity/polymarket` (order signing), `@apicity/s3` in
-  `@apicity/b2`, and `@apicity/cost` in `@apicity/kie`/`@apicity/xai`
-  (pay-gate). ESM, strict TypeScript.
+  `viem` in `@apicity/polymarket` for order signing. Paid endpoint OTP
+  verification and B2's S3-compatible transport are bundled inside their
+  provider packages. ESM, strict TypeScript.
 
 ## Example
 

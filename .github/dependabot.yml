@@ -4,13 +4,9 @@ updates:
     directory: /
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
-    groups:
-      minor-patch:
-        update-types:
-          - minor
-          - patch
+    # Disable Dependabot version-update PRs while keeping this config present.
+    open-pull-requests-limit: 0
+    # Ignore every dependency so security-update PRs are not generated.
+    # Dependabot alerts/security warnings are controlled separately in GitHub.
     ignore:
       - dependency-name: "*"
-        update-types:
-          - version-update:semver-major

@@ -13,6 +13,34 @@ export interface PollyContext {
   mode: string;
 }
 
+interface PersistedHarHeader {
+  name?: string;
+  value?: string;
+}
+
+export interface PersistedHarRecording {
+  _id?: string;
+  request?: {
+    url?: string;
+    headers?: PersistedHarHeader[];
+    postData?: {
+      mimeType?: string;
+      params?: unknown[];
+      text?: string;
+    };
+  };
+  response?: {
+    bodySize?: number;
+    headers?: PersistedHarHeader[];
+    cookies?: unknown[];
+    content?: {
+      mimeType?: string;
+      size?: number;
+      text?: string;
+    };
+  };
+}
+
 interface MultipartFileSummary {
   _file: true;
   filename?: string;
@@ -143,6 +171,13 @@ export function setupPolly(recordingName: string): PollyContext {
   return setupPollyWithOptions(recordingName, {});
 }
 
+export function setupPollyWithPersistScrubber(
+  recordingName: string,
+  beforePersist: (recording: PersistedHarRecording) => void
+): PollyContext {
+  return setupPollyWithOptions(recordingName, { beforePersist });
+}
+
 export function setupPollyForFileUploads(recordingName: string): PollyContext {
   // Disable body matching for FormData compatibility
   return setupPollyWithOptions(recordingName, {
@@ -204,7 +239,10 @@ function resolvePollyMode(): {
 
 function setupPollyWithOptions(
   recordingName: string,
-  options: { matchRequestsBy?: Record<string, unknown> }
+  options: {
+    matchRequestsBy?: Record<string, unknown>;
+    beforePersist?: (recording: PersistedHarRecording) => void;
+  }
 ): PollyContext {
   const { raw, adapter, recordIfMissing } = resolvePollyMode();
   const recordingsDir = path.resolve(import.meta.dirname, "recordings");
@@ -279,6 +317,8 @@ function setupPollyWithOptions(
         summarizeMultipartFormData(req.body)
       );
     }
+
+    options.beforePersist?.(recording as PersistedHarRecording);
   });
 
   return { polly, mode: raw };

@@ -1,13 +1,55 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPolly,
+  setupPollyWithPersistScrubber,
+  teardownPolly,
+  type PersistedHarRecording,
+  type PollyContext,
+} from "../harness";
 import { createOpenAi } from "@apicity/openai";
+
+const MINIMAL_FILES_LIST_RESPONSE = {
+  object: "list",
+  data: [],
+  has_more: false,
+  first_id: null,
+  last_id: null,
+};
+
+function sanitizeOpenAiFilesListRecording(
+  recording: PersistedHarRecording
+): void {
+  const response = recording.response;
+  if (!response) return;
+
+  const text = JSON.stringify(MINIMAL_FILES_LIST_RESPONSE);
+  response.bodySize = text.length;
+  response.content ??= {};
+  response.content.mimeType = "application/json";
+  response.content.size = text.length;
+  response.content.text = text;
+  response.cookies = [];
+
+  const droppedHeaders = new Set([
+    "openai-organization",
+    "openai-project",
+    "set-cookie",
+    "x-request-id",
+  ]);
+  response.headers = response.headers?.filter(
+    (header) => !droppedHeaders.has(header.name?.toLowerCase() ?? "")
+  );
+}
 
 describe("openai files integration", () => {
   let ctx: PollyContext;
 
   describe("list files", () => {
     beforeEach(() => {
-      ctx = setupPolly("openai/files-list");
+      ctx = setupPollyWithPersistScrubber(
+        "openai/files-list",
+        sanitizeOpenAiFilesListRecording
+      );
     });
 
     afterEach(async () => {

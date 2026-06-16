@@ -1,8 +1,8 @@
 {
   "POST managementApi.v1.collections": {
-    "source": "xai/collections-docs",
+    "source": "xai/collections-documents-add",
     "payload": {
-      "name": "test-delete-doc-1775143467493"
+      "collection_name": "test-collection-for-docs"
     }
   },
   "POST managementApi.v1.collections.documents": {
@@ -53,23 +53,15 @@
       "temperature": 0
     }
   },
-  "POST v1.documents.search": {
-    "source": "xai/documents-search",
-    "payload": {
-      "query": "test",
-      "limit": 10,
-      "filters": {
-        "collection_id": "test-collection"
-      }
-    }
-  },
   "POST v1.images.edits": {
-    "source": "xai/image-edits",
+    "source": "xai/image-edit-single",
     "payload": {
-      "model": "grok-2-image-1212",
-      "image": {},
-      "prompt": "Add a sunset background",
-      "n": 1
+      "prompt": "Render this as a pencil sketch with detailed shading",
+      "model": "grok-imagine-image",
+      "image": {
+        "url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+        "type": "image_url"
+      }
     }
   },
   "POST v1.images.generations": {
@@ -88,10 +80,10 @@
     }
   },
   "POST v1.responses": {
-    "source": "xai/responses-crud",
+    "source": "xai/responses-crud-create",
     "payload": {
-      "model": "grok-2",
-      "input": "Delete this"
+      "model": "grok-4-fast",
+      "input": "Hello!"
     }
   },
   "POST v1.tokenizeText": {
@@ -131,10 +123,13 @@
     }
   },
   "POST v1.videos.generations": {
-    "source": "xai/video-get",
+    "source": "xai/video-text-to-video",
     "payload": {
-      "model": "grok-video",
-      "prompt": "A cat playing with a ball"
+      "prompt": "A white cat with heterochromia eyes walking across a rooftop at golden hour, cinematic drone shot",
+      "model": "grok-imagine-video",
+      "duration": 10,
+      "aspect_ratio": "16:9",
+      "resolution": "720p"
     }
   },
   "PUT managementApi.v1.collections": {

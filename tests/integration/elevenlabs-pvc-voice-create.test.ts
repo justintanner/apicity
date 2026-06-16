@@ -18,7 +18,7 @@ describe("elevenlabs v1.voices.pvc", () => {
 
   it("routes PVC voice creation requests", async () => {
     const provider = createElevenLabs({
-      apiKey: "elevenlabs-test-key",
+      apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
     const req: ElevenLabsCreatePvcVoiceRequest = {
       name: "Apicity PVC route test",
@@ -33,9 +33,8 @@ describe("elevenlabs v1.voices.pvc", () => {
     expect(provider.post.v1.voices.pvc).toBe(provider.v1.voices.pvc);
     expect(provider.v1.voices.pvc.schema.safeParse(req).success).toBe(true);
 
-    await expect(provider.v1.voices.pvc(req)).rejects.toMatchObject({
-      status: 401,
-      code: "invalid_api_key",
-    });
+    const res = await provider.v1.voices.pvc(req);
+    expect(typeof res.voice_id).toBe("string");
+    expect(res.voice_id.length).toBeGreaterThan(0);
   });
 });

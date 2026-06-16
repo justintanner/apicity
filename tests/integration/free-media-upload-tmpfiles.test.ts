@@ -4,17 +4,18 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
-  getPollyMode,
-  recordingExists,
   type PollyContext,
 } from "../harness";
 import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
 describe("free-media-upload tmpfiles upload", () => {
-  let ctx: PollyContext;
+  let ctx: PollyContext | undefined;
 
   afterEach(async () => {
-    await teardownPolly(ctx);
+    if (ctx) {
+      await teardownPolly(ctx);
+      ctx = undefined;
+    }
   });
 
   it("should upload a file and return a URL", async () => {
@@ -68,13 +69,6 @@ describe("free-media-upload tmpfiles upload", () => {
   });
 
   it("should expose schema on upload", () => {
-    if (
-      getPollyMode() === "replay" &&
-      !recordingExists("free-media-upload/tmpfiles-schema")
-    ) {
-      return;
-    }
-    ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-schema");
     const provider = createFreeMediaUpload();
     const schema = provider.tmpfiles.api.v1.upload.schema;
 
@@ -83,13 +77,6 @@ describe("free-media-upload tmpfiles upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (
-      getPollyMode() === "replay" &&
-      !recordingExists("free-media-upload/tmpfiles-validate")
-    ) {
-      return;
-    }
-    ctx = setupPollyForFileUploads("free-media-upload/tmpfiles-validate");
     const provider = createFreeMediaUpload();
     const result = provider.tmpfiles.api.v1.upload.schema.safeParse({});
 

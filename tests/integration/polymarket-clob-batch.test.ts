@@ -1,11 +1,5 @@
 import { describe, it, expect, afterEach } from "vitest";
-import {
-  setupPolly,
-  teardownPolly,
-  getPollyMode,
-  recordingExists,
-  type PollyContext,
-} from "../harness";
+import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createPolymarket } from "@apicity/polymarket";
 
 const TOKEN_YES =
@@ -14,10 +8,13 @@ const TOKEN_NO =
   "50346565575310273995396997144874891836871065259829083228393044602519086496922";
 
 describe("polymarket clob batch POSTs", () => {
-  let ctx: PollyContext;
+  let ctx: PollyContext | undefined;
 
   afterEach(async () => {
-    await teardownPolly(ctx);
+    if (ctx) {
+      await teardownPolly(ctx);
+      ctx = undefined;
+    }
   });
 
   it("books returns one orderbook per requested token", async () => {
@@ -117,14 +114,7 @@ describe("polymarket clob batch POSTs", () => {
     }
   });
 
-  it("exposes payload schemas for runtime validation", async () => {
-    if (
-      getPollyMode() === "replay" &&
-      !recordingExists("polymarket/clob-batch-schemas")
-    ) {
-      return;
-    }
-    ctx = setupPolly("polymarket/clob-batch-schemas");
+  it("exposes payload schemas for runtime validation", () => {
     const provider = createPolymarket();
 
     expect(typeof provider.post.clob.books.schema.parse).toBe("function");

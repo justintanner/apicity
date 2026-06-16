@@ -4,17 +4,18 @@ import { describe, it, expect, afterEach } from "vitest";
 import {
   setupPollyForFileUploads,
   teardownPolly,
-  getPollyMode,
-  recordingExists,
   type PollyContext,
 } from "../harness";
 import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
 describe("free-media-upload catbox upload", () => {
-  let ctx: PollyContext;
+  let ctx: PollyContext | undefined;
 
   afterEach(async () => {
-    await teardownPolly(ctx);
+    if (ctx) {
+      await teardownPolly(ctx);
+      ctx = undefined;
+    }
   });
 
   it("should upload a text file", async () => {
@@ -39,13 +40,6 @@ describe("free-media-upload catbox upload", () => {
   });
 
   it("should validate payload - missing file", () => {
-    if (
-      getPollyMode() === "replay" &&
-      !recordingExists("free-media-upload/catbox-validate")
-    ) {
-      return;
-    }
-    ctx = setupPollyForFileUploads("free-media-upload/catbox-validate");
     const provider = createFreeMediaUpload();
     const result = provider.catbox.upload.schema.safeParse({});
 

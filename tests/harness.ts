@@ -51,6 +51,8 @@ interface MultipartFileSummary {
 
 type MultipartSummaryValue = string | MultipartFileSummary;
 
+const REDACTED_GUEST_TOKEN = "***";
+
 function appendMultipartField(
   summary: Record<string, unknown>,
   name: string,
@@ -186,6 +188,67 @@ export function redactPersistedHarSecrets(
   const responseText = recording.response?.content?.text;
   if (typeof responseText === "string") {
     recording.response.content.text = redactResponseTextSecrets(responseText);
+  }
+  redactGuestTokenResponseBody(recording);
+}
+
+function byteLength(value: string): number {
+  return new TextEncoder().encode(value).length;
+}
+
+function redactGuestTokens(value: unknown): {
+  value: unknown;
+  redacted: boolean;
+} {
+  if (Array.isArray(value)) {
+    let redacted = false;
+    const redactedValues = value.map((item) => {
+      const result = redactGuestTokens(item);
+      redacted ||= result.redacted;
+      return result.value;
+    });
+    return { value: redactedValues, redacted };
+  }
+  if (value === null || typeof value !== "object") {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const redactedObject: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (key === "guestToken" && typeof item === "string") {
+      redactedObject[key] = REDACTED_GUEST_TOKEN;
+      redacted = true;
+      continue;
+    }
+    const result = redactGuestTokens(item);
+    redacted ||= result.redacted;
+    redactedObject[key] = result.value;
+  }
+  return { value: redactedObject, redacted };
+}
+
+function redactGuestTokenResponseBody(recording: PersistedHarRecording): void {
+  const content = recording.response?.content;
+  const text = content?.text;
+  if (typeof text !== "string" || text.length === 0) return;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+
+  const result = redactGuestTokens(parsed);
+  if (!result.redacted) return;
+
+  const nextText =
+    JSON.stringify(result.value) + (text.endsWith("\n") ? "\n" : "");
+  content.text = nextText;
+  content.size = byteLength(nextText);
+  if (recording.response) {
+    recording.response.bodySize = byteLength(nextText);
   }
 }
 

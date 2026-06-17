@@ -91,6 +91,35 @@ describe("harness request body helpers", () => {
     expect(parseRequestBody(entry)).toEqual(expected);
     expect(JSON.parse(getRequestBodyText(entry) ?? "")).toEqual(expected);
   });
+
+  it("redacts Gofile guest tokens from persisted response bodies", () => {
+    const recording: PersistedHarRecording = {
+      response: {
+        content: {
+          mimeType: "application/json",
+          text: '{"data":{"guestToken":"live-token","nested":[{"guestToken":"other-token"}]},"status":"ok"}\n',
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(JSON.parse(recording.response?.content?.text ?? "")).toEqual({
+      data: {
+        guestToken: "***",
+        nested: [{ guestToken: "***" }],
+      },
+      status: "ok",
+    });
+    expect(recording.response?.content?.text).not.toContain("live-token");
+    expect(recording.response?.content?.text).not.toContain("other-token");
+    expect(recording.response?.content?.size).toBe(
+      new TextEncoder().encode(recording.response?.content?.text ?? "").length
+    );
+    expect(recording.response?.bodySize).toBe(
+      recording.response?.content?.size
+    );
+  });
 });
 
 describe("harness persist scrubbers", () => {

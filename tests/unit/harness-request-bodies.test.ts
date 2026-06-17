@@ -123,6 +123,47 @@ describe("harness request body helpers", () => {
 });
 
 describe("harness persist scrubbers", () => {
+  it("redacts response cookies before persisting recordings", () => {
+    const recording: PersistedHarRecording = {
+      response: {
+        headers: [
+          { name: "content-type", value: "application/json" },
+          {
+            name: "set-cookie",
+            value: "JSESSIONID=raw-session; Path=/; HttpOnly",
+          },
+          {
+            name: "Set-Cookie",
+            value: "other=raw-cookie; Path=/; Secure",
+          },
+        ],
+        cookies: [
+          { name: "JSESSIONID", value: "raw-session", httpOnly: true },
+          { name: "other", value: "raw-cookie", secure: true },
+        ],
+        content: { text: '{"ok":true}' },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(recording.response?.headers).toEqual([
+      { name: "content-type", value: "application/json" },
+      {
+        name: "set-cookie",
+        value: "JSESSIONID=***; Path=/; HttpOnly",
+      },
+      {
+        name: "Set-Cookie",
+        value: "other=***; Path=/; Secure",
+      },
+    ]);
+    expect(recording.response?.cookies).toEqual([
+      { name: "JSESSIONID", value: "***", httpOnly: true },
+      { name: "other", value: "***", secure: true },
+    ]);
+  });
+
   it("redacts DashScope identifiers and signed OSS response URLs", () => {
     const recording: PersistedHarRecording = {
       request: {

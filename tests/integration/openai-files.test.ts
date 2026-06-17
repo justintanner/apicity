@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   setupPolly,
+  setupPollyForFileUploads,
   setupPollyWithPersistScrubber,
   teardownPolly,
   type PersistedHarRecording,
@@ -71,7 +72,7 @@ describe("openai files integration", () => {
 
   describe("upload and retrieve file", () => {
     beforeEach(() => {
-      ctx = setupPolly("openai/files-upload");
+      ctx = setupPollyForFileUploads("openai/files-upload");
     });
 
     afterEach(async () => {

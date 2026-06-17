@@ -52,21 +52,18 @@ export function isSensitiveResponseHeaderName(
 export function scrubSensitiveResponseHeaders(
   headers: HarHeaderLike[] | undefined
 ): void {
-  for (const header of headers ?? []) {
-    if (isSensitiveResponseHeaderName(header.name)) {
-      header.value = REDACTED_HAR_VALUE;
-    }
-  }
+  if (!headers) return;
+
+  const retainedHeaders = headers.filter(
+    (header) => !isSensitiveResponseHeaderName(header.name)
+  );
+  headers.splice(0, headers.length, ...retainedHeaders);
 }
 
 export function scrubResponseCookies(
   cookies: HarCookieLike[] | undefined
 ): void {
-  for (const cookie of cookies ?? []) {
-    if (typeof cookie.value === "string") {
-      cookie.value = REDACTED_HAR_VALUE;
-    }
-  }
+  cookies?.splice(0, cookies.length);
 }
 
 export function scrubSensitiveResponse(recording: HarRecordingLike): void {

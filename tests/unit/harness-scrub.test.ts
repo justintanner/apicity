@@ -1,12 +1,8 @@
 import { describe, expect, it } from "vitest";
-import {
-  REDACTED_HAR_VALUE,
-  scrubSensitiveResponse,
-  type HarRecordingLike,
-} from "../har-scrub";
+import { scrubSensitiveResponse, type HarRecordingLike } from "../har-scrub";
 
 describe("HAR response scrubber", () => {
-  it("redacts response cookies and provider identifiers", () => {
+  it("drops response cookies and sensitive response headers", () => {
     const recording: HarRecordingLike = {
       response: {
         cookies: [
@@ -30,23 +26,13 @@ describe("HAR response scrubber", () => {
 
     scrubSensitiveResponse(recording);
 
-    expect(recording.response?.cookies?.[0]?.value).toBe(REDACTED_HAR_VALUE);
-    expect(recording.response?.cookies?.[1]?.value).toBe(REDACTED_HAR_VALUE);
-    expect(recording.response?.cookies?.[2]?.value).toBeUndefined();
+    expect(recording.response?.cookies).toEqual([]);
     expect(recording.response?.headers).toEqual([
-      { name: "anthropic-organization-id", value: REDACTED_HAR_VALUE },
-      { name: "openai-organization", value: REDACTED_HAR_VALUE },
-      { name: "request-id", value: REDACTED_HAR_VALUE },
-      { name: "x-request-id", value: REDACTED_HAR_VALUE },
-      { name: "traceresponse", value: REDACTED_HAR_VALUE },
-      { name: "x-dashscope-inner-user-meta", value: REDACTED_HAR_VALUE },
-      { name: "set-cookie", value: REDACTED_HAR_VALUE },
-      { name: "Set-Cookie", value: REDACTED_HAR_VALUE },
       { name: "content-type", value: "application/json" },
     ]);
   });
 
-  it("redacts Kie JSESSIONID response cookies", () => {
+  it("drops Kie JSESSIONID response cookies", () => {
     const recording: HarRecordingLike = {
       response: {
         cookies: [{ name: "JSESSIONID", value: "kie-session-id" }],
@@ -61,11 +47,7 @@ describe("HAR response scrubber", () => {
 
     scrubSensitiveResponse(recording);
 
-    expect(recording.response?.cookies).toEqual([
-      { name: "JSESSIONID", value: REDACTED_HAR_VALUE },
-    ]);
-    expect(recording.response?.headers).toEqual([
-      { name: "set-cookie", value: REDACTED_HAR_VALUE },
-    ]);
+    expect(recording.response?.cookies).toEqual([]);
+    expect(recording.response?.headers).toEqual([]);
   });
 });

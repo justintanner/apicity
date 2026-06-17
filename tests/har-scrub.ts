@@ -22,6 +22,7 @@ export interface HarRecordingLike {
 const SENSITIVE_RESPONSE_HEADER_NAMES = new Set([
   "anthropic-organization-id",
   "cf-ray",
+  "cookie",
   "openai-organization",
   "openai-project",
   "origin-cf-ray",

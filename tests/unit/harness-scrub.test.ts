@@ -62,6 +62,7 @@ describe("HAR response scrubber", () => {
           { name: "x-mbx-uuid", value: "uuid-real" },
           { name: "traceresponse", value: "trace-real" },
           { name: "x-dashscope-inner-user-meta", value: "user-real" },
+          { name: "cookie", value: "__cf_bm=real-cookie-value" },
           { name: "set-cookie", value: "_cfuvid=real-cookie-value" },
           { name: "Set-Cookie", value: "JSESSIONID=real-session-id; Path=/" },
           { name: "content-type", value: "application/json" },
@@ -126,6 +127,44 @@ describe("HAR response scrubber", () => {
             leaks.push(
               `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
                 "response header set-cookie"
+            );
+          }
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
+  });
+
+  it("keeps committed OpenAI fixtures free of sensitive response metadata", () => {
+    const recordingsDir = path.resolve(
+      import.meta.dirname,
+      "../recordings/openai_3991279299"
+    );
+    const sensitiveHeaders = new Set([
+      "cookie",
+      "openai-organization",
+      "openai-project",
+      "set-cookie",
+    ]);
+    const leaks: string[] = [];
+
+    for (const file of collectRecordingHars(recordingsDir)) {
+      const har = JSON.parse(readFileSync(file, "utf8")) as FixtureHar;
+      for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+        for (const cookie of entry.response?.cookies ?? []) {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              `response cookie ${cookie.name ?? "<unnamed>"}`
+          );
+        }
+
+        for (const header of entry.response?.headers ?? []) {
+          const headerName = header.name?.toLowerCase();
+          if (headerName && sensitiveHeaders.has(headerName)) {
+            leaks.push(
+              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                `response header ${header.name}`
             );
           }
         }

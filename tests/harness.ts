@@ -92,7 +92,100 @@ function findHeaderValue(
 }
 
 function redactUrlSecrets(url: string): string {
-  return url.replace(/(https:\/\/api\.telegram\.org\/bot)[^/]+/g, "$1***");
+  return url
+    .replace(/(https:\/\/api\.telegram\.org\/bot)[^/]+/g, "$1***")
+    .replace(/([?&](?:OSSAccessKeyId|Signature)=)[^"&\\]+/g, "$1***");
+}
+
+function redactResponseTextSecrets(text: string): string {
+  const redacted = redactUrlSecrets(text);
+  if (
+    !/"upload_host"\s*:/.test(redacted) ||
+    !/"oss_access_key_id"\s*:/.test(redacted)
+  ) {
+    return redacted;
+  }
+
+  return redacted
+    .replace(/("oss_access_key_id"\s*:\s*")[^"]*(")/g, "$1***$2")
+    .replace(/("signature"\s*:\s*")[^"]*(")/g, "$1***$2");
+}
+
+function redactDashScopeFlowControlMeta(value: string | undefined): string {
+  if (!value) return "***";
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (
+      parsed !== null &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed)
+    ) {
+      const meta = parsed as Record<string, unknown>;
+      if ("user_id" in meta) meta.user_id = "***";
+      if ("user_spec" in meta) meta.user_spec = "***";
+      return JSON.stringify(meta);
+    }
+  } catch {
+    // Fall back to string-level redaction for malformed service metadata.
+  }
+
+  return value
+    .replace(/("user_id"\s*:\s*")[^"]*(")/g, "$1***$2")
+    .replace(/("user_spec"\s*:\s*)(?:\{[^}]*\}|"[^"]*"|[^,}]+)/g, '$1"***"');
+}
+
+function redactDashScopeResponseHeaders(
+  headers: PersistedHarHeader[] | undefined
+): void {
+  for (const header of headers ?? []) {
+    switch (header.name?.toLowerCase()) {
+      case "x-dashscope-apikeyid":
+      case "x-dashscope-uid":
+        header.value = "***";
+        break;
+      case "x-dashscope-bwid":
+      case "x-dashscope-workspace":
+        header.value = "ws-***";
+        break;
+      case "x-dashscope-inner-flow-control-meta":
+        header.value = redactDashScopeFlowControlMeta(header.value);
+        break;
+    }
+  }
+}
+
+export function redactPersistedHarSecrets(
+  recording: PersistedHarRecording
+): void {
+  if (recording.request?.url) {
+    recording.request.url = redactUrlSecrets(recording.request.url);
+  }
+
+  for (const header of recording.request?.headers ?? []) {
+    if (header.name?.toLowerCase() === "authorization") {
+      header.value = "Bearer ***";
+    }
+    if (header.name?.toLowerCase() === "x-api-key") {
+      header.value = "***";
+    }
+    if (header.name?.toLowerCase() === "xi-api-key") {
+      header.value = "***";
+    }
+    if (header.name?.toLowerCase() === "x-goog-api-key") {
+      header.value = "***";
+    }
+    if (header.name?.toLowerCase() === "x-amz-security-token") {
+      header.value = "***";
+    }
+  }
+
+  redactDashScopeResponseHeaders(recording.response?.headers);
+
+  const responseText = recording.response?.content?.text;
+  if (typeof responseText === "string") {
+    recording.response.content.text = redactResponseTextSecrets(responseText);
+  }
 }
 
 function stableStringify(value: unknown): string | undefined {
@@ -275,32 +368,12 @@ function setupPollyWithOptions(
     matchRequestsBy: options.matchRequestsBy ?? defaultMatchRequestsBy,
   });
 
-  // Redact sensitive headers before persisting to disk and keep a scrubbed
+  // Redact sensitive values before persisting to disk and keep a scrubbed
   // multipart summary so prompts remain visible in the harness viewer.
   polly.server.any().on("beforePersist", (req, recording) => {
     if (recording.request?.url) {
       const requestId = redactedRequestId(req);
-      recording.request.url = redactUrlSecrets(recording.request.url);
       if (requestId) recording._id = requestId;
-    }
-
-    const entries = recording.request?.headers ?? [];
-    for (const header of entries) {
-      if (header.name?.toLowerCase() === "authorization") {
-        header.value = "Bearer ***";
-      }
-      if (header.name?.toLowerCase() === "x-api-key") {
-        header.value = "***";
-      }
-      if (header.name?.toLowerCase() === "xi-api-key") {
-        header.value = "***";
-      }
-      if (header.name?.toLowerCase() === "x-goog-api-key") {
-        header.value = "***";
-      }
-      if (header.name?.toLowerCase() === "x-amz-security-token") {
-        header.value = "***";
-      }
     }
 
     if (
@@ -319,6 +392,7 @@ function setupPollyWithOptions(
     }
 
     options.beforePersist?.(recording as PersistedHarRecording);
+    redactPersistedHarSecrets(recording as PersistedHarRecording);
   });
 
   return { polly, mode: raw };

@@ -4,7 +4,11 @@ import {
   parseRequestBody,
   type HarEntry,
 } from "../har-data";
-import { summarizeMultipartFormData } from "../harness";
+import {
+  redactPersistedHarSecrets,
+  summarizeMultipartFormData,
+  type PersistedHarRecording,
+} from "../harness";
 
 function emptyResponse(): HarEntry["response"] {
   return {
@@ -86,5 +90,84 @@ describe("harness request body helpers", () => {
 
     expect(parseRequestBody(entry)).toEqual(expected);
     expect(JSON.parse(getRequestBodyText(entry) ?? "")).toEqual(expected);
+  });
+});
+
+describe("harness persist scrubbers", () => {
+  it("redacts DashScope identifiers and signed OSS response URLs", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        url: "https://api.telegram.org/bot123456:secret/sendMessage",
+        headers: [
+          { name: "authorization", value: "Bearer real-token" },
+          { name: "x-api-key", value: "real-key" },
+        ],
+      },
+      response: {
+        headers: [
+          { name: "x-dashscope-apikeyid", value: "apikey-123" },
+          { name: "x-dashscope-bwid", value: "ws-123" },
+          { name: "x-dashscope-uid", value: "5077675727314676" },
+          { name: "x-dashscope-workspace", value: "ws-456" },
+          {
+            name: "x-dashscope-inner-flow-control-meta",
+            value: JSON.stringify({
+              model: "qwen-image-edit",
+              user_id: "5077675727314676",
+              user_spec: {
+                default_spec: false,
+                count_limit: 2,
+              },
+            }),
+          },
+        ],
+        content: {
+          text: JSON.stringify({
+            image:
+              "https://dashscope-result-sh.oss-cn-shanghai.aliyuncs.com/" +
+              "result.png?Expires=1777010569&OSSAccessKeyId=LTAI-secret" +
+              "&Signature=secret-signature",
+            upload_host:
+              "https://dashscope-file-mgr.oss-cn-beijing.aliyuncs.com",
+            oss_access_key_id: "LTAI-upload-secret",
+            signature: "upload-policy-signature",
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(recording.request?.url).toBe(
+      "https://api.telegram.org/bot***/sendMessage"
+    );
+    expect(recording.request?.headers).toEqual([
+      { name: "authorization", value: "Bearer ***" },
+      { name: "x-api-key", value: "***" },
+    ]);
+    expect(recording.response?.headers).toEqual([
+      { name: "x-dashscope-apikeyid", value: "***" },
+      { name: "x-dashscope-bwid", value: "ws-***" },
+      { name: "x-dashscope-uid", value: "***" },
+      { name: "x-dashscope-workspace", value: "ws-***" },
+      {
+        name: "x-dashscope-inner-flow-control-meta",
+        value: JSON.stringify({
+          model: "qwen-image-edit",
+          user_id: "***",
+          user_spec: "***",
+        }),
+      },
+    ]);
+    expect(recording.response?.content?.text).toContain("OSSAccessKeyId=***");
+    expect(recording.response?.content?.text).toContain("Signature=***");
+    expect(recording.response?.content?.text).not.toContain("LTAI-secret");
+    expect(recording.response?.content?.text).not.toContain(
+      "LTAI-upload-secret"
+    );
+    expect(recording.response?.content?.text).not.toContain("secret-signature");
+    expect(recording.response?.content?.text).not.toContain(
+      "upload-policy-signature"
+    );
   });
 });

@@ -859,6 +859,7 @@ describe("harness Telegram messages", () => {
     recording.entries[0].response.headers = [
       { name: "set-cookie", value: "PHPSESSID=real-session-leak" },
       { name: "anthropic-organization-id", value: "org-real-leak" },
+      { name: "openai-project", value: "proj-real-leak" },
       { name: "request-id", value: "req-real-leak" },
       { name: "x-request-id", value: "req-x-real-leak" },
       { name: "content-type", value: "application/json" },
@@ -875,6 +876,7 @@ describe("harness Telegram messages", () => {
     expect(all).not.toContain("real-cookie-leak");
     expect(all).not.toContain("real-session-leak");
     expect(all).not.toContain("org-real-leak");
+    expect(all).not.toContain("proj-real-leak");
     expect(all).not.toContain("req-real-leak");
     expect(all).not.toContain("req-x-real-leak");
   });

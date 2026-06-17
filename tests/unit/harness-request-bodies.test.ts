@@ -170,8 +170,10 @@ describe("harness persist scrubbers", () => {
         url: "https://api.telegram.org/bot123456:secret/sendMessage",
         headers: [
           { name: "authorization", value: "Bearer real-token" },
+          { name: "cookie", value: "session=real-session" },
           { name: "x-api-key", value: "real-key" },
         ],
+        cookies: [{ name: "session", value: "real-session" }],
       },
       response: {
         headers: [
@@ -225,7 +227,11 @@ describe("harness persist scrubbers", () => {
     );
     expect(recording.request?.headers).toEqual([
       { name: "authorization", value: "Bearer ***" },
+      { name: "cookie", value: "***" },
       { name: "x-api-key", value: "***" },
+    ]);
+    expect(recording.request?.cookies).toEqual([
+      { name: "session", value: "***" },
     ]);
     expect(recording.response?.headers).toEqual([
       {

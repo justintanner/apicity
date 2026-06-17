@@ -24,6 +24,7 @@ export interface PersistedHarRecording {
   request?: {
     url?: string;
     headers?: PersistedHarHeader[];
+    cookies?: HarCookieLike[];
     postData?: {
       mimeType?: string;
       params?: unknown[];
@@ -184,6 +185,24 @@ function redactResponseCookies(
   }
 }
 
+function redactRequestCookieHeaders(
+  headers: PersistedHarHeader[] | undefined
+): void {
+  for (const header of headers ?? []) {
+    if (header.name?.toLowerCase() === "cookie") {
+      header.value = "***";
+    }
+  }
+}
+
+function redactRequestCookies(cookies: HarCookieLike[] | undefined): void {
+  for (const cookie of cookies ?? []) {
+    if (typeof cookie.value === "string") {
+      cookie.value = "***";
+    }
+  }
+}
+
 export function redactPersistedHarSecrets(
   recording: PersistedHarRecording
 ): void {
@@ -191,6 +210,7 @@ export function redactPersistedHarSecrets(
     recording.request.url = redactUrlSecrets(recording.request.url);
   }
 
+  redactRequestCookieHeaders(recording.request?.headers);
   for (const header of recording.request?.headers ?? []) {
     if (header.name?.toLowerCase() === "authorization") {
       header.value = "Bearer ***";
@@ -209,6 +229,7 @@ export function redactPersistedHarSecrets(
     }
   }
 
+  redactRequestCookies(recording.request?.cookies);
   redactDashScopeResponseHeaders(recording.response?.headers);
   redactResponseCookies(
     recording.response?.headers,

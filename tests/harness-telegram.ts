@@ -25,6 +25,7 @@ import {
   getRequestBodyText,
   parseHarDir,
 } from "./har-data.js";
+import { isSensitiveResponseHeaderName } from "./har-scrub.js";
 
 const ENDPOINT_DOCS_PATH = "scripts/endpoint-docs.tsv";
 const DEFAULT_OUT_PATH = "harness-telegram-messages.json";
@@ -728,12 +729,18 @@ function responseBody(entry: HarEntry): string {
 
 function headerLines(
   headers: Array<{ name: string; value: string }>,
-  excludes: Set<string>
+  excludes: Set<string>,
+  excludeSensitiveResponseHeaders = false
 ): string {
   return headers
     .filter((header) => {
       const name = header.name.toLowerCase();
-      return !excludes.has(name) && !name.startsWith("x-amz-cf-");
+      return (
+        !excludes.has(name) &&
+        !name.startsWith("x-amz-cf-") &&
+        (!excludeSensitiveResponseHeaders ||
+          !isSensitiveResponseHeaderName(name))
+      );
     })
     .map((header) => {
       const value = SENSITIVE_HEADER_PATTERN.test(header.name)
@@ -745,7 +752,11 @@ function headerLines(
 }
 
 function responseHeaders(entry: HarEntry): string {
-  return headerLines(entry.response.headers, RESPONSE_HEADER_PREVIEW_EXCLUDES);
+  return headerLines(
+    entry.response.headers,
+    RESPONSE_HEADER_PREVIEW_EXCLUDES,
+    true
+  );
 }
 
 function responsePreview(entry: HarEntry): string {
@@ -966,11 +977,16 @@ function apicityPathFor(
 
 function headerCount(
   headers: Array<{ name: string; value: string }>,
-  excludes: Set<string>
+  excludes: Set<string>,
+  excludeSensitiveResponseHeaders = false
 ): number {
   return headers.filter((header) => {
     const name = header.name.toLowerCase();
-    return !excludes.has(name) && !name.startsWith("x-amz-cf-");
+    return (
+      !excludes.has(name) &&
+      !name.startsWith("x-amz-cf-") &&
+      (!excludeSensitiveResponseHeaders || !isSensitiveResponseHeaderName(name))
+    );
   }).length;
 }
 
@@ -1004,7 +1020,8 @@ export function buildSections(entry: HarEntry): Section[] {
   if (respHeaders) {
     const count = headerCount(
       entry.response.headers,
-      RESPONSE_HEADER_PREVIEW_EXCLUDES
+      RESPONSE_HEADER_PREVIEW_EXCLUDES,
+      true
     );
     sections.push({
       title: `Response headers (${count})`,

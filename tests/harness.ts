@@ -4,6 +4,7 @@ import FSPersister from "@pollyjs/persister-fs";
 import { createHash } from "node:crypto";
 import path from "path";
 import fs from "fs";
+import { scrubSensitiveResponse, type HarCookieLike } from "./har-scrub.js";
 
 Polly.register(FetchAdapter);
 Polly.register(FSPersister);
@@ -32,7 +33,7 @@ export interface PersistedHarRecording {
   response?: {
     bodySize?: number;
     headers?: PersistedHarHeader[];
-    cookies?: unknown[];
+    cookies?: HarCookieLike[];
     content?: {
       mimeType?: string;
       size?: number;
@@ -393,6 +394,7 @@ function setupPollyWithOptions(
 
     options.beforePersist?.(recording as PersistedHarRecording);
     redactPersistedHarSecrets(recording as PersistedHarRecording);
+    scrubSensitiveResponse(recording);
   });
 
   return { polly, mode: raw };

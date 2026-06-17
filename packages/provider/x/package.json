@@ -1,6 +1,6 @@
 {
   "name": "@apicity/x",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "X (formerly Twitter) social API provider for posting content (api.x.com).",
   "license": "MIT",
   "repository": {

@@ -9,6 +9,7 @@ import {
   summarizeMultipartFormData,
   type PersistedHarRecording,
 } from "../harness";
+import { scrubSensitiveResponse } from "../har-scrub";
 
 function emptyResponse(): HarEntry["response"] {
   return {
@@ -123,7 +124,7 @@ describe("harness request body helpers", () => {
 });
 
 describe("harness persist scrubbers", () => {
-  it("redacts response cookies before persisting recordings", () => {
+  it("removes response cookies before persisting recordings", () => {
     const recording: PersistedHarRecording = {
       response: {
         headers: [
@@ -146,22 +147,12 @@ describe("harness persist scrubbers", () => {
     };
 
     redactPersistedHarSecrets(recording);
+    scrubSensitiveResponse(recording);
 
     expect(recording.response?.headers).toEqual([
       { name: "content-type", value: "application/json" },
-      {
-        name: "set-cookie",
-        value: "JSESSIONID=***; Path=/; HttpOnly",
-      },
-      {
-        name: "Set-Cookie",
-        value: "other=***; Path=/; Secure",
-      },
     ]);
-    expect(recording.response?.cookies).toEqual([
-      { name: "JSESSIONID", value: "***", httpOnly: true },
-      { name: "other", value: "***", secure: true },
-    ]);
+    expect(recording.response?.cookies).toEqual([]);
   });
 
   it("redacts DashScope identifiers and signed OSS response URLs", () => {
@@ -221,6 +212,7 @@ describe("harness persist scrubbers", () => {
     };
 
     redactPersistedHarSecrets(recording);
+    scrubSensitiveResponse(recording);
 
     expect(recording.request?.url).toBe(
       "https://api.telegram.org/bot***/sendMessage"
@@ -234,12 +226,6 @@ describe("harness persist scrubbers", () => {
       { name: "session", value: "***" },
     ]);
     expect(recording.response?.headers).toEqual([
-      {
-        name: "set-cookie",
-        value:
-          "PHPSESSID=***; expires=Thu, 23 Apr 2026 07:19:05 GMT; " +
-          "Max-Age=604800; path=/; domain=.catbox.moe; Secure; SameSite=Lax",
-      },
       { name: "x-dashscope-apikeyid", value: "***" },
       { name: "x-dashscope-bwid", value: "ws-***" },
       { name: "x-dashscope-uid", value: "***" },
@@ -253,12 +239,7 @@ describe("harness persist scrubbers", () => {
         }),
       },
     ]);
-    expect(recording.response?.cookies).toEqual([
-      {
-        name: "PHPSESSID",
-        value: "***",
-      },
-    ]);
+    expect(recording.response?.cookies).toEqual([]);
     expect(recording.response?.content?.text).toContain("OSSAccessKeyId=***");
     expect(recording.response?.content?.text).toContain("Signature=***");
     expect(recording.response?.content?.text).not.toContain("LTAI-secret");

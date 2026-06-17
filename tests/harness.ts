@@ -159,32 +159,6 @@ function redactDashScopeResponseHeaders(
   }
 }
 
-function redactSetCookieHeaderValue(value: string | undefined): string {
-  if (!value) return "***";
-
-  const match = /^([^=;\s]+)=([^;]*)(.*)$/s.exec(value);
-  if (!match) return "***";
-
-  return `${match[1]}=***${match[3]}`;
-}
-
-function redactResponseCookies(
-  headers: PersistedHarHeader[] | undefined,
-  cookies: HarCookieLike[] | undefined
-): void {
-  for (const header of headers ?? []) {
-    if (header.name?.toLowerCase() === "set-cookie") {
-      header.value = redactSetCookieHeaderValue(header.value);
-    }
-  }
-
-  for (const cookie of cookies ?? []) {
-    if (typeof cookie.value === "string") {
-      cookie.value = "***";
-    }
-  }
-}
-
 function redactRequestCookieHeaders(
   headers: PersistedHarHeader[] | undefined
 ): void {
@@ -202,7 +176,6 @@ function redactRequestCookies(cookies: HarCookieLike[] | undefined): void {
     }
   }
 }
-
 export function redactPersistedHarSecrets(
   recording: PersistedHarRecording
 ): void {
@@ -231,10 +204,6 @@ export function redactPersistedHarSecrets(
 
   redactRequestCookies(recording.request?.cookies);
   redactDashScopeResponseHeaders(recording.response?.headers);
-  redactResponseCookies(
-    recording.response?.headers,
-    recording.response?.cookies
-  );
 
   const responseText = recording.response?.content?.text;
   if (typeof responseText === "string") {

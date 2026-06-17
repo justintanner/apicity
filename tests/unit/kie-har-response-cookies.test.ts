@@ -1,7 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { REDACTED_HAR_VALUE } from "../har-scrub";
 
 interface HarHeader {
   name?: string;
@@ -35,7 +34,7 @@ function listRecordingFiles(dir: string): string[] {
 }
 
 describe("Kie HAR response cookies", () => {
-  it("keeps committed response cookie values redacted", () => {
+  it("keeps committed response cookies removed", () => {
     const recordingsRoot = path.join(
       process.cwd(),
       "tests",
@@ -51,24 +50,16 @@ describe("Kie HAR response cookies", () => {
         for (const [cookieIndex, cookie] of (
           entry.response?.cookies ?? []
         ).entries()) {
-          if (
-            typeof cookie.value === "string" &&
-            cookie.value !== REDACTED_HAR_VALUE
-          ) {
-            leaks.push(
-              `${file}: entry ${entryIndex} response cookie ` +
-                `${cookieIndex} (${cookie.name ?? "unnamed"})`
-            );
-          }
+          leaks.push(
+            `${file}: entry ${entryIndex} response cookie ` +
+              `${cookieIndex} (${cookie.name ?? "unnamed"})`
+          );
         }
 
         for (const [headerIndex, header] of (
           entry.response?.headers ?? []
         ).entries()) {
-          if (
-            header.name?.toLowerCase() === "set-cookie" &&
-            header.value !== REDACTED_HAR_VALUE
-          ) {
+          if (header.name?.toLowerCase() === "set-cookie") {
             leaks.push(
               `${file}: entry ${entryIndex} response set-cookie header ` +
                 `${headerIndex}`

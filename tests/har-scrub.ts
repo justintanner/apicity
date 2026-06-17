@@ -24,6 +24,7 @@ const SENSITIVE_RESPONSE_HEADER_NAMES = new Set([
   "cf-ray",
   "openai-organization",
   "openai-project",
+  "origin-cf-ray",
   "request-id",
   "set-cookie",
   "traceresponse",
@@ -33,6 +34,7 @@ const SENSITIVE_RESPONSE_HEADER_NAMES = new Set([
   "x-amzn-trace-id",
   "x-dashscope-inner-user-group",
   "x-dashscope-inner-user-meta",
+  "x-mbx-uuid",
   "x-request-id",
 ]);
 
@@ -44,6 +46,8 @@ export function isSensitiveResponseHeaderName(
   return (
     SENSITIVE_RESPONSE_HEADER_NAMES.has(lower) ||
     lower.includes("organization") ||
+    lower.includes("project") ||
+    lower.endsWith("cf-ray") ||
     /(^|-)request-id$/.test(lower) ||
     lower.endsWith("requestid") ||
     lower.includes("trace")

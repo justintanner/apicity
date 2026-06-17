@@ -1,7 +1,11 @@
 import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { scrubSensitiveResponse, type HarRecordingLike } from "../har-scrub";
+import {
+  REDACTED_HAR_VALUE,
+  scrubSensitiveResponse,
+  type HarRecordingLike,
+} from "../har-scrub";
 
 interface FixtureHarHeader {
   name?: string;
@@ -52,8 +56,10 @@ describe("HAR response scrubber", () => {
           { name: "anthropic-organization-id", value: "org-real" },
           { name: "openai-organization", value: "org-openai" },
           { name: "openai-project", value: "proj-real" },
+          { name: "origin-cf-ray", value: "ray-real" },
           { name: "request-id", value: "req-real" },
           { name: "x-request-id", value: "req-x-real" },
+          { name: "x-mbx-uuid", value: "uuid-real" },
           { name: "traceresponse", value: "trace-real" },
           { name: "x-dashscope-inner-user-meta", value: "user-real" },
           { name: "set-cookie", value: "_cfuvid=real-cookie-value" },

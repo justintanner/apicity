@@ -51,6 +51,7 @@ describe("HAR response scrubber", () => {
         headers: [
           { name: "anthropic-organization-id", value: "org-real" },
           { name: "openai-organization", value: "org-openai" },
+          { name: "openai-project", value: "proj-real" },
           { name: "request-id", value: "req-real" },
           { name: "x-request-id", value: "req-x-real" },
           { name: "traceresponse", value: "trace-real" },

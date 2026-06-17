@@ -23,6 +23,7 @@ const SENSITIVE_RESPONSE_HEADER_NAMES = new Set([
   "anthropic-organization-id",
   "cf-ray",
   "openai-organization",
+  "openai-project",
   "request-id",
   "set-cookie",
   "traceresponse",

@@ -16,6 +16,7 @@ import {
   MediaGenerationRequestSchema,
   HappyHorseImageToVideoRequestSchema,
   HappyHorseTextToVideoRequestSchema,
+  VolcengineVideoToVideoLipSyncRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -313,6 +314,65 @@ describe("kie Zod schema validation", () => {
       expect(
         result.error?.issues.some((i) => i.path.includes("image_urls"))
       ).toBe(true);
+    });
+  });
+
+  describe("volcengine video-to-video lip sync", () => {
+    it("should accept the documented lip sync request and apply defaults", () => {
+      const request = {
+        model: "volcengine/video-to-video-lip-sync",
+        callBackUrl: "https://example.com/callback",
+        input: {
+          mode: "lite",
+          video_url: "https://example.com/source-video.mp4",
+          audio_url: "https://example.com/target-vocal.wav",
+          separate_vocal: true,
+          align_audio_reverse: true,
+          templ_start_seconds: 1.25,
+        },
+      };
+
+      const result =
+        VolcengineVideoToVideoLipSyncRequestSchema.safeParse(request);
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.open_scenedet).toBe(false);
+      expect(result.data.input.align_audio).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should require mode, video_url, and audio_url", () => {
+      const result = VolcengineVideoToVideoLipSyncRequestSchema.safeParse({
+        model: "volcengine/video-to-video-lip-sync",
+        input: {
+          mode: "lite",
+          video_url: "https://example.com/source-video.mp4",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("audio_url"))
+      ).toBe(true);
+    });
+
+    it("should reject unsupported modes", () => {
+      const result = VolcengineVideoToVideoLipSyncRequestSchema.safeParse({
+        model: "volcengine/video-to-video-lip-sync",
+        input: {
+          mode: "pro",
+          video_url: "https://example.com/source-video.mp4",
+          audio_url: "https://example.com/target-vocal.wav",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("mode"))).toBe(
+        true
+      );
     });
   });
 

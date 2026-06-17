@@ -36,6 +36,7 @@ export const KieMediaModelSchema = z.enum([
   "happyhorse/image-to-video",
   "happyhorse/reference-to-video",
   "happyhorse/video-edit",
+  "volcengine/video-to-video-lip-sync",
   "elevenlabs/audio-isolation",
   "elevenlabs/text-to-dialogue-v3",
   "elevenlabs/text-to-speech-multilingual-v2",
@@ -143,6 +144,11 @@ export const HappyHorseAspectRatioSchema = z.enum([
 ]);
 
 export const HappyHorseAudioSettingSchema = z.enum(["auto", "origin"]);
+
+export const VolcengineVideoToVideoLipSyncModeSchema = z.enum([
+  "lite",
+  "basic",
+]);
 
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
@@ -636,6 +642,21 @@ export const HappyHorseVideoEditRequestSchema = z.object({
     resolution: HappyHorseResolutionSchema.optional(),
     audio_setting: HappyHorseAudioSettingSchema.optional(),
     seed: z.number().int().min(0).max(2147483647).optional(),
+  }),
+});
+
+export const VolcengineVideoToVideoLipSyncRequestSchema = z.object({
+  model: z.literal("volcengine/video-to-video-lip-sync"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    mode: VolcengineVideoToVideoLipSyncModeSchema,
+    video_url: z.string().min(1),
+    audio_url: z.string().min(1),
+    separate_vocal: z.boolean().default(false),
+    open_scenedet: z.boolean().default(false),
+    align_audio: z.boolean().default(true),
+    align_audio_reverse: z.boolean().default(false),
+    templ_start_seconds: z.number().min(0).default(0),
   }),
 });
 
@@ -1166,6 +1187,7 @@ export const MediaGenerationRequestSchema = z.union([
   HappyHorseImageToVideoRequestSchema,
   HappyHorseReferenceToVideoRequestSchema,
   HappyHorseVideoEditRequestSchema,
+  VolcengineVideoToVideoLipSyncRequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -1209,6 +1231,9 @@ export type HappyHorseResolution = z.infer<typeof HappyHorseResolutionSchema>;
 export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
 export type HappyHorseAudioSetting = z.infer<
   typeof HappyHorseAudioSettingSchema
+>;
+export type VolcengineVideoToVideoLipSyncMode = z.infer<
+  typeof VolcengineVideoToVideoLipSyncModeSchema
 >;
 
 export type KlingElement = z.infer<typeof KlingElementSchema>;
@@ -1303,6 +1328,9 @@ export type HappyHorseReferenceToVideoRequest = z.infer<
 >;
 export type HappyHorseVideoEditRequest = z.infer<
   typeof HappyHorseVideoEditRequestSchema
+>;
+export type VolcengineVideoToVideoLipSyncRequest = z.infer<
+  typeof VolcengineVideoToVideoLipSyncRequestSchema
 >;
 export type ElevenLabsAudioIsolationRequest = z.infer<
   typeof ElevenLabsAudioIsolationRequestSchema

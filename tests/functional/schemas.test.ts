@@ -857,4 +857,19 @@ describe("kie modelInputSchemas", () => {
     expect(dialogue.type).toBe("audio");
     expect(dialogue.fields.dialogue.required).toBe(true);
   });
+
+  it("volcengine video-to-video lip sync exposes required media fields", () => {
+    const schema = modelInputSchemas["volcengine/video-to-video-lip-sync"];
+
+    expect(schema.type).toBe("video");
+    expect(schema.fields.mode.required).toBe(true);
+    expect(schema.fields.mode.enum).toEqual(["lite", "basic"]);
+    expect(schema.fields.video_url.required).toBe(true);
+    expect(schema.fields.audio_url.required).toBe(true);
+    expect(schema.fields.separate_vocal.type).toBe("boolean");
+    expect(schema.fields.open_scenedet.type).toBe("boolean");
+    expect(schema.fields.align_audio.type).toBe("boolean");
+    expect(schema.fields.align_audio_reverse.type).toBe("boolean");
+    expect(schema.fields.templ_start_seconds.type).toBe("number");
+  });
 });

@@ -1451,4 +1451,50 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  "volcengine/video-to-video-lip-sync": {
+    type: "video",
+    fields: {
+      mode: {
+        type: "string",
+        required: true,
+        enum: ["lite", "basic"],
+        description: "Lip-sync processing mode",
+      },
+      video_url: {
+        type: "string",
+        required: true,
+        description: "Source video asset URL",
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description: "Target pure vocal audio URL (max 10MB)",
+      },
+      separate_vocal: {
+        type: "boolean",
+        description:
+          "Separate vocals before lip-sync processing (default false)",
+      },
+      open_scenedet: {
+        type: "boolean",
+        description:
+          "Enable scene segmentation and speaker identification in basic mode (default false)",
+      },
+      align_audio: {
+        type: "boolean",
+        description:
+          "Loop video when audio is longer than video in lite mode (default true)",
+      },
+      align_audio_reverse: {
+        type: "boolean",
+        description:
+          "Loop video backward when align_audio is enabled in lite mode (default false)",
+      },
+      templ_start_seconds: {
+        type: "number",
+        description: "Start offset in seconds for lite mode (default 0)",
+      },
+    },
+  },
 };

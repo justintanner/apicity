@@ -1,8 +1,10 @@
 import { afterEach, describe, it, expect, vi } from "vitest";
 
 import { createKie } from "../../packages/provider/kie/src/kie";
+import { mintOtp } from "../../packages/provider/kie/src/paygate";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
+import type { VolcengineVideoToVideoLipSyncRequest } from "../../packages/provider/kie/src/types";
 
 describe("KIE request utilities", () => {
   afterEach(() => {
@@ -341,6 +343,63 @@ describe("KIE request utilities", () => {
   });
 
   describe("top-level KIE provider helpers", () => {
+    it("should serialize Volcengine lip sync createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_volcengine-video-to-video-lip-sync_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: VolcengineVideoToVideoLipSyncRequest = {
+        model: "volcengine/video-to-video-lip-sync",
+        input: {
+          mode: "basic",
+          video_url: "https://example.com/source-video.mp4",
+          audio_url: "https://example.com/target-vocal.wav",
+          separate_vocal: false,
+          open_scenedet: true,
+          align_audio: true,
+          align_audio_reverse: false,
+          templ_start_seconds: 0,
+        },
+        callBackUrl: "https://example.com/callback",
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe(
+        "task_volcengine-video-to-video-lip-sync_1234567890"
+      );
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(init.headers).toEqual({
+        Authorization: "Bearer test-key",
+        "Content-Type": "application/json",
+      });
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
     it("should build multipart uploads with inferred MIME type", async () => {
       const mockFetch = vi.fn().mockResolvedValue(
         new Response(JSON.stringify({ code: 200, data: {} }), {

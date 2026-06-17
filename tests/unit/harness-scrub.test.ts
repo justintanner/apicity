@@ -173,4 +173,36 @@ describe("HAR response scrubber", () => {
 
     expect(leaks).toEqual([]);
   });
+
+  it("keeps committed HAR response cookies removed", () => {
+    const recordingsDir = path.resolve(import.meta.dirname, "../recordings");
+    const leaks: string[] = [];
+
+    for (const file of collectRecordingHars(recordingsDir)) {
+      const har = JSON.parse(readFileSync(file, "utf8")) as FixtureHar;
+      for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+        for (const [cookieIndex, cookie] of (
+          entry.response?.cookies ?? []
+        ).entries()) {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              `response cookie ${cookieIndex} (${cookie.name ?? "unnamed"})`
+          );
+        }
+
+        for (const [headerIndex, header] of (
+          entry.response?.headers ?? []
+        ).entries()) {
+          if (header.name?.toLowerCase() === "set-cookie") {
+            leaks.push(
+              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                `response set-cookie header ${headerIndex}`
+            );
+          }
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
+  });
 });

@@ -134,6 +134,12 @@ describe("harness persist scrubbers", () => {
       },
       response: {
         headers: [
+          {
+            name: "set-cookie",
+            value:
+              "PHPSESSID=real-session; expires=Thu, 23 Apr 2026 07:19:05 GMT; " +
+              "Max-Age=604800; path=/; domain=.catbox.moe; Secure; SameSite=Lax",
+          },
           { name: "x-dashscope-apikeyid", value: "apikey-123" },
           { name: "x-dashscope-bwid", value: "ws-123" },
           { name: "x-dashscope-uid", value: "5077675727314676" },
@@ -148,6 +154,12 @@ describe("harness persist scrubbers", () => {
                 count_limit: 2,
               },
             }),
+          },
+        ],
+        cookies: [
+          {
+            name: "PHPSESSID",
+            value: "real-session",
           },
         ],
         content: {
@@ -175,6 +187,12 @@ describe("harness persist scrubbers", () => {
       { name: "x-api-key", value: "***" },
     ]);
     expect(recording.response?.headers).toEqual([
+      {
+        name: "set-cookie",
+        value:
+          "PHPSESSID=***; expires=Thu, 23 Apr 2026 07:19:05 GMT; " +
+          "Max-Age=604800; path=/; domain=.catbox.moe; Secure; SameSite=Lax",
+      },
       { name: "x-dashscope-apikeyid", value: "***" },
       { name: "x-dashscope-bwid", value: "ws-***" },
       { name: "x-dashscope-uid", value: "***" },
@@ -186,6 +204,12 @@ describe("harness persist scrubbers", () => {
           user_id: "***",
           user_spec: "***",
         }),
+      },
+    ]);
+    expect(recording.response?.cookies).toEqual([
+      {
+        name: "PHPSESSID",
+        value: "***",
       },
     ]);
     expect(recording.response?.content?.text).toContain("OSSAccessKeyId=***");

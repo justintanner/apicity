@@ -45,4 +45,27 @@ describe("HAR response scrubber", () => {
       { name: "content-type", value: "application/json" },
     ]);
   });
+
+  it("redacts Kie JSESSIONID response cookies", () => {
+    const recording: HarRecordingLike = {
+      response: {
+        cookies: [{ name: "JSESSIONID", value: "kie-session-id" }],
+        headers: [
+          {
+            name: "set-cookie",
+            value: "JSESSIONID=kie-session-id; Path=/; HttpOnly",
+          },
+        ],
+      },
+    };
+
+    scrubSensitiveResponse(recording);
+
+    expect(recording.response?.cookies).toEqual([
+      { name: "JSESSIONID", value: REDACTED_HAR_VALUE },
+    ]);
+    expect(recording.response?.headers).toEqual([
+      { name: "set-cookie", value: REDACTED_HAR_VALUE },
+    ]);
+  });
 });

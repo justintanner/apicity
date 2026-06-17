@@ -14,7 +14,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "POST sendMessage": {
     "source": "telegram/send-all-types",
     "payload": {
-      "chat_id": "@justintanner",
+      "chat_id": "@apicity_fixture",
       "text": "apicity telegram HAR text 2026-06-06T16:29:37.784Z"
     }
   }

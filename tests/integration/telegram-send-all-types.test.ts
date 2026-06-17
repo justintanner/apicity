@@ -10,7 +10,7 @@ import {
 import { createTelegram } from "@apicity/telegram";
 
 const RECORDING_NAME = "telegram/send-all-types";
-const DEFAULT_CHAT_ID = "@justintanner";
+const DEFAULT_CHAT_ID = "@apicity_fixture";
 
 function shouldUseLiveToken(ctx: PollyContext): boolean {
   if (ctx.mode === "record" || ctx.mode === "passthrough") return true;
@@ -47,7 +47,7 @@ describe("telegram send all message types", () => {
     await teardownPolly(ctx);
   });
 
-  it("sends text, photo, video, and audio messages to @justintanner", async () => {
+  it("sends text, photo, video, and audio messages to the fixture chat", async () => {
     const telegram = createTelegram({
       botToken: botTokenForMode(ctx),
       timeout: 60000,

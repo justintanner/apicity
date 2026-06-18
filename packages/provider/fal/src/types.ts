@@ -678,10 +678,9 @@ export interface FalNanoBananaEditResponse {
 }
 
 // Bytedance Seedream v5 Lite image editing
-export type FalSeedreamV5LiteImageSize =
-  | "auto_2K"
-  | "auto_4K"
-  | { width: number; height: number };
+export type FalSeedreamV5LiteImageSize = NonNullable<
+  FalSeedreamV5LiteTextToImageParams["image_size"]
+>;
 
 export interface FalSeedreamV5LiteEditResponse {
   images: FalFile[];

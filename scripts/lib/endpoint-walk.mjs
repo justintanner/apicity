@@ -1009,6 +1009,12 @@ async function* walkAllEndpointsRaw(project) {
             fullUrl = null;
           } else if (absolute || /^https?:\/\//i.test(pth)) {
             fullUrl = pth;
+          } else if (
+            provider.name === "fireworks" &&
+            pth.startsWith("/v1/accounts")
+          ) {
+            const p = pth.startsWith("/") ? pth : "/" + pth;
+            fullUrl = `https://api.fireworks.ai${p}`;
           } else if (baseOverride) {
             // Handle baseOverride like {nativeBaseURL} or literal URL
             let b = baseOverride;

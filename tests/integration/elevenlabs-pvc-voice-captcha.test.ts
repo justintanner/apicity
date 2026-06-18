@@ -1,11 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, afterEach } from "vitest";
-import {
-  createElevenLabs,
-  ElevenLabsError,
-  type ElevenLabsPvcVoiceCaptchaResponse,
-} from "@apicity/elevenlabs";
+import { createElevenLabs } from "@apicity/elevenlabs";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
 describe("elevenlabs v1.voices.pvc.captcha", () => {
@@ -18,7 +14,7 @@ describe("elevenlabs v1.voices.pvc.captcha", () => {
     }
   });
 
-  it("submits a recording for PVC captcha verification", async () => {
+  it("surfaces upstream errors when the voice is not PVC", async () => {
     ctx = setupPolly("elevenlabs/pvc-voice-captcha");
 
     const mp3Path = resolve(__dirname, "../fixtures/tone.mp3");
@@ -28,13 +24,6 @@ describe("elevenlabs v1.voices.pvc.captcha", () => {
       apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
 
-    const outcome = await provider.v1.voices.pvc
-      .captcha("hpp4J3VqNfWAUOO0d1Us", { recording })
-      .then(
-        (response) => ({ ok: true as const, response }),
-        (error: unknown) => ({ ok: false as const, error })
-      );
-
     expect(provider.post.v1.voices.pvc.captcha).toBe(
       provider.v1.voices.pvc.captcha
     );
@@ -42,17 +31,15 @@ describe("elevenlabs v1.voices.pvc.captcha", () => {
       provider.v1.voices.pvc.captcha.schema.safeParse({ recording }).success
     ).toBe(true);
 
-    if (!outcome.ok) {
-      expect(outcome.error).toBeInstanceOf(ElevenLabsError);
-      expect((outcome.error as ElevenLabsError).status).toBe(400);
-      expect((outcome.error as ElevenLabsError).code).toBe(
-        "voice_not_professional"
-      );
-      return;
-    }
-
-    const response: ElevenLabsPvcVoiceCaptchaResponse = outcome.response;
-    expect(response.status).toBe("ok");
+    // The Apicity ElevenLabs account has PVC capability, but no owned PVC
+    // voice currently awaiting captcha verification. A true 200 fixture needs
+    // that account state before it can replace this recorded blocker.
+    await expect(
+      provider.v1.voices.pvc.captcha("hpp4J3VqNfWAUOO0d1Us", { recording })
+    ).rejects.toMatchObject({
+      status: 400,
+      code: "voice_not_professional",
+    });
   });
 
   it("gets PVC captcha challenge metadata", async () => {

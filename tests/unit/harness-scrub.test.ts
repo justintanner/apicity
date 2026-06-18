@@ -174,6 +174,66 @@ describe("HAR response scrubber", () => {
     expect(leaks).toEqual([]);
   });
 
+  it("keeps committed Alibaba fixtures free of raw DashScope IDs", () => {
+    const recordingsDir = path.resolve(
+      import.meta.dirname,
+      "../recordings/alibaba_1329897167"
+    );
+    const redactedHeaders = new Map([
+      ["x-dashscope-apikeyid", REDACTED_HAR_VALUE],
+      ["x-dashscope-bwid", "ws-***"],
+      ["x-dashscope-uid", REDACTED_HAR_VALUE],
+      ["x-dashscope-workspace", "ws-***"],
+    ]);
+    const leaks: string[] = [];
+
+    for (const file of collectRecordingHars(recordingsDir)) {
+      const har = JSON.parse(readFileSync(file, "utf8")) as FixtureHar;
+      for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+        for (const header of entry.response?.headers ?? []) {
+          const headerName = header.name?.toLowerCase();
+          const expected = headerName
+            ? redactedHeaders.get(headerName)
+            : undefined;
+
+          if (expected && header.value !== expected) {
+            leaks.push(
+              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                `response header ${header.name}`
+            );
+          }
+
+          if (headerName !== "x-dashscope-inner-flow-control-meta") {
+            continue;
+          }
+
+          try {
+            const meta = JSON.parse(header.value ?? "{}") as Record<
+              string,
+              unknown
+            >;
+            if (
+              ("user_id" in meta && meta.user_id !== REDACTED_HAR_VALUE) ||
+              ("user_spec" in meta && meta.user_spec !== REDACTED_HAR_VALUE)
+            ) {
+              leaks.push(
+                `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                  `response header ${header.name}`
+              );
+            }
+          } catch {
+            leaks.push(
+              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                `response header ${header.name} malformed JSON`
+            );
+          }
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
+  });
+
   it("keeps committed HAR response cookies removed", () => {
     const recordingsDir = path.resolve(import.meta.dirname, "../recordings");
     const leaks: string[] = [];

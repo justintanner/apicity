@@ -87,11 +87,18 @@ describe("fireworks account resources GET endpoints integration", () => {
         await teardownPolly(ctx);
       });
 
-      it("should handle get secret for non-existent resource", async () => {
-        // Demo secret does not exist - API returns error
-        await expect(
-          provider().inference.v1.accounts.secrets.get(accountId, "demo-secret")
-        ).rejects.toThrow(/Fireworks API error/);
+      it("should get managed test secret details", async () => {
+        // TEST_SECRET is a managed fixture secret with redacted value.
+        const result = await provider().inference.v1.accounts.secrets.get(
+          accountId,
+          "test-secret"
+        );
+
+        expect(result).toMatchObject({
+          keyName: "TEST_SECRET",
+          name: "accounts/jwtanner/secrets/test-secret",
+          value: "",
+        });
       });
     });
   });

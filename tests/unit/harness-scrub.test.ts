@@ -80,6 +80,7 @@ describe("HAR response scrubber", () => {
       response: {
         cookies: [
           { name: "_cfuvid", value: "real-cookie-value" },
+          { name: "PHPSESSID", value: "real-php-session-id" },
           { name: "JSESSIONID", value: "real-session-id" },
           { name: "empty" },
         ],
@@ -95,6 +96,7 @@ describe("HAR response scrubber", () => {
           { name: "x-dashscope-inner-user-meta", value: "user-real" },
           { name: "cookie", value: "__cf_bm=real-cookie-value" },
           { name: "set-cookie", value: "_cfuvid=real-cookie-value" },
+          { name: "set-cookie", value: "PHPSESSID=real-php-session-id" },
           { name: "Set-Cookie", value: "JSESSIONID=real-session-id; Path=/" },
           { name: "content-type", value: "application/json" },
         ],
@@ -262,6 +264,57 @@ describe("HAR response scrubber", () => {
             leaks.push(
               `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
                 `response header ${header.name} malformed JSON`
+            );
+          }
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
+  });
+
+  it("keeps committed Catbox/Litterbox fixtures free of PHP session cookies", () => {
+    const recordingsDir = path.resolve(
+      import.meta.dirname,
+      "../recordings/free-media-upload_1393460724"
+    );
+    const leaks: string[] = [];
+    const recordingFiles = collectRecordingHars(recordingsDir).filter(
+      (file) => {
+        const recordingDir = path.basename(path.dirname(file));
+        return (
+          recordingDir.startsWith("catbox-") ||
+          recordingDir.startsWith("litterbox-")
+        );
+      }
+    );
+
+    for (const file of recordingFiles) {
+      const raw = readFileSync(file, "utf8");
+      if (/PHPSESSID/i.test(raw)) {
+        leaks.push(
+          `${path.relative(process.cwd(), file)} contains raw PHPSESSID`
+        );
+      }
+
+      const har = JSON.parse(raw) as FixtureHar;
+      for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+        for (const [cookieIndex, cookie] of (
+          entry.response?.cookies ?? []
+        ).entries()) {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              `response cookie ${cookieIndex} (${cookie.name ?? "unnamed"})`
+          );
+        }
+
+        for (const [headerIndex, header] of (
+          entry.response?.headers ?? []
+        ).entries()) {
+          if (header.name?.toLowerCase() === "set-cookie") {
+            leaks.push(
+              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                `response set-cookie header ${headerIndex}`
             );
           }
         }

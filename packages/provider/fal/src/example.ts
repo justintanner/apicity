@@ -95,7 +95,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "diarize": true
     }
   },
-  "POST gptImage1p5.edit": {
+  "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
     "payload": {
       "prompt": "An action shot of a black lab swimming in an inground suburban swimming pool.",
@@ -103,6 +103,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_size": "1024x1024",
       "output_format": "png",
       "quality": "low"
+    }
+  },
+  "POST gptImage1p5.edit": {
+    "source": "fal/gpt-image-1.5-edit",
+    "payload": {
+      "prompt": "place the man in a red mercedes convertible driving down the california coastline at sunset",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "num_images": 1,
+      "quality": "low",
+      "output_format": "png"
     }
   },
   "POST hunyuan.v3.instructEdit": {
@@ -181,6 +193,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST nanoBanana.edit": {
+    "source": "fal/nano-banana-edit",
+    "payload": {
+      "prompt": "make a photo of the man driving a red mercedes convertible down the california coastline at sunset",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    }
+  },
+  "POST nanoBanana.textToImage": {
     "source": "fal/nano-banana",
     "payload": {
       "prompt": "An action shot of a black lab swimming in an inground suburban swimming pool.",
@@ -191,6 +212,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST nanoBanana2.edit": {
+    "source": "fal/nano-banana-2-edit",
+    "payload": {
+      "prompt": "make a photo of the man driving a red mercedes convertible down the california coastline at sunset",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    }
+  },
+  "POST nanoBanana2.textToImage": {
     "source": "fal/nano-banana-2",
     "payload": {
       "prompt": "An action shot of a black lab swimming in an inground suburban swimming pool.",
@@ -202,6 +232,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST nanoBananaPro.edit": {
+    "source": "fal/nano-banana-pro-edit",
+    "payload": {
+      "prompt": "make a photo of the man driving a red mercedes convertible down the california coastline at sunset",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ]
+    }
+  },
+  "POST nanoBananaPro.textToImage": {
     "source": "fal/nano-banana-pro",
     "payload": {
       "prompt": "An action shot of a black lab swimming in an inground suburban swimming pool.",
@@ -259,6 +298,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST veo3p1.imageToVideo": {
+    "source": "fal/veo3-1-image-to-video",
+    "payload": {
+      "prompt": "the man waves at the camera as the wind blows his hair",
+      "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
+      "aspect_ratio": "16:9",
+      "duration": "4s",
+      "resolution": "720p",
+      "generate_audio": false
+    }
+  },
+  "POST veo3p1.textToVideo": {
     "source": "fal/veo3-1",
     "payload": {
       "prompt": "A black lab swimming in an inground suburban swimming pool at sunset.",
@@ -322,6 +372,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "resolution": "720p",
       "duration": 2,
       "aspect_ratio": "1:1"
+    }
+  },
+  "POST xai.grokImagineImage": {
+    "source": "fal/xai-grok-imagine-image",
+    "payload": {
+      "prompt": "Abstract human silhouette, golden particles ready to burst outward representing joy, data visualization style, emotional expression through particles, artistic scientific",
+      "num_images": 1,
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "output_format": "jpeg"
     }
   },
   "POST xai.grokImagineImage.edit": {

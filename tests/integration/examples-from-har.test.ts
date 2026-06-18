@@ -2,6 +2,7 @@ import { describe, expect, test } from "vitest";
 import { createOpenAi } from "@apicity/openai";
 import { createAlibaba } from "@apicity/alibaba";
 import { createXai } from "@apicity/xai";
+import { createFal } from "@apicity/fal";
 
 // Replay-safe: no Polly, no network. These tests verify that the
 // HAR-derived examples extracted by `pnpm run gen:examples` end up
@@ -49,5 +50,15 @@ describe("HAR-derived examples on endpoints", () => {
     const ex = client.post.v1.chat.completions.example;
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("xai/chat-hello");
+  });
+
+  test("fal veo3.1 image-to-video keeps its image payload", () => {
+    const client = createFal({ apiKey: "test-key" });
+    const ex = client.run.veo3p1.imageToVideo.example;
+    expect(ex).toBeDefined();
+    expect(ex?.source).toBe("fal/veo3-1-image-to-video");
+    expect(ex?.payload).toMatchObject({
+      image_url: expect.any(String),
+    });
   });
 });

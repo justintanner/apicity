@@ -10,12 +10,10 @@
  *   2. Lenient: provider-scoped, path-only, segment subsequence match.
  *      Some providers route the same factory function through multiple host
  *      shapes (fal: `api.fal.ai/v1/<model>` in the TSV vs `fal.run/<model>`
- *      at runtime) or expose overloaded paths (openai chat completions:
- *      `/v1/chat/completions` and `/v1/chat/completions/{id}` share one
- *      function). The lenient rule: drop `{paramName}` placeholders from the
- *      TSV path; pass if the resulting segments form a contiguous
- *      subsequence of the HAR path's segments, or vice versa. When several
- *      provider rows match leniently, the row with the longest
+ *      at runtime). The lenient rule: drop a leading API version segment and
+ *      `{paramName}` placeholders from the TSV path; pass if the resulting
+ *      TSV segments form a contiguous subsequence of the HAR path's segments.
+ *      When several provider rows match leniently, the row with the longest
  *      placeholder-stripped path wins (most specific).
  */
 
@@ -40,13 +38,12 @@ export function matchHarEntryLenient(entry, tsvRow) {
   if (entry.request.method.toUpperCase() !== tsvRow.method.toUpperCase()) {
     return false;
   }
-  const harSegs = pathSegments(entry.request.url);
-  const tsvSegs = pathSegments(tsvRow.fullUrl).filter((s) => !isPlaceholder(s));
-  if (tsvSegs.length === 0) return harSegs.length === 0;
-  return (
-    isContiguousSubsequence(tsvSegs, harSegs) ||
-    isContiguousSubsequence(harSegs, tsvSegs)
+  const harSegs = comparablePathSegments(entry.request.url);
+  const tsvSegs = comparablePathSegments(tsvRow.fullUrl).filter(
+    (s) => !isPlaceholder(s)
   );
+  if (tsvSegs.length === 0) return harSegs.length === 0;
+  return isContiguousSubsequence(tsvSegs, harSegs);
 }
 
 /**
@@ -76,6 +73,14 @@ export function findMatchingRow(entry, tsvRows, { provider } = {}) {
 function pathSegments(url) {
   const path = stripQueryMarker(stripHost(url)).split("?")[0].split("#")[0];
   return path.split("/").filter((s) => s.length > 0);
+}
+
+function comparablePathSegments(url) {
+  const segs = pathSegments(url);
+  if (segs.length > 0 && /^v\d+(?:\.\d+)?$/i.test(segs[0])) {
+    return segs.slice(1);
+  }
+  return segs;
 }
 
 function isPlaceholder(seg) {

@@ -39,7 +39,7 @@ describe("fireworks accounts integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.users.list(
-        "jwtanner",
+        "example",
         {
           pageSize: 5,
         }

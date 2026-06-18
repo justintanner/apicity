@@ -60,7 +60,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list users for an account", async () => {
         const result = await provider().inference.v1.accounts.users.list(
-          accountId,
+          "example",
           {
             pageSize: 5,
           }

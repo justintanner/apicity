@@ -46,6 +46,34 @@ function collectRecordingHars(dir: string): string[] {
   return files;
 }
 
+function collectResponseCookieLeaks(dir: string): string[] {
+  const leaks: string[] = [];
+
+  for (const file of collectRecordingHars(dir)) {
+    const har = JSON.parse(readFileSync(file, "utf8")) as FixtureHar;
+    for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+      const responseCookies = entry.response?.cookies ?? [];
+      if (responseCookies.length > 0) {
+        leaks.push(
+          `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+            `response cookies (${responseCookies.length})`
+        );
+      }
+
+      for (const header of entry.response?.headers ?? []) {
+        if (header.name?.toLowerCase() === "set-cookie") {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              "response header set-cookie"
+          );
+        }
+      }
+    }
+  }
+
+  return leaks;
+}
+
 describe("HAR response scrubber", () => {
   it("drops response cookies and sensitive response headers", () => {
     const recording: HarRecordingLike = {
@@ -98,6 +126,12 @@ describe("HAR response scrubber", () => {
 
     expect(recording.response?.cookies).toEqual([]);
     expect(recording.response?.headers).toEqual([]);
+  });
+
+  it("keeps committed HAR fixtures free of response cookies", () => {
+    const recordingsDir = path.resolve(import.meta.dirname, "../recordings");
+
+    expect(collectResponseCookieLeaks(recordingsDir)).toEqual([]);
   });
 
   it("keeps committed Kie session cookie fixtures redacted", () => {

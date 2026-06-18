@@ -22,14 +22,13 @@ describe("kie suno add instrumental (submit)", () => {
       uploadUrl: "https://example.com/vocal.mp3",
       title: "Gentle Acoustic Backing",
       tags: "gentle acoustic guitar, piano",
+      negativeTags: "distortion, harsh noise",
       callBackUrl: "https://example.com/cb",
       model: "V4_5PLUS",
     });
 
-    expect([200, 422, 451]).toContain(result.code);
-    if (result.code === 200) {
-      expect(result.data?.taskId).toBeTruthy();
-      expect(typeof result.data?.taskId).toBe("string");
-    }
+    expect(result.code).toBe(200);
+    expect(result.data?.taskId).toBeTruthy();
+    expect(typeof result.data?.taskId).toBe("string");
   });
 });

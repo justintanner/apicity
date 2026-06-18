@@ -41,6 +41,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "uploadUrl": "https://example.com/vocal.mp3",
       "title": "Gentle Acoustic Backing",
       "tags": "gentle acoustic guitar, piano",
+      "negativeTags": "distortion, harsh noise",
       "callBackUrl": "https://example.com/cb",
       "model": "V4_5PLUS"
     }

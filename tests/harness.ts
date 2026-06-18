@@ -594,7 +594,9 @@ export function setupPollyWithPersistScrubber(
 }
 
 export function setupPollyForFileUploads(recordingName: string): PollyContext {
-  // Disable body matching for FormData compatibility
+  // Disable body matching for upload compatibility. FormData recordings get
+  // sanitized multipart summaries in beforePersist; raw Blob uploads stay
+  // summary-less so HARs never commit file bytes.
   return setupPollyWithOptions(recordingName, {
     matchRequestsBy: {
       headers: {

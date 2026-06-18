@@ -65,6 +65,13 @@ function dryRunFlag(argv) {
   return argv.includes("--dry-run");
 }
 
+function signatureOptions(provider) {
+  return {
+    keepFullHostname: provider === "free-media-upload",
+    ignoredHostLabels: provider === "kie" ? ["kieai"] : [],
+  };
+}
+
 async function main() {
   const dryRun = dryRunFlag(process.argv);
   const project = loadProject();
@@ -74,9 +81,7 @@ async function main() {
 
   for await (const ep of walkAllEndpoints(project)) {
     if (!ep.fullUrl || ep.fullUrl === "?" || !ep.dotPath) continue;
-    const expected = urlToDotPath(ep.fullUrl, {
-      keepFullHostname: ep.provider === "free-media-upload",
-    });
+    const expected = urlToDotPath(ep.fullUrl, signatureOptions(ep.provider));
     if (!expected) continue;
     const actual = ep.dotPath.split(".").filter(Boolean);
     if (matches(actual, expected)) continue;

@@ -69,6 +69,13 @@ function hasSigOkComment(anchorNode) {
   return false;
 }
 
+function signatureOptions(provider) {
+  return {
+    keepFullHostname: provider === "free-media-upload",
+    ignoredHostLabels: provider === "kie" ? ["kieai"] : [],
+  };
+}
+
 async function main() {
   const project = loadProject();
   const warnings = [];
@@ -93,9 +100,7 @@ async function main() {
       skipped++;
       continue;
     }
-    const expected = urlToDotPath(ep.fullUrl, {
-      keepFullHostname: ep.provider === "free-media-upload",
-    });
+    const expected = urlToDotPath(ep.fullUrl, signatureOptions(ep.provider));
     if (!expected) {
       skipped++;
       continue;

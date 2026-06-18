@@ -12,7 +12,9 @@
  *
  * Pass `{ keepFullHostname: true }` for providers like `free` that wrap
  * multiple unrelated hosts — then every hostname label is retained as a
- * distinguishing prefix (e.g. `tmpfiles.org`, `catbox.moe`).
+ * distinguishing prefix (e.g. `tmpfiles.org`, `catbox.moe`). Pass
+ * `{ ignoredHostLabels: [...] }` for provider-owned host aliases that should
+ * not become namespace segments.
  *
  *   urlToDotPath("https://api.openai.com/v1/chat/completions")
  *     → ["v1", "chat", "completions"]
@@ -22,12 +24,18 @@
  *   urlToDotPath("https://catbox.moe/user/api.php", { keepFullHostname: true })
  *     → ["catbox","moe","user"]   (api.php is a server-script filename → dropped)
  */
-export function urlToDotPath(url, { keepFullHostname = false } = {}) {
+export function urlToDotPath(
+  url,
+  { keepFullHostname = false, ignoredHostLabels = [] } = {}
+) {
   if (!url || typeof url !== "string") return null;
   const parsed = parseUrl(url);
   if (!parsed) return null;
   const { hostname, pathname } = parsed;
-  const hostSegments = hostname ? hostLabels(hostname, keepFullHostname) : [];
+  const ignored = new Set(ignoredHostLabels);
+  const hostSegments = hostname
+    ? hostLabels(hostname, keepFullHostname).filter((s) => !ignored.has(s))
+    : [];
   const pathSegments = pathname
     .split("/")
     .flatMap((s) => s.split(":"))

@@ -59,6 +59,34 @@ describe("fireworks workflows.kontext", () => {
     });
   });
 
+  it("injects the default kontext safety tolerance when omitted", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockResolvedValue(createJsonResponse({ request_id: "req-456" }));
+    const provider = createFireworks({
+      apiKey: "fw-test-key",
+      fetch: mockFetch,
+    });
+
+    await provider.inference.v1.workflows.kontext("flux-kontext-pro", {
+      prompt: "A small blue sphere on a white background",
+      seed: 42,
+      output_format: "png",
+    });
+
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+
+    const [, init] = mockFetch.mock.calls[0];
+    const body = JSON.parse(init.body as string) as Record<string, unknown>;
+
+    expect(body).toEqual({
+      safety_tolerance: 6,
+      prompt: "A small blue sphere on a white background",
+      seed: 42,
+      output_format: "png",
+    });
+  });
+
   it("builds getResult requests with the workflow result suffix", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       createJsonResponse({

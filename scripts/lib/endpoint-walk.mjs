@@ -513,6 +513,7 @@ const HELPER_BASE_URLS = {
   makeUploadRequest: "https://www.googleapis.com/upload/youtube/v3",
   makeManagementRequest: "https://management-api.x.ai/v1",
   makeManagementRootRequest: "https://management-api.x.ai",
+  makeModelsRequest: "https://api.fireworks.ai",
 };
 
 /**

@@ -1,4 +1,24 @@
 {
+  "POST inference.v1.accounts.rlorTrainerJobs.create": {
+    "source": "fireworks/rlor-trainer-jobs-create",
+    "payload": {
+      "dataset": "accounts/jwtanner/datasets/test-rlor-dataset",
+      "evaluator": "accounts/jwtanner/evaluators/test-evaluator",
+      "displayName": "Test RLOR Trainer Job",
+      "trainingConfig": {
+        "baseModel": "accounts/fireworks/models/llama-v3p1-8b-instruct",
+        "epochs": 1,
+        "learningRate": 0.00001
+      }
+    }
+  },
+  "POST inference.v1.accounts.rlorTrainerJobs.executeTrainStep": {
+    "source": "fireworks/rlor-trainer-jobs-execute-step",
+    "payload": {
+      "dataset": "accounts/jwtanner/datasets/step-dataset",
+      "outputModel": "accounts/jwtanner/models/step-output-model"
+    }
+  },
   "POST inference.v1.chat.completions": {
     "source": "fireworks/chat-hello",
     "payload": {

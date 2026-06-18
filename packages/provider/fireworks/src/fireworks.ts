@@ -1071,7 +1071,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
     accounts: {
       users: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/users
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1093,7 +1093,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -1131,7 +1131,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       models: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/models
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1152,7 +1152,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:prepare
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:prepare
         // Docs: https://docs.fireworks.ai/api-reference
         prepare: Object.assign(
           async (
@@ -1174,7 +1174,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:getUploadEndpoint
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:getUploadEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getUploadEndpoint: Object.assign(
           async (
@@ -1198,7 +1198,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployments: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1220,7 +1220,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}:undelete
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:undelete
         // Docs: https://docs.fireworks.ai/api-reference
         undelete: async (
           accountId: string,
@@ -1238,7 +1238,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployedModels: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1262,7 +1262,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       apiKeys: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1286,7 +1286,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       secrets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/secrets
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1309,7 +1309,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       datasets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1330,7 +1330,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:getUploadEndpoint
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:getUploadEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getUploadEndpoint: Object.assign(
           async (
@@ -1352,7 +1352,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:validateUpload
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:validateUpload
         // Docs: https://docs.fireworks.ai/api-reference
         validateUpload: Object.assign(
           async (
@@ -1376,7 +1376,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       batchInferenceJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1399,7 +1399,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       supervisedFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/supervisedFineTuningJobs
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/supervisedFineTuningJobs
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1424,7 +1424,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume
+        // POST https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume
         // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           req: FireworksSFTResumeRequest,
@@ -1441,7 +1441,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       dpoJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1462,7 +1462,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:resume
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:resume
         // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           accountId: string,
@@ -1480,7 +1480,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluators: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluatorsV2
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluatorsV2
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1501,7 +1501,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getUploadEndpoint
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getUploadEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getUploadEndpoint: Object.assign(
           async (
@@ -1523,7 +1523,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload
         // Docs: https://docs.fireworks.ai/api-reference
         validateUpload: async (
           accountId: string,
@@ -1541,7 +1541,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluationJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1564,7 +1564,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       reinforcementFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1590,7 +1590,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume
         // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           accountId: string,
@@ -1608,7 +1608,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       rlorTrainerJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs
         // Docs: https://docs.fireworks.ai/api-reference
         create: Object.assign(
           async (
@@ -1629,7 +1629,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:executeTrainStep
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:executeTrainStep
         // Docs: https://docs.fireworks.ai/api-reference
         executeTrainStep: Object.assign(
           async (
@@ -1651,7 +1651,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume
+        // POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume
         // Docs: https://docs.fireworks.ai/api-reference
         resume: async (
           accountId: string,
@@ -1713,7 +1713,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
   const getV1 = {
     accounts: {
       // sig-ok: walker can't see baseURL override / management subpath
-      // GET https://api.fireworks.ai/inference/v1/v1/accounts
+      // GET https://api.fireworks.ai/v1/accounts
       // Docs: https://docs.fireworks.ai/api-reference
       list: async (
         params?: FireworksListAccountsRequest,
@@ -1728,7 +1728,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
         );
       },
       // sig-ok: walker can't see baseURL override / management subpath
-      // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}
+      // GET https://api.fireworks.ai/v1/accounts/{accountId}
       // Docs: https://docs.fireworks.ai/api-reference
       get: async (
         accountId: string,
@@ -1745,7 +1745,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       users: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/users
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -1761,7 +1761,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -1780,7 +1780,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       apiKeys: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -1799,7 +1799,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       secrets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/secrets
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -1815,7 +1815,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -1834,7 +1834,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       models: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/models
         // Docs: https://docs.fireworks.ai/api-reference
         list: Object.assign(
           async (
@@ -1855,7 +1855,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: Object.assign(
           async (
@@ -1877,7 +1877,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:getDownloadEndpoint
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:getDownloadEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getDownloadEndpoint: Object.assign(
           async (
@@ -1899,7 +1899,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:validateUpload
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:validateUpload
         // Docs: https://docs.fireworks.ai/api-reference
         validateUpload: Object.assign(
           async (
@@ -1923,7 +1923,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       datasets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -1939,7 +1939,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -1956,7 +1956,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:getDownloadEndpoint
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:getDownloadEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getDownloadEndpoint: Object.assign(
           async (
@@ -1980,7 +1980,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       batchInferenceJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -1996,7 +1996,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs/{jobId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2014,7 +2014,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       supervisedFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/supervisedFineTuningJobs
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/supervisedFineTuningJobs
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           req: FireworksSFTListRequest,
@@ -2036,7 +2036,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}
+        // GET https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           req: FireworksSFTGetRequest,
@@ -2053,7 +2053,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployments: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/deployments
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2069,7 +2069,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2087,7 +2087,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deploymentShapes: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2105,7 +2105,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
         },
         versions: {
           // sig-ok: walker can't see baseURL override / management subpath
-          // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions
+          // GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions
           // Docs: https://docs.fireworks.ai/api-reference
           list: async (
             accountId: string,
@@ -2122,7 +2122,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
             );
           },
           // sig-ok: walker can't see baseURL override / management subpath
-          // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions/{versionId}
+          // GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions/{versionId}
           // Docs: https://docs.fireworks.ai/api-reference
           get: async (
             accountId: string,
@@ -2143,7 +2143,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployedModels: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2159,7 +2159,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2178,7 +2178,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       dpoJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2194,7 +2194,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2211,7 +2211,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getMetricsFileEndpoint: async (
           accountId: string,
@@ -2229,7 +2229,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluators: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2245,7 +2245,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2262,7 +2262,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getBuildLogEndpoint
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getBuildLogEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getBuildLogEndpoint: async (
           accountId: string,
@@ -2279,7 +2279,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getSourceCodeSignedUrl
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getSourceCodeSignedUrl
         // Docs: https://docs.fireworks.ai/api-reference
         getSourceCodeSignedUrl: async (
           accountId: string,
@@ -2298,7 +2298,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluationJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2314,7 +2314,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2331,7 +2331,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint
         // Docs: https://docs.fireworks.ai/api-reference
         getExecutionLogEndpoint: async (
           accountId: string,
@@ -2349,7 +2349,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       reinforcementFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2365,7 +2365,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2384,7 +2384,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       rlorTrainerJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs
         // Docs: https://docs.fireworks.ai/api-reference
         list: async (
           accountId: string,
@@ -2400,7 +2400,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           );
         },
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2421,7 +2421,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
     audio: {
       batch: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batch_job/{batchId}
+        // GET https://api.fireworks.ai/v1/accounts/{accountId}/batch_job/{batchId}
         // Docs: https://docs.fireworks.ai/api-reference
         get: async (
           accountId: string,
@@ -2445,7 +2445,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
     accounts: {
       users: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2483,7 +2483,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       models: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2521,7 +2521,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       datasets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2545,7 +2545,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployments: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2581,7 +2581,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
           }
         ),
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}:scale
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:scale
         // Docs: https://docs.fireworks.ai/api-reference
         scale: Object.assign(
           async (
@@ -2605,7 +2605,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployedModels: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2629,7 +2629,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       secrets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2653,7 +2653,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluators: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}
+        // PATCH https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}
         // Docs: https://docs.fireworks.ai/api-reference
         update: Object.assign(
           async (
@@ -2684,7 +2684,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
     accounts: {
       apiKeys: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys:delete
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys:delete
         // Docs: https://docs.fireworks.ai/api-reference
         delete: Object.assign(
           async (
@@ -2708,7 +2708,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       secrets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2726,7 +2726,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       models: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: Object.assign(
           async (
@@ -2749,7 +2749,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       datasets: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2767,7 +2767,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       batchInferenceJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs/{jobId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2785,7 +2785,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       supervisedFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}
+        // DELETE https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: Object.assign(
           async (
@@ -2807,7 +2807,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployments: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2826,7 +2826,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       deployedModels: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2844,7 +2844,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       dpoJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2862,7 +2862,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluators: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2880,7 +2880,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       evaluationJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2898,7 +2898,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       reinforcementFineTuningJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,
@@ -2916,7 +2916,7 @@ export function createFireworks(opts: FireworksOptions): FireworksProvider {
       },
       rlorTrainerJobs: {
         // sig-ok: walker can't see baseURL override / management subpath
-        // DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}
+        // DELETE https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}
         // Docs: https://docs.fireworks.ai/api-reference
         delete: async (
           accountId: string,

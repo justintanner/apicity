@@ -176,7 +176,7 @@ console.log(
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.apiKeys.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -191,7 +191,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.apiKeys</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys:delete</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys:delete</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -206,7 +206,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.apiKeys.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}/apiKeys</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}/apiKeys</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -221,7 +221,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.batchInferenceJobs.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -236,7 +236,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.batchInferenceJobs</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs/{jobId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -251,7 +251,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.batchInferenceJobs</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs/{jobId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -266,7 +266,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.batchInferenceJobs.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batchInferenceJobs</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/batchInferenceJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -281,7 +281,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.datasets.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -296,7 +296,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.datasets</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -311,7 +311,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.datasets</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -326,7 +326,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.datasets.getDownloadEndpoint</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:getDownloadEndpoint</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:getDownloadEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -341,7 +341,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.datasets.getUploadEndpoint</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:getUploadEndpoint</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:getUploadEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -356,7 +356,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.datasets.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/datasets</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -371,7 +371,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.datasets.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -386,7 +386,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.datasets.validateUpload</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/datasets/{datasetId}:validateUpload</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/datasets/{datasetId}:validateUpload</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -401,7 +401,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.deployedModels.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -416,7 +416,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.deployedModels</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -431,7 +431,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deployedModels</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -446,7 +446,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deployedModels.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -461,7 +461,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.deployedModels.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployedModels/{deployedModelId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -476,7 +476,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deploymentShapes</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -491,7 +491,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deploymentShapes.versions</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions/{versionId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions/{versionId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -506,7 +506,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deploymentShapes.versions.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deploymentShapes/{shapeId}/versions</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -521,7 +521,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.deployments.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -536,7 +536,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.deployments</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -551,7 +551,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deployments</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -566,7 +566,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.deployments.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/deployments</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -581,7 +581,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.deployments.scale</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}:scale</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:scale</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -596,7 +596,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.deployments.undelete</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}:undelete</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}:undelete</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -611,7 +611,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.deployments.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/deployments/{deploymentId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/deployments/{deploymentId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -626,7 +626,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.dpoJobs.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -641,7 +641,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.dpoJobs</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -656,7 +656,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.dpoJobs</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -671,7 +671,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.dpoJobs.getMetricsFileEndpoint</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:getMetricsFileEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -686,7 +686,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.dpoJobs.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -701,7 +701,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.dpoJobs.resume</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/dpoJobs/{jobId}:resume</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/dpoJobs/{jobId}:resume</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -716,7 +716,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -731,7 +731,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -746,7 +746,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -761,7 +761,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs.getExecutionLogEndpoint</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs/{evaluationJobId}:getExecutionLogEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -776,7 +776,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluationJobs.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluationJobs</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluationJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -791,7 +791,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.evaluators.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluatorsV2</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluatorsV2</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -806,7 +806,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.evaluators</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -821,7 +821,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -836,7 +836,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators.getBuildLogEndpoint</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getBuildLogEndpoint</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getBuildLogEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -851,7 +851,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators.getSourceCodeSignedUrl</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getSourceCodeSignedUrl</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getSourceCodeSignedUrl</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -866,7 +866,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.evaluators.getUploadEndpoint</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:getUploadEndpoint</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:getUploadEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -881,7 +881,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.evaluators.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/evaluators</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -896,7 +896,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.evaluators.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -911,7 +911,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.evaluators.validateUpload</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/evaluators/{evaluatorId}:validateUpload</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -926,7 +926,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -941,7 +941,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts</code>
+<code>GET https://api.fireworks.ai/v1/accounts</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -956,7 +956,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.models.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/models</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -971,7 +971,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.models</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -986,7 +986,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.models</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1001,7 +1001,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.models.getDownloadEndpoint</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:getDownloadEndpoint</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:getDownloadEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1016,7 +1016,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.models.getUploadEndpoint</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:getUploadEndpoint</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:getUploadEndpoint</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1031,7 +1031,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.models.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1046,7 +1046,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.models.prepare</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:prepare</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:prepare</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1061,7 +1061,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.models.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1076,7 +1076,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.models.validateUpload</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/models/{modelId}:validateUpload</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/models/{modelId}:validateUpload</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1091,7 +1091,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1106,7 +1106,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1121,7 +1121,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1136,7 +1136,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1151,7 +1151,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.reinforcementFineTuningJobs.resume</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/reinforcementFineTuningJobs/{jobId}:resume</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1166,7 +1166,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1181,7 +1181,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1196,7 +1196,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs.executeTrainStep</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:executeTrainStep</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:executeTrainStep</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1211,7 +1211,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1226,7 +1226,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1241,7 +1241,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.rlorTrainerJobs.resume</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs/{jobId}:resume</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1256,7 +1256,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.secrets.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/secrets</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1271,7 +1271,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.secrets</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1286,7 +1286,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.secrets</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1301,7 +1301,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.secrets.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/secrets</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1316,7 +1316,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.secrets.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/secrets/{secretId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/secrets/{secretId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1331,7 +1331,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/supervisedFineTuningJobs</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/supervisedFineTuningJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1346,7 +1346,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>DELETE</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs</code></b></summary>
 
-<code>DELETE https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}</code>
+<code>DELETE https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1361,7 +1361,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1376,7 +1376,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/supervisedFineTuningJobs</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/supervisedFineTuningJobs</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1391,7 +1391,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.supervisedFineTuningJobs.resume</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{param}/supervisedFineTuningJobs/{param}:resume</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1406,7 +1406,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.users.create</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/users</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1421,7 +1421,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.users</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1436,7 +1436,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.accounts.users.list</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/users</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1451,7 +1451,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>PATCH</code> <b><code>fireworks.inference.v1.accounts.users.update</code></b></summary>
 
-<code>PATCH https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}</code>
+<code>PATCH https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1466,7 +1466,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>GET</code> <b><code>fireworks.inference.v1.audio.batch</code></b></summary>
 
-<code>GET https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/batch_job/{batchId}</code>
+<code>GET https://api.fireworks.ai/v1/accounts/{accountId}/batch_job/{batchId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
@@ -1616,7 +1616,7 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.accounts.users.update</code></b></summary>
 
-<code>POST https://api.fireworks.ai/inference/v1/v1/accounts/{accountId}/users/{userId}</code>
+<code>POST https://api.fireworks.ai/v1/accounts/{accountId}/users/{userId}</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 

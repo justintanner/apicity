@@ -180,10 +180,10 @@ describe("fireworks account resources GET endpoints integration", () => {
       it("should handle get SFT job for non-existent resource", async () => {
         // Demo SFT job does not exist - API returns 403/404
         await expect(
-          provider().inference.v1.accounts.supervisedFineTuningJobs.get(
+          provider().inference.v1.accounts.supervisedFineTuningJobs.get({
             accountId,
-            "demo-sft-job"
-          )
+            jobId: "demo-sft-job",
+          })
         ).rejects.toThrow(/Fireworks API error/);
       });
     });

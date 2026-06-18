@@ -240,8 +240,11 @@ describe("harness persist scrubbers", () => {
       },
     ]);
     expect(recording.response?.cookies).toEqual([]);
-    expect(recording.response?.content?.text).toContain("OSSAccessKeyId=***");
-    expect(recording.response?.content?.text).toContain("Signature=***");
+    expect(recording.response?.content?.text).toContain(
+      "result.png?Expires=1777010569"
+    );
+    expect(recording.response?.content?.text).not.toContain("OSSAccessKeyId");
+    expect(recording.response?.content?.text).not.toContain("Signature");
     expect(recording.response?.content?.text).not.toContain("LTAI-secret");
     expect(recording.response?.content?.text).not.toContain(
       "LTAI-upload-secret"

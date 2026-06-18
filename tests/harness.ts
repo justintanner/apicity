@@ -53,6 +53,8 @@ interface MultipartFileSummary {
 type MultipartSummaryValue = string | MultipartFileSummary;
 
 const REDACTED_GUEST_TOKEN = "***";
+const SIGNED_OSS_URL_RE =
+  /https:\/\/[^"\\\s]*[?&](?:OSSAccessKeyId|Signature)=[^"\\\s]*/g;
 
 function appendMultipartField(
   summary: Record<string, unknown>,
@@ -98,7 +100,18 @@ function findHeaderValue(
 function redactUrlSecrets(url: string): string {
   return url
     .replace(/(https:\/\/api\.telegram\.org\/bot)[^/]+/g, "$1***")
-    .replace(/([?&](?:OSSAccessKeyId|Signature)=)[^"&\\]+/g, "$1***");
+    .replace(SIGNED_OSS_URL_RE, (signedUrl) => {
+      try {
+        const parsed = new URL(signedUrl);
+        parsed.searchParams.delete("OSSAccessKeyId");
+        parsed.searchParams.delete("Signature");
+        return parsed.toString();
+      } catch {
+        return signedUrl
+          .replace(/([?&])(?:OSSAccessKeyId|Signature)=[^"&\\]+/g, "")
+          .replace("?&", "?");
+      }
+    });
 }
 
 function redactResponseTextSecrets(text: string): string {

@@ -21,11 +21,13 @@ describe("kie suno music generation integration", () => {
       model: "V5",
       instrumental: false,
       customMode: false,
+      callBackUrl: "https://example.com/cb",
     });
 
     // API may return error code if model unavailable, but should have well-formed response
     expect(result).toBeDefined();
     expect(typeof result.code).toBe("number");
+    expect(result.msg).not.toBe("Please enter callBackUrl.");
 
     // If successful, verify taskId structure
     if (result.data?.taskId) {
@@ -44,10 +46,12 @@ describe("kie suno music generation integration", () => {
       model: "V5",
       instrumental: true,
       customMode: false,
+      callBackUrl: "https://example.com/cb",
     });
 
     expect(result).toBeDefined();
     expect(typeof result.code).toBe("number");
+    expect(result.msg).not.toBe("Please enter callBackUrl.");
   });
 
   it("rejects sunoGenerate payload missing required fields", async () => {
@@ -67,6 +71,9 @@ describe("kie suno music generation integration", () => {
     ).toBe(true);
     expect(
       invalidResult.error?.issues.some((i) => i.path.includes("customMode"))
+    ).toBe(true);
+    expect(
+      invalidResult.error?.issues.some((i) => i.path.includes("callBackUrl"))
     ).toBe(true);
   });
 });

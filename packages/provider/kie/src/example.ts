@@ -31,7 +31,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A cheerful indie pop song about summer adventures",
       "model": "V5",
       "instrumental": false,
-      "customMode": false
+      "customMode": false,
+      "callBackUrl": "https://example.com/cb"
     }
   },
   "POST api.v1.generate.addInstrumental": {

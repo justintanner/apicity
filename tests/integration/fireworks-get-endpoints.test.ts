@@ -4,6 +4,7 @@ import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks GET endpoints integration", () => {
   const accountId = "jwtanner";
+  const datasetsAccountId = "fixture-account";
 
   function provider() {
     return createFireworks({
@@ -148,7 +149,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list datasets for an account", async () => {
         const result = await provider().inference.v1.accounts.datasets.list(
-          accountId,
+          datasetsAccountId,
           {
             pageSize: 5,
           }

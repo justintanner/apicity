@@ -23,6 +23,7 @@ export interface PersistedHarRecording {
   _id?: string;
   request?: {
     url?: string;
+    bodySize?: number;
     headers?: PersistedHarHeader[];
     cookies?: HarCookieLike[];
     postData?: {
@@ -53,6 +54,9 @@ interface MultipartFileSummary {
 type MultipartSummaryValue = string | MultipartFileSummary;
 
 const REDACTED_GUEST_TOKEN = "***";
+const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^,]*)*;base64,([\s\S]*)$/i;
+const LONG_BASE64_CHARS = 1024;
+const BASE64ISH_RE = /^[A-Za-z0-9+/_-]+={0,2}$/;
 const SIGNED_OSS_URL_RE =
   /https:\/\/[^"\\\s]*[?&](?:OSSAccessKeyId|Signature)=[^"\\\s]*/g;
 
@@ -227,6 +231,98 @@ export function redactPersistedHarSecrets(
 
 function byteLength(value: string): number {
   return new TextEncoder().encode(value).length;
+}
+
+function normalizedBase64(value: string): string {
+  return value.replace(/\s/g, "").replace(/-/g, "+").replace(/_/g, "/");
+}
+
+function base64ByteLength(value: string): number {
+  const base64 = normalizedBase64(value);
+  if (base64.length === 0) return 0;
+
+  const paddingLength = (4 - (base64.length % 4)) % 4;
+  return Buffer.from(`${base64}${"=".repeat(paddingLength)}`, "base64").length;
+}
+
+function summarizeInlineDataUrl(value: string): string | undefined {
+  const match = value.match(DATA_URL_BASE64_RE);
+  if (!match) return undefined;
+
+  const mime = match[1] || "binary";
+  return `<inline ${mime} data URL — replace with a real URL or upload>`;
+}
+
+function summarizeLongBase64(value: string): string | undefined {
+  const compact = value.replace(/\s/g, "");
+  if (compact.length <= LONG_BASE64_CHARS) return undefined;
+  if (compact.length % 4 === 1) return undefined;
+  if (!BASE64ISH_RE.test(compact)) return undefined;
+
+  return `<inline base64 data; ${base64ByteLength(compact)} bytes>`;
+}
+
+function summarizeJsonMediaStrings(value: unknown): {
+  value: unknown;
+  summarized: boolean;
+} {
+  if (typeof value === "string") {
+    const summary = summarizeInlineDataUrl(value) ?? summarizeLongBase64(value);
+    return { value: summary ?? value, summarized: summary !== undefined };
+  }
+
+  if (Array.isArray(value)) {
+    let summarized = false;
+    const values = value.map((item) => {
+      const result = summarizeJsonMediaStrings(item);
+      summarized ||= result.summarized;
+      return result.value;
+    });
+    return { value: values, summarized };
+  }
+
+  if (value === null || typeof value !== "object") {
+    return { value, summarized: false };
+  }
+
+  let summarized = false;
+  const out: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    const result = summarizeJsonMediaStrings(item);
+    summarized ||= result.summarized;
+    out[key] = result.value;
+  }
+  return { value: out, summarized };
+}
+
+function isJsonMimeType(mimeType: string | undefined): boolean {
+  const lower = mimeType?.toLowerCase() ?? "";
+  return lower.includes("application/json") || lower.includes("+json");
+}
+
+export function summarizeJsonRequestBodyMedia(
+  recording: PersistedHarRecording
+): void {
+  const postData = recording.request?.postData;
+  const text = postData?.text;
+  if (!isJsonMimeType(postData?.mimeType) || typeof text !== "string") return;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+
+  const result = summarizeJsonMediaStrings(parsed);
+  if (!result.summarized) return;
+
+  const nextText =
+    JSON.stringify(result.value) + (text.endsWith("\n") ? "\n" : "");
+  postData.text = nextText;
+  if (recording.request) {
+    recording.request.bodySize = byteLength(nextText);
+  }
 }
 
 function redactGuestTokens(value: unknown): {
@@ -489,6 +585,7 @@ function setupPollyWithOptions(
     }
 
     options.beforePersist?.(recording as PersistedHarRecording);
+    summarizeJsonRequestBodyMedia(recording as PersistedHarRecording);
     redactPersistedHarSecrets(recording as PersistedHarRecording);
     scrubSensitiveResponse(recording);
   });

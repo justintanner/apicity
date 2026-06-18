@@ -6,6 +6,7 @@ import {
 } from "../har-data";
 import {
   redactPersistedHarSecrets,
+  summarizeJsonRequestBodyMedia,
   summarizeMultipartFormData,
   type PersistedHarRecording,
 } from "../harness";
@@ -119,6 +120,51 @@ describe("harness request body helpers", () => {
     );
     expect(recording.response?.bodySize).toBe(
       recording.response?.content?.size
+    );
+  });
+
+  it("summarizes JSON request media without losing scalar context", () => {
+    const videoBytes = Buffer.from("fake-video");
+    const rawBytes = Buffer.alloc(900, 7);
+    const videoDataUrl = `data:video/mp4;base64,${videoBytes.toString(
+      "base64"
+    )}`;
+    const rawBase64 = rawBytes.toString("base64");
+    const recording: PersistedHarRecording = {
+      request: {
+        bodySize: 0,
+        postData: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            prompt: "The camera slowly zooms out",
+            duration: 4,
+            video_url: videoDataUrl,
+            settings: {
+              seed: 42,
+              references: [{ kind: "mask", data: rawBase64 }],
+            },
+          }),
+        },
+      },
+    };
+
+    summarizeJsonRequestBodyMedia(recording);
+
+    const text = recording.request?.postData?.text ?? "";
+    expect(JSON.parse(text)).toEqual({
+      prompt: "The camera slowly zooms out",
+      duration: 4,
+      video_url:
+        "<inline video/mp4 data URL — replace with a real URL or upload>",
+      settings: {
+        seed: 42,
+        references: [{ kind: "mask", data: "<inline base64 data; 900 bytes>" }],
+      },
+    });
+    expect(text).not.toContain(videoDataUrl);
+    expect(text).not.toContain(rawBase64);
+    expect(recording.request?.bodySize).toBe(
+      new TextEncoder().encode(text).length
     );
   });
 });

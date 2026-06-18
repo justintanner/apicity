@@ -231,6 +231,7 @@ export function redactPersistedHarSecrets(
     recording.response.content.text = redactResponseTextSecrets(responseText);
   }
   redactGuestTokenResponseBody(recording);
+  redactFireworksApiKeyResponseBody(recording);
 }
 
 function byteLength(value: string): number {
@@ -376,13 +377,111 @@ function redactGuestTokenResponseBody(recording: PersistedHarRecording): void {
   const result = redactGuestTokens(parsed);
   if (!result.redacted) return;
 
+  writeJsonResponseBody(recording, result.value, text);
+}
+
+function writeJsonResponseBody(
+  recording: PersistedHarRecording,
+  value: unknown,
+  originalText: string
+): void {
+  const content = recording.response?.content;
+  if (!content) return;
+
   const nextText =
-    JSON.stringify(result.value) + (text.endsWith("\n") ? "\n" : "");
+    JSON.stringify(value) + (originalText.endsWith("\n") ? "\n" : "");
+  const size = byteLength(nextText);
   content.text = nextText;
-  content.size = byteLength(nextText);
+  content.size = size;
   if (recording.response) {
-    recording.response.bodySize = byteLength(nextText);
+    recording.response.bodySize = size;
   }
+}
+
+function redactFireworksApiKeyEntry(value: unknown): {
+  value: unknown;
+  redacted: boolean;
+} {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const redactedObject: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (
+      ["displayName", "email", "keyId", "prefix"].includes(key) &&
+      typeof item === "string"
+    ) {
+      redactedObject[key] = "***";
+      redacted ||= item !== "***";
+      continue;
+    }
+    if (key === "key" && typeof item === "string" && item.length > 0) {
+      redactedObject[key] = "***";
+      redacted ||= item !== "***";
+      continue;
+    }
+    redactedObject[key] = item;
+  }
+  return { value: redactedObject, redacted };
+}
+
+function redactFireworksApiKeys(value: unknown): {
+  value: unknown;
+  redacted: boolean;
+} {
+  if (Array.isArray(value)) {
+    let redacted = false;
+    const redactedValues = value.map((item) => {
+      const result = redactFireworksApiKeys(item);
+      redacted ||= result.redacted;
+      return result.value;
+    });
+    return { value: redactedValues, redacted };
+  }
+  if (value === null || typeof value !== "object") {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const redactedObject: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (key === "apiKeys" && Array.isArray(item)) {
+      const redactedApiKeys = item.map((apiKey) => {
+        const result = redactFireworksApiKeyEntry(apiKey);
+        redacted ||= result.redacted;
+        return result.value;
+      });
+      redactedObject[key] = redactedApiKeys;
+      continue;
+    }
+
+    const result = redactFireworksApiKeys(item);
+    redacted ||= result.redacted;
+    redactedObject[key] = result.value;
+  }
+  return { value: redactedObject, redacted };
+}
+
+function redactFireworksApiKeyResponseBody(
+  recording: PersistedHarRecording
+): void {
+  const content = recording.response?.content;
+  const text = content?.text;
+  if (typeof text !== "string" || text.length === 0) return;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+
+  const result = redactFireworksApiKeys(parsed);
+  if (!result.redacted) return;
+
+  writeJsonResponseBody(recording, result.value, text);
 }
 
 function stableStringify(value: unknown): string | undefined {

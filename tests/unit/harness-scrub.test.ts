@@ -21,6 +21,9 @@ interface FixtureHarEntry {
   response?: {
     headers?: FixtureHarHeader[];
     cookies?: FixtureHarCookie[];
+    content?: {
+      text?: string;
+    };
   };
 }
 
@@ -227,6 +230,64 @@ describe("HAR response scrubber", () => {
                 `response header ${header.name} malformed JSON`
             );
           }
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
+  });
+
+  it("keeps committed Fireworks API key fixtures redacted", () => {
+    const file = path.resolve(
+      import.meta.dirname,
+      "../recordings/fireworks_626462085/apikeys-list_1724751226/recording.har"
+    );
+    const sensitiveFields = ["displayName", "email", "keyId", "prefix"];
+    const har = JSON.parse(readFileSync(file, "utf8")) as FixtureHar;
+    const leaks: string[] = [];
+
+    for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+      const text = entry.response?.content?.text;
+      if (!text) continue;
+
+      const body = JSON.parse(text) as unknown;
+      if (body === null || typeof body !== "object" || Array.isArray(body)) {
+        continue;
+      }
+
+      const apiKeys = (body as Record<string, unknown>).apiKeys;
+      if (!Array.isArray(apiKeys)) continue;
+
+      for (const [apiKeyIndex, apiKey] of apiKeys.entries()) {
+        if (
+          apiKey === null ||
+          typeof apiKey !== "object" ||
+          Array.isArray(apiKey)
+        ) {
+          continue;
+        }
+
+        const apiKeyRecord = apiKey as Record<string, unknown>;
+        for (const field of sensitiveFields) {
+          const value = apiKeyRecord[field];
+          if (typeof value === "string" && value !== REDACTED_HAR_VALUE) {
+            leaks.push(
+              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+                `apiKeys[${apiKeyIndex}].${field}`
+            );
+          }
+        }
+
+        const key = apiKeyRecord.key;
+        if (
+          typeof key === "string" &&
+          key.length > 0 &&
+          key !== REDACTED_HAR_VALUE
+        ) {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              `apiKeys[${apiKeyIndex}].key`
+          );
         }
       }
     }

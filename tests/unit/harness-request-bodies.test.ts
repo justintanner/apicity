@@ -196,6 +196,65 @@ describe("harness request body helpers", () => {
       new TextEncoder().encode(text).length
     );
   });
+
+  it("redacts Fireworks API key metadata from persisted response bodies", () => {
+    const recording: PersistedHarRecording = {
+      response: {
+        content: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            apiKeys: [
+              {
+                annotations: {},
+                createTime: "2026-03-30T05:41:10Z",
+                displayName: "production-key",
+                email: "person@example.com",
+                expireTime: null,
+                key: "fw_live_secret",
+                keyId: "key_live123",
+                lastUsed: "2026-04-16T07:18:00Z",
+                prefix: "fw_live",
+                secure: true,
+              },
+            ],
+            nextPageToken: "",
+            totalSize: 1,
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(JSON.parse(recording.response?.content?.text ?? "")).toEqual({
+      apiKeys: [
+        {
+          annotations: {},
+          createTime: "2026-03-30T05:41:10Z",
+          displayName: "***",
+          email: "***",
+          expireTime: null,
+          key: "***",
+          keyId: "***",
+          lastUsed: "2026-04-16T07:18:00Z",
+          prefix: "***",
+          secure: true,
+        },
+      ],
+      nextPageToken: "",
+      totalSize: 1,
+    });
+    expect(recording.response?.content?.text).not.toContain("person@example");
+    expect(recording.response?.content?.text).not.toContain("key_live123");
+    expect(recording.response?.content?.text).not.toContain("fw_live");
+    expect(recording.response?.content?.text).not.toContain("production-key");
+    expect(recording.response?.content?.size).toBe(
+      new TextEncoder().encode(recording.response?.content?.text ?? "").length
+    );
+    expect(recording.response?.bodySize).toBe(
+      recording.response?.content?.size
+    );
+  });
 });
 
 describe("harness persist scrubbers", () => {

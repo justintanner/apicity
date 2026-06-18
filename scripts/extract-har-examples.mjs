@@ -53,17 +53,32 @@ async function main() {
       const method = entry?.request?.method?.toUpperCase();
       if (!method) continue;
       const bodyText = entry?.request?.postData?.text;
-      if (typeof bodyText !== "string" || bodyText.length === 0) continue;
-      // JSON-only for v1: skip multipart, form-urlencoded, raw binary, etc.
-      const mime = entry?.request?.postData?.mimeType ?? "";
-      if (!mime.includes("application/json")) continue;
       let payload;
-      try {
-        payload = JSON.parse(bodyText);
-      } catch {
+      let payloadString;
+      if (typeof bodyText === "string" && bodyText.length > 0) {
+        // JSON-only for v1: skip multipart, form-urlencoded, raw binary, etc.
+        const mime = entry?.request?.postData?.mimeType ?? "";
+        if (!mime.includes("application/json")) continue;
+        try {
+          payload = JSON.parse(bodyText);
+        } catch {
+          continue;
+        }
+        payload = sanitizePayload(payload);
+        payloadString = bodyText;
+      } else if (
+        providerHint === "fireworks" &&
+        !hasRequestBody(entry) &&
+        isSuccessfulResponse(entry)
+      ) {
+        // Fireworks management endpoints are often bodyless reads. Count
+        // their successful recordings as coverage without
+        // broadening every provider's example surface.
+        payload = {};
+        payloadString = "{}";
+      } else {
         continue;
       }
-      payload = sanitizePayload(payload);
       const row = findMatchingRow(entry, tsvRows, { provider: providerHint });
       if (!row) {
         unmatched.push({
@@ -77,7 +92,7 @@ async function main() {
       const candidate = {
         recordingName,
         payload,
-        payloadString: bodyText,
+        payloadString,
       };
       const list = candidatesByKey.get(key) ?? [];
       list.push(candidate);
@@ -188,7 +203,9 @@ function printReport(covered, missing, unmatched, candidatesByKey) {
     console.log(`  ${key}  →  ${chosen.recordingName}`);
   }
   if (missing.length > 0) {
-    console.log("\n== missing (no JSON HAR entry matched) ==");
+    console.log(
+      "\n== missing (no JSON/bodyless green-path HAR entry matched) =="
+    );
     for (const m of missing) console.log(`  ${m}`);
   }
   if (unmatched.length > 0) {
@@ -253,6 +270,20 @@ function sanitizePayload(value) {
     return out;
   }
   return value;
+}
+
+function hasRequestBody(entry) {
+  const postData = entry?.request?.postData;
+  if (!postData) return false;
+  if (typeof postData.text === "string" && postData.text.length > 0) {
+    return true;
+  }
+  return Array.isArray(postData.params) && postData.params.length > 0;
+}
+
+function isSuccessfulResponse(entry) {
+  const status = Number(entry?.response?.status);
+  return Number.isFinite(status) && status >= 200 && status < 300;
 }
 
 function providerFromHarPath(harPath) {

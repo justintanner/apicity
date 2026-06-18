@@ -4,6 +4,7 @@ import { createOpenAi } from "@apicity/openai";
 import { createAlibaba } from "@apicity/alibaba";
 import { createXai } from "@apicity/xai";
 import { createFal } from "@apicity/fal";
+import { createFireworks } from "@apicity/fireworks";
 import { findMatchingRow } from "../../scripts/lib/match-har-to-endpoint.mjs";
 
 interface EndpointDocRow {
@@ -112,5 +113,14 @@ describe("HAR-derived examples on endpoints", () => {
     expect(row?.fullUrl).toBe(
       "https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs"
     );
+  });
+
+  test("fireworks RFT jobs list uses its bodyless HAR as coverage", () => {
+    const client = createFireworks({ apiKey: "test-key" });
+    const ex =
+      client.inference.v1.accounts.reinforcementFineTuningJobs.list.example;
+    expect(ex).toBeDefined();
+    expect(ex?.source).toBe("fireworks/rft-jobs-list");
+    expect(ex?.payload).toEqual({});
   });
 });

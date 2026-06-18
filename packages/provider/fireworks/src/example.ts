@@ -11,6 +11,94 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET inference.v1.accounts": {
+    "source": "fireworks/accounts-get",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.apiKeys.list": {
+    "source": "fireworks/apikeys-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.batchInferenceJobs.list": {
+    "source": "fireworks/batch-inference-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.datasets.list": {
+    "source": "fireworks/datasets-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.deployedModels.list": {
+    "source": "fireworks/deployedmodels-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.deploymentShapes.versions.list": {
+    "source": "fireworks/deployment-shapes-versions-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.deployments.list": {
+    "source": "fireworks/deployments-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.dpoJobs.list": {
+    "source": "fireworks/dpo-jobs-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.evaluationJobs.list": {
+    "source": "fireworks/evaluation-jobs-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.evaluators": {
+    "source": "fireworks/evaluators-get",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.evaluators.list": {
+    "source": "fireworks/evaluators-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.list": {
+    "source": "fireworks/accounts-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.models": {
+    "source": "fireworks/models-get",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.models.list": {
+    "source": "fireworks/models-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.reinforcementFineTuningJobs": {
+    "source": "fireworks/rft-jobs-get",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.reinforcementFineTuningJobs.list": {
+    "source": "fireworks/rft-jobs-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.rlorTrainerJobs.list": {
+    "source": "fireworks/rlor-trainer-jobs-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.secrets": {
+    "source": "fireworks/secrets-get",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.secrets.list": {
+    "source": "fireworks/secrets-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.supervisedFineTuningJobs.list": {
+    "source": "fireworks/sft-jobs-list",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.users": {
+    "source": "fireworks/users-get",
+    "payload": {}
+  },
+  "GET inference.v1.accounts.users.list": {
+    "source": "fireworks/users-list",
+    "payload": {}
+  },
   "POST inference.v1.accounts.rlorTrainerJobs.create": {
     "source": "fireworks/rlor-trainer-jobs-create",
     "payload": {

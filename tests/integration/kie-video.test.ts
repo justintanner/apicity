@@ -53,7 +53,7 @@ describe("kie grok-imagine video integration", () => {
 
   describe("videoExtend", () => {
     beforeEach(() => {
-      ctx = setupPollyIgnoringBody("kie/grok-video-extend");
+      ctx = setupPolly("kie/grok-video-extend");
     });
 
     afterEach(async () => {
@@ -67,7 +67,8 @@ describe("kie grok-imagine video integration", () => {
       });
 
       // Use a completed text-to-video task_id — extend requires the
-      // source video to have finished generating.
+      // source video to have finished generating. The top-level resolution
+      // is the cost hint for the source video resolution.
       const request = {
         model: "grok-imagine/extend",
         resolution: "480p",

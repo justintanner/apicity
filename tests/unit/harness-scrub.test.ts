@@ -3,6 +3,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   REDACTED_HAR_VALUE,
+  isSensitiveResponseHeaderName,
   scrubSensitiveResponse,
   type HarRecordingLike,
 } from "../har-scrub";
@@ -92,6 +93,10 @@ describe("HAR response scrubber", () => {
           { name: "request-id", value: "req-real" },
           { name: "x-request-id", value: "req-x-real" },
           { name: "x-mbx-uuid", value: "uuid-real" },
+          { name: "x-ratelimit-limit-requests", value: "5000" },
+          { name: "x-ratelimit-remaining-tokens", value: "999218" },
+          { name: "x-ratelimit-reset-requests", value: "12ms" },
+          { name: "ratelimit-reset", value: "12ms" },
           { name: "traceresponse", value: "trace-real" },
           { name: "x-dashscope-inner-user-meta", value: "user-real" },
           { name: "cookie", value: "__cf_bm=real-cookie-value" },
@@ -180,12 +185,6 @@ describe("HAR response scrubber", () => {
       import.meta.dirname,
       "../recordings/openai_3991279299"
     );
-    const sensitiveHeaders = new Set([
-      "cookie",
-      "openai-organization",
-      "openai-project",
-      "set-cookie",
-    ]);
     const leaks: string[] = [];
 
     for (const file of collectRecordingHars(recordingsDir)) {
@@ -199,8 +198,7 @@ describe("HAR response scrubber", () => {
         }
 
         for (const header of entry.response?.headers ?? []) {
-          const headerName = header.name?.toLowerCase();
-          if (headerName && sensitiveHeaders.has(headerName)) {
+          if (isSensitiveResponseHeaderName(header.name)) {
             leaks.push(
               `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
                 `response header ${header.name}`

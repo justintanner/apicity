@@ -48,6 +48,8 @@ export function isSensitiveResponseHeaderName(
     SENSITIVE_RESPONSE_HEADER_NAMES.has(lower) ||
     lower.includes("organization") ||
     lower.includes("project") ||
+    lower.startsWith("ratelimit-") ||
+    lower.startsWith("x-ratelimit-") ||
     lower.endsWith("cf-ray") ||
     /(^|-)request-id$/.test(lower) ||
     lower.endsWith("requestid") ||

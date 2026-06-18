@@ -3,7 +3,7 @@ import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks GET endpoints integration", () => {
-  const accountId = "jwtanner";
+  const accountId = "test-account";
   const datasetsAccountId = "fixture-account";
 
   function provider() {
@@ -60,7 +60,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list users for an account", async () => {
         const result = await provider().inference.v1.accounts.users.list(
-          "example",
+          accountId,
           {
             pageSize: 5,
           }
@@ -83,7 +83,7 @@ describe("fireworks GET endpoints integration", () => {
       it("should get a specific user", async () => {
         const result = await provider().inference.v1.accounts.users.get(
           accountId,
-          "jwtanner"
+          "test-user"
         );
         expect(result).toBeDefined();
         expect(result.name).toBeTruthy();
@@ -104,7 +104,7 @@ describe("fireworks GET endpoints integration", () => {
       it("should list api keys for a user", async () => {
         const result = await provider().inference.v1.accounts.apiKeys.list(
           accountId,
-          "jwtanner"
+          "test-user"
         );
         expect(result).toBeDefined();
         expect(result.apiKeys).toBeDefined();

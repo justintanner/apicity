@@ -3,7 +3,7 @@ import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createFireworks } from "@apicity/fireworks";
 
 describe("fireworks account resources GET endpoints integration", () => {
-  const accountId = "jwtanner";
+  const accountId = "test-account";
 
   function provider() {
     return createFireworks({
@@ -68,7 +68,7 @@ describe("fireworks account resources GET endpoints integration", () => {
       it("should list api keys for a user", async () => {
         const result = await provider().inference.v1.accounts.apiKeys.list(
           accountId,
-          "jwtanner"
+          "test-user"
         );
         expect(result).toBeDefined();
         expect(result.apiKeys).toBeDefined();
@@ -96,7 +96,7 @@ describe("fireworks account resources GET endpoints integration", () => {
 
         expect(result).toMatchObject({
           keyName: "TEST_SECRET",
-          name: "accounts/jwtanner/secrets/test-secret",
+          name: "accounts/test-account/secrets/test-secret",
           value: "",
         });
       });

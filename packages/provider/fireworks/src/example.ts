@@ -102,8 +102,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "POST inference.v1.accounts.rlorTrainerJobs.create": {
     "source": "fireworks/rlor-trainer-jobs-create",
     "payload": {
-      "dataset": "accounts/jwtanner/datasets/test-rlor-dataset",
-      "evaluator": "accounts/jwtanner/evaluators/test-evaluator",
+      "dataset": "accounts/test-account/datasets/test-rlor-dataset",
+      "evaluator": "accounts/test-account/evaluators/test-evaluator",
       "displayName": "Test RLOR Trainer Job",
       "trainingConfig": {
         "baseModel": "accounts/fireworks/models/llama-v3p1-8b-instruct",
@@ -115,8 +115,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "POST inference.v1.accounts.rlorTrainerJobs.executeTrainStep": {
     "source": "fireworks/rlor-trainer-jobs-execute-step",
     "payload": {
-      "dataset": "accounts/jwtanner/datasets/step-dataset",
-      "outputModel": "accounts/jwtanner/models/step-output-model"
+      "dataset": "accounts/test-account/datasets/step-dataset",
+      "outputModel": "accounts/test-account/models/step-output-model"
     }
   },
   "POST inference.v1.chat.completions": {

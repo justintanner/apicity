@@ -18,7 +18,7 @@ describe("fireworks accounts integration", () => {
       const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      const result = await provider.inference.v1.accounts.get("jwtanner");
+      const result = await provider.inference.v1.accounts.get("test-account");
       expect(result.name).toBeTruthy();
     });
   });
@@ -39,7 +39,7 @@ describe("fireworks accounts integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.users.list(
-        "example",
+        "test-account",
         {
           pageSize: 5,
         }
@@ -63,10 +63,10 @@ describe("fireworks accounts integration", () => {
       const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      // Use the user ID from the recording (jwtanner)
+      // Use the user ID from the recording.
       const result = await provider.inference.v1.accounts.users.get(
-        "jwtanner",
-        "jwtanner"
+        "test-account",
+        "test-user"
       );
       expect(result.name).toBeTruthy();
     });
@@ -87,10 +87,10 @@ describe("fireworks accounts integration", () => {
       const provider = createFireworks({
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
-      // Use the user ID from the recording (jwtanner)
+      // Use the user ID from the recording.
       const result = await provider.inference.v1.accounts.apiKeys.list(
-        "jwtanner",
-        "jwtanner"
+        "test-account",
+        "test-user"
       );
       expect(result.apiKeys).toBeInstanceOf(Array);
     });
@@ -112,7 +112,7 @@ describe("fireworks accounts integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const result = await provider.inference.v1.accounts.secrets.list(
-        "jwtanner",
+        "test-account",
         {
           pageSize: 5,
         }
@@ -125,7 +125,7 @@ describe("fireworks accounts integration", () => {
         apiKey: process.env.FIREWORKS_API_KEY ?? "fw-test-key",
       });
       const listResult = await provider.inference.v1.accounts.secrets.list(
-        "jwtanner",
+        "test-account",
         {
           pageSize: 5,
         }
@@ -134,7 +134,7 @@ describe("fireworks accounts integration", () => {
         const secretId = listResult.secrets[0].name?.split("/").pop() ?? "";
         if (secretId) {
           const result = await provider.inference.v1.accounts.secrets.get(
-            "jwtanner",
+            "test-account",
             secretId
           );
           expect(result.name).toBeTruthy();

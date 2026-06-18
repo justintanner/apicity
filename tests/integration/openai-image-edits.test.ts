@@ -1,14 +1,18 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPollyForFileUploads,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { createOpenAi } from "@apicity/openai";
 
 describe("openai image edits integration", () => {
   let ctx: PollyContext;
 
   beforeEach(() => {
-    ctx = setupPolly("openai/image-edits");
+    ctx = setupPollyForFileUploads("openai/image-edits");
   });
 
   afterEach(async () => {

@@ -288,7 +288,7 @@ describe("fireworks GET endpoints integration", () => {
 
       it("should list DPO jobs for an account", async () => {
         const result = await provider().inference.v1.accounts.dpoJobs.list(
-          accountId,
+          "fixture",
           {
             pageSize: 5,
           }

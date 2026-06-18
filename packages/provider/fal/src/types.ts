@@ -1126,6 +1126,10 @@ interface FalModelsPricingNamespace {
   estimate: FalPricingEstimateMethod;
 }
 
+interface FalGetV1ModelsPricingNamespace {
+  (params: FalPricingParams, signal?: AbortSignal): Promise<FalPricingResponse>;
+}
+
 interface FalDeletePayloadsMethod {
   (
     params: FalDeletePayloadsParams,
@@ -1730,7 +1734,7 @@ interface FalGetV1ModelsNamespace {
     params?: FalModelSearchParams,
     signal?: AbortSignal
   ): Promise<FalModelSearchResponse>;
-  pricing: FalModelsPricingNamespace;
+  pricing: FalGetV1ModelsPricingNamespace;
   usage(
     params?: FalUsageParams,
     signal?: AbortSignal

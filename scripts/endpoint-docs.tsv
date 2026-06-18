@@ -265,7 +265,6 @@ fal	storage.upload.initiate	?	?	https://docs.fal.ai
 fal	storage.upload.initiateMultipart	?	?	https://docs.fal.ai
 fal	v1.models	GET	https://api.fal.ai/v1/models	https://docs.fal.ai
 fal	v1.models.pricing	GET	https://api.fal.ai/v1/models/pricing	https://docs.fal.ai
-fal	v1.models.pricing.estimate	GET	https://api.fal.ai/v1/models/pricing/estimate	https://docs.fal.ai
 fal	v1.models.pricing.estimate	POST	https://api.fal.ai/v1/models/pricing/estimate	https://docs.fal.ai
 fal	v1.models.requests.payloads	DELETE	https://api.fal.ai/v1/models/requests/{param}/payloads	https://docs.fal.ai
 fal	v1.models.requests.payloads	GET	https://api.fal.ai/v1/models/requests/{param}/payloads	https://docs.fal.ai

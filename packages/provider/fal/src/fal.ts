@@ -2152,39 +2152,17 @@ export function createFal(opts: FalOptions): FalProvider {
 
   // GET https://api.fal.ai/v1/models/pricing
   // Docs: https://docs.fal.ai
-  const getV1ModelsPricing = Object.assign(
-    async function pricing(
-      params: FalPricingParams,
-      signal?: AbortSignal
-    ): Promise<FalPricingResponse> {
-      return makeRequest<FalPricingResponse>(
-        "GET",
-        "/models/pricing",
-        params as unknown as Record<string, unknown>,
-        signal
-      );
-    },
-    {
-      // GET https://api.fal.ai/v1/models/pricing/estimate
-      // Docs: https://docs.fal.ai
-      estimate: Object.assign(
-        async function estimate(
-          req: FalEstimateRequest,
-          signal?: AbortSignal
-        ): Promise<FalEstimateResponse> {
-          return makeRequest<FalEstimateResponse>(
-            "POST",
-            "/models/pricing/estimate",
-            req as unknown as Record<string, unknown>,
-            signal
-          );
-        },
-        {
-          schema: FalPricingEstimateRequestSchema,
-        }
-      ),
-    }
-  );
+  const getV1ModelsPricing = async function pricing(
+    params: FalPricingParams,
+    signal?: AbortSignal
+  ): Promise<FalPricingResponse> {
+    return makeRequest<FalPricingResponse>(
+      "GET",
+      "/models/pricing",
+      params as unknown as Record<string, unknown>,
+      signal
+    );
+  };
 
   const getV1ModelsRequests = {
     async byEndpoint(

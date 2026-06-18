@@ -165,7 +165,7 @@ export function createKie(opts: KieOptions): KieProvider {
     }
   }
 
-  // POST https://api.kie.ai/api/file-stream-upload
+  // POST https://kieai.redpandaai.co/api/file-stream-upload
   // Docs: https://docs.kie.ai/file-upload-api/upload-file-stream
   async function fileStreamUpload(
     req: UploadMediaRequest
@@ -228,7 +228,7 @@ export function createKie(opts: KieOptions): KieProvider {
     }
   }
 
-  // POST https://api.kie.ai/api/file-url-upload
+  // POST https://kieai.redpandaai.co/api/file-url-upload
   // Docs: https://docs.kie.ai/file-upload-api/upload-file-url
   async function fileUrlUpload(
     req: FileUrlUploadRequest
@@ -280,7 +280,7 @@ export function createKie(opts: KieOptions): KieProvider {
     }
   }
 
-  // POST https://api.kie.ai/api/file-base64-upload
+  // POST https://kieai.redpandaai.co/api/file-base64-upload
   // Docs: https://docs.kie.ai/file-upload-api/upload-file-base-64
   async function fileBase64Upload(
     req: FileBase64UploadRequest

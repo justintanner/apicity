@@ -184,20 +184,21 @@ function findFactory(sourceFile, name) {
   return null;
 }
 
-function extractBaseURL(factoryFn) {
+function extractBaseURLs(factoryFn) {
   const body = factoryFn.getBody();
-  if (!body) return null;
+  const urls = new Map();
+  if (!body) return urls;
   for (const stmt of body.getStatements()) {
     if (stmt.getKind() !== SyntaxKind.VariableStatement) continue;
     for (const decl of stmt.getDeclarations()) {
-      if (decl.getName() !== "baseURL") continue;
+      if (!BASE_URL_IDENTIFIERS.has(decl.getName())) continue;
       const init = decl.getInitializer();
       if (!init) continue;
       const base = evalUrlExpr(init);
-      if (base) return base;
+      if (base) urls.set(decl.getName(), base);
     }
   }
-  return null;
+  return urls;
 }
 
 /**
@@ -562,7 +563,14 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
     if (name === "doFetch" || name === "fetch" || name === "kieRequest") {
       const p = extractPath(args[0]);
       const m = extractMethodFromOptions(args[1]);
-      if (p) return { method: m || "POST", path: p };
+      const baseIdentifier = extractLeadingBaseIdentifier(args[0]);
+      if (p) {
+        return {
+          method: m || "POST",
+          path: p,
+          baseOverride: baseIdentifier ? `{${baseIdentifier}}` : null,
+        };
+      }
     }
 
     // Shape C: helper("/path", body?, signal?, options?) — method inferred from helper name
@@ -736,6 +744,33 @@ function extractPath(argNode) {
       result += span.getLiteral().getLiteralText();
     }
     return result || null;
+  }
+  return null;
+}
+
+function extractLeadingBaseIdentifier(argNode) {
+  if (!argNode) return null;
+  const k = argNode.getKind();
+  if (k === SyntaxKind.TemplateExpression) {
+    const head = argNode.getHead().getLiteralText();
+    const firstSpan = argNode.getTemplateSpans()[0];
+    if (!firstSpan || head !== "") return null;
+    const expr = firstSpan.getExpression();
+    if (
+      expr.getKind() === SyntaxKind.Identifier &&
+      BASE_URL_IDENTIFIERS.has(expr.getText())
+    ) {
+      return expr.getText();
+    }
+  }
+  if (k === SyntaxKind.BinaryExpression) {
+    const left = argNode.getLeft();
+    if (
+      left.getKind() === SyntaxKind.Identifier &&
+      BASE_URL_IDENTIFIERS.has(left.getText())
+    ) {
+      return left.getText();
+    }
   }
   return null;
 }
@@ -963,6 +998,7 @@ export async function* walkAllEndpoints(project) {
 async function* walkAllEndpointsRaw(project) {
   for (const provider of PROVIDERS) {
     const providerBaseURLs = new Map(); // factoryName → baseURL literal
+    const providerBaseURLMaps = new Map(); // factoryName → local base var map
     // First pass: resolve baseURL per factory
     for (const file of provider.entryFiles) {
       const sf = project.getSourceFile(path.join(REPO_ROOT, file));
@@ -970,7 +1006,9 @@ async function* walkAllEndpointsRaw(project) {
       for (const name of provider.factoryNames) {
         const fn = findFactory(sf, name);
         if (!fn) continue;
-        const base = extractBaseURL(fn);
+        const baseURLs = extractBaseURLs(fn);
+        if (baseURLs.size) providerBaseURLMaps.set(name, baseURLs);
+        const base = baseURLs.get("baseURL");
         if (base) providerBaseURLs.set(name, base);
       }
     }
@@ -987,6 +1025,7 @@ async function* walkAllEndpointsRaw(project) {
           providerBaseURLs.get(name) ??
           [...providerBaseURLs.values()][0] ??
           null;
+        const baseURLMap = providerBaseURLMaps.get(name) ?? new Map();
         for (const { dotPath, leafNode } of walkReturnTree(
           retExpr,
           [],
@@ -1020,8 +1059,10 @@ async function* walkAllEndpointsRaw(project) {
             let b = baseOverride;
             if (b.startsWith("{") && b.endsWith("}")) {
               const baseName = b.slice(1, -1);
-              // For now, only nativeBaseURL is known — derive it from baseURL
-              if (baseName === "nativeBaseURL" && baseURL) {
+              const mappedBase = baseURLMap.get(baseName);
+              if (mappedBase) {
+                b = mappedBase;
+              } else if (baseName === "nativeBaseURL" && baseURL) {
                 const u = new URL(baseURL);
                 b = `${u.origin}/api/v1`;
               } else {

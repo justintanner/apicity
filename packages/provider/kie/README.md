@@ -213,7 +213,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <details>
 <summary><code>POST</code> <b><code>kie.post.api.fileBase64Upload</code></b></summary>
 
-<code>POST https://api.kie.ai/api/file-base64-upload</code>
+<code>POST https://kieai.redpandaai.co/api/file-base64-upload</code>
 
 [Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-base-64)
 
@@ -230,7 +230,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <details>
 <summary><code>POST</code> <b><code>kie.post.api.fileStreamUpload</code></b></summary>
 
-<code>POST https://api.kie.ai/api/file-stream-upload</code>
+<code>POST https://kieai.redpandaai.co/api/file-stream-upload</code>
 
 [Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-stream)
 
@@ -247,7 +247,7 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 <details>
 <summary><code>POST</code> <b><code>kie.post.api.fileUrlUpload</code></b></summary>
 
-<code>POST https://api.kie.ai/api/file-url-upload</code>
+<code>POST https://kieai.redpandaai.co/api/file-url-upload</code>
 
 [Upstream docs ↗](https://docs.kie.ai/file-upload-api/upload-file-url)
 

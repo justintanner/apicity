@@ -672,6 +672,7 @@ describe("KIE Suno provider", () => {
       prompt: "A calm vocal about summer dreams",
       title: "Summer Dreams",
       style: "soft pop",
+      negativeTags: "heavy metal, strong drum beats",
       callBackUrl: "https://example.com/cb",
       model: "V4_5PLUS" as const,
     };
@@ -692,6 +693,7 @@ describe("KIE Suno provider", () => {
       "prompt",
       "title",
       "style",
+      "negativeTags",
       "callBackUrl",
       "model",
     ] as const)("requires %s", (field) => {
@@ -700,6 +702,16 @@ describe("KIE Suno provider", () => {
       delete partial[field];
       const result =
         provider.post.api.v1.generate.addVocals.schema.safeParse(partial);
+      expect(result.success).toBe(false);
+    });
+
+    it("requires non-empty negativeTags", () => {
+      const { provider } = createProvider();
+      const result = provider.post.api.v1.generate.addVocals.schema.safeParse({
+        ...VALID_ADD_VOCALS,
+        negativeTags: "",
+      });
+
       expect(result.success).toBe(false);
     });
   });

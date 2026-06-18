@@ -257,9 +257,9 @@ export interface SunoAddVocalsRequest {
   prompt: string;
   title: string;
   style: string;
+  negativeTags: string;
   callBackUrl: string;
   model: SunoModel;
-  negativeTags?: string;
   vocalGender?: "m" | "f";
   styleWeight?: number;
   weirdnessConstraint?: number;
@@ -579,9 +579,9 @@ const SunoAddVocalsRequestSchema = z.object({
   prompt: z.string().min(1),
   title: z.string().min(1),
   style: z.string().min(1),
+  negativeTags: z.string().min(1),
   callBackUrl: z.string().min(1),
   model: z.enum(["V3_5", "V4", "V4_5", "V4_5PLUS", "V4_5ALL", "V5", "V5_5"]),
-  negativeTags: z.string().optional(),
   vocalGender: z.enum(["m", "f"]).optional(),
   styleWeight: z.number().min(0).max(1).optional(),
   weirdnessConstraint: z.number().min(0).max(1).optional(),

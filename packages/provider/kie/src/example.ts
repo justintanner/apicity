@@ -52,6 +52,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "Add soft female vocals about summer dreams",
       "title": "Summer Dreams",
       "style": "soft pop",
+      "negativeTags": "heavy metal, strong drum beats",
       "callBackUrl": "https://example.com/cb",
       "model": "V4_5PLUS"
     }

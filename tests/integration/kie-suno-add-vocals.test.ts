@@ -23,14 +23,13 @@ describe("kie suno add vocals (submit)", () => {
       prompt: "Add soft female vocals about summer dreams",
       title: "Summer Dreams",
       style: "soft pop",
+      negativeTags: "heavy metal, strong drum beats",
       callBackUrl: "https://example.com/cb",
       model: "V4_5PLUS",
     });
 
-    expect([200, 422, 451]).toContain(result.code);
-    if (result.code === 200) {
-      expect(result.data?.taskId).toBeTruthy();
-      expect(typeof result.data?.taskId).toBe("string");
-    }
+    expect(result.code).toBe(200);
+    expect(result.data?.taskId).toBeTruthy();
+    expect(typeof result.data?.taskId).toBe("string");
   });
 });

@@ -8,6 +8,66 @@ import {
 } from "../harness";
 import { createFreeMediaUpload } from "@apicity/free-media-upload";
 
+interface HarFixture {
+  path: string;
+  expected: Record<string, unknown>;
+}
+
+const tmpfilesHarFixtures: HarFixture[] = [
+  {
+    path: "../recordings/free-media-upload_1393460724/tmpfiles-upload_4132818341/recording.har",
+    expected: {
+      _multipart: true,
+      file: {
+        _file: true,
+        filename: "test.txt",
+        contentType: "text/plain",
+        size: 16,
+      },
+    },
+  },
+  {
+    path: "../recordings/free-media-upload_1393460724/tmpfiles-upload-image_3924478405/recording.har",
+    expected: {
+      _multipart: true,
+      file: {
+        _file: true,
+        filename: "cat1.jpg",
+        contentType: "image/jpeg",
+        size: 83558,
+      },
+    },
+  },
+  {
+    path: "../recordings/free-media-upload_1393460724/tmpfiles-upload-video_466177323/recording.har",
+    expected: {
+      _multipart: true,
+      file: {
+        _file: true,
+        filename: "jump.mp4",
+        contentType: "video/mp4",
+        size: 1318021,
+      },
+    },
+  },
+];
+
+function readFixturePostData(fixturePath: string): {
+  mimeType?: string;
+  text?: string;
+} {
+  const har = JSON.parse(
+    readFileSync(resolve(__dirname, fixturePath), "utf-8")
+  ) as {
+    log?: {
+      entries?: Array<{
+        request?: { postData?: { mimeType?: string; text?: string } };
+      }>;
+    };
+  };
+  return har.log?.entries?.[0]?.request?.postData ?? {};
+}
+
 describe("free-media-upload tmpfiles upload", () => {
   let ctx: PollyContext | undefined;
 
@@ -66,6 +126,15 @@ describe("free-media-upload tmpfiles upload", () => {
 
     expect(result.status).toBe("success");
     expect(result.data.url).toContain("tmpfiles.org");
+  });
+
+  it("should keep multipart summaries in tmpfiles HAR fixtures", () => {
+    for (const fixture of tmpfilesHarFixtures) {
+      const postData = readFixturePostData(fixture.path);
+
+      expect(postData.mimeType).toBe("multipart/form-data");
+      expect(JSON.parse(postData.text ?? "")).toEqual(fixture.expected);
+    }
   });
 
   it("should expose schema on upload", () => {

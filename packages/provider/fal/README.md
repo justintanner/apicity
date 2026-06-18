@@ -118,7 +118,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-68 endpoints across 18 groups. Each method mirrors an upstream URL path.
+70 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -474,6 +474,21 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>fal.v1.models.requests.byEndpoint</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/requests/by-endpoint</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.requests.byEndpoint({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>fal.v1.models.requests.payloads</code></b></summary>
 
 <code>GET https://api.fal.ai/v1/models/requests/{param}/payloads</code>
@@ -542,6 +557,21 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.v1.models.pricing.estimate({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>fal.v1.models.requests.byEndpoint</code></b></summary>
+
+<code>GET https://api.fal.ai/v1/models/requests/by-endpoint</code>
+
+[Upstream docs ↗](https://docs.fal.ai)
+
+```typescript
+const res = await fal.v1.models.requests.byEndpoint({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

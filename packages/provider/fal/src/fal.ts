@@ -547,7 +547,9 @@ export function createFal(opts: FalOptions): FalProvider {
   );
 
   const requests = {
-    async byEndpoint(
+    // GET https://api.fal.ai/v1/models/requests/by-endpoint
+    // Docs: https://docs.fal.ai
+    byEndpoint: async function byEndpoint(
       params: FalRequestsParams,
       signal?: AbortSignal
     ): Promise<FalRequestsResponse> {
@@ -2165,7 +2167,9 @@ export function createFal(opts: FalOptions): FalProvider {
   };
 
   const getV1ModelsRequests = {
-    async byEndpoint(
+    // GET https://api.fal.ai/v1/models/requests/by-endpoint
+    // Docs: https://docs.fal.ai
+    byEndpoint: async function byEndpoint(
       params: FalRequestsParams,
       signal?: AbortSignal
     ): Promise<FalRequestsResponse> {

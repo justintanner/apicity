@@ -80,6 +80,7 @@ describe("HAR response scrubber", () => {
     const recording: HarRecordingLike = {
       response: {
         cookies: [
+          { name: "__cf_bm", value: "cloudflare-bot-cookie" },
           { name: "_cfuvid", value: "real-cookie-value" },
           { name: "PHPSESSID", value: "real-php-session-id" },
           { name: "JSESSIONID", value: "real-session-id" },
@@ -100,6 +101,10 @@ describe("HAR response scrubber", () => {
           { name: "traceresponse", value: "trace-real" },
           { name: "x-dashscope-inner-user-meta", value: "user-real" },
           { name: "cookie", value: "__cf_bm=real-cookie-value" },
+          {
+            name: "set-cookie",
+            value: "__cf_bm=cloudflare-bot-cookie; Path=/; HttpOnly",
+          },
           { name: "set-cookie", value: "_cfuvid=real-cookie-value" },
           { name: "set-cookie", value: "PHPSESSID=real-php-session-id" },
           { name: "Set-Cookie", value: "JSESSIONID=real-session-id; Path=/" },
@@ -133,6 +138,45 @@ describe("HAR response scrubber", () => {
 
     expect(recording.response?.cookies).toEqual([]);
     expect(recording.response?.headers).toEqual([]);
+  });
+
+  it("keeps the Polymarket gamma event fixture free of Cloudflare cookies", () => {
+    const file = path.resolve(
+      import.meta.dirname,
+      "../recordings/polymarket_3782428595/" +
+        "gamma-events-by-id_2629891956/recording.har"
+    );
+    const raw = readFileSync(file, "utf8");
+    const har = JSON.parse(raw) as FixtureHar;
+    const leaks: string[] = [];
+
+    if (/__cf_bm/i.test(raw)) {
+      leaks.push(`${path.relative(process.cwd(), file)} contains __cf_bm`);
+    }
+
+    for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+      for (const [cookieIndex, cookie] of (
+        entry.response?.cookies ?? []
+      ).entries()) {
+        leaks.push(
+          `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+            `response cookie ${cookieIndex} (${cookie.name ?? "unnamed"})`
+        );
+      }
+
+      for (const [headerIndex, header] of (
+        entry.response?.headers ?? []
+      ).entries()) {
+        if (header.name?.toLowerCase() === "set-cookie") {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              `response set-cookie header ${headerIndex}`
+          );
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
   });
 
   it("keeps committed HAR fixtures free of response cookies", () => {

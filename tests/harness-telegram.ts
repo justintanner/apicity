@@ -49,6 +49,14 @@ const CREDIT_URL_PATTERNS = [
 
 const MEDIA_URL_EXT =
   /\.(mp4|webm|mov|png|jpe?g|gif|webp|wav|mp3|ogg|flac|m4a)(?:\?|$)/i;
+const REDACTED_QUERY_VALUE = "***";
+const SIGNED_MEDIA_QUERY_PARAMS = new Set([
+  "ossaccesskeyid",
+  "signature",
+  "x-oss-signature",
+  "x-amz-credential",
+  "x-amz-signature",
+]);
 
 const RESPONSE_HEADER_PREVIEW_EXCLUDES = new Set([
   "connection",
@@ -763,9 +771,43 @@ function responsePreview(entry: HarEntry): string {
   return responseBody(entry) || responseHeaders(entry);
 }
 
+function isExpiredUnixTimestamp(value: string | null): boolean {
+  if (!value) return false;
+  const expires = Number(value);
+  if (!Number.isFinite(expires) || expires <= 0) return false;
+  const expiresMs = expires > 10_000_000_000 ? expires : expires * 1000;
+  return expiresMs <= Date.now();
+}
+
+function shouldSkipMediaUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const params: Array<[string, string]> = [
+      ...parsed.searchParams.entries(),
+    ].map(([name, value]) => [name.toLowerCase(), value]);
+    const hasSignedParam = params.some(([name]) =>
+      SIGNED_MEDIA_QUERY_PARAMS.has(name)
+    );
+    if (!hasSignedParam) return false;
+
+    const hasRedactedCredential = params.some(
+      ([name, value]) =>
+        SIGNED_MEDIA_QUERY_PARAMS.has(name) && value === REDACTED_QUERY_VALUE
+    );
+    const expires = params.find(([name]) => name === "expires")?.[1] ?? null;
+    return hasRedactedCredential || isExpiredUnixTimestamp(expires);
+  } catch {
+    return false;
+  }
+}
+
 function collectMediaUrls(value: unknown, urls: Set<string>): void {
   if (typeof value === "string") {
-    if (value.startsWith("http") && MEDIA_URL_EXT.test(value)) {
+    if (
+      value.startsWith("http") &&
+      MEDIA_URL_EXT.test(value) &&
+      !shouldSkipMediaUrl(value)
+    ) {
       urls.add(value);
     }
     return;
@@ -797,7 +839,9 @@ function extractMediaUrls(entries: HarEntry[]): string[] {
     } catch {
       for (const match of raw.matchAll(/https?:\/\/[^\s"<>\\]+/g)) {
         const url = match[0];
-        if (MEDIA_URL_EXT.test(url)) urls.add(url);
+        if (MEDIA_URL_EXT.test(url) && !shouldSkipMediaUrl(url)) {
+          urls.add(url);
+        }
       }
     }
   }

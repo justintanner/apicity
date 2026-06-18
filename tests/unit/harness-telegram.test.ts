@@ -672,6 +672,42 @@ function b2ListObjectsV2Recording(): ChangedRecording {
   };
 }
 
+function alibabaExpiredSignedVideoRecording(): ChangedRecording {
+  return {
+    provider: "alibaba",
+    recordingName: "alibaba/wan-i2v",
+    changeType: "new",
+    filePath:
+      "tests/recordings/alibaba_1329897167/" +
+      "wan-i2v_2196817451/recording.har",
+    entries: [
+      {
+        request: {
+          method: "GET",
+          url: "https://dashscope.aliyuncs.com/api/v1/tasks/task-id",
+          headers: [],
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/json" }],
+          content: {
+            mimeType: "application/json",
+            text: JSON.stringify({
+              output: {
+                task_status: "SUCCEEDED",
+                video_url:
+                  "https://dashscope-a717.oss-accelerate.aliyuncs.com/" +
+                  "clip.mp4?Expires=1&OSSAccessKeyId=***&Signature=***",
+              },
+            }),
+          },
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -933,6 +969,15 @@ describe("harness Telegram messages", () => {
       data: Buffer.from("fake-mp3-bytes").toString("base64"),
     });
     expect(items[0].caption.length).toBeLessThanOrEqual(1024);
+  });
+
+  it("omits expired signed Alibaba OSS output URLs from media uploads", () => {
+    const items = collectMedia(
+      alibabaExpiredSignedVideoRecording(),
+      "alibaba.api.v1.tasks.get"
+    );
+
+    expect(items).toEqual([]);
   });
 
   it("marks binary response bodies as sent below instead of dumping bytes", () => {

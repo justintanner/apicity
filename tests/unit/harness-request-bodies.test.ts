@@ -8,6 +8,7 @@ import {
   redactPersistedHarSecrets,
   summarizeJsonRequestBodyMedia,
   summarizeMultipartFormData,
+  summarizeMultipartRequestBody,
   type PersistedHarRecording,
 } from "../harness";
 import { scrubSensitiveResponse } from "../har-scrub";
@@ -50,6 +51,34 @@ describe("harness request body helpers", () => {
         },
       ],
     });
+  });
+
+  it("summarizes FormData-like request bodies from fetch adapters", () => {
+    const file = new Blob(["audio-bytes"], { type: "audio/mpeg" });
+    const formDataLike = {
+      [Symbol.toStringTag]: "FormData",
+      entries: function* (): Iterable<[string, FormDataEntryValue]> {
+        yield ["file", file];
+        yield ["model", "whisper-v3"];
+      },
+    };
+
+    expect(summarizeMultipartRequestBody(formDataLike)).toEqual({
+      _multipart: true,
+      file: {
+        _file: true,
+        contentType: "audio/mpeg",
+        size: file.size,
+      },
+      model: "whisper-v3",
+    });
+  });
+
+  it("does not treat URLSearchParams as multipart form data", () => {
+    const params = new URLSearchParams();
+    params.append("file", "not-a-file");
+
+    expect(summarizeMultipartRequestBody(params)).toBeNull();
   });
 
   it("reconstructs a readable body from multipart HAR params", () => {

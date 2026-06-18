@@ -53,6 +53,10 @@ interface MultipartFileSummary {
 
 type MultipartSummaryValue = string | MultipartFileSummary;
 
+interface MultipartFormDataLike {
+  entries(): Iterable<[string, FormDataEntryValue]>;
+}
+
 const REDACTED_GUEST_TOKEN = "***";
 const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^,]*)*;base64,([\s\S]*)$/i;
 const LONG_BASE64_CHARS = 1024;
@@ -444,13 +448,39 @@ function redactedRequestId(req: { identifiers?: unknown }): string | undefined {
 }
 
 export function summarizeMultipartFormData(
-  form: FormData
+  form: MultipartFormDataLike
 ): Record<string, unknown> {
   const summary: Record<string, unknown> = { _multipart: true };
   for (const [name, value] of form.entries()) {
     appendMultipartField(summary, name, summarizeMultipartValue(value));
   }
   return summary;
+}
+
+function isMultipartFormDataBody(
+  value: unknown
+): value is MultipartFormDataLike {
+  if (typeof FormData !== "undefined" && value instanceof FormData) {
+    return true;
+  }
+
+  if (value === null || typeof value !== "object") {
+    return false;
+  }
+
+  if (Object.prototype.toString.call(value) !== "[object FormData]") {
+    return false;
+  }
+
+  const candidate = value as { entries?: unknown };
+  return typeof candidate.entries === "function";
+}
+
+export function summarizeMultipartRequestBody(
+  body: unknown
+): Record<string, unknown> | null {
+  if (!isMultipartFormDataBody(body)) return null;
+  return summarizeMultipartFormData(body);
 }
 
 export function setupPolly(recordingName: string): PollyContext {
@@ -569,19 +599,14 @@ function setupPollyWithOptions(
       if (requestId) recording._id = requestId;
     }
 
-    if (
-      typeof FormData !== "undefined" &&
-      req.body instanceof FormData &&
-      recording.request
-    ) {
+    const multipartSummary = summarizeMultipartRequestBody(req.body);
+    if (multipartSummary && recording.request) {
       const contentType =
         findHeaderValue(recording.request.headers, "content-type") ??
         "multipart/form-data";
       recording.request.postData ??= { mimeType: contentType, params: [] };
       recording.request.postData.mimeType = contentType;
-      recording.request.postData.text = JSON.stringify(
-        summarizeMultipartFormData(req.body)
-      );
+      recording.request.postData.text = JSON.stringify(multipartSummary);
     }
 
     options.beforePersist?.(recording as PersistedHarRecording);

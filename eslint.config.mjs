@@ -32,17 +32,6 @@ export default [
   },
   {
     files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        project: [
-          "./tsconfig.base.json",
-          "./packages/*/tsconfig.json",
-          "./packages/provider/*/tsconfig.json",
-          "./examples/*/tsconfig.json",
-        ],
-      },
-    },
     rules: {
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": [

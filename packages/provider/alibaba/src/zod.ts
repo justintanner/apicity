@@ -592,6 +592,9 @@ export const AlibabaModelSchema = z.object({
 export const AlibabaModelListResponseSchema = z.object({
   object: z.string(),
   data: z.array(AlibabaModelSchema),
+  first_id: z.string(),
+  last_id: z.string(),
+  has_more: z.boolean(),
 });
 
 // -- Image generation (Wan 2.7 — async) -------------------------------------

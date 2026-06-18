@@ -19,5 +19,8 @@ describe("alibaba models list", () => {
 
     expect(result.data.length).toBeGreaterThan(0);
     expect(result.data[0].id).toBeTruthy();
+    expect(result.first_id).toBe("model-id-0");
+    expect(result.last_id).toBe("model-id-178");
+    expect(result.has_more).toBe(false);
   });
 });

@@ -264,11 +264,13 @@ fal	storage.upload.completeMultipart	?	?	https://docs.fal.ai
 fal	storage.upload.initiate	?	?	https://docs.fal.ai
 fal	storage.upload.initiateMultipart	?	?	https://docs.fal.ai
 fal	v1.models	GET	https://api.fal.ai/v1/models	https://docs.fal.ai
+fal	v1.models.analytics	GET	https://api.fal.ai/v1/models/analytics	https://docs.fal.ai
 fal	v1.models.pricing	GET	https://api.fal.ai/v1/models/pricing	https://docs.fal.ai
 fal	v1.models.pricing.estimate	POST	https://api.fal.ai/v1/models/pricing/estimate	https://docs.fal.ai
 fal	v1.models.requests.byEndpoint	GET	https://api.fal.ai/v1/models/requests/by-endpoint	https://docs.fal.ai
 fal	v1.models.requests.payloads	DELETE	https://api.fal.ai/v1/models/requests/{param}/payloads	https://docs.fal.ai
 fal	v1.models.requests.payloads	GET	https://api.fal.ai/v1/models/requests/{param}/payloads	https://docs.fal.ai
+fal	v1.models.usage	GET	https://api.fal.ai/v1/models/usage	https://docs.fal.ai
 fal	v1.queue.submit	POST	https://api.fal.ai/v1/POST	https://docs.fal.ai
 fal	v1.serverless.files.uploadLocal	POST	https://api.fal.ai/v1/serverless/files/file/local/{param}	https://docs.fal.ai
 fal	v1.serverless.files.uploadUrl	POST	https://api.fal.ai/v1/serverless/files/file/url/{param}	https://docs.fal.ai

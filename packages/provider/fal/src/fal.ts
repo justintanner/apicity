@@ -603,6 +603,8 @@ export function createFal(opts: FalOptions): FalProvider {
     {
       pricing,
 
+      // GET https://api.fal.ai/v1/models/usage
+      // Docs: https://docs.fal.ai
       async usage(
         params?: FalUsageParams,
         signal?: AbortSignal
@@ -615,6 +617,8 @@ export function createFal(opts: FalOptions): FalProvider {
         );
       },
 
+      // GET https://api.fal.ai/v1/models/analytics
+      // Docs: https://docs.fal.ai
       async analytics(
         params: FalAnalyticsParams,
         signal?: AbortSignal
@@ -2223,6 +2227,8 @@ export function createFal(opts: FalOptions): FalProvider {
     {
       pricing: getV1ModelsPricing,
 
+      // GET https://api.fal.ai/v1/models/usage
+      // Docs: https://docs.fal.ai
       async usage(
         params?: FalUsageParams,
         signal?: AbortSignal
@@ -2235,6 +2241,8 @@ export function createFal(opts: FalOptions): FalProvider {
         );
       },
 
+      // GET https://api.fal.ai/v1/models/analytics
+      // Docs: https://docs.fal.ai
       async analytics(
         params: FalAnalyticsParams,
         signal?: AbortSignal

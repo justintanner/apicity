@@ -1,9 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { execFile } from "node:child_process";
 import { randomBytes, createHash } from "node:crypto";
 import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
+
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
 
 import {
   mintOtp,
@@ -14,6 +16,16 @@ import {
 } from "../../packages/provider/cost/src/paygate.js";
 
 const SECRET = "test-shared-hmac-secret-value";
+
+interface CliResult {
+  stdout: string;
+  stderr: string;
+}
+
+interface CliError extends Error {
+  stdout: string;
+  stderr: string;
+}
 
 function makeTestDir(): string {
   const dir = join(
@@ -180,10 +192,40 @@ describe("CLI subprocess", () => {
   let testDir: string;
   let secretFile: string;
   let payloadFile: string;
-  const cliPath = join(
+  const cliSourcePath = join(
     dirname(fileURLToPath(import.meta.url)),
     "../../packages/provider/cost/src/paygate-cli.ts"
   );
+  const cliDistPath = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "../../packages/provider/cost/dist/src/paygate-cli.js"
+  );
+
+  function runCli(args: string[]): Promise<CliResult> {
+    const usesBuiltCli = existsSync(cliDistPath);
+    const command = usesBuiltCli ? process.execPath : "npx";
+    const commandArgs = usesBuiltCli
+      ? [cliDistPath, ...args]
+      : ["tsx", cliSourcePath, ...args];
+
+    return new Promise((resolve, reject) => {
+      execFile(
+        command,
+        commandArgs,
+        { env: { ...process.env } },
+        (error, stdout, stderr) => {
+          if (error) {
+            const cliError = error as CliError;
+            cliError.stdout = stdout;
+            cliError.stderr = stderr;
+            reject(cliError);
+          } else {
+            resolve({ stdout, stderr });
+          }
+        }
+      );
+    });
+  }
 
   beforeEach(() => {
     testDir = makeTestDir();
@@ -207,37 +249,22 @@ describe("CLI subprocess", () => {
   });
 
   it("mints an OTP via CLI subprocess", async () => {
-    const { execFile } = await import("node:child_process");
-    const result = await new Promise<{ stdout: string; stderr: string }>(
-      (resolve, reject) => {
-        execFile(
-          "npx",
-          [
-            "tsx",
-            cliPath,
-            "otp",
-            "mint",
-            "--provider",
-            "kie",
-            "--method",
-            "POST",
-            "--dot-path",
-            "api.v1.jobs.createTask",
-            "--payload-file",
-            payloadFile,
-            "--secret-file",
-            secretFile,
-            "--ttl",
-            "10m",
-          ],
-          { env: { ...process.env } },
-          (error, stdout, stderr) => {
-            if (error) reject(error);
-            else resolve({ stdout, stderr });
-          }
-        );
-      }
-    );
+    const result = await runCli([
+      "otp",
+      "mint",
+      "--provider",
+      "kie",
+      "--method",
+      "POST",
+      "--dot-path",
+      "api.v1.jobs.createTask",
+      "--payload-file",
+      payloadFile,
+      "--secret-file",
+      secretFile,
+      "--ttl",
+      "10m",
+    ]);
 
     const otp = result.stdout.trim();
     const parsed = parseOtp(otp);
@@ -266,34 +293,25 @@ describe("CLI subprocess", () => {
   });
 
   it("exits with error when --secret-file is missing", async () => {
-    const { execFile } = await import("node:child_process");
     await expect(
-      new Promise((resolve, reject) => {
-        execFile(
-          "npx",
-          [
-            "tsx",
-            cliPath,
-            "otp",
-            "mint",
-            "--provider",
-            "kie",
-            "--method",
-            "POST",
-            "--dot-path",
-            "api.v1.jobs.createTask",
-            "--payload-file",
-            payloadFile,
-            "--ttl",
-            "10m",
-          ],
-          { env: { ...process.env } },
-          (error, stdout, stderr) => {
-            if (error) reject(error);
-            else resolve({ stdout, stderr });
-          }
-        );
-      })
-    ).rejects.toBeTruthy();
+      runCli([
+        "otp",
+        "mint",
+        "--provider",
+        "kie",
+        "--method",
+        "POST",
+        "--dot-path",
+        "api.v1.jobs.createTask",
+        "--payload-file",
+        payloadFile,
+        "--ttl",
+        "10m",
+      ])
+    ).rejects.toMatchObject({
+      stderr: expect.stringContaining(
+        "Missing required argument: --secret-file"
+      ),
+    });
   });
 });

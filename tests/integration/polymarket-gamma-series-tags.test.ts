@@ -83,5 +83,10 @@ describe("polymarket gamma series + tags surface", () => {
 
     const rels = await provider.get.gamma.tags.relatedTags.slug("politics");
     expect(Array.isArray(rels)).toBe(true);
+    if (rels.length > 0) {
+      expect(typeof rels[0].tagID).toBe("number");
+      expect(typeof rels[0].relatedTagID).toBe("number");
+      expect(typeof rels[0].rank).toBe("number");
+    }
   });
 });

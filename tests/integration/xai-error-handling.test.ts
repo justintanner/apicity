@@ -52,12 +52,9 @@ describe("xAI error handling integration", () => {
     }
   });
 
-  it("should handle rate limit error when encountered", async () => {
-    // Note: Rate limits are hard to trigger consistently
-    // This test verifies the error structure if we do hit a 429
+  it("should replay a successful models response after error cases", async () => {
     const provider = createXaiProvider();
 
-    // Make a successful request first
     const result = await provider.get.v1.models();
     expect(result.data).toBeDefined();
   });

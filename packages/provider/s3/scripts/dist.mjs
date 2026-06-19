@@ -36,7 +36,10 @@ async function addJsExtensions(dir) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       await addJsExtensions(fullPath);
-    } else if (entry.name.endsWith(".js")) {
+    } else if (entry.name.endsWith(".js") || entry.name.endsWith(".d.ts")) {
+      // .d.ts files need the same rewrite: under Node16 module resolution,
+      // extensionless relative imports in declaration files fail to resolve
+      // and the whole package silently degrades to `any` for consumers.
       const content = await fs.readFile(fullPath, "utf8");
       const updatedContent = content.replace(
         /from\s+["'](\.\/[^"']+)["']/g,

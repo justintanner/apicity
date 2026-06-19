@@ -376,7 +376,7 @@ describe("harness request body helpers", () => {
               batches: [
                 {
                   batch_id: "batch_456",
-                  create_api_key_id: "276a4be1-763d-460a-a3d9-91b306d381b8",
+                  create_api_key_id: "31cf6025-b096-42d0-84c0-8d98be6889db",
                 },
               ],
             },
@@ -401,6 +401,9 @@ describe("harness request body helpers", () => {
     });
     expect(recording.response?.content?.text).not.toContain(
       "276a4be1-763d-460a-a3d9-91b306d381b8"
+    );
+    expect(recording.response?.content?.text).not.toContain(
+      "31cf6025-b096-42d0-84c0-8d98be6889db"
     );
     expect(recording.response?.content?.size).toBe(
       new TextEncoder().encode(recording.response?.content?.text ?? "").length

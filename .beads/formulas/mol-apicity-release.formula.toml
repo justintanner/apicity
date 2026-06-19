@@ -434,11 +434,13 @@ const { execFileSync } = require("child_process");
 const version = "{{version}}";
 const releaseBead = "{{release_bead}}";
 const currentTag = `v${version}`;
+const commandMaxBuffer = 64 * 1024 * 1024;
 
 function run(command, args) {
   try {
     return execFileSync(command, args, {
       encoding: "utf8",
+      maxBuffer: commandMaxBuffer,
       stdio: ["ignore", "pipe", "ignore"],
     }).trim();
   } catch {
@@ -573,9 +575,26 @@ function isInfrastructureIssue(issue) {
   return (
     /\bmol\b/i.test(id) ||
     /\bmol\b/i.test(parent) ||
-    ["molecule", "gate", "convoy"].includes(issue.issue_type) ||
+    ["molecule", "gate", "convoy", "step", "wisp", "order"].includes(
+      issue.issue_type
+    ) ||
     /^mol[-: ]/i.test(title) ||
     /^(order|nudge):/i.test(title)
+  );
+}
+
+function isAdministrativeClosureIssue(issue) {
+  const reason = normalize([
+    issue.close_reason,
+    issue.metadata?.close_reason,
+  ].filter(Boolean).join(" "));
+
+  return (
+    /^(cancell?ed|closed) per user request\b/i.test(reason) ||
+    /^cancell?ed\b/i.test(reason) ||
+    /\bmass-cancell?ed\b/i.test(reason) ||
+    /^molecule (cleanup|autoclose):/i.test(reason) ||
+    /\bsubtree force-closed\b/i.test(reason)
   );
 }
 
@@ -620,6 +639,7 @@ function readClosedWork(previousRelease, previousTag, currentDate) {
       .filter((issue) => issue.id !== releaseBead)
       .filter((issue) => !isReleaseTrackingIssue(issue))
       .filter((issue) => !isInfrastructureIssue(issue))
+      .filter((issue) => !isAdministrativeClosureIssue(issue))
       .filter((issue) => !shippedInPreviousRelease(issue, previousTag)),
   };
 }

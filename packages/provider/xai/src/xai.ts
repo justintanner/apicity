@@ -227,6 +227,53 @@ export function createXai(opts: XaiOptions): XaiProvider {
     }
   }
 
+  async function makeGetTextRequest(
+    path: string,
+    signal?: AbortSignal
+  ): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `XAI API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (typeof body === "object" && body !== null && "error" in body) {
+            const err = (body as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `XAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new XaiError(message, res.status, body);
+      }
+
+      return await res.text();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof XaiError) throw error;
+      throw new XaiError(`XAI request failed: ${error}`, 500);
+    }
+  }
+
   function buildQuery(params: object): string {
     const parts: string[] = [];
     for (const [key, value] of Object.entries(params)) {
@@ -662,6 +709,20 @@ export function createXai(opts: XaiOptions): XaiProvider {
       fileIdOrSignal
     );
   }
+
+  const getFilesNamespace = Object.assign(getFiles, {
+    // GET https://api.x.ai/v1/files/{fileId}/content
+    // Docs: https://docs.x.ai/docs/api-reference
+    content: async function content(
+      fileId: string,
+      signal?: AbortSignal
+    ): Promise<string> {
+      return await makeGetTextRequest(
+        `/files/${encodeURIComponent(fileId)}/content`,
+        signal
+      );
+    },
+  });
 
   // GET https://api.x.ai/v1/models/{modelIdOrSignal}
   // Docs: https://docs.x.ai/docs/api-reference
@@ -1376,7 +1437,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 signal
               );
             },
-            files: getFiles,
+            files: getFilesNamespace,
             models: getModels,
             languageModels: getLanguageModels,
             imageGenerationModels: getImageGenerationModels,

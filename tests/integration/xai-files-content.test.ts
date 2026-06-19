@@ -40,16 +40,7 @@ describe("xAI files content download integration", () => {
     createdFileId = created.id;
 
     // Download content
-    const response = await fetch(
-      `${process.env.XAI_BASE_URL ?? "https://api.x.ai/v1"}/files/${created.id}/content`,
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.XAI_API_KEY ?? "xai-test-key"}`,
-        },
-      }
-    );
-    expect(response.ok).toBe(true);
-    const downloaded = await response.text();
-    expect(downloaded).toBeTruthy();
+    const downloaded = await provider.get.v1.files.content(created.id);
+    expect(downloaded).toContain("content download");
   });
 });

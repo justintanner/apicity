@@ -143,7 +143,7 @@ console.log(result.usage);
 
 ## API Reference
 
-46 endpoints across 18 groups. Each method mirrors an upstream URL path.
+47 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### apiKey
 
@@ -346,6 +346,21 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 ```typescript
 const res = await xai.v1.files({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.files.content</code></b></summary>
+
+<code>GET https://api.x.ai/v1/files/{fileId}/content</code>
+
+[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+
+```typescript
+const res = await xai.v1.files.content({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)

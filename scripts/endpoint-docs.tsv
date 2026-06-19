@@ -593,6 +593,7 @@ xai	v1.documents.search	POST	https://api.x.ai/v1/documents/search	https://docs.x
 xai	v1.files	DELETE	https://api.x.ai/v1/files/{fileId}	https://docs.x.ai/docs/api-reference
 xai	v1.files	GET	https://api.x.ai/v1/files/{fileIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.files	POST	https://api.x.ai/v1/files	https://docs.x.ai/docs/api-reference
+xai	v1.files.content	GET	https://api.x.ai/v1/files/{fileId}/content	https://docs.x.ai/docs/api-reference
 xai	v1.imageGenerationModels	GET	https://api.x.ai/v1/image-generation-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.images.edits	POST	https://api.x.ai/v1/images/edits	https://docs.x.ai/developers/rest-api-reference/inference/images
 xai	v1.images.generations	POST	https://api.x.ai/v1/images/generations	https://docs.x.ai/developers/rest-api-reference/inference/images

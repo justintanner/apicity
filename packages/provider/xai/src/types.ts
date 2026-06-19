@@ -1238,6 +1238,7 @@ interface XaiGetFilesMethod {
     fileIdOrSignal?: string | AbortSignal,
     signal?: AbortSignal
   ): Promise<XaiFileListResponse | XaiFileObject>;
+  content(fileId: string, signal?: AbortSignal): Promise<string>;
 }
 
 interface XaiGetBatchesMethod {

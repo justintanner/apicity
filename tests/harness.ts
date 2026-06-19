@@ -245,22 +245,19 @@ function redactDashScopeResponseHeaders(
   }
 }
 
-function redactRequestCookieHeaders(
+function scrubRequestCookieHeaders(
   headers: PersistedHarHeader[] | undefined
 ): void {
-  for (const header of headers ?? []) {
-    if (header.name?.toLowerCase() === "cookie") {
-      header.value = "***";
-    }
-  }
+  if (!headers) return;
+
+  const retainedHeaders = headers.filter(
+    (header) => header.name?.toLowerCase() !== "cookie"
+  );
+  headers.splice(0, headers.length, ...retainedHeaders);
 }
 
-function redactRequestCookies(cookies: HarCookieLike[] | undefined): void {
-  for (const cookie of cookies ?? []) {
-    if (typeof cookie.value === "string") {
-      cookie.value = "***";
-    }
-  }
+function scrubRequestCookies(cookies: HarCookieLike[] | undefined): void {
+  cookies?.splice(0, cookies.length);
 }
 export function redactPersistedHarSecrets(
   recording: PersistedHarRecording
@@ -269,7 +266,7 @@ export function redactPersistedHarSecrets(
     recording.request.url = redactUrlSecrets(recording.request.url);
   }
 
-  redactRequestCookieHeaders(recording.request?.headers);
+  scrubRequestCookieHeaders(recording.request?.headers);
   for (const header of recording.request?.headers ?? []) {
     if (header.name?.toLowerCase() === "authorization") {
       header.value = "Bearer ***";
@@ -288,7 +285,7 @@ export function redactPersistedHarSecrets(
     }
   }
 
-  redactRequestCookies(recording.request?.cookies);
+  scrubRequestCookies(recording.request?.cookies);
   redactRequestPostDataTextSecrets(recording);
   redactDashScopeResponseHeaders(recording.response?.headers);
 

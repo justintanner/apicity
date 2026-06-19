@@ -415,6 +415,31 @@ describe("harness request body helpers", () => {
 });
 
 describe("harness persist scrubbers", () => {
+  it("removes request cookies before persisting recordings", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        headers: [
+          { name: "authorization", value: "Bearer real-token" },
+          { name: "cookie", value: "__cf_bm=raw-cloudflare-cookie" },
+          { name: "Cookie", value: "session=raw-session" },
+          { name: "content-type", value: "application/json" },
+        ],
+        cookies: [
+          { name: "__cf_bm", value: "raw-cloudflare-cookie" },
+          { name: "session", value: "raw-session" },
+        ],
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(recording.request?.headers).toEqual([
+      { name: "authorization", value: "Bearer ***" },
+      { name: "content-type", value: "application/json" },
+    ]);
+    expect(recording.request?.cookies).toEqual([]);
+  });
+
   it("removes response cookies before persisting recordings", () => {
     const recording: PersistedHarRecording = {
       response: {
@@ -510,12 +535,9 @@ describe("harness persist scrubbers", () => {
     );
     expect(recording.request?.headers).toEqual([
       { name: "authorization", value: "Bearer ***" },
-      { name: "cookie", value: "***" },
       { name: "x-api-key", value: "***" },
     ]);
-    expect(recording.request?.cookies).toEqual([
-      { name: "session", value: "***" },
-    ]);
+    expect(recording.request?.cookies).toEqual([]);
     expect(recording.response?.headers).toEqual([
       { name: "x-dashscope-apikeyid", value: "***" },
       { name: "x-dashscope-bwid", value: "ws-***" },

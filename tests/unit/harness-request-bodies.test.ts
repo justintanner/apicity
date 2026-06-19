@@ -152,6 +152,45 @@ describe("harness request body helpers", () => {
     );
   });
 
+  it("redacts OSS credentials from multipart request summaries", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        postData: {
+          mimeType: "multipart/form-data",
+          text: JSON.stringify({
+            _multipart: true,
+            OSSAccessKeyId: "LTAI-upload-secret",
+            Signature: "upload-policy-signature",
+            policy: "encoded-upload-policy",
+            key: "dashscope-instant/request-id/cat1.jpg",
+            file: {
+              _file: true,
+              filename: "cat1.jpg",
+              contentType: "image/jpeg",
+              size: 83558,
+            },
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(JSON.parse(recording.request?.postData?.text ?? "")).toEqual({
+      _multipart: true,
+      OSSAccessKeyId: "***",
+      Signature: "***",
+      policy: "***",
+      key: "dashscope-instant/request-id/cat1.jpg",
+      file: {
+        _file: true,
+        filename: "cat1.jpg",
+        contentType: "image/jpeg",
+        size: 83558,
+      },
+    });
+  });
+
   it("summarizes JSON request media without losing scalar context", () => {
     const videoBytes = Buffer.from("fake-video");
     const rawBytes = Buffer.alloc(900, 7);

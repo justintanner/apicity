@@ -58,6 +58,11 @@ interface MultipartFormDataLike {
 }
 
 const REDACTED_GUEST_TOKEN = "***";
+const REQUEST_POST_DATA_SECRET_KEYS = new Set([
+  "ossaccesskeyid",
+  "policy",
+  "signature",
+]);
 const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^,]*)*;base64,([\s\S]*)$/i;
 const LONG_BASE64_CHARS = 1024;
 const BASE64ISH_RE = /^[A-Za-z0-9+/_-]+={0,2}$/;
@@ -134,6 +139,65 @@ function redactResponseTextSecrets(text: string): string {
   return redacted
     .replace(/("oss_access_key_id"\s*:\s*")[^"]*(")/g, "$1***$2")
     .replace(/("signature"\s*:\s*")[^"]*(")/g, "$1***$2");
+}
+
+function redactRequestPostDataValueSecrets(
+  value: unknown,
+  key?: string
+): { value: unknown; redacted: boolean } {
+  if (
+    key &&
+    REQUEST_POST_DATA_SECRET_KEYS.has(key.toLowerCase()) &&
+    typeof value === "string"
+  ) {
+    return { value: "***", redacted: true };
+  }
+
+  if (Array.isArray(value)) {
+    let redacted = false;
+    const next = value.map((item) => {
+      const result = redactRequestPostDataValueSecrets(item);
+      redacted ||= result.redacted;
+      return result.value;
+    });
+    return { value: next, redacted };
+  }
+
+  if (value === null || typeof value !== "object") {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const next: Record<string, unknown> = {};
+  for (const [childKey, childValue] of Object.entries(
+    value as Record<string, unknown>
+  )) {
+    const result = redactRequestPostDataValueSecrets(childValue, childKey);
+    redacted ||= result.redacted;
+    next[childKey] = result.value;
+  }
+  return { value: next, redacted };
+}
+
+function redactRequestPostDataTextSecrets(
+  recording: PersistedHarRecording
+): void {
+  const postData = recording.request?.postData;
+  const text = postData?.text;
+  if (typeof text !== "string") return;
+
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    const result = redactRequestPostDataValueSecrets(parsed);
+    if (result.redacted) {
+      postData.text = JSON.stringify(result.value);
+    }
+  } catch {
+    postData.text = redactUrlSecrets(text)
+      .replace(/("OSSAccessKeyId"\s*:\s*")[^"]*(")/g, "$1***$2")
+      .replace(/("Signature"\s*:\s*")[^"]*(")/g, "$1***$2")
+      .replace(/("policy"\s*:\s*")[^"]*(")/g, "$1***$2");
+  }
 }
 
 function redactDashScopeFlowControlMeta(value: string | undefined): string {
@@ -224,6 +288,7 @@ export function redactPersistedHarSecrets(
   }
 
   redactRequestCookies(recording.request?.cookies);
+  redactRequestPostDataTextSecrets(recording);
   redactDashScopeResponseHeaders(recording.response?.headers);
 
   const responseText = recording.response?.content?.text;

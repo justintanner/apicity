@@ -11,6 +11,13 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET v2.media.upload": {
+    "source": "x/media-upload-status",
+    "payload": {
+      "media_id": "2050120900222296064",
+      "command": "STATUS"
+    }
+  },
   "POST v2.media.upload.initialize": {
     "source": "x/media-upload-initialize",
     "payload": {

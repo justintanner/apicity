@@ -1,4 +1,42 @@
 {
+  "GET v1.models": {
+    "source": "fal/models-search",
+    "payload": {
+      "limit": 5
+    }
+  },
+  "GET v1.models.analytics": {
+    "source": "fal/analytics",
+    "payload": {
+      "endpoint_id": "fal-ai/flux/dev"
+    }
+  },
+  "GET v1.models.pricing": {
+    "source": "fal/models-pricing",
+    "payload": {
+      "endpoint_id": "fal-ai/flux/dev"
+    }
+  },
+  "GET v1.models.requests.byEndpoint": {
+    "source": "fal/requests",
+    "payload": {
+      "endpoint_id": "fal-ai/flux/dev",
+      "limit": 5
+    }
+  },
+  "GET v1.models.usage": {
+    "source": "fal/models-usage-stats",
+    "payload": {
+      "endpoint_id": "fal-ai/flux/dev",
+      "limit": 5
+    }
+  },
+  "GET v1.workflows": {
+    "source": "fal/workflows-list",
+    "payload": {
+      "limit": 3
+    }
+  },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
     "payload": {

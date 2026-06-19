@@ -11,6 +11,13 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET api.v1.uploads": {
+    "source": "alibaba/uploads-policy",
+    "payload": {
+      "action": "getPolicy",
+      "model": "qwen-image-edit"
+    }
+  },
   "POST api.v1.services.aigc.imageGeneration.generation": {
     "source": "alibaba/wan-image-t2i",
     "payload": {

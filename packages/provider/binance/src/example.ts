@@ -10,7 +10,116 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "GET api.v3.aggTrades": {
+    "source": "binance/agg-trades",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 5
+    }
+  },
+  "GET api.v3.avgPrice": {
+    "source": "binance/avg-price",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.depth": {
+    "source": "binance/depth",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 5
+    }
+  },
+  "GET api.v3.exchangeInfo": {
+    "source": "binance/exchange-info",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "showPermissionSets": false
+    }
+  },
+  "GET api.v3.historicalBlockTrades": {
+    "source": "binance/historical-block-trades",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "fromId": 1,
+      "limit": 1
+    }
+  },
+  "GET api.v3.historicalTrades": {
+    "source": "binance/historical-trades",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 5
+    }
+  },
+  "GET api.v3.klines": {
+    "source": "binance/klines",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET api.v3.referencePrice": {
+    "source": "binance/reference-price",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.referencePrice.calculation": {
+    "source": "binance/reference-price-calculation",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.ticker": {
+    "source": "binance/ticker",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "windowSize": "1d"
+    }
+  },
+  "GET api.v3.ticker.bookTicker": {
+    "source": "binance/ticker-book-ticker",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.ticker.price": {
+    "source": "binance/ticker-price",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.ticker.tradingDay": {
+    "source": "binance/ticker-trading-day",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.ticker.twentyFourHr": {
+    "source": "binance/ticker-24hr",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET api.v3.trades": {
+    "source": "binance/trades",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 5
+    }
+  },
+  "GET api.v3.uiKlines": {
+    "source": "binance/ui-klines",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "interval": "1m",
+      "limit": 1
+    }
+  }
+};
 
 export default EXAMPLES;
 

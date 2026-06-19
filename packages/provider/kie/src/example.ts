@@ -11,6 +11,18 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET api.v1.generate.recordInfo": {
+    "source": "kie/suno/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    }
+  },
+  "GET api.v1.jobs.recordInfo": {
+    "source": "kie/bytedance-seedance-2",
+    "payload": {
+      "taskId": "49265b81be9607661c0246b892144776"
+    }
+  },
   "POST api.fileBase64Upload": {
     "source": "kie/file-base64-upload",
     "payload": {

@@ -11,6 +11,14 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET v2.voices": {
+    "source": "elevenlabs/voices",
+    "payload": {
+      "page_size": 1,
+      "voice_type": "default",
+      "include_total_count": true
+    }
+  },
   "POST v1.soundGeneration": {
     "source": "elevenlabs/sound-generation",
     "payload": {

@@ -11,6 +11,18 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET v1.batches": {
+    "source": "openai/batches-list-limit",
+    "payload": {
+      "limit": 2
+    }
+  },
+  "GET v1.chat.completions": {
+    "source": "openai/stored-completions-list-limit",
+    "payload": {
+      "limit": 1
+    }
+  },
   "POST v1.audio.speech": {
     "source": "openai/speech-hello",
     "payload": {

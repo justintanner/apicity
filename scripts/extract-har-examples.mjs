@@ -52,6 +52,7 @@ async function main() {
     for (const entry of entries) {
       const method = entry?.request?.method?.toUpperCase();
       if (!method) continue;
+      const row = findMatchingRow(entry, tsvRows, { provider: providerHint });
       const bodyText = entry?.request?.postData?.text;
       let payload;
       let payloadString;
@@ -76,10 +77,14 @@ async function main() {
         // broadening every provider's example surface.
         payload = {};
         payloadString = "{}";
+      } else if (method === "GET" && row) {
+        const queryPayload = extractCompleteQueryPayload(entry, row);
+        if (!queryPayload) continue;
+        payload = queryPayload.payload;
+        payloadString = queryPayload.payloadString;
       } else {
         continue;
       }
-      const row = findMatchingRow(entry, tsvRows, { provider: providerHint });
       if (!row) {
         unmatched.push({
           recordingName,
@@ -284,6 +289,80 @@ function hasRequestBody(entry) {
 function isSuccessfulResponse(entry) {
   const status = Number(entry?.response?.status);
   return Number.isFinite(status) && status >= 200 && status < 300;
+}
+
+function extractCompleteQueryPayload(entry, row) {
+  if (!isSuccessfulResponse(entry)) return null;
+  const url = new URL(entry.request.url, "https://example.invalid");
+  if (hasBareQueryMarker(url.search)) return null;
+  const params = url.searchParams;
+  if ([...params.keys()].length === 0) return null;
+
+  // Query-string examples are useful only when the query object is the full
+  // callable payload. If the concrete HAR path contains extra segments beyond
+  // the placeholder-stripped TSV path, the endpoint also needs path arguments
+  // (for example `comments.byUser(address, params)`), so a query-only example
+  // would be incomplete.
+  const harPath = pathSegments(entry.request.url).join("/");
+  const tsvPath = pathSegments(row.fullUrl)
+    .filter((seg) => !isPlaceholder(seg))
+    .join("/");
+  if (tsvPath === "") return null;
+  if (harPath !== tsvPath) return null;
+
+  const payload = {};
+  for (const [key, value] of params) {
+    const next = coerceQueryValue(value);
+    if (Object.prototype.hasOwnProperty.call(payload, key)) {
+      const prev = payload[key];
+      payload[key] = Array.isArray(prev) ? [...prev, next] : [prev, next];
+    } else {
+      payload[key] = next;
+    }
+  }
+  return {
+    payload,
+    payloadString: JSON.stringify(payload),
+  };
+}
+
+function hasBareQueryMarker(search) {
+  return search
+    .slice(1)
+    .split("&")
+    .some((part) => part.length > 0 && !part.includes("="));
+}
+
+function coerceQueryValue(value) {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value)) {
+    const n = Number(value);
+    if (
+      Number.isFinite(n) &&
+      (Number.isSafeInteger(n) ||
+        (!Number.isInteger(n) && Math.abs(n) <= Number.MAX_SAFE_INTEGER))
+    ) {
+      return n;
+    }
+  }
+  return value;
+}
+
+function pathSegments(url) {
+  const parsed = new URL(stripQueryMarker(url), "https://example.invalid");
+  return parsed.pathname
+    .split("/")
+    .filter((seg) => seg.length > 0)
+    .map((seg) => decodeURIComponent(seg));
+}
+
+function isPlaceholder(seg) {
+  return seg.startsWith("{") && seg.endsWith("}");
+}
+
+function stripQueryMarker(url) {
+  return url.replace(/\{query\}/g, "");
 }
 
 function providerFromHarPath(harPath) {

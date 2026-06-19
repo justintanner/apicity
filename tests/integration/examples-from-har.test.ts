@@ -5,6 +5,7 @@ import { createAlibaba } from "@apicity/alibaba";
 import { createXai } from "@apicity/xai";
 import { createFal } from "@apicity/fal";
 import { createFireworks } from "@apicity/fireworks";
+import { createPolymarket } from "@apicity/polymarket";
 import { findMatchingRow } from "../../scripts/lib/match-har-to-endpoint.mjs";
 
 interface EndpointDocRow {
@@ -201,5 +202,19 @@ describe("HAR-derived examples on endpoints", () => {
     expect(ex).toBeDefined();
     expect(ex?.source).toBe("fireworks/rft-jobs-list");
     expect(ex?.payload).toEqual({});
+  });
+
+  test("polymarket gamma comments uses the complete query HAR as coverage", () => {
+    const client = createPolymarket();
+    const ex = client.get.gamma.comments.example;
+
+    expect(ex).toBeDefined();
+    expect(ex?.source).toBe("polymarket/gamma-comments-list");
+    expect(ex?.payload).toEqual({
+      parent_entity_type: "Event",
+      parent_entity_id: 16167,
+      limit: 2,
+    });
+    expect(client.get.gamma.comments.byUser.example).toBeUndefined();
   });
 });

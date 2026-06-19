@@ -11,6 +11,125 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET clob.book": {
+    "source": "polymarket/clob-book",
+    "payload": {
+      "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
+    }
+  },
+  "GET clob.lastTradePrice": {
+    "source": "polymarket/clob-last-trade-price",
+    "payload": {
+      "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
+    }
+  },
+  "GET clob.markets": {
+    "source": "polymarket/gamma-markets-list",
+    "payload": {
+      "limit": 2,
+      "closed": false
+    }
+  },
+  "GET clob.midpoint": {
+    "source": "polymarket/clob-midpoint",
+    "payload": {
+      "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
+    }
+  },
+  "GET clob.price": {
+    "source": "polymarket/clob-price",
+    "payload": {
+      "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025",
+      "side": "BUY"
+    }
+  },
+  "GET clob.pricesHistory": {
+    "source": "polymarket/clob-prices-history-interval",
+    "payload": {
+      "market": "78433024518676680431174478322854148606578065650008220678402966840627347604025",
+      "interval": "1h"
+    }
+  },
+  "GET clob.spread": {
+    "source": "polymarket/clob-spread",
+    "payload": {
+      "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
+    }
+  },
+  "GET data.activity": {
+    "source": "polymarket/data-activity",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
+      "limit": 3
+    }
+  },
+  "GET data.holders": {
+    "source": "polymarket/data-holders",
+    "payload": {
+      "market": "0x384e2707bbb95da4bfa6f330fe7d5ccbec1c0a85e20be900cbf599987588e1a4",
+      "limit": 3
+    }
+  },
+  "GET data.liveVolume": {
+    "source": "polymarket/data-live-volume",
+    "payload": {
+      "id": 16167
+    }
+  },
+  "GET data.positions": {
+    "source": "polymarket/data-positions",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
+      "limit": 2
+    }
+  },
+  "GET data.trades": {
+    "source": "polymarket/data-trades",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
+      "limit": 3
+    }
+  },
+  "GET data.value": {
+    "source": "polymarket/data-value",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e"
+    }
+  },
+  "GET gamma.comments": {
+    "source": "polymarket/gamma-comments-list",
+    "payload": {
+      "parent_entity_type": "Event",
+      "parent_entity_id": 16167,
+      "limit": 2
+    }
+  },
+  "GET gamma.events": {
+    "source": "polymarket/gamma-events-list",
+    "payload": {
+      "limit": 2,
+      "closed": false
+    }
+  },
+  "GET gamma.search": {
+    "source": "polymarket/gamma-search",
+    "payload": {
+      "q": "trump",
+      "limit_per_type": 2
+    }
+  },
+  "GET gamma.series": {
+    "source": "polymarket/gamma-series-list",
+    "payload": {
+      "limit": 1
+    }
+  },
+  "GET gamma.tags": {
+    "source": "polymarket/gamma-tags-list",
+    "payload": {
+      "limit": 2
+    }
+  },
   "POST clob.batchPricesHistory": {
     "source": "polymarket/clob-batch-prices-history",
     "payload": {

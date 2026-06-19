@@ -10,7 +10,28 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "GET channels.list": {
+    "source": "youtube/channels-list",
+    "payload": {
+      "part": "snippet",
+      "mine": true
+    }
+  },
+  "GET transcripts": {
+    "source": "youtube/transcript-id",
+    "payload": {
+      "v": "dQw4w9WgXcQ"
+    }
+  },
+  "GET videos.list": {
+    "source": "youtube/videos-list",
+    "payload": {
+      "part": "snippet",
+      "id": "dQw4w9WgXcQ"
+    }
+  }
+};
 
 export default EXAMPLES;
 

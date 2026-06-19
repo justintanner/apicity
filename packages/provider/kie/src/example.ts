@@ -84,7 +84,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST api.v1.generate.replaceSection": {
-    "source": "kie/suno/replace-music-section-submit",
+    "source": "kie/suno/replace-music-section-full-lyrics-validation",
     "payload": {
       "taskId": "test-task-id",
       "audioId": "test-audio-id",

@@ -1631,6 +1631,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.getResult</code></b></summary>
 
+<code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/get_result</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1644,6 +1646,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.kontext</code></b></summary>
 
+<code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}</code>
+
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 
 ```typescript
@@ -1656,6 +1660,8 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 <details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.workflows.textToImage</code></b></summary>
+
+<code>POST https://api.fireworks.ai/inference/v1/workflows/accounts/fireworks/models/{model}/text_to_image</code>
 
 [Upstream docs ↗](https://docs.fireworks.ai/api-reference)
 

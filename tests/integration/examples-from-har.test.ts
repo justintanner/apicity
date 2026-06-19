@@ -36,10 +36,14 @@ function loadEndpointDocRows(): EndpointDocRow[] {
 }
 
 function loadFirstHarEntry(path: string): HarEntry {
+  return loadHarEntries(path)[0];
+}
+
+function loadHarEntries(path: string): HarEntry[] {
   const har = JSON.parse(fs.readFileSync(path, "utf-8")) as {
     log: { entries: HarEntry[] };
   };
-  return har.log.entries[0];
+  return har.log.entries;
 }
 
 // Replay-safe: no Polly, no network. These tests verify that the
@@ -110,6 +114,30 @@ describe("HAR-derived examples on endpoints", () => {
     });
   });
 
+  test("fal storage upload initiate HAR maps to its endpoint doc row", () => {
+    const entry = loadFirstHarEntry(
+      "tests/recordings/fal_2801268556/" +
+        "storage-upload-initiate_29504192/recording.har"
+    );
+    const row = findMatchingRow(entry, loadEndpointDocRows(), {
+      provider: "fal",
+    }) as EndpointDocRow | null;
+
+    expect(row?.dotPath).toBe("storage.upload.initiate");
+    expect(row?.method).toBe("POST");
+    expect(row?.fullUrl).toBe("https://rest.fal.ai/storage/upload/initiate");
+  });
+
+  test("fal storage upload initiate has a schema-valid example", () => {
+    const client = createFal({ apiKey: "test-key" });
+    const fn = client.storage.upload.initiate;
+    const ex = fn.example;
+    expect(ex).toBeDefined();
+    expect(ex?.source).toBe("fal/storage-upload-initiate");
+    const result = fn.schema.safeParse(ex?.payload);
+    expect(result.success).toBe(true);
+  });
+
   test("fireworks RLOR trainer list HAR maps to its endpoint doc row", () => {
     const entry = loadFirstHarEntry(
       "tests/recordings/fireworks_626462085/" +
@@ -122,6 +150,47 @@ describe("HAR-derived examples on endpoints", () => {
     expect(row?.dotPath).toBe("inference.v1.accounts.rlorTrainerJobs.list");
     expect(row?.fullUrl).toBe(
       "https://api.fireworks.ai/v1/accounts/{accountId}/rlorTrainerJobs"
+    );
+  });
+
+  test("fireworks kontext HAR maps workflow calls to endpoint doc rows", () => {
+    const entries = loadHarEntries(
+      "tests/recordings/fireworks_626462085/" +
+        "kontext-async-job_2497757731/recording.har"
+    );
+    const rows = entries
+      .map((entry) =>
+        findMatchingRow(entry, loadEndpointDocRows(), {
+          provider: "fireworks",
+        })
+      )
+      .filter((row): row is EndpointDocRow => Boolean(row));
+
+    expect(rows.map((row) => row.dotPath)).toContain(
+      "inference.v1.workflows.kontext"
+    );
+    expect(rows.map((row) => row.dotPath)).toContain(
+      "inference.v1.workflows.getResult"
+    );
+  });
+
+  test("fireworks kontext workflow examples validate against schemas", () => {
+    const client = createFireworks({ apiKey: "test-key" });
+
+    const kontext = client.inference.v1.workflows.kontext;
+    const kontextExample = kontext.example;
+    expect(kontextExample).toBeDefined();
+    expect(kontextExample?.source).toBe("fireworks/kontext-async-job");
+    expect(kontext.schema.safeParse(kontextExample?.payload).success).toBe(
+      true
+    );
+
+    const getResult = client.inference.v1.workflows.getResult;
+    const getResultExample = getResult.example;
+    expect(getResultExample).toBeDefined();
+    expect(getResultExample?.source).toBe("fireworks/kontext-async-job");
+    expect(getResult.schema.safeParse(getResultExample?.payload).success).toBe(
+      true
     );
   });
 

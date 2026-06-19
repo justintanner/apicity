@@ -880,7 +880,9 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 ### storage
 
 <details>
-<summary><b><code>fal.storage.upload.completeMultipart</code></b></summary>
+<summary><code>POST</code> <b><code>fal.storage.upload.completeMultipart</code></b></summary>
+
+<code>POST https://rest.fal.ai/storage/upload/complete-multipart</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -893,7 +895,9 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
-<summary><b><code>fal.storage.upload.initiate</code></b></summary>
+<summary><code>POST</code> <b><code>fal.storage.upload.initiate</code></b></summary>
+
+<code>POST https://rest.fal.ai/storage/upload/initiate</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 
@@ -906,7 +910,9 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 </details>
 
 <details>
-<summary><b><code>fal.storage.upload.initiateMultipart</code></b></summary>
+<summary><code>POST</code> <b><code>fal.storage.upload.initiateMultipart</code></b></summary>
+
+<code>POST https://rest.fal.ai/storage/upload/initiate-multipart</code>
 
 [Upstream docs ↗](https://docs.fal.ai)
 

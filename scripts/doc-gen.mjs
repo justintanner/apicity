@@ -41,11 +41,41 @@ function loadEndpointDocsRows() {
 }
 
 function loadDocsTsv() {
-  const docs = new Map();
+  const byKey = new Map();
+  const byDotPath = new Map();
   for (const row of loadEndpointDocsRows()) {
-    docs.set(`${row.provider}\t${row.dotPath}\t${row.method}`, row.docsUrl);
+    byKey.set(`${row.provider}\t${row.dotPath}\t${row.method}`, row);
+    const dotPathKey = `${row.provider}\t${row.dotPath}`;
+    const rows = byDotPath.get(dotPathKey) ?? [];
+    rows.push(row);
+    byDotPath.set(dotPathKey, rows);
   }
-  return docs;
+  return { byKey, byDotPath };
+}
+
+function cleanTsvValue(value) {
+  return value && value !== "?" ? value : null;
+}
+
+function resolveEndpointDocRow(docs, ep, providerName) {
+  const displayPath = displayDotPath(providerName, ep);
+  const dotPaths = [displayPath, ep.dotPath].filter(Boolean);
+  const method = ep.method ?? "?";
+
+  for (const dotPath of dotPaths) {
+    const row = docs.byKey.get(`${ep.provider}\t${dotPath}\t${method}`);
+    if (row) return row;
+  }
+
+  for (const dotPath of dotPaths) {
+    const rows = docs.byDotPath.get(`${ep.provider}\t${dotPath}`) ?? [];
+    const concreteRows = rows.filter(
+      (row) => cleanTsvValue(row.method) || cleanTsvValue(row.fullUrl)
+    );
+    if (concreteRows.length === 1) return concreteRows[0];
+  }
+
+  return null;
 }
 
 async function collectEndpointsByProvider() {
@@ -277,11 +307,21 @@ function renderApiReference(providerName, endpoints) {
   for (const [group, list] of groups) {
     sections.push(`### ${group}`, "");
     for (const ep of list) {
-      const displayPath = displayDotPath(providerName, ep);
-      const displayKey = `${ep.provider}\t${displayPath}\t${ep.method ?? "?"}`;
-      const logicalKey = `${ep.provider}\t${ep.dotPath}\t${ep.method ?? "?"}`;
-      const docsUrl = docs.get(displayKey) ?? docs.get(logicalKey) ?? "";
-      sections.push(renderEndpointDetails(ep, providerName, docsUrl));
+      const docRow = resolveEndpointDocRow(docs, ep, providerName);
+      const enrichedEndpoint = docRow
+        ? {
+            ...ep,
+            method: ep.method ?? cleanTsvValue(docRow.method),
+            fullUrl: ep.fullUrl ?? cleanTsvValue(docRow.fullUrl),
+          }
+        : ep;
+      sections.push(
+        renderEndpointDetails(
+          enrichedEndpoint,
+          providerName,
+          docRow?.docsUrl ?? ""
+        )
+      );
     }
   }
   return sections.join("\n");

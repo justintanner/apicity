@@ -652,6 +652,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 <details>
 <summary><code>POST</code> <b><code>polymarket.clob.placeOrder</code></b></summary>
 
+<code>POST https://clob.polymarket.com/order</code>
+
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order)
 
 ```typescript

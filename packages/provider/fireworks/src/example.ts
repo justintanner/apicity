@@ -175,6 +175,21 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "top_n": 2,
       "return_documents": true
     }
+  },
+  "POST inference.v1.workflows.getResult": {
+    "source": "fireworks/kontext-async-job",
+    "payload": {
+      "id": "d5622736-11b7-4d53-a061-29350fe7ec66"
+    }
+  },
+  "POST inference.v1.workflows.kontext": {
+    "source": "fireworks/kontext-async-job",
+    "payload": {
+      "safety_tolerance": 6,
+      "prompt": "A cat sitting on a windowsill",
+      "seed": 123,
+      "output_format": "png"
+    }
   }
 };
 

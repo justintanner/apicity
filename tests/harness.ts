@@ -370,6 +370,60 @@ function isJsonMimeType(mimeType: string | undefined): boolean {
   return lower.includes("application/json") || lower.includes("+json");
 }
 
+function baseMimeType(mimeType: string | undefined): string {
+  return (mimeType ?? "").split(";")[0].trim().toLowerCase();
+}
+
+function isPersistableTextMimeType(mimeType: string | undefined): boolean {
+  const mime = baseMimeType(mimeType);
+  return (
+    mime.startsWith("text/") ||
+    mime === "application/xml" ||
+    mime.endsWith("+xml")
+  );
+}
+
+function decodeUtf8(bytes: Uint8Array): string | null {
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  } catch {
+    return null;
+  }
+}
+
+function requestBodyText(body: unknown): string | null {
+  if (typeof body === "string") return body;
+  if (body instanceof ArrayBuffer) return decodeUtf8(new Uint8Array(body));
+  if (ArrayBuffer.isView(body)) {
+    return decodeUtf8(
+      new Uint8Array(body.buffer, body.byteOffset, body.byteLength)
+    );
+  }
+  return null;
+}
+
+export function persistSafeTextRequestBody(
+  recording: PersistedHarRecording,
+  body: unknown
+): void {
+  const request = recording.request;
+  if (!request) return;
+  if (typeof request.postData?.text === "string") return;
+
+  const mimeType =
+    request.postData?.mimeType ??
+    findHeaderValue(request.headers, "content-type");
+  if (!isPersistableTextMimeType(mimeType)) return;
+
+  const text = requestBodyText(body);
+  if (!text) return;
+
+  request.postData ??= { mimeType, params: [] };
+  request.postData.mimeType = request.postData.mimeType ?? mimeType;
+  request.postData.text = text;
+  request.bodySize = byteLength(text);
+}
+
 export function summarizeJsonRequestBodyMedia(
   recording: PersistedHarRecording
 ): void {
@@ -775,6 +829,7 @@ function setupPollyWithOptions(
       recording.request.postData.text = JSON.stringify(multipartSummary);
     }
 
+    persistSafeTextRequestBody(recording as PersistedHarRecording, req.body);
     options.beforePersist?.(recording as PersistedHarRecording);
     summarizeJsonRequestBodyMedia(recording as PersistedHarRecording);
     redactPersistedHarSecrets(recording as PersistedHarRecording);

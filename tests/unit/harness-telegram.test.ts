@@ -41,6 +41,14 @@ const endpointDocs: EndpointDocRow[] = [
   },
   {
     provider: "s3",
+    dotPath: "buckets.putAccelerateConfiguration",
+    method: "PUT",
+    fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?accelerate",
+    docsUrl:
+      "https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAccelerateConfiguration.html",
+  },
+  {
+    provider: "s3",
     dotPath: "buckets.getLifecycle",
     method: "GET",
     fullUrl: "https://s3.us-east-1.amazonaws.com/{bucket}?lifecycle",
@@ -394,6 +402,42 @@ function s3BucketMetricsRecording(): ChangedRecording {
             mimeType: "application/xml",
             text: "<MetricsConfiguration></MetricsConfiguration>",
           },
+        },
+      },
+    ],
+  };
+}
+
+function s3PutAccelerateRecording(): ChangedRecording {
+  const body =
+    '<AccelerateConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">' +
+    "<Status>Suspended</Status>" +
+    "</AccelerateConfiguration>";
+
+  return {
+    provider: "s3",
+    recordingName: "s3/bucket-put-accelerate-configuration",
+    changeType: "new",
+    filePath:
+      "tests/recordings/s3_106018211/" +
+      "bucket-put-accelerate-configuration_123456789/recording.har",
+    entries: [
+      {
+        request: {
+          method: "PUT",
+          url: "https://apicity-s3-fixtures.s3.us-east-1.amazonaws.com/?accelerate",
+          headers: [{ name: "content-type", value: "application/xml" }],
+          postData: {
+            mimeType: "application/xml",
+            text: body,
+            params: [],
+          },
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [],
+          content: {},
         },
       },
     ],
@@ -803,6 +847,18 @@ describe("harness Telegram messages", () => {
 
     expect(corsMessage.apicityPath).toBe("s3.buckets.getCors");
     expect(metricsMessage.apicityPath).toBe("s3.buckets.getMetrics");
+  });
+
+  it("renders S3 XML request bodies in Telegram previews", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [s3PutAccelerateRecording()],
+      endpointDocs
+    );
+
+    expect(message.apicityPath).toBe("s3.buckets.putAccelerateConfiguration");
+    expect(message.text).toContain("Request body");
+    expect(message.text).toContain("AccelerateConfiguration");
+    expect(message.text).toContain("Suspended");
   });
 
   it("prefers S3 response bodies and matches object subresources", () => {

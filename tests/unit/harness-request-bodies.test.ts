@@ -5,6 +5,7 @@ import {
   type HarEntry,
 } from "../har-data";
 import {
+  persistSafeTextRequestBody,
   redactPersistedHarSecrets,
   summarizeJsonRequestBodyMedia,
   summarizeMultipartFormData,
@@ -121,6 +122,71 @@ describe("harness request body helpers", () => {
 
     expect(parseRequestBody(entry)).toEqual(expected);
     expect(JSON.parse(getRequestBodyText(entry) ?? "")).toEqual(expected);
+  });
+
+  it("persists safe XML request bodies captured as bytes", () => {
+    const xml =
+      '<AccelerateConfiguration xmlns="http://s3.amazonaws.com/doc/2006-03-01/">' +
+      "<Status>Suspended</Status>" +
+      "</AccelerateConfiguration>";
+    const recording: PersistedHarRecording = {
+      request: {
+        bodySize: 0,
+        headers: [{ name: "content-type", value: "application/xml" }],
+        postData: { mimeType: "application/xml", params: [] },
+      },
+    };
+
+    persistSafeTextRequestBody(recording, new TextEncoder().encode(xml));
+
+    expect(recording.request?.postData?.text).toBe(xml);
+    expect(recording.request?.bodySize).toBe(
+      new TextEncoder().encode(xml).length
+    );
+  });
+
+  it("persists safe text request bodies captured as strings", () => {
+    const body = "hello from @apicity/s3 object core test\n";
+    const recording: PersistedHarRecording = {
+      request: {
+        bodySize: 0,
+        headers: [{ name: "content-type", value: "text/plain; charset=utf-8" }],
+        postData: { mimeType: "text/plain", params: [] },
+      },
+    };
+
+    persistSafeTextRequestBody(recording, body);
+
+    expect(recording.request?.postData?.text).toBe(body);
+    expect(recording.request?.bodySize).toBe(body.length);
+  });
+
+  it("does not persist binary or already populated request bodies", () => {
+    const binaryRecording: PersistedHarRecording = {
+      request: {
+        bodySize: 0,
+        headers: [{ name: "content-type", value: "image/png" }],
+        postData: { mimeType: "image/png", params: [] },
+      },
+    };
+    const existingRecording: PersistedHarRecording = {
+      request: {
+        bodySize: 13,
+        headers: [{ name: "content-type", value: "application/xml" }],
+        postData: {
+          mimeType: "application/xml",
+          text: "<Existing />",
+          params: [],
+        },
+      },
+    };
+
+    persistSafeTextRequestBody(binaryRecording, new Uint8Array([0xff, 0xd8]));
+    persistSafeTextRequestBody(existingRecording, "<Next />");
+
+    expect(binaryRecording.request?.postData?.text).toBeUndefined();
+    expect(existingRecording.request?.postData?.text).toBe("<Existing />");
+    expect(existingRecording.request?.bodySize).toBe(13);
   });
 
   it("redacts Gofile guest tokens from persisted response bodies", () => {

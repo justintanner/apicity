@@ -135,6 +135,8 @@ describe("xai middleware - withRetry", () => {
   });
 
   it("should calculate exponential backoff correctly", async () => {
+    vi.useFakeTimers();
+
     const error = { status: 429 };
     const fn = vi
       .fn()
@@ -143,113 +145,164 @@ describe("xai middleware - withRetry", () => {
       .mockRejectedValueOnce(error)
       .mockResolvedValue("success");
 
-    const startTime = Date.now();
-    const wrapped = withRetry(fn, {
-      retries: 4,
-      baseMs: 100,
-      factor: 2,
-      jitter: false,
-    });
-    await wrapped("request");
-    const elapsed = Date.now() - startTime;
+    try {
+      const wrapped = withRetry(fn, {
+        retries: 4,
+        baseMs: 100,
+        factor: 2,
+        jitter: false,
+      });
+      const result = wrapped("request");
 
-    // Expected delays: 100ms (attempt 1), 200ms (attempt 2), 400ms (attempt 3)
-    // Total: ~700ms minimum
-    expect(elapsed).toBeGreaterThanOrEqual(650);
-    expect(fn).toHaveBeenCalledTimes(4);
+      expect(fn).toHaveBeenCalledTimes(1);
+
+      await vi.advanceTimersByTimeAsync(99);
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(fn).toHaveBeenCalledTimes(2);
+
+      await vi.advanceTimersByTimeAsync(199);
+      expect(fn).toHaveBeenCalledTimes(2);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(fn).toHaveBeenCalledTimes(3);
+
+      await vi.advanceTimersByTimeAsync(399);
+      expect(fn).toHaveBeenCalledTimes(3);
+      await vi.advanceTimersByTimeAsync(1);
+
+      await expect(result).resolves.toBe("success");
+      expect(fn).toHaveBeenCalledTimes(4);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("should apply configurable base delay", async () => {
-    const error = { status: 429 };
-    const fn = vi.fn().mockRejectedValue(error);
+    vi.useFakeTimers();
 
-    const startTime = Date.now();
-    const wrapped = withRetry(fn, {
-      retries: 1,
-      baseMs: 50,
-      jitter: false,
-    });
-    await expect(wrapped("request")).rejects.toEqual(error);
-    const elapsed = Date.now() - startTime;
-
-    expect(elapsed).toBeGreaterThanOrEqual(45);
-    expect(fn).toHaveBeenCalledTimes(2); // Initial + 1 retry
-  });
-
-  it("should apply configurable factor", async () => {
-    const error = { status: 429 };
-    const fn = vi
-      .fn()
-      .mockRejectedValueOnce(error)
-      .mockRejectedValueOnce(error)
-      .mockResolvedValue("success");
-
-    const startTime = Date.now();
-    const wrapped = withRetry(fn, {
-      retries: 3,
-      baseMs: 50,
-      factor: 3,
-      jitter: false,
-    });
-    await wrapped("request");
-    const elapsed = Date.now() - startTime;
-
-    // Expected delays: 50ms * 3^0 = 50ms, 50ms * 3^1 = 150ms
-    // Total: ~200ms minimum
-    expect(elapsed).toBeGreaterThanOrEqual(180);
-    expect(fn).toHaveBeenCalledTimes(3);
-  });
-
-  it("should apply jitter to delay when enabled", async () => {
-    const error = { status: 429 };
-    const fn = vi.fn().mockRejectedValue(error);
-
-    const delays: number[] = [];
-
-    // Run multiple times to check jitter variance
-    for (let i = 0; i < 5; i++) {
-      const startTime = Date.now();
-      const wrapped = withRetry(fn, { retries: 1, baseMs: 100, jitter: true });
-      await expect(wrapped("request")).rejects.toEqual(error);
-      const elapsed = Date.now() - startTime;
-      delays.push(elapsed);
-    }
-
-    // With jitter, delays should vary (0.8 to 1.2 of base)
-    // Check that we have some variance
-    const uniqueDelays = [...new Set(delays)];
-    expect(uniqueDelays.length).toBeGreaterThan(1);
-  });
-
-  it("should respect jitter = false option", async () => {
-    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
     const error = { status: 429 };
     const fn = vi.fn().mockRejectedValue(error);
 
     try {
-      // Run multiple times without jitter - scheduled delays should be exact
-      for (let i = 0; i < 3; i++) {
+      const wrapped = withRetry(fn, {
+        retries: 1,
+        baseMs: 50,
+        jitter: false,
+      });
+      const result = expect(wrapped("request")).rejects.toEqual(error);
+
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(49);
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1);
+
+      await result;
+      expect(fn).toHaveBeenCalledTimes(2); // Initial + 1 retry
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("should apply configurable factor", async () => {
+    vi.useFakeTimers();
+
+    const error = { status: 429 };
+    const fn = vi
+      .fn()
+      .mockRejectedValueOnce(error)
+      .mockRejectedValueOnce(error)
+      .mockResolvedValue("success");
+
+    try {
+      const wrapped = withRetry(fn, {
+        retries: 3,
+        baseMs: 50,
+        factor: 3,
+        jitter: false,
+      });
+      const result = wrapped("request");
+
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(49);
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1);
+      expect(fn).toHaveBeenCalledTimes(2);
+
+      await vi.advanceTimersByTimeAsync(149);
+      expect(fn).toHaveBeenCalledTimes(2);
+      await vi.advanceTimersByTimeAsync(1);
+
+      await expect(result).resolves.toBe("success");
+      expect(fn).toHaveBeenCalledTimes(3);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("should apply jitter to delay when enabled", async () => {
+    vi.useFakeTimers();
+
+    const error = { status: 429 };
+    const randomSpy = vi.spyOn(Math, "random");
+
+    try {
+      const cases = [
+        { random: 0, waitMs: 80 },
+        { random: 0.5, waitMs: 100 },
+        { random: 0.999, waitMs: 119 },
+      ];
+
+      for (const { random, waitMs } of cases) {
+        randomSpy.mockReturnValueOnce(random);
+
+        const fn = vi.fn().mockRejectedValue(error);
         const wrapped = withRetry(fn, {
           retries: 1,
-          baseMs: 50,
-          jitter: false,
+          baseMs: 100,
+          jitter: true,
         });
-        await expect(wrapped("request")).rejects.toEqual(error);
+        const result = expect(wrapped("request")).rejects.toEqual(error);
+
+        expect(fn).toHaveBeenCalledTimes(1);
+        await vi.advanceTimersByTimeAsync(waitMs - 1);
+        expect(fn).toHaveBeenCalledTimes(1);
+        await vi.advanceTimersByTimeAsync(1);
+
+        await result;
+        expect(fn).toHaveBeenCalledTimes(2);
       }
 
-      expect(setTimeoutSpy).toHaveBeenCalledTimes(3);
-      for (let call = 1; call <= 3; call++) {
-        expect(setTimeoutSpy).toHaveBeenNthCalledWith(
-          call,
-          expect.any(Function),
-          50
-        );
-      }
+      expect(randomSpy).toHaveBeenCalledTimes(cases.length);
     } finally {
-      setTimeoutSpy.mockRestore();
+      randomSpy.mockRestore();
+      vi.useRealTimers();
     }
+  });
 
-    expect(fn).toHaveBeenCalledTimes(6);
+  it("should respect jitter = false option", async () => {
+    vi.useFakeTimers();
+
+    const error = { status: 429 };
+    const fn = vi.fn().mockRejectedValue(error);
+
+    try {
+      const wrapped = withRetry(fn, {
+        retries: 1,
+        baseMs: 50,
+        jitter: false,
+      });
+      const result = expect(wrapped("request")).rejects.toEqual(error);
+
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(49);
+      expect(fn).toHaveBeenCalledTimes(1);
+      await vi.advanceTimersByTimeAsync(1);
+
+      await result;
+      expect(fn).toHaveBeenCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("should abort when signal is triggered", async () => {

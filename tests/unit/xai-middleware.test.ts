@@ -222,29 +222,34 @@ describe("withRetry", () => {
   });
 
   it("should respect jitter = false option", async () => {
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
     const error = { status: 429 };
     const fn = vi.fn().mockRejectedValue(error);
 
-    const delays: number[] = [];
+    try {
+      // Run multiple times without jitter - scheduled delays should be exact
+      for (let i = 0; i < 3; i++) {
+        const wrapped = withRetry(fn, {
+          retries: 1,
+          baseMs: 50,
+          jitter: false,
+        });
+        await expect(wrapped("request")).rejects.toEqual(error);
+      }
 
-    // Run multiple times without jitter - delays should be consistent
-    for (let i = 0; i < 3; i++) {
-      const startTime = Date.now();
-      const wrapped = withRetry(fn, {
-        retries: 1,
-        baseMs: 50,
-        jitter: false,
-      });
-      await expect(wrapped("request")).rejects.toEqual(error);
-      const elapsed = Date.now() - startTime;
-      delays.push(elapsed);
+      expect(setTimeoutSpy).toHaveBeenCalledTimes(3);
+      for (let call = 1; call <= 3; call++) {
+        expect(setTimeoutSpy).toHaveBeenNthCalledWith(
+          call,
+          expect.any(Function),
+          50
+        );
+      }
+    } finally {
+      setTimeoutSpy.mockRestore();
     }
 
-    // Without jitter, all delays should be approximately the same
-    const avgDelay = delays.reduce((a, b) => a + b, 0) / delays.length;
-    for (const delay of delays) {
-      expect(Math.abs(delay - avgDelay)).toBeLessThan(20); // Allow 20ms variance
-    }
+    expect(fn).toHaveBeenCalledTimes(6);
   });
 
   it("should abort when signal is triggered", async () => {

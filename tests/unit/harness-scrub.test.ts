@@ -206,11 +206,11 @@ describe("HAR response scrubber", () => {
     expect(recording.response?.headers).toEqual([]);
   });
 
-  it("keeps the Polymarket gamma event fixture free of Cloudflare cookies", () => {
+  it("keeps the Polymarket gamma events list fixture free of Cloudflare cookies", () => {
     const file = path.resolve(
       import.meta.dirname,
       "../recordings/polymarket_3782428595/" +
-        "gamma-events-by-id_2629891956/recording.har"
+        "gamma-events-list_3407432115/recording.har"
     );
     const raw = readFileSync(file, "utf8");
     const har = JSON.parse(raw) as FixtureHar;

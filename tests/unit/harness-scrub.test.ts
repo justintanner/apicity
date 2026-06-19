@@ -34,6 +34,9 @@ interface FixtureHar {
   };
 }
 
+const CATBOX_RECORDING_URL_RE =
+  /https:\/\/(?:catbox\.moe|files\.catbox\.moe|litter\.catbox\.moe|litterbox\.catbox\.moe)\b/i;
+
 function collectRecordingHars(dir: string): string[] {
   const files: string[] = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -432,27 +435,19 @@ describe("HAR response scrubber", () => {
   });
 
   it("keeps committed Catbox/Litterbox fixtures free of PHP session cookies", () => {
-    const recordingsDir = path.resolve(
-      import.meta.dirname,
-      "../recordings/free-media-upload_1393460724"
-    );
+    const recordingsDir = path.resolve(import.meta.dirname, "../recordings");
+    const checkedFiles: string[] = [];
     const leaks: string[] = [];
-    const recordingFiles = collectRecordingHars(recordingsDir).filter(
-      (file) => {
-        const recordingDir = path.basename(path.dirname(file));
-        return (
-          recordingDir.startsWith("catbox-") ||
-          recordingDir.startsWith("litterbox-")
-        );
-      }
-    );
 
-    for (const file of recordingFiles) {
+    for (const file of collectRecordingHars(recordingsDir)) {
       const raw = readFileSync(file, "utf8");
+      if (!CATBOX_RECORDING_URL_RE.test(raw)) continue;
+
+      const relativePath = path.relative(process.cwd(), file);
+      checkedFiles.push(relativePath);
+
       if (/PHPSESSID/i.test(raw)) {
-        leaks.push(
-          `${path.relative(process.cwd(), file)} contains raw PHPSESSID`
-        );
+        leaks.push(`${relativePath} contains raw PHPSESSID`);
       }
 
       const har = JSON.parse(raw) as FixtureHar;
@@ -461,7 +456,7 @@ describe("HAR response scrubber", () => {
           entry.response?.cookies ?? []
         ).entries()) {
           leaks.push(
-            `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+            `${relativePath} entry ${entryIndex} ` +
               `response cookie ${cookieIndex} (${cookie.name ?? "unnamed"})`
           );
         }
@@ -471,7 +466,7 @@ describe("HAR response scrubber", () => {
         ).entries()) {
           if (header.name?.toLowerCase() === "set-cookie") {
             leaks.push(
-              `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+              `${relativePath} entry ${entryIndex} ` +
                 `response set-cookie header ${headerIndex}`
             );
           }
@@ -479,6 +474,10 @@ describe("HAR response scrubber", () => {
       }
     }
 
+    expect(checkedFiles).toContain(
+      "tests/recordings/meta_2180927320/" +
+        "media-publish_3200519841/recording.har"
+    );
     expect(leaks).toEqual([]);
   });
 

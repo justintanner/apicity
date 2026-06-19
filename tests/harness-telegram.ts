@@ -575,18 +575,23 @@ function kebabDotPath(dotPath: string): string {
 
 function recordingDotPathHints(dotPath: string): string[] {
   const kebab = kebabDotPath(dotPath);
+  const parts = dotPath.split(".");
+  const suffixes = parts
+    .slice(1)
+    .map((_, index) => kebabDotPath(parts.slice(index + 1).join(".")));
   return [
     kebab,
     kebab.replace(/^buckets-/, "bucket-"),
     kebab.replace(/^objects-/, "object-"),
+    ...suffixes,
   ];
 }
 
-function findHintedEndpointDoc(
+function findHintedEndpointDocMatch(
   recording: ChangedRecording,
   entry: HarEntry,
   rows: EndpointDocRow[]
-): EndpointDocRow | null {
+): { length: number; row: EndpointDocRow } | null {
   const recordingName = recording.recordingName.toLowerCase();
   let best: { length: number; row: EndpointDocRow } | null = null;
 
@@ -614,7 +619,15 @@ function findHintedEndpointDoc(
     }
   }
 
-  return best?.row ?? null;
+  return best;
+}
+
+function findHintedEndpointDoc(
+  recording: ChangedRecording,
+  entry: HarEntry,
+  rows: EndpointDocRow[]
+): EndpointDocRow | null {
+  return findHintedEndpointDocMatch(recording, entry, rows)?.row ?? null;
 }
 
 function parseEndpointDocs(tsvPath = ENDPOINT_DOCS_PATH): EndpointDocRow[] {
@@ -633,8 +646,27 @@ function isCreditEntry(entry: HarEntry): boolean {
   return CREDIT_URL_PATTERNS.some((pattern) => pattern.test(pathOnly));
 }
 
-function findEndpointEntry(recording: ChangedRecording): HarEntry {
+function findEndpointEntry(
+  recording: ChangedRecording,
+  endpointDocs: EndpointDocRow[]
+): HarEntry {
   const operations = recording.entries.filter((entry) => !isCreditEntry(entry));
+  let hinted: { entry: HarEntry; length: number } | null = null;
+  for (const entry of operations) {
+    if (
+      entry.response.status >= 400 ||
+      (!responseBody(entry) && !responsePreview(entry))
+    ) {
+      continue;
+    }
+    const match = findHintedEndpointDocMatch(recording, entry, endpointDocs);
+    if (!match) continue;
+    if (!hinted || match.length > hinted.length) {
+      hinted = { entry, length: match.length };
+    }
+  }
+  if (hinted) return hinted.entry;
+
   return (
     operations.find(
       (entry) => entry.response.status < 400 && responseBody(entry)
@@ -1223,7 +1255,7 @@ export function formatTelegramEndpointMessage(
   recording: ChangedRecording,
   endpointDocs: EndpointDocRow[] = parseEndpointDocs()
 ): TelegramHarnessMessage {
-  const entry = findEndpointEntry(recording);
+  const entry = findEndpointEntry(recording, endpointDocs);
   const doc =
     findHintedEndpointDoc(recording, entry, endpointDocs) ??
     findMatchingEndpointDoc(entry, endpointDocs, recording.provider);

@@ -90,6 +90,16 @@ describe("HAR-derived examples on endpoints", () => {
     expect(ex?.source).toBe("xai/chat-hello");
   });
 
+  test("xai documents search example validates against its endpoint schema", () => {
+    const client = createXai({ apiKey: "test-key" });
+    const fn = client.post.v1.documents.search;
+    const ex = fn.example;
+    expect(ex).toBeDefined();
+    expect(ex?.source).toBe("xai/documents-search");
+    const result = fn.schema.safeParse(ex?.payload);
+    expect(result.success).toBe(true);
+  });
+
   test("fal veo3.1 image-to-video keeps its image payload", () => {
     const client = createFal({ apiKey: "test-key" });
     const ex = client.run.veo3p1.imageToVideo.example;

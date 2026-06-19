@@ -206,6 +206,21 @@ const endpointDocs: EndpointDocRow[] = [
     docsUrl:
       "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   },
+  {
+    provider: "xai",
+    dotPath: "managementApi.v1.collections",
+    method: "POST",
+    fullUrl: "https://management-api.x.ai/v1/collections",
+    docsUrl: "https://docs.x.ai/docs/api-reference",
+  },
+  {
+    provider: "xai",
+    dotPath: "v1.documents.search",
+    method: "POST",
+    fullUrl: "https://api.x.ai/v1/documents/search",
+    docsUrl:
+      "https://docs.x.ai/developers/rest-api-reference/collections/search",
+  },
 ];
 
 function seedSpeechRecording(): ChangedRecording {
@@ -752,6 +767,68 @@ function alibabaExpiredSignedVideoRecording(): ChangedRecording {
   };
 }
 
+function xaiDocumentsSearchRecording(): ChangedRecording {
+  return {
+    provider: "xai",
+    recordingName: "xai/documents-search",
+    changeType: "new",
+    filePath:
+      "tests/recordings/xai_3613880225/" +
+      "documents-search_2410887428/recording.har",
+    entries: [
+      {
+        request: {
+          method: "POST",
+          url: "https://management-api.x.ai/v1/collections",
+          headers: [{ name: "content-type", value: "application/json" }],
+          postData: {
+            mimeType: "application/json",
+            text: JSON.stringify({
+              collection_name: "test-collection-documents-search",
+            }),
+          },
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/json" }],
+          content: {
+            mimeType: "application/json",
+            text: JSON.stringify({
+              collection_id: "collection_fixture",
+            }),
+          },
+        },
+      },
+      {
+        request: {
+          method: "POST",
+          url: "https://api.x.ai/v1/documents/search",
+          headers: [{ name: "content-type", value: "application/json" }],
+          postData: {
+            mimeType: "application/json",
+            text: JSON.stringify({
+              query: "aurora-test-vector",
+              source: { collection_ids: ["collection_fixture"] },
+            }),
+          },
+        },
+        response: {
+          status: 200,
+          statusText: "OK",
+          headers: [{ name: "content-type", value: "application/json" }],
+          content: {
+            mimeType: "application/json",
+            text: JSON.stringify({
+              matches: [{ file_id: "file_fixture" }],
+            }),
+          },
+        },
+      },
+    ],
+  };
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -938,6 +1015,17 @@ describe("harness Telegram messages", () => {
 
     expect(message.apicityPath).toBe("b2.objects.list");
     expect(message.text).toContain("backblaze.com/docs");
+  });
+
+  it("prefers a hinted endpoint over setup calls in multi-call recordings", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [xaiDocumentsSearchRecording()],
+      endpointDocs
+    );
+
+    expect(message.endpoint).toBe("POST https://api.x.ai/v1/documents/search");
+    expect(message.apicityPath).toBe("xai.v1.documents.search");
+    expect(message.text).toContain("aurora-test-vector");
   });
 
   it("redacts credential-shaped headers and drops cookies", () => {

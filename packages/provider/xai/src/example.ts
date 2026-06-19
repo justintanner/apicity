@@ -65,6 +65,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "temperature": 0
     }
   },
+  "POST v1.documents.search": {
+    "source": "xai/documents-search",
+    "payload": {
+      "query": "aurora-test-vector",
+      "source": {
+        "collection_ids": [
+          "collection_2afa52a6-f4ce-4f9c-985f-37203c4bbd45"
+        ]
+      },
+      "limit": 5
+    }
+  },
   "POST v1.images.edits": {
     "source": "xai/image-edit-single",
     "payload": {

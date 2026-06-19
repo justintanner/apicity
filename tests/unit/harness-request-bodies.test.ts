@@ -363,6 +363,52 @@ describe("harness request body helpers", () => {
       recording.response?.content?.size
     );
   });
+
+  it("redacts xAI batch account metadata from persisted response bodies", () => {
+    const recording: PersistedHarRecording = {
+      response: {
+        content: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            batch_id: "batch_123",
+            create_api_key_id: "276a4be1-763d-460a-a3d9-91b306d381b8",
+            nested: {
+              batches: [
+                {
+                  batch_id: "batch_456",
+                  create_api_key_id: "276a4be1-763d-460a-a3d9-91b306d381b8",
+                },
+              ],
+            },
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(JSON.parse(recording.response?.content?.text ?? "")).toEqual({
+      batch_id: "batch_123",
+      create_api_key_id: "***",
+      nested: {
+        batches: [
+          {
+            batch_id: "batch_456",
+            create_api_key_id: "***",
+          },
+        ],
+      },
+    });
+    expect(recording.response?.content?.text).not.toContain(
+      "276a4be1-763d-460a-a3d9-91b306d381b8"
+    );
+    expect(recording.response?.content?.size).toBe(
+      new TextEncoder().encode(recording.response?.content?.text ?? "").length
+    );
+    expect(recording.response?.bodySize).toBe(
+      recording.response?.content?.size
+    );
+  });
 });
 
 describe("harness persist scrubbers", () => {

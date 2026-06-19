@@ -75,6 +75,31 @@ function collectResponseCookieLeaks(dir: string): string[] {
   return leaks;
 }
 
+function collectCreateApiKeyIdLeaks(
+  value: unknown,
+  location: string
+): string[] {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) =>
+      collectCreateApiKeyIdLeaks(item, `${location}[${index}]`)
+    );
+  }
+  if (value === null || typeof value !== "object") {
+    return [];
+  }
+
+  const leaks: string[] = [];
+  for (const [key, item] of Object.entries(value)) {
+    const childLocation = `${location}.${key}`;
+    if (key === "create_api_key_id" && item !== REDACTED_HAR_VALUE) {
+      leaks.push(childLocation);
+      continue;
+    }
+    leaks.push(...collectCreateApiKeyIdLeaks(item, childLocation));
+  }
+  return leaks;
+}
+
 describe("HAR response scrubber", () => {
   it("drops response cookies and sensitive response headers", () => {
     const recording: HarRecordingLike = {
@@ -416,6 +441,42 @@ describe("HAR response scrubber", () => {
           leaks.push(
             `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
               `apiKeys[${apiKeyIndex}].key`
+          );
+        }
+      }
+    }
+
+    expect(leaks).toEqual([]);
+  });
+
+  it("keeps committed xAI batch fixtures free of raw account ids", () => {
+    const recordingsDir = path.resolve(
+      import.meta.dirname,
+      "../recordings/xai_3613880225"
+    );
+    const leaks: string[] = [];
+
+    for (const file of collectRecordingHars(recordingsDir)) {
+      const raw = readFileSync(file, "utf8");
+      if (!raw.includes("create_api_key_id")) continue;
+
+      const har = JSON.parse(raw) as FixtureHar;
+      for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+        const text = entry.response?.content?.text;
+        if (!text) continue;
+
+        try {
+          leaks.push(
+            ...collectCreateApiKeyIdLeaks(
+              JSON.parse(text) as unknown,
+              `${path.relative(process.cwd(), file)} entry ${entryIndex}` +
+                " response body"
+            )
+          );
+        } catch {
+          leaks.push(
+            `${path.relative(process.cwd(), file)} entry ${entryIndex}` +
+              " response body malformed JSON"
           );
         }
       }

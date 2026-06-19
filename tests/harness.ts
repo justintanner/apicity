@@ -63,6 +63,7 @@ const REQUEST_POST_DATA_SECRET_KEYS = new Set([
   "policy",
   "signature",
 ]);
+const RESPONSE_ACCOUNT_METADATA_KEYS = new Set(["create_api_key_id"]);
 const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^,]*)*;base64,([\s\S]*)$/i;
 const LONG_BASE64_CHARS = 1024;
 const BASE64ISH_RE = /^[A-Za-z0-9+/_-]+={0,2}$/;
@@ -297,6 +298,7 @@ export function redactPersistedHarSecrets(
   }
   redactGuestTokenResponseBody(recording);
   redactFireworksApiKeyResponseBody(recording);
+  redactResponseAccountMetadataBody(recording);
 }
 
 function byteLength(value: string): number {
@@ -515,6 +517,62 @@ function writeJsonResponseBody(
   if (recording.response) {
     recording.response.bodySize = size;
   }
+}
+
+function redactResponseAccountMetadata(value: unknown): {
+  value: unknown;
+  redacted: boolean;
+} {
+  if (Array.isArray(value)) {
+    let redacted = false;
+    const redactedValues = value.map((item) => {
+      const result = redactResponseAccountMetadata(item);
+      redacted ||= result.redacted;
+      return result.value;
+    });
+    return { value: redactedValues, redacted };
+  }
+  if (value === null || typeof value !== "object") {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const redactedObject: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (
+      RESPONSE_ACCOUNT_METADATA_KEYS.has(key.toLowerCase()) &&
+      typeof item === "string"
+    ) {
+      redactedObject[key] = "***";
+      redacted ||= item !== "***";
+      continue;
+    }
+
+    const result = redactResponseAccountMetadata(item);
+    redacted ||= result.redacted;
+    redactedObject[key] = result.value;
+  }
+  return { value: redactedObject, redacted };
+}
+
+function redactResponseAccountMetadataBody(
+  recording: PersistedHarRecording
+): void {
+  const content = recording.response?.content;
+  const text = content?.text;
+  if (typeof text !== "string" || text.length === 0) return;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return;
+  }
+
+  const result = redactResponseAccountMetadata(parsed);
+  if (!result.redacted) return;
+
+  writeJsonResponseBody(recording, result.value, text);
 }
 
 function redactFireworksApiKeyEntry(value: unknown): {

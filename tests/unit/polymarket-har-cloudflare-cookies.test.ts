@@ -34,7 +34,7 @@ function listRecordingFiles(dir: string): string[] {
 }
 
 describe("Polymarket HAR Cloudflare cookies", () => {
-  it("keeps committed response cookies and set-cookie headers removed", () => {
+  it("keeps committed Cloudflare cookies removed", () => {
     const recordingsRoot = path.join(
       process.cwd(),
       "tests",
@@ -44,7 +44,12 @@ describe("Polymarket HAR Cloudflare cookies", () => {
     const leaks: string[] = [];
 
     for (const file of listRecordingFiles(recordingsRoot)) {
-      const har = JSON.parse(readFileSync(file, "utf8")) as HarRecording;
+      const raw = readFileSync(file, "utf8");
+      const har = JSON.parse(raw) as HarRecording;
+
+      if (/__cf_bm/i.test(raw)) {
+        leaks.push(`${path.relative(process.cwd(), file)} contains __cf_bm`);
+      }
 
       for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
         for (const [cookieIndex, cookie] of (
@@ -66,7 +71,7 @@ describe("Polymarket HAR Cloudflare cookies", () => {
                 `response set-cookie header ${headerIndex}`
             );
           }
-          if (header.value?.includes("__cf_bm")) {
+          if (/__cf_bm/i.test(header.value ?? "")) {
             leaks.push(
               `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
                 `response header ${headerIndex} contains __cf_bm`

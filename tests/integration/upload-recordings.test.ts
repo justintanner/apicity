@@ -206,6 +206,40 @@ const summarizedMultipartFixtures: HarFixture[] = [
   },
 ];
 
+const summarizedMultipartRelatedFixtures: HarFixture[] = [
+  {
+    path: "../recordings/youtube_3083192990/videos-insert_2365121445/recording.har",
+    entryIndex: 0,
+    expected: {
+      video: fileSummary("jump.mp4", "video/mp4", 1318021),
+      snippet: {
+        title: "Apicity jump.mp4 test upload",
+        description: "Integration test video uploaded via @apicity/youtube",
+        tags: ["apicity", "test", "integration"],
+        categoryId: "22",
+        defaultLanguage: "en",
+      },
+      status: {
+        privacyStatus: "unlisted",
+        embeddable: true,
+        license: "youtube",
+        publicStatsViewable: true,
+        selfDeclaredMadeForKids: false,
+        containsSyntheticMedia: false,
+      },
+      recordingDetails: {
+        recordingDate: "2026-05-14",
+      },
+      localizations: {
+        es: {
+          title: "Prueba de subida jump.mp4",
+          description: "Video de prueba de integracion",
+        },
+      },
+    },
+  },
+];
+
 const intentionalSummarylessFixtures: SummarylessFixture[] = [
   {
     path: "../recordings/b2_2402036085/object-core_2379895886/recording.har",
@@ -221,11 +255,6 @@ const intentionalSummarylessFixtures: SummarylessFixture[] = [
     path: "../recordings/fal_2801268556/storage-upload-initiate_29504192/recording.har",
     entryIndex: 1,
     reason: "raw FAL signed-url image PUT body",
-  },
-  {
-    path: "../recordings/youtube_3083192990/videos-insert_2365121445/recording.har",
-    entryIndex: 0,
-    reason: "multipart/related body mixes JSON metadata with media bytes",
   },
 ];
 
@@ -302,6 +331,21 @@ describe("non-free-media upload HAR request bodies", () => {
 
       expect(postData?.mimeType, fixtureId(fixture)).toBe(
         "multipart/form-data"
+      );
+      expect(postData?.text, fixtureId(fixture)).toEqual(expect.any(String));
+      expect(JSON.parse(postData?.text ?? ""), fixtureId(fixture)).toEqual(
+        fixture.expected
+      );
+    }
+  });
+
+  it("keeps sanitized multipart/related summaries for upload fixtures", () => {
+    for (const fixture of summarizedMultipartRelatedFixtures) {
+      const entry = readFixtureEntry(fixture);
+      const postData = entry.request?.postData;
+
+      expect(postData?.mimeType, fixtureId(fixture)).toMatch(
+        /^multipart\/related/
       );
       expect(postData?.text, fixtureId(fixture)).toEqual(expect.any(String));
       expect(JSON.parse(postData?.text ?? ""), fixtureId(fixture)).toEqual(

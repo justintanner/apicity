@@ -52,21 +52,16 @@ async function main() {
     for (const entry of entries) {
       const method = entry?.request?.method?.toUpperCase();
       if (!method) continue;
-      const row = findMatchingRow(entry, tsvRows, { provider: providerHint });
       const bodyText = entry?.request?.postData?.text;
-      let payload;
-      let payloadString;
-      if (typeof bodyText === "string" && bodyText.length > 0) {
-        // JSON-only for v1: skip multipart, form-urlencoded, raw binary, etc.
-        const mime = entry?.request?.postData?.mimeType ?? "";
-        if (!mime.includes("application/json")) continue;
-        try {
-          payload = JSON.parse(bodyText);
-        } catch {
-          continue;
-        }
-        payload = sanitizePayload(payload);
-        payloadString = bodyText;
+      const mime = entry?.request?.postData?.mimeType ?? "";
+      const jsonSummary =
+        typeof bodyText === "string" &&
+        bodyText.length > 0 &&
+        (mime.includes("application/json") || isMultipartRelated(mime));
+      const row = findMatchingRow(entry, tsvRows, { provider: providerHint });
+      let extracted;
+      if (jsonSummary) {
+        extracted = parseJsonPayload(bodyText);
       } else if (
         providerHint === "fireworks" &&
         !hasRequestBody(entry) &&
@@ -75,16 +70,18 @@ async function main() {
         // Fireworks management endpoints are often bodyless reads. Count
         // their successful recordings as coverage without
         // broadening every provider's example surface.
-        payload = {};
-        payloadString = "{}";
+        extracted = {
+          payload: {},
+          payloadString: "{}",
+        };
       } else if (method === "GET" && row) {
         const queryPayload = extractCompleteQueryPayload(entry, row);
         if (!queryPayload) continue;
-        payload = queryPayload.payload;
-        payloadString = queryPayload.payloadString;
+        extracted = queryPayload;
       } else {
         continue;
       }
+      if (!extracted) continue;
       if (!row) {
         unmatched.push({
           recordingName,
@@ -96,8 +93,8 @@ async function main() {
       const key = `${row.provider}::${row.method.toUpperCase()} ${row.dotPath}`;
       const candidate = {
         recordingName,
-        payload,
-        payloadString,
+        payload: extracted.payload,
+        payloadString: extracted.payloadString,
       };
       const list = candidatesByKey.get(key) ?? [];
       list.push(candidate);
@@ -275,6 +272,21 @@ function sanitizePayload(value) {
     return out;
   }
   return value;
+}
+
+function parseJsonPayload(bodyText) {
+  try {
+    return {
+      payload: sanitizePayload(JSON.parse(bodyText)),
+      payloadString: bodyText,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function isMultipartRelated(mime) {
+  return mime.toLowerCase().startsWith("multipart/related");
 }
 
 function hasRequestBody(entry) {

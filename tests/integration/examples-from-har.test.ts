@@ -6,6 +6,7 @@ import { createXai } from "@apicity/xai";
 import { createFal } from "@apicity/fal";
 import { createFireworks } from "@apicity/fireworks";
 import { createPolymarket } from "@apicity/polymarket";
+import { createYouTube } from "@apicity/youtube";
 import { findMatchingRow } from "../../scripts/lib/match-har-to-endpoint.mjs";
 
 interface EndpointDocRow {
@@ -216,5 +217,28 @@ describe("HAR-derived examples on endpoints", () => {
       limit: 2,
     });
     expect(client.get.gamma.comments.byUser.example).toBeUndefined();
+  });
+
+  test("youtube videos.insert uses a sanitized upload example", () => {
+    const client = createYouTube({ accessToken: "test-token" });
+    const ex = client.videos.insert.example;
+
+    expect(ex).toBeDefined();
+    expect(ex?.source).toBe("youtube/videos-insert");
+    expect(ex?.payload).toMatchObject({
+      video: {
+        _file: true,
+        filename: "jump.mp4",
+        contentType: "video/mp4",
+        size: 1318021,
+      },
+      snippet: {
+        title: "Apicity jump.mp4 test upload",
+      },
+      status: {
+        privacyStatus: "unlisted",
+      },
+    });
+    expect(JSON.stringify(ex?.payload)).not.toContain("Bearer");
   });
 });

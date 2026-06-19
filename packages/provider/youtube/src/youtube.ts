@@ -11,6 +11,7 @@ import {
   YouTubeGetTranscriptRequestSchema,
   YouTubeGetVideoMetadataRequestSchema,
 } from "./zod";
+import { attachExamples } from "./example";
 
 export function buildQuery(
   params: Record<string, string | number | undefined>
@@ -540,7 +541,7 @@ export function createYouTube(opts?: YouTubeOptions): YouTubeProvider {
     { schema: YouTubeGetVideoMetadataRequestSchema }
   );
 
-  return {
+  return attachExamples({
     videos: {
       list: videosList,
       insert: videosInsert,
@@ -552,5 +553,5 @@ export function createYouTube(opts?: YouTubeOptions): YouTubeProvider {
       get: getTranscript,
     },
     videoMetadata: getVideoMetadata,
-  };
+  });
 }

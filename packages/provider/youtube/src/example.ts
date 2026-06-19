@@ -30,6 +30,45 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "part": "snippet",
       "id": "dQw4w9WgXcQ"
     }
+  },
+  "POST videos.insert": {
+    "source": "youtube/videos-insert",
+    "payload": {
+      "video": {
+        "_file": true,
+        "filename": "jump.mp4",
+        "contentType": "video/mp4",
+        "size": 1318021
+      },
+      "snippet": {
+        "title": "Apicity jump.mp4 test upload",
+        "description": "Integration test video uploaded via @apicity/youtube",
+        "tags": [
+          "apicity",
+          "test",
+          "integration"
+        ],
+        "categoryId": "22",
+        "defaultLanguage": "en"
+      },
+      "status": {
+        "privacyStatus": "unlisted",
+        "embeddable": true,
+        "license": "youtube",
+        "publicStatsViewable": true,
+        "selfDeclaredMadeForKids": false,
+        "containsSyntheticMedia": false
+      },
+      "recordingDetails": {
+        "recordingDate": "2026-05-14"
+      },
+      "localizations": {
+        "es": {
+          "title": "Prueba de subida jump.mp4",
+          "description": "Video de prueba de integracion"
+        }
+      }
+    }
   }
 };
 

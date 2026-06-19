@@ -75,6 +75,47 @@ function collectResponseCookieLeaks(dir: string): string[] {
   return leaks;
 }
 
+function collectCloudflareResponseCookieLeaks(file: string): string[] {
+  const raw = readFileSync(file, "utf8");
+  const har = JSON.parse(raw) as FixtureHar;
+  const relativePath = path.relative(process.cwd(), file);
+  const leaks: string[] = [];
+
+  if (/__cf_bm/i.test(raw)) {
+    leaks.push(`${relativePath} contains __cf_bm`);
+  }
+
+  for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+    for (const [cookieIndex, cookie] of (
+      entry.response?.cookies ?? []
+    ).entries()) {
+      leaks.push(
+        `${relativePath} entry ${entryIndex} response cookie ` +
+          `${cookieIndex} (${cookie.name ?? "unnamed"})`
+      );
+    }
+
+    for (const [headerIndex, header] of (
+      entry.response?.headers ?? []
+    ).entries()) {
+      if (header.name?.toLowerCase() === "set-cookie") {
+        leaks.push(
+          `${relativePath} entry ${entryIndex} ` +
+            `response set-cookie header ${headerIndex}`
+        );
+      }
+      if (/__cf_bm/i.test(header.value ?? "")) {
+        leaks.push(
+          `${relativePath} entry ${entryIndex} response header ` +
+            `${headerIndex} contains __cf_bm`
+        );
+      }
+    }
+  }
+
+  return leaks;
+}
+
 function collectCreateApiKeyIdLeaks(
   value: unknown,
   location: string
@@ -200,6 +241,25 @@ describe("HAR response scrubber", () => {
         }
       }
     }
+
+    expect(leaks).toEqual([]);
+  });
+
+  it("keeps xAI TTS and responses CRUD fixtures free of Cloudflare cookies", () => {
+    const files = [
+      "../recordings/xai_3613880225/tts-welcome_3586931899/recording.har",
+      "../recordings/xai_3613880225/" +
+        "responses-crud-create_10211913/recording.har",
+      "../recordings/xai_3613880225/" +
+        "responses-crud-get_2571518523/recording.har",
+      "../recordings/xai_3613880225/" +
+        "responses-crud-delete_2661153406/recording.har",
+    ];
+    const leaks = files.flatMap((file) =>
+      collectCloudflareResponseCookieLeaks(
+        path.resolve(import.meta.dirname, file)
+      )
+    );
 
     expect(leaks).toEqual([]);
   });

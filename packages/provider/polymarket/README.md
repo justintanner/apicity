@@ -868,6 +868,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-events)
 
+> **Deprecated upstream:** the replay fixture for the list form `GET /events?...` returned `Deprecation: true`, `Sunset: Fri, 01 May 2026 00:00:00 GMT`, and `Warning: 299 - "use /events/keyset"`. This compatibility method remains for existing bare-array `/events` callers; prefer `polymarket.gamma.events.keyset()` for new paginated event lists.
+
 ```typescript
 const res = await polymarket.gamma.events({ /* ... */ });
 ```

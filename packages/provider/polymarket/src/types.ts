@@ -1092,8 +1092,8 @@ export interface PolymarketGammaSportsMarketTypesResponse {
   marketTypes: string[];
 }
 
-// /events returns a bare JSON array (no envelope) — we represent the list
-// shape directly.
+// /events returns a bare JSON array (no envelope) for compatibility. Upstream
+// marks the list form deprecated and recommends /events/keyset for pagination.
 export type PolymarketGammaEventListResponse = PolymarketGammaEvent[];
 
 // /events/keyset uses a different envelope: { events, next_cursor }. The
@@ -1160,7 +1160,17 @@ export interface PolymarketGammaMarketKeysetResponse {
 // -- Gamma method interfaces ------------------------------------------------
 
 export interface PolymarketGammaEventsMethod {
+  /**
+   * @deprecated Upstream marked the list form of GET /events deprecated and
+   * recommends /events/keyset. Use events.keyset() for new paginated event
+   * list callers.
+   */
   (signal?: AbortSignal): Promise<PolymarketGammaEventListResponse>;
+  /**
+   * @deprecated Upstream marked the list form of GET /events deprecated and
+   * recommends /events/keyset. Use events.keyset() for new paginated event
+   * list callers.
+   */
   (
     params: PolymarketGammaEventListQuery,
     signal?: AbortSignal

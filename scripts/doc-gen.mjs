@@ -197,6 +197,20 @@ const REST_ALIAS_SUFFIXES = new Set([
   "results",
 ]);
 
+const ENDPOINT_NOTES = new Map([
+  [
+    "polymarket\tgamma.events\tGET",
+    [
+      "> **Deprecated upstream:** the replay fixture for the list form",
+      "`GET /events?...` returned `Deprecation: true`,",
+      "`Sunset: Fri, 01 May 2026 00:00:00 GMT`, and",
+      '`Warning: 299 - "use /events/keyset"`. This compatibility method',
+      "remains for existing bare-array `/events` callers; prefer",
+      "`polymarket.gamma.events.keyset()` for new paginated event lists.",
+    ].join(" "),
+  ],
+]);
+
 function renderEndpointDetails(ep, providerName, docsUrl) {
   const method = ep.method ?? "";
   const dotPath = displayDotPath(providerName, ep);
@@ -208,6 +222,8 @@ function renderEndpointDetails(ep, providerName, docsUrl) {
     : "";
   const docsLine =
     docsUrl && docsUrl.length > 0 ? `[Upstream docs ↗](${docsUrl})` : "";
+  const noteLine =
+    ENDPOINT_NOTES.get(`${providerName}\t${dotPath}\t${method}`) ?? "";
 
   const usage = formatUsageSnippet(providerName, dotPath);
   const relSrc = ep.file.replace(
@@ -219,6 +235,7 @@ function renderEndpointDetails(ep, providerName, docsUrl) {
   const lines = ["<details>", `<summary>${summary}</summary>`, ""];
   if (urlLine) lines.push(urlLine, "");
   if (docsLine) lines.push(docsLine, "");
+  if (noteLine) lines.push(noteLine, "");
   lines.push("```typescript", usage, "```", "");
   lines.push(sourceLine, "", "</details>", "");
   return lines.join("\n");

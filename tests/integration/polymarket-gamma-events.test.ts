@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createPolymarket } from "@apicity/polymarket";
@@ -7,6 +9,21 @@ import { createPolymarket } from "@apicity/polymarket";
 const EVENT_ID = "16167";
 const EVENT_SLUG = "microstrategy-sell-any-bitcoin-in-2025";
 
+interface HarHeader {
+  name: string;
+  value: string;
+}
+
+interface HarRecording {
+  log: {
+    entries: Array<{
+      response: {
+        headers: HarHeader[];
+      };
+    }>;
+  };
+}
+
 describe("polymarket gamma events surface", () => {
   let ctx: PollyContext;
 
@@ -14,7 +31,7 @@ describe("polymarket gamma events surface", () => {
     await teardownPolly(ctx);
   });
 
-  it("events() lists events as a bare JSON array", async () => {
+  it("events() preserves deprecated bare-array compatibility", async () => {
     ctx = setupPolly("polymarket/gamma-events-list");
     const provider = createPolymarket();
 
@@ -30,6 +47,25 @@ describe("polymarket gamma events surface", () => {
       expect(typeof e.title).toBe("string");
       expect(Array.isArray(e.markets)).toBe(true);
     }
+  });
+
+  it("events() legacy fixture records upstream deprecation headers", () => {
+    const harPath = resolve(
+      __dirname,
+      "../recordings/polymarket_3782428595/" +
+        "gamma-events-list_3407432115/recording.har"
+    );
+    const har = JSON.parse(readFileSync(harPath, "utf8")) as HarRecording;
+    const headers = new Map(
+      har.log.entries[0].response.headers.map((header) => [
+        header.name.toLowerCase(),
+        header.value,
+      ])
+    );
+
+    expect(headers.get("deprecation")).toBe("true");
+    expect(headers.get("sunset")).toBe("Fri, 01 May 2026 00:00:00 GMT");
+    expect(headers.get("warning")).toBe('299 - "use /events/keyset"');
   });
 
   it("events(id) retrieves a single event", async () => {

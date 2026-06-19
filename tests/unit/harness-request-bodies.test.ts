@@ -152,17 +152,17 @@ describe("harness request body helpers", () => {
     );
   });
 
-  it("redacts OSS credentials from multipart request summaries", () => {
+  it("redacts credential-bearing multipart request fields", () => {
     const recording: PersistedHarRecording = {
       request: {
         postData: {
           mimeType: "multipart/form-data",
           text: JSON.stringify({
             _multipart: true,
-            OSSAccessKeyId: "LTAI-upload-secret",
-            Signature: "upload-policy-signature",
-            policy: "encoded-upload-policy",
-            key: "dashscope-instant/request-id/cat1.jpg",
+            OSSAccessKeyId: "oss-key",
+            Signature: "oss-signature",
+            policy: "base64-policy",
+            key: "uploads/cat1.jpg",
             file: {
               _file: true,
               filename: "cat1.jpg",
@@ -181,7 +181,7 @@ describe("harness request body helpers", () => {
       OSSAccessKeyId: "***",
       Signature: "***",
       policy: "***",
-      key: "dashscope-instant/request-id/cat1.jpg",
+      key: "uploads/cat1.jpg",
       file: {
         _file: true,
         filename: "cat1.jpg",
@@ -189,6 +189,9 @@ describe("harness request body helpers", () => {
         size: 83558,
       },
     });
+    expect(recording.request?.postData?.text).not.toContain("oss-key");
+    expect(recording.request?.postData?.text).not.toContain("oss-signature");
+    expect(recording.request?.postData?.text).not.toContain("base64-policy");
   });
 
   it("summarizes JSON request media without losing scalar context", () => {

@@ -116,6 +116,28 @@ function collectCloudflareResponseCookieLeaks(file: string): string[] {
   return leaks;
 }
 
+function collectSensitiveResponseMetadataLeaks(dir: string): string[] {
+  const leaks: string[] = [];
+
+  for (const file of collectRecordingHars(dir)) {
+    const har = JSON.parse(readFileSync(file, "utf8")) as FixtureHar;
+    for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+      for (const header of entry.response?.headers ?? []) {
+        if (!isSensitiveResponseHeaderName(header.name)) {
+          continue;
+        }
+
+        leaks.push(
+          `${path.relative(process.cwd(), file)} entry ${entryIndex} ` +
+            `response header ${header.name ?? "<unnamed>"}`
+        );
+      }
+    }
+  }
+
+  return leaks;
+}
+
 function collectCreateApiKeyIdLeaks(
   value: unknown,
   location: string
@@ -160,6 +182,9 @@ describe("HAR response scrubber", () => {
           { name: "request-id", value: "req-real" },
           { name: "x-request-id", value: "req-x-real" },
           { name: "x-mbx-uuid", value: "uuid-real" },
+          { name: "x-rate-limit-limit", value: "300" },
+          { name: "x-rate-limit-remaining", value: "299" },
+          { name: "x-rate-limit-reset", value: "1710000000" },
           { name: "x-ratelimit-limit-requests", value: "5000" },
           { name: "x-ratelimit-remaining-tokens", value: "999218" },
           { name: "x-ratelimit-reset-requests", value: "12ms" },
@@ -338,6 +363,12 @@ describe("HAR response scrubber", () => {
     }
 
     expect(leaks).toEqual([]);
+  });
+
+  it("keeps committed HAR fixtures free of sensitive response metadata", () => {
+    const recordingsDir = path.resolve(import.meta.dirname, "../recordings");
+
+    expect(collectSensitiveResponseMetadataLeaks(recordingsDir)).toEqual([]);
   });
 
   it("keeps committed Alibaba fixtures free of raw DashScope IDs", () => {

@@ -49,6 +49,7 @@ export function isSensitiveResponseHeaderName(
     lower.includes("organization") ||
     lower.includes("project") ||
     lower.startsWith("ratelimit-") ||
+    lower.startsWith("x-rate-limit-") ||
     lower.startsWith("x-ratelimit-") ||
     lower.endsWith("cf-ray") ||
     /(^|-)request-id$/.test(lower) ||

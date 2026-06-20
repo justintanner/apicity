@@ -5,29 +5,28 @@ import {
   TelegramError,
 } from "../../packages/provider/telegram/src";
 
-function telegramResponse(result: Record<string, unknown>): Response {
-  return new Response(
-    JSON.stringify({
-      ok: true,
-      result: {
-        message_id: 1,
-        date: 1770300000,
-        chat: { id: 42, type: "private" },
-        ...result,
-      },
-    }),
-    {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    }
-  );
+function telegramResponse(result: unknown): Response {
+  return new Response(JSON.stringify({ ok: true, result }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function jsonBody(init: RequestInit): Record<string, unknown> {
+  expect(typeof init.body).toBe("string");
+  return JSON.parse(init.body as string) as Record<string, unknown>;
 }
 
 describe("Telegram endpoint wiring", () => {
-  it("posts sendMessage requests to the bot-token URL", async () => {
-    const mockFetch = vi
-      .fn()
-      .mockResolvedValue(telegramResponse({ text: "hello" }));
+  it("posts JSON requests to the bot-token URL", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      telegramResponse({
+        message_id: 1,
+        date: 1770300000,
+        chat: { id: 42, type: "private" },
+        text: "hello",
+      })
+    );
     const telegram = createTelegram({
       botToken: "123456:ABC-DEF",
       fetch: mockFetch,
@@ -43,142 +42,286 @@ describe("Telegram endpoint wiring", () => {
     expect(url).toBe("https://api.telegram.org/bot123456:ABC-DEF/sendMessage");
     expect(init.method).toBe("POST");
     expect(init.headers).toEqual({ "Content-Type": "application/json" });
-    expect(JSON.parse(init.body as string)).toEqual({
-      chat_id: 42,
-      text: "hello",
-    });
+    expect(jsonBody(init)).toEqual({ chat_id: 42, text: "hello" });
   });
 
-  it("exposes the same methods under the post namespace", () => {
-    const telegram = createTelegram({
-      botToken: "123456:ABC-DEF",
-      fetch: vi.fn(),
-    });
+  it("exposes wrappers at the root and post namespace", () => {
+    const telegram = createTelegram({ botToken: "test", fetch: vi.fn() });
+    const root = telegram as unknown as Record<string, unknown>;
+    const post = telegram.post as unknown as Record<string, unknown>;
 
-    expect(telegram.post.sendMessage).toBe(telegram.sendMessage);
-    expect(telegram.post.sendPhoto).toBe(telegram.sendPhoto);
-    expect(telegram.post.sendVideo).toBe(telegram.sendVideo);
-    expect(telegram.post.sendAudio).toBe(telegram.sendAudio);
+    for (const method of [
+      "approveSuggestedPost",
+      "declineSuggestedPost",
+      "getUserProfileAudios",
+      "getUserProfilePhotos",
+      "removeMyProfilePhoto",
+      "setMyProfilePhoto",
+      "addStickerToSet",
+      "answerCallbackQuery",
+      "answerChatJoinRequestQuery",
+      "answerGuestQuery",
+      "answerInlineQuery",
+      "answerPreCheckoutQuery",
+      "answerShippingQuery",
+      "answerWebAppQuery",
+      "approveChatJoinRequest",
+      "banChatMember",
+      "banChatSenderChat",
+      "close",
+      "closeForumTopic",
+      "closeGeneralForumTopic",
+      "convertGiftToStars",
+      "copyMessage",
+      "copyMessages",
+      "createChatInviteLink",
+      "createChatSubscriptionInviteLink",
+      "createForumTopic",
+      "createInvoiceLink",
+      "createNewStickerSet",
+      "declineChatJoinRequest",
+      "deleteAllMessageReactions",
+      "deleteBusinessMessages",
+      "deleteChatPhoto",
+      "deleteChatStickerSet",
+      "deleteForumTopic",
+      "deleteMessage",
+      "deleteMessageReaction",
+      "deleteMessages",
+      "deleteMyCommands",
+      "deleteStickerFromSet",
+      "deleteStickerSet",
+      "deleteStory",
+      "deleteWebhook",
+      "editChatInviteLink",
+      "editChatSubscriptionInviteLink",
+      "editForumTopic",
+      "editGeneralForumTopic",
+      "editMessageCaption",
+      "editMessageChecklist",
+      "editMessageLiveLocation",
+      "editMessageMedia",
+      "editMessageReplyMarkup",
+      "editMessageText",
+      "editStory",
+      "editUserStarSubscription",
+      "exportChatInviteLink",
+      "forwardMessage",
+      "forwardMessages",
+      "getAvailableGifts",
+      "getBusinessAccountGifts",
+      "getBusinessAccountStarBalance",
+      "getBusinessConnection",
+      "getChat",
+      "getChatAdministrators",
+      "getChatGifts",
+      "getChatMember",
+      "getChatMemberCount",
+      "getChatMenuButton",
+      "getCustomEmojiStickers",
+      "getFile",
+      "getForumTopicIconStickers",
+      "getGameHighScores",
+      "getManagedBotAccessSettings",
+      "getManagedBotToken",
+      "getMe",
+      "getMyCommands",
+      "getMyDefaultAdministratorRights",
+      "getMyDescription",
+      "getMyName",
+      "getMyShortDescription",
+      "getMyStarBalance",
+      "getStarTransactions",
+      "getStickerSet",
+      "getUpdates",
+      "getUserChatBoosts",
+      "getUserGifts",
+      "getUserPersonalChatMessages",
+      "getWebhookInfo",
+      "giftPremiumSubscription",
+      "hideGeneralForumTopic",
+      "leaveChat",
+      "logOut",
+      "pinChatMessage",
+      "postStory",
+      "promoteChatMember",
+      "readBusinessMessage",
+      "refundStarPayment",
+      "removeBusinessAccountProfilePhoto",
+      "removeChatVerification",
+      "removeUserVerification",
+      "reopenForumTopic",
+      "reopenGeneralForumTopic",
+      "replaceManagedBotToken",
+      "replaceStickerInSet",
+      "repostStory",
+      "restrictChatMember",
+      "revokeChatInviteLink",
+      "savePreparedInlineMessage",
+      "savePreparedKeyboardButton",
+      "sendAnimation",
+      "sendAudio",
+      "sendChatAction",
+      "sendChatJoinRequestWebApp",
+      "sendChecklist",
+      "sendContact",
+      "sendDice",
+      "sendDocument",
+      "sendGame",
+      "sendGift",
+      "sendInvoice",
+      "sendLivePhoto",
+      "sendLocation",
+      "sendMediaGroup",
+      "sendMessage",
+      "sendMessageDraft",
+      "sendPaidMedia",
+      "sendPhoto",
+      "sendPoll",
+      "sendRichMessage",
+      "sendRichMessageDraft",
+      "sendSticker",
+      "sendVenue",
+      "sendVideo",
+      "sendVideoNote",
+      "sendVoice",
+      "setBusinessAccountBio",
+      "setBusinessAccountGiftSettings",
+      "setBusinessAccountName",
+      "setBusinessAccountProfilePhoto",
+      "setBusinessAccountUsername",
+      "setChatAdministratorCustomTitle",
+      "setChatDescription",
+      "setChatMemberTag",
+      "setChatMenuButton",
+      "setChatPermissions",
+      "setChatPhoto",
+      "setChatStickerSet",
+      "setChatTitle",
+      "setCustomEmojiStickerSetThumbnail",
+      "setGameScore",
+      "setManagedBotAccessSettings",
+      "setMessageReaction",
+      "setMyCommands",
+      "setMyDefaultAdministratorRights",
+      "setMyDescription",
+      "setMyName",
+      "setMyShortDescription",
+      "setPassportDataErrors",
+      "setStickerEmojiList",
+      "setStickerKeywords",
+      "setStickerMaskPosition",
+      "setStickerPositionInSet",
+      "setStickerSetThumbnail",
+      "setStickerSetTitle",
+      "setUserEmojiStatus",
+      "setWebhook",
+      "stopMessageLiveLocation",
+      "stopPoll",
+      "transferBusinessAccountStars",
+      "transferGift",
+      "unbanChatMember",
+      "unbanChatSenderChat",
+      "unhideGeneralForumTopic",
+      "unpinAllChatMessages",
+      "unpinAllForumTopicMessages",
+      "unpinAllGeneralForumTopicMessages",
+      "unpinChatMessage",
+      "upgradeGift",
+      "uploadStickerFile",
+      "verifyChat",
+      "verifyUser",
+    ]) {
+      expect(typeof root[method], method).toBe("function");
+      expect(root[method], method).toBe(post[method]);
+    }
   });
 
-  it("posts string media as JSON for photo, video, and audio messages", async () => {
+  it("posts no-parameter methods with empty JSON bodies", async () => {
     const mockFetch = vi
       .fn()
-      .mockImplementation(() => Promise.resolve(telegramResponse({})));
+      .mockResolvedValueOnce(telegramResponse({ first_name: "Apicity" }))
+      .mockResolvedValueOnce(telegramResponse({ pending_update_count: 0 }))
+      .mockResolvedValueOnce(telegramResponse(true))
+      .mockResolvedValueOnce(telegramResponse(true));
     const telegram = createTelegram({
       botToken: "123456:ABC-DEF",
       baseURL: "https://telegram.local/bot{token}",
       fetch: mockFetch,
     });
 
-    await telegram.sendPhoto({
-      chat_id: "@channel",
-      photo: "https://example.com/photo.png",
-    });
-    await telegram.sendVideo({
-      chat_id: "@channel",
-      video: "telegram-file-id",
-      supports_streaming: true,
-    });
-    await telegram.sendAudio({
-      chat_id: "@channel",
-      audio: "https://example.com/audio.mp3",
-      performer: "Apicity",
-    });
+    await telegram.getMe();
+    await telegram.getWebhookInfo();
+    await telegram.logOut();
+    await telegram.close();
 
-    expect(mockFetch).toHaveBeenCalledTimes(3);
-    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
-    expect(calls.map(([url]) => url)).toEqual([
-      "https://telegram.local/bot123456:ABC-DEF/sendPhoto",
-      "https://telegram.local/bot123456:ABC-DEF/sendVideo",
-      "https://telegram.local/bot123456:ABC-DEF/sendAudio",
+    expect(
+      (mockFetch.mock.calls as Array<[string, RequestInit]>).map(([url]) => url)
+    ).toEqual([
+      "https://telegram.local/bot123456:ABC-DEF/getMe",
+      "https://telegram.local/bot123456:ABC-DEF/getWebhookInfo",
+      "https://telegram.local/bot123456:ABC-DEF/logOut",
+      "https://telegram.local/bot123456:ABC-DEF/close",
     ]);
-
-    for (const [, init] of calls) {
+    for (const [, init] of mockFetch.mock.calls as Array<
+      [string, RequestInit]
+    >) {
       expect(init.headers).toEqual({ "Content-Type": "application/json" });
+      expect(jsonBody(init)).toEqual({});
     }
-    expect(JSON.parse(calls[0][1].body as string)).toEqual({
-      chat_id: "@channel",
-      photo: "https://example.com/photo.png",
-    });
-    expect(JSON.parse(calls[1][1].body as string)).toEqual({
-      chat_id: "@channel",
-      video: "telegram-file-id",
-      supports_streaming: true,
-    });
-    expect(JSON.parse(calls[2][1].body as string)).toEqual({
-      chat_id: "@channel",
-      audio: "https://example.com/audio.mp3",
-      performer: "Apicity",
-    });
   });
 
-  it("posts Blob media as multipart form-data", async () => {
-    const mockFetch = vi
-      .fn()
-      .mockResolvedValue(telegramResponse({ caption: "uploaded" }));
-    const telegram = createTelegram({
-      botToken: "123456:ABC-DEF",
-      fetch: mockFetch,
-    });
-    const photo = new Blob(["image bytes"], { type: "image/png" });
+  it("uses multipart form data for top-level and nested Blob uploads", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(telegramResponse(true));
+    const telegram = createTelegram({ botToken: "test", fetch: mockFetch });
+    const photo = new Blob(["photo"], { type: "image/png" });
+    const thumb = new Blob(["thumb"], { type: "image/jpeg" });
 
-    await telegram.sendPhoto({
-      chat_id: "@channel",
-      photo,
-      caption: "uploaded",
-      has_spoiler: true,
+    await telegram.sendMediaGroup({
+      chat_id: "@fixture",
+      media: [
+        { type: "photo", media: photo, thumbnail: thumb, caption: "local" },
+        { type: "photo", media: "https://example.com/remote.png" },
+      ],
     });
 
     const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
     expect(init.headers).toBeUndefined();
     expect(init.body).toBeInstanceOf(FormData);
-
     const form = init.body as FormData;
-    const formPhoto = form.get("photo");
-    expect(form.get("chat_id")).toBe("@channel");
-    expect(form.get("caption")).toBe("uploaded");
-    expect(form.get("has_spoiler")).toBe("true");
-    expect(formPhoto).toBeInstanceOf(Blob);
-    expect((formPhoto as Blob).type).toBe("image/png");
-    expect(await (formPhoto as Blob).text()).toBe("image bytes");
+    expect(form.get("chat_id")).toBe("@fixture");
+    expect(form.get("media_0_media")).toBeInstanceOf(Blob);
+    expect(form.get("media_0_thumbnail")).toBeInstanceOf(Blob);
+    expect(JSON.parse(String(form.get("media")))).toEqual([
+      {
+        type: "photo",
+        media: "attach://media_0_media",
+        thumbnail: "attach://media_0_thumbnail",
+        caption: "local",
+      },
+      { type: "photo", media: "https://example.com/remote.png" },
+    ]);
   });
 
   it("surfaces Telegram error responses", async () => {
-    const errorBody = {
-      ok: false,
-      error_code: 400,
-      description: "Bad Request: chat not found",
-    };
     const mockFetch = vi.fn().mockResolvedValue(
-      new Response(JSON.stringify(errorBody), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      })
+      new Response(
+        JSON.stringify({
+          ok: false,
+          error_code: 400,
+          description: "Bad Request: chat not found",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      )
     );
-    const telegram = createTelegram({
-      botToken: "123456:ABC-DEF",
-      fetch: mockFetch,
-    });
+    const telegram = createTelegram({ botToken: "test", fetch: mockFetch });
 
-    try {
-      await telegram.sendMessage({
-        chat_id: 42,
-        text: "hello",
-      });
-    } catch (error) {
-      expect(error).toBeInstanceOf(TelegramError);
-      expect(error).toMatchObject({
-        status: 400,
-        code: "400",
-        body: errorBody,
-      });
-      expect((error as Error).message).toBe(
-        "Telegram API error 400: Bad Request: chat not found"
-      );
-      return;
-    }
-
-    throw new Error("Expected TelegramError");
+    await expect(
+      telegram.sendMessage({ chat_id: 42, text: "hello" })
+    ).rejects.toMatchObject({
+      name: "TelegramError",
+      status: 400,
+      code: "400",
+    } satisfies Partial<TelegramError>);
   });
 });

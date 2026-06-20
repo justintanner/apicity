@@ -45,6 +45,7 @@ const SENSITIVE_REQUEST_HEADER_NAMES = new Set([
   "xi-api-key",
   "x-goog-api-key",
   "x-amz-security-token",
+  "x-telegram-bot-api-secret-token",
   "poly-api-key",
   "poly-passphrase",
   "poly-signature",
@@ -72,6 +73,32 @@ const SENSITIVE_RESPONSE_HEADER_NAMES = new Set([
   "x-mbx-uuid",
   "x-request-id",
 ]);
+
+const TELEGRAM_BOT_URL_RE = /(https:\/\/api\.telegram\.org\/bot)[^/?#"\\\s]+/g;
+const TELEGRAM_REDACT_VALUE_KEYS = new Set([
+  "credentials",
+  "encryptedcredentials",
+  "invoicepayload",
+  "orderinfo",
+  "passportdata",
+  "payload",
+  "providerdata",
+  "providerpaymentchargeid",
+  "providertoken",
+  "secret",
+  "secrettoken",
+  "securedata",
+  "shippingaddress",
+  "telegrampaymentchargeid",
+]);
+const TELEGRAM_REDACT_PASSPORT_ERROR_KEYS = new Set([
+  "datahash",
+  "elementhash",
+  "elementhashes",
+  "filehash",
+  "filehashes",
+]);
+const TELEGRAM_REDACT_FILE_KEYS = new Set(["fileid", "fileuniqueid"]);
 
 function normalizedHeaderName(name: string | undefined): string {
   return (name ?? "").toLowerCase().replace(/_/g, "-");
@@ -195,6 +222,120 @@ function isPolymarketUrl(url: string | undefined): boolean {
 
 function normalizedObjectKey(key: string): string {
   return key.toLowerCase().replace(/[-_]/g, "");
+}
+
+function redactTelegramUrlSecrets(value: string): string {
+  return value.replace(TELEGRAM_BOT_URL_RE, "$1***");
+}
+
+function isTelegramBotApiUrl(url: string | undefined): boolean {
+  if (!url) return false;
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === "https:" &&
+      parsed.hostname === "api.telegram.org" &&
+      parsed.pathname.startsWith("/bot")
+    );
+  } catch {
+    return /https:\/\/api\.telegram\.org\/bot/i.test(url);
+  }
+}
+
+function shouldRedactTelegramJsonKey(key: string | undefined): boolean {
+  if (!key) return false;
+  const normalized = normalizedObjectKey(key);
+  return (
+    TELEGRAM_REDACT_VALUE_KEYS.has(normalized) ||
+    TELEGRAM_REDACT_PASSPORT_ERROR_KEYS.has(normalized) ||
+    TELEGRAM_REDACT_FILE_KEYS.has(normalized)
+  );
+}
+
+function redactTelegramJsonValue(
+  value: unknown,
+  key?: string
+): { value: unknown; redacted: boolean } {
+  if (shouldRedactTelegramJsonKey(key)) {
+    return {
+      value: REDACTED_HAR_VALUE,
+      redacted: value !== REDACTED_HAR_VALUE,
+    };
+  }
+
+  if (typeof value === "string") {
+    const redactedValue = redactTelegramUrlSecrets(value);
+    return { value: redactedValue, redacted: redactedValue !== value };
+  }
+
+  if (Array.isArray(value)) {
+    let redacted = false;
+    const values = value.map((item) => {
+      const result = redactTelegramJsonValue(item);
+      redacted ||= result.redacted;
+      return result.value;
+    });
+    return { value: values, redacted };
+  }
+
+  if (value === null || typeof value !== "object") {
+    return { value, redacted: false };
+  }
+
+  let redacted = false;
+  const out: Record<string, unknown> = {};
+  for (const [childKey, childValue] of Object.entries(
+    value as Record<string, unknown>
+  )) {
+    const result = redactTelegramJsonValue(childValue, childKey);
+    redacted ||= result.redacted;
+    out[childKey] = result.value;
+  }
+  return { value: out, redacted };
+}
+
+function redactTelegramJsonText(text: string): string {
+  try {
+    const parsed = JSON.parse(text) as unknown;
+    const result = redactTelegramJsonValue(parsed);
+    if (!result.redacted) return text;
+    return JSON.stringify(result.value) + (text.endsWith("\n") ? "\n" : "");
+  } catch {
+    return redactTelegramUrlSecrets(text)
+      .replace(
+        /("(?:secret_token|provider_token|payload|invoice_payload|provider_data)"\s*:\s*")[^"]*(")/gi,
+        "$1***$2"
+      )
+      .replace(
+        /("(?:telegram_payment_charge_id|provider_payment_charge_id)"\s*:\s*")[^"]*(")/gi,
+        "$1***$2"
+      )
+      .replace(
+        /("(?:file_id|file_unique_id|data_hash|file_hash|element_hash)"\s*:\s*")[^"]*(")/gi,
+        "$1***$2"
+      );
+  }
+}
+
+function scrubTelegramArtifacts(recording: HarRecordingLike): void {
+  const requestUrl = recording.request?.url;
+  const isTelegram = isTelegramBotApiUrl(requestUrl);
+
+  if (recording.request?.url) {
+    recording.request.url = redactTelegramUrlSecrets(recording.request.url);
+  }
+
+  if (!isTelegram) return;
+
+  const requestText = recording.request?.postData?.text;
+  if (typeof requestText === "string" && requestText.length > 0) {
+    writeRequestPostDataText(recording, redactTelegramJsonText(requestText));
+  }
+
+  const responseText = recording.response?.content?.text;
+  if (typeof responseText === "string" && responseText.length > 0) {
+    writeResponseContentText(recording, redactTelegramJsonText(responseText));
+  }
 }
 
 function objectLooksLikeApiCredentials(
@@ -358,5 +499,6 @@ export function scrubSensitiveRecording(recording: HarRecordingLike): void {
   scrubSensitiveRequestHeaders(recording.request?.headers);
   scrubRequestCookies(recording.request?.cookies);
   scrubSensitiveResponse(recording);
+  scrubTelegramArtifacts(recording);
   scrubPolymarketAuthArtifacts(recording);
 }

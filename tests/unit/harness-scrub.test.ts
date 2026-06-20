@@ -174,6 +174,118 @@ function collectCreateApiKeyIdLeaks(
   return leaks;
 }
 
+const TELEGRAM_SENSITIVE_JSON_KEYS = new Set([
+  "credentials",
+  "data_hash",
+  "element_hash",
+  "element_hashes",
+  "file_hash",
+  "file_hashes",
+  "file_id",
+  "file_unique_id",
+  "invoice_payload",
+  "order_info",
+  "passport_data",
+  "payload",
+  "provider_data",
+  "provider_payment_charge_id",
+  "provider_token",
+  "secret",
+  "secret_token",
+  "secure_data",
+  "shipping_address",
+  "telegram_payment_charge_id",
+]);
+
+function collectTelegramSensitiveJsonLeaks(
+  value: unknown,
+  location: string
+): string[] {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) =>
+      collectTelegramSensitiveJsonLeaks(item, `${location}[${index}]`)
+    );
+  }
+  if (value === null || typeof value !== "object") {
+    return [];
+  }
+
+  const leaks: string[] = [];
+  for (const [key, item] of Object.entries(value)) {
+    const childLocation = `${location}.${key}`;
+    if (TELEGRAM_SENSITIVE_JSON_KEYS.has(key) && item !== REDACTED_HAR_VALUE) {
+      leaks.push(childLocation);
+      continue;
+    }
+    leaks.push(...collectTelegramSensitiveJsonLeaks(item, childLocation));
+  }
+  return leaks;
+}
+
+function collectTelegramFixtureLeaks(dir: string): string[] {
+  const leaks: string[] = [];
+
+  for (const file of collectRecordingHars(dir)) {
+    const raw = readFileSync(file, "utf8");
+    const relativePath = path.relative(process.cwd(), file);
+    const har = JSON.parse(raw) as FixtureHar & {
+      log?: {
+        entries?: Array<
+          FixtureHarEntry & {
+            request?: {
+              url?: string;
+              headers?: FixtureHarHeader[];
+              postData?: { text?: string };
+            };
+          }
+        >;
+      };
+    };
+
+    if (/https:\/\/api\.telegram\.org\/bot(?!\*\*\*)[^/"\\]+/i.test(raw)) {
+      leaks.push(`${relativePath} contains raw Telegram bot token URL`);
+    }
+
+    for (const [entryIndex, entry] of (har.log?.entries ?? []).entries()) {
+      for (const header of entry.request?.headers ?? []) {
+        if (
+          header.name?.toLowerCase() === "x-telegram-bot-api-secret-token" &&
+          header.value !== REDACTED_HAR_VALUE
+        ) {
+          leaks.push(
+            `${relativePath} entry ${entryIndex} ` +
+              "request header X-Telegram-Bot-Api-Secret-Token"
+          );
+        }
+      }
+
+      const requestText = entry.request?.postData?.text;
+      if (requestText) {
+        const requestBody = JSON.parse(requestText) as unknown;
+        leaks.push(
+          ...collectTelegramSensitiveJsonLeaks(
+            requestBody,
+            `${relativePath} entry ${entryIndex} request`
+          )
+        );
+      }
+
+      const responseText = entry.response?.content?.text;
+      if (responseText) {
+        const responseBody = JSON.parse(responseText) as unknown;
+        leaks.push(
+          ...collectTelegramSensitiveJsonLeaks(
+            responseBody,
+            `${relativePath} entry ${entryIndex} response`
+          )
+        );
+      }
+    }
+  }
+
+  return leaks;
+}
+
 describe("HAR response scrubber", () => {
   it("drops response cookies and sensitive response headers", () => {
     const recording: HarRecordingLike = {
@@ -397,6 +509,15 @@ describe("HAR response scrubber", () => {
     const recordingsDir = path.resolve(import.meta.dirname, "../recordings");
 
     expect(collectResponseCookieLeaks(recordingsDir)).toEqual([]);
+  });
+
+  it("keeps committed Telegram fixtures free of auth and payload leaks", () => {
+    const recordingsDir = path.resolve(
+      import.meta.dirname,
+      "../recordings/telegram_3882847574"
+    );
+
+    expect(collectTelegramFixtureLeaks(recordingsDir)).toEqual([]);
   });
 
   it("keeps committed Kie session cookie fixtures redacted", () => {

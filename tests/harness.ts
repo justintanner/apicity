@@ -63,6 +63,15 @@ const REQUEST_POST_DATA_SECRET_KEYS = new Set([
   "policy",
   "signature",
 ]);
+const TELEGRAM_REQUEST_POST_DATA_SECRET_KEYS = new Set([
+  "data_hash",
+  "file_hash",
+  "file_hashes",
+  "payload",
+  "provider_token",
+  "secret_token",
+  "telegram_payment_charge_id",
+]);
 const RESPONSE_ACCOUNT_METADATA_KEYS = new Set(["create_api_key_id"]);
 const DATA_URL_BASE64_RE = /^data:([^;,]+)?(?:;[^,]*)*;base64,([\s\S]*)$/i;
 const LONG_BASE64_CHARS = 1024;
@@ -144,20 +153,21 @@ function redactResponseTextSecrets(text: string): string {
 
 function redactRequestPostDataValueSecrets(
   value: unknown,
-  key?: string
+  key?: string,
+  secretKeys: Set<string> = REQUEST_POST_DATA_SECRET_KEYS
 ): { value: unknown; redacted: boolean } {
-  if (
-    key &&
-    REQUEST_POST_DATA_SECRET_KEYS.has(key.toLowerCase()) &&
-    typeof value === "string"
-  ) {
+  if (key && secretKeys.has(key.toLowerCase()) && typeof value === "string") {
     return { value: "***", redacted: true };
   }
 
   if (Array.isArray(value)) {
     let redacted = false;
     const next = value.map((item) => {
-      const result = redactRequestPostDataValueSecrets(item);
+      const result = redactRequestPostDataValueSecrets(
+        item,
+        undefined,
+        secretKeys
+      );
       redacted ||= result.redacted;
       return result.value;
     });
@@ -173,7 +183,11 @@ function redactRequestPostDataValueSecrets(
   for (const [childKey, childValue] of Object.entries(
     value as Record<string, unknown>
   )) {
-    const result = redactRequestPostDataValueSecrets(childValue, childKey);
+    const result = redactRequestPostDataValueSecrets(
+      childValue,
+      childKey,
+      secretKeys
+    );
     redacted ||= result.redacted;
     next[childKey] = result.value;
   }
@@ -186,10 +200,20 @@ function redactRequestPostDataTextSecrets(
   const postData = recording.request?.postData;
   const text = postData?.text;
   if (typeof text !== "string") return;
+  const secretKeys = new Set(REQUEST_POST_DATA_SECRET_KEYS);
+  if (recording.request?.url?.includes("api.telegram.org/bot")) {
+    for (const key of TELEGRAM_REQUEST_POST_DATA_SECRET_KEYS) {
+      secretKeys.add(key);
+    }
+  }
 
   try {
     const parsed = JSON.parse(text) as unknown;
-    const result = redactRequestPostDataValueSecrets(parsed);
+    const result = redactRequestPostDataValueSecrets(
+      parsed,
+      undefined,
+      secretKeys
+    );
     if (result.redacted) {
       postData.text = JSON.stringify(result.value);
     }

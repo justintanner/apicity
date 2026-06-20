@@ -36,7 +36,7 @@ binance	eapi.v1.blockTrades	GET	https://eapi.binance.com/eapi/v1/blockTrades{que
 binance	eapi.v1.index	GET	https://eapi.binance.com/eapi/v1/index{query}	https://developers.binance.com/docs/derivatives/options-trading/market-data/Symbol-Price-Ticker
 binance	eapi.v1.klines	GET	https://eapi.binance.com/eapi/v1/klines{query}	https://developers.binance.com/docs/derivatives/options-trading/market-data/Kline-Candlestick-Data
 binance	eapi.v1.mark	GET	https://eapi.binance.com/eapi/v1/mark{query}	https://developers.binance.com/docs/derivatives/options-trading/market-data/Option-Mark-Price
-binance	dapi.v1.ping	GET	https://dapi.binance.com/dapi/v1/ping	https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api
+binance	dapi.v1.ping	GET	https://dapi.binance.com/dapi/v1/ping	https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Test-Connectivity
 binance	dapi.v1.time	GET	https://dapi.binance.com/dapi/v1/time	https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Check-Server-time
 binance	dapi.v1.exchangeInfo	GET	https://dapi.binance.com/dapi/v1/exchangeInfo	https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Exchange-Information
 binance	dapi.v1.depth	GET	https://dapi.binance.com/dapi/v1/depth{query}	https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Order-Book

@@ -1,7 +1,7 @@
 {
   "name": "@apicity/binance",
   "version": "0.4.3",
-  "description": "Binance Spot, Options, and COIN-M Futures REST API provider.",
+  "description": "Binance Spot, USD-M Futures, COIN-M Futures, and Options public REST API provider.",
   "license": "MIT",
   "repository": {
     "type": "git",

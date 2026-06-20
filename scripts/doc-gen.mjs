@@ -245,12 +245,67 @@ const PROVIDER_NOTES = new Map([
   [
     "binance",
     [
-      "COIN-M Futures coverage is limited to public market-data reads.",
+      "Binance coverage is focused on public REST market-data reads across",
+      "Spot, USD-M Futures, COIN-M Futures, and Options.",
       "The COIN-M Old Trades Lookup endpoint (`GET /dapi/v1/historicalTrades`) is intentionally not exposed because Binance requires an API key for it.",
-      "Signed trade, account, and user endpoints are out of scope.",
+      "USD-M Old Trades Lookup (`GET /fapi/v1/historicalTrades`), signed trade, account, and user endpoints are out of scope.",
     ].join(" "),
   ],
 ]);
+
+function renderBinancePublicDataGuide() {
+  return [
+    "## Public Market Data",
+    "",
+    "`createBinance()` works without credentials for the public market-data",
+    "surface. Pass `apiKey` only when you intentionally call a Binance",
+    "endpoint that is documented as API-key or `MARKET_DATA`; signed trade,",
+    "account, and user-data-stream endpoints are not exposed by this package.",
+    "",
+    "| Surface | Namespace | Default host | Auth |",
+    "|---------|-----------|--------------|------|",
+    "| Spot REST | `binance.api.v3.*` | `https://api.binance.com` | No key for public market data; optional `apiKey` header when supplied |",
+    "| Spot market-data-only REST | `binance.api.v3.*` with `spotBaseURL` | `https://data-api.binance.vision` | No key |",
+    "| USD-M Futures | `binance.fapi.v1.*`, `binance.fapi.v2.*`, `binance.futures.data.*` | `https://fapi.binance.com` | No key for exposed endpoints |",
+    "| COIN-M Futures | `binance.dapi.v1.*`, `binance.coinMFutures.data.*` | `https://dapi.binance.com` | No key for exposed endpoints |",
+    "| Options | `binance.eapi.v1.*` | `https://eapi.binance.com` | No key for exposed endpoints |",
+    "",
+    "To send existing Spot public calls to Binance's market-data-only host,",
+    "override the Spot base URL. This keeps the same `api.v3` method paths",
+    "while changing the host:",
+    "",
+    "```typescript",
+    "const binance = createBinance({",
+    '  spotBaseURL: "https://data-api.binance.vision",',
+    "});",
+    "",
+    "const exchangeInfo = await binance.api.v3.exchangeInfo({",
+    '  symbol: "BTCUSDT",',
+    "  showPermissionSets: false,",
+    "});",
+    "```",
+    "",
+    "You can also configure every public host explicitly:",
+    "",
+    "```typescript",
+    "const binance = createBinance({",
+    "  publicBaseURLs: {",
+    '    spot: "https://data-api.binance.vision",',
+    '    spotData: "https://data-api.binance.vision",',
+    '    fapi: "https://fapi.binance.com",',
+    '    dapi: "https://dapi.binance.com",',
+    '    eapi: "https://eapi.binance.com",',
+    "  },",
+    "});",
+    "```",
+    "",
+    "`binance.public.*` contains explicit no-auth smoke aliases for each",
+    "public surface, and `binance.public.coinMFutures.*` mirrors the COIN-M",
+    "public REST tree. Use the top-level namespaces above for the full",
+    "implemented market-data surface.",
+    "",
+  ].join("\n");
+}
 
 function renderEndpointDetails(ep, providerName, docsUrl) {
   const method = ep.method ?? "";
@@ -2332,6 +2387,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
   if (providerName === "x") {
     sections.push(renderXSetup());
     sections.push(renderXExample());
+  }
+
+  if (providerName === "binance") {
+    sections.push(renderBinancePublicDataGuide());
   }
 
   if (providerName === "xai") {

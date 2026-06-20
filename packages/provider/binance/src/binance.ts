@@ -1684,7 +1684,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
 
   // sig-ok: intentional
   // GET https://dapi.binance.com/dapi/v1/ping
-  // Docs: https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api
+  // Docs: https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Test-Connectivity
   const coinMPing = Object.assign(
     async (signal?: AbortSignal): Promise<BinancePingResponse> => {
       return makeJsonRequest<BinancePingResponse>(

@@ -1,6 +1,36 @@
 import { TelegramError } from "./types";
 import type {
+  TelegramCopyMessageRequest,
+  TelegramCopyMessageResponse,
+  TelegramCopyMessagesRequest,
+  TelegramCopyMessagesResponse,
+  TelegramDeleteAllMessageReactionsRequest,
+  TelegramDeleteAllMessageReactionsResponse,
+  TelegramDeleteMessageReactionRequest,
+  TelegramDeleteMessageReactionResponse,
+  TelegramDeleteMessageRequest,
+  TelegramDeleteMessageResponse,
+  TelegramDeleteMessagesRequest,
+  TelegramDeleteMessagesResponse,
+  TelegramEditMessageCaptionRequest,
+  TelegramEditMessageCaptionResponse,
+  TelegramEditMessageChecklistRequest,
+  TelegramEditMessageChecklistResponse,
+  TelegramEditMessageLiveLocationRequest,
+  TelegramEditMessageLiveLocationResponse,
+  TelegramEditMessageMediaRequest,
+  TelegramEditMessageMediaResponse,
+  TelegramEditMessageReplyMarkupRequest,
+  TelegramEditMessageReplyMarkupResponse,
+  TelegramEditMessageTextRequest,
+  TelegramEditMessageTextResponse,
+  TelegramForwardMessageRequest,
+  TelegramForwardMessageResponse,
+  TelegramForwardMessagesRequest,
+  TelegramForwardMessagesResponse,
   TelegramOptions,
+  TelegramPinChatMessageRequest,
+  TelegramPinChatMessageResponse,
   TelegramProvider,
   TelegramSendAudioRequest,
   TelegramSendAudioResponse,
@@ -10,12 +40,42 @@ import type {
   TelegramSendPhotoResponse,
   TelegramSendVideoRequest,
   TelegramSendVideoResponse,
+  TelegramSetMessageReactionRequest,
+  TelegramSetMessageReactionResponse,
+  TelegramStopMessageLiveLocationRequest,
+  TelegramStopMessageLiveLocationResponse,
+  TelegramStopPollRequest,
+  TelegramStopPollResponse,
+  TelegramUnpinAllChatMessagesRequest,
+  TelegramUnpinAllChatMessagesResponse,
+  TelegramUnpinChatMessageRequest,
+  TelegramUnpinChatMessageResponse,
 } from "./types";
 import {
+  TelegramCopyMessageRequestSchema,
+  TelegramCopyMessagesRequestSchema,
+  TelegramDeleteAllMessageReactionsRequestSchema,
+  TelegramDeleteMessageReactionRequestSchema,
+  TelegramDeleteMessageRequestSchema,
+  TelegramDeleteMessagesRequestSchema,
+  TelegramEditMessageCaptionRequestSchema,
+  TelegramEditMessageChecklistRequestSchema,
+  TelegramEditMessageLiveLocationRequestSchema,
+  TelegramEditMessageMediaRequestSchema,
+  TelegramEditMessageReplyMarkupRequestSchema,
+  TelegramEditMessageTextRequestSchema,
+  TelegramForwardMessageRequestSchema,
+  TelegramForwardMessagesRequestSchema,
+  TelegramPinChatMessageRequestSchema,
   TelegramSendAudioRequestSchema,
   TelegramSendMessageRequestSchema,
   TelegramSendPhotoRequestSchema,
   TelegramSendVideoRequestSchema,
+  TelegramSetMessageReactionRequestSchema,
+  TelegramStopMessageLiveLocationRequestSchema,
+  TelegramStopPollRequestSchema,
+  TelegramUnpinAllChatMessagesRequestSchema,
+  TelegramUnpinChatMessageRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -202,18 +262,394 @@ export function createTelegram(opts: TelegramOptions): TelegramProvider {
     { schema: TelegramSendAudioRequestSchema }
   );
 
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/forwardMessage
+  // Docs: https://core.telegram.org/bots/api#forwardmessage
+  const forwardMessage = Object.assign(
+    async (
+      req: TelegramForwardMessageRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramForwardMessageResponse> => {
+      return makeRequest<TelegramForwardMessageResponse>(
+        "/forwardMessage",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramForwardMessageRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/forwardMessages
+  // Docs: https://core.telegram.org/bots/api#forwardmessages
+  const forwardMessages = Object.assign(
+    async (
+      req: TelegramForwardMessagesRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramForwardMessagesResponse> => {
+      return makeRequest<TelegramForwardMessagesResponse>(
+        "/forwardMessages",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramForwardMessagesRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/copyMessage
+  // Docs: https://core.telegram.org/bots/api#copymessage
+  const copyMessage = Object.assign(
+    async (
+      req: TelegramCopyMessageRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramCopyMessageResponse> => {
+      return makeRequest<TelegramCopyMessageResponse>(
+        "/copyMessage",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramCopyMessageRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/copyMessages
+  // Docs: https://core.telegram.org/bots/api#copymessages
+  const copyMessages = Object.assign(
+    async (
+      req: TelegramCopyMessagesRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramCopyMessagesResponse> => {
+      return makeRequest<TelegramCopyMessagesResponse>(
+        "/copyMessages",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramCopyMessagesRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/deleteMessage
+  // Docs: https://core.telegram.org/bots/api#deletemessage
+  const deleteMessage = Object.assign(
+    async (
+      req: TelegramDeleteMessageRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramDeleteMessageResponse> => {
+      return makeRequest<TelegramDeleteMessageResponse>(
+        "/deleteMessage",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramDeleteMessageRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/deleteMessages
+  // Docs: https://core.telegram.org/bots/api#deletemessages
+  const deleteMessages = Object.assign(
+    async (
+      req: TelegramDeleteMessagesRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramDeleteMessagesResponse> => {
+      return makeRequest<TelegramDeleteMessagesResponse>(
+        "/deleteMessages",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramDeleteMessagesRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/pinChatMessage
+  // Docs: https://core.telegram.org/bots/api#pinchatmessage
+  const pinChatMessage = Object.assign(
+    async (
+      req: TelegramPinChatMessageRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramPinChatMessageResponse> => {
+      return makeRequest<TelegramPinChatMessageResponse>(
+        "/pinChatMessage",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramPinChatMessageRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/unpinChatMessage
+  // Docs: https://core.telegram.org/bots/api#unpinchatmessage
+  const unpinChatMessage = Object.assign(
+    async (
+      req: TelegramUnpinChatMessageRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramUnpinChatMessageResponse> => {
+      return makeRequest<TelegramUnpinChatMessageResponse>(
+        "/unpinChatMessage",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramUnpinChatMessageRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/unpinAllChatMessages
+  // Docs: https://core.telegram.org/bots/api#unpinallchatmessages
+  const unpinAllChatMessages = Object.assign(
+    async (
+      req: TelegramUnpinAllChatMessagesRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramUnpinAllChatMessagesResponse> => {
+      return makeRequest<TelegramUnpinAllChatMessagesResponse>(
+        "/unpinAllChatMessages",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramUnpinAllChatMessagesRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/editMessageText
+  // Docs: https://core.telegram.org/bots/api#editmessagetext
+  const editMessageText = Object.assign(
+    async (
+      req: TelegramEditMessageTextRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramEditMessageTextResponse> => {
+      return makeRequest<TelegramEditMessageTextResponse>(
+        "/editMessageText",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramEditMessageTextRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/editMessageCaption
+  // Docs: https://core.telegram.org/bots/api#editmessagecaption
+  const editMessageCaption = Object.assign(
+    async (
+      req: TelegramEditMessageCaptionRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramEditMessageCaptionResponse> => {
+      return makeRequest<TelegramEditMessageCaptionResponse>(
+        "/editMessageCaption",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramEditMessageCaptionRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/editMessageMedia
+  // Docs: https://core.telegram.org/bots/api#editmessagemedia
+  const editMessageMedia = Object.assign(
+    async (
+      req: TelegramEditMessageMediaRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramEditMessageMediaResponse> => {
+      return makeRequest<TelegramEditMessageMediaResponse>(
+        "/editMessageMedia",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramEditMessageMediaRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/editMessageLiveLocation
+  // Docs: https://core.telegram.org/bots/api#editmessagelivelocation
+  const editMessageLiveLocation = Object.assign(
+    async (
+      req: TelegramEditMessageLiveLocationRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramEditMessageLiveLocationResponse> => {
+      return makeRequest<TelegramEditMessageLiveLocationResponse>(
+        "/editMessageLiveLocation",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramEditMessageLiveLocationRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/stopMessageLiveLocation
+  // Docs: https://core.telegram.org/bots/api#stopmessagelivelocation
+  const stopMessageLiveLocation = Object.assign(
+    async (
+      req: TelegramStopMessageLiveLocationRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramStopMessageLiveLocationResponse> => {
+      return makeRequest<TelegramStopMessageLiveLocationResponse>(
+        "/stopMessageLiveLocation",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramStopMessageLiveLocationRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/editMessageChecklist
+  // Docs: https://core.telegram.org/bots/api#editmessagechecklist
+  const editMessageChecklist = Object.assign(
+    async (
+      req: TelegramEditMessageChecklistRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramEditMessageChecklistResponse> => {
+      return makeRequest<TelegramEditMessageChecklistResponse>(
+        "/editMessageChecklist",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramEditMessageChecklistRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/editMessageReplyMarkup
+  // Docs: https://core.telegram.org/bots/api#editmessagereplymarkup
+  const editMessageReplyMarkup = Object.assign(
+    async (
+      req: TelegramEditMessageReplyMarkupRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramEditMessageReplyMarkupResponse> => {
+      return makeRequest<TelegramEditMessageReplyMarkupResponse>(
+        "/editMessageReplyMarkup",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramEditMessageReplyMarkupRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/stopPoll
+  // Docs: https://core.telegram.org/bots/api#stoppoll
+  const stopPoll = Object.assign(
+    async (
+      req: TelegramStopPollRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramStopPollResponse> => {
+      return makeRequest<TelegramStopPollResponse>("/stopPoll", req, signal);
+    },
+    { schema: TelegramStopPollRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/setMessageReaction
+  // Docs: https://core.telegram.org/bots/api#setmessagereaction
+  const setMessageReaction = Object.assign(
+    async (
+      req: TelegramSetMessageReactionRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramSetMessageReactionResponse> => {
+      return makeRequest<TelegramSetMessageReactionResponse>(
+        "/setMessageReaction",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramSetMessageReactionRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/deleteMessageReaction
+  // Docs: https://core.telegram.org/bots/api#deletemessagereaction
+  const deleteMessageReaction = Object.assign(
+    async (
+      req: TelegramDeleteMessageReactionRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramDeleteMessageReactionResponse> => {
+      return makeRequest<TelegramDeleteMessageReactionResponse>(
+        "/deleteMessageReaction",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramDeleteMessageReactionRequestSchema }
+  );
+
+  // sig-ok: `bot{token}` is Telegram's auth prefix, not a method namespace.
+  // POST https://api.telegram.org/bot{token}/deleteAllMessageReactions
+  // Docs: https://core.telegram.org/bots/api#deleteallmessagereactions
+  const deleteAllMessageReactions = Object.assign(
+    async (
+      req: TelegramDeleteAllMessageReactionsRequest,
+      signal?: AbortSignal
+    ): Promise<TelegramDeleteAllMessageReactionsResponse> => {
+      return makeRequest<TelegramDeleteAllMessageReactionsResponse>(
+        "/deleteAllMessageReactions",
+        req,
+        signal
+      );
+    },
+    { schema: TelegramDeleteAllMessageReactionsRequestSchema }
+  );
+
   const post = {
+    copyMessage,
+    copyMessages,
+    deleteAllMessageReactions,
+    deleteMessage,
+    deleteMessageReaction,
+    deleteMessages,
+    editMessageCaption,
+    editMessageChecklist,
+    editMessageLiveLocation,
+    editMessageMedia,
+    editMessageReplyMarkup,
+    editMessageText,
+    forwardMessage,
+    forwardMessages,
+    pinChatMessage,
     sendMessage,
     sendPhoto,
     sendVideo,
     sendAudio,
+    setMessageReaction,
+    stopMessageLiveLocation,
+    stopPoll,
+    unpinAllChatMessages,
+    unpinChatMessage,
   };
 
   return attachExamples({
+    copyMessage,
+    copyMessages,
+    deleteAllMessageReactions,
+    deleteMessage,
+    deleteMessageReaction,
+    deleteMessages,
+    editMessageCaption,
+    editMessageChecklist,
+    editMessageLiveLocation,
+    editMessageMedia,
+    editMessageReplyMarkup,
+    editMessageText,
+    forwardMessage,
+    forwardMessages,
+    pinChatMessage,
     sendMessage,
     sendPhoto,
     sendVideo,
     sendAudio,
+    setMessageReaction,
+    stopMessageLiveLocation,
+    stopPoll,
+    unpinAllChatMessages,
+    unpinChatMessage,
     post,
   });
 }

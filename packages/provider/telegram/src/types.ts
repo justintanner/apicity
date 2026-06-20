@@ -1,18 +1,60 @@
 import type { z } from "zod";
 import type {
+  TelegramCopyMessageRequest,
+  TelegramCopyMessagesRequest,
+  TelegramDeleteAllMessageReactionsRequest,
+  TelegramDeleteMessageReactionRequest,
+  TelegramDeleteMessageRequest,
+  TelegramDeleteMessagesRequest,
+  TelegramEditMessageCaptionRequest,
+  TelegramEditMessageChecklistRequest,
+  TelegramEditMessageLiveLocationRequest,
+  TelegramEditMessageMediaRequest,
+  TelegramEditMessageReplyMarkupRequest,
+  TelegramEditMessageTextRequest,
+  TelegramForwardMessageRequest,
+  TelegramForwardMessagesRequest,
+  TelegramPinChatMessageRequest,
   TelegramSendAudioRequest,
   TelegramSendMessageRequest,
   TelegramSendPhotoRequest,
   TelegramSendVideoRequest,
+  TelegramSetMessageReactionRequest,
+  TelegramStopMessageLiveLocationRequest,
+  TelegramStopPollRequest,
+  TelegramUnpinAllChatMessagesRequest,
+  TelegramUnpinChatMessageRequest,
 } from "./zod";
 
 export type {
+  TelegramCopyMessageRequest,
+  TelegramCopyMessagesRequest,
+  TelegramDeleteAllMessageReactionsRequest,
+  TelegramDeleteMessageReactionRequest,
+  TelegramDeleteMessageRequest,
+  TelegramDeleteMessagesRequest,
+  TelegramEditMessageCaptionRequest,
+  TelegramEditMessageChecklistRequest,
+  TelegramEditMessageLiveLocationRequest,
+  TelegramEditMessageMediaRequest,
+  TelegramEditMessageReplyMarkupRequest,
+  TelegramEditMessageTextRequest,
+  TelegramForwardMessageRequest,
+  TelegramForwardMessagesRequest,
+  TelegramInputChecklist,
+  TelegramInputMedia,
   TelegramInputFile,
   TelegramOptions,
+  TelegramPinChatMessageRequest,
+  TelegramSetMessageReactionRequest,
   TelegramSendAudioRequest,
   TelegramSendMessageRequest,
   TelegramSendPhotoRequest,
   TelegramSendVideoRequest,
+  TelegramStopMessageLiveLocationRequest,
+  TelegramStopPollRequest,
+  TelegramUnpinAllChatMessagesRequest,
+  TelegramUnpinChatMessageRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -79,58 +121,241 @@ export interface TelegramMessage {
   [key: string]: unknown;
 }
 
+export interface TelegramMessageId {
+  message_id: number;
+}
+
+export interface TelegramPoll {
+  id: string;
+  question: string;
+  [key: string]: unknown;
+}
+
 export type TelegramSendMessageResponse = TelegramApiResponse<TelegramMessage>;
 export type TelegramSendPhotoResponse = TelegramApiResponse<TelegramMessage>;
 export type TelegramSendVideoResponse = TelegramApiResponse<TelegramMessage>;
 export type TelegramSendAudioResponse = TelegramApiResponse<TelegramMessage>;
+export type TelegramForwardMessageResponse =
+  TelegramApiResponse<TelegramMessage>;
+export type TelegramForwardMessagesResponse = TelegramApiResponse<
+  TelegramMessageId[]
+>;
+export type TelegramCopyMessageResponse =
+  TelegramApiResponse<TelegramMessageId>;
+export type TelegramCopyMessagesResponse = TelegramApiResponse<
+  TelegramMessageId[]
+>;
+export type TelegramDeleteMessageResponse = TelegramApiResponse<true>;
+export type TelegramDeleteMessagesResponse = TelegramApiResponse<true>;
+export type TelegramPinChatMessageResponse = TelegramApiResponse<true>;
+export type TelegramUnpinChatMessageResponse = TelegramApiResponse<true>;
+export type TelegramUnpinAllChatMessagesResponse = TelegramApiResponse<true>;
+export type TelegramEditMessageTextResponse = TelegramApiResponse<
+  TelegramMessage | true
+>;
+export type TelegramEditMessageCaptionResponse = TelegramApiResponse<
+  TelegramMessage | true
+>;
+export type TelegramEditMessageMediaResponse = TelegramApiResponse<
+  TelegramMessage | true
+>;
+export type TelegramEditMessageLiveLocationResponse = TelegramApiResponse<
+  TelegramMessage | true
+>;
+export type TelegramStopMessageLiveLocationResponse = TelegramApiResponse<
+  TelegramMessage | true
+>;
+export type TelegramEditMessageChecklistResponse =
+  TelegramApiResponse<TelegramMessage>;
+export type TelegramEditMessageReplyMarkupResponse = TelegramApiResponse<
+  TelegramMessage | true
+>;
+export type TelegramStopPollResponse = TelegramApiResponse<TelegramPoll>;
+export type TelegramSetMessageReactionResponse = TelegramApiResponse<true>;
+export type TelegramDeleteMessageReactionResponse = TelegramApiResponse<true>;
+export type TelegramDeleteAllMessageReactionsResponse =
+  TelegramApiResponse<true>;
 
 // -- Method interfaces -------------------------------------------------------
 
-export interface TelegramSendMessageMethod {
-  (
-    req: TelegramSendMessageRequest,
-    signal?: AbortSignal
-  ): Promise<TelegramSendMessageResponse>;
-  schema: z.ZodType<TelegramSendMessageRequest>;
+export interface TelegramMethod<TRequest, TResponse> {
+  (req: TRequest, signal?: AbortSignal): Promise<TResponse>;
+  schema: z.ZodType<TRequest>;
 }
 
-export interface TelegramSendPhotoMethod {
-  (
-    req: TelegramSendPhotoRequest,
-    signal?: AbortSignal
-  ): Promise<TelegramSendPhotoResponse>;
-  schema: z.ZodType<TelegramSendPhotoRequest>;
-}
+export type TelegramSendMessageMethod = TelegramMethod<
+  TelegramSendMessageRequest,
+  TelegramSendMessageResponse
+>;
 
-export interface TelegramSendVideoMethod {
-  (
-    req: TelegramSendVideoRequest,
-    signal?: AbortSignal
-  ): Promise<TelegramSendVideoResponse>;
-  schema: z.ZodType<TelegramSendVideoRequest>;
-}
+export type TelegramSendPhotoMethod = TelegramMethod<
+  TelegramSendPhotoRequest,
+  TelegramSendPhotoResponse
+>;
 
-export interface TelegramSendAudioMethod {
-  (
-    req: TelegramSendAudioRequest,
-    signal?: AbortSignal
-  ): Promise<TelegramSendAudioResponse>;
-  schema: z.ZodType<TelegramSendAudioRequest>;
-}
+export type TelegramSendVideoMethod = TelegramMethod<
+  TelegramSendVideoRequest,
+  TelegramSendVideoResponse
+>;
+
+export type TelegramSendAudioMethod = TelegramMethod<
+  TelegramSendAudioRequest,
+  TelegramSendAudioResponse
+>;
+
+export type TelegramForwardMessageMethod = TelegramMethod<
+  TelegramForwardMessageRequest,
+  TelegramForwardMessageResponse
+>;
+
+export type TelegramForwardMessagesMethod = TelegramMethod<
+  TelegramForwardMessagesRequest,
+  TelegramForwardMessagesResponse
+>;
+
+export type TelegramCopyMessageMethod = TelegramMethod<
+  TelegramCopyMessageRequest,
+  TelegramCopyMessageResponse
+>;
+
+export type TelegramCopyMessagesMethod = TelegramMethod<
+  TelegramCopyMessagesRequest,
+  TelegramCopyMessagesResponse
+>;
+
+export type TelegramDeleteMessageMethod = TelegramMethod<
+  TelegramDeleteMessageRequest,
+  TelegramDeleteMessageResponse
+>;
+
+export type TelegramDeleteMessagesMethod = TelegramMethod<
+  TelegramDeleteMessagesRequest,
+  TelegramDeleteMessagesResponse
+>;
+
+export type TelegramPinChatMessageMethod = TelegramMethod<
+  TelegramPinChatMessageRequest,
+  TelegramPinChatMessageResponse
+>;
+
+export type TelegramUnpinChatMessageMethod = TelegramMethod<
+  TelegramUnpinChatMessageRequest,
+  TelegramUnpinChatMessageResponse
+>;
+
+export type TelegramUnpinAllChatMessagesMethod = TelegramMethod<
+  TelegramUnpinAllChatMessagesRequest,
+  TelegramUnpinAllChatMessagesResponse
+>;
+
+export type TelegramEditMessageTextMethod = TelegramMethod<
+  TelegramEditMessageTextRequest,
+  TelegramEditMessageTextResponse
+>;
+
+export type TelegramEditMessageCaptionMethod = TelegramMethod<
+  TelegramEditMessageCaptionRequest,
+  TelegramEditMessageCaptionResponse
+>;
+
+export type TelegramEditMessageMediaMethod = TelegramMethod<
+  TelegramEditMessageMediaRequest,
+  TelegramEditMessageMediaResponse
+>;
+
+export type TelegramEditMessageLiveLocationMethod = TelegramMethod<
+  TelegramEditMessageLiveLocationRequest,
+  TelegramEditMessageLiveLocationResponse
+>;
+
+export type TelegramStopMessageLiveLocationMethod = TelegramMethod<
+  TelegramStopMessageLiveLocationRequest,
+  TelegramStopMessageLiveLocationResponse
+>;
+
+export type TelegramEditMessageChecklistMethod = TelegramMethod<
+  TelegramEditMessageChecklistRequest,
+  TelegramEditMessageChecklistResponse
+>;
+
+export type TelegramEditMessageReplyMarkupMethod = TelegramMethod<
+  TelegramEditMessageReplyMarkupRequest,
+  TelegramEditMessageReplyMarkupResponse
+>;
+
+export type TelegramStopPollMethod = TelegramMethod<
+  TelegramStopPollRequest,
+  TelegramStopPollResponse
+>;
+
+export type TelegramSetMessageReactionMethod = TelegramMethod<
+  TelegramSetMessageReactionRequest,
+  TelegramSetMessageReactionResponse
+>;
+
+export type TelegramDeleteMessageReactionMethod = TelegramMethod<
+  TelegramDeleteMessageReactionRequest,
+  TelegramDeleteMessageReactionResponse
+>;
+
+export type TelegramDeleteAllMessageReactionsMethod = TelegramMethod<
+  TelegramDeleteAllMessageReactionsRequest,
+  TelegramDeleteAllMessageReactionsResponse
+>;
 
 // -- Provider ----------------------------------------------------------------
 
 export interface TelegramPostNamespace {
+  copyMessage: TelegramCopyMessageMethod;
+  copyMessages: TelegramCopyMessagesMethod;
+  deleteAllMessageReactions: TelegramDeleteAllMessageReactionsMethod;
+  deleteMessage: TelegramDeleteMessageMethod;
+  deleteMessageReaction: TelegramDeleteMessageReactionMethod;
+  deleteMessages: TelegramDeleteMessagesMethod;
+  editMessageCaption: TelegramEditMessageCaptionMethod;
+  editMessageChecklist: TelegramEditMessageChecklistMethod;
+  editMessageLiveLocation: TelegramEditMessageLiveLocationMethod;
+  editMessageMedia: TelegramEditMessageMediaMethod;
+  editMessageReplyMarkup: TelegramEditMessageReplyMarkupMethod;
+  editMessageText: TelegramEditMessageTextMethod;
+  forwardMessage: TelegramForwardMessageMethod;
+  forwardMessages: TelegramForwardMessagesMethod;
+  pinChatMessage: TelegramPinChatMessageMethod;
   sendMessage: TelegramSendMessageMethod;
   sendPhoto: TelegramSendPhotoMethod;
   sendVideo: TelegramSendVideoMethod;
   sendAudio: TelegramSendAudioMethod;
+  setMessageReaction: TelegramSetMessageReactionMethod;
+  stopMessageLiveLocation: TelegramStopMessageLiveLocationMethod;
+  stopPoll: TelegramStopPollMethod;
+  unpinAllChatMessages: TelegramUnpinAllChatMessagesMethod;
+  unpinChatMessage: TelegramUnpinChatMessageMethod;
 }
 
 export interface TelegramProvider {
+  copyMessage: TelegramCopyMessageMethod;
+  copyMessages: TelegramCopyMessagesMethod;
+  deleteAllMessageReactions: TelegramDeleteAllMessageReactionsMethod;
+  deleteMessage: TelegramDeleteMessageMethod;
+  deleteMessageReaction: TelegramDeleteMessageReactionMethod;
+  deleteMessages: TelegramDeleteMessagesMethod;
+  editMessageCaption: TelegramEditMessageCaptionMethod;
+  editMessageChecklist: TelegramEditMessageChecklistMethod;
+  editMessageLiveLocation: TelegramEditMessageLiveLocationMethod;
+  editMessageMedia: TelegramEditMessageMediaMethod;
+  editMessageReplyMarkup: TelegramEditMessageReplyMarkupMethod;
+  editMessageText: TelegramEditMessageTextMethod;
+  forwardMessage: TelegramForwardMessageMethod;
+  forwardMessages: TelegramForwardMessagesMethod;
+  pinChatMessage: TelegramPinChatMessageMethod;
   sendMessage: TelegramSendMessageMethod;
   sendPhoto: TelegramSendPhotoMethod;
   sendVideo: TelegramSendVideoMethod;
   sendAudio: TelegramSendAudioMethod;
+  setMessageReaction: TelegramSetMessageReactionMethod;
+  stopMessageLiveLocation: TelegramStopMessageLiveLocationMethod;
+  stopPoll: TelegramStopPollMethod;
+  unpinAllChatMessages: TelegramUnpinAllChatMessagesMethod;
+  unpinChatMessage: TelegramUnpinChatMessageMethod;
   post: TelegramPostNamespace;
 }

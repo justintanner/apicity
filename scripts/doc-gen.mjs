@@ -304,6 +304,11 @@ function renderBinancePublicDataGuide() {
     "public REST tree. Use the top-level namespaces above for the full",
     "implemented market-data surface.",
     "",
+    "The `https://data.binance.vision` static archive serves public ZIP and",
+    "checksum files for historical Spot, USD-M, and COIN-M datasets. It is",
+    "intentionally outside this JSON REST provider; archive downloads need",
+    "separate binary/checksum handling and tests.",
+    "",
   ].join("\n");
 }
 

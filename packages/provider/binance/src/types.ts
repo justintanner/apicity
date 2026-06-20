@@ -89,6 +89,28 @@ export interface BinanceExchangeInfoResponse {
   [key: string]: unknown;
 }
 
+export interface BinanceExecutionRulesRequest {
+  symbol?: string;
+  symbols?: string[];
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
+}
+
+export interface BinanceExecutionRule {
+  ruleType: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceSymbolExecutionRules {
+  symbol: string;
+  rules: BinanceExecutionRule[];
+  [key: string]: unknown;
+}
+
+export interface BinanceExecutionRulesResponse {
+  symbolRules: BinanceSymbolExecutionRules[];
+  [key: string]: unknown;
+}
+
 export interface BinanceDepthRequest {
   symbol: string;
   limit?: number;
@@ -210,6 +232,7 @@ export interface BinanceTicker24hrRequest {
   symbol?: string;
   symbols?: string[];
   type?: "FULL" | "MINI";
+  symbolStatus?: "TRADING" | "HALT" | "BREAK";
 }
 
 export interface BinanceTicker24hr {
@@ -1522,6 +1545,14 @@ export interface BinanceExchangeInfoMethod {
   schema: typeof import("./zod").BinanceExchangeInfoRequestSchema;
 }
 
+export interface BinanceExecutionRulesMethod {
+  (
+    req?: BinanceExecutionRulesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceExecutionRulesResponse>;
+  schema: typeof import("./zod").BinanceExecutionRulesRequestSchema;
+}
+
 export interface BinanceDepthMethod {
   (
     req: BinanceDepthRequest,
@@ -2171,6 +2202,7 @@ export interface BinanceApiV3Namespace {
   avgPrice: BinanceAvgPriceMethod;
   depth: BinanceDepthMethod;
   exchangeInfo: BinanceExchangeInfoMethod;
+  executionRules: BinanceExecutionRulesMethod;
   historicalBlockTrades: BinanceHistoricalBlockTradesMethod;
   historicalTrades: BinanceHistoricalTradesMethod;
   klines: BinanceKlinesMethod;

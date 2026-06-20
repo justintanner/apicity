@@ -53,6 +53,8 @@ import type {
   BinanceDepthResponse,
   BinanceExchangeInfoRequest,
   BinanceExchangeInfoResponse,
+  BinanceExecutionRulesRequest,
+  BinanceExecutionRulesResponse,
   BinanceHistoricalBlockTradesRequest,
   BinanceHistoricalBlockTradesResponse,
   BinanceHistoricalTradesRequest,
@@ -130,6 +132,7 @@ import {
   BinanceCoinMTradesRequestSchema,
   BinanceDepthRequestSchema,
   BinanceExchangeInfoRequestSchema,
+  BinanceExecutionRulesRequestSchema,
   BinanceHistoricalBlockTradesRequestSchema,
   BinanceHistoricalTradesRequestSchema,
   BinanceKlinesRequestSchema,
@@ -401,6 +404,28 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceExchangeInfoRequestSchema }
   );
 
+  // GET https://api.binance.com/api/v3/executionRules{query}
+  // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#query-execution-rules
+  const executionRules = Object.assign(
+    async (
+      req: BinanceExecutionRulesRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceExecutionRulesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        symbols: req.symbols,
+        symbolStatus: req.symbolStatus,
+      });
+      return makeJsonRequest<BinanceExecutionRulesResponse>(
+        "GET",
+        `/api/v3/executionRules${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: BinanceExecutionRulesRequestSchema }
+  );
+
   // GET https://api.binance.com/api/v3/depth{query}
   // Docs: https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#order-book
   const depth = Object.assign(
@@ -638,6 +663,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
         symbol: req.symbol,
         symbols: req.symbols,
         type: req.type,
+        symbolStatus: req.symbolStatus,
       });
       return makeJsonRequest<BinanceTicker24hrResponse>(
         "GET",
@@ -2293,6 +2319,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
       avgPrice,
       depth,
       exchangeInfo,
+      executionRules,
       historicalBlockTrades,
       historicalTrades,
       klines,

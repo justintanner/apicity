@@ -78,9 +78,14 @@ public surface, and `binance.public.coinMFutures.*` mirrors the COIN-M
 public REST tree. Use the top-level namespaces above for the full
 implemented market-data surface.
 
+The `https://data.binance.vision` static archive serves public ZIP and
+checksum files for historical Spot, USD-M, and COIN-M datasets. It is
+intentionally outside this JSON REST provider; archive downloads need
+separate binary/checksum handling and tests.
+
 ## API Reference
 
-92 endpoints across 19 groups. Each method mirrors an upstream URL path.
+93 endpoints across 20 groups. Each method mirrors an upstream URL path.
 
 ### aggTrades
 
@@ -720,6 +725,23 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 ```typescript
 const res = await binance.api.v3.exchangeInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+### executionRules
+
+<details>
+<summary><code>GET</code> <b><code>binance.api.v3.executionRules</code></b></summary>
+
+<code>GET https://api.binance.com/api/v3/executionRules{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#query-execution-rules)
+
+```typescript
+const res = await binance.api.v3.executionRules({ /* ... */ });
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)

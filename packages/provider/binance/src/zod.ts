@@ -34,6 +34,12 @@ export const BinanceExchangeInfoRequestSchema = z.object({
   symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
 
+export const BinanceExecutionRulesRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  symbols: z.array(z.string().min(1)).optional(),
+  symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
+});
+
 export const BinanceDepthRequestSchema = z.object({
   symbol: z.string().min(1),
   limit: z.number().int().positive().max(5000).optional(),
@@ -95,6 +101,7 @@ export const BinanceTicker24hrRequestSchema = z.object({
   symbol: z.string().min(1).optional(),
   symbols: z.array(z.string().min(1)).optional(),
   type: z.enum(["FULL", "MINI"]).optional(),
+  symbolStatus: z.enum(["TRADING", "HALT", "BREAK"]).optional(),
 });
 
 export const BinanceTickerTradingDayRequestSchema = z.object({

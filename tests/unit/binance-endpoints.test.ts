@@ -141,6 +141,19 @@ describe("Binance endpoint wiring", () => {
     expect(params.get("permissions")).toBe(JSON.stringify(["SPOT", "MARGIN"]));
   });
 
+  it("passes Spot ticker 24hr symbolStatus through the query string", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(jsonResponse({}));
+    const binance = createBinance({ fetch: mockFetch });
+
+    await binance.api.v3.ticker.twentyFourHr({
+      symbol: "BTCUSDT",
+      symbolStatus: "TRADING",
+    });
+
+    const [url] = mockFetch.mock.calls[0] as [string, RequestInit];
+    expect(new URL(url).searchParams.get("symbolStatus")).toBe("TRADING");
+  });
+
   it("validates public base URL options", () => {
     expect(
       BinanceOptionsSchema.parse({

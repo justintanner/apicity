@@ -38,6 +38,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "showPermissionSets": false
     }
   },
+  "GET api.v3.executionRules": {
+    "source": "binance/execution-rules",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
   "GET api.v3.historicalBlockTrades": {
     "source": "binance/historical-block-trades",
     "payload": {

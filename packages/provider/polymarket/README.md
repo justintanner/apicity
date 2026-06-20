@@ -30,7 +30,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-76 endpoints across 3 groups. Each method mirrors an upstream URL path.
+98 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -43,6 +43,19 @@ const polymarket = createPolymarket();
 
 ```typescript
 const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>polymarket.clob.auth.builderApiKey</code></b></summary>
+
+<code>DELETE https://clob.polymarket.com/auth/builder-api-key</code>
+
+```typescript
+const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -155,6 +168,19 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.clob.auth.builderApiKey</code></b></summary>
+
+<code>GET https://clob.polymarket.com/auth/builder-api-key</code>
+
+```typescript
+const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.clob.auth.deriveApiKey</code></b></summary>
 
 <code>GET https://clob.polymarket.com/auth/derive-api-key</code>
@@ -208,6 +234,34 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.book({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.books</code></b></summary>
+
+<code>GET https://clob.polymarket.com/books{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-books)
+
+```typescript
+const res = await polymarket.clob.books({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.builderTrades</code></b></summary>
+
+<code>GET https://clob.polymarket.com/builder/trades{query}</code>
+
+```typescript
+const res = await polymarket.clob.builderTrades({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -290,6 +344,19 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.clob.feeRateByQuery</code></b></summary>
+
+<code>GET https://clob.polymarket.com/fee-rate{query}</code>
+
+```typescript
+const res = await polymarket.clob.feeRateByQuery({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.clob.lastTradePrice</code></b></summary>
 
 <code>GET https://clob.polymarket.com/last-trade-price{query}</code>
@@ -298,6 +365,34 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.lastTradePrice({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.lastTradesPrices</code></b></summary>
+
+<code>GET https://clob.polymarket.com/last-trades-prices{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trades-prices)
+
+```typescript
+const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.marketLiveActivity</code></b></summary>
+
+<code>GET https://clob.polymarket.com/markets/live-activity/{conditionId}</code>
+
+```typescript
+const res = await polymarket.clob.marketLiveActivity({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -343,6 +438,47 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.midpoint({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.midpoints</code></b></summary>
+
+<code>GET https://clob.polymarket.com/midpoints{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoints)
+
+```typescript
+const res = await polymarket.clob.midpoints({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.negRisk</code></b></summary>
+
+<code>GET https://clob.polymarket.com/neg-risk/{tokenId}</code>
+
+```typescript
+const res = await polymarket.clob.negRisk({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.negRiskByQuery</code></b></summary>
+
+<code>GET https://clob.polymarket.com/neg-risk{query}</code>
+
+```typescript
+const res = await polymarket.clob.negRiskByQuery({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -410,6 +546,21 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.clob.prices</code></b></summary>
+
+<code>GET https://clob.polymarket.com/prices{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-prices)
+
+```typescript
+const res = await polymarket.clob.prices({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.clob.pricesHistory</code></b></summary>
 
 <code>GET https://clob.polymarket.com/prices-history{query}</code>
@@ -418,6 +569,110 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.pricesHistory({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rebates.current</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rebates/current{query}</code>
+
+```typescript
+const res = await polymarket.clob.rebates.current({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.markets.byCondition</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/markets/{conditionId}{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.markets.byCondition({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.markets.current</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/markets/current{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.markets.current({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.markets.multi</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/markets/multi{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.markets.multi({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.user</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/user{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.user({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.userMarkets</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/user/markets{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.userMarkets({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.userPercentages</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/user/percentages{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.userPercentages({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.clob.rewards.userTotal</code></b></summary>
+
+<code>GET https://clob.polymarket.com/rewards/user/total{query}</code>
+
+```typescript
+const res = await polymarket.clob.rewards.userTotal({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -500,6 +755,19 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.clob.tickSizeByQuery</code></b></summary>
+
+<code>GET https://clob.polymarket.com/tick-size{query}</code>
+
+```typescript
+const res = await polymarket.clob.tickSizeByQuery({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.clob.time</code></b></summary>
 
 <code>GET https://clob.polymarket.com/time</code>
@@ -523,6 +791,19 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.auth.apiKey({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.auth.builderApiKey</code></b></summary>
+
+<code>POST https://clob.polymarket.com/auth/builder-api-key</code>
+
+```typescript
+const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
@@ -583,6 +864,19 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 ```typescript
 const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>polymarket.clob.marketsLiveActivity</code></b></summary>
+
+<code>POST https://clob.polymarket.com/markets/live-activity</code>
+
+```typescript
+const res = await polymarket.clob.marketsLiveActivity({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)

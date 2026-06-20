@@ -219,8 +219,9 @@ export function createClobProvider(
     );
   }
 
+  // OpenAPI-only query-form alias; page docs cover the POST body form.
   // GET https://clob.polymarket.com/books{query}
-  // Docs: https://docs.polymarket.com/api-reference/market-data/get-order-books.md
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   async function clobBooks(
     params: PolymarketClobTokenIdsQuery,
     signal?: AbortSignal
@@ -233,7 +234,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/prices{query}
-  // Docs: https://docs.polymarket.com/api-reference/market-data/get-market-prices.md
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-market-prices-query-parameters.md
   async function clobPrices(
     params: PolymarketClobPricesQuery,
     signal?: AbortSignal
@@ -248,7 +249,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/midpoints{query}
-  // Docs: https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices.md
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-query-parameters.md
   async function clobMidpoints(
     params: PolymarketClobTokenIdsQuery,
     signal?: AbortSignal
@@ -261,7 +262,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/last-trades-prices{query}
-  // Docs: https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices.md
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-query-parameters.md
   async function clobLastTradesPrices(
     params: PolymarketClobTokenIdsQuery,
     signal?: AbortSignal
@@ -325,8 +326,9 @@ export function createClobProvider(
     );
   }
 
+  // OpenAPI-only negative-risk read endpoint.
   // GET https://clob.polymarket.com/neg-risk/{tokenId}
-  // Docs: https://docs.polymarket.com/api-reference/market-data/get-neg-risk-by-path-parameter.md
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   async function clobNegRisk(
     tokenId: string,
     signal?: AbortSignal
@@ -337,9 +339,10 @@ export function createClobProvider(
     );
   }
 
+  // OpenAPI-only negative-risk read endpoint.
   // sig-ok: query-form alias kept distinct from path-form negRisk
   // GET https://clob.polymarket.com/neg-risk{query}
-  // Docs: https://docs.polymarket.com/api-reference/market-data/get-neg-risk.md
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   async function clobNegRiskByQuery(
     params: PolymarketClobTokenQuery,
     signal?: AbortSignal
@@ -408,7 +411,7 @@ export function createClobProvider(
 
   // Legacy compatibility: current public market listings are documented on Gamma.
   // GET https://clob.polymarket.com/markets/{paramsOrConditionIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/markets/list-markets.md
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   async function clobMarkets(
     paramsOrConditionIdOrSignal?:
       | PolymarketClobPaginationQuery
@@ -503,9 +506,10 @@ export function createClobProvider(
     );
   }
 
+  // OpenAPI-only live-activity read endpoint.
   // sig-ok: singular convenience name for markets/live-activity lookup
   // GET https://clob.polymarket.com/markets/live-activity/{conditionId}
-  // Docs: https://docs.polymarket.com/api-reference/markets/get-live-activity-by-condition-id.md
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   async function clobMarketLiveActivity(
     conditionId: string,
     signal?: AbortSignal
@@ -665,7 +669,7 @@ export function createClobProvider(
   };
 
   // POST https://clob.polymarket.com/order
-  // Docs: https://docs.polymarket.com/api-reference/trade/post-a-new-order
+  // Docs: https://docs.polymarket.com/api-reference/trade/post-a-new-order.md
   const clobPostOrder = Object.assign(
     async (
       req: PolymarketClobPostOrderRequest,
@@ -697,7 +701,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/orders
-  // Docs: https://docs.polymarket.com/api-reference/trade/post-multiple-orders
+  // Docs: https://docs.polymarket.com/api-reference/trade/post-multiple-orders.md
   const clobPostOrders = Object.assign(
     async (
       req: PolymarketClobPostOrdersRequest,
@@ -714,7 +718,7 @@ export function createClobProvider(
   );
 
   // DELETE https://clob.polymarket.com/order
-  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-single-order
+  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-single-order.md
   const clobCancelOrder = Object.assign(
     async (
       req: PolymarketClobCancelOrderRequest,
@@ -731,7 +735,7 @@ export function createClobProvider(
   );
 
   // DELETE https://clob.polymarket.com/orders
-  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders
+  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders.md
   const clobCancelOrders = Object.assign(
     async (
       req: PolymarketClobCancelOrdersRequest,
@@ -748,7 +752,7 @@ export function createClobProvider(
   );
 
   // DELETE https://clob.polymarket.com/cancel-all
-  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-all-orders
+  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-all-orders.md
   async function clobCancelAll(
     signal?: AbortSignal
   ): Promise<PolymarketClobCancelOrdersResponse> {
@@ -761,7 +765,7 @@ export function createClobProvider(
   }
 
   // DELETE https://clob.polymarket.com/cancel-market-orders
-  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market
+  // Docs: https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market.md
   const clobCancelMarketOrders = Object.assign(
     async (
       req: PolymarketClobCancelMarketOrdersRequest,
@@ -778,7 +782,7 @@ export function createClobProvider(
   );
 
   // GET https://clob.polymarket.com/data/orders{query}
-  // Docs: https://docs.polymarket.com/api-reference/trade/get-user-orders
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-user-orders.md
   async function clobDataOrders(
     params?: PolymarketClobUserOrdersQuery,
     signal?: AbortSignal
@@ -793,7 +797,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/data/order/{orderID}
-  // Docs: https://docs.polymarket.com/api-reference/trade/get-single-order-by-id
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-single-order-by-id.md
   async function clobDataOrder(
     orderID: string,
     signal?: AbortSignal
@@ -807,7 +811,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/data/trades{query}
-  // Docs: https://docs.polymarket.com/api-reference/trade/get-trades
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-trades.md
   async function clobDataTrades(
     params?: PolymarketClobUserTradesQuery,
     signal?: AbortSignal
@@ -944,7 +948,7 @@ export function createClobProvider(
   };
 
   // GET https://clob.polymarket.com/rebates/current{query}
-  // Docs: https://docs.polymarket.com/api-reference/rewards/get-current-rebated-fees-for-a-maker.md
+  // Docs: https://docs.polymarket.com/api-reference/rebates/get-current-rebated-fees-for-a-maker.md
   async function clobRebatesCurrent(
     params: PolymarketClobRebatesCurrentQuery,
     signal?: AbortSignal
@@ -1054,7 +1058,7 @@ export function createClobProvider(
   }
 
   // POST https://clob.polymarket.com/heartbeats
-  // Docs: https://docs.polymarket.com/api-reference/trade/send-heartbeat
+  // Docs: https://docs.polymarket.com/api-reference/trade/send-heartbeat.md
   async function clobHeartbeats(
     signal?: AbortSignal
   ): Promise<PolymarketClobHeartbeatResponse> {
@@ -1067,7 +1071,7 @@ export function createClobProvider(
   }
 
   // POST https://clob.polymarket.com/v1/heartbeats
-  // Docs: https://docs.polymarket.com/api-reference/trade/send-heartbeat
+  // Docs: https://docs.polymarket.com/api-reference/trade/send-heartbeat.md
   const clobHeartbeatsV1 = Object.assign(
     async (
       req: PolymarketClobHeartbeatRequest,
@@ -1084,7 +1088,7 @@ export function createClobProvider(
   );
 
   // GET https://clob.polymarket.com/order-scoring{query}
-  // Docs: https://docs.polymarket.com/api-reference/trade/get-order-scoring-status
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md
   async function clobOrderScoring(
     params: PolymarketClobOrderScoringQuery,
     signal?: AbortSignal
@@ -1099,7 +1103,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/orders-scoring{query}
-  // Docs: https://docs.polymarket.com/api-reference/trade/get-order-scoring-status
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md
   async function clobOrdersScoring(
     params: PolymarketClobOrdersScoringQuery,
     signal?: AbortSignal
@@ -1114,7 +1118,7 @@ export function createClobProvider(
   }
 
   // POST https://clob.polymarket.com/orders-scoring
-  // Docs: https://docs.polymarket.com/api-reference/trade/get-order-scoring-status
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md
   const clobOrdersScoringPost = Object.assign(
     async (
       req: PolymarketClobOrdersScoringRequest,
@@ -1226,9 +1230,10 @@ export function createClobProvider(
     { schema: PolymarketClobBatchPricesHistoryRequestSchema }
   );
 
+  // OpenAPI-only live-activity read endpoint.
   // sig-ok: plural POST counterpart to marketLiveActivity
   // POST https://clob.polymarket.com/markets/live-activity
-  // Docs: https://docs.polymarket.com/api-reference/markets/get-live-activity-for-markets.md
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
   const clobMarketsLiveActivity = Object.assign(
     async (
       req: PolymarketClobLiveActivityRequest,

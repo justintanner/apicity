@@ -28,6 +28,10 @@ import { createPolymarket } from "@apicity/polymarket";
 const polymarket = createPolymarket();
 ```
 
+## Unsupported Upstream Paths
+
+The current Polymarket OpenAPI specs mark some paths as `x-excluded`; `@apicity/polymarket` intentionally does not expose wrappers for those unsupported surfaces. That includes Gamma administrative/private paths such as team detail, event pagination/results/comment-count, market information and abridged POST endpoints, series summaries, and private profile lookups, plus Data `/revisions` and `/other`.
+
 ## API Reference
 
 108 endpoints across 3 groups. Each method mirrors an upstream URL path.
@@ -39,7 +43,7 @@ const polymarket = createPolymarket();
 
 <code>DELETE https://clob.polymarket.com/auth/api-key</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.auth.apiKey({ /* ... */ });
@@ -54,6 +58,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>DELETE https://clob.polymarket.com/auth/builder-api-key</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
 ```typescript
 const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
 ```
@@ -67,7 +73,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>DELETE https://clob.polymarket.com/cancel-all</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-all-orders)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-all-orders.md)
 
 ```typescript
 const res = await polymarket.clob.cancelAll({ /* ... */ });
@@ -82,7 +88,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>DELETE https://clob.polymarket.com/cancel-market-orders</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-orders-for-a-market.md)
 
 ```typescript
 const res = await polymarket.clob.cancelMarketOrders({ /* ... */ });
@@ -97,7 +103,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>DELETE https://clob.polymarket.com/notifications{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.notifications({ /* ... */ });
@@ -112,7 +118,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>DELETE https://clob.polymarket.com/order</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-single-order)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-single-order.md)
 
 ```typescript
 const res = await polymarket.clob.order({ /* ... */ });
@@ -127,7 +133,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>DELETE https://clob.polymarket.com/orders</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/cancel-multiple-orders.md)
 
 ```typescript
 const res = await polymarket.clob.orders({ /* ... */ });
@@ -142,7 +148,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/auth/api-keys</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.auth.apiKeys({ /* ... */ });
@@ -157,7 +163,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/auth/ban-status/closed-only</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.auth.banStatus.closedOnly({ /* ... */ });
@@ -172,6 +178,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/auth/builder-api-key</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
 ```typescript
 const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
 ```
@@ -185,7 +193,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/auth/derive-api-key</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.auth.deriveApiKey({ /* ... */ });
@@ -200,7 +208,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/balance-allowance{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.balanceAllowance({ /* ... */ });
@@ -215,7 +223,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/balance-allowance/update{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.balanceAllowance.update({ /* ... */ });
@@ -230,7 +238,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/book{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-book)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-order-book.md)
 
 ```typescript
 const res = await polymarket.clob.book({ /* ... */ });
@@ -245,7 +253,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/books{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-books)
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
 const res = await polymarket.clob.books({ /* ... */ });
@@ -260,6 +268,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/builder/trades{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-builder-trades.md)
+
 ```typescript
 const res = await polymarket.clob.builderTrades({ /* ... */ });
 ```
@@ -273,7 +283,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/clob-markets/{conditionId}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-clob-market-info)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-clob-market-info.md)
 
 ```typescript
 const res = await polymarket.clob.clobMarkets({ /* ... */ });
@@ -288,7 +298,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/data/order/{orderID}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-single-order-by-id)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-single-order-by-id.md)
 
 ```typescript
 const res = await polymarket.clob.data.order({ /* ... */ });
@@ -303,7 +313,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/data/orders{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-user-orders)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-user-orders.md)
 
 ```typescript
 const res = await polymarket.clob.data.orders({ /* ... */ });
@@ -318,7 +328,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/data/trades{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-trades)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-trades.md)
 
 ```typescript
 const res = await polymarket.clob.data.trades({ /* ... */ });
@@ -333,7 +343,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/fee-rate/{tokenId}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-fee-rate)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-fee-rate-by-path-parameter.md)
 
 ```typescript
 const res = await polymarket.clob.feeRate({ /* ... */ });
@@ -348,6 +358,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/fee-rate{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-fee-rate.md)
+
 ```typescript
 const res = await polymarket.clob.feeRateByQuery({ /* ... */ });
 ```
@@ -361,7 +373,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/last-trade-price{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trade-price)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-last-trade-price.md)
 
 ```typescript
 const res = await polymarket.clob.lastTradePrice({ /* ... */ });
@@ -376,7 +388,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/last-trades-prices{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trades-prices)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-query-parameters.md)
 
 ```typescript
 const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
@@ -391,6 +403,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/markets/live-activity/{conditionId}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
 ```typescript
 const res = await polymarket.clob.marketLiveActivity({ /* ... */ });
 ```
@@ -404,7 +418,9 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/markets/{paramsOrConditionIdOrSignal}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-markets)
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
+> **Legacy compatibility:** current public market discovery is documented on the Gamma `/markets` pages. The CLOB `/markets` compatibility path is retained for existing callers and is documented by the CLOB OpenAPI spec.
 
 ```typescript
 const res = await polymarket.clob.markets({ /* ... */ });
@@ -419,7 +435,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/markets-by-token/{tokenId}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-by-token)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-market-by-token.md)
 
 ```typescript
 const res = await polymarket.clob.marketsByToken({ /* ... */ });
@@ -434,7 +450,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/midpoint{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoint)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-midpoint-price.md)
 
 ```typescript
 const res = await polymarket.clob.midpoint({ /* ... */ });
@@ -449,7 +465,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/midpoints{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoints)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-query-parameters.md)
 
 ```typescript
 const res = await polymarket.clob.midpoints({ /* ... */ });
@@ -464,6 +480,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/neg-risk/{tokenId}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
 ```typescript
 const res = await polymarket.clob.negRisk({ /* ... */ });
 ```
@@ -476,6 +494,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 <summary><code>GET</code> <b><code>polymarket.clob.negRiskByQuery</code></b></summary>
 
 <code>GET https://clob.polymarket.com/neg-risk{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
 
 ```typescript
 const res = await polymarket.clob.negRiskByQuery({ /* ... */ });
@@ -490,7 +510,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/notifications{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.notifications({ /* ... */ });
@@ -505,7 +525,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/order-scoring{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md)
 
 ```typescript
 const res = await polymarket.clob.orderScoring({ /* ... */ });
@@ -520,7 +540,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/orders-scoring{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md)
 
 ```typescript
 const res = await polymarket.clob.ordersScoring({ /* ... */ });
@@ -535,7 +555,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/price{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-price)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-market-price.md)
 
 ```typescript
 const res = await polymarket.clob.price({ /* ... */ });
@@ -550,7 +570,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/prices{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-prices)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-market-prices-query-parameters.md)
 
 ```typescript
 const res = await polymarket.clob.prices({ /* ... */ });
@@ -565,7 +585,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/prices-history{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-prices-history)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-prices-history.md)
 
 ```typescript
 const res = await polymarket.clob.pricesHistory({ /* ... */ });
@@ -580,6 +600,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/rebates/current{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rebates/get-current-rebated-fees-for-a-maker.md)
+
 ```typescript
 const res = await polymarket.clob.rebates.current({ /* ... */ });
 ```
@@ -592,6 +614,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 <summary><code>GET</code> <b><code>polymarket.clob.rewards.markets.byCondition</code></b></summary>
 
 <code>GET https://clob.polymarket.com/rewards/markets/{conditionId}{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-raw-rewards-for-a-specific-market.md)
 
 ```typescript
 const res = await polymarket.clob.rewards.markets.byCondition({ /* ... */ });
@@ -606,6 +630,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/rewards/markets/current{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-current-active-rewards-configurations.md)
+
 ```typescript
 const res = await polymarket.clob.rewards.markets.current({ /* ... */ });
 ```
@@ -618,6 +644,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 <summary><code>GET</code> <b><code>polymarket.clob.rewards.markets.multi</code></b></summary>
 
 <code>GET https://clob.polymarket.com/rewards/markets/multi{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-multiple-markets-with-rewards.md)
 
 ```typescript
 const res = await polymarket.clob.rewards.markets.multi({ /* ... */ });
@@ -632,6 +660,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/rewards/user{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-earnings-for-user-by-date.md)
+
 ```typescript
 const res = await polymarket.clob.rewards.user({ /* ... */ });
 ```
@@ -644,6 +674,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 <summary><code>GET</code> <b><code>polymarket.clob.rewards.userMarkets</code></b></summary>
 
 <code>GET https://clob.polymarket.com/rewards/user/markets{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-user-earnings-and-markets-configuration.md)
 
 ```typescript
 const res = await polymarket.clob.rewards.userMarkets({ /* ... */ });
@@ -658,6 +690,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/rewards/user/percentages{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-reward-percentages-for-user.md)
+
 ```typescript
 const res = await polymarket.clob.rewards.userPercentages({ /* ... */ });
 ```
@@ -670,6 +704,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 <summary><code>GET</code> <b><code>polymarket.clob.rewards.userTotal</code></b></summary>
 
 <code>GET https://clob.polymarket.com/rewards/user/total{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/rewards/get-total-earnings-for-user-by-date.md)
 
 ```typescript
 const res = await polymarket.clob.rewards.userTotal({ /* ... */ });
@@ -684,7 +720,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/sampling-markets{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-sampling-markets)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-sampling-markets.md)
 
 ```typescript
 const res = await polymarket.clob.samplingMarkets({ /* ... */ });
@@ -699,7 +735,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/sampling-simplified-markets{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-sampling-simplified-markets.md)
 
 ```typescript
 const res = await polymarket.clob.samplingSimplifiedMarkets({ /* ... */ });
@@ -714,7 +750,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/simplified-markets{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-simplified-markets)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-simplified-markets.md)
 
 ```typescript
 const res = await polymarket.clob.simplifiedMarkets({ /* ... */ });
@@ -729,7 +765,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/spread{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-spread)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-spread.md)
 
 ```typescript
 const res = await polymarket.clob.spread({ /* ... */ });
@@ -744,7 +780,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/tick-size/{tokenId}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-tick-size)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-tick-size-by-path-parameter.md)
 
 ```typescript
 const res = await polymarket.clob.tickSize({ /* ... */ });
@@ -759,6 +795,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/tick-size{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-tick-size.md)
+
 ```typescript
 const res = await polymarket.clob.tickSizeByQuery({ /* ... */ });
 ```
@@ -772,7 +810,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>GET https://clob.polymarket.com/time</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-server-time)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-server-time.md)
 
 ```typescript
 const res = await polymarket.clob.time({ /* ... */ });
@@ -787,7 +825,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/auth/api-key</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.auth.apiKey({ /* ... */ });
@@ -802,6 +840,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/auth/builder-api-key</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
 ```typescript
 const res = await polymarket.clob.auth.builderApiKey({ /* ... */ });
 ```
@@ -815,7 +855,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/batch-prices-history</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-batch-prices-history)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-batch-prices-history.md)
 
 ```typescript
 const res = await polymarket.clob.batchPricesHistory({ /* ... */ });
@@ -830,7 +870,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/books</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-order-books)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-order-books-request-body.md)
 
 ```typescript
 const res = await polymarket.clob.books({ /* ... */ });
@@ -845,7 +885,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/heartbeats</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat.md)
 
 ```typescript
 const res = await polymarket.clob.heartbeats({ /* ... */ });
@@ -860,7 +900,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/last-trades-prices</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-last-trades-prices)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-request-body.md)
 
 ```typescript
 const res = await polymarket.clob.lastTradesPrices({ /* ... */ });
@@ -875,6 +915,8 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/markets/live-activity</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/clob-openapi.yaml)
+
 ```typescript
 const res = await polymarket.clob.marketsLiveActivity({ /* ... */ });
 ```
@@ -888,7 +930,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/midpoints</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-midpoints)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-request-body.md)
 
 ```typescript
 const res = await polymarket.clob.midpoints({ /* ... */ });
@@ -903,7 +945,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/order</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order.md)
 
 ```typescript
 const res = await polymarket.clob.order({ /* ... */ });
@@ -918,7 +960,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/orders</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-multiple-orders)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-multiple-orders.md)
 
 ```typescript
 const res = await polymarket.clob.orders({ /* ... */ });
@@ -933,7 +975,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/orders-scoring</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/get-order-scoring-status.md)
 
 ```typescript
 const res = await polymarket.clob.ordersScoring({ /* ... */ });
@@ -948,7 +990,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/order</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/post-a-new-order.md)
 
 ```typescript
 const res = await polymarket.clob.placeOrder({ /* ... */ });
@@ -963,7 +1005,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/prices</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-market-prices)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-market-prices-request-body.md)
 
 ```typescript
 const res = await polymarket.clob.prices({ /* ... */ });
@@ -978,7 +1020,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/spreads</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/clob/get-spreads)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/market-data/get-spreads.md)
 
 ```typescript
 const res = await polymarket.clob.spreads({ /* ... */ });
@@ -993,7 +1035,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>POST https://clob.polymarket.com/v1/heartbeats</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/trade/send-heartbeat.md)
 
 ```typescript
 const res = await polymarket.clob.v1.heartbeats({ /* ... */ });
@@ -1008,7 +1050,7 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 
 <code>PUT https://clob.polymarket.com/balance-allowance{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/authentication.md)
 
 ```typescript
 const res = await polymarket.clob.balanceAllowance({ /* ... */ });
@@ -1282,7 +1324,7 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://gamma-api.polymarket.com/comments/{paramsOrIdOrSignal}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-comments)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/comments/list-comments.md)
 
 ```typescript
 const res = await polymarket.gamma.comments({ /* ... */ });
@@ -1297,7 +1339,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/comments/user_address/{address}{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-comments-by-user)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/comments/get-comments-by-user-address.md)
 
 ```typescript
 const res = await polymarket.gamma.comments.byUser({ /* ... */ });
@@ -1312,7 +1354,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/events/{paramsOrIdOrSignal}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-events)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/events/list-events.md)
 
 > **Deprecated upstream:** the replay fixture for the list form `GET /events?...` returned `Deprecation: true`, `Sunset: Fri, 01 May 2026 00:00:00 GMT`, and `Warning: 299 - "use /events/keyset"`. This compatibility method remains for existing bare-array `/events` callers; prefer `polymarket.gamma.events.keyset()` for new paginated event lists.
 
@@ -1329,7 +1371,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/events/keyset{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-events-keyset)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/events/list-events-keyset-pagination.md)
 
 ```typescript
 const res = await polymarket.gamma.events.keyset({ /* ... */ });
@@ -1344,7 +1386,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/events/slug/{slug}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-event-by-slug)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/events/get-event-by-slug.md)
 
 ```typescript
 const res = await polymarket.gamma.events.slug({ /* ... */ });
@@ -1359,7 +1401,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/events/{id}/tags</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-event-tags)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/events/get-event-tags.md)
 
 ```typescript
 const res = await polymarket.gamma.events.tags({ /* ... */ });
@@ -1374,7 +1416,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/markets/{paramsOrIdOrSignal}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-markets)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/list-markets.md)
 
 ```typescript
 const res = await polymarket.gamma.markets({ /* ... */ });
@@ -1389,7 +1431,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/markets/keyset{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-markets-keyset)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/list-markets-keyset-pagination.md)
 
 ```typescript
 const res = await polymarket.gamma.markets.keyset({ /* ... */ });
@@ -1404,7 +1446,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/markets/slug/{slug}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-market-by-slug)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md)
 
 ```typescript
 const res = await polymarket.gamma.markets.slug({ /* ... */ });
@@ -1419,7 +1461,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/markets/{id}/tags</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-market-tags)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md)
 
 ```typescript
 const res = await polymarket.gamma.markets.tags({ /* ... */ });
@@ -1434,6 +1476,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/public-profile{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-address.md)
+
 ```typescript
 const res = await polymarket.gamma.publicProfile({ /* ... */ });
 ```
@@ -1447,7 +1491,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/public-search{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/search)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/search/search-markets-events-and-profiles.md)
 
 ```typescript
 const res = await polymarket.gamma.search({ /* ... */ });
@@ -1462,7 +1506,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/series/{paramsOrIdOrSignal}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-series)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/series/list-series.md)
 
 ```typescript
 const res = await polymarket.gamma.series({ /* ... */ });
@@ -1477,7 +1521,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/sports</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-sports)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/get-sports-metadata-information.md)
 
 ```typescript
 const res = await polymarket.gamma.sports({ /* ... */ });
@@ -1492,7 +1536,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/sports/market-types</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-sports-market-types)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/get-valid-sports-market-types.md)
 
 ```typescript
 const res = await polymarket.gamma.sports.marketTypes({ /* ... */ });
@@ -1507,6 +1551,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/status</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/gamma-openapi.yaml)
+
 ```typescript
 const res = await polymarket.gamma.status({ /* ... */ });
 ```
@@ -1520,7 +1566,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/tags/{paramsOrIdOrSignal}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-tags)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/list-tags.md)
 
 ```typescript
 const res = await polymarket.gamma.tags({ /* ... */ });
@@ -1535,7 +1581,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/tags/{id}/related-tags{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-id)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-related-tags-relationships-by-tag-id.md)
 
 ```typescript
 const res = await polymarket.gamma.tags.relatedTags({ /* ... */ });
@@ -1550,7 +1596,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-slug)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-related-tags-relationships-by-tag-slug.md)
 
 ```typescript
 const res = await polymarket.gamma.tags.relatedTags.slug({ /* ... */ });
@@ -1565,6 +1611,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/tags/{id}/related-tags/tags{query}</code>
 
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-id.md)
+
 ```typescript
 const res = await polymarket.gamma.tags.relatedTags.tags({ /* ... */ });
 ```
@@ -1577,6 +1625,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 <summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags.tags.slug</code></b></summary>
 
 <code>GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags/tags{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-slug.md)
 
 ```typescript
 const res = await polymarket.gamma.tags.relatedTags.tags.slug({ /* ... */ });
@@ -1591,7 +1641,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 <code>GET https://gamma-api.polymarket.com/tags/slug/{slug}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-tag-by-slug)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/tags/get-tag-by-slug.md)
 
 ```typescript
 const res = await polymarket.gamma.tags.slug({ /* ... */ });
@@ -1605,6 +1655,8 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 <summary><code>GET</code> <b><code>polymarket.gamma.teams</code></b></summary>
 
 <code>GET https://gamma-api.polymarket.com/teams{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/sports/list-teams.md)
 
 ```typescript
 const res = await polymarket.gamma.teams({ /* ... */ });

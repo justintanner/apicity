@@ -2212,6 +2212,8 @@ function renderTelegramSetup() {
     "  `file_id`, an HTTP URL, an `attach://...` reference, or a `Blob`.",
     "- Blob payloads are sent as `multipart/form-data`; string payloads use",
     "  `application/json`.",
+    "- Recorded examples redact bot tokens, webhook secret tokens, payment",
+    "  payloads, passport data, Telegram file identifiers, and Blob bytes.",
     "",
   ].join("\n");
 }

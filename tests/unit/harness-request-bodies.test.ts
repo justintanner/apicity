@@ -568,6 +568,176 @@ describe("harness persist scrubbers", () => {
     );
   });
 
+  it("redacts Telegram webhook, payment, passport, and file artifacts", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        url: "https://api.telegram.org/bot123456:secret/sendInvoice",
+        headers: [
+          {
+            name: "X-Telegram-Bot-Api-Secret-Token",
+            value: "webhook-secret",
+          },
+          { name: "content-type", value: "application/json" },
+        ],
+        postData: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            chat_id: "@apicity_fixture",
+            title: "Apicity plan",
+            description: "Keep this public description",
+            payload: "invoice-payload",
+            provider_token: "payment-provider-token",
+            provider_data: '{"receipt_email":"person@example.com"}',
+            secret_token: "webhook-secret",
+            passport_data: {
+              data: "encrypted-passport-data",
+              credentials: "encrypted-passport-credentials",
+            },
+            errors: [
+              {
+                source: "data",
+                type: "personal_details",
+                data_hash: "passport-data-hash",
+                message: "keep validation message",
+              },
+            ],
+          }),
+        },
+      },
+      response: {
+        content: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            ok: true,
+            result: {
+              successful_payment: {
+                invoice_payload: "invoice-payload",
+                telegram_payment_charge_id: "tg-charge",
+                provider_payment_charge_id: "provider-charge",
+              },
+              passport_data: {
+                data: "encrypted-passport-response",
+              },
+              document: {
+                file_id: "telegram-file-id",
+                file_unique_id: "telegram-file-unique-id",
+              },
+            },
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(recording.request?.url).toBe(
+      "https://api.telegram.org/bot***/sendInvoice"
+    );
+    expect(recording.request?.headers).toEqual([
+      { name: "X-Telegram-Bot-Api-Secret-Token", value: "***" },
+      { name: "content-type", value: "application/json" },
+    ]);
+    expect(JSON.parse(recording.request?.postData?.text ?? "")).toEqual({
+      chat_id: "@apicity_fixture",
+      title: "Apicity plan",
+      description: "Keep this public description",
+      payload: "***",
+      provider_token: "***",
+      provider_data: "***",
+      secret_token: "***",
+      passport_data: "***",
+      errors: [
+        {
+          source: "data",
+          type: "personal_details",
+          data_hash: "***",
+          message: "keep validation message",
+        },
+      ],
+    });
+    expect(JSON.parse(recording.response?.content?.text ?? "")).toEqual({
+      ok: true,
+      result: {
+        successful_payment: {
+          invoice_payload: "***",
+          telegram_payment_charge_id: "***",
+          provider_payment_charge_id: "***",
+        },
+        passport_data: "***",
+        document: {
+          file_id: "***",
+          file_unique_id: "***",
+        },
+      },
+    });
+
+    const serialized = JSON.stringify(recording);
+    for (const leaked of [
+      "123456:secret",
+      "webhook-secret",
+      "invoice-payload",
+      "payment-provider-token",
+      "person@example.com",
+      "encrypted-passport-data",
+      "encrypted-passport-credentials",
+      "passport-data-hash",
+      "tg-charge",
+      "provider-charge",
+      "encrypted-passport-response",
+      "telegram-file-id",
+      "telegram-file-unique-id",
+    ]) {
+      expect(serialized).not.toContain(leaked);
+    }
+    expect(recording.request?.bodySize).toBe(
+      new TextEncoder().encode(recording.request?.postData?.text ?? "").length
+    );
+    expect(recording.response?.bodySize).toBe(
+      recording.response?.content?.size
+    );
+  });
+
+  it("keeps Telegram multipart file summaries while redacting payloads", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        url: "https://api.telegram.org/bot123456:secret/sendPaidMedia",
+        postData: {
+          mimeType: "multipart/form-data",
+          text: JSON.stringify({
+            _multipart: true,
+            chat_id: "@apicity_fixture",
+            payload: "paid-media-payload",
+            media: JSON.stringify([{ type: "photo", media: "attach://photo" }]),
+            photo: {
+              _file: true,
+              filename: "receipt.png",
+              contentType: "image/png",
+              size: 4921,
+            },
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(JSON.parse(recording.request?.postData?.text ?? "")).toEqual({
+      _multipart: true,
+      chat_id: "@apicity_fixture",
+      payload: "***",
+      media: JSON.stringify([{ type: "photo", media: "attach://photo" }]),
+      photo: {
+        _file: true,
+        filename: "receipt.png",
+        contentType: "image/png",
+        size: 4921,
+      },
+    });
+    expect(recording.request?.postData?.text).not.toContain(
+      "paid-media-payload"
+    );
+  });
+
   it("redacts Polymarket CLOB auth headers, request signatures, and response credentials", () => {
     const recording: PersistedHarRecording = {
       request: {

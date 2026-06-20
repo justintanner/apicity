@@ -166,5 +166,189 @@
       "symbol": "BTC-260626-140000-C",
       "limit": 5
     }
+  },
+  "GET fapi.v1.aggTrades": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.assetIndex": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "USDTUSD"
+    }
+  },
+  "GET fapi.v1.constituents": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.continuousKlines": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "pair": "BTCUSDT",
+      "contractType": "PERPETUAL",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.depth": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 5
+    }
+  },
+  "GET fapi.v1.fundingRate": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.indexPriceKlines": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "pair": "BTCUSDT",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.insuranceBalance": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.klines": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.markPriceKlines": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.openInterest": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.premiumIndex": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.premiumIndexKlines": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET fapi.v1.rpiDepth": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.symbolAdlRisk": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.ticker.bookTicker": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.ticker.twentyFourHr": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET fapi.v1.trades": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "limit": 1
+    }
+  },
+  "GET fapi.v2.ticker.price": {
+    "source": "binance/fapi-market-data",
+    "payload": {
+      "symbol": "BTCUSDT"
+    }
+  },
+  "GET futures.data.basis": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "pair": "BTCUSDT",
+      "contractType": "PERPETUAL",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET futures.data.deliveryPrice": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "pair": "BTCUSDT"
+    }
+  },
+  "GET futures.data.globalLongShortAccountRatio": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET futures.data.openInterestHist": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET futures.data.takerlongshortRatio": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET futures.data.topLongShortAccountRatio": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET futures.data.topLongShortPositionRatio": {
+    "source": "binance/futures-data-market-data",
+    "payload": {
+      "symbol": "BTCUSDT",
+      "period": "5m",
+      "limit": 1
+    }
   }
 }

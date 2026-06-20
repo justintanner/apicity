@@ -373,6 +373,522 @@ export interface BinanceBlockTrade {
 
 export type BinanceHistoricalBlockTradesResponse = BinanceBlockTrade[];
 
+export type BinanceFapiPingResponse = BinancePingResponse;
+export type BinanceFapiTimeResponse = BinanceTimeResponse;
+
+export interface BinanceFapiExchangeInfoAsset {
+  asset: string;
+  marginAvailable?: boolean;
+  autoAssetExchange?: string | null;
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiSymbolInfo {
+  symbol: string;
+  pair: string;
+  contractType: string;
+  deliveryDate: number;
+  onboardDate: number;
+  status: string;
+  baseAsset: string;
+  quoteAsset: string;
+  marginAsset: string;
+  pricePrecision: number;
+  quantityPrecision: number;
+  baseAssetPrecision: number;
+  quotePrecision: number;
+  filters: BinanceExchangeFilter[];
+  orderTypes: string[];
+  timeInForce?: string[];
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiExchangeInfoResponse {
+  timezone: string;
+  serverTime: number;
+  rateLimits: BinanceRateLimit[];
+  exchangeFilters: BinanceExchangeFilter[];
+  assets?: BinanceFapiExchangeInfoAsset[];
+  symbols: BinanceFapiSymbolInfo[];
+  [key: string]: unknown;
+}
+
+export type BinanceFapiDepthLimit = 5 | 10 | 20 | 50 | 100 | 500 | 1000;
+
+export interface BinanceFapiDepthRequest {
+  symbol: string;
+  limit?: BinanceFapiDepthLimit;
+}
+
+export interface BinanceFapiDepthResponse {
+  lastUpdateId: number;
+  E: number;
+  T: number;
+  bids: BinanceOrderBookLevel[];
+  asks: BinanceOrderBookLevel[];
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiRpiDepthRequest {
+  symbol: string;
+  limit?: 1000;
+}
+
+export type BinanceFapiRpiDepthResponse = BinanceFapiDepthResponse;
+
+export interface BinanceFapiTradesRequest {
+  symbol: string;
+  limit?: number;
+}
+
+export interface BinanceFapiTrade {
+  id: number;
+  price: string;
+  qty: string;
+  quoteQty: string;
+  time: number;
+  isBuyerMaker: boolean;
+  isRPITrade?: boolean;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiTradesResponse = BinanceFapiTrade[];
+
+export interface BinanceFapiAggTradesRequest {
+  symbol: string;
+  fromId?: number;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export interface BinanceFapiAggregateTrade {
+  a: number;
+  p: string;
+  q: string;
+  nq?: string;
+  f: number;
+  l: number;
+  T: number;
+  m: boolean;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiAggTradesResponse = BinanceFapiAggregateTrade[];
+
+export type BinanceFapiKlineInterval =
+  | "1m"
+  | "3m"
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "4h"
+  | "6h"
+  | "8h"
+  | "12h"
+  | "1d"
+  | "3d"
+  | "1w"
+  | "1M";
+
+export interface BinanceFapiKlinesRequest {
+  symbol: string;
+  interval: BinanceFapiKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceFapiKline = [
+  openTime: number,
+  open: string,
+  high: string,
+  low: string,
+  close: string,
+  volume: string,
+  closeTime: number,
+  quoteAssetVolume: string,
+  numberOfTrades: number,
+  takerBuyVolume: string,
+  takerBuyQuoteAssetVolume: string,
+  unused: string,
+];
+
+export type BinanceFapiKlinesResponse = BinanceFapiKline[];
+
+export type BinanceFapiContractType =
+  | "PERPETUAL"
+  | "CURRENT_QUARTER"
+  | "NEXT_QUARTER"
+  | "TRADIFI_PERPETUAL";
+
+export interface BinanceFapiContinuousKlinesRequest {
+  pair: string;
+  contractType: BinanceFapiContractType;
+  interval: BinanceFapiKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceFapiContinuousKlinesResponse = BinanceFapiKlinesResponse;
+
+export interface BinanceFapiIndexPriceKlinesRequest {
+  pair: string;
+  interval: BinanceFapiKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceFapiIndexPriceKlinesResponse = BinanceFapiKlinesResponse;
+export type BinanceFapiMarkPriceKlinesRequest = BinanceFapiKlinesRequest;
+export type BinanceFapiMarkPriceKlinesResponse = BinanceFapiKlinesResponse;
+export type BinanceFapiPremiumIndexKlinesRequest = BinanceFapiKlinesRequest;
+export type BinanceFapiPremiumIndexKlinesResponse = BinanceFapiKlinesResponse;
+
+export interface BinanceFapiPremiumIndexRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiPremiumIndex {
+  symbol: string;
+  markPrice: string;
+  indexPrice: string;
+  estimatedSettlePrice?: string;
+  lastFundingRate?: string;
+  interestRate?: string;
+  nextFundingTime?: number;
+  time: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiPremiumIndexResponse =
+  | BinanceFapiPremiumIndex
+  | BinanceFapiPremiumIndex[];
+
+export interface BinanceFapiFundingRateRequest {
+  symbol?: string;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export interface BinanceFapiFundingRate {
+  symbol: string;
+  fundingTime: number;
+  fundingRate: string;
+  markPrice?: string;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiFundingRateResponse = BinanceFapiFundingRate[];
+
+export interface BinanceFapiFundingInfo {
+  symbol: string;
+  adjustedFundingRateCap: string;
+  adjustedFundingRateFloor: string;
+  fundingIntervalHours: number;
+  disclaimer?: boolean;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiFundingInfoResponse = BinanceFapiFundingInfo[];
+
+export interface BinanceFapiTicker24hrRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiTicker24hr {
+  symbol: string;
+  priceChange: string;
+  priceChangePercent: string;
+  weightedAvgPrice: string;
+  lastPrice: string;
+  lastQty: string;
+  openPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  volume: string;
+  quoteVolume: string;
+  openTime: number;
+  closeTime: number;
+  firstId: number;
+  lastId: number;
+  count: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiTicker24hrResponse =
+  | BinanceFapiTicker24hr
+  | BinanceFapiTicker24hr[];
+
+export interface BinanceFapiTickerBookTickerRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiTickerBookTicker {
+  symbol: string;
+  bidPrice: string;
+  bidQty: string;
+  askPrice: string;
+  askQty: string;
+  time: number;
+  lastUpdateId?: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiTickerBookTickerResponse =
+  | BinanceFapiTickerBookTicker
+  | BinanceFapiTickerBookTicker[];
+
+export interface BinanceFapiV2TickerPriceRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiTickerPrice {
+  symbol: string;
+  price: string;
+  time: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiV2TickerPriceResponse =
+  | BinanceFapiTickerPrice
+  | BinanceFapiTickerPrice[];
+
+export interface BinanceFapiOpenInterestRequest {
+  symbol: string;
+}
+
+export interface BinanceFapiOpenInterestResponse {
+  symbol: string;
+  openInterest: string;
+  time: number;
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiIndexInfoRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiIndexInfoBaseAsset {
+  baseAsset: string;
+  quoteAsset: string;
+  weightInQuantity: string;
+  weightInPercentage: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiIndexInfo {
+  symbol: string;
+  time: number;
+  component: string;
+  baseAssetList: BinanceFapiIndexInfoBaseAsset[];
+  [key: string]: unknown;
+}
+
+export type BinanceFapiIndexInfoResponse = BinanceFapiIndexInfo[];
+
+export interface BinanceFapiAssetIndexRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiAssetIndex {
+  symbol: string;
+  time: number;
+  index: string;
+  bidBuffer?: string;
+  askBuffer?: string;
+  bidRate?: string;
+  askRate?: string;
+  autoExchangeBidBuffer?: string;
+  autoExchangeAskBuffer?: string;
+  autoExchangeBidRate?: string;
+  autoExchangeAskRate?: string;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiAssetIndexResponse =
+  | BinanceFapiAssetIndex
+  | BinanceFapiAssetIndex[];
+
+export interface BinanceFapiConstituentsRequest {
+  symbol: string;
+}
+
+export interface BinanceFapiIndexConstituent {
+  exchange: string;
+  symbol: string;
+  price: string;
+  weight: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiConstituentsResponse {
+  symbol: string;
+  time: number;
+  constituents: BinanceFapiIndexConstituent[];
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiInsuranceBalanceRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiInsuranceBalanceAsset {
+  asset: string;
+  marginBalance: string;
+  updateTime: number;
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiInsuranceBalance {
+  symbols: string[];
+  assets: BinanceFapiInsuranceBalanceAsset[];
+  [key: string]: unknown;
+}
+
+export type BinanceFapiInsuranceBalanceResponse =
+  | BinanceFapiInsuranceBalance
+  | BinanceFapiInsuranceBalance[];
+
+export interface BinanceFapiSymbolAdlRiskRequest {
+  symbol?: string;
+}
+
+export interface BinanceFapiSymbolAdlRisk {
+  symbol: string;
+  adlRisk: string;
+  updateTime: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFapiSymbolAdlRiskResponse =
+  | BinanceFapiSymbolAdlRisk
+  | BinanceFapiSymbolAdlRisk[];
+
+export interface BinanceFapiTradingScheduleSession {
+  startTime: number;
+  endTime: number;
+  type: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiTradingScheduleMarket {
+  sessions: BinanceFapiTradingScheduleSession[];
+  [key: string]: unknown;
+}
+
+export interface BinanceFapiTradingScheduleResponse {
+  updateTime: number;
+  marketSchedules: Record<string, BinanceFapiTradingScheduleMarket>;
+  [key: string]: unknown;
+}
+
+export type BinanceFuturesDataPeriod =
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "4h"
+  | "6h"
+  | "12h"
+  | "1d";
+
+export interface BinanceFuturesDataDeliveryPriceRequest {
+  pair: string;
+}
+
+export interface BinanceFuturesDataDeliveryPrice {
+  deliveryTime: number;
+  deliveryPrice: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFuturesDataDeliveryPriceResponse =
+  BinanceFuturesDataDeliveryPrice[];
+
+export interface BinanceFuturesDataOpenInterestHistRequest {
+  symbol: string;
+  period: BinanceFuturesDataPeriod;
+  limit?: number;
+  startTime?: number;
+  endTime?: number;
+}
+
+export interface BinanceFuturesDataOpenInterestHist {
+  symbol: string;
+  sumOpenInterest: string;
+  sumOpenInterestValue: string;
+  CMCCirculatingSupply?: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFuturesDataOpenInterestHistResponse =
+  BinanceFuturesDataOpenInterestHist[];
+
+export interface BinanceFuturesDataLongShortRatioRequest {
+  symbol: string;
+  period: BinanceFuturesDataPeriod;
+  limit?: number;
+  startTime?: number;
+  endTime?: number;
+}
+
+export interface BinanceFuturesDataLongShortRatio {
+  symbol: string;
+  longShortRatio: string;
+  longAccount: string;
+  shortAccount: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFuturesDataLongShortRatioResponse =
+  BinanceFuturesDataLongShortRatio[];
+
+export type BinanceFuturesDataTakerlongshortRatioRequest =
+  BinanceFuturesDataLongShortRatioRequest;
+
+export interface BinanceFuturesDataTakerlongshortRatio {
+  buySellRatio: string;
+  buyVol: string;
+  sellVol: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFuturesDataTakerlongshortRatioResponse =
+  BinanceFuturesDataTakerlongshortRatio[];
+
+export interface BinanceFuturesDataBasisRequest {
+  pair: string;
+  contractType: "CURRENT_QUARTER" | "NEXT_QUARTER" | "PERPETUAL";
+  period: BinanceFuturesDataPeriod;
+  limit?: number;
+  startTime?: number;
+  endTime?: number;
+}
+
+export interface BinanceFuturesDataBasis {
+  pair: string;
+  contractType: string;
+  indexPrice: string;
+  futuresPrice: string;
+  basis: string;
+  basisRate: string;
+  annualizedBasisRate: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceFuturesDataBasisResponse = BinanceFuturesDataBasis[];
+
 export type BinanceOptionPingResponse = BinancePingResponse;
 export type BinanceOptionTimeResponse = BinanceTimeResponse;
 
@@ -720,6 +1236,247 @@ export interface BinanceHistoricalBlockTradesMethod {
   schema: typeof import("./zod").BinanceHistoricalBlockTradesRequestSchema;
 }
 
+export interface BinanceFapiPingMethod {
+  (signal?: AbortSignal): Promise<BinanceFapiPingResponse>;
+  schema: undefined;
+}
+
+export interface BinanceFapiTimeMethod {
+  (signal?: AbortSignal): Promise<BinanceFapiTimeResponse>;
+  schema: undefined;
+}
+
+export interface BinanceFapiExchangeInfoMethod {
+  (signal?: AbortSignal): Promise<BinanceFapiExchangeInfoResponse>;
+  schema: undefined;
+}
+
+export interface BinanceFapiDepthMethod {
+  (
+    req: BinanceFapiDepthRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiDepthResponse>;
+  schema: typeof import("./zod").BinanceFapiDepthRequestSchema;
+}
+
+export interface BinanceFapiRpiDepthMethod {
+  (
+    req: BinanceFapiRpiDepthRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiRpiDepthResponse>;
+  schema: typeof import("./zod").BinanceFapiRpiDepthRequestSchema;
+}
+
+export interface BinanceFapiTradesMethod {
+  (
+    req: BinanceFapiTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiTradesResponse>;
+  schema: typeof import("./zod").BinanceFapiTradesRequestSchema;
+}
+
+export interface BinanceFapiAggTradesMethod {
+  (
+    req: BinanceFapiAggTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiAggTradesResponse>;
+  schema: typeof import("./zod").BinanceFapiAggTradesRequestSchema;
+}
+
+export interface BinanceFapiKlinesMethod {
+  (
+    req: BinanceFapiKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiKlinesResponse>;
+  schema: typeof import("./zod").BinanceFapiKlinesRequestSchema;
+}
+
+export interface BinanceFapiContinuousKlinesMethod {
+  (
+    req: BinanceFapiContinuousKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiContinuousKlinesResponse>;
+  schema: typeof import("./zod").BinanceFapiContinuousKlinesRequestSchema;
+}
+
+export interface BinanceFapiIndexPriceKlinesMethod {
+  (
+    req: BinanceFapiIndexPriceKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiIndexPriceKlinesResponse>;
+  schema: typeof import("./zod").BinanceFapiIndexPriceKlinesRequestSchema;
+}
+
+export interface BinanceFapiMarkPriceKlinesMethod {
+  (
+    req: BinanceFapiMarkPriceKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiMarkPriceKlinesResponse>;
+  schema: typeof import("./zod").BinanceFapiMarkPriceKlinesRequestSchema;
+}
+
+export interface BinanceFapiPremiumIndexKlinesMethod {
+  (
+    req: BinanceFapiPremiumIndexKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiPremiumIndexKlinesResponse>;
+  schema: typeof import("./zod").BinanceFapiPremiumIndexKlinesRequestSchema;
+}
+
+export interface BinanceFapiPremiumIndexMethod {
+  (
+    req?: BinanceFapiPremiumIndexRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiPremiumIndexResponse>;
+  schema: typeof import("./zod").BinanceFapiPremiumIndexRequestSchema;
+}
+
+export interface BinanceFapiFundingRateMethod {
+  (
+    req?: BinanceFapiFundingRateRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiFundingRateResponse>;
+  schema: typeof import("./zod").BinanceFapiFundingRateRequestSchema;
+}
+
+export interface BinanceFapiFundingInfoMethod {
+  (signal?: AbortSignal): Promise<BinanceFapiFundingInfoResponse>;
+  schema: undefined;
+}
+
+export interface BinanceFapiTicker24hrMethod {
+  (
+    req?: BinanceFapiTicker24hrRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiTicker24hrResponse>;
+  schema: typeof import("./zod").BinanceFapiTicker24hrRequestSchema;
+}
+
+export interface BinanceFapiTickerBookTickerMethod {
+  (
+    req?: BinanceFapiTickerBookTickerRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiTickerBookTickerResponse>;
+  schema: typeof import("./zod").BinanceFapiTickerBookTickerRequestSchema;
+}
+
+export interface BinanceFapiV2TickerPriceMethod {
+  (
+    req?: BinanceFapiV2TickerPriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiV2TickerPriceResponse>;
+  schema: typeof import("./zod").BinanceFapiV2TickerPriceRequestSchema;
+}
+
+export interface BinanceFapiOpenInterestMethod {
+  (
+    req: BinanceFapiOpenInterestRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiOpenInterestResponse>;
+  schema: typeof import("./zod").BinanceFapiOpenInterestRequestSchema;
+}
+
+export interface BinanceFapiIndexInfoMethod {
+  (
+    req?: BinanceFapiIndexInfoRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiIndexInfoResponse>;
+  schema: typeof import("./zod").BinanceFapiIndexInfoRequestSchema;
+}
+
+export interface BinanceFapiAssetIndexMethod {
+  (
+    req?: BinanceFapiAssetIndexRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiAssetIndexResponse>;
+  schema: typeof import("./zod").BinanceFapiAssetIndexRequestSchema;
+}
+
+export interface BinanceFapiConstituentsMethod {
+  (
+    req: BinanceFapiConstituentsRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiConstituentsResponse>;
+  schema: typeof import("./zod").BinanceFapiConstituentsRequestSchema;
+}
+
+export interface BinanceFapiInsuranceBalanceMethod {
+  (
+    req?: BinanceFapiInsuranceBalanceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiInsuranceBalanceResponse>;
+  schema: typeof import("./zod").BinanceFapiInsuranceBalanceRequestSchema;
+}
+
+export interface BinanceFapiSymbolAdlRiskMethod {
+  (
+    req?: BinanceFapiSymbolAdlRiskRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFapiSymbolAdlRiskResponse>;
+  schema: typeof import("./zod").BinanceFapiSymbolAdlRiskRequestSchema;
+}
+
+export interface BinanceFapiTradingScheduleMethod {
+  (signal?: AbortSignal): Promise<BinanceFapiTradingScheduleResponse>;
+  schema: undefined;
+}
+
+export interface BinanceFuturesDataDeliveryPriceMethod {
+  (
+    req: BinanceFuturesDataDeliveryPriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataDeliveryPriceResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataDeliveryPriceRequestSchema;
+}
+
+export interface BinanceFuturesDataOpenInterestHistMethod {
+  (
+    req: BinanceFuturesDataOpenInterestHistRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataOpenInterestHistResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataOpenInterestHistRequestSchema;
+}
+
+export interface BinanceFuturesDataTopLongShortPositionRatioMethod {
+  (
+    req: BinanceFuturesDataLongShortRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataLongShortRatioResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataLongShortRatioRequestSchema;
+}
+
+export interface BinanceFuturesDataTopLongShortAccountRatioMethod {
+  (
+    req: BinanceFuturesDataLongShortRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataLongShortRatioResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataLongShortRatioRequestSchema;
+}
+
+export interface BinanceFuturesDataGlobalLongShortAccountRatioMethod {
+  (
+    req: BinanceFuturesDataLongShortRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataLongShortRatioResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataLongShortRatioRequestSchema;
+}
+
+export interface BinanceFuturesDataTakerlongshortRatioMethod {
+  (
+    req: BinanceFuturesDataTakerlongshortRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataTakerlongshortRatioResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataTakerlongshortRatioRequestSchema;
+}
+
+export interface BinanceFuturesDataBasisMethod {
+  (
+    req: BinanceFuturesDataBasisRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceFuturesDataBasisResponse>;
+  schema: typeof import("./zod").BinanceFuturesDataBasisRequestSchema;
+}
+
 export interface BinanceOptionPingMethod {
   (signal?: AbortSignal): Promise<BinanceOptionPingResponse>;
   schema: undefined;
@@ -857,13 +1614,75 @@ export interface BinanceEapiNamespace {
   v1: BinanceEapiV1Namespace;
 }
 
+export interface BinanceFapiV1TickerNamespace {
+  bookTicker: BinanceFapiTickerBookTickerMethod;
+  twentyFourHr: BinanceFapiTicker24hrMethod;
+}
+
+export interface BinanceFapiV1Namespace {
+  aggTrades: BinanceFapiAggTradesMethod;
+  assetIndex: BinanceFapiAssetIndexMethod;
+  constituents: BinanceFapiConstituentsMethod;
+  continuousKlines: BinanceFapiContinuousKlinesMethod;
+  depth: BinanceFapiDepthMethod;
+  exchangeInfo: BinanceFapiExchangeInfoMethod;
+  fundingInfo: BinanceFapiFundingInfoMethod;
+  fundingRate: BinanceFapiFundingRateMethod;
+  indexInfo: BinanceFapiIndexInfoMethod;
+  indexPriceKlines: BinanceFapiIndexPriceKlinesMethod;
+  insuranceBalance: BinanceFapiInsuranceBalanceMethod;
+  klines: BinanceFapiKlinesMethod;
+  markPriceKlines: BinanceFapiMarkPriceKlinesMethod;
+  openInterest: BinanceFapiOpenInterestMethod;
+  ping: BinanceFapiPingMethod;
+  premiumIndex: BinanceFapiPremiumIndexMethod;
+  premiumIndexKlines: BinanceFapiPremiumIndexKlinesMethod;
+  rpiDepth: BinanceFapiRpiDepthMethod;
+  symbolAdlRisk: BinanceFapiSymbolAdlRiskMethod;
+  ticker: BinanceFapiV1TickerNamespace;
+  time: BinanceFapiTimeMethod;
+  trades: BinanceFapiTradesMethod;
+  tradingSchedule: BinanceFapiTradingScheduleMethod;
+}
+
+export interface BinanceFapiV2TickerNamespace {
+  price: BinanceFapiV2TickerPriceMethod;
+}
+
+export interface BinanceFapiV2Namespace {
+  ticker: BinanceFapiV2TickerNamespace;
+}
+
+export interface BinanceFapiNamespace {
+  v1: BinanceFapiV1Namespace;
+  v2: BinanceFapiV2Namespace;
+}
+
+export interface BinanceFuturesDataNamespace {
+  basis: BinanceFuturesDataBasisMethod;
+  deliveryPrice: BinanceFuturesDataDeliveryPriceMethod;
+  globalLongShortAccountRatio: BinanceFuturesDataGlobalLongShortAccountRatioMethod;
+  openInterestHist: BinanceFuturesDataOpenInterestHistMethod;
+  takerlongshortRatio: BinanceFuturesDataTakerlongshortRatioMethod;
+  topLongShortAccountRatio: BinanceFuturesDataTopLongShortAccountRatioMethod;
+  topLongShortPositionRatio: BinanceFuturesDataTopLongShortPositionRatioMethod;
+}
+
+export interface BinanceFuturesNamespace {
+  data: BinanceFuturesDataNamespace;
+}
+
 export interface BinanceGetNamespace {
   api: BinanceApiNamespace;
   eapi: BinanceEapiNamespace;
+  fapi: BinanceFapiNamespace;
+  futures: BinanceFuturesNamespace;
 }
 
 export interface BinanceProvider {
   api: BinanceApiNamespace;
   eapi: BinanceEapiNamespace;
+  fapi: BinanceFapiNamespace;
+  futures: BinanceFuturesNamespace;
   get: BinanceGetNamespace;
 }

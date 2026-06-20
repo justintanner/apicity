@@ -710,6 +710,7 @@ const BASE_URL_IDENTIFIERS = new Set([
   "spotBaseURL",
   "spotDataBaseURL",
   "fapiBaseURL",
+  "futuresDataBaseURL",
   "dapiBaseURL",
   "uploadBaseURL",
   "uploadBaseURL",
@@ -810,6 +811,12 @@ function extractMethodFromOptions(argNode) {
 
 function extractBaseOverride(optionsNode) {
   if (!optionsNode) return null;
+  if (optionsNode.getKind() === SyntaxKind.Identifier) {
+    const idName = optionsNode.getText();
+    if (BASE_URL_IDENTIFIERS.has(idName)) {
+      return `{${idName}}`;
+    }
+  }
   if (optionsNode.getKind() !== SyntaxKind.ObjectLiteralExpression) return null;
   for (const prop of optionsNode.getProperties()) {
     if (prop.getKind() !== SyntaxKind.PropertyAssignment) continue;

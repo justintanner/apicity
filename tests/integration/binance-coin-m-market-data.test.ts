@@ -175,7 +175,7 @@ describe("binance COIN-M Futures market data integration", () => {
       constituents: expect.any(Array),
     });
 
-    const openInterestHist = await binance.futures.data.openInterestHist({
+    const openInterestHist = await binance.coinMFutures.data.openInterestHist({
       pair: "BTCUSD",
       contractType: "PERPETUAL",
       period: "5m",
@@ -188,7 +188,7 @@ describe("binance COIN-M Futures market data integration", () => {
     });
 
     const topPositionRatio =
-      await binance.futures.data.topLongShortPositionRatio({
+      await binance.coinMFutures.data.topLongShortPositionRatio({
         pair: "BTCUSD",
         period: "5m",
         limit: 1,
@@ -200,13 +200,12 @@ describe("binance COIN-M Futures market data integration", () => {
       shortPosition: expect.any(String),
     });
 
-    const topAccountRatio = await binance.futures.data.topLongShortAccountRatio(
-      {
+    const topAccountRatio =
+      await binance.coinMFutures.data.topLongShortAccountRatio({
         pair: "BTCUSD",
         period: "5m",
         limit: 1,
-      }
-    );
+      });
     expect(topAccountRatio[0]).toMatchObject({
       pair: "BTCUSD",
       longShortRatio: expect.any(String),
@@ -215,7 +214,7 @@ describe("binance COIN-M Futures market data integration", () => {
     });
 
     const globalAccountRatio =
-      await binance.futures.data.globalLongShortAccountRatio({
+      await binance.coinMFutures.data.globalLongShortAccountRatio({
         pair: "BTCUSD",
         period: "5m",
         limit: 1,
@@ -227,7 +226,7 @@ describe("binance COIN-M Futures market data integration", () => {
       shortAccount: expect.any(String),
     });
 
-    const takerBuySellVol = await binance.futures.data.takerBuySellVol({
+    const takerBuySellVol = await binance.coinMFutures.data.takerBuySellVol({
       pair: "BTCUSD",
       contractType: "PERPETUAL",
       period: "5m",
@@ -239,7 +238,7 @@ describe("binance COIN-M Futures market data integration", () => {
       takerSellVol: expect.any(String),
     });
 
-    const deliveryPrice = await binance.futures.data.deliveryPrice({
+    const deliveryPrice = await binance.coinMFutures.data.deliveryPrice({
       pair: "BTCUSD",
     });
     expect(deliveryPrice[0]).toMatchObject({
@@ -247,7 +246,7 @@ describe("binance COIN-M Futures market data integration", () => {
       deliveryPrice: expect.any(Number),
     });
 
-    const basis = await binance.futures.data.basis({
+    const basis = await binance.coinMFutures.data.basis({
       pair: "BTCUSD",
       contractType: "PERPETUAL",
       period: "5m",

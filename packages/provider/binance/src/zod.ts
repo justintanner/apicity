@@ -14,6 +14,7 @@ export const BinanceOptionsSchema = z.object({
   spotBaseURL: z.string().optional(),
   spotDataBaseURL: z.string().optional(),
   fapiBaseURL: z.string().optional(),
+  futuresDataBaseURL: z.string().optional(),
   dapiBaseURL: z.string().optional(),
   eapiBaseURL: z.string().optional(),
   coinMBaseURL: z.string().optional(),
@@ -142,6 +143,184 @@ export const BinanceHistoricalBlockTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   fromId: z.number().int().nonnegative(),
   limit: z.number().int().positive().max(1000).optional(),
+});
+
+const BinanceFapiDepthLimitSchema = z.union([
+  z.literal(5),
+  z.literal(10),
+  z.literal(20),
+  z.literal(50),
+  z.literal(100),
+  z.literal(500),
+  z.literal(1000),
+]);
+
+export const BinanceFapiDepthRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: BinanceFapiDepthLimitSchema.optional(),
+});
+
+export const BinanceFapiRpiDepthRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.literal(1000).optional(),
+});
+
+export const BinanceFapiTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceFapiAggTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  fromId: z.number().int().nonnegative().optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceFapiKlineIntervalSchema = z.enum([
+  "1m",
+  "3m",
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "2h",
+  "4h",
+  "6h",
+  "8h",
+  "12h",
+  "1d",
+  "3d",
+  "1w",
+  "1M",
+]);
+
+export const BinanceFapiKlinesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  interval: BinanceFapiKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceFapiContinuousKlinesRequestSchema = z.object({
+  pair: z.string().min(1),
+  contractType: z.enum([
+    "PERPETUAL",
+    "CURRENT_QUARTER",
+    "NEXT_QUARTER",
+    "TRADIFI_PERPETUAL",
+  ]),
+  interval: BinanceFapiKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceFapiIndexPriceKlinesRequestSchema = z.object({
+  pair: z.string().min(1),
+  interval: BinanceFapiKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceFapiMarkPriceKlinesRequestSchema =
+  BinanceFapiKlinesRequestSchema;
+
+export const BinanceFapiPremiumIndexKlinesRequestSchema =
+  BinanceFapiKlinesRequestSchema;
+
+export const BinanceFapiPremiumIndexRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiFundingRateRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceFapiTicker24hrRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiTickerBookTickerRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiV2TickerPriceRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiOpenInterestRequestSchema = z.object({
+  symbol: z.string().min(1),
+});
+
+export const BinanceFapiIndexInfoRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiAssetIndexRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiConstituentsRequestSchema = z.object({
+  symbol: z.string().min(1),
+});
+
+export const BinanceFapiInsuranceBalanceRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFapiSymbolAdlRiskRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceFuturesDataPeriodSchema = z.enum([
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "2h",
+  "4h",
+  "6h",
+  "12h",
+  "1d",
+]);
+
+export const BinanceFuturesDataDeliveryPriceRequestSchema = z.object({
+  pair: z.string().min(1),
+});
+
+export const BinanceFuturesDataOpenInterestHistRequestSchema = z.object({
+  symbol: z.string().min(1),
+  period: BinanceFuturesDataPeriodSchema,
+  limit: z.number().int().positive().max(500).optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+});
+
+export const BinanceFuturesDataLongShortRatioRequestSchema = z.object({
+  symbol: z.string().min(1),
+  period: BinanceFuturesDataPeriodSchema,
+  limit: z.number().int().positive().max(500).optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+});
+
+export const BinanceFuturesDataTakerlongshortRatioRequestSchema =
+  BinanceFuturesDataLongShortRatioRequestSchema;
+
+export const BinanceFuturesDataBasisRequestSchema = z.object({
+  pair: z.string().min(1),
+  contractType: z.enum(["CURRENT_QUARTER", "NEXT_QUARTER", "PERPETUAL"]),
+  period: BinanceFuturesDataPeriodSchema,
+  limit: z.number().int().positive().max(500).optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
 });
 
 export const BinanceOptionTickerRequestSchema = z.object({

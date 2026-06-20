@@ -31,7 +31,7 @@ const binance = createBinance();
 
 ## API Reference
 
-60 endpoints across 17 groups. Each method mirrors an upstream URL path.
+92 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### aggTrades
 
@@ -67,12 +67,121 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 </details>
 
+### coinMFutures
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.basis</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/basis{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Basis)
+
+```typescript
+const res = await binance.coinMFutures.data.basis({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.deliveryPrice</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/delivery-price{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Delivery-Price)
+
+```typescript
+const res = await binance.coinMFutures.data.deliveryPrice({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.globalLongShortAccountRatio</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/globalLongShortAccountRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Long-Short-Ratio)
+
+```typescript
+const res = await binance.coinMFutures.data.globalLongShortAccountRatio({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.openInterestHist</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/openInterestHist{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Open-Interest-Statistics)
+
+```typescript
+const res = await binance.coinMFutures.data.openInterestHist({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.takerBuySellVol</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/takerBuySellVol{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Taker-Buy-Sell-Volume)
+
+```typescript
+const res = await binance.coinMFutures.data.takerBuySellVol({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.topLongShortAccountRatio</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/topLongShortAccountRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Top-Long-Short-Account-Ratio)
+
+```typescript
+const res = await binance.coinMFutures.data.topLongShortAccountRatio({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.coinMFutures.data.topLongShortPositionRatio</code></b></summary>
+
+<code>GET https://dapi.binance.com/futures/data/topLongShortPositionRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Top-Trader-Long-Short-Ratio)
+
+```typescript
+const res = await binance.coinMFutures.data.topLongShortPositionRatio({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
 ### dapi
 
 <details>
 <summary><code>GET</code> <b><code>binance.dapi.v1.aggTrades</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/aggTrades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Compressed-Aggregate-Trades-List)
 
 ```typescript
 const res = await binance.dapi.v1.aggTrades({ /* ... */ });
@@ -87,6 +196,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/constituents{query}</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Index-Constituents)
+
 ```typescript
 const res = await binance.dapi.v1.constituents({ /* ... */ });
 ```
@@ -99,6 +210,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.continuousKlines</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/continuousKlines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Continuous-Contract-Kline-Candlestick-Data)
 
 ```typescript
 const res = await binance.dapi.v1.continuousKlines({ /* ... */ });
@@ -113,6 +226,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/depth{query}</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Order-Book)
+
 ```typescript
 const res = await binance.dapi.v1.depth({ /* ... */ });
 ```
@@ -125,6 +240,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.exchangeInfo</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/exchangeInfo</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Exchange-Information)
 
 ```typescript
 const res = await binance.dapi.v1.exchangeInfo({ /* ... */ });
@@ -139,6 +256,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/fundingInfo</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Get-Funding-Info)
+
 ```typescript
 const res = await binance.dapi.v1.fundingInfo({ /* ... */ });
 ```
@@ -151,6 +270,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.fundingRate</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/fundingRate{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Get-Funding-Rate-History-of-Perpetual-Futures)
 
 ```typescript
 const res = await binance.dapi.v1.fundingRate({ /* ... */ });
@@ -165,6 +286,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/indexPriceKlines{query}</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Index-Price-Kline-Candlestick-Data)
+
 ```typescript
 const res = await binance.dapi.v1.indexPriceKlines({ /* ... */ });
 ```
@@ -177,6 +300,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.klines</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/klines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Kline-Candlestick-Data)
 
 ```typescript
 const res = await binance.dapi.v1.klines({ /* ... */ });
@@ -191,6 +316,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/markPriceKlines{query}</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Mark-Price-Kline-Candlestick-Data)
+
 ```typescript
 const res = await binance.dapi.v1.markPriceKlines({ /* ... */ });
 ```
@@ -203,6 +330,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.openInterest</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/openInterest{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Open-Interest)
 
 ```typescript
 const res = await binance.dapi.v1.openInterest({ /* ... */ });
@@ -217,6 +346,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/ping</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api)
+
 ```typescript
 const res = await binance.dapi.v1.ping({ /* ... */ });
 ```
@@ -229,6 +360,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.premiumIndex</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/premiumIndex{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Index-Price-and-Mark-Price)
 
 ```typescript
 const res = await binance.dapi.v1.premiumIndex({ /* ... */ });
@@ -243,6 +376,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/premiumIndexKlines{query}</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Premium-Index-Kline-Data)
+
 ```typescript
 const res = await binance.dapi.v1.premiumIndexKlines({ /* ... */ });
 ```
@@ -255,6 +390,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.ticker.bookTicker</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/ticker/bookTicker{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Symbol-Order-Book-Ticker)
 
 ```typescript
 const res = await binance.dapi.v1.ticker.bookTicker({ /* ... */ });
@@ -269,6 +406,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/ticker/price{query}</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Symbol-Price-Ticker)
+
 ```typescript
 const res = await binance.dapi.v1.ticker.price({ /* ... */ });
 ```
@@ -281,6 +420,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.ticker.twentyFourHr</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/ticker/24hr{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/24hr-Ticker-Price-Change-Statistics)
 
 ```typescript
 const res = await binance.dapi.v1.ticker.twentyFourHr({ /* ... */ });
@@ -295,6 +436,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 <code>GET https://dapi.binance.com/dapi/v1/time</code>
 
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Check-Server-time)
+
 ```typescript
 const res = await binance.dapi.v1.time({ /* ... */ });
 ```
@@ -307,6 +450,8 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <summary><code>GET</code> <b><code>binance.dapi.v1.trades</code></b></summary>
 
 <code>GET https://dapi.binance.com/dapi/v1/trades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Recent-Trades-List)
 
 ```typescript
 const res = await binance.dapi.v1.trades({ /* ... */ });
@@ -532,12 +677,391 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 </details>
 
+### fapi
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.aggTrades</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/aggTrades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Compressed-Aggregate-Trades-List)
+
+```typescript
+const res = await binance.fapi.v1.aggTrades({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.assetIndex</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/assetIndex{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Multi-Assets-Mode-Asset-Index)
+
+```typescript
+const res = await binance.fapi.v1.assetIndex({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.constituents</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/constituents{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Index-Constituents)
+
+```typescript
+const res = await binance.fapi.v1.constituents({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.continuousKlines</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/continuousKlines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Continuous-Contract-Kline-Candlestick-Data)
+
+```typescript
+const res = await binance.fapi.v1.continuousKlines({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.depth</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/depth{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Order-Book)
+
+```typescript
+const res = await binance.fapi.v1.depth({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.exchangeInfo</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/exchangeInfo</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information)
+
+```typescript
+const res = await binance.fapi.v1.exchangeInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.fundingInfo</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/fundingInfo</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-Info)
+
+```typescript
+const res = await binance.fapi.v1.fundingInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.fundingRate</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/fundingRate{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-History)
+
+```typescript
+const res = await binance.fapi.v1.fundingRate({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.indexInfo</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/indexInfo{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Composite-Index-Symbol-Information)
+
+```typescript
+const res = await binance.fapi.v1.indexInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.indexPriceKlines</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/indexPriceKlines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Index-Price-Kline-Candlestick-Data)
+
+```typescript
+const res = await binance.fapi.v1.indexPriceKlines({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.insuranceBalance</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/insuranceBalance{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Insurance-Fund-Balance)
+
+```typescript
+const res = await binance.fapi.v1.insuranceBalance({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.klines</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/klines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Kline-Candlestick-Data)
+
+```typescript
+const res = await binance.fapi.v1.klines({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.markPriceKlines</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/markPriceKlines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Mark-Price-Kline-Candlestick-Data)
+
+```typescript
+const res = await binance.fapi.v1.markPriceKlines({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.openInterest</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/openInterest{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Open-Interest)
+
+```typescript
+const res = await binance.fapi.v1.openInterest({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.ping</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/ping</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity)
+
+```typescript
+const res = await binance.fapi.v1.ping({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.premiumIndex</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/premiumIndex{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Mark-Price)
+
+```typescript
+const res = await binance.fapi.v1.premiumIndex({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.premiumIndexKlines</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/premiumIndexKlines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Premium-Index-Kline-Data)
+
+```typescript
+const res = await binance.fapi.v1.premiumIndexKlines({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.rpiDepth</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/rpiDepth{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Order-Book-RPI)
+
+```typescript
+const res = await binance.fapi.v1.rpiDepth({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.symbolAdlRisk</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/symbolAdlRisk{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/ADL-Risk)
+
+```typescript
+const res = await binance.fapi.v1.symbolAdlRisk({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.ticker.bookTicker</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/ticker/bookTicker{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Symbol-Order-Book-Ticker)
+
+```typescript
+const res = await binance.fapi.v1.ticker.bookTicker({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.ticker.twentyFourHr</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/ticker/24hr{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/24hr-Ticker-Price-Change-Statistics)
+
+```typescript
+const res = await binance.fapi.v1.ticker.twentyFourHr({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.time</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/time</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Check-Server-Time)
+
+```typescript
+const res = await binance.fapi.v1.time({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.trades</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/trades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Recent-Trades-List)
+
+```typescript
+const res = await binance.fapi.v1.trades({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v1.tradingSchedule</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v1/tradingSchedule</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Trading-Schedule)
+
+```typescript
+const res = await binance.fapi.v1.tradingSchedule({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.fapi.v2.ticker.price</code></b></summary>
+
+<code>GET https://fapi.binance.com/fapi/v2/ticker/price{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Symbol-Price-Ticker-v2)
+
+```typescript
+const res = await binance.fapi.v2.ticker.price({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
 ### futures
 
 <details>
 <summary><code>GET</code> <b><code>binance.futures.data.basis</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/basis{query}</code>
+<code>GET https://fapi.binance.com/futures/data/basis{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Basis)
 
 ```typescript
 const res = await binance.futures.data.basis({ /* ... */ });
@@ -550,7 +1074,9 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <details>
 <summary><code>GET</code> <b><code>binance.futures.data.deliveryPrice</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/delivery-price{query}</code>
+<code>GET https://fapi.binance.com/futures/data/delivery-price{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Delivery-Price)
 
 ```typescript
 const res = await binance.futures.data.deliveryPrice({ /* ... */ });
@@ -563,7 +1089,9 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <details>
 <summary><code>GET</code> <b><code>binance.futures.data.globalLongShortAccountRatio</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/globalLongShortAccountRatio{query}</code>
+<code>GET https://fapi.binance.com/futures/data/globalLongShortAccountRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Long-Short-Ratio)
 
 ```typescript
 const res = await binance.futures.data.globalLongShortAccountRatio({ /* ... */ });
@@ -576,7 +1104,9 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <details>
 <summary><code>GET</code> <b><code>binance.futures.data.openInterestHist</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/openInterestHist{query}</code>
+<code>GET https://fapi.binance.com/futures/data/openInterestHist{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Open-Interest-Statistics)
 
 ```typescript
 const res = await binance.futures.data.openInterestHist({ /* ... */ });
@@ -587,12 +1117,14 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>binance.futures.data.takerBuySellVol</code></b></summary>
+<summary><code>GET</code> <b><code>binance.futures.data.takerlongshortRatio</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/takerBuySellVol{query}</code>
+<code>GET https://fapi.binance.com/futures/data/takerlongshortRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Taker-BuySell-Volume)
 
 ```typescript
-const res = await binance.futures.data.takerBuySellVol({ /* ... */ });
+const res = await binance.futures.data.takerlongshortRatio({ /* ... */ });
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
@@ -602,7 +1134,9 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <details>
 <summary><code>GET</code> <b><code>binance.futures.data.topLongShortAccountRatio</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/topLongShortAccountRatio{query}</code>
+<code>GET https://fapi.binance.com/futures/data/topLongShortAccountRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Top-Long-Short-Account-Ratio)
 
 ```typescript
 const res = await binance.futures.data.topLongShortAccountRatio({ /* ... */ });
@@ -615,7 +1149,9 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 <details>
 <summary><code>GET</code> <b><code>binance.futures.data.topLongShortPositionRatio</code></b></summary>
 
-<code>GET https://dapi.binance.com/futures/data/topLongShortPositionRatio{query}</code>
+<code>GET https://fapi.binance.com/futures/data/topLongShortPositionRatio{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Top-Trader-Long-Short-Ratio)
 
 ```typescript
 const res = await binance.futures.data.topLongShortPositionRatio({ /* ... */ });

@@ -73,7 +73,11 @@ function signatureOptions(provider) {
   return {
     keepFullHostname: provider === "free-media-upload",
     ignoredHostLabels:
-      provider === "binance" ? ["eapi"] : provider === "kie" ? ["kieai"] : [],
+      provider === "binance"
+        ? ["eapi", "fapi"]
+        : provider === "kie"
+          ? ["kieai"]
+          : [],
   };
 }
 

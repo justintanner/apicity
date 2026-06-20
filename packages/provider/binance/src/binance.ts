@@ -1,4 +1,5 @@
 import { BinanceError } from "./types";
+import type * as BinanceTypes from "./types";
 import type {
   BinanceAggTradesRequest,
   BinanceAggTradesResponse,
@@ -103,6 +104,7 @@ import type {
   BinanceUiKlinesRequest,
   BinanceUiKlinesResponse,
 } from "./types";
+import * as BinanceSchemas from "./zod";
 import {
   BinanceAggTradesRequestSchema,
   BinanceAvgPriceRequestSchema,
@@ -186,6 +188,12 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     "https://data-api.binance.vision"
   ).replace(/\/+$/, "");
   const fapiBaseURL = (
+    opts?.fapiBaseURL ??
+    opts?.publicBaseURLs?.fapi ??
+    "https://fapi.binance.com"
+  ).replace(/\/+$/, "");
+  const futuresDataBaseURL = (
+    opts?.futuresDataBaseURL ??
     opts?.fapiBaseURL ??
     opts?.publicBaseURLs?.fapi ??
     "https://fapi.binance.com"
@@ -983,6 +991,694 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     { schema: BinanceOptionMarkPriceRequestSchema }
   );
 
+  // GET https://fapi.binance.com/fapi/v1/ping
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity
+  const fapiPing = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiPingResponse> => {
+      return makeJsonRequest<BinanceTypes.BinanceFapiPingResponse>(
+        "GET",
+        "/fapi/v1/ping",
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/time
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Check-Server-Time
+  const fapiTime = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiTimeResponse> => {
+      return makeJsonRequest<BinanceTypes.BinanceFapiTimeResponse>(
+        "GET",
+        "/fapi/v1/time",
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/exchangeInfo
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Exchange-Information
+  const fapiExchangeInfo = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiExchangeInfoResponse> => {
+      return makeJsonRequest<BinanceTypes.BinanceFapiExchangeInfoResponse>(
+        "GET",
+        "/fapi/v1/exchangeInfo",
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/depth{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Order-Book
+  const fapiDepth = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiDepthRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiDepthResponse> => {
+      const query = buildQuery({ symbol: req.symbol, limit: req.limit });
+      return makeJsonRequest<BinanceTypes.BinanceFapiDepthResponse>(
+        "GET",
+        `/fapi/v1/depth${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiDepthRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/rpiDepth{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Order-Book-RPI
+  const fapiRpiDepth = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiRpiDepthRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiRpiDepthResponse> => {
+      const query = buildQuery({ symbol: req.symbol, limit: req.limit });
+      return makeJsonRequest<BinanceTypes.BinanceFapiRpiDepthResponse>(
+        "GET",
+        `/fapi/v1/rpiDepth${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiRpiDepthRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/trades{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Recent-Trades-List
+  const fapiTrades = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiTradesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiTradesResponse> => {
+      const query = buildQuery({ symbol: req.symbol, limit: req.limit });
+      return makeJsonRequest<BinanceTypes.BinanceFapiTradesResponse>(
+        "GET",
+        `/fapi/v1/trades${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiTradesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/aggTrades{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Compressed-Aggregate-Trades-List
+  const fapiAggTrades = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiAggTradesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiAggTradesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        fromId: req.fromId,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiAggTradesResponse>(
+        "GET",
+        `/fapi/v1/aggTrades${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiAggTradesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/klines{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Kline-Candlestick-Data
+  const fapiKlines = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiKlinesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiKlinesResponse>(
+        "GET",
+        `/fapi/v1/klines${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiKlinesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/continuousKlines{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Continuous-Contract-Kline-Candlestick-Data
+  const fapiContinuousKlines = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiContinuousKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiContinuousKlinesResponse> => {
+      const query = buildQuery({
+        pair: req.pair,
+        contractType: req.contractType,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiContinuousKlinesResponse>(
+        "GET",
+        `/fapi/v1/continuousKlines${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiContinuousKlinesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/indexPriceKlines{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Index-Price-Kline-Candlestick-Data
+  const fapiIndexPriceKlines = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiIndexPriceKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiIndexPriceKlinesResponse> => {
+      const query = buildQuery({
+        pair: req.pair,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiIndexPriceKlinesResponse>(
+        "GET",
+        `/fapi/v1/indexPriceKlines${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiIndexPriceKlinesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/markPriceKlines{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Mark-Price-Kline-Candlestick-Data
+  const fapiMarkPriceKlines = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiMarkPriceKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiMarkPriceKlinesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiMarkPriceKlinesResponse>(
+        "GET",
+        `/fapi/v1/markPriceKlines${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiMarkPriceKlinesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/premiumIndexKlines{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Premium-Index-Kline-Data
+  const fapiPremiumIndexKlines = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiPremiumIndexKlinesRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiPremiumIndexKlinesResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        interval: req.interval,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiPremiumIndexKlinesResponse>(
+        "GET",
+        `/fapi/v1/premiumIndexKlines${query}`,
+        undefined,
+        signal,
+        {
+          baseOverride: fapiBaseURL,
+        }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiPremiumIndexKlinesRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/premiumIndex{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Mark-Price
+  const fapiPremiumIndex = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiPremiumIndexRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiPremiumIndexResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiPremiumIndexResponse>(
+        "GET",
+        `/fapi/v1/premiumIndex${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiPremiumIndexRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/fundingRate{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-History
+  const fapiFundingRate = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiFundingRateRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiFundingRateResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        startTime: req.startTime,
+        endTime: req.endTime,
+        limit: req.limit,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFapiFundingRateResponse>(
+        "GET",
+        `/fapi/v1/fundingRate${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiFundingRateRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/fundingInfo
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Get-Funding-Rate-Info
+  const fapiFundingInfo = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiFundingInfoResponse> => {
+      return makeJsonRequest<BinanceTypes.BinanceFapiFundingInfoResponse>(
+        "GET",
+        "/fapi/v1/fundingInfo",
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: undefined }
+  );
+
+  // sig-ok: upstream numeric segment exposed as a TypeScript-friendly name.
+  // GET https://fapi.binance.com/fapi/v1/ticker/24hr{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/24hr-Ticker-Price-Change-Statistics
+  const fapiTickerTwentyFourHr = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiTicker24hrRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiTicker24hrResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiTicker24hrResponse>(
+        "GET",
+        `/fapi/v1/ticker/24hr${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiTicker24hrRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/ticker/bookTicker{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Symbol-Order-Book-Ticker
+  const fapiTickerBookTicker = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiTickerBookTickerRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiTickerBookTickerResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiTickerBookTickerResponse>(
+        "GET",
+        `/fapi/v1/ticker/bookTicker${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiTickerBookTickerRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v2/ticker/price{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Symbol-Price-Ticker-v2
+  const fapiV2TickerPrice = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiV2TickerPriceRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiV2TickerPriceResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiV2TickerPriceResponse>(
+        "GET",
+        `/fapi/v2/ticker/price${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiV2TickerPriceRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/openInterest{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Open-Interest
+  const fapiOpenInterest = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiOpenInterestRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiOpenInterestResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiOpenInterestResponse>(
+        "GET",
+        `/fapi/v1/openInterest${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiOpenInterestRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/indexInfo{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Composite-Index-Symbol-Information
+  const fapiIndexInfo = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiIndexInfoRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiIndexInfoResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiIndexInfoResponse>(
+        "GET",
+        `/fapi/v1/indexInfo${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiIndexInfoRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/assetIndex{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Multi-Assets-Mode-Asset-Index
+  const fapiAssetIndex = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiAssetIndexRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiAssetIndexResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiAssetIndexResponse>(
+        "GET",
+        `/fapi/v1/assetIndex${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiAssetIndexRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/constituents{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Index-Constituents
+  const fapiConstituents = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiConstituentsRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiConstituentsResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiConstituentsResponse>(
+        "GET",
+        `/fapi/v1/constituents${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiConstituentsRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/insuranceBalance{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Insurance-Fund-Balance
+  const fapiInsuranceBalance = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiInsuranceBalanceRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiInsuranceBalanceResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiInsuranceBalanceResponse>(
+        "GET",
+        `/fapi/v1/insuranceBalance${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiInsuranceBalanceRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/symbolAdlRisk{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/ADL-Risk
+  const fapiSymbolAdlRisk = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFapiSymbolAdlRiskRequest = {},
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiSymbolAdlRiskResponse> => {
+      const query = buildQuery({ symbol: req.symbol });
+      return makeJsonRequest<BinanceTypes.BinanceFapiSymbolAdlRiskResponse>(
+        "GET",
+        `/fapi/v1/symbolAdlRisk${query}`,
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFapiSymbolAdlRiskRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/fapi/v1/tradingSchedule
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Trading-Schedule
+  const fapiTradingSchedule = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFapiTradingScheduleResponse> => {
+      return makeJsonRequest<BinanceTypes.BinanceFapiTradingScheduleResponse>(
+        "GET",
+        "/fapi/v1/tradingSchedule",
+        undefined,
+        signal,
+        { baseOverride: fapiBaseURL }
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://fapi.binance.com/futures/data/delivery-price{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Delivery-Price
+  const futuresDataDeliveryPrice = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataDeliveryPriceRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataDeliveryPriceResponse> => {
+      const query = buildQuery({ pair: req.pair });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataDeliveryPriceResponse>(
+        "GET",
+        `/futures/data/delivery-price${query}`,
+        undefined,
+        signal,
+        {
+          baseOverride: futuresDataBaseURL,
+        }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFuturesDataDeliveryPriceRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/futures/data/openInterestHist{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Open-Interest-Statistics
+  const futuresDataOpenInterestHist = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataOpenInterestHistRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataOpenInterestHistResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        period: req.period,
+        limit: req.limit,
+        startTime: req.startTime,
+        endTime: req.endTime,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataOpenInterestHistResponse>(
+        "GET",
+        `/futures/data/openInterestHist${query}`,
+        undefined,
+        signal,
+        {
+          baseOverride: futuresDataBaseURL,
+        }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFuturesDataOpenInterestHistRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/futures/data/topLongShortPositionRatio{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Top-Trader-Long-Short-Ratio
+  const futuresDataTopLongShortPositionRatio = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataLongShortRatioRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataLongShortRatioResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        period: req.period,
+        limit: req.limit,
+        startTime: req.startTime,
+        endTime: req.endTime,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataLongShortRatioResponse>(
+        "GET",
+        `/futures/data/topLongShortPositionRatio${query}`,
+        undefined,
+        signal,
+        { baseOverride: futuresDataBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFuturesDataLongShortRatioRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/futures/data/topLongShortAccountRatio{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Top-Long-Short-Account-Ratio
+  const futuresDataTopLongShortAccountRatio = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataLongShortRatioRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataLongShortRatioResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        period: req.period,
+        limit: req.limit,
+        startTime: req.startTime,
+        endTime: req.endTime,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataLongShortRatioResponse>(
+        "GET",
+        `/futures/data/topLongShortAccountRatio${query}`,
+        undefined,
+        signal,
+        { baseOverride: futuresDataBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFuturesDataLongShortRatioRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/futures/data/globalLongShortAccountRatio{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Long-Short-Ratio
+  const futuresDataGlobalLongShortAccountRatio = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataLongShortRatioRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataLongShortRatioResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        period: req.period,
+        limit: req.limit,
+        startTime: req.startTime,
+        endTime: req.endTime,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataLongShortRatioResponse>(
+        "GET",
+        `/futures/data/globalLongShortAccountRatio${query}`,
+        undefined,
+        signal,
+        { baseOverride: futuresDataBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFuturesDataLongShortRatioRequestSchema }
+  );
+
+  // GET https://fapi.binance.com/futures/data/takerlongshortRatio{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Taker-BuySell-Volume
+  const futuresDataTakerlongshortRatio = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataTakerlongshortRatioRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataTakerlongshortRatioResponse> => {
+      const query = buildQuery({
+        symbol: req.symbol,
+        period: req.period,
+        limit: req.limit,
+        startTime: req.startTime,
+        endTime: req.endTime,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataTakerlongshortRatioResponse>(
+        "GET",
+        `/futures/data/takerlongshortRatio${query}`,
+        undefined,
+        signal,
+        {
+          baseOverride: futuresDataBaseURL,
+        }
+      );
+    },
+    {
+      schema: BinanceSchemas.BinanceFuturesDataTakerlongshortRatioRequestSchema,
+    }
+  );
+
+  // GET https://fapi.binance.com/futures/data/basis{query}
+  // Docs: https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Basis
+  const futuresDataBasis = Object.assign(
+    async (
+      req: BinanceTypes.BinanceFuturesDataBasisRequest,
+      signal?: AbortSignal
+    ): Promise<BinanceTypes.BinanceFuturesDataBasisResponse> => {
+      const query = buildQuery({
+        pair: req.pair,
+        contractType: req.contractType,
+        period: req.period,
+        limit: req.limit,
+        startTime: req.startTime,
+        endTime: req.endTime,
+      });
+      return makeJsonRequest<BinanceTypes.BinanceFuturesDataBasisResponse>(
+        "GET",
+        `/futures/data/basis${query}`,
+        undefined,
+        signal,
+        { baseOverride: futuresDataBaseURL }
+      );
+    },
+    { schema: BinanceSchemas.BinanceFuturesDataBasisRequestSchema }
+  );
+
   // sig-ok: intentional
   // GET https://dapi.binance.com/dapi/v1/ping
   // Docs: https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api
@@ -1623,6 +2319,53 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     },
   };
 
+  const fapi = {
+    v1: {
+      aggTrades: fapiAggTrades,
+      assetIndex: fapiAssetIndex,
+      constituents: fapiConstituents,
+      continuousKlines: fapiContinuousKlines,
+      depth: fapiDepth,
+      exchangeInfo: fapiExchangeInfo,
+      fundingInfo: fapiFundingInfo,
+      fundingRate: fapiFundingRate,
+      indexInfo: fapiIndexInfo,
+      indexPriceKlines: fapiIndexPriceKlines,
+      insuranceBalance: fapiInsuranceBalance,
+      klines: fapiKlines,
+      markPriceKlines: fapiMarkPriceKlines,
+      openInterest: fapiOpenInterest,
+      ping: fapiPing,
+      premiumIndex: fapiPremiumIndex,
+      premiumIndexKlines: fapiPremiumIndexKlines,
+      rpiDepth: fapiRpiDepth,
+      symbolAdlRisk: fapiSymbolAdlRisk,
+      ticker: {
+        bookTicker: fapiTickerBookTicker,
+        twentyFourHr: fapiTickerTwentyFourHr,
+      },
+      time: fapiTime,
+      trades: fapiTrades,
+      tradingSchedule: fapiTradingSchedule,
+    },
+    v2: {
+      ticker: {
+        price: fapiV2TickerPrice,
+      },
+    },
+  };
+  const futures = {
+    data: {
+      basis: futuresDataBasis,
+      deliveryPrice: futuresDataDeliveryPrice,
+      globalLongShortAccountRatio: futuresDataGlobalLongShortAccountRatio,
+      openInterestHist: futuresDataOpenInterestHist,
+      takerlongshortRatio: futuresDataTakerlongshortRatio,
+      topLongShortAccountRatio: futuresDataTopLongShortAccountRatio,
+      topLongShortPositionRatio: futuresDataTopLongShortPositionRatio,
+    },
+  };
+
   const dapi = {
     v1: {
       aggTrades: coinMAggTrades,
@@ -1649,7 +2392,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     },
   };
 
-  const futures = {
+  const coinMFutures = {
     data: {
       basis: coinMBasis,
       deliveryPrice: coinMDeliveryPrice,
@@ -1749,7 +2492,7 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
     },
     coinMFutures: {
       dapi,
-      futures,
+      futures: coinMFutures,
     },
     options: {
       eapi: {
@@ -1763,14 +2506,18 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
   return {
     api,
     eapi,
+    fapi,
     dapi,
     futures,
+    coinMFutures,
     public: publicApi,
     get: {
       api,
       eapi,
+      fapi,
       dapi,
       futures,
+      coinMFutures,
       public: publicApi,
     },
   };

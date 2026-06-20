@@ -1708,8 +1708,25 @@ export interface PolymarketGammaGetNamespace {
 // -- Top-level provider shape (multi-host) ----------------------------------
 
 // ===========================================================================
-// Data API (https://data-api.polymarket.com) — public positions/value/...
+// Data API (https://data-api.polymarket.com) — public profile, portfolio,
+// leaderboard, builder, and accounting endpoints.
 // ===========================================================================
+
+export type PolymarketDataCsvParam = string | number | Array<string | number>;
+
+export type PolymarketDataSortDirection = "ASC" | "DESC";
+export type PolymarketDataTimePeriod = "DAY" | "WEEK" | "MONTH" | "ALL";
+
+export interface PolymarketDataHealthResponse {
+  data: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataUserQuery {
+  user: string;
+}
+
+export type PolymarketDataAccountingSnapshotQuery = PolymarketDataUserQuery;
 
 // Position rows are wallet+asset-keyed snapshots: a user's holding in a
 // specific outcome token, plus the derived PnL / size fields the dashboards
@@ -1739,22 +1756,77 @@ export interface PolymarketDataPosition {
   eventSlug?: string;
   outcome?: string;
   outcomeIndex?: number;
+  oppositeOutcome?: string;
+  oppositeAsset?: string;
   endDate?: string;
+  negativeRisk?: boolean;
   [key: string]: unknown;
 }
 
+export type PolymarketDataPositionsSortBy =
+  | "CURRENT"
+  | "INITIAL"
+  | "TOKENS"
+  | "CASHPNL"
+  | "PERCENTPNL"
+  | "TITLE"
+  | "RESOLVING"
+  | "PRICE"
+  | "AVGPRICE"
+  | string;
+
 export interface PolymarketDataPositionsQuery {
   user: string;
-  market?: string | string[];
-  eventId?: string;
+  market?: PolymarketDataCsvParam;
+  eventId?: PolymarketDataCsvParam;
   sizeThreshold?: number;
   redeemable?: boolean;
   mergeable?: boolean;
   title?: string;
-  sortBy?: string;
-  sortDirection?: "ASC" | "DESC";
+  sortBy?: PolymarketDataPositionsSortBy;
+  sortDirection?: PolymarketDataSortDirection;
   limit?: number;
   offset?: number;
+}
+
+export interface PolymarketDataClosedPosition {
+  proxyWallet: string;
+  asset: string;
+  conditionId: string;
+  avgPrice: number;
+  totalBought: number;
+  realizedPnl: number;
+  curPrice: number;
+  timestamp: number;
+  title?: string;
+  slug?: string;
+  icon?: string;
+  eventSlug?: string;
+  outcome?: string;
+  outcomeIndex?: number;
+  oppositeOutcome?: string;
+  oppositeAsset?: string;
+  endDate?: string;
+  [key: string]: unknown;
+}
+
+export type PolymarketDataClosedPositionsSortBy =
+  | "REALIZEDPNL"
+  | "TITLE"
+  | "PRICE"
+  | "AVGPRICE"
+  | "TIMESTAMP"
+  | string;
+
+export interface PolymarketDataClosedPositionsQuery {
+  user: string;
+  market?: PolymarketDataCsvParam;
+  title?: string;
+  eventId?: PolymarketDataCsvParam;
+  limit?: number;
+  offset?: number;
+  sortBy?: PolymarketDataClosedPositionsSortBy;
+  sortDirection?: PolymarketDataSortDirection;
 }
 
 // /value returns one row per user (or the user's wallet sums collapsed) with
@@ -1768,22 +1840,7 @@ export type PolymarketDataValueResponse = PolymarketDataValueEntry[];
 
 export interface PolymarketDataValueQuery {
   user: string;
-}
-
-// -- Data method interfaces -------------------------------------------------
-
-export interface PolymarketDataPositionsMethod {
-  (
-    params: PolymarketDataPositionsQuery,
-    signal?: AbortSignal
-  ): Promise<PolymarketDataPosition[]>;
-}
-
-export interface PolymarketDataValueMethod {
-  (
-    params: PolymarketDataValueQuery,
-    signal?: AbortSignal
-  ): Promise<PolymarketDataValueResponse>;
+  market?: PolymarketDataCsvParam;
 }
 
 // /holders is keyed by token (not condition), returning per-token leaderboard
@@ -1810,7 +1867,7 @@ export interface PolymarketDataHoldersGroup {
 }
 
 export interface PolymarketDataHoldersQuery {
-  market: string | string[];
+  market: PolymarketDataCsvParam;
   limit?: number;
 }
 
@@ -1819,10 +1876,14 @@ export interface PolymarketDataHoldersQuery {
 // fields apply contextually.
 export type PolymarketDataActivityType =
   | "TRADE"
-  | "REDEEM"
-  | "MERGE"
   | "SPLIT"
+  | "MERGE"
+  | "REDEEM"
   | "REWARD"
+  | "CONVERSION"
+  | "MAKER_REBATE"
+  | "TAKER_REBATE"
+  | "REFERRAL_REWARD"
   | string;
 
 export interface PolymarketDataActivityEntry {
@@ -1839,20 +1900,32 @@ export interface PolymarketDataActivityEntry {
   outcomeIndex?: number;
   title?: string;
   slug?: string;
+  icon?: string;
+  eventSlug?: string;
+  outcome?: string;
+  name?: string;
+  pseudonym?: string;
+  bio?: string;
+  profileImage?: string;
+  profileImageOptimized?: string;
+  isCombo?: boolean;
   [key: string]: unknown;
 }
+
+export type PolymarketDataActivitySortBy = "TIMESTAMP" | "TOKENS" | "CASH";
 
 export interface PolymarketDataActivityQuery {
   user: string;
   limit?: number;
   offset?: number;
-  market?: string | string[];
+  market?: PolymarketDataCsvParam;
+  eventId?: PolymarketDataCsvParam;
   type?: PolymarketDataActivityType | PolymarketDataActivityType[];
   start?: number;
   end?: number;
   side?: "BUY" | "SELL";
-  sortBy?: string;
-  sortDirection?: "ASC" | "DESC";
+  sortBy?: PolymarketDataActivitySortBy;
+  sortDirection?: PolymarketDataSortDirection;
 }
 
 export interface PolymarketDataTradeEntry {
@@ -1867,16 +1940,33 @@ export interface PolymarketDataTradeEntry {
   slug?: string;
   icon?: string;
   eventSlug?: string;
+  outcome?: string;
+  outcomeIndex?: number;
+  name?: string;
+  pseudonym?: string;
+  bio?: string;
+  profileImage?: string;
+  profileImageOptimized?: string;
+  transactionHash?: string;
   [key: string]: unknown;
 }
 
 export interface PolymarketDataTradesQuery {
   user?: string;
-  market?: string | string[];
+  market?: PolymarketDataCsvParam;
+  eventId?: PolymarketDataCsvParam;
   limit?: number;
   offset?: number;
   takerOnly?: boolean;
-  filterType?: string;
+  filterType?: "CASH" | "TOKENS" | string;
+  filterAmount?: number;
+  side?: "BUY" | "SELL";
+}
+
+export interface PolymarketDataTradedResponse {
+  user: string;
+  traded: number;
+  [key: string]: unknown;
 }
 
 // /oi returns a flat list of open-interest entries; default response is a
@@ -1890,7 +1980,7 @@ export type PolymarketDataOpenInterestResponse =
   PolymarketDataOpenInterestEntry[];
 
 export interface PolymarketDataOpenInterestQuery {
-  market?: string | string[];
+  market?: PolymarketDataCsvParam;
 }
 
 // /live-volume returns a per-event volume rollup; markets[] enumerates
@@ -1911,6 +2001,276 @@ export interface PolymarketDataLiveVolumeQuery {
   id: string | number;
 }
 
+export interface PolymarketDataPagination {
+  limit: number;
+  offset: number;
+  has_more: boolean;
+  next_cursor: string | null;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataComboEvent {
+  event_id?: string;
+  event_slug?: string;
+  event_title?: string;
+  event_image?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataComboMarket {
+  market_id?: string;
+  slug?: string;
+  title?: string;
+  outcome?: string;
+  image_url?: string;
+  icon_url?: string;
+  category?: string;
+  subcategory?: string;
+  tags?: string[];
+  end_date?: string;
+  event?: PolymarketDataComboEvent;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataComboLeg {
+  leg_index?: number;
+  leg_position_id?: string;
+  leg_condition_id?: string;
+  leg_outcome_index?: number;
+  leg_outcome_label?: string;
+  leg_status?: string;
+  leg_resolved_at?: string | null;
+  leg_current_price?: string;
+  market?: PolymarketDataComboMarket;
+  [key: string]: unknown;
+}
+
+export type PolymarketDataComboStatus =
+  | "OPEN"
+  | "PARTIAL"
+  | "RESOLVED_WIN"
+  | "RESOLVED_LOSS";
+
+export interface PolymarketDataComboPosition {
+  combo_condition_id: string;
+  combo_position_id: string;
+  module_id: number;
+  user_address: string;
+  shares_balance: string;
+  entry_avg_price_usdc: string;
+  entry_cost_usdc: string;
+  realized_payout_usdc: string;
+  total_cost_usdc: string;
+  status: PolymarketDataComboStatus;
+  first_entry_at: string;
+  resolved_at: string | null;
+  legs_total: number;
+  legs_resolved: number;
+  legs_pending: number;
+  legs: PolymarketDataComboLeg[];
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataComboActivity {
+  id: string;
+  event_kind: string;
+  side:
+    | "Split"
+    | "Merge"
+    | "Convert"
+    | "Compress"
+    | "Wrap"
+    | "Unwrap"
+    | "Redeem";
+  module_kind: string;
+  user_address: string;
+  combo_condition_id: string;
+  combo_position_id: string;
+  module_id: number;
+  amount_usdc: number | null;
+  payout_usdc: number | null;
+  timestamp: number;
+  tx_dttm: string;
+  tx_hash: string;
+  log_index: number;
+  block_number: number;
+  legs: PolymarketDataComboLeg[];
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataComboPositionsResponse {
+  combos: PolymarketDataComboPosition[];
+  pagination: PolymarketDataPagination;
+}
+
+export interface PolymarketDataComboActivityResponse {
+  activity: PolymarketDataComboActivity[];
+  pagination: PolymarketDataPagination;
+}
+
+export interface PolymarketDataComboActivityQuery {
+  user: string;
+  market_id?: PolymarketDataCsvParam;
+  limit?: number;
+  offset?: number;
+}
+
+export type PolymarketDataComboPositionsSort =
+  | "current_value_desc"
+  | "first_entry_desc"
+  | "entry_cost_desc"
+  | "resolved_at_desc";
+
+export interface PolymarketDataComboPositionsQuery {
+  user: string;
+  status?: PolymarketDataComboStatus;
+  sort?: PolymarketDataComboPositionsSort;
+  market_id?: PolymarketDataCsvParam;
+  limit?: number;
+  offset?: number;
+}
+
+export interface PolymarketDataMarketPosition {
+  proxyWallet: string;
+  name?: string;
+  profileImage?: string;
+  verified?: boolean;
+  asset: string;
+  conditionId: string;
+  avgPrice: number;
+  size: number;
+  currPrice: number;
+  currentValue: number;
+  cashPnl: number;
+  totalBought: number;
+  realizedPnl: number;
+  totalPnl: number;
+  outcome?: string;
+  outcomeIndex?: number;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataMarketPositionsGroup {
+  token: string;
+  positions: PolymarketDataMarketPosition[];
+}
+
+export type PolymarketDataMarketPositionStatus = "OPEN" | "CLOSED" | "ALL";
+export type PolymarketDataMarketPositionsSortBy =
+  | "TOKENS"
+  | "CASH_PNL"
+  | "REALIZED_PNL"
+  | "TOTAL_PNL";
+
+export interface PolymarketDataMarketPositionsQuery {
+  market: string;
+  user?: string;
+  status?: PolymarketDataMarketPositionStatus;
+  sortBy?: PolymarketDataMarketPositionsSortBy;
+  sortDirection?: PolymarketDataSortDirection;
+  limit?: number;
+  offset?: number;
+}
+
+export interface PolymarketDataBuilderLeaderboardEntry {
+  rank: string;
+  builder: string;
+  builderCode?: string;
+  volume: number;
+  activeUsers: number;
+  verified: boolean;
+  builderLogo?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketDataBuilderVolumeEntry extends PolymarketDataBuilderLeaderboardEntry {
+  dt: string;
+}
+
+export interface PolymarketDataBuildersLeaderboardQuery {
+  timePeriod?: PolymarketDataTimePeriod;
+  limit?: number;
+  offset?: number;
+}
+
+export interface PolymarketDataBuildersVolumeQuery {
+  timePeriod?: PolymarketDataTimePeriod;
+}
+
+export interface PolymarketDataTraderLeaderboardEntry {
+  rank: string;
+  proxyWallet: string;
+  userName: string;
+  vol: number;
+  pnl: number;
+  profileImage?: string;
+  xUsername?: string;
+  verifiedBadge?: boolean;
+  [key: string]: unknown;
+}
+
+export type PolymarketDataLeaderboardCategory =
+  | "OVERALL"
+  | "POLITICS"
+  | "SPORTS"
+  | "ESPORTS"
+  | "CRYPTO"
+  | "CULTURE"
+  | "MENTIONS"
+  | "WEATHER"
+  | "ECONOMICS"
+  | "TECH"
+  | "FINANCE";
+
+export interface PolymarketDataLeaderboardQuery {
+  category?: PolymarketDataLeaderboardCategory;
+  timePeriod?: PolymarketDataTimePeriod;
+  orderBy?: "PNL" | "VOL";
+  limit?: number;
+  offset?: number;
+  user?: string;
+  userName?: string;
+}
+
+// -- Data method interfaces -------------------------------------------------
+
+export interface PolymarketDataHealthMethod {
+  (signal?: AbortSignal): Promise<PolymarketDataHealthResponse>;
+}
+
+export interface PolymarketDataAccountingSnapshotMethod {
+  (
+    params: PolymarketDataAccountingSnapshotQuery,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+}
+
+export interface PolymarketDataAccountingNamespace {
+  snapshot: PolymarketDataAccountingSnapshotMethod;
+}
+
+export interface PolymarketDataComboPositionsMethod {
+  (
+    params: PolymarketDataComboPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataComboPositionsResponse>;
+}
+
+export interface PolymarketDataPositionsMethod {
+  (
+    params: PolymarketDataPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataPosition[]>;
+  combos: PolymarketDataComboPositionsMethod;
+}
+
+export interface PolymarketDataValueMethod {
+  (
+    params: PolymarketDataValueQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataValueResponse>;
+}
+
 export interface PolymarketDataHoldersMethod {
   (
     params: PolymarketDataHoldersQuery,
@@ -1918,11 +2278,19 @@ export interface PolymarketDataHoldersMethod {
   ): Promise<PolymarketDataHoldersGroup[]>;
 }
 
+export interface PolymarketDataComboActivityMethod {
+  (
+    params: PolymarketDataComboActivityQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataComboActivityResponse>;
+}
+
 export interface PolymarketDataActivityMethod {
   (
     params: PolymarketDataActivityQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataActivityEntry[]>;
+  combos: PolymarketDataComboActivityMethod;
 }
 
 export interface PolymarketDataTradesMethod {
@@ -1930,6 +2298,13 @@ export interface PolymarketDataTradesMethod {
     params: PolymarketDataTradesQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataTradeEntry[]>;
+}
+
+export interface PolymarketDataTradedMethod {
+  (
+    params: PolymarketDataUserQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataTradedResponse>;
 }
 
 export interface PolymarketDataOpenInterestMethod {
@@ -1946,14 +2321,61 @@ export interface PolymarketDataLiveVolumeMethod {
   ): Promise<PolymarketDataLiveVolumeResponse>;
 }
 
+export interface PolymarketDataClosedPositionsMethod {
+  (
+    params: PolymarketDataClosedPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataClosedPosition[]>;
+}
+
+export interface PolymarketDataMarketPositionsMethod {
+  (
+    params: PolymarketDataMarketPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataMarketPositionsGroup[]>;
+}
+
+export interface PolymarketDataBuildersLeaderboardMethod {
+  (
+    params?: PolymarketDataBuildersLeaderboardQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataBuilderLeaderboardEntry[]>;
+}
+
+export interface PolymarketDataBuildersVolumeMethod {
+  (
+    params?: PolymarketDataBuildersVolumeQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataBuilderVolumeEntry[]>;
+}
+
+export interface PolymarketDataBuildersNamespace {
+  leaderboard: PolymarketDataBuildersLeaderboardMethod;
+  volume: PolymarketDataBuildersVolumeMethod;
+}
+
+export interface PolymarketDataLeaderboardMethod {
+  (
+    params?: PolymarketDataLeaderboardQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataTraderLeaderboardEntry[]>;
+}
+
 export interface PolymarketDataGetNamespace {
+  health: PolymarketDataHealthMethod;
+  accounting: PolymarketDataAccountingNamespace;
   positions: PolymarketDataPositionsMethod;
   value: PolymarketDataValueMethod;
   holders: PolymarketDataHoldersMethod;
   activity: PolymarketDataActivityMethod;
   trades: PolymarketDataTradesMethod;
+  traded: PolymarketDataTradedMethod;
   oi: PolymarketDataOpenInterestMethod;
   liveVolume: PolymarketDataLiveVolumeMethod;
+  closedPositions: PolymarketDataClosedPositionsMethod;
+  marketPositions: PolymarketDataMarketPositionsMethod;
+  builders: PolymarketDataBuildersNamespace;
+  leaderboard: PolymarketDataLeaderboardMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

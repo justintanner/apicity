@@ -30,7 +30,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-98 endpoints across 3 groups. Each method mirrors an upstream URL path.
+108 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -1021,14 +1021,104 @@ Source: [`packages/provider/polymarket/src/clob.ts`](src/clob.ts)
 ### data
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.data.accounting.snapshot</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/accounting/snapshot{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/download-an-accounting-snapshot-zip-of-csvs.md)
+
+```typescript
+const res = await polymarket.data.accounting.snapshot({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.data.activity</code></b></summary>
 
 <code>GET https://data-api.polymarket.com/activity{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-activity)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-user-activity.md)
 
 ```typescript
 const res = await polymarket.data.activity({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.activity.combos</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/activity/combos{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-user-combo-activity.md)
+
+```typescript
+const res = await polymarket.data.activity.combos({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.builders.leaderboard</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/builders/leaderboard{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/builders/get-aggregated-builder-leaderboard.md)
+
+```typescript
+const res = await polymarket.data.builders.leaderboard({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.builders.volume</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/builders/volume{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/builders/get-daily-builder-volume-time-series.md)
+
+```typescript
+const res = await polymarket.data.builders.volume({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.closedPositions</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/closed-positions{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-closed-positions-for-a-user.md)
+
+```typescript
+const res = await polymarket.data.closedPositions({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.health</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-spec/data-openapi.yaml)
+
+```typescript
+const res = await polymarket.data.health({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1040,10 +1130,25 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://data-api.polymarket.com/holders{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-holders)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-top-holders-for-markets.md)
 
 ```typescript
 const res = await polymarket.data.holders({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.leaderboard</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/leaderboard{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-trader-leaderboard-rankings.md)
+
+```typescript
+const res = await polymarket.data.leaderboard({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1055,10 +1160,25 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://data-api.polymarket.com/live-volume{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-live-volume)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/get-live-volume-for-an-event.md)
 
 ```typescript
 const res = await polymarket.data.liveVolume({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.marketPositions</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/market-positions{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-positions-for-a-market.md)
+
+```typescript
+const res = await polymarket.data.marketPositions({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1070,7 +1190,7 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://data-api.polymarket.com/oi{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-open-interest)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/get-open-interest.md)
 
 ```typescript
 const res = await polymarket.data.oi({ /* ... */ });
@@ -1085,10 +1205,40 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://data-api.polymarket.com/positions{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-positions)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-current-positions-for-a-user.md)
 
 ```typescript
 const res = await polymarket.data.positions({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.positions.combos</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/v1/positions/combos{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-user-combo-positions.md)
+
+```typescript
+const res = await polymarket.data.positions.combos({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.data.traded</code></b></summary>
+
+<code>GET https://data-api.polymarket.com/traded{query}</code>
+
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/misc/get-total-markets-a-user-has-traded.md)
+
+```typescript
+const res = await polymarket.data.traded({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
@@ -1100,7 +1250,7 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://data-api.polymarket.com/trades{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-trades)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-trades-for-a-user-or-markets.md)
 
 ```typescript
 const res = await polymarket.data.trades({ /* ... */ });
@@ -1115,7 +1265,7 @@ Source: [`packages/provider/polymarket/src/data.ts`](src/data.ts)
 
 <code>GET https://data-api.polymarket.com/value{query}</code>
 
-[Upstream docs ↗](https://docs.polymarket.com/api-reference/data/get-positions-value)
+[Upstream docs ↗](https://docs.polymarket.com/api-reference/core/get-total-value-of-a-users-positions.md)
 
 ```typescript
 const res = await polymarket.data.value({ /* ... */ });

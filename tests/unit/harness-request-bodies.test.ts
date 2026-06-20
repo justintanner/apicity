@@ -567,4 +567,102 @@ describe("harness persist scrubbers", () => {
       "upload-policy-signature"
     );
   });
+
+  it("redacts Polymarket CLOB auth headers, request signatures, and response credentials", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        url: "https://clob.polymarket.com/auth/api-key",
+        headers: [
+          { name: "POLY_API_KEY", value: "poly-api-key" },
+          { name: "POLY_PASSPHRASE", value: "poly-passphrase" },
+          { name: "POLY_SIGNATURE", value: "poly-signature" },
+          { name: "POLY_ADDRESS", value: "0x1234567890abcdef" },
+          { name: "POLY_TIMESTAMP", value: "1700000000" },
+          { name: "POLY_NONCE", value: "7" },
+          { name: "X-Builder-API-Key", value: "builder-key" },
+          { name: "X-Relayer-Signature", value: "relayer-signature" },
+          { name: "content-type", value: "application/json" },
+        ],
+        postData: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            note: "keep",
+            signature: "signed-order",
+            clobPrivateKey: "0xprivate",
+            builderApiKey: "builder-body-key",
+          }),
+        },
+      },
+      response: {
+        content: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            apiKey: "created-api-key",
+            secret: "created-secret",
+            passphrase: "created-passphrase",
+            nested: {
+              api_key: "nested-api-key",
+              signature: "nested-signature",
+            },
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(recording.request?.headers).toEqual([
+      { name: "POLY_API_KEY", value: "***" },
+      { name: "POLY_PASSPHRASE", value: "***" },
+      { name: "POLY_SIGNATURE", value: "***" },
+      { name: "POLY_ADDRESS", value: "***" },
+      { name: "POLY_TIMESTAMP", value: "***" },
+      { name: "POLY_NONCE", value: "***" },
+      { name: "X-Builder-API-Key", value: "***" },
+      { name: "X-Relayer-Signature", value: "***" },
+      { name: "content-type", value: "application/json" },
+    ]);
+    expect(JSON.parse(recording.request?.postData?.text ?? "")).toEqual({
+      note: "keep",
+      signature: "***",
+      clobPrivateKey: "***",
+      builderApiKey: "***",
+    });
+    expect(JSON.parse(recording.response?.content?.text ?? "")).toEqual({
+      apiKey: "***",
+      secret: "***",
+      passphrase: "***",
+      nested: {
+        api_key: "***",
+        signature: "***",
+      },
+    });
+
+    const serialized = JSON.stringify(recording);
+    for (const leaked of [
+      "poly-api-key",
+      "poly-passphrase",
+      "poly-signature",
+      "0x1234567890abcdef",
+      "1700000000",
+      "builder-key",
+      "relayer-signature",
+      "signed-order",
+      "0xprivate",
+      "builder-body-key",
+      "created-api-key",
+      "created-secret",
+      "created-passphrase",
+      "nested-api-key",
+      "nested-signature",
+    ]) {
+      expect(serialized).not.toContain(leaked);
+    }
+    expect(recording.request?.bodySize).toBe(
+      new TextEncoder().encode(recording.request?.postData?.text ?? "").length
+    );
+    expect(recording.response?.bodySize).toBe(
+      recording.response?.content?.size
+    );
+  });
 });

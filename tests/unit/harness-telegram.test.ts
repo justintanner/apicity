@@ -221,6 +221,13 @@ const endpointDocs: EndpointDocRow[] = [
     docsUrl:
       "https://docs.x.ai/developers/rest-api-reference/collections/search",
   },
+  {
+    provider: "polymarket",
+    dotPath: "clob.auth.apiKey",
+    method: "POST",
+    fullUrl: "https://clob.polymarket.com/auth/api-key",
+    docsUrl: "https://docs.polymarket.com/api-reference/authentication",
+  },
 ];
 
 function seedSpeechRecording(): ChangedRecording {
@@ -1059,6 +1066,79 @@ describe("harness Telegram messages", () => {
     expect(all).not.toContain("proj-real-leak");
     expect(all).not.toContain("req-real-leak");
     expect(all).not.toContain("req-x-real-leak");
+  });
+
+  it("redacts Polymarket auth secrets from Telegram previews", () => {
+    const recording: ChangedRecording = {
+      provider: "polymarket",
+      recordingName: "polymarket/clob-auth-api-key",
+      changeType: "new",
+      filePath:
+        "tests/recordings/polymarket_3782428595/" +
+        "clob-auth-api-key_123456789/recording.har",
+      entries: [
+        {
+          request: {
+            method: "POST",
+            url: "https://clob.polymarket.com/auth/api-key",
+            headers: [
+              { name: "POLY_API_KEY", value: "poly-api-key" },
+              { name: "POLY_PASSPHRASE", value: "poly-passphrase" },
+              { name: "POLY_SIGNATURE", value: "poly-signature" },
+              { name: "POLY_ADDRESS", value: "0xabc123" },
+              { name: "POLY_TIMESTAMP", value: "1700000000" },
+              { name: "POLY_NONCE", value: "7" },
+              { name: "X-Relayer-API-Key", value: "relayer-key" },
+              { name: "content-type", value: "application/json" },
+            ],
+            postData: {
+              mimeType: "application/json",
+              text: JSON.stringify({
+                signature: "request-signature",
+                builderApiKey: "builder-body-key",
+              }),
+            },
+          },
+          response: {
+            status: 200,
+            statusText: "OK",
+            headers: [{ name: "content-type", value: "application/json" }],
+            content: {
+              mimeType: "application/json",
+              text: JSON.stringify({
+                apiKey: "created-api-key",
+                secret: "created-secret",
+                passphrase: "created-passphrase",
+              }),
+            },
+          },
+        },
+      ],
+    };
+
+    const [message] = buildTelegramHarnessMessages([recording], endpointDocs);
+    const all = message.chunks.join("\n");
+
+    expect(message.apicityPath).toBe("polymarket.clob.auth.apiKey");
+    expect(all).toContain("POLY_ADDRESS: ***");
+    expect(all).toContain('"apiKey": "***"');
+    expect(all).toContain('"secret": "***"');
+    expect(all).toContain('"passphrase": "***"');
+    for (const leaked of [
+      "poly-api-key",
+      "poly-passphrase",
+      "poly-signature",
+      "0xabc123",
+      "1700000000",
+      "relayer-key",
+      "request-signature",
+      "builder-body-key",
+      "created-api-key",
+      "created-secret",
+      "created-passphrase",
+    ]) {
+      expect(all).not.toContain(leaked);
+    }
   });
 
   it("splits oversized content into chunks under Telegram's limit", () => {

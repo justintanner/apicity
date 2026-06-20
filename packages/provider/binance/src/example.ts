@@ -119,6 +119,168 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "limit": 1
     }
   },
+  "GET coinMFutures.data.basis": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "contractType": "PERPETUAL",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET coinMFutures.data.deliveryPrice": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD"
+    }
+  },
+  "GET coinMFutures.data.globalLongShortAccountRatio": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET coinMFutures.data.openInterestHist": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "contractType": "PERPETUAL",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET coinMFutures.data.takerBuySellVol": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "contractType": "PERPETUAL",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET coinMFutures.data.topLongShortAccountRatio": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET coinMFutures.data.topLongShortPositionRatio": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "period": "5m",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.aggTrades": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.constituents": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD"
+    }
+  },
+  "GET dapi.v1.continuousKlines": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "contractType": "PERPETUAL",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.depth": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "limit": 5
+    }
+  },
+  "GET dapi.v1.fundingRate": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.indexPriceKlines": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "pair": "BTCUSD",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.klines": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.markPriceKlines": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.openInterest": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP"
+    }
+  },
+  "GET dapi.v1.premiumIndex": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP"
+    }
+  },
+  "GET dapi.v1.premiumIndexKlines": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET dapi.v1.ticker.bookTicker": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP"
+    }
+  },
+  "GET dapi.v1.ticker.price": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP"
+    }
+  },
+  "GET dapi.v1.ticker.twentyFourHr": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP"
+    }
+  },
+  "GET dapi.v1.trades": {
+    "source": "binance/coin-m-market-data",
+    "payload": {
+      "symbol": "BTCUSD_PERP",
+      "limit": 1
+    }
+  },
   "GET eapi.v1.blockTrades": {
     "source": "binance/options-market-data",
     "payload": {
@@ -309,24 +471,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "GET futures.data.basis": {
-    "source": "binance/coin-m-market-data",
+    "source": "binance/futures-data-market-data",
     "payload": {
-      "pair": "BTCUSD",
+      "pair": "BTCUSDT",
       "contractType": "PERPETUAL",
       "period": "5m",
       "limit": 1
     }
   },
   "GET futures.data.deliveryPrice": {
-    "source": "binance/coin-m-market-data",
+    "source": "binance/futures-data-market-data",
     "payload": {
-      "pair": "BTCUSD"
+      "pair": "BTCUSDT"
     }
   },
   "GET futures.data.globalLongShortAccountRatio": {
-    "source": "binance/coin-m-market-data",
+    "source": "binance/futures-data-market-data",
     "payload": {
-      "pair": "BTCUSD",
+      "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
     }
@@ -348,17 +510,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "GET futures.data.topLongShortAccountRatio": {
-    "source": "binance/coin-m-market-data",
+    "source": "binance/futures-data-market-data",
     "payload": {
-      "pair": "BTCUSD",
+      "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
     }
   },
   "GET futures.data.topLongShortPositionRatio": {
-    "source": "binance/coin-m-market-data",
+    "source": "binance/futures-data-market-data",
     "payload": {
-      "pair": "BTCUSD",
+      "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
     }

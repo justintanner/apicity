@@ -84,6 +84,40 @@ describe("Binance endpoint wiring", () => {
     );
   });
 
+  it("omits API key headers for public derivative host requests", async () => {
+    const mockFetch = vi.fn(async () => jsonResponse([]));
+    const binance = createBinance({
+      apiKey: "binance-test-key",
+      fapiBaseURL: "https://fapi.public.local",
+      futuresDataBaseURL: "https://futures.public.local",
+      dapiBaseURL: "https://dapi.public.local",
+      eapiBaseURL: "https://eapi.public.local",
+      fetch: mockFetch,
+    });
+
+    await binance.fapi.v1.trades({ symbol: "BTCUSDT" });
+    await binance.futures.data.openInterestHist({
+      symbol: "BTCUSDT",
+      period: "5m",
+    });
+    await binance.dapi.v1.trades({ symbol: "BTCUSD_PERP" });
+    await binance.eapi.v1.trades({ symbol: "BTC-260626-140000-C" });
+
+    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
+    expect(calls.map(([url]) => url)).toEqual([
+      "https://fapi.public.local/fapi/v1/trades?symbol=BTCUSDT",
+      "https://futures.public.local/futures/data/openInterestHist?symbol=BTCUSDT&period=5m",
+      "https://dapi.public.local/dapi/v1/trades?symbol=BTCUSD_PERP",
+      "https://eapi.public.local/eapi/v1/trades?symbol=BTC-260626-140000-C",
+    ]);
+    expect(
+      calls.every(
+        ([, init]) =>
+          !("X-MBX-APIKEY" in (init.headers as Record<string, string>))
+      )
+    ).toBe(true);
+  });
+
   it("serializes Binance array query params as JSON strings", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       jsonResponse({

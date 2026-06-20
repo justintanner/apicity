@@ -258,7 +258,10 @@ export function createBinance(opts?: BinanceOptions): BinanceProvider {
         ? requestOptions
         : (requestOptions.baseOverride ?? baseURL);
     const requestAuth =
-      typeof requestOptions === "string" ? "none" : requestOptions.auth;
+      typeof requestOptions === "string"
+        ? "none"
+        : (requestOptions.auth ??
+          (requestOptions.baseOverride === undefined ? undefined : "none"));
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 

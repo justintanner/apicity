@@ -229,6 +229,15 @@ const REST_ALIAS_SUFFIXES = new Set([
 
 const ENDPOINT_NOTES = new Map([
   [
+    "polymarket\tclob.markets\tGET",
+    [
+      "> **Legacy compatibility:** current public market discovery is documented",
+      "on the Gamma `/markets` pages. The CLOB `/markets` compatibility path",
+      "is retained for existing callers and is documented by the CLOB OpenAPI",
+      "spec.",
+    ].join(" "),
+  ],
+  [
     "polymarket\tgamma.events\tGET",
     [
       "> **Deprecated upstream:** the replay fixture for the list form",
@@ -2437,6 +2446,23 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "telegram") {
     sections.push(renderTelegramSetup());
+  }
+
+  if (providerName === "polymarket") {
+    sections.push(
+      "## Unsupported Upstream Paths",
+      "",
+      [
+        "The current Polymarket OpenAPI specs mark some paths as",
+        "`x-excluded`; `@apicity/polymarket` intentionally does not expose",
+        "wrappers for those unsupported surfaces. That includes Gamma",
+        "administrative/private paths such as team detail, event",
+        "pagination/results/comment-count, market information and abridged",
+        "POST endpoints, series summaries, and private profile lookups, plus",
+        "Data `/revisions` and `/other`.",
+      ].join(" "),
+      ""
+    );
   }
 
   if (providerName === "b2") {

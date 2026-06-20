@@ -4,7 +4,7 @@ import FSPersister from "@pollyjs/persister-fs";
 import { createHash } from "node:crypto";
 import path from "path";
 import fs from "fs";
-import { scrubSensitiveResponse, type HarCookieLike } from "./har-scrub.js";
+import { scrubSensitiveRecording, type HarCookieLike } from "./har-scrub.js";
 
 Polly.register(FetchAdapter);
 Polly.register(FSPersister);
@@ -296,6 +296,7 @@ export function redactPersistedHarSecrets(
   redactGuestTokenResponseBody(recording);
   redactFireworksApiKeyResponseBody(recording);
   redactResponseAccountMetadataBody(recording);
+  scrubSensitiveRecording(recording);
 }
 
 function byteLength(value: string): number {
@@ -888,7 +889,6 @@ function setupPollyWithOptions(
     options.beforePersist?.(recording as PersistedHarRecording);
     summarizeJsonRequestBodyMedia(recording as PersistedHarRecording);
     redactPersistedHarSecrets(recording as PersistedHarRecording);
-    scrubSensitiveResponse(recording);
   });
 
   return { polly, mode: raw };

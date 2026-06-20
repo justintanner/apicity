@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
+import { scrubSensitiveRecording } from "./har-scrub.js";
 
 export interface HarPostDataParam {
   name: string;
@@ -124,11 +125,19 @@ export function extractProvider(filePath: string): string {
 export function parseHarFile(filePath: string): HarRecording {
   const raw = fs.readFileSync(filePath, "utf-8");
   const har = JSON.parse(raw);
+  const entries = sanitizeHarEntries(har.log?.entries ?? []);
   return {
     name: har.log?._recordingName ?? path.basename(path.dirname(filePath)),
     source: filePath,
-    entries: har.log?.entries ?? [],
+    entries,
   };
+}
+
+function sanitizeHarEntries(entries: HarEntry[]): HarEntry[] {
+  for (const entry of entries) {
+    scrubSensitiveRecording(entry);
+  }
+  return entries;
 }
 
 export function parseHarDir(dirPath: string): HarRecording[] {
@@ -149,7 +158,7 @@ export function parseHarDir(dirPath: string): HarRecording[] {
           results.push({
             name: har.log?._recordingName ?? prefix,
             source: fullPath,
-            entries: har.log?.entries ?? [],
+            entries: sanitizeHarEntries(har.log?.entries ?? []),
           });
         } catch {
           // skip malformed HAR files
@@ -373,7 +382,7 @@ export function getChangedRecordingsByCommit(
         changeType: status === "A" ? "new" : "modified",
         provider,
         recordingName,
-        entries: har.log?.entries ?? [],
+        entries: sanitizeHarEntries(har.log?.entries ?? []),
       });
     }
 
@@ -426,7 +435,7 @@ export function getChangedRecordings(baseBranch: string): ChangedRecording[] {
       changeType: status === "A" ? "new" : "modified",
       provider,
       recordingName,
-      entries: har.log?.entries ?? [],
+      entries: sanitizeHarEntries(har.log?.entries ?? []),
     });
   }
 

@@ -3,6 +3,7 @@ import {
   PolymarketGammaEvent,
   PolymarketGammaMarket,
   PolymarketGammaTag,
+  PolymarketGammaStatusResponse,
   PolymarketGammaEventListResponse,
   PolymarketGammaEventListQuery,
   PolymarketGammaEventKeysetResponse,
@@ -13,6 +14,7 @@ import {
   PolymarketGammaMarketKeysetQuery,
   PolymarketGammaSeries,
   PolymarketGammaRelatedTag,
+  PolymarketGammaRelatedTagsQuery,
   PolymarketGammaComment,
   PolymarketGammaCommentListQuery,
   PolymarketGammaCommentByUserQuery,
@@ -20,6 +22,10 @@ import {
   PolymarketGammaSearchResponse,
   PolymarketGammaSport,
   PolymarketGammaSportsMarketTypesResponse,
+  PolymarketGammaTeam,
+  PolymarketGammaTeamsQuery,
+  PolymarketGammaPublicProfileQuery,
+  PolymarketGammaPublicProfileResponse,
   PolymarketGammaGetNamespace,
 } from "./types";
 import { createRequestHelpers } from "./_helpers";
@@ -39,53 +45,69 @@ export function createGammaProvider(
   const timeout = opts.timeout ?? 30000;
   const { makeGetRequest } = createRequestHelpers(doFetch, timeout);
 
-  function buildEventsQuery(
-    params: PolymarketGammaEventListQuery | PolymarketGammaKeysetQuery
-  ): string {
+  type QueryRecord = object;
+
+  function buildQuery(params?: QueryRecord): string {
+    if (!params) return "";
     const usp = new URLSearchParams();
-    const append = (k: string, v: unknown): void => {
-      if (v === undefined || v === null) return;
-      if (Array.isArray(v)) {
-        for (const item of v) usp.append(k, String(item));
-      } else {
-        usp.set(k, String(v));
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+      if (Array.isArray(value)) {
+        for (const item of value) usp.append(key, String(item));
+        continue;
       }
-    };
-    append("limit", params.limit);
-    append("offset", params.offset);
-    append("order", params.order);
-    append("ascending", params.ascending);
-    append("id", params.id);
-    append("slug", params.slug);
-    append("archived", params.archived);
-    append("active", params.active);
-    append("closed", params.closed);
-    append("liquidity_min", params.liquidity_min);
-    append("liquidity_max", params.liquidity_max);
-    append("volume_min", params.volume_min);
-    append("volume_max", params.volume_max);
-    append("start_date_min", params.start_date_min);
-    append("start_date_max", params.start_date_max);
-    append("end_date_min", params.end_date_min);
-    append("end_date_max", params.end_date_max);
-    append("tag", params.tag);
-    append("tag_id", params.tag_id);
-    append("related_tags", params.related_tags);
-    append("tag_slug", params.tag_slug);
-    append("featured", params.featured);
-    append("restricted", params.restricted);
-    append("cyom", params.cyom);
-    append("recurrence", params.recurrence);
-    if ("next_cursor" in params && params.next_cursor !== undefined) {
-      usp.set("next_cursor", params.next_cursor);
+      usp.set(key, String(value));
     }
     const s = usp.toString();
     return s.length > 0 ? `?${s}` : "";
   }
 
+  function resolveQueryArgs<T extends QueryRecord>(
+    paramsOrSignal?: T | AbortSignal,
+    signal?: AbortSignal
+  ): {
+    params?: T;
+    signal?: AbortSignal;
+  } {
+    if (paramsOrSignal instanceof AbortSignal) {
+      return { signal: paramsOrSignal };
+    }
+    return { params: paramsOrSignal, signal };
+  }
+
+  function keysetCursorParams(
+    params: PolymarketGammaKeysetQuery | PolymarketGammaMarketKeysetQuery
+  ): QueryRecord {
+    const { next_cursor, ...rest } = params;
+    if (rest.after_cursor !== undefined || next_cursor === undefined) {
+      return rest as QueryRecord;
+    }
+    return { ...rest, after_cursor: next_cursor };
+  }
+
+  function buildEventsQuery(
+    params: PolymarketGammaEventListQuery | PolymarketGammaKeysetQuery
+  ): string {
+    return buildQuery(
+      "next_cursor" in params ? keysetCursorParams(params) : params
+    );
+  }
+
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/status
+  // Docs: https://docs.polymarket.com/api-spec/gamma-openapi.yaml
+  async function gammaStatus(
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaStatusResponse> {
+    return makeGetRequest<PolymarketGammaStatusResponse>(
+      `${baseURL}/status`,
+      signal
+    );
+  }
+
   // sig-ok: intentional
   // GET https://gamma-api.polymarket.com/events/{paramsOrIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-events
+  // Docs: https://docs.polymarket.com/api-reference/events/list-events.md
   async function gammaEvents(
     paramsOrIdOrSignal?: PolymarketGammaEventListQuery | string | AbortSignal,
     signal?: AbortSignal
@@ -116,7 +138,7 @@ export function createGammaProvider(
 
   // sig-ok: intentional
   // GET https://gamma-api.polymarket.com/events/keyset{query}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-events-keyset
+  // Docs: https://docs.polymarket.com/api-reference/events/list-events-keyset-pagination.md
   async function gammaEventsKeyset(
     params?: PolymarketGammaKeysetQuery,
     signal?: AbortSignal
@@ -130,7 +152,7 @@ export function createGammaProvider(
 
   // sig-ok: intentional
   // GET https://gamma-api.polymarket.com/events/slug/{slug}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-event-by-slug
+  // Docs: https://docs.polymarket.com/api-reference/events/get-event-by-slug.md
   async function gammaEventsBySlug(
     slug: string,
     signal?: AbortSignal
@@ -143,7 +165,7 @@ export function createGammaProvider(
 
   // sig-ok: intentional
   // GET https://gamma-api.polymarket.com/events/{id}/tags
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-event-tags
+  // Docs: https://docs.polymarket.com/api-reference/events/get-event-tags.md
   async function gammaEventsTags(
     id: string,
     signal?: AbortSignal
@@ -163,51 +185,14 @@ export function createGammaProvider(
   function buildMarketsQuery(
     params: PolymarketGammaMarketListQuery | PolymarketGammaMarketKeysetQuery
   ): string {
-    const usp = new URLSearchParams();
-    const append = (k: string, v: unknown): void => {
-      if (v === undefined || v === null) return;
-      if (Array.isArray(v)) {
-        for (const item of v) usp.append(k, String(item));
-      } else {
-        usp.set(k, String(v));
-      }
-    };
-    append("limit", params.limit);
-    append("offset", params.offset);
-    append("order", params.order);
-    append("ascending", params.ascending);
-    append("id", params.id);
-    append("slug", params.slug);
-    append("archived", params.archived);
-    append("active", params.active);
-    append("closed", params.closed);
-    append("liquidity_min", params.liquidity_min);
-    append("liquidity_max", params.liquidity_max);
-    append("volume_min", params.volume_min);
-    append("volume_max", params.volume_max);
-    append("start_date_min", params.start_date_min);
-    append("start_date_max", params.start_date_max);
-    append("end_date_min", params.end_date_min);
-    append("end_date_max", params.end_date_max);
-    append("tag", params.tag);
-    append("tag_id", params.tag_id);
-    append("related_tags", params.related_tags);
-    append("tag_slug", params.tag_slug);
-    append("featured", params.featured);
-    append("restricted", params.restricted);
-    append("cyom", params.cyom);
-    append("recurrence", params.recurrence);
-    append("clob_token_ids", params.clob_token_ids);
-    if ("next_cursor" in params && params.next_cursor !== undefined) {
-      usp.set("next_cursor", params.next_cursor);
-    }
-    const s = usp.toString();
-    return s.length > 0 ? `?${s}` : "";
+    return buildQuery(
+      "next_cursor" in params ? keysetCursorParams(params) : params
+    );
   }
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/markets/{paramsOrIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-markets
+  // Docs: https://docs.polymarket.com/api-reference/markets/list-markets.md
   async function gammaMarkets(
     paramsOrIdOrSignal?: PolymarketGammaMarketListQuery | string | AbortSignal,
     signal?: AbortSignal
@@ -238,7 +223,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/markets/keyset{query}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-markets-keyset
+  // Docs: https://docs.polymarket.com/api-reference/markets/list-markets-keyset-pagination.md
   async function gammaMarketsKeyset(
     params?: PolymarketGammaMarketKeysetQuery,
     signal?: AbortSignal
@@ -252,7 +237,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/markets/slug/{slug}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-market-by-slug
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-market-by-slug.md
   async function gammaMarketsBySlug(
     slug: string,
     signal?: AbortSignal
@@ -265,7 +250,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/markets/{id}/tags
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-market-tags
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-market-tags-by-id.md
   async function gammaMarketsTags(
     id: string,
     signal?: AbortSignal
@@ -284,7 +269,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/series/{paramsOrIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-series
+  // Docs: https://docs.polymarket.com/api-reference/series/list-series.md
   async function gammaSeries(
     paramsOrIdOrSignal?: PolymarketGammaEventListQuery | string | AbortSignal,
     signal?: AbortSignal
@@ -317,7 +302,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/tags/{paramsOrIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-tags
+  // Docs: https://docs.polymarket.com/api-reference/tags/list-tags.md
   async function gammaTags(
     paramsOrIdOrSignal?: PolymarketGammaEventListQuery | string | AbortSignal,
     signal?: AbortSignal
@@ -348,7 +333,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/tags/slug/{slug}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-tag-by-slug
+  // Docs: https://docs.polymarket.com/api-reference/tags/get-tag-by-slug.md
   async function gammaTagsBySlug(
     slug: string,
     signal?: AbortSignal
@@ -360,33 +345,76 @@ export function createGammaProvider(
   }
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
-  // GET https://gamma-api.polymarket.com/tags/{id}/related-tags
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-id
+  // GET https://gamma-api.polymarket.com/tags/{id}/related-tags{query}
+  // Docs: https://docs.polymarket.com/api-reference/tags/get-related-tags-relationships-by-tag-id.md
   async function gammaTagsRelatedById(
     id: string,
+    paramsOrSignal?: PolymarketGammaRelatedTagsQuery | AbortSignal,
     signal?: AbortSignal
   ): Promise<PolymarketGammaRelatedTag[]> {
+    const args = resolveQueryArgs(paramsOrSignal, signal);
+    const query = buildQuery(args.params);
     return makeGetRequest<PolymarketGammaRelatedTag[]>(
-      `${baseURL}/tags/${encodeURIComponent(id)}/related-tags`,
-      signal
+      `${baseURL}/tags/${encodeURIComponent(id)}/related-tags${query}`,
+      args.signal
     );
   }
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
-  // GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-slug
+  // GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags{query}
+  // Docs: https://docs.polymarket.com/api-reference/tags/get-related-tags-relationships-by-tag-slug.md
   async function gammaTagsRelatedBySlug(
     slug: string,
+    paramsOrSignal?: PolymarketGammaRelatedTagsQuery | AbortSignal,
     signal?: AbortSignal
   ): Promise<PolymarketGammaRelatedTag[]> {
+    const args = resolveQueryArgs(paramsOrSignal, signal);
+    const query = buildQuery(args.params);
     return makeGetRequest<PolymarketGammaRelatedTag[]>(
-      `${baseURL}/tags/slug/${encodeURIComponent(slug)}/related-tags`,
-      signal
+      `${baseURL}/tags/slug/${encodeURIComponent(slug)}/related-tags${query}`,
+      args.signal
     );
   }
 
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/tags/{id}/related-tags/tags{query}
+  // Docs: https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-id.md
+  async function gammaTagsRelatedTagsById(
+    id: string,
+    paramsOrSignal?: PolymarketGammaRelatedTagsQuery | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTag[]> {
+    const args = resolveQueryArgs(paramsOrSignal, signal);
+    const query = buildQuery(args.params);
+    return makeGetRequest<PolymarketGammaTag[]>(
+      `${baseURL}/tags/${encodeURIComponent(id)}/related-tags/tags${query}`,
+      args.signal
+    );
+  }
+
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags/tags{query}
+  // Docs: https://docs.polymarket.com/api-reference/tags/get-tags-related-to-a-tag-slug.md
+  async function gammaTagsRelatedTagsBySlug(
+    slug: string,
+    paramsOrSignal?: PolymarketGammaRelatedTagsQuery | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTag[]> {
+    const args = resolveQueryArgs(paramsOrSignal, signal);
+    const query = buildQuery(args.params);
+    return makeGetRequest<PolymarketGammaTag[]>(
+      `${baseURL}/tags/slug/${encodeURIComponent(slug)}/related-tags/tags${query}`,
+      args.signal
+    );
+  }
+
+  const relatedTagsTags = Object.assign(gammaTagsRelatedTagsById, {
+    slug: gammaTagsRelatedTagsBySlug,
+  }) as PolymarketGammaGetNamespace["tags"]["relatedTags"]["tags"];
+
   const relatedTags = Object.assign(gammaTagsRelatedById, {
     slug: gammaTagsRelatedBySlug,
+    tags: relatedTagsTags,
   }) as PolymarketGammaGetNamespace["tags"]["relatedTags"];
 
   const tags = Object.assign(gammaTags, {
@@ -396,7 +424,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/comments/{paramsOrIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-comments
+  // Docs: https://docs.polymarket.com/api-reference/comments/list-comments.md
   async function gammaComments(
     paramsOrIdOrSignal: PolymarketGammaCommentListQuery | string | AbortSignal,
     signal?: AbortSignal
@@ -426,6 +454,10 @@ export function createGammaProvider(
       if (params.order !== undefined) usp.set("order", params.order);
       if (params.ascending !== undefined)
         usp.set("ascending", String(params.ascending));
+      if (params.get_positions !== undefined)
+        usp.set("get_positions", String(params.get_positions));
+      if (params.holders_only !== undefined)
+        usp.set("holders_only", String(params.holders_only));
     }
     const query = usp.toString().length > 0 ? `?${usp.toString()}` : "";
     return makeGetRequest<PolymarketGammaComment[]>(
@@ -436,7 +468,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/comments/user_address/{address}{query}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-comments-by-user
+  // Docs: https://docs.polymarket.com/api-reference/comments/get-comments-by-user-address.md
   async function gammaCommentsByUser(
     address: string,
     params?: PolymarketGammaCommentByUserQuery,
@@ -459,7 +491,7 @@ export function createGammaProvider(
   // sig-ok: maps `gamma.search` to /public-search (the protected /search needs
   // session cookies — out of scope for the public SDK)
   // GET https://gamma-api.polymarket.com/public-search{query}
-  // Docs: https://docs.polymarket.com/api-reference/gamma/search
+  // Docs: https://docs.polymarket.com/api-reference/search/search-markets-events-and-profiles.md
   async function gammaSearch(
     params: PolymarketGammaSearchQuery,
     signal?: AbortSignal
@@ -479,7 +511,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/sports
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-sports
+  // Docs: https://docs.polymarket.com/api-reference/sports/get-sports-metadata-information.md
   async function gammaSports(
     signal?: AbortSignal
   ): Promise<PolymarketGammaSport[]> {
@@ -488,7 +520,7 @@ export function createGammaProvider(
 
   // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
   // GET https://gamma-api.polymarket.com/sports/market-types
-  // Docs: https://docs.polymarket.com/api-reference/gamma/get-sports-market-types
+  // Docs: https://docs.polymarket.com/api-reference/sports/get-valid-sports-market-types.md
   async function gammaSportsMarketTypes(
     signal?: AbortSignal
   ): Promise<PolymarketGammaSportsMarketTypesResponse> {
@@ -502,9 +534,39 @@ export function createGammaProvider(
     marketTypes: gammaSportsMarketTypes,
   }) as PolymarketGammaGetNamespace["sports"];
 
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/teams{query}
+  // Docs: https://docs.polymarket.com/api-reference/sports/list-teams.md
+  async function gammaTeams(
+    paramsOrSignal?: PolymarketGammaTeamsQuery | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTeam[]> {
+    const args = resolveQueryArgs(paramsOrSignal, signal);
+    const query = buildQuery(args.params);
+    return makeGetRequest<PolymarketGammaTeam[]>(
+      `${baseURL}/teams${query}`,
+      args.signal
+    );
+  }
+
+  // sig-ok: hostname `gamma-api` shortened to `gamma` for caller ergonomics
+  // GET https://gamma-api.polymarket.com/public-profile{query}
+  // Docs: https://docs.polymarket.com/api-reference/profiles/get-public-profile-by-wallet-address.md
+  async function gammaPublicProfile(
+    params: PolymarketGammaPublicProfileQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaPublicProfileResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketGammaPublicProfileResponse>(
+      `${baseURL}/public-profile${query}`,
+      signal
+    );
+  }
+
   return {
     get: {
       gamma: {
+        status: gammaStatus,
         events,
         markets,
         series,
@@ -512,6 +574,8 @@ export function createGammaProvider(
         comments,
         search: gammaSearch,
         sports,
+        teams: gammaTeams,
+        publicProfile: gammaPublicProfile,
       },
     },
   };

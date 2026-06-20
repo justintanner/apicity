@@ -25,7 +25,11 @@ import {
   getRequestBodyText,
   parseHarDir,
 } from "./har-data.js";
-import { isSensitiveResponseHeaderName } from "./har-scrub.js";
+import {
+  isSensitiveRequestHeaderName,
+  isSensitiveResponseHeaderName,
+  scrubSensitiveRecording,
+} from "./har-scrub.js";
 
 const ENDPOINT_DOCS_PATH = "scripts/endpoint-docs.tsv";
 const DEFAULT_OUT_PATH = "harness-telegram-messages.json";
@@ -783,9 +787,11 @@ function headerLines(
       );
     })
     .map((header) => {
-      const value = SENSITIVE_HEADER_PATTERN.test(header.name)
-        ? "***"
-        : header.value;
+      const value =
+        isSensitiveRequestHeaderName(header.name) ||
+        SENSITIVE_HEADER_PATTERN.test(header.name)
+          ? "***"
+          : header.value;
       return `${header.name}: ${value}`;
     })
     .join("\n");
@@ -1255,16 +1261,17 @@ export function formatTelegramEndpointMessage(
   recording: ChangedRecording,
   endpointDocs: EndpointDocRow[] = parseEndpointDocs()
 ): TelegramHarnessMessage {
-  const entry = findEndpointEntry(recording, endpointDocs);
+  const sanitizedRecording = sanitizeRecordingForPreview(recording);
+  const entry = findEndpointEntry(sanitizedRecording, endpointDocs);
   const doc =
-    findHintedEndpointDoc(recording, entry, endpointDocs) ??
-    findMatchingEndpointDoc(entry, endpointDocs, recording.provider);
+    findHintedEndpointDoc(sanitizedRecording, entry, endpointDocs) ??
+    findMatchingEndpointDoc(entry, endpointDocs, sanitizedRecording.provider);
   const endpoint = `${entry.request.method} ${stripQuery(entry.request.url)}`;
   const status = `${entry.response.status} ${entry.response.statusText}`.trim();
-  const apicityPath = apicityPathFor(recording, entry, doc);
+  const apicityPath = apicityPathFor(sanitizedRecording, entry, doc);
 
   const header = renderHeader(
-    recording,
+    sanitizedRecording,
     entry,
     doc,
     endpoint,
@@ -1273,22 +1280,35 @@ export function formatTelegramEndpointMessage(
   );
   const chunks = chunkMessage(
     header,
-    recordingHeading(recording),
+    recordingHeading(sanitizedRecording),
     buildSections(entry)
   );
 
   return {
-    provider: recording.provider,
-    recordingName: recording.recordingName,
-    recordingPath: recording.filePath,
+    provider: sanitizedRecording.provider,
+    recordingName: sanitizedRecording.recordingName,
+    recordingPath: sanitizedRecording.filePath,
     endpoint,
     apicityPath,
     status,
     chunks,
     text: chunks[0],
-    media: collectMedia(recording, apicityPath),
+    media: collectMedia(sanitizedRecording, apicityPath),
     parse_mode: "HTML",
   };
+}
+
+function sanitizeRecordingForPreview(
+  recording: ChangedRecording
+): ChangedRecording {
+  const sanitized: ChangedRecording = {
+    ...recording,
+    entries: recording.entries.map((entry) => structuredClone(entry)),
+  };
+  for (const entry of sanitized.entries) {
+    scrubSensitiveRecording(entry);
+  }
+  return sanitized;
 }
 
 export function buildTelegramHarnessMessages(

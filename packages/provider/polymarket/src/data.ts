@@ -1,5 +1,7 @@
 import {
   PolymarketOptions,
+  PolymarketDataHealthResponse,
+  PolymarketDataAccountingSnapshotQuery,
   PolymarketDataPosition,
   PolymarketDataPositionsQuery,
   PolymarketDataValueResponse,
@@ -10,10 +12,26 @@ import {
   PolymarketDataActivityQuery,
   PolymarketDataTradeEntry,
   PolymarketDataTradesQuery,
+  PolymarketDataTradedResponse,
+  PolymarketDataUserQuery,
   PolymarketDataOpenInterestResponse,
   PolymarketDataOpenInterestQuery,
   PolymarketDataLiveVolumeResponse,
   PolymarketDataLiveVolumeQuery,
+  PolymarketDataClosedPosition,
+  PolymarketDataClosedPositionsQuery,
+  PolymarketDataComboActivityResponse,
+  PolymarketDataComboActivityQuery,
+  PolymarketDataComboPositionsResponse,
+  PolymarketDataComboPositionsQuery,
+  PolymarketDataMarketPositionsGroup,
+  PolymarketDataMarketPositionsQuery,
+  PolymarketDataBuilderLeaderboardEntry,
+  PolymarketDataBuildersLeaderboardQuery,
+  PolymarketDataBuilderVolumeEntry,
+  PolymarketDataBuildersVolumeQuery,
+  PolymarketDataTraderLeaderboardEntry,
+  PolymarketDataLeaderboardQuery,
   PolymarketDataGetNamespace,
 } from "./types";
 import { createRequestHelpers } from "./_helpers";
@@ -31,42 +49,58 @@ export function createDataProvider(
   const baseURL = opts.dataBaseURL ?? "https://data-api.polymarket.com";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
-  const { makeGetRequest } = createRequestHelpers(doFetch, timeout);
+  const { makeGetRequest, makeGetBinaryRequest } = createRequestHelpers(
+    doFetch,
+    timeout
+  );
 
-  function buildPositionsQuery(params: PolymarketDataPositionsQuery): string {
+  function buildQuery(params?: object): string {
+    if (!params) return "";
     const usp = new URLSearchParams();
-    usp.set("user", params.user);
-    if (params.market !== undefined) {
-      if (Array.isArray(params.market)) {
-        for (const m of params.market) usp.append("market", m);
-      } else {
-        usp.set("market", params.market);
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === null) continue;
+      if (Array.isArray(value)) {
+        if (value.length === 0) continue;
+        usp.set(key, value.map(String).join(","));
+        continue;
       }
+      usp.set(key, String(value));
     }
-    if (params.eventId !== undefined) usp.set("eventId", params.eventId);
-    if (params.sizeThreshold !== undefined)
-      usp.set("sizeThreshold", String(params.sizeThreshold));
-    if (params.redeemable !== undefined)
-      usp.set("redeemable", String(params.redeemable));
-    if (params.mergeable !== undefined)
-      usp.set("mergeable", String(params.mergeable));
-    if (params.title !== undefined) usp.set("title", params.title);
-    if (params.sortBy !== undefined) usp.set("sortBy", params.sortBy);
-    if (params.sortDirection !== undefined)
-      usp.set("sortDirection", params.sortDirection);
-    if (params.limit !== undefined) usp.set("limit", String(params.limit));
-    if (params.offset !== undefined) usp.set("offset", String(params.offset));
-    return `?${usp.toString()}`;
+    const s = usp.toString();
+    return s.length > 0 ? `?${s}` : "";
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/
+  // Docs: https://docs.polymarket.com/api-spec/data-openapi.yaml
+  async function dataHealth(
+    signal?: AbortSignal
+  ): Promise<PolymarketDataHealthResponse> {
+    return makeGetRequest<PolymarketDataHealthResponse>(`${baseURL}/`, signal);
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/accounting/snapshot{query}
+  // Docs: https://docs.polymarket.com/api-reference/misc/download-an-accounting-snapshot-zip-of-csvs.md
+  async function dataAccountingSnapshot(
+    params: PolymarketDataAccountingSnapshotQuery,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer> {
+    const query = buildQuery(params);
+    return makeGetBinaryRequest(
+      `${baseURL}/v1/accounting/snapshot${query}`,
+      signal
+    );
   }
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/positions{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-positions
+  // Docs: https://docs.polymarket.com/api-reference/core/get-current-positions-for-a-user.md
   async function dataPositions(
     params: PolymarketDataPositionsQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataPosition[]> {
-    const query = buildPositionsQuery(params);
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataPosition[]>(
       `${baseURL}/positions${query}`,
       signal
@@ -74,13 +108,31 @@ export function createDataProvider(
   }
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/positions/combos{query}
+  // Docs: https://docs.polymarket.com/api-reference/core/get-user-combo-positions.md
+  async function dataPositionsCombos(
+    params: PolymarketDataComboPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataComboPositionsResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataComboPositionsResponse>(
+      `${baseURL}/v1/positions/combos${query}`,
+      signal
+    );
+  }
+
+  const positions = Object.assign(dataPositions, {
+    combos: dataPositionsCombos,
+  }) as PolymarketDataGetNamespace["positions"];
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/value{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-positions-value
+  // Docs: https://docs.polymarket.com/api-reference/core/get-total-value-of-a-users-positions.md
   async function dataValue(
     params: PolymarketDataValueQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataValueResponse> {
-    const query = `?user=${encodeURIComponent(params.user)}`;
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataValueResponse>(
       `${baseURL}/value${query}`,
       signal
@@ -89,19 +141,12 @@ export function createDataProvider(
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/holders{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-holders
+  // Docs: https://docs.polymarket.com/api-reference/core/get-top-holders-for-markets.md
   async function dataHolders(
     params: PolymarketDataHoldersQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataHoldersGroup[]> {
-    const usp = new URLSearchParams();
-    if (Array.isArray(params.market)) {
-      for (const m of params.market) usp.append("market", m);
-    } else {
-      usp.set("market", params.market);
-    }
-    if (params.limit !== undefined) usp.set("limit", String(params.limit));
-    const query = `?${usp.toString()}`;
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataHoldersGroup[]>(
       `${baseURL}/holders${query}`,
       signal
@@ -110,36 +155,12 @@ export function createDataProvider(
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/activity{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-activity
+  // Docs: https://docs.polymarket.com/api-reference/core/get-user-activity.md
   async function dataActivity(
     params: PolymarketDataActivityQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataActivityEntry[]> {
-    const usp = new URLSearchParams();
-    usp.set("user", params.user);
-    if (params.limit !== undefined) usp.set("limit", String(params.limit));
-    if (params.offset !== undefined) usp.set("offset", String(params.offset));
-    if (params.market !== undefined) {
-      if (Array.isArray(params.market)) {
-        for (const m of params.market) usp.append("market", m);
-      } else {
-        usp.set("market", params.market);
-      }
-    }
-    if (params.type !== undefined) {
-      if (Array.isArray(params.type)) {
-        for (const t of params.type) usp.append("type", t);
-      } else {
-        usp.set("type", params.type);
-      }
-    }
-    if (params.start !== undefined) usp.set("start", String(params.start));
-    if (params.end !== undefined) usp.set("end", String(params.end));
-    if (params.side !== undefined) usp.set("side", params.side);
-    if (params.sortBy !== undefined) usp.set("sortBy", params.sortBy);
-    if (params.sortDirection !== undefined)
-      usp.set("sortDirection", params.sortDirection);
-    const query = `?${usp.toString()}`;
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataActivityEntry[]>(
       `${baseURL}/activity${query}`,
       signal
@@ -147,28 +168,31 @@ export function createDataProvider(
   }
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/activity/combos{query}
+  // Docs: https://docs.polymarket.com/api-reference/core/get-user-combo-activity.md
+  async function dataActivityCombos(
+    params: PolymarketDataComboActivityQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataComboActivityResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataComboActivityResponse>(
+      `${baseURL}/v1/activity/combos${query}`,
+      signal
+    );
+  }
+
+  const activity = Object.assign(dataActivity, {
+    combos: dataActivityCombos,
+  }) as PolymarketDataGetNamespace["activity"];
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/trades{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-trades
+  // Docs: https://docs.polymarket.com/api-reference/core/get-trades-for-a-user-or-markets.md
   async function dataTrades(
     params: PolymarketDataTradesQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataTradeEntry[]> {
-    const usp = new URLSearchParams();
-    if (params.user !== undefined) usp.set("user", params.user);
-    if (params.market !== undefined) {
-      if (Array.isArray(params.market)) {
-        for (const m of params.market) usp.append("market", m);
-      } else {
-        usp.set("market", params.market);
-      }
-    }
-    if (params.limit !== undefined) usp.set("limit", String(params.limit));
-    if (params.offset !== undefined) usp.set("offset", String(params.offset));
-    if (params.takerOnly !== undefined)
-      usp.set("takerOnly", String(params.takerOnly));
-    if (params.filterType !== undefined)
-      usp.set("filterType", params.filterType);
-    const query = usp.toString().length > 0 ? `?${usp.toString()}` : "";
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataTradeEntry[]>(
       `${baseURL}/trades${query}`,
       signal
@@ -176,21 +200,27 @@ export function createDataProvider(
   }
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/traded{query}
+  // Docs: https://docs.polymarket.com/api-reference/misc/get-total-markets-a-user-has-traded.md
+  async function dataTraded(
+    params: PolymarketDataUserQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataTradedResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataTradedResponse>(
+      `${baseURL}/traded${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/oi{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-open-interest
+  // Docs: https://docs.polymarket.com/api-reference/misc/get-open-interest.md
   async function dataOi(
     params?: PolymarketDataOpenInterestQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataOpenInterestResponse> {
-    const usp = new URLSearchParams();
-    if (params?.market !== undefined) {
-      if (Array.isArray(params.market)) {
-        for (const m of params.market) usp.append("market", m);
-      } else {
-        usp.set("market", params.market);
-      }
-    }
-    const query = usp.toString().length > 0 ? `?${usp.toString()}` : "";
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataOpenInterestResponse>(
       `${baseURL}/oi${query}`,
       signal
@@ -199,14 +229,84 @@ export function createDataProvider(
 
   // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
   // GET https://data-api.polymarket.com/live-volume{query}
-  // Docs: https://docs.polymarket.com/api-reference/data/get-live-volume
+  // Docs: https://docs.polymarket.com/api-reference/misc/get-live-volume-for-an-event.md
   async function dataLiveVolume(
     params: PolymarketDataLiveVolumeQuery,
     signal?: AbortSignal
   ): Promise<PolymarketDataLiveVolumeResponse> {
-    const query = `?id=${encodeURIComponent(String(params.id))}`;
+    const query = buildQuery(params);
     return makeGetRequest<PolymarketDataLiveVolumeResponse>(
       `${baseURL}/live-volume${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/closed-positions{query}
+  // Docs: https://docs.polymarket.com/api-reference/core/get-closed-positions-for-a-user.md
+  async function dataClosedPositions(
+    params: PolymarketDataClosedPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataClosedPosition[]> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataClosedPosition[]>(
+      `${baseURL}/closed-positions${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/market-positions{query}
+  // Docs: https://docs.polymarket.com/api-reference/core/get-positions-for-a-market.md
+  async function dataMarketPositions(
+    params: PolymarketDataMarketPositionsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataMarketPositionsGroup[]> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataMarketPositionsGroup[]>(
+      `${baseURL}/v1/market-positions${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/builders/leaderboard{query}
+  // Docs: https://docs.polymarket.com/api-reference/builders/get-aggregated-builder-leaderboard.md
+  async function dataBuildersLeaderboard(
+    params?: PolymarketDataBuildersLeaderboardQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataBuilderLeaderboardEntry[]> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataBuilderLeaderboardEntry[]>(
+      `${baseURL}/v1/builders/leaderboard${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/builders/volume{query}
+  // Docs: https://docs.polymarket.com/api-reference/builders/get-daily-builder-volume-time-series.md
+  async function dataBuildersVolume(
+    params?: PolymarketDataBuildersVolumeQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataBuilderVolumeEntry[]> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataBuilderVolumeEntry[]>(
+      `${baseURL}/v1/builders/volume${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: hostname `data-api` shortened to `data` for caller ergonomics
+  // GET https://data-api.polymarket.com/v1/leaderboard{query}
+  // Docs: https://docs.polymarket.com/api-reference/core/get-trader-leaderboard-rankings.md
+  async function dataLeaderboard(
+    params?: PolymarketDataLeaderboardQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketDataTraderLeaderboardEntry[]> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketDataTraderLeaderboardEntry[]>(
+      `${baseURL}/v1/leaderboard${query}`,
       signal
     );
   }
@@ -214,13 +314,25 @@ export function createDataProvider(
   return {
     get: {
       data: {
-        positions: dataPositions,
+        health: dataHealth,
+        accounting: {
+          snapshot: dataAccountingSnapshot,
+        },
+        positions,
         value: dataValue,
         holders: dataHolders,
-        activity: dataActivity,
+        activity,
         trades: dataTrades,
+        traded: dataTraded,
         oi: dataOi,
         liveVolume: dataLiveVolume,
+        closedPositions: dataClosedPositions,
+        marketPositions: dataMarketPositions,
+        builders: {
+          leaderboard: dataBuildersLeaderboard,
+          volume: dataBuildersVolume,
+        },
+        leaderboard: dataLeaderboard,
       },
     },
   };

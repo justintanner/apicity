@@ -51,11 +51,45 @@
       "limit": 3
     }
   },
+  "GET data.activity.combos": {
+    "source": "polymarket/data-combo-activity",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
+      "limit": 1
+    }
+  },
+  "GET data.builders.leaderboard": {
+    "source": "polymarket/data-builders-leaderboard",
+    "payload": {
+      "timePeriod": "DAY",
+      "limit": 1
+    }
+  },
+  "GET data.builders.volume": {
+    "source": "polymarket/data-builders-volume",
+    "payload": {
+      "timePeriod": "DAY"
+    }
+  },
+  "GET data.closedPositions": {
+    "source": "polymarket/data-closed-positions",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
+      "limit": 1
+    }
+  },
   "GET data.holders": {
     "source": "polymarket/data-holders",
     "payload": {
       "market": "0x384e2707bbb95da4bfa6f330fe7d5ccbec1c0a85e20be900cbf599987588e1a4",
       "limit": 3
+    }
+  },
+  "GET data.leaderboard": {
+    "source": "polymarket/data-leaderboard",
+    "payload": {
+      "timePeriod": "DAY",
+      "limit": 1
     }
   },
   "GET data.liveVolume": {
@@ -64,11 +98,31 @@
       "id": 16167
     }
   },
+  "GET data.marketPositions": {
+    "source": "polymarket/data-market-positions",
+    "payload": {
+      "market": "0x384e2707bbb95da4bfa6f330fe7d5ccbec1c0a85e20be900cbf599987588e1a4",
+      "limit": 1
+    }
+  },
   "GET data.positions": {
     "source": "polymarket/data-positions",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 2
+    }
+  },
+  "GET data.positions.combos": {
+    "source": "polymarket/data-combo-positions",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
+      "limit": 1
+    }
+  },
+  "GET data.traded": {
+    "source": "polymarket/data-traded",
+    "payload": {
+      "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e"
     }
   },
   "GET data.trades": {

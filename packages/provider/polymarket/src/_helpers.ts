@@ -79,6 +79,7 @@ async function readSuccessBody<T>(res: Response): Promise<T> {
 
 export interface PolymarketRequestHelpers {
   makeGetRequest<T>(url: string, signal?: AbortSignal): Promise<T>;
+  makeGetBinaryRequest(url: string, signal?: AbortSignal): Promise<ArrayBuffer>;
   makeGetTextRequest(url: string, signal?: AbortSignal): Promise<string>;
   makeJsonRequest<T>(
     url: string,
@@ -254,6 +255,36 @@ export function createRequestHelpers(
     }
   }
 
+  async function makeGetBinaryRequest(
+    url: string,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    if (signal) attachAbortHandler(signal, controller);
+
+    try {
+      const res = await doFetch(url, {
+        method: "GET",
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) {
+        const resBody = await readErrorBody(res);
+        throw new PolymarketError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
+      }
+      return await res.arrayBuffer();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof PolymarketError) throw error;
+      throw new PolymarketError(`Polymarket request failed: ${error}`, 500);
+    }
+  }
+
   async function makeGetTextRequest(
     url: string,
     signal?: AbortSignal
@@ -360,6 +391,7 @@ export function createRequestHelpers(
 
   return {
     makeGetRequest,
+    makeGetBinaryRequest,
     makeGetTextRequest,
     makeJsonRequest,
     makeAuthenticatedRequest,

@@ -1,6 +1,14 @@
-import { readdirSync, readFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { parseHarFile } from "../har-data";
 import {
   REDACTED_HAR_VALUE,
   isSensitiveResponseHeaderName,
@@ -232,6 +240,99 @@ describe("HAR response scrubber", () => {
 
     expect(recording.response?.cookies).toEqual([]);
     expect(recording.response?.headers).toEqual([]);
+  });
+
+  it("sanitizes Polymarket auth secrets from parsed report HAR data", () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "apicity-poly-har-"));
+    try {
+      const harPath = path.join(dir, "recording.har");
+      writeFileSync(
+        harPath,
+        JSON.stringify({
+          log: {
+            _recordingName: "polymarket/clob-auth-api-key",
+            entries: [
+              {
+                request: {
+                  method: "POST",
+                  url: "https://clob.polymarket.com/auth/api-key",
+                  headers: [
+                    { name: "POLY_API_KEY", value: "poly-api-key" },
+                    { name: "POLY_ADDRESS", value: "0xabc123" },
+                    { name: "POLY_TIMESTAMP", value: "1700000000" },
+                    { name: "X-Builder-API-Key", value: "builder-key" },
+                    { name: "content-type", value: "application/json" },
+                  ],
+                  cookies: [{ name: "__cf_bm", value: "cloudflare-cookie" }],
+                  postData: {
+                    mimeType: "application/json",
+                    text: JSON.stringify({
+                      signature: "request-signature",
+                      relayerApiKey: "relayer-body-key",
+                    }),
+                  },
+                },
+                response: {
+                  status: 200,
+                  statusText: "OK",
+                  headers: [
+                    { name: "content-type", value: "application/json" },
+                  ],
+                  cookies: [],
+                  content: {
+                    mimeType: "application/json",
+                    text: JSON.stringify({
+                      apiKey: "created-api-key",
+                      secret: "created-secret",
+                      passphrase: "created-passphrase",
+                    }),
+                  },
+                },
+              },
+            ],
+          },
+        }),
+        "utf8"
+      );
+
+      const recording = parseHarFile(harPath);
+      const entry = recording.entries[0];
+
+      expect(entry.request.headers).toEqual([
+        { name: "POLY_API_KEY", value: "***" },
+        { name: "POLY_ADDRESS", value: "***" },
+        { name: "POLY_TIMESTAMP", value: "***" },
+        { name: "X-Builder-API-Key", value: "***" },
+        { name: "content-type", value: "application/json" },
+      ]);
+      expect(JSON.parse(entry.request.postData?.text ?? "")).toEqual({
+        signature: "***",
+        relayerApiKey: "***",
+      });
+      expect(JSON.parse(entry.response.content.text ?? "")).toEqual({
+        apiKey: "***",
+        secret: "***",
+        passphrase: "***",
+      });
+
+      const reportJson = JSON.stringify(recording);
+      for (const leaked of [
+        "poly-api-key",
+        "0xabc123",
+        "1700000000",
+        "builder-key",
+        "cloudflare-cookie",
+        "request-signature",
+        "relayer-body-key",
+        "created-api-key",
+        "created-secret",
+        "created-passphrase",
+      ]) {
+        expect(reportJson).not.toContain(leaked);
+      }
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   it("keeps the Polymarket gamma events list fixture free of Cloudflare cookies", () => {

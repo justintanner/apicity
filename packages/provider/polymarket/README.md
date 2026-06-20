@@ -30,7 +30,7 @@ const polymarket = createPolymarket();
 
 ## API Reference
 
-71 endpoints across 3 groups. Each method mirrors an upstream URL path.
+76 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### clob
 
@@ -986,6 +986,19 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.gamma.publicProfile</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/public-profile{query}</code>
+
+```typescript
+const res = await polymarket.gamma.publicProfile({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.gamma.search</code></b></summary>
 
 <code>GET https://gamma-api.polymarket.com/public-search{query}</code>
@@ -1046,6 +1059,19 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>polymarket.gamma.status</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/status</code>
+
+```typescript
+const res = await polymarket.gamma.status({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>polymarket.gamma.tags</code></b></summary>
 
 <code>GET https://gamma-api.polymarket.com/tags/{paramsOrIdOrSignal}</code>
@@ -1063,7 +1089,7 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 <details>
 <summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags</code></b></summary>
 
-<code>GET https://gamma-api.polymarket.com/tags/{id}/related-tags</code>
+<code>GET https://gamma-api.polymarket.com/tags/{id}/related-tags{query}</code>
 
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-id)
 
@@ -1078,12 +1104,38 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 <details>
 <summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags.slug</code></b></summary>
 
-<code>GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags</code>
+<code>GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags{query}</code>
 
 [Upstream docs ↗](https://docs.polymarket.com/api-reference/gamma/get-related-tags-by-slug)
 
 ```typescript
 const res = await polymarket.gamma.tags.relatedTags.slug({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags.tags</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/tags/{id}/related-tags/tags{query}</code>
+
+```typescript
+const res = await polymarket.gamma.tags.relatedTags.tags({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.tags.relatedTags.tags.slug</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/tags/slug/{slug}/related-tags/tags{query}</code>
+
+```typescript
+const res = await polymarket.gamma.tags.relatedTags.tags.slug({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
@@ -1099,6 +1151,19 @@ Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
 
 ```typescript
 const res = await polymarket.gamma.tags.slug({ /* ... */ });
+```
+
+Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>polymarket.gamma.teams</code></b></summary>
+
+<code>GET https://gamma-api.polymarket.com/teams{query}</code>
+
+```typescript
+const res = await polymarket.gamma.teams({ /* ... */ });
 ```
 
 Source: [`packages/provider/polymarket/src/gamma.ts`](src/gamma.ts)

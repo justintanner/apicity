@@ -998,6 +998,11 @@ export interface PolymarketGammaRelatedTag {
   rank: number;
 }
 
+export interface PolymarketGammaRelatedTagsQuery {
+  omit_empty?: boolean;
+  status?: "active" | "closed" | "all";
+}
+
 // Comments anchor to either an Event or a Market via parentEntityType +
 // parentEntityID. The wire format is verbose (nested profile, reactions,
 // replies, attachments); we type the load-bearing fields and let callers
@@ -1026,12 +1031,14 @@ export interface PolymarketGammaComment {
 }
 
 export interface PolymarketGammaCommentListQuery {
-  parent_entity_type: "Event" | "Market";
+  parent_entity_type: "Event" | "Series" | "Market" | "market";
   parent_entity_id: number | string;
   limit?: number;
   offset?: number;
   order?: string;
   ascending?: boolean;
+  get_positions?: boolean;
+  holders_only?: boolean;
 }
 
 export interface PolymarketGammaCommentByUserQuery {
@@ -1092,6 +1099,56 @@ export interface PolymarketGammaSportsMarketTypesResponse {
   marketTypes: string[];
 }
 
+export type PolymarketGammaStatusResponse = string;
+
+export interface PolymarketGammaTeam {
+  id: number;
+  name?: string | null;
+  league?: string | null;
+  record?: string | null;
+  logo?: string | null;
+  abbreviation?: string | null;
+  alias?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaTeamsQuery {
+  limit?: number;
+  offset?: number;
+  order?: string;
+  ascending?: boolean;
+  league?: string | string[];
+  name?: string | string[];
+  abbreviation?: string | string[];
+}
+
+export interface PolymarketGammaPublicProfileUser {
+  id: string;
+  creator?: boolean;
+  mod?: boolean;
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaPublicProfileResponse {
+  createdAt?: string | null;
+  proxyWallet?: string | null;
+  profileImage?: string | null;
+  displayUsernamePublic?: boolean | null;
+  bio?: string | null;
+  pseudonym?: string | null;
+  name?: string | null;
+  users?: PolymarketGammaPublicProfileUser[] | null;
+  xUsername?: string | null;
+  verifiedBadge?: boolean | null;
+  [key: string]: unknown;
+}
+
+export interface PolymarketGammaPublicProfileQuery {
+  address: string;
+}
+
 // /events returns a bare JSON array (no envelope) for compatibility. Upstream
 // marks the list form deprecated and recommends /events/keyset for pagination.
 export type PolymarketGammaEventListResponse = PolymarketGammaEvent[];
@@ -1113,9 +1170,11 @@ export interface PolymarketGammaEventListQuery {
   ascending?: boolean;
   id?: number | number[];
   slug?: string | string[];
+  exclude_tag_id?: number | number[];
   archived?: boolean;
   active?: boolean;
   closed?: boolean;
+  live?: boolean;
   liquidity_min?: number;
   liquidity_max?: number;
   volume_min?: number;
@@ -1124,19 +1183,39 @@ export interface PolymarketGammaEventListQuery {
   start_date_max?: string;
   end_date_min?: string;
   end_date_max?: string;
+  start_time_min?: string;
+  start_time_max?: string;
   tag?: string;
-  tag_id?: number;
+  tag_id?: number | number[];
   related_tags?: boolean;
+  tag_match?: string;
   tag_slug?: string;
   featured?: boolean;
+  title_search?: string;
   restricted?: boolean;
   cyom?: boolean;
+  series_id?: number | number[];
+  game_id?: number | number[] | string;
+  event_date?: string;
+  event_week?: number;
+  featured_order?: boolean;
   recurrence?: string;
+  created_by?: string | string[];
+  parent_event_id?: number;
+  include_children?: boolean;
+  partner_slug?: string;
+  include_chat?: boolean;
+  include_template?: boolean;
+  include_best_lines?: boolean;
+  locale?: string;
 }
 
-// Cursor pagination uses opaque next_cursor strings — pass undefined / empty
-// for the first page.
+// Cursor pagination responses expose `next_cursor`; current requests pass that
+// value back as `after_cursor`. The deprecated `next_cursor` request alias is
+// kept for old callers and serialized as after_cursor.
 export interface PolymarketGammaKeysetQuery extends PolymarketGammaEventListQuery {
+  after_cursor?: string;
+  /** @deprecated Use after_cursor for requests; responses still use next_cursor. */
   next_cursor?: string;
 }
 
@@ -1144,9 +1223,24 @@ export interface PolymarketGammaKeysetQuery extends PolymarketGammaEventListQuer
 // added (clob_token_ids for direct token lookup).
 export interface PolymarketGammaMarketListQuery extends PolymarketGammaEventListQuery {
   clob_token_ids?: string | string[];
+  condition_ids?: string | string[];
+  market_maker_address?: string | string[];
+  liquidity_num_min?: number;
+  liquidity_num_max?: number;
+  volume_num_min?: number;
+  volume_num_max?: number;
+  uma_resolution_status?: string;
+  sports_market_types?: string | string[];
+  rewards_min_size?: number;
+  question_ids?: string | string[];
+  include_tag?: boolean;
+  decimalized?: boolean;
+  rfq_enabled?: boolean;
 }
 
 export interface PolymarketGammaMarketKeysetQuery extends PolymarketGammaMarketListQuery {
+  after_cursor?: string;
+  /** @deprecated Use after_cursor for requests; responses still use next_cursor. */
   next_cursor?: string;
 }
 
@@ -1221,10 +1315,36 @@ export interface PolymarketGammaTagsMethod {
 
 export interface PolymarketGammaTagsRelatedMethod {
   (id: string, signal?: AbortSignal): Promise<PolymarketGammaRelatedTag[]>;
+  (
+    id: string,
+    params: PolymarketGammaRelatedTagsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaRelatedTag[]>;
   slug(
     slug: string,
     signal?: AbortSignal
   ): Promise<PolymarketGammaRelatedTag[]>;
+  slug(
+    slug: string,
+    params: PolymarketGammaRelatedTagsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaRelatedTag[]>;
+  tags: PolymarketGammaTagsRelatedTagsMethod;
+}
+
+export interface PolymarketGammaTagsRelatedTagsMethod {
+  (id: string, signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
+  (
+    id: string,
+    params: PolymarketGammaRelatedTagsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTag[]>;
+  slug(slug: string, signal?: AbortSignal): Promise<PolymarketGammaTag[]>;
+  slug(
+    slug: string,
+    params: PolymarketGammaRelatedTagsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTag[]>;
 }
 
 export interface PolymarketGammaCommentsByUserMethod {
@@ -1260,7 +1380,27 @@ export interface PolymarketGammaSportsMethod {
   marketTypes: PolymarketGammaSportsMarketTypesMethod;
 }
 
+export interface PolymarketGammaStatusMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaStatusResponse>;
+}
+
+export interface PolymarketGammaTeamsMethod {
+  (signal?: AbortSignal): Promise<PolymarketGammaTeam[]>;
+  (
+    params: PolymarketGammaTeamsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaTeam[]>;
+}
+
+export interface PolymarketGammaPublicProfileMethod {
+  (
+    params: PolymarketGammaPublicProfileQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketGammaPublicProfileResponse>;
+}
+
 export interface PolymarketGammaGetNamespace {
+  status: PolymarketGammaStatusMethod;
   events: PolymarketGammaEventsMethod;
   markets: PolymarketGammaMarketsMethod;
   series: PolymarketGammaSeriesMethod;
@@ -1268,6 +1408,8 @@ export interface PolymarketGammaGetNamespace {
   comments: PolymarketGammaCommentsMethod;
   search: PolymarketGammaSearchMethod;
   sports: PolymarketGammaSportsMethod;
+  teams: PolymarketGammaTeamsMethod;
+  publicProfile: PolymarketGammaPublicProfileMethod;
 }
 
 // -- Top-level provider shape (multi-host) ----------------------------------

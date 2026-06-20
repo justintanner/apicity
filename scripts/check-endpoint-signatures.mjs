@@ -72,7 +72,8 @@ function hasSigOkComment(anchorNode) {
 function signatureOptions(provider) {
   return {
     keepFullHostname: provider === "free-media-upload",
-    ignoredHostLabels: provider === "kie" ? ["kieai"] : [],
+    ignoredHostLabels:
+      provider === "binance" ? ["eapi"] : provider === "kie" ? ["kieai"] : [],
   };
 }
 

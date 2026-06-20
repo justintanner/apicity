@@ -3,6 +3,7 @@ import { z } from "zod";
 export const BinanceOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
+  eapiBaseURL: z.string().optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
@@ -126,4 +127,78 @@ export const BinanceHistoricalBlockTradesRequestSchema = z.object({
   symbol: z.string().min(1),
   fromId: z.number().int().nonnegative(),
   limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceOptionTickerRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+});
+
+export const BinanceOptionExerciseHistoryRequestSchema = z.object({
+  underlying: z.string().min(1).optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(100).optional(),
+});
+
+export const BinanceOptionOpenInterestRequestSchema = z.object({
+  underlyingAsset: z.string().min(1),
+  expiration: z.string().min(1),
+});
+
+export const BinanceOptionDepthRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z
+    .union([
+      z.literal(10),
+      z.literal(20),
+      z.literal(50),
+      z.literal(100),
+      z.literal(500),
+      z.literal(1000),
+    ])
+    .optional(),
+});
+
+export const BinanceOptionTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(500).optional(),
+});
+
+export const BinanceOptionBlockTradesRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  limit: z.number().int().positive().max(500).optional(),
+});
+
+export const BinanceOptionIndexRequestSchema = z.object({
+  underlying: z.string().min(1),
+});
+
+export const BinanceOptionKlineIntervalSchema = z.enum([
+  "1m",
+  "3m",
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "2h",
+  "4h",
+  "6h",
+  "8h",
+  "12h",
+  "1d",
+  "3d",
+  "1w",
+  "1M",
+]);
+
+export const BinanceOptionKlinesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  interval: BinanceOptionKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceOptionMarkPriceRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
 });

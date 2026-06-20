@@ -373,6 +373,215 @@ export interface BinanceBlockTrade {
 
 export type BinanceHistoricalBlockTradesResponse = BinanceBlockTrade[];
 
+export type BinanceOptionPingResponse = BinancePingResponse;
+export type BinanceOptionTimeResponse = BinanceTimeResponse;
+
+export interface BinanceOptionContract {
+  baseAsset: string;
+  quoteAsset: string;
+  underlying: string;
+  settleAsset: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceOptionAsset {
+  name: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceOptionSymbolInfo {
+  symbol: string;
+  expiryDate: number;
+  filters: BinanceExchangeFilter[];
+  side: string;
+  strikePrice: string;
+  underlying: string;
+  unit: number;
+  liquidationFeeRate?: string;
+  minQty?: string;
+  maxQty?: string;
+  initialMargin?: string;
+  maintenanceMargin?: string;
+  minInitialMargin?: string;
+  minMaintenanceMargin?: string;
+  priceScale?: number;
+  quantityScale?: number;
+  quoteAsset?: string;
+  nakedSell?: boolean;
+  status?: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceOptionExchangeInfoResponse {
+  timezone: string;
+  serverTime: number;
+  optionContracts: BinanceOptionContract[];
+  optionAssets: BinanceOptionAsset[];
+  optionSymbols: BinanceOptionSymbolInfo[];
+  rateLimits: BinanceRateLimit[];
+  [key: string]: unknown;
+}
+
+export interface BinanceOptionTickerRequest {
+  symbol?: string;
+}
+
+export interface BinanceOptionTicker {
+  symbol: string;
+  priceChange: string;
+  priceChangePercent: string;
+  lastPrice: string;
+  lastQty: string;
+  open: string;
+  high: string;
+  low: string;
+  volume: string;
+  amount: string;
+  bidPrice: string;
+  askPrice: string;
+  openTime: number;
+  closeTime: number;
+  firstTradeId: number;
+  tradeCount: number;
+  strikePrice: string;
+  exercisePrice: string;
+  [key: string]: unknown;
+}
+
+export type BinanceOptionTickerResponse = BinanceOptionTicker[];
+
+export interface BinanceOptionExerciseHistoryRequest {
+  underlying?: string;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export interface BinanceOptionExerciseRecord {
+  symbol: string;
+  strikePrice: string;
+  realStrikePrice: string;
+  expiryDate: number;
+  strikeResult: string;
+  [key: string]: unknown;
+}
+
+export type BinanceOptionExerciseHistoryResponse =
+  BinanceOptionExerciseRecord[];
+
+export interface BinanceOptionOpenInterestRequest {
+  underlyingAsset: string;
+  expiration: string;
+}
+
+export interface BinanceOptionOpenInterest {
+  symbol: string;
+  sumOpenInterest: string;
+  sumOpenInterestUsd: string;
+  timestamp: string | number;
+  [key: string]: unknown;
+}
+
+export type BinanceOptionOpenInterestResponse = BinanceOptionOpenInterest[];
+
+export interface BinanceOptionDepthRequest {
+  symbol: string;
+  limit?: 10 | 20 | 50 | 100 | 500 | 1000;
+}
+
+export interface BinanceOptionDepthResponse {
+  lastUpdateId: number;
+  T?: number;
+  bids: BinanceOrderBookLevel[];
+  asks: BinanceOrderBookLevel[];
+  [key: string]: unknown;
+}
+
+export interface BinanceOptionTradesRequest {
+  symbol: string;
+  limit?: number;
+}
+
+export interface BinanceOptionBlockTradesRequest {
+  symbol?: string;
+  limit?: number;
+}
+
+export interface BinanceOptionTrade {
+  id: number;
+  tradeId: number;
+  symbol: string;
+  price: string;
+  qty: string;
+  quoteQty: string;
+  side: number;
+  time: number;
+  [key: string]: unknown;
+}
+
+export type BinanceOptionTradesResponse = BinanceOptionTrade[];
+export type BinanceOptionBlockTradesResponse = BinanceOptionTrade[];
+
+export interface BinanceOptionIndexRequest {
+  underlying: string;
+}
+
+export interface BinanceOptionIndexResponse {
+  time: number;
+  indexPrice: string;
+  [key: string]: unknown;
+}
+
+export type BinanceOptionKlineInterval =
+  | "1m"
+  | "3m"
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "4h"
+  | "6h"
+  | "8h"
+  | "12h"
+  | "1d"
+  | "3d"
+  | "1w"
+  | "1M";
+
+export interface BinanceOptionKlinesRequest {
+  symbol: string;
+  interval: BinanceOptionKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceOptionKline = BinanceKline;
+export type BinanceOptionKlinesResponse = BinanceOptionKline[];
+
+export interface BinanceOptionMarkPriceRequest {
+  symbol?: string;
+}
+
+export interface BinanceOptionMarkPrice {
+  symbol: string;
+  markPrice: string;
+  bidIV: string;
+  askIV: string;
+  markIV: string;
+  delta: string;
+  theta: string;
+  gamma: string;
+  vega: string;
+  highPriceLimit: string;
+  lowPriceLimit: string;
+  riskFreeInterest: string;
+  [key: string]: unknown;
+}
+
+export type BinanceOptionMarkPriceResponse = BinanceOptionMarkPrice[];
+
 export interface BinancePingMethod {
   (signal?: AbortSignal): Promise<BinancePingResponse>;
   schema: undefined;
@@ -511,6 +720,93 @@ export interface BinanceHistoricalBlockTradesMethod {
   schema: typeof import("./zod").BinanceHistoricalBlockTradesRequestSchema;
 }
 
+export interface BinanceOptionPingMethod {
+  (signal?: AbortSignal): Promise<BinanceOptionPingResponse>;
+  schema: undefined;
+}
+
+export interface BinanceOptionTimeMethod {
+  (signal?: AbortSignal): Promise<BinanceOptionTimeResponse>;
+  schema: undefined;
+}
+
+export interface BinanceOptionExchangeInfoMethod {
+  (signal?: AbortSignal): Promise<BinanceOptionExchangeInfoResponse>;
+  schema: undefined;
+}
+
+export interface BinanceOptionTickerMethod {
+  (
+    req?: BinanceOptionTickerRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionTickerResponse>;
+  schema: typeof import("./zod").BinanceOptionTickerRequestSchema;
+}
+
+export interface BinanceOptionExerciseHistoryMethod {
+  (
+    req?: BinanceOptionExerciseHistoryRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionExerciseHistoryResponse>;
+  schema: typeof import("./zod").BinanceOptionExerciseHistoryRequestSchema;
+}
+
+export interface BinanceOptionOpenInterestMethod {
+  (
+    req: BinanceOptionOpenInterestRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionOpenInterestResponse>;
+  schema: typeof import("./zod").BinanceOptionOpenInterestRequestSchema;
+}
+
+export interface BinanceOptionDepthMethod {
+  (
+    req: BinanceOptionDepthRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionDepthResponse>;
+  schema: typeof import("./zod").BinanceOptionDepthRequestSchema;
+}
+
+export interface BinanceOptionTradesMethod {
+  (
+    req: BinanceOptionTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionTradesResponse>;
+  schema: typeof import("./zod").BinanceOptionTradesRequestSchema;
+}
+
+export interface BinanceOptionBlockTradesMethod {
+  (
+    req?: BinanceOptionBlockTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionBlockTradesResponse>;
+  schema: typeof import("./zod").BinanceOptionBlockTradesRequestSchema;
+}
+
+export interface BinanceOptionIndexMethod {
+  (
+    req: BinanceOptionIndexRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionIndexResponse>;
+  schema: typeof import("./zod").BinanceOptionIndexRequestSchema;
+}
+
+export interface BinanceOptionKlinesMethod {
+  (
+    req: BinanceOptionKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionKlinesResponse>;
+  schema: typeof import("./zod").BinanceOptionKlinesRequestSchema;
+}
+
+export interface BinanceOptionMarkPriceMethod {
+  (
+    req?: BinanceOptionMarkPriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceOptionMarkPriceResponse>;
+  schema: typeof import("./zod").BinanceOptionMarkPriceRequestSchema;
+}
+
 export interface BinanceApiV3Namespace {
   aggTrades: BinanceAggTradesMethod;
   avgPrice: BinanceAvgPriceMethod;
@@ -542,11 +838,32 @@ export interface BinanceApiNamespace {
   v3: BinanceApiV3Namespace;
 }
 
+export interface BinanceEapiV1Namespace {
+  blockTrades: BinanceOptionBlockTradesMethod;
+  depth: BinanceOptionDepthMethod;
+  exchangeInfo: BinanceOptionExchangeInfoMethod;
+  exerciseHistory: BinanceOptionExerciseHistoryMethod;
+  index: BinanceOptionIndexMethod;
+  klines: BinanceOptionKlinesMethod;
+  mark: BinanceOptionMarkPriceMethod;
+  openInterest: BinanceOptionOpenInterestMethod;
+  ping: BinanceOptionPingMethod;
+  ticker: BinanceOptionTickerMethod;
+  time: BinanceOptionTimeMethod;
+  trades: BinanceOptionTradesMethod;
+}
+
+export interface BinanceEapiNamespace {
+  v1: BinanceEapiV1Namespace;
+}
+
 export interface BinanceGetNamespace {
   api: BinanceApiNamespace;
+  eapi: BinanceEapiNamespace;
 }
 
 export interface BinanceProvider {
   api: BinanceApiNamespace;
+  eapi: BinanceEapiNamespace;
   get: BinanceGetNamespace;
 }

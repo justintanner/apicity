@@ -706,6 +706,7 @@ const BASE_URL_IDENTIFIERS = new Set([
   "baseUrl",
   "apiBase",
   "apiBaseURL",
+  "eapiBaseURL",
   "uploadBaseURL",
   "uploadBaseURL",
   "uploadBase",

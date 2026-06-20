@@ -118,6 +118,66 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "interval": "1m",
       "limit": 1
     }
+  },
+  "GET eapi.v1.blockTrades": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "limit": 5
+    }
+  },
+  "GET eapi.v1.depth": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "symbol": "BTC-260626-140000-C",
+      "limit": 10
+    }
+  },
+  "GET eapi.v1.exerciseHistory": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "underlying": "BTCUSDT",
+      "limit": 1
+    }
+  },
+  "GET eapi.v1.index": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "underlying": "BTCUSDT"
+    }
+  },
+  "GET eapi.v1.klines": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "symbol": "BTC-260626-140000-C",
+      "interval": "1m",
+      "limit": 1
+    }
+  },
+  "GET eapi.v1.mark": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "symbol": "BTC-260626-140000-C"
+    }
+  },
+  "GET eapi.v1.openInterest": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "underlyingAsset": "BTC",
+      "expiration": 260626
+    }
+  },
+  "GET eapi.v1.ticker": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "symbol": "BTC-260626-140000-C"
+    }
+  },
+  "GET eapi.v1.trades": {
+    "source": "binance/options-market-data",
+    "payload": {
+      "symbol": "BTC-260626-140000-C",
+      "limit": 5
+    }
   }
 };
 

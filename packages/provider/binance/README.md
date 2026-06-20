@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 [![docs](https://img.shields.io/badge/docs-developers.binance.com-blue)](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information)
 
-Binance Spot REST API provider.
+Binance REST API provider for Spot and Options public market data.
 
 Runtime dependencies:
 
@@ -29,7 +29,7 @@ const binance = createBinance();
 
 ## API Reference
 
-18 endpoints across 13 groups. Each method mirrors an upstream URL path.
+30 endpoints across 14 groups. Each method mirrors an upstream URL path.
 
 ### aggTrades
 
@@ -76,6 +76,188 @@ Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
 
 ```typescript
 const res = await binance.api.v3.depth({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+### eapi
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.blockTrades</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/blockTrades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Recent-Block-Trade-List)
+
+```typescript
+const res = await binance.eapi.v1.blockTrades({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.depth</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/depth{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Order-Book)
+
+```typescript
+const res = await binance.eapi.v1.depth({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.exchangeInfo</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/exchangeInfo</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Exchange-Information)
+
+```typescript
+const res = await binance.eapi.v1.exchangeInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.exerciseHistory</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/exerciseHistory{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Historical-Exercise-Records)
+
+```typescript
+const res = await binance.eapi.v1.exerciseHistory({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.index</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/index{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Symbol-Price-Ticker)
+
+```typescript
+const res = await binance.eapi.v1.index({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.klines</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/klines{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Kline-Candlestick-Data)
+
+```typescript
+const res = await binance.eapi.v1.klines({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.mark</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/mark{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Option-Mark-Price)
+
+```typescript
+const res = await binance.eapi.v1.mark({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.openInterest</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/openInterest{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Open-Interest)
+
+```typescript
+const res = await binance.eapi.v1.openInterest({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.ping</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/ping</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Test-Connectivity)
+
+```typescript
+const res = await binance.eapi.v1.ping({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.ticker</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/ticker{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/24hr-Ticker-Price-Change-Statistics)
+
+```typescript
+const res = await binance.eapi.v1.ticker({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.time</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/time</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Check-Server-Time)
+
+```typescript
+const res = await binance.eapi.v1.time({ /* ... */ });
+```
+
+Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>binance.eapi.v1.trades</code></b></summary>
+
+<code>GET https://eapi.binance.com/eapi/v1/trades{query}</code>
+
+[Upstream docs ↗](https://developers.binance.com/docs/derivatives/options-trading/market-data/Recent-Trades-List)
+
+```typescript
+const res = await binance.eapi.v1.trades({ /* ... */ });
 ```
 
 Source: [`packages/provider/binance/src/binance.ts`](src/binance.ts)

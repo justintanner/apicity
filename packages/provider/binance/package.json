@@ -1,7 +1,7 @@
 {
   "name": "@apicity/binance",
   "version": "0.4.3",
-  "description": "Binance Spot REST API provider.",
+  "description": "Binance REST API provider for Spot and Options public market data.",
   "license": "MIT",
   "repository": {
     "type": "git",

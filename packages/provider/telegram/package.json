@@ -1,7 +1,7 @@
 {
   "name": "@apicity/telegram",
   "version": "0.5.0",
-  "description": "Telegram Bot API provider for sending text, photo, video, and audio messages.",
+  "description": "Telegram Bot API provider for sending messages, media, polls, and rich messages.",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -36,6 +36,11 @@ binance	eapi.v1.blockTrades	GET	https://eapi.binance.com/eapi/v1/blockTrades{que
 binance	eapi.v1.index	GET	https://eapi.binance.com/eapi/v1/index{query}	https://developers.binance.com/docs/derivatives/options-trading/market-data/Symbol-Price-Ticker
 binance	eapi.v1.klines	GET	https://eapi.binance.com/eapi/v1/klines{query}	https://developers.binance.com/docs/derivatives/options-trading/market-data/Kline-Candlestick-Data
 binance	eapi.v1.mark	GET	https://eapi.binance.com/eapi/v1/mark{query}	https://developers.binance.com/docs/derivatives/options-trading/market-data/Option-Mark-Price
+binance	public.coinMFutures.dapi.v1.ping	GET	https://dapi.binance.com/dapi/v1/ping	https://developers.binance.com/docs/derivatives/coin-margined-futures/market-data/rest-api/Test-Connectivity
+binance	public.options.eapi.v1.ping	GET	https://eapi.binance.com/eapi/v1/ping	https://developers.binance.com/docs/derivatives/options-trading/market-data/Test-Connectivity
+binance	public.spot.api.v3.ping	GET	https://api.binance.com/api/v3/ping	https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-endpoints#test-connectivity
+binance	public.spotData.api.v3.ping	GET	https://data-api.binance.vision/api/v3/ping	https://developers.binance.com/docs/binance-spot-api-docs/faqs/market_data_only
+binance	public.usdMFutures.fapi.v1.ping	GET	https://fapi.binance.com/fapi/v1/ping	https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/Test-Connectivity
 s3	buckets.list	GET	https://s3.us-east-1.amazonaws.com/	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBuckets.html
 s3	buckets.listDirectory	GET	https://s3express-control.{param}.amazonaws.com/{query}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListDirectoryBuckets.html
 s3	buckets.create	PUT	https://s3.us-east-1.amazonaws.com/{bucket}	https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html

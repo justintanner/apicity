@@ -132,15 +132,7 @@ const PROVIDERS = [
   },
 ];
 
-const METHOD_KEYS = new Set([
-  "post",
-  "get",
-  "put",
-  "delete",
-  "patch",
-  "head",
-  "options",
-]);
+const METHOD_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
 
 const STREAM_KEYS = new Set(["stream", "ws", "run"]);
 
@@ -548,6 +540,13 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
               baseOverride = bo;
               break;
             }
+            if (args[i].getKind() === SyntaxKind.Identifier) {
+              const idName = args[i].getText();
+              if (BASE_URL_IDENTIFIERS.has(idName)) {
+                baseOverride = `{${idName}}`;
+                break;
+              }
+            }
           }
           return {
             method: first,
@@ -707,6 +706,11 @@ const BASE_URL_IDENTIFIERS = new Set([
   "apiBase",
   "apiBaseURL",
   "eapiBaseURL",
+  "coinMBaseURL",
+  "spotBaseURL",
+  "spotDataBaseURL",
+  "fapiBaseURL",
+  "dapiBaseURL",
   "uploadBaseURL",
   "uploadBaseURL",
   "uploadBase",

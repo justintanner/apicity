@@ -241,6 +241,17 @@ const ENDPOINT_NOTES = new Map([
   ],
 ]);
 
+const PROVIDER_NOTES = new Map([
+  [
+    "binance",
+    [
+      "COIN-M Futures coverage is limited to public market-data reads.",
+      "The COIN-M Old Trades Lookup endpoint (`GET /dapi/v1/historicalTrades`) is intentionally not exposed because Binance requires an API key for it.",
+      "Signed trade, account, and user endpoints are out of scope.",
+    ].join(" "),
+  ],
+]);
+
 function renderEndpointDetails(ep, providerName, docsUrl) {
   const method = ep.method ?? "";
   const dotPath = displayDotPath(providerName, ep);
@@ -2263,6 +2274,12 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("");
   sections.push(pkg.description || `${providerName} provider for apicity.`);
   sections.push("");
+
+  const providerNote = PROVIDER_NOTES.get(providerName);
+  if (providerNote) {
+    sections.push(providerNote);
+    sections.push("");
+  }
 
   if (runtimeDeps.length > 0) {
     sections.push("Runtime dependencies:");

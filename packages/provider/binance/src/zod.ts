@@ -1,13 +1,28 @@
 import { z } from "zod";
 
+export const BinancePublicBaseURLsSchema = z.object({
+  spot: z.string().optional(),
+  spotData: z.string().optional(),
+  fapi: z.string().optional(),
+  dapi: z.string().optional(),
+  eapi: z.string().optional(),
+});
+
 export const BinanceOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
+  spotBaseURL: z.string().optional(),
+  spotDataBaseURL: z.string().optional(),
+  fapiBaseURL: z.string().optional(),
+  dapiBaseURL: z.string().optional(),
   eapiBaseURL: z.string().optional(),
+  coinMBaseURL: z.string().optional(),
+  publicBaseURLs: BinancePublicBaseURLsSchema.optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
 
+export type BinancePublicBaseURLs = z.infer<typeof BinancePublicBaseURLsSchema>;
 export type BinanceOptions = z.infer<typeof BinanceOptionsSchema>;
 
 export const BinanceExchangeInfoRequestSchema = z.object({
@@ -202,3 +217,156 @@ export const BinanceOptionKlinesRequestSchema = z.object({
 export const BinanceOptionMarkPriceRequestSchema = z.object({
   symbol: z.string().min(1).optional(),
 });
+
+export const BinanceCoinMContractTypeSchema = z.enum([
+  "PERPETUAL",
+  "CURRENT_QUARTER",
+  "NEXT_QUARTER",
+]);
+
+export const BinanceCoinMStatsContractTypeSchema = z.enum([
+  "ALL",
+  "PERPETUAL",
+  "CURRENT_QUARTER",
+  "NEXT_QUARTER",
+]);
+
+export const BinanceCoinMKlineIntervalSchema = z.enum([
+  "1m",
+  "3m",
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "2h",
+  "4h",
+  "6h",
+  "8h",
+  "12h",
+  "1d",
+  "3d",
+  "1w",
+  "1M",
+]);
+
+export const BinanceCoinMStatsPeriodSchema = z.enum([
+  "5m",
+  "15m",
+  "30m",
+  "1h",
+  "2h",
+  "4h",
+  "6h",
+  "12h",
+  "1d",
+]);
+
+export const BinanceCoinMDepthRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceCoinMTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceCoinMAggTradesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  fromId: z.number().int().nonnegative().optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceCoinMPremiumIndexRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  pair: z.string().min(1).optional(),
+});
+
+export const BinanceCoinMFundingRateRequestSchema = z.object({
+  symbol: z.string().min(1),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1000).optional(),
+});
+
+export const BinanceCoinMKlinesRequestSchema = z.object({
+  symbol: z.string().min(1),
+  interval: BinanceCoinMKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceCoinMContinuousKlinesRequestSchema = z.object({
+  pair: z.string().min(1),
+  contractType: BinanceCoinMContractTypeSchema,
+  interval: BinanceCoinMKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceCoinMIndexPriceKlinesRequestSchema = z.object({
+  pair: z.string().min(1),
+  interval: BinanceCoinMKlineIntervalSchema,
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+  limit: z.number().int().positive().max(1500).optional(),
+});
+
+export const BinanceCoinMMarkPriceKlinesRequestSchema =
+  BinanceCoinMKlinesRequestSchema;
+
+export const BinanceCoinMPremiumIndexKlinesRequestSchema =
+  BinanceCoinMKlinesRequestSchema;
+
+export const BinanceCoinMTickerRequestSchema = z.object({
+  symbol: z.string().min(1).optional(),
+  pair: z.string().min(1).optional(),
+});
+
+export const BinanceCoinMOpenInterestRequestSchema = z.object({
+  symbol: z.string().min(1),
+});
+
+export const BinanceCoinMConstituentsRequestSchema = z.object({
+  symbol: z.string().min(1),
+});
+
+export const BinanceCoinMDeliveryPriceRequestSchema = z.object({
+  pair: z.string().min(1),
+});
+
+export const BinanceCoinMStatsBaseRequestSchema = z.object({
+  pair: z.string().min(1),
+  period: BinanceCoinMStatsPeriodSchema,
+  limit: z.number().int().positive().max(500).optional(),
+  startTime: z.number().int().nonnegative().optional(),
+  endTime: z.number().int().nonnegative().optional(),
+});
+
+export const BinanceCoinMOpenInterestHistRequestSchema =
+  BinanceCoinMStatsBaseRequestSchema.extend({
+    contractType: BinanceCoinMStatsContractTypeSchema,
+  });
+
+export const BinanceCoinMTopLongShortPositionRatioRequestSchema =
+  BinanceCoinMStatsBaseRequestSchema;
+
+export const BinanceCoinMTopLongShortAccountRatioRequestSchema =
+  BinanceCoinMStatsBaseRequestSchema;
+
+export const BinanceCoinMGlobalLongShortAccountRatioRequestSchema =
+  BinanceCoinMStatsBaseRequestSchema;
+
+export const BinanceCoinMTakerBuySellVolRequestSchema =
+  BinanceCoinMStatsBaseRequestSchema.extend({
+    contractType: BinanceCoinMStatsContractTypeSchema,
+  });
+
+export const BinanceCoinMBasisRequestSchema =
+  BinanceCoinMStatsBaseRequestSchema.extend({
+    contractType: BinanceCoinMContractTypeSchema,
+  });

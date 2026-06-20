@@ -1,4 +1,6 @@
-export type { BinanceOptions } from "./zod";
+export type { BinanceOptions, BinancePublicBaseURLs } from "./zod";
+
+export type BinanceQueryArrayFormat = "json" | "repeat" | "csv";
 
 export class BinanceError extends Error {
   readonly status: number;
@@ -373,6 +375,410 @@ export interface BinanceBlockTrade {
 
 export type BinanceHistoricalBlockTradesResponse = BinanceBlockTrade[];
 
+export type BinanceCoinMContractType =
+  | "PERPETUAL"
+  | "CURRENT_QUARTER"
+  | "NEXT_QUARTER";
+
+export type BinanceCoinMStatsContractType = BinanceCoinMContractType | "ALL";
+
+export type BinanceCoinMKlineInterval =
+  | "1m"
+  | "3m"
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "4h"
+  | "6h"
+  | "8h"
+  | "12h"
+  | "1d"
+  | "3d"
+  | "1w"
+  | "1M";
+
+export type BinanceCoinMStatsPeriod =
+  | "5m"
+  | "15m"
+  | "30m"
+  | "1h"
+  | "2h"
+  | "4h"
+  | "6h"
+  | "12h"
+  | "1d";
+
+export interface BinanceCoinMExchangeInfoSymbol {
+  symbol: string;
+  pair: string;
+  contractType: BinanceCoinMContractType | string;
+  contractStatus: string;
+  baseAsset: string;
+  quoteAsset: string;
+  marginAsset: string;
+  contractSize: number;
+  deliveryDate: number;
+  onboardDate: number;
+  filters: BinanceExchangeFilter[];
+  orderTypes: string[];
+  timeInForce?: string[];
+  [key: string]: unknown;
+}
+
+export interface BinanceCoinMExchangeInfoResponse {
+  timezone: string;
+  serverTime: number;
+  rateLimits: BinanceRateLimit[];
+  exchangeFilters: BinanceExchangeFilter[];
+  symbols: BinanceCoinMExchangeInfoSymbol[];
+  [key: string]: unknown;
+}
+
+export interface BinanceCoinMDepthRequest {
+  symbol: string;
+  limit?: number;
+}
+
+export interface BinanceCoinMDepthResponse {
+  lastUpdateId: number;
+  symbol: string;
+  pair: string;
+  E: number;
+  T: number;
+  bids: BinanceOrderBookLevel[];
+  asks: BinanceOrderBookLevel[];
+}
+
+export interface BinanceCoinMTradesRequest {
+  symbol: string;
+  limit?: number;
+}
+
+export interface BinanceCoinMTrade {
+  id: number;
+  price: string;
+  qty: string;
+  baseQty: string;
+  time: number;
+  isBuyerMaker: boolean;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTradesResponse = BinanceCoinMTrade[];
+
+export interface BinanceCoinMAggTradesRequest {
+  symbol: string;
+  fromId?: number;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export interface BinanceCoinMAggregateTrade {
+  a: number;
+  p: string;
+  q: string;
+  f: number;
+  l: number;
+  T: number;
+  m: boolean;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMAggTradesResponse = BinanceCoinMAggregateTrade[];
+
+export interface BinanceCoinMPremiumIndexRequest {
+  symbol?: string;
+  pair?: string;
+}
+
+export interface BinanceCoinMPremiumIndex {
+  symbol: string;
+  pair: string;
+  markPrice: string;
+  indexPrice: string;
+  estimatedSettlePrice?: string;
+  lastFundingRate?: string;
+  interestRate?: string;
+  nextFundingTime?: number;
+  time: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMPremiumIndexResponse = BinanceCoinMPremiumIndex[];
+
+export interface BinanceCoinMFundingRateRequest {
+  symbol: string;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export interface BinanceCoinMFundingRate {
+  symbol: string;
+  fundingTime: number;
+  fundingRate: string;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMFundingRateResponse = BinanceCoinMFundingRate[];
+
+export interface BinanceCoinMFundingInfo {
+  symbol: string;
+  adjustedFundingRateCap: string;
+  adjustedFundingRateFloor: string;
+  fundingIntervalHours: number;
+  disclaimer?: boolean;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMFundingInfoResponse = BinanceCoinMFundingInfo[];
+
+export interface BinanceCoinMKlinesRequest {
+  symbol: string;
+  interval: BinanceCoinMKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceCoinMKline = [
+  openTime: number,
+  open: string,
+  high: string,
+  low: string,
+  close: string,
+  volume: string,
+  closeTime: number,
+  baseAssetVolume: string,
+  numberOfTrades: number,
+  takerBuyVolume: string,
+  takerBuyBaseAssetVolume: string,
+  unused: string,
+];
+
+export type BinanceCoinMKlinesResponse = BinanceCoinMKline[];
+
+export interface BinanceCoinMContinuousKlinesRequest {
+  pair: string;
+  contractType: BinanceCoinMContractType;
+  interval: BinanceCoinMKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceCoinMContinuousKlinesResponse = BinanceCoinMKlinesResponse;
+
+export interface BinanceCoinMIndexPriceKlinesRequest {
+  pair: string;
+  interval: BinanceCoinMKlineInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}
+
+export type BinanceCoinMIndexPriceKlinesResponse = BinanceCoinMKlinesResponse;
+
+export type BinanceCoinMMarkPriceKlinesRequest = BinanceCoinMKlinesRequest;
+export type BinanceCoinMMarkPriceKlinesResponse = BinanceCoinMKlinesResponse;
+
+export type BinanceCoinMPremiumIndexKlinesRequest = BinanceCoinMKlinesRequest;
+export type BinanceCoinMPremiumIndexKlinesResponse = BinanceCoinMKlinesResponse;
+
+export interface BinanceCoinMTickerRequest {
+  symbol?: string;
+  pair?: string;
+}
+
+export interface BinanceCoinMTicker24hr {
+  symbol: string;
+  pair: string;
+  priceChange: string;
+  priceChangePercent: string;
+  weightedAvgPrice: string;
+  lastPrice: string;
+  lastQty: string;
+  openPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  volume: string;
+  baseVolume?: string;
+  openTime: number;
+  closeTime: number;
+  firstId: number;
+  lastId: number;
+  count: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTicker24hrResponse = BinanceCoinMTicker24hr[];
+
+export interface BinanceCoinMTickerPrice {
+  symbol: string;
+  ps?: string;
+  pair?: string;
+  price: string;
+  time: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTickerPriceResponse = BinanceCoinMTickerPrice[];
+
+export interface BinanceCoinMTickerBookTicker {
+  symbol: string;
+  pair: string;
+  bidPrice: string;
+  bidQty: string;
+  askPrice: string;
+  askQty: string;
+  time: number;
+  lastUpdateId?: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTickerBookTickerResponse =
+  BinanceCoinMTickerBookTicker[];
+
+export interface BinanceCoinMOpenInterestRequest {
+  symbol: string;
+}
+
+export interface BinanceCoinMOpenInterestResponse {
+  symbol: string;
+  pair: string;
+  openInterest: string;
+  contractType: BinanceCoinMContractType | string;
+  time: number;
+  [key: string]: unknown;
+}
+
+export interface BinanceCoinMConstituentsRequest {
+  symbol: string;
+}
+
+export interface BinanceCoinMIndexConstituent {
+  exchange: string;
+  symbol: string;
+  [key: string]: unknown;
+}
+
+export interface BinanceCoinMConstituentsResponse {
+  symbol: string;
+  time: number;
+  constituents: BinanceCoinMIndexConstituent[];
+  [key: string]: unknown;
+}
+
+export interface BinanceCoinMStatsBaseRequest {
+  pair: string;
+  period: BinanceCoinMStatsPeriod;
+  limit?: number;
+  startTime?: number;
+  endTime?: number;
+}
+
+export interface BinanceCoinMOpenInterestHistRequest extends BinanceCoinMStatsBaseRequest {
+  contractType: BinanceCoinMStatsContractType;
+}
+
+export interface BinanceCoinMOpenInterestHist {
+  pair: string;
+  contractType: BinanceCoinMStatsContractType | string;
+  sumOpenInterest: string;
+  sumOpenInterestValue: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMOpenInterestHistResponse =
+  BinanceCoinMOpenInterestHist[];
+
+export type BinanceCoinMTopLongShortPositionRatioRequest =
+  BinanceCoinMStatsBaseRequest;
+
+export interface BinanceCoinMTopLongShortPositionRatio {
+  pair: string;
+  longShortRatio: string;
+  longPosition: string;
+  shortPosition: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTopLongShortPositionRatioResponse =
+  BinanceCoinMTopLongShortPositionRatio[];
+
+export type BinanceCoinMTopLongShortAccountRatioRequest =
+  BinanceCoinMStatsBaseRequest;
+
+export interface BinanceCoinMLongShortAccountRatio {
+  pair: string;
+  longShortRatio: string;
+  longAccount: string;
+  shortAccount: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTopLongShortAccountRatioResponse =
+  BinanceCoinMLongShortAccountRatio[];
+
+export type BinanceCoinMGlobalLongShortAccountRatioRequest =
+  BinanceCoinMStatsBaseRequest;
+
+export type BinanceCoinMGlobalLongShortAccountRatioResponse =
+  BinanceCoinMLongShortAccountRatio[];
+
+export interface BinanceCoinMTakerBuySellVolRequest extends BinanceCoinMStatsBaseRequest {
+  contractType: BinanceCoinMStatsContractType;
+}
+
+export interface BinanceCoinMTakerBuySellVol {
+  pair: string;
+  contractType: BinanceCoinMStatsContractType | string;
+  takerBuyVol: string;
+  takerSellVol: string;
+  takerBuyVolValue: string;
+  takerSellVolValue: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMTakerBuySellVolResponse = BinanceCoinMTakerBuySellVol[];
+
+export interface BinanceCoinMDeliveryPriceRequest {
+  pair: string;
+}
+
+export interface BinanceCoinMDeliveryPrice {
+  deliveryTime: number;
+  deliveryPrice: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMDeliveryPriceResponse = BinanceCoinMDeliveryPrice[];
+
+export interface BinanceCoinMBasisRequest extends BinanceCoinMStatsBaseRequest {
+  contractType: BinanceCoinMContractType;
+}
+
+export interface BinanceCoinMBasis {
+  pair: string;
+  contractType: BinanceCoinMContractType | string;
+  indexPrice: string;
+  futuresPrice: string;
+  basis: string;
+  basisRate: string;
+  annualizedBasisRate: string;
+  timestamp: number;
+  [key: string]: unknown;
+}
+
+export type BinanceCoinMBasisResponse = BinanceCoinMBasis[];
+
 export type BinanceOptionPingResponse = BinancePingResponse;
 export type BinanceOptionTimeResponse = BinanceTimeResponse;
 
@@ -720,6 +1126,202 @@ export interface BinanceHistoricalBlockTradesMethod {
   schema: typeof import("./zod").BinanceHistoricalBlockTradesRequestSchema;
 }
 
+export interface BinanceCoinMPingMethod {
+  (signal?: AbortSignal): Promise<BinancePingResponse>;
+  schema: undefined;
+}
+
+export interface BinanceCoinMTimeMethod {
+  (signal?: AbortSignal): Promise<BinanceTimeResponse>;
+  schema: undefined;
+}
+
+export interface BinanceCoinMExchangeInfoMethod {
+  (signal?: AbortSignal): Promise<BinanceCoinMExchangeInfoResponse>;
+  schema: undefined;
+}
+
+export interface BinanceCoinMDepthMethod {
+  (
+    req: BinanceCoinMDepthRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMDepthResponse>;
+  schema: typeof import("./zod").BinanceCoinMDepthRequestSchema;
+}
+
+export interface BinanceCoinMTradesMethod {
+  (
+    req: BinanceCoinMTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTradesResponse>;
+  schema: typeof import("./zod").BinanceCoinMTradesRequestSchema;
+}
+
+export interface BinanceCoinMAggTradesMethod {
+  (
+    req: BinanceCoinMAggTradesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMAggTradesResponse>;
+  schema: typeof import("./zod").BinanceCoinMAggTradesRequestSchema;
+}
+
+export interface BinanceCoinMPremiumIndexMethod {
+  (
+    req?: BinanceCoinMPremiumIndexRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMPremiumIndexResponse>;
+  schema: typeof import("./zod").BinanceCoinMPremiumIndexRequestSchema;
+}
+
+export interface BinanceCoinMFundingRateMethod {
+  (
+    req: BinanceCoinMFundingRateRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMFundingRateResponse>;
+  schema: typeof import("./zod").BinanceCoinMFundingRateRequestSchema;
+}
+
+export interface BinanceCoinMFundingInfoMethod {
+  (signal?: AbortSignal): Promise<BinanceCoinMFundingInfoResponse>;
+  schema: undefined;
+}
+
+export interface BinanceCoinMKlinesMethod {
+  (
+    req: BinanceCoinMKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMKlinesResponse>;
+  schema: typeof import("./zod").BinanceCoinMKlinesRequestSchema;
+}
+
+export interface BinanceCoinMContinuousKlinesMethod {
+  (
+    req: BinanceCoinMContinuousKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMContinuousKlinesResponse>;
+  schema: typeof import("./zod").BinanceCoinMContinuousKlinesRequestSchema;
+}
+
+export interface BinanceCoinMIndexPriceKlinesMethod {
+  (
+    req: BinanceCoinMIndexPriceKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMIndexPriceKlinesResponse>;
+  schema: typeof import("./zod").BinanceCoinMIndexPriceKlinesRequestSchema;
+}
+
+export interface BinanceCoinMMarkPriceKlinesMethod {
+  (
+    req: BinanceCoinMMarkPriceKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMMarkPriceKlinesResponse>;
+  schema: typeof import("./zod").BinanceCoinMMarkPriceKlinesRequestSchema;
+}
+
+export interface BinanceCoinMPremiumIndexKlinesMethod {
+  (
+    req: BinanceCoinMPremiumIndexKlinesRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMPremiumIndexKlinesResponse>;
+  schema: typeof import("./zod").BinanceCoinMPremiumIndexKlinesRequestSchema;
+}
+
+export interface BinanceCoinMTicker24hrMethod {
+  (
+    req?: BinanceCoinMTickerRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTicker24hrResponse>;
+  schema: typeof import("./zod").BinanceCoinMTickerRequestSchema;
+}
+
+export interface BinanceCoinMTickerPriceMethod {
+  (
+    req?: BinanceCoinMTickerRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTickerPriceResponse>;
+  schema: typeof import("./zod").BinanceCoinMTickerRequestSchema;
+}
+
+export interface BinanceCoinMTickerBookTickerMethod {
+  (
+    req?: BinanceCoinMTickerRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTickerBookTickerResponse>;
+  schema: typeof import("./zod").BinanceCoinMTickerRequestSchema;
+}
+
+export interface BinanceCoinMOpenInterestMethod {
+  (
+    req: BinanceCoinMOpenInterestRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMOpenInterestResponse>;
+  schema: typeof import("./zod").BinanceCoinMOpenInterestRequestSchema;
+}
+
+export interface BinanceCoinMConstituentsMethod {
+  (
+    req: BinanceCoinMConstituentsRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMConstituentsResponse>;
+  schema: typeof import("./zod").BinanceCoinMConstituentsRequestSchema;
+}
+
+export interface BinanceCoinMOpenInterestHistMethod {
+  (
+    req: BinanceCoinMOpenInterestHistRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMOpenInterestHistResponse>;
+  schema: typeof import("./zod").BinanceCoinMOpenInterestHistRequestSchema;
+}
+
+export interface BinanceCoinMTopLongShortPositionRatioMethod {
+  (
+    req: BinanceCoinMTopLongShortPositionRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTopLongShortPositionRatioResponse>;
+  schema: typeof import("./zod").BinanceCoinMTopLongShortPositionRatioRequestSchema;
+}
+
+export interface BinanceCoinMTopLongShortAccountRatioMethod {
+  (
+    req: BinanceCoinMTopLongShortAccountRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTopLongShortAccountRatioResponse>;
+  schema: typeof import("./zod").BinanceCoinMTopLongShortAccountRatioRequestSchema;
+}
+
+export interface BinanceCoinMGlobalLongShortAccountRatioMethod {
+  (
+    req: BinanceCoinMGlobalLongShortAccountRatioRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMGlobalLongShortAccountRatioResponse>;
+  schema: typeof import("./zod").BinanceCoinMGlobalLongShortAccountRatioRequestSchema;
+}
+
+export interface BinanceCoinMTakerBuySellVolMethod {
+  (
+    req: BinanceCoinMTakerBuySellVolRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMTakerBuySellVolResponse>;
+  schema: typeof import("./zod").BinanceCoinMTakerBuySellVolRequestSchema;
+}
+
+export interface BinanceCoinMDeliveryPriceMethod {
+  (
+    req: BinanceCoinMDeliveryPriceRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMDeliveryPriceResponse>;
+  schema: typeof import("./zod").BinanceCoinMDeliveryPriceRequestSchema;
+}
+
+export interface BinanceCoinMBasisMethod {
+  (
+    req: BinanceCoinMBasisRequest,
+    signal?: AbortSignal
+  ): Promise<BinanceCoinMBasisResponse>;
+  schema: typeof import("./zod").BinanceCoinMBasisRequestSchema;
+}
+
 export interface BinanceOptionPingMethod {
   (signal?: AbortSignal): Promise<BinanceOptionPingResponse>;
   schema: undefined;
@@ -823,6 +1425,89 @@ export interface BinanceApiV3Namespace {
   uiKlines: BinanceUiKlinesMethod;
 }
 
+export interface BinanceCoinMTickerNamespace {
+  bookTicker: BinanceCoinMTickerBookTickerMethod;
+  price: BinanceCoinMTickerPriceMethod;
+  twentyFourHr: BinanceCoinMTicker24hrMethod;
+}
+
+export interface BinanceDapiV1Namespace {
+  aggTrades: BinanceCoinMAggTradesMethod;
+  constituents: BinanceCoinMConstituentsMethod;
+  continuousKlines: BinanceCoinMContinuousKlinesMethod;
+  depth: BinanceCoinMDepthMethod;
+  exchangeInfo: BinanceCoinMExchangeInfoMethod;
+  fundingInfo: BinanceCoinMFundingInfoMethod;
+  fundingRate: BinanceCoinMFundingRateMethod;
+  indexPriceKlines: BinanceCoinMIndexPriceKlinesMethod;
+  klines: BinanceCoinMKlinesMethod;
+  markPriceKlines: BinanceCoinMMarkPriceKlinesMethod;
+  openInterest: BinanceCoinMOpenInterestMethod;
+  ping: BinanceCoinMPingMethod;
+  premiumIndex: BinanceCoinMPremiumIndexMethod;
+  premiumIndexKlines: BinanceCoinMPremiumIndexKlinesMethod;
+  ticker: BinanceCoinMTickerNamespace;
+  time: BinanceCoinMTimeMethod;
+  trades: BinanceCoinMTradesMethod;
+}
+
+export interface BinanceDapiNamespace {
+  v1: BinanceDapiV1Namespace;
+}
+
+export interface BinanceFuturesDataNamespace {
+  basis: BinanceCoinMBasisMethod;
+  deliveryPrice: BinanceCoinMDeliveryPriceMethod;
+  globalLongShortAccountRatio: BinanceCoinMGlobalLongShortAccountRatioMethod;
+  openInterestHist: BinanceCoinMOpenInterestHistMethod;
+  takerBuySellVol: BinanceCoinMTakerBuySellVolMethod;
+  topLongShortAccountRatio: BinanceCoinMTopLongShortAccountRatioMethod;
+  topLongShortPositionRatio: BinanceCoinMTopLongShortPositionRatioMethod;
+}
+
+export interface BinanceFuturesNamespace {
+  data: BinanceFuturesDataNamespace;
+}
+
+export interface BinancePublicSpotApiV3Namespace {
+  ping: BinancePingMethod;
+}
+
+export interface BinancePublicSpotNamespace {
+  api: {
+    v3: BinancePublicSpotApiV3Namespace;
+  };
+}
+
+export interface BinancePublicUsdMFuturesNamespace {
+  fapi: {
+    v1: {
+      ping: BinancePingMethod;
+    };
+  };
+}
+
+export interface BinancePublicCoinMFuturesNamespace {
+  dapi: BinanceDapiNamespace;
+  futures: BinanceFuturesNamespace;
+}
+
+export interface BinancePublicOptionsNamespace {
+  eapi: {
+    v1: {
+      ping: BinancePingMethod;
+    };
+  };
+}
+
+export interface BinancePublicNamespace {
+  spot: BinancePublicSpotNamespace;
+  spotData: BinancePublicSpotNamespace;
+  usdMFutures: BinancePublicUsdMFuturesNamespace;
+  coinMFutures: BinancePublicCoinMFuturesNamespace;
+  options: BinancePublicOptionsNamespace;
+}
+
 export interface BinanceReferencePriceNamespace extends BinanceReferencePriceMethod {
   calculation: BinanceReferencePriceCalculationMethod;
 }
@@ -860,10 +1545,16 @@ export interface BinanceEapiNamespace {
 export interface BinanceGetNamespace {
   api: BinanceApiNamespace;
   eapi: BinanceEapiNamespace;
+  dapi: BinanceDapiNamespace;
+  futures: BinanceFuturesNamespace;
+  public: BinancePublicNamespace;
 }
 
 export interface BinanceProvider {
   api: BinanceApiNamespace;
   eapi: BinanceEapiNamespace;
+  dapi: BinanceDapiNamespace;
+  futures: BinanceFuturesNamespace;
+  public: BinancePublicNamespace;
   get: BinanceGetNamespace;
 }

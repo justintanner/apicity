@@ -568,6 +568,57 @@ describe("harness persist scrubbers", () => {
     );
   });
 
+  it("redacts Telegram payment and passport request secrets", () => {
+    const recording: PersistedHarRecording = {
+      request: {
+        url: "https://api.telegram.org/bot123456:secret/sendInvoice",
+        headers: [{ name: "content-type", value: "application/json" }],
+        postData: {
+          mimeType: "application/json",
+          text: JSON.stringify({
+            chat_id: 42,
+            title: "Premium pack",
+            description: "Stars payment",
+            payload: "raw-payment-payload",
+            provider_token: "provider-secret",
+            prices: [{ label: "Stars", amount: 10 }],
+            errors: [
+              {
+                source: "data",
+                type: "passport",
+                field_name: "first_name",
+                data_hash: "passport-data-hash",
+                message: "invalid",
+              },
+              {
+                source: "file",
+                type: "passport",
+                file_hash: "passport-file-hash",
+                message: "invalid",
+              },
+            ],
+          }),
+        },
+      },
+    };
+
+    redactPersistedHarSecrets(recording);
+
+    expect(recording.request?.url).toBe(
+      "https://api.telegram.org/bot***/sendInvoice"
+    );
+    const body = JSON.parse(
+      recording.request?.postData?.text ?? "{}"
+    ) as Record<string, unknown>;
+    expect(body.payload).toBe("***");
+    expect(body.provider_token).toBe("***");
+    const serialized = JSON.stringify(body);
+    expect(serialized).not.toContain("raw-payment-payload");
+    expect(serialized).not.toContain("provider-secret");
+    expect(serialized).not.toContain("passport-data-hash");
+    expect(serialized).not.toContain("passport-file-hash");
+  });
+
   it("redacts Polymarket CLOB auth headers, request signatures, and response credentials", () => {
     const recording: PersistedHarRecording = {
       request: {

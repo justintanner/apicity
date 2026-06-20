@@ -5,16 +5,11 @@ import {
   TelegramError,
 } from "../../packages/provider/telegram/src";
 
-function telegramResponse(result: Record<string, unknown>): Response {
+function telegramApiResponse(result: unknown): Response {
   return new Response(
     JSON.stringify({
       ok: true,
-      result: {
-        message_id: 1,
-        date: 1770300000,
-        chat: { id: 42, type: "private" },
-        ...result,
-      },
+      result,
     }),
     {
       status: 200,
@@ -23,11 +18,24 @@ function telegramResponse(result: Record<string, unknown>): Response {
   );
 }
 
+function telegramMessageResponse(result: Record<string, unknown>): Response {
+  return telegramApiResponse({
+    message_id: 1,
+    date: 1770300000,
+    chat: { id: 42, type: "private" },
+    ...result,
+  });
+}
+
+function jsonBody(init: RequestInit): unknown {
+  return JSON.parse(init.body as string);
+}
+
 describe("Telegram endpoint wiring", () => {
   it("posts sendMessage requests to the bot-token URL", async () => {
     const mockFetch = vi
       .fn()
-      .mockResolvedValue(telegramResponse({ text: "hello" }));
+      .mockResolvedValue(telegramMessageResponse({ text: "hello" }));
     const telegram = createTelegram({
       botToken: "123456:ABC-DEF",
       fetch: mockFetch,
@@ -43,7 +51,7 @@ describe("Telegram endpoint wiring", () => {
     expect(url).toBe("https://api.telegram.org/bot123456:ABC-DEF/sendMessage");
     expect(init.method).toBe("POST");
     expect(init.headers).toEqual({ "Content-Type": "application/json" });
-    expect(JSON.parse(init.body as string)).toEqual({
+    expect(jsonBody(init)).toEqual({
       chat_id: 42,
       text: "hello",
     });
@@ -54,17 +62,249 @@ describe("Telegram endpoint wiring", () => {
       botToken: "123456:ABC-DEF",
       fetch: vi.fn(),
     });
+    const methodNames = [
+      "getUpdates",
+      "setWebhook",
+      "deleteWebhook",
+      "getWebhookInfo",
+      "getMe",
+      "logOut",
+      "close",
+      "getFile",
+      "getManagedBotToken",
+      "replaceManagedBotToken",
+      "getManagedBotAccessSettings",
+      "setManagedBotAccessSettings",
+      "setMyCommands",
+      "deleteMyCommands",
+      "getMyCommands",
+      "setMyName",
+      "getMyName",
+      "setMyDescription",
+      "getMyDescription",
+      "setMyShortDescription",
+      "getMyShortDescription",
+      "setChatMenuButton",
+      "getChatMenuButton",
+      "setMyDefaultAdministratorRights",
+      "getMyDefaultAdministratorRights",
+      "sendMessage",
+      "sendPhoto",
+      "sendVideo",
+      "sendAudio",
+    ] as const;
 
-    expect(telegram.post.sendMessage).toBe(telegram.sendMessage);
-    expect(telegram.post.sendPhoto).toBe(telegram.sendPhoto);
-    expect(telegram.post.sendVideo).toBe(telegram.sendVideo);
-    expect(telegram.post.sendAudio).toBe(telegram.sendAudio);
+    for (const methodName of methodNames) {
+      expect(telegram.post[methodName]).toBe(telegram[methodName]);
+    }
+  });
+
+  it("posts no-parameter methods with empty JSON bodies", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        telegramApiResponse({
+          id: 123456,
+          is_bot: true,
+          first_name: "Apicity",
+        })
+      )
+      .mockResolvedValueOnce(
+        telegramApiResponse({
+          url: "",
+          has_custom_certificate: false,
+          pending_update_count: 0,
+        })
+      )
+      .mockResolvedValueOnce(telegramApiResponse(true))
+      .mockResolvedValueOnce(telegramApiResponse(true));
+    const telegram = createTelegram({
+      botToken: "123456:ABC-DEF",
+      baseURL: "https://telegram.local/bot{token}",
+      fetch: mockFetch,
+    });
+
+    const me = await telegram.getMe();
+    const webhook = await telegram.getWebhookInfo();
+    const logout = await telegram.logOut();
+    const close = await telegram.close();
+
+    expect(me.result.first_name).toBe("Apicity");
+    expect(webhook.result.pending_update_count).toBe(0);
+    expect(logout.result).toBe(true);
+    expect(close.result).toBe(true);
+    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
+    expect(calls.map(([url]) => url)).toEqual([
+      "https://telegram.local/bot123456:ABC-DEF/getMe",
+      "https://telegram.local/bot123456:ABC-DEF/getWebhookInfo",
+      "https://telegram.local/bot123456:ABC-DEF/logOut",
+      "https://telegram.local/bot123456:ABC-DEF/close",
+    ]);
+    for (const [, init] of calls) {
+      expect(init.headers).toEqual({ "Content-Type": "application/json" });
+      expect(jsonBody(init)).toEqual({});
+    }
+  });
+
+  it("posts update, webhook, file, and managed-bot request bodies", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(telegramApiResponse(true)));
+    const telegram = createTelegram({
+      botToken: "123456:ABC-DEF",
+      baseURL: "https://telegram.local/bot{token}",
+      fetch: mockFetch,
+    });
+
+    await telegram.getUpdates({
+      offset: 7,
+      limit: 10,
+      timeout: 1,
+      allowed_updates: ["message", "managed_bot"],
+    });
+    await telegram.deleteWebhook({ drop_pending_updates: true });
+    await telegram.getFile({ file_id: "AgACAgQAAxkBAAI" });
+    await telegram.getManagedBotToken({ user_id: 1001 });
+    await telegram.replaceManagedBotToken({ user_id: 1001 });
+    await telegram.getManagedBotAccessSettings({ user_id: 1001 });
+    await telegram.setManagedBotAccessSettings({
+      user_id: 1001,
+      is_access_restricted: true,
+      added_user_ids: [2001, 2002],
+    });
+
+    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
+    expect(calls.map(([url]) => url)).toEqual([
+      "https://telegram.local/bot123456:ABC-DEF/getUpdates",
+      "https://telegram.local/bot123456:ABC-DEF/deleteWebhook",
+      "https://telegram.local/bot123456:ABC-DEF/getFile",
+      "https://telegram.local/bot123456:ABC-DEF/getManagedBotToken",
+      "https://telegram.local/bot123456:ABC-DEF/replaceManagedBotToken",
+      "https://telegram.local/bot123456:ABC-DEF/getManagedBotAccessSettings",
+      "https://telegram.local/bot123456:ABC-DEF/setManagedBotAccessSettings",
+    ]);
+    expect(jsonBody(calls[0][1])).toEqual({
+      offset: 7,
+      limit: 10,
+      timeout: 1,
+      allowed_updates: ["message", "managed_bot"],
+    });
+    expect(jsonBody(calls[1][1])).toEqual({ drop_pending_updates: true });
+    expect(jsonBody(calls[2][1])).toEqual({ file_id: "AgACAgQAAxkBAAI" });
+    expect(jsonBody(calls[3][1])).toEqual({ user_id: 1001 });
+    expect(jsonBody(calls[4][1])).toEqual({ user_id: 1001 });
+    expect(jsonBody(calls[5][1])).toEqual({ user_id: 1001 });
+    expect(jsonBody(calls[6][1])).toEqual({
+      user_id: 1001,
+      is_access_restricted: true,
+      added_user_ids: [2001, 2002],
+    });
+  });
+
+  it("posts webhook certificates as multipart form-data", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(telegramApiResponse(true)));
+    const telegram = createTelegram({
+      botToken: "123456:ABC-DEF",
+      fetch: mockFetch,
+    });
+    const certificate = new Blob(["pem bytes"], {
+      type: "application/x-pem-file",
+    });
+
+    await telegram.setWebhook({
+      url: "https://example.com/telegram",
+      certificate,
+      allowed_updates: ["message"],
+      secret_token: "secret-token_1",
+    });
+
+    const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://api.telegram.org/bot123456:ABC-DEF/setWebhook");
+    expect(init.headers).toBeUndefined();
+    expect(init.body).toBeInstanceOf(FormData);
+
+    const form = init.body as FormData;
+    const formCertificate = form.get("certificate");
+    expect(form.get("url")).toBe("https://example.com/telegram");
+    expect(form.get("allowed_updates")).toBe(JSON.stringify(["message"]));
+    expect(form.get("secret_token")).toBe("secret-token_1");
+    expect(formCertificate).toBeInstanceOf(Blob);
+    expect((formCertificate as Blob).type).toBe("application/x-pem-file");
+    expect(await (formCertificate as Blob).text()).toBe("pem bytes");
+  });
+
+  it("posts command, menu, profile, and administrator-rights metadata", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockImplementation(() => Promise.resolve(telegramApiResponse(true)));
+    const telegram = createTelegram({
+      botToken: "123456:ABC-DEF",
+      baseURL: "https://telegram.local/bot{token}",
+      fetch: mockFetch,
+    });
+
+    await telegram.setMyCommands({
+      commands: [{ command: "start", description: "Start the bot" }],
+      scope: { type: "default" },
+      language_code: "en",
+    });
+    await telegram.getMyCommands({ scope: { type: "default" } });
+    await telegram.deleteMyCommands({ language_code: "en" });
+    await telegram.setChatMenuButton({
+      chat_id: 42,
+      menu_button: { type: "commands" },
+    });
+    await telegram.getChatMenuButton({ chat_id: 42 });
+    await telegram.setMyName({ name: "Apicity", language_code: "en" });
+    await telegram.getMyName({ language_code: "en" });
+    await telegram.setMyDescription({ description: "Fixture bot" });
+    await telegram.getMyDescription();
+    await telegram.setMyShortDescription({ short_description: "Fixtures" });
+    await telegram.getMyShortDescription();
+    await telegram.setMyDefaultAdministratorRights({
+      rights: { can_delete_messages: true },
+      for_channels: true,
+    });
+    await telegram.getMyDefaultAdministratorRights({ for_channels: true });
+
+    const calls = mockFetch.mock.calls as Array<[string, RequestInit]>;
+    expect(calls.map(([url]) => url)).toEqual([
+      "https://telegram.local/bot123456:ABC-DEF/setMyCommands",
+      "https://telegram.local/bot123456:ABC-DEF/getMyCommands",
+      "https://telegram.local/bot123456:ABC-DEF/deleteMyCommands",
+      "https://telegram.local/bot123456:ABC-DEF/setChatMenuButton",
+      "https://telegram.local/bot123456:ABC-DEF/getChatMenuButton",
+      "https://telegram.local/bot123456:ABC-DEF/setMyName",
+      "https://telegram.local/bot123456:ABC-DEF/getMyName",
+      "https://telegram.local/bot123456:ABC-DEF/setMyDescription",
+      "https://telegram.local/bot123456:ABC-DEF/getMyDescription",
+      "https://telegram.local/bot123456:ABC-DEF/setMyShortDescription",
+      "https://telegram.local/bot123456:ABC-DEF/getMyShortDescription",
+      "https://telegram.local/bot123456:ABC-DEF/setMyDefaultAdministratorRights",
+      "https://telegram.local/bot123456:ABC-DEF/getMyDefaultAdministratorRights",
+    ]);
+    expect(jsonBody(calls[0][1])).toEqual({
+      commands: [{ command: "start", description: "Start the bot" }],
+      scope: { type: "default" },
+      language_code: "en",
+    });
+    expect(jsonBody(calls[3][1])).toEqual({
+      chat_id: 42,
+      menu_button: { type: "commands" },
+    });
+    expect(jsonBody(calls[8][1])).toEqual({});
+    expect(jsonBody(calls[11][1])).toEqual({
+      rights: { can_delete_messages: true },
+      for_channels: true,
+    });
   });
 
   it("posts string media as JSON for photo, video, and audio messages", async () => {
     const mockFetch = vi
       .fn()
-      .mockImplementation(() => Promise.resolve(telegramResponse({})));
+      .mockImplementation(() => Promise.resolve(telegramMessageResponse({})));
     const telegram = createTelegram({
       botToken: "123456:ABC-DEF",
       baseURL: "https://telegram.local/bot{token}",
@@ -97,16 +337,16 @@ describe("Telegram endpoint wiring", () => {
     for (const [, init] of calls) {
       expect(init.headers).toEqual({ "Content-Type": "application/json" });
     }
-    expect(JSON.parse(calls[0][1].body as string)).toEqual({
+    expect(jsonBody(calls[0][1])).toEqual({
       chat_id: "@channel",
       photo: "https://example.com/photo.png",
     });
-    expect(JSON.parse(calls[1][1].body as string)).toEqual({
+    expect(jsonBody(calls[1][1])).toEqual({
       chat_id: "@channel",
       video: "telegram-file-id",
       supports_streaming: true,
     });
-    expect(JSON.parse(calls[2][1].body as string)).toEqual({
+    expect(jsonBody(calls[2][1])).toEqual({
       chat_id: "@channel",
       audio: "https://example.com/audio.mp3",
       performer: "Apicity",
@@ -116,7 +356,7 @@ describe("Telegram endpoint wiring", () => {
   it("posts Blob media as multipart form-data", async () => {
     const mockFetch = vi
       .fn()
-      .mockResolvedValue(telegramResponse({ caption: "uploaded" }));
+      .mockResolvedValue(telegramMessageResponse({ caption: "uploaded" }));
     const telegram = createTelegram({
       botToken: "123456:ABC-DEF",
       fetch: mockFetch,

@@ -63,6 +63,12 @@ function createMarketDataProvider() {
           return jsonResponse({ spread: "0.01" });
         case "/last-trade-price":
           return jsonResponse({ price: "0.42", side: "BUY" });
+        case "/tick-size":
+          return jsonResponse({ minimum_tick_size: 0.01 });
+        case "/fee-rate":
+          return jsonResponse({ base_fee: 0 });
+        case "/neg-risk":
+          return jsonResponse({ neg_risk: false });
         case "/prices-history":
           return jsonResponse({ history: [{ t: 1778040000, p: 0.42 }] });
         case "/markets":
@@ -95,12 +101,45 @@ function createMarketDataProvider() {
           ]);
         case "/batch-prices-history":
           return jsonResponse({ history: { [TOKEN_ID]: [] } });
+        case "/markets/live-activity":
+          return jsonResponse([{ condition_id: CONDITION_ID }]);
+        case "/rewards/markets/current":
+        case "/rewards/markets/multi":
+          return jsonResponse({
+            data: [],
+            next_cursor: NEXT_CURSOR,
+            limit: 100,
+            count: 0,
+          });
+        case "/rebates/current":
+          return jsonResponse([]);
+        case "/builder/trades":
+          return jsonResponse({
+            data: [],
+            next_cursor: NEXT_CURSOR,
+            limit: 100,
+            count: 0,
+          });
         default:
           if (pathname.startsWith("/tick-size/")) {
             return jsonResponse({ minimum_tick_size: 0.01 });
           }
           if (pathname.startsWith("/fee-rate/")) {
             return jsonResponse({ base_fee: 0 });
+          }
+          if (pathname.startsWith("/neg-risk/")) {
+            return jsonResponse({ neg_risk: false });
+          }
+          if (pathname.startsWith("/markets/live-activity/")) {
+            return jsonResponse([{ condition_id: CONDITION_ID }]);
+          }
+          if (pathname.startsWith("/rewards/markets/")) {
+            return jsonResponse({
+              data: [],
+              next_cursor: NEXT_CURSOR,
+              limit: 100,
+              count: 0,
+            });
           }
           if (pathname.startsWith("/markets-by-token/")) {
             return jsonResponse({
@@ -159,7 +198,11 @@ describe("Polymarket CLOB market-data request wiring", () => {
     await provider.get.clob.spread({ token_id: TOKEN_ID });
     await provider.get.clob.lastTradePrice({ token_id: TOKEN_ID });
     await provider.get.clob.tickSize(PATH_TOKEN_ID);
+    await provider.get.clob.tickSizeByQuery({ token_id: PATH_TOKEN_ID });
     await provider.get.clob.feeRate(PATH_TOKEN_ID);
+    await provider.get.clob.feeRateByQuery({ token_id: PATH_TOKEN_ID });
+    await provider.get.clob.negRisk(PATH_TOKEN_ID);
+    await provider.get.clob.negRiskByQuery({ token_id: PATH_TOKEN_ID });
     await provider.get.clob.pricesHistory({
       market: TOKEN_ID,
       interval: "1h",
@@ -176,7 +219,11 @@ describe("Polymarket CLOB market-data request wiring", () => {
       "/spread?token_id=token-123",
       "/last-trade-price?token_id=token-123",
       "/tick-size/token%2Fwith%20space",
+      "/tick-size?token_id=token%2Fwith%20space",
       "/fee-rate/token%2Fwith%20space",
+      "/fee-rate?token_id=token%2Fwith%20space",
+      "/neg-risk/token%2Fwith%20space",
+      "/neg-risk?token_id=token%2Fwith%20space",
       "/prices-history?market=token-123&interval=1h&startTs=1700000000&endTs=1700003600&fidelity=5",
     ]);
     for (const call of calls) {
@@ -198,6 +245,7 @@ describe("Polymarket CLOB market-data request wiring", () => {
     });
     await provider.get.clob.marketsByToken(PATH_TOKEN_ID);
     await provider.get.clob.clobMarkets(CONDITION_ID);
+    await provider.get.clob.marketLiveActivity(CONDITION_ID);
 
     expect(calls.map(pathAndSearch)).toEqual([
       "/markets",
@@ -208,6 +256,71 @@ describe("Polymarket CLOB market-data request wiring", () => {
       "/sampling-simplified-markets?next_cursor=MTAwMA%3D%3D%2Fnext",
       "/markets-by-token/token%2Fwith%20space",
       "/clob-markets/condition%2Fwith%20space",
+      "/markets/live-activity/condition%2Fwith%20space",
+    ]);
+    for (const call of calls) {
+      expect(call.init.method).toBe("GET");
+      expect(call.init.body).toBeUndefined();
+    }
+  });
+
+  it("serializes plural market-data GET URLs", async () => {
+    const { calls, provider } = createMarketDataProvider();
+    const tokenIds = { token_ids: [TOKEN_ID, PATH_TOKEN_ID] };
+
+    await provider.get.clob.books(tokenIds);
+    await provider.get.clob.prices({
+      token_ids: [TOKEN_ID, PATH_TOKEN_ID],
+      sides: ["BUY", "SELL"],
+    });
+    await provider.get.clob.midpoints(tokenIds);
+    await provider.get.clob.lastTradesPrices(tokenIds);
+
+    expect(calls.map(pathAndSearch)).toEqual([
+      "/books?token_ids=token-123%2Ctoken%2Fwith%20space",
+      "/prices?token_ids=token-123%2Ctoken%2Fwith%20space&sides=BUY%2CSELL",
+      "/midpoints?token_ids=token-123%2Ctoken%2Fwith%20space",
+      "/last-trades-prices?token_ids=token-123%2Ctoken%2Fwith%20space",
+    ]);
+    for (const call of calls) {
+      expect(call.init.method).toBe("GET");
+      expect(call.init.body).toBeUndefined();
+    }
+  });
+
+  it("serializes public rewards, rebates, and builder trade URLs", async () => {
+    const { calls, provider } = createMarketDataProvider();
+
+    await provider.get.clob.rewards.markets.current({
+      sponsored: true,
+      next_cursor: NEXT_CURSOR,
+    });
+    await provider.get.clob.rewards.markets.byCondition(CONDITION_ID, {
+      sponsored: false,
+      next_cursor: NEXT_CURSOR,
+    });
+    await provider.get.clob.rewards.markets.multi({
+      q: "Election Markets",
+      tag_slug: ["politics", "crypto"],
+      position: "DESC",
+      min_volume: 10,
+    });
+    await provider.get.clob.rebates.current({
+      date: "2026-02-27",
+      maker_address: "0xmaker",
+    });
+    await provider.get.clob.builderTrades({
+      builder_code: "0xbuilder",
+      market: "0xmarket",
+      next_cursor: "next cursor",
+    });
+
+    expect(calls.map(pathAndSearch)).toEqual([
+      "/rewards/markets/current?sponsored=true&next_cursor=MTAwMA%3D%3D%2Fnext",
+      "/rewards/markets/condition%2Fwith%20space?sponsored=false&next_cursor=MTAwMA%3D%3D%2Fnext",
+      "/rewards/markets/multi?q=Election+Markets&tag_slug=politics&tag_slug=crypto&position=DESC&min_volume=10",
+      "/rebates/current?date=2026-02-27&maker_address=0xmaker",
+      "/builder/trades?builder_code=0xbuilder&market=0xmarket&next_cursor=next+cursor",
     ]);
     for (const call of calls) {
       expect(call.init.method).toBe("GET");
@@ -229,6 +342,7 @@ describe("Polymarket CLOB market-data request wiring", () => {
       endTs: 1700003600,
       fidelity: 5,
     };
+    const liveActivity = [CONDITION_ID, "condition-456"];
 
     await provider.post.clob.books(tokenBatch);
     await provider.post.clob.prices(pricesBatch);
@@ -236,6 +350,7 @@ describe("Polymarket CLOB market-data request wiring", () => {
     await provider.post.clob.spreads(tokenBatch);
     await provider.post.clob.lastTradesPrices(tokenBatch);
     await provider.post.clob.batchPricesHistory(historyBatch);
+    await provider.post.clob.marketsLiveActivity(liveActivity);
 
     expect(calls.map(pathAndSearch)).toEqual([
       "/books",
@@ -244,6 +359,7 @@ describe("Polymarket CLOB market-data request wiring", () => {
       "/spreads",
       "/last-trades-prices",
       "/batch-prices-history",
+      "/markets/live-activity",
     ]);
     expect(calls.map((call) => call.init.body)).toEqual([
       JSON.stringify(tokenBatch),
@@ -252,6 +368,7 @@ describe("Polymarket CLOB market-data request wiring", () => {
       JSON.stringify(tokenBatch),
       JSON.stringify(tokenBatch),
       JSON.stringify(historyBatch),
+      JSON.stringify(liveActivity),
     ]);
     for (const call of calls) {
       expect(call.init.method).toBe("POST");
@@ -276,7 +393,13 @@ describe("Polymarket CLOB market-data request wiring", () => {
     expect(
       provider.post.clob.batchPricesHistory.schema.parse(historyBatch)
     ).toEqual(historyBatch);
+    expect(
+      provider.post.clob.marketsLiveActivity.schema.parse(liveActivity)
+    ).toEqual(liveActivity);
     expect(() => provider.post.clob.books.schema.parse([])).toThrow();
+    expect(() =>
+      provider.post.clob.marketsLiveActivity.schema.parse([])
+    ).toThrow();
     expect(() =>
       provider.post.clob.prices.schema.parse([
         { token_id: TOKEN_ID, side: "HOLD" },

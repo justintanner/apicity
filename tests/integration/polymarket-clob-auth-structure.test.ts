@@ -11,6 +11,10 @@ import {
   PolymarketClobNotificationsQuerySchema,
   PolymarketClobOrderScoringQuerySchema,
   PolymarketClobOrdersScoringQuerySchema,
+  PolymarketClobRewardPercentagesQuerySchema,
+  PolymarketClobRewardsUserMarketsQuerySchema,
+  PolymarketClobRewardsUserQuerySchema,
+  PolymarketClobRewardsUserTotalQuerySchema,
   PolymarketClobUserOrdersQuerySchema,
   PolymarketClobUserTradesQuerySchema,
 } from "@apicity/polymarket/zod";
@@ -84,6 +88,13 @@ describe("polymarket clob authenticated structure", () => {
     expect(provider.post.clob.v1.heartbeats.schema.safeParse).toBeInstanceOf(
       Function
     );
+    expect(provider.get.clob.auth.builderApiKey).toBeInstanceOf(Function);
+    expect(provider.post.clob.auth.builderApiKey).toBeInstanceOf(Function);
+    expect(provider.delete.clob.auth.builderApiKey).toBeInstanceOf(Function);
+    expect(provider.get.clob.rewards.user).toBeInstanceOf(Function);
+    expect(provider.get.clob.rewards.userTotal).toBeInstanceOf(Function);
+    expect(provider.get.clob.rewards.userPercentages).toBeInstanceOf(Function);
+    expect(provider.get.clob.rewards.userMarkets).toBeInstanceOf(Function);
   });
 
   it("validates authenticated trading request and query schemas", () => {
@@ -204,6 +215,31 @@ describe("polymarket clob authenticated structure", () => {
       PolymarketClobOrdersScoringQuerySchema.safeParse({ order_ids: [] })
         .success
     ).toBe(false);
+    expect(
+      PolymarketClobRewardsUserQuerySchema.safeParse({
+        date: "2026-02-27",
+        signature_type: 3,
+      }).success
+    ).toBe(true);
+    expect(PolymarketClobRewardsUserQuerySchema.safeParse({}).success).toBe(
+      false
+    );
+    expect(
+      PolymarketClobRewardsUserTotalQuerySchema.safeParse({
+        date: "2026-02-27",
+      }).success
+    ).toBe(true);
+    expect(
+      PolymarketClobRewardPercentagesQuerySchema.safeParse({
+        maker_address: "0xmaker",
+      }).success
+    ).toBe(true);
+    expect(
+      PolymarketClobRewardsUserMarketsQuerySchema.safeParse({
+        tag_slug: ["politics", "crypto"],
+        favorite_markets: true,
+      }).success
+    ).toBe(true);
   });
 
   it("constructs API-key L1 auth requests with caller-provided headers", async () => {
@@ -261,6 +297,182 @@ describe("polymarket clob authenticated structure", () => {
         String(headers.timestamp)
       );
       expect(requestHeaders.get("POLY_NONCE")).toBe(String(headers.nonce));
+    }
+  });
+
+  it("constructs builder API-key and user rewards L2 requests", async () => {
+    vi.spyOn(Date, "now").mockReturnValue(1_700_000_000_000);
+    const captured: Array<{ url: string; init?: RequestInit }> = [];
+    const signerCalls: PolymarketClobL2HeaderArgs[] = [];
+    const fetchImpl: typeof fetch = async (url, init) => {
+      captured.push({ url: String(url), init });
+      return jsonResponse({
+        key: "builder-key",
+        secret: "builder-secret",
+        passphrase: "builder-passphrase",
+        data: [],
+        limit: 0,
+        count: 0,
+        next_cursor: "",
+      });
+    };
+    const provider = createPolymarket({
+      fetch: fetchImpl,
+      clobL2HeaderSigner: (args) => {
+        signerCalls.push(args);
+        return {
+          address: "0x1234567890123456789012345678901234567890",
+          apiKey: "signed-api-key",
+          passphrase: "signed-passphrase",
+          timestamp: args.timestamp,
+          signature: `sig:${args.method}:${args.requestPath}`,
+        };
+      },
+    });
+
+    await provider.get.clob.auth.builderApiKey();
+    await provider.post.clob.auth.builderApiKey();
+    await provider.delete.clob.auth.builderApiKey();
+    await provider.get.clob.rewards.user({
+      date: "2026-02-27",
+      signature_type: 3,
+      maker_address: "0xmaker",
+      sponsored: true,
+      next_cursor: "next cursor",
+    });
+    await provider.get.clob.rewards.userTotal({
+      date: "2026-02-27",
+      signature_type: 3,
+    });
+    await provider.get.clob.rewards.userPercentages({
+      signature_type: 3,
+      maker_address: "0xmaker",
+    });
+    await provider.get.clob.rewards.userMarkets({
+      date: "2026-02-27",
+      tag_slug: ["politics", "crypto"],
+      favorite_markets: true,
+      page_size: 25,
+    });
+
+    expect(
+      captured.map(({ url, init }) => ({
+        method: init?.method,
+        url,
+        body: init?.body,
+      }))
+    ).toEqual([
+      {
+        method: "GET",
+        url: "https://clob.polymarket.com/auth/builder-api-key",
+        body: undefined,
+      },
+      {
+        method: "POST",
+        url: "https://clob.polymarket.com/auth/builder-api-key",
+        body: undefined,
+      },
+      {
+        method: "DELETE",
+        url: "https://clob.polymarket.com/auth/builder-api-key",
+        body: undefined,
+      },
+      {
+        method: "GET",
+        url:
+          "https://clob.polymarket.com/rewards/user" +
+          "?date=2026-02-27&signature_type=3&maker_address=0xmaker" +
+          "&sponsored=true&next_cursor=next+cursor",
+        body: undefined,
+      },
+      {
+        method: "GET",
+        url:
+          "https://clob.polymarket.com/rewards/user/total" +
+          "?date=2026-02-27&signature_type=3",
+        body: undefined,
+      },
+      {
+        method: "GET",
+        url:
+          "https://clob.polymarket.com/rewards/user/percentages" +
+          "?signature_type=3&maker_address=0xmaker",
+        body: undefined,
+      },
+      {
+        method: "GET",
+        url:
+          "https://clob.polymarket.com/rewards/user/markets" +
+          "?date=2026-02-27&tag_slug=politics&tag_slug=crypto" +
+          "&favorite_markets=true&page_size=25",
+        body: undefined,
+      },
+    ]);
+
+    expect(
+      signerCalls.map(({ method, requestPath, body, timestamp }) => ({
+        method,
+        requestPath,
+        body,
+        timestamp,
+      }))
+    ).toEqual([
+      {
+        method: "GET",
+        requestPath: "/auth/builder-api-key",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+      {
+        method: "POST",
+        requestPath: "/auth/builder-api-key",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+      {
+        method: "DELETE",
+        requestPath: "/auth/builder-api-key",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+      {
+        method: "GET",
+        requestPath: "/rewards/user",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+      {
+        method: "GET",
+        requestPath: "/rewards/user/total",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+      {
+        method: "GET",
+        requestPath: "/rewards/user/percentages",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+      {
+        method: "GET",
+        requestPath: "/rewards/user/markets",
+        body: undefined,
+        timestamp: 1_700_000_000,
+      },
+    ]);
+
+    for (const { url, init } of captured) {
+      const headers = new Headers(init?.headers);
+      expect(headers.get("POLY_ADDRESS")).toBe(
+        "0x1234567890123456789012345678901234567890"
+      );
+      expect(headers.get("POLY_API_KEY")).toBe("signed-api-key");
+      expect(headers.get("POLY_PASSPHRASE")).toBe("signed-passphrase");
+      expect(headers.get("POLY_TIMESTAMP")).toBe("1700000000");
+      expect(headers.get("POLY_SIGNATURE")).toBe(
+        `sig:${init?.method}:${new URL(url).pathname}`
+      );
+      expect(headers.get("Content-Type")).toBeNull();
     }
   });
 

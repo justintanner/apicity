@@ -6,14 +6,20 @@ import {
   PolymarketClobMidpointResponse,
   PolymarketClobSpreadResponse,
   PolymarketClobLastTradePriceResponse,
+  PolymarketClobBooksResponse,
+  PolymarketClobPricesResponse,
+  PolymarketClobMidpointsResponse,
+  PolymarketClobLastTradesPricesResponse,
   PolymarketClobTickSizeResponse,
   PolymarketClobFeeRateResponse,
+  PolymarketClobNegRiskResponse,
   PolymarketClobPriceHistoryResponse,
   PolymarketClobMarket,
   PolymarketClobMarketListResponse,
   PolymarketClobSimplifiedMarketListResponse,
   PolymarketClobMarketsByTokenResponse,
   PolymarketClobMarketCompact,
+  PolymarketClobLiveActivityResponse,
   PolymarketClobBooksBatchResponse,
   PolymarketClobPricesBatchResponse,
   PolymarketClobMidpointsBatchResponse,
@@ -22,6 +28,8 @@ import {
   PolymarketClobBatchPricesHistoryResponse,
   PolymarketClobApiKeyResponse,
   PolymarketClobApiKeysResponse,
+  PolymarketClobBuilderApiKeyResponse,
+  PolymarketClobBuilderApiKeysResponse,
   PolymarketClobPostOrderResponse,
   PolymarketClobPostOrdersResponse,
   PolymarketClobCancelOrdersResponse,
@@ -35,11 +43,23 @@ import {
   PolymarketClobOrderScoringResponse,
   PolymarketClobOrdersScoringResponse,
   PolymarketClobTradesResponse,
+  PolymarketClobRewardsUserResponse,
+  PolymarketClobRewardsUserTotalResponse,
+  PolymarketClobRewardPercentagesResponse,
+  PolymarketClobRewardsUserMarketsResponse,
+  PolymarketClobRewardsCurrentResponse,
+  PolymarketClobRewardsMarketResponse,
+  PolymarketClobRewardsMultiMarketsResponse,
+  PolymarketClobRebatesCurrentResponse,
+  PolymarketClobBuilderTradesResponse,
   PolymarketClobL1Headers,
   PolymarketClobTokenQuery,
   PolymarketClobPriceQuery,
+  PolymarketClobTokenIdsQuery,
+  PolymarketClobPricesQuery,
   PolymarketClobPriceHistoryQuery,
   PolymarketClobPaginationQuery,
+  PolymarketClobLiveActivityRequest,
   PolymarketClobTokenBatchRequest,
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
@@ -58,6 +78,15 @@ import {
   PolymarketClobOrdersScoringQuery,
   PolymarketClobOrdersScoringRequest,
   PolymarketClobHeartbeatRequest,
+  PolymarketClobRewardsUserQuery,
+  PolymarketClobRewardsUserTotalQuery,
+  PolymarketClobRewardPercentagesQuery,
+  PolymarketClobRewardsUserMarketsQuery,
+  PolymarketClobRewardsCurrentQuery,
+  PolymarketClobRewardsMarketQuery,
+  PolymarketClobRewardsMultiMarketsQuery,
+  PolymarketClobRebatesCurrentQuery,
+  PolymarketClobBuilderTradesQuery,
   PolymarketClobGetNamespace,
   PolymarketClobPostNamespace,
   PolymarketClobDeleteNamespace,
@@ -65,6 +94,7 @@ import {
   PolymarketError,
 } from "./types";
 import {
+  PolymarketClobLiveActivityRequestSchema,
   PolymarketClobTokenBatchRequestSchema,
   PolymarketClobPricesBatchRequestSchema,
   PolymarketClobBatchPricesHistoryRequestSchema,
@@ -108,7 +138,7 @@ export function createClobProvider(
   const trader = createClobTrader(opts);
 
   // GET https://clob.polymarket.com/time
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-server-time
+  // Docs: https://docs.polymarket.com/api-reference/data/get-server-time.md
   async function clobTime(signal?: AbortSignal): Promise<PolymarketServerTime> {
     const text = (await makeGetTextRequest(`${baseURL}/time`, signal)).trim();
     const n = Number(text);
@@ -123,7 +153,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/book{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-order-book
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-order-book.md
   async function clobBook(
     params: PolymarketClobTokenQuery,
     signal?: AbortSignal
@@ -136,7 +166,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/price{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-market-price
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-market-price.md
   async function clobPrice(
     params: PolymarketClobPriceQuery,
     signal?: AbortSignal
@@ -151,7 +181,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/midpoint{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-midpoint
+  // Docs: https://docs.polymarket.com/api-reference/data/get-midpoint-price.md
   async function clobMidpoint(
     params: PolymarketClobTokenQuery,
     signal?: AbortSignal
@@ -164,7 +194,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/spread{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-spread
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-spread.md
   async function clobSpread(
     params: PolymarketClobTokenQuery,
     signal?: AbortSignal
@@ -177,7 +207,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/last-trade-price{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-last-trade-price
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-last-trade-price.md
   async function clobLastTradePrice(
     params: PolymarketClobTokenQuery,
     signal?: AbortSignal
@@ -189,8 +219,62 @@ export function createClobProvider(
     );
   }
 
+  // GET https://clob.polymarket.com/books{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-order-books.md
+  async function clobBooks(
+    params: PolymarketClobTokenIdsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBooksResponse> {
+    const query = tokenIdsQuery(params);
+    return makeGetRequest<PolymarketClobBooksResponse>(
+      `${baseURL}/books${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/prices{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-market-prices.md
+  async function clobPrices(
+    params: PolymarketClobPricesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPricesResponse> {
+    const query =
+      `?token_ids=${encodeURIComponent(params.token_ids.join(","))}` +
+      `&sides=${encodeURIComponent(params.sides.join(","))}`;
+    return makeGetRequest<PolymarketClobPricesResponse>(
+      `${baseURL}/prices${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/midpoints{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices.md
+  async function clobMidpoints(
+    params: PolymarketClobTokenIdsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMidpointsResponse> {
+    const query = tokenIdsQuery(params);
+    return makeGetRequest<PolymarketClobMidpointsResponse>(
+      `${baseURL}/midpoints${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/last-trades-prices{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices.md
+  async function clobLastTradesPrices(
+    params: PolymarketClobTokenIdsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLastTradesPricesResponse> {
+    const query = tokenIdsQuery(params);
+    return makeGetRequest<PolymarketClobLastTradesPricesResponse>(
+      `${baseURL}/last-trades-prices${query}`,
+      signal
+    );
+  }
+
   // GET https://clob.polymarket.com/tick-size/{tokenId}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-tick-size
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-tick-size-by-path-parameter.md
   async function clobTickSize(
     tokenId: string,
     signal?: AbortSignal
@@ -201,8 +285,22 @@ export function createClobProvider(
     );
   }
 
+  // sig-ok: query-form alias kept distinct from path-form tickSize
+  // GET https://clob.polymarket.com/tick-size{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-tick-size.md
+  async function clobTickSizeByQuery(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobTickSizeResponse> {
+    const query = tokenQuery(params);
+    return makeGetRequest<PolymarketClobTickSizeResponse>(
+      `${baseURL}/tick-size${query}`,
+      signal
+    );
+  }
+
   // GET https://clob.polymarket.com/fee-rate/{tokenId}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-fee-rate
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-fee-rate-by-path-parameter.md
   async function clobFeeRate(
     tokenId: string,
     signal?: AbortSignal
@@ -213,9 +311,57 @@ export function createClobProvider(
     );
   }
 
+  // sig-ok: query-form alias kept distinct from path-form feeRate
+  // GET https://clob.polymarket.com/fee-rate{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-fee-rate.md
+  async function clobFeeRateByQuery(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobFeeRateResponse> {
+    const query = tokenQuery(params);
+    return makeGetRequest<PolymarketClobFeeRateResponse>(
+      `${baseURL}/fee-rate${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/neg-risk/{tokenId}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-neg-risk-by-path-parameter.md
+  async function clobNegRisk(
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobNegRiskResponse> {
+    return makeGetRequest<PolymarketClobNegRiskResponse>(
+      `${baseURL}/neg-risk/${encodeURIComponent(tokenId)}`,
+      signal
+    );
+  }
+
+  // sig-ok: query-form alias kept distinct from path-form negRisk
+  // GET https://clob.polymarket.com/neg-risk{query}
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-neg-risk.md
+  async function clobNegRiskByQuery(
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobNegRiskResponse> {
+    const query = tokenQuery(params);
+    return makeGetRequest<PolymarketClobNegRiskResponse>(
+      `${baseURL}/neg-risk${query}`,
+      signal
+    );
+  }
+
   function paginationQuery(params?: PolymarketClobPaginationQuery): string {
     if (!params?.next_cursor) return "";
     return `?next_cursor=${encodeURIComponent(params.next_cursor)}`;
+  }
+
+  function tokenQuery(params: PolymarketClobTokenQuery): string {
+    return `?token_id=${encodeURIComponent(params.token_id)}`;
+  }
+
+  function tokenIdsQuery(params: PolymarketClobTokenIdsQuery): string {
+    return `?token_ids=${encodeURIComponent(params.token_ids.join(","))}`;
   }
 
   // The CLOB `/balance-allowance` endpoints resolve *which* wallet's balance to
@@ -260,8 +406,9 @@ export function createClobProvider(
     return { headers: headersOrSignal, signal };
   }
 
+  // Legacy compatibility: current public market listings are documented on Gamma.
   // GET https://clob.polymarket.com/markets/{paramsOrConditionIdOrSignal}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-markets
+  // Docs: https://docs.polymarket.com/api-reference/markets/list-markets.md
   async function clobMarkets(
     paramsOrConditionIdOrSignal?:
       | PolymarketClobPaginationQuery
@@ -294,7 +441,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/sampling-markets{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-sampling-markets
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-sampling-markets.md
   async function clobSamplingMarkets(
     params?: PolymarketClobPaginationQuery,
     signal?: AbortSignal
@@ -307,7 +454,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/simplified-markets{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-simplified-markets
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-simplified-markets.md
   async function clobSimplifiedMarkets(
     params?: PolymarketClobPaginationQuery,
     signal?: AbortSignal
@@ -320,7 +467,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/sampling-simplified-markets{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-sampling-simplified-markets
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-sampling-simplified-markets.md
   async function clobSamplingSimplifiedMarkets(
     params?: PolymarketClobPaginationQuery,
     signal?: AbortSignal
@@ -333,7 +480,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/markets-by-token/{tokenId}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-market-by-token
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-market-by-token.md
   async function clobMarketsByToken(
     tokenId: string,
     signal?: AbortSignal
@@ -345,7 +492,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/clob-markets/{conditionId}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-clob-market-info
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-clob-market-info.md
   async function clobMarketsCompact(
     conditionId: string,
     signal?: AbortSignal
@@ -356,8 +503,21 @@ export function createClobProvider(
     );
   }
 
+  // sig-ok: singular convenience name for markets/live-activity lookup
+  // GET https://clob.polymarket.com/markets/live-activity/{conditionId}
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-live-activity-by-condition-id.md
+  async function clobMarketLiveActivity(
+    conditionId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLiveActivityResponse> {
+    return makeGetRequest<PolymarketClobLiveActivityResponse>(
+      `${baseURL}/markets/live-activity/${encodeURIComponent(conditionId)}`,
+      signal
+    );
+  }
+
   // GET https://clob.polymarket.com/prices-history{query}
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-prices-history
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-prices-history.md
   async function clobPricesHistory(
     params: PolymarketClobPriceHistoryQuery,
     signal?: AbortSignal
@@ -378,7 +538,7 @@ export function createClobProvider(
   }
 
   // POST https://clob.polymarket.com/auth/api-key
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobAuthApiKey(
     headersOrSignal?: PolymarketClobL1Headers | AbortSignal,
     signal?: AbortSignal
@@ -393,7 +553,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/auth/api-keys
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobAuthApiKeys(
     headersOrSignal?: PolymarketClobL1Headers | AbortSignal,
     signal?: AbortSignal
@@ -408,7 +568,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/auth/derive-api-key
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobAuthDeriveApiKey(
     headersOrSignal?: PolymarketClobL1Headers | AbortSignal,
     signal?: AbortSignal
@@ -423,7 +583,7 @@ export function createClobProvider(
   }
 
   // DELETE https://clob.polymarket.com/auth/api-key
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobAuthDeleteApiKey(signal?: AbortSignal): Promise<string> {
     return makeAuthenticatedRequest<string>(
       "DELETE",
@@ -434,7 +594,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/auth/ban-status/closed-only
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobAuthClosedOnly(
     signal?: AbortSignal
   ): Promise<PolymarketClobClosedOnlyResponse> {
@@ -446,9 +606,49 @@ export function createClobProvider(
     );
   }
 
+  // GET https://clob.polymarket.com/auth/builder-api-key
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
+  async function clobAuthBuilderApiKeyGet(
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBuilderApiKeysResponse> {
+    return makeAuthenticatedRequest<PolymarketClobBuilderApiKeysResponse>(
+      "GET",
+      `${baseURL}/auth/builder-api-key`,
+      undefined,
+      signal
+    );
+  }
+
+  // POST https://clob.polymarket.com/auth/builder-api-key
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
+  async function clobAuthBuilderApiKeyPost(
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBuilderApiKeyResponse> {
+    return makeAuthenticatedRequest<PolymarketClobBuilderApiKeyResponse>(
+      "POST",
+      `${baseURL}/auth/builder-api-key`,
+      undefined,
+      signal
+    );
+  }
+
+  // DELETE https://clob.polymarket.com/auth/builder-api-key
+  // Docs: https://docs.polymarket.com/api-spec/clob-openapi.yaml
+  async function clobAuthBuilderApiKeyDelete(
+    signal?: AbortSignal
+  ): Promise<string> {
+    return makeAuthenticatedRequest<string>(
+      "DELETE",
+      `${baseURL}/auth/builder-api-key`,
+      undefined,
+      signal
+    );
+  }
+
   const authGet = {
     apiKeys: clobAuthApiKeys,
     deriveApiKey: clobAuthDeriveApiKey,
+    builderApiKey: clobAuthBuilderApiKeyGet,
     banStatus: {
       closedOnly: clobAuthClosedOnly,
     },
@@ -456,10 +656,12 @@ export function createClobProvider(
 
   const authPost = {
     apiKey: clobAuthApiKey,
+    builderApiKey: clobAuthBuilderApiKeyPost,
   };
 
   const authDelete = {
     apiKey: clobAuthDeleteApiKey,
+    builderApiKey: clobAuthBuilderApiKeyDelete,
   };
 
   // POST https://clob.polymarket.com/order
@@ -625,8 +827,155 @@ export function createClobProvider(
     trades: clobDataTrades,
   };
 
+  // GET https://clob.polymarket.com/rewards/user{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-earnings-for-user-by-date.md
+  async function clobRewardsUser(
+    params: PolymarketClobRewardsUserQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsUserResponse> {
+    const query = buildQuery(params);
+    return makeAuthenticatedRequest<PolymarketClobRewardsUserResponse>(
+      "GET",
+      `${baseURL}/rewards/user${query}`,
+      undefined,
+      signal
+    );
+  }
+
+  // sig-ok: flat userTotal name avoids making rewards.user both callable and nested
+  // GET https://clob.polymarket.com/rewards/user/total{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-total-earnings-for-user-by-date.md
+  async function clobRewardsUserTotal(
+    params: PolymarketClobRewardsUserTotalQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsUserTotalResponse> {
+    const query = buildQuery(params);
+    return makeAuthenticatedRequest<PolymarketClobRewardsUserTotalResponse>(
+      "GET",
+      `${baseURL}/rewards/user/total${query}`,
+      undefined,
+      signal
+    );
+  }
+
+  // sig-ok: flat userPercentages name avoids making rewards.user both callable and nested
+  // GET https://clob.polymarket.com/rewards/user/percentages{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-reward-percentages-for-user.md
+  async function clobRewardsUserPercentages(
+    params?: PolymarketClobRewardPercentagesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardPercentagesResponse> {
+    const query = buildQuery(params);
+    return makeAuthenticatedRequest<PolymarketClobRewardPercentagesResponse>(
+      "GET",
+      `${baseURL}/rewards/user/percentages${query}`,
+      undefined,
+      signal
+    );
+  }
+
+  // sig-ok: flat userMarkets name avoids making rewards.user both callable and nested
+  // GET https://clob.polymarket.com/rewards/user/markets{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-user-earnings-and-markets-configuration.md
+  async function clobRewardsUserMarkets(
+    params?: PolymarketClobRewardsUserMarketsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsUserMarketsResponse> {
+    const query = buildQuery(params);
+    return makeAuthenticatedRequest<PolymarketClobRewardsUserMarketsResponse>(
+      "GET",
+      `${baseURL}/rewards/user/markets${query}`,
+      undefined,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/rewards/markets/current{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-current-active-rewards-configurations.md
+  async function clobRewardsMarketsCurrent(
+    params?: PolymarketClobRewardsCurrentQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsCurrentResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketClobRewardsCurrentResponse>(
+      `${baseURL}/rewards/markets/current${query}`,
+      signal
+    );
+  }
+
+  // sig-ok: byCondition disambiguates the path-param market rewards lookup
+  // GET https://clob.polymarket.com/rewards/markets/{conditionId}{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-raw-rewards-for-a-specific-market.md
+  async function clobRewardsMarketsByCondition(
+    conditionId: string,
+    params?: PolymarketClobRewardsMarketQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsMarketResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketClobRewardsMarketResponse>(
+      `${baseURL}/rewards/markets/${encodeURIComponent(conditionId)}${query}`,
+      signal
+    );
+  }
+
+  // GET https://clob.polymarket.com/rewards/markets/multi{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-multiple-markets-with-rewards.md
+  async function clobRewardsMarketsMulti(
+    params?: PolymarketClobRewardsMultiMarketsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsMultiMarketsResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketClobRewardsMultiMarketsResponse>(
+      `${baseURL}/rewards/markets/multi${query}`,
+      signal
+    );
+  }
+
+  const rewardsGet = {
+    user: clobRewardsUser,
+    userTotal: clobRewardsUserTotal,
+    userPercentages: clobRewardsUserPercentages,
+    userMarkets: clobRewardsUserMarkets,
+    markets: {
+      current: clobRewardsMarketsCurrent,
+      byCondition: clobRewardsMarketsByCondition,
+      multi: clobRewardsMarketsMulti,
+    },
+  };
+
+  // GET https://clob.polymarket.com/rebates/current{query}
+  // Docs: https://docs.polymarket.com/api-reference/rewards/get-current-rebated-fees-for-a-maker.md
+  async function clobRebatesCurrent(
+    params: PolymarketClobRebatesCurrentQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRebatesCurrentResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketClobRebatesCurrentResponse>(
+      `${baseURL}/rebates/current${query}`,
+      signal
+    );
+  }
+
+  const rebatesGet = {
+    current: clobRebatesCurrent,
+  };
+
+  // sig-ok: builderTrades keeps CLOB builder reads in one flat namespace
+  // GET https://clob.polymarket.com/builder/trades{query}
+  // Docs: https://docs.polymarket.com/api-reference/trade/get-builder-trades.md
+  async function clobBuilderTrades(
+    params: PolymarketClobBuilderTradesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBuilderTradesResponse> {
+    const query = buildQuery(params);
+    return makeGetRequest<PolymarketClobBuilderTradesResponse>(
+      `${baseURL}/builder/trades${query}`,
+      signal
+    );
+  }
+
   // GET https://clob.polymarket.com/balance-allowance{query}
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobBalanceAllowanceGet(
     params: PolymarketClobBalanceAllowanceQuery,
     signal?: AbortSignal
@@ -641,7 +990,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/balance-allowance/update{query}
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobBalanceAllowanceUpdateGet(
     params: PolymarketClobBalanceAllowanceQuery,
     signal?: AbortSignal
@@ -660,7 +1009,7 @@ export function createClobProvider(
   });
 
   // PUT https://clob.polymarket.com/balance-allowance{query}
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobBalanceAllowancePut(
     params: PolymarketClobBalanceAllowanceQuery,
     signal?: AbortSignal
@@ -675,7 +1024,7 @@ export function createClobProvider(
   }
 
   // GET https://clob.polymarket.com/notifications{query}
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobNotifications(
     params: PolymarketClobNotificationsQuery,
     signal?: AbortSignal
@@ -690,7 +1039,7 @@ export function createClobProvider(
   }
 
   // DELETE https://clob.polymarket.com/notifications{query}
-  // Docs: https://docs.polymarket.com/api-reference/authentication
+  // Docs: https://docs.polymarket.com/api-reference/authentication.md
   async function clobDropNotifications(
     params: PolymarketClobDropNotificationsQuery,
     signal?: AbortSignal
@@ -782,7 +1131,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/books
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-order-books
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-order-books-request-body.md
   const clobBooksBatch = Object.assign(
     async (
       req: PolymarketClobTokenBatchRequest,
@@ -798,7 +1147,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/prices
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-market-prices
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-market-prices-request-body.md
   const clobPricesBatch = Object.assign(
     async (
       req: PolymarketClobPricesBatchRequest,
@@ -814,7 +1163,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/midpoints
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-midpoints
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-midpoint-prices-request-body.md
   const clobMidpointsBatch = Object.assign(
     async (
       req: PolymarketClobTokenBatchRequest,
@@ -830,7 +1179,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/spreads
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-spreads
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-spreads.md
   const clobSpreadsBatch = Object.assign(
     async (
       req: PolymarketClobTokenBatchRequest,
@@ -846,7 +1195,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/last-trades-prices
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-last-trades-prices
+  // Docs: https://docs.polymarket.com/api-reference/market-data/get-last-trade-prices-request-body.md
   const clobLastTradesPricesBatch = Object.assign(
     async (
       req: PolymarketClobTokenBatchRequest,
@@ -862,7 +1211,7 @@ export function createClobProvider(
   );
 
   // POST https://clob.polymarket.com/batch-prices-history
-  // Docs: https://docs.polymarket.com/api-reference/clob/get-batch-prices-history
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-batch-prices-history.md
   const clobBatchPricesHistory = Object.assign(
     async (
       req: PolymarketClobBatchPricesHistoryRequest,
@@ -877,6 +1226,23 @@ export function createClobProvider(
     { schema: PolymarketClobBatchPricesHistoryRequestSchema }
   );
 
+  // sig-ok: plural POST counterpart to marketLiveActivity
+  // POST https://clob.polymarket.com/markets/live-activity
+  // Docs: https://docs.polymarket.com/api-reference/markets/get-live-activity-for-markets.md
+  const clobMarketsLiveActivity = Object.assign(
+    async (
+      req: PolymarketClobLiveActivityRequest,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobLiveActivityResponse> => {
+      return makeJsonRequest<PolymarketClobLiveActivityResponse>(
+        `${baseURL}/markets/live-activity`,
+        req,
+        signal
+      );
+    },
+    { schema: PolymarketClobLiveActivityRequestSchema }
+  );
+
   return {
     get: {
       clob: {
@@ -887,8 +1253,16 @@ export function createClobProvider(
         midpoint: clobMidpoint,
         spread: clobSpread,
         lastTradePrice: clobLastTradePrice,
+        books: clobBooks,
+        prices: clobPrices,
+        midpoints: clobMidpoints,
+        lastTradesPrices: clobLastTradesPrices,
         tickSize: clobTickSize,
+        tickSizeByQuery: clobTickSizeByQuery,
         feeRate: clobFeeRate,
+        feeRateByQuery: clobFeeRateByQuery,
+        negRisk: clobNegRisk,
+        negRiskByQuery: clobNegRiskByQuery,
         pricesHistory: clobPricesHistory,
         markets: clobMarkets as PolymarketClobGetNamespace["markets"],
         samplingMarkets: clobSamplingMarkets,
@@ -896,16 +1270,20 @@ export function createClobProvider(
         samplingSimplifiedMarkets: clobSamplingSimplifiedMarkets,
         marketsByToken: clobMarketsByToken,
         clobMarkets: clobMarketsCompact,
+        marketLiveActivity: clobMarketLiveActivity,
+        rewards: rewardsGet,
+        rebates: rebatesGet,
+        builderTrades: clobBuilderTrades,
         data: dataGet,
         balanceAllowance: clobBalanceAllowance,
         notifications: clobNotifications,
         orderScoring: clobOrderScoring,
         ordersScoring: clobOrdersScoring,
-      },
+      } as PolymarketClobGetNamespace,
     },
     post: {
       clob: {
-        auth: authPost,
+        auth: authPost as PolymarketClobPostNamespace["auth"],
         order: clobPostOrder,
         placeOrder: clobPlaceOrder,
         orders: clobPostOrders,
@@ -915,12 +1293,13 @@ export function createClobProvider(
         spreads: clobSpreadsBatch,
         lastTradesPrices: clobLastTradesPricesBatch,
         batchPricesHistory: clobBatchPricesHistory,
+        marketsLiveActivity: clobMarketsLiveActivity,
         heartbeats: clobHeartbeats,
         v1: {
           heartbeats: clobHeartbeatsV1,
         },
         ordersScoring: clobOrdersScoringPost,
-      },
+      } as unknown as PolymarketClobPostNamespace,
     },
     put: {
       clob: {
@@ -929,7 +1308,7 @@ export function createClobProvider(
     },
     delete: {
       clob: {
-        auth: authDelete,
+        auth: authDelete as PolymarketClobDeleteNamespace["auth"],
         order: clobCancelOrder,
         orders: clobCancelOrders,
         cancelAll: clobCancelAll,

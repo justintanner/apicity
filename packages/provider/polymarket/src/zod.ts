@@ -120,6 +120,38 @@ export type PolymarketClobBatchPricesHistoryRequest = z.infer<
   typeof PolymarketClobBatchPricesHistoryRequestSchema
 >;
 
+// Query-form market-data aliases (/books, /prices, /midpoints,
+// /last-trades-prices) use comma-separated lists in URL query parameters.
+export const PolymarketClobTokenIdsQuerySchema = z.object({
+  token_ids: z.array(z.string().min(1)).min(1),
+});
+
+export type PolymarketClobTokenIdsQuery = z.infer<
+  typeof PolymarketClobTokenIdsQuerySchema
+>;
+
+export const PolymarketClobPricesQuerySchema = z
+  .object({
+    token_ids: z.array(z.string().min(1)).min(1),
+    sides: z.array(PolymarketClobSideSchema).min(1),
+  })
+  .refine((value) => value.token_ids.length === value.sides.length, {
+    message: "token_ids and sides must have the same length",
+    path: ["sides"],
+  });
+
+export type PolymarketClobPricesQuery = z.infer<
+  typeof PolymarketClobPricesQuerySchema
+>;
+
+export const PolymarketClobLiveActivityRequestSchema = z
+  .array(z.string().min(1))
+  .min(1);
+
+export type PolymarketClobLiveActivityRequest = z.infer<
+  typeof PolymarketClobLiveActivityRequestSchema
+>;
+
 // ---------------------------------------------------------------------------
 // Authenticated CLOB trading/account schemas
 // ---------------------------------------------------------------------------
@@ -303,4 +335,149 @@ export const PolymarketClobHeartbeatRequestSchema = z.object({
 
 export type PolymarketClobHeartbeatRequest = z.infer<
   typeof PolymarketClobHeartbeatRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// Rewards, rebates, and builder-read schemas
+// ---------------------------------------------------------------------------
+
+export const PolymarketClobRewardsUserQuerySchema = z.object({
+  date: z.string().min(1),
+  signature_type: PolymarketClobSignatureTypeSchema.optional(),
+  maker_address: z.string().optional(),
+  sponsored: z.boolean().optional(),
+  next_cursor: z.string().optional(),
+});
+
+export type PolymarketClobRewardsUserQuery = z.infer<
+  typeof PolymarketClobRewardsUserQuerySchema
+>;
+
+export const PolymarketClobRewardsUserTotalQuerySchema = z.object({
+  date: z.string().min(1),
+  signature_type: PolymarketClobSignatureTypeSchema.optional(),
+  maker_address: z.string().optional(),
+  sponsored: z.boolean().optional(),
+});
+
+export type PolymarketClobRewardsUserTotalQuery = z.infer<
+  typeof PolymarketClobRewardsUserTotalQuerySchema
+>;
+
+export const PolymarketClobRewardPercentagesQuerySchema = z.object({
+  signature_type: PolymarketClobSignatureTypeSchema.optional(),
+  maker_address: z.string().optional(),
+});
+
+export type PolymarketClobRewardPercentagesQuery = z.infer<
+  typeof PolymarketClobRewardPercentagesQuerySchema
+>;
+
+export const PolymarketClobRewardsUserMarketsQuerySchema = z.object({
+  date: z.string().optional(),
+  signature_type: PolymarketClobSignatureTypeSchema.optional(),
+  maker_address: z.string().optional(),
+  sponsored: z.boolean().optional(),
+  next_cursor: z.string().optional(),
+  page_size: z.number().optional(),
+  q: z.string().optional(),
+  tag_slug: z.union([z.string(), z.array(z.string())]).optional(),
+  favorite_markets: z.boolean().optional(),
+  no_competition: z.boolean().optional(),
+  only_mergeable: z.boolean().optional(),
+  only_open_orders: z.boolean().optional(),
+  only_open_positions: z.boolean().optional(),
+  order_by: z
+    .enum([
+      "currentRewards",
+      "volume24hr",
+      "volume1wk",
+      "volume1mo",
+      "volume1yr",
+      "liquidity",
+      "endDate",
+      "createdAt",
+      "competitive",
+    ])
+    .optional(),
+  position: z.enum(["ASC", "DESC"]).optional(),
+});
+
+export type PolymarketClobRewardsUserMarketsQuery = z.infer<
+  typeof PolymarketClobRewardsUserMarketsQuerySchema
+>;
+
+export const PolymarketClobRewardsCurrentQuerySchema = z.object({
+  sponsored: z.boolean().optional(),
+  next_cursor: z.string().optional(),
+});
+
+export type PolymarketClobRewardsCurrentQuery = z.infer<
+  typeof PolymarketClobRewardsCurrentQuerySchema
+>;
+
+export const PolymarketClobRewardsMarketQuerySchema = z.object({
+  sponsored: z.boolean().optional(),
+  next_cursor: z.string().optional(),
+});
+
+export type PolymarketClobRewardsMarketQuery = z.infer<
+  typeof PolymarketClobRewardsMarketQuerySchema
+>;
+
+export const PolymarketClobRewardsMultiMarketsQuerySchema = z.object({
+  q: z.string().optional(),
+  tag_slug: z.union([z.string(), z.array(z.string())]).optional(),
+  event_id: z.union([z.string(), z.array(z.string())]).optional(),
+  event_title: z.string().optional(),
+  sponsored: z.boolean().optional(),
+  next_cursor: z.string().optional(),
+  page_size: z.number().optional(),
+  order_by: z
+    .enum([
+      "currentRewards",
+      "volume24hr",
+      "volume1wk",
+      "volume1mo",
+      "volume1yr",
+      "liquidity",
+      "endDate",
+      "createdAt",
+      "competitive",
+    ])
+    .optional(),
+  position: z.enum(["ASC", "DESC"]).optional(),
+  min_volume: z.number().optional(),
+  max_volume: z.number().optional(),
+  min_spread: z.number().optional(),
+  max_spread: z.number().optional(),
+  min_price: z.number().optional(),
+  max_price: z.number().optional(),
+});
+
+export type PolymarketClobRewardsMultiMarketsQuery = z.infer<
+  typeof PolymarketClobRewardsMultiMarketsQuerySchema
+>;
+
+export const PolymarketClobRebatesCurrentQuerySchema = z.object({
+  date: z.string().min(1),
+  maker_address: z.string().min(1),
+});
+
+export type PolymarketClobRebatesCurrentQuery = z.infer<
+  typeof PolymarketClobRebatesCurrentQuerySchema
+>;
+
+export const PolymarketClobBuilderTradesQuerySchema = z.object({
+  builder_code: z.string().min(1),
+  id: z.string().optional(),
+  market: z.string().optional(),
+  asset_id: z.string().optional(),
+  before: z.string().optional(),
+  after: z.string().optional(),
+  next_cursor: z.string().optional(),
+});
+
+export type PolymarketClobBuilderTradesQuery = z.infer<
+  typeof PolymarketClobBuilderTradesQuerySchema
 >;

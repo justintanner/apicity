@@ -5,6 +5,9 @@
 import type { z } from "zod";
 import type {
   PolymarketClobL1Headers,
+  PolymarketClobTokenIdsQuery,
+  PolymarketClobPricesQuery,
+  PolymarketClobLiveActivityRequest,
   PolymarketClobTokenBatchRequest,
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
@@ -23,6 +26,15 @@ import type {
   PolymarketClobOrdersScoringQuery,
   PolymarketClobOrdersScoringRequest,
   PolymarketClobHeartbeatRequest,
+  PolymarketClobRewardsUserQuery,
+  PolymarketClobRewardsUserTotalQuery,
+  PolymarketClobRewardPercentagesQuery,
+  PolymarketClobRewardsUserMarketsQuery,
+  PolymarketClobRewardsCurrentQuery,
+  PolymarketClobRewardsMarketQuery,
+  PolymarketClobRewardsMultiMarketsQuery,
+  PolymarketClobRebatesCurrentQuery,
+  PolymarketClobBuilderTradesQuery,
 } from "./zod";
 
 // -- Request types — derived from Zod schemas (source of truth in zod.ts) ----
@@ -34,6 +46,9 @@ export type {
   PolymarketClobL2HeaderArgs,
   PolymarketClobL2Headers,
   PolymarketClobL2HeaderSigner,
+  PolymarketClobTokenIdsQuery,
+  PolymarketClobPricesQuery,
+  PolymarketClobLiveActivityRequest,
   PolymarketClobTokenBatchRequest,
   PolymarketClobPricesBatchRequest,
   PolymarketClobBatchPricesHistoryRequest,
@@ -53,6 +68,15 @@ export type {
   PolymarketClobOrdersScoringQuery,
   PolymarketClobOrdersScoringRequest,
   PolymarketClobHeartbeatRequest,
+  PolymarketClobRewardsUserQuery,
+  PolymarketClobRewardsUserTotalQuery,
+  PolymarketClobRewardPercentagesQuery,
+  PolymarketClobRewardsUserMarketsQuery,
+  PolymarketClobRewardsCurrentQuery,
+  PolymarketClobRewardsMarketQuery,
+  PolymarketClobRewardsMultiMarketsQuery,
+  PolymarketClobRebatesCurrentQuery,
+  PolymarketClobBuilderTradesQuery,
 } from "./zod";
 
 // -- Shared scalars ---------------------------------------------------------
@@ -91,6 +115,10 @@ export interface PolymarketClobBook {
   hash: string;
   bids: PolymarketClobBookLevel[];
   asks: PolymarketClobBookLevel[];
+  min_order_size?: string;
+  tick_size?: string;
+  neg_risk?: boolean;
+  last_trade_price?: string;
 }
 
 export interface PolymarketClobPriceResponse {
@@ -107,7 +135,7 @@ export interface PolymarketClobSpreadResponse {
 
 export interface PolymarketClobLastTradePriceResponse {
   price: string;
-  side: PolymarketClobSide;
+  side: PolymarketClobSide | "";
 }
 
 // CLOB tick-size and fee-rate return numeric primitives, not decimal strings —
@@ -119,6 +147,30 @@ export interface PolymarketClobTickSizeResponse {
 export interface PolymarketClobFeeRateResponse {
   base_fee: number;
 }
+
+export interface PolymarketClobNegRiskResponse {
+  neg_risk: boolean;
+}
+
+export type PolymarketClobBooksResponse = PolymarketClobBook[];
+export type PolymarketClobPricesResponse = Record<
+  string,
+  Partial<Record<PolymarketClobSide, string | number>>
+>;
+export type PolymarketClobMidpointsResponse = Record<string, string | number>;
+export type PolymarketClobLastTradesPricesResponse =
+  PolymarketClobLastTradesPricesEntry[];
+
+export interface PolymarketClobLiveActivityMarket {
+  condition_id?: string;
+  market?: string;
+  active?: boolean;
+  accepting_orders?: boolean;
+  [key: string]: unknown;
+}
+
+export type PolymarketClobLiveActivityResponse =
+  PolymarketClobLiveActivityMarket[];
 
 // Each history point is { t: unix-seconds, p: decimal-price-as-number }. The
 // server returns numeric primitives here, not decimal strings — series shape
@@ -307,6 +359,14 @@ export interface PolymarketClobApiKeysResponse {
   apiKeys: string[];
 }
 
+export interface PolymarketClobBuilderApiKeyResponse {
+  key: string;
+  secret: string;
+  passphrase: string;
+}
+
+export type PolymarketClobBuilderApiKeysResponse = string[];
+
 export interface PolymarketClobPostOrderResponse {
   success: boolean;
   orderID: string;
@@ -432,6 +492,100 @@ export interface PolymarketClobTradesResponse {
   data: PolymarketClobTrade[];
 }
 
+export interface PolymarketClobRewardToken {
+  asset_address?: string;
+  rewards_daily_rate?: number;
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobRewardConfig {
+  condition_id?: string;
+  rewards?: PolymarketClobRewardToken[];
+  min_size?: number;
+  max_spread?: number;
+  event_start_date?: string;
+  event_end_date?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobUserReward {
+  condition_id?: string;
+  asset_address?: string;
+  amount?: number | string;
+  maker_address?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobUserRewardTotal {
+  amount?: number | string;
+  maker_address?: string;
+  [key: string]: unknown;
+}
+
+export type PolymarketClobRewardPercentagesResponse = Record<string, number>;
+
+export interface PolymarketClobRewardsUserMarket {
+  condition_id?: string;
+  question?: string;
+  market_slug?: string;
+  rewards?: PolymarketClobRewardConfig[];
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobCurrentRewardsMarket {
+  condition_id?: string;
+  rewards?: PolymarketClobRewardConfig[];
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobMultiRewardsMarket {
+  condition_id?: string;
+  question?: string;
+  rewards?: PolymarketClobRewardConfig[];
+  [key: string]: unknown;
+}
+
+export type PolymarketClobRewardsUserResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobUserReward>;
+export type PolymarketClobRewardsUserTotalResponse =
+  PolymarketClobUserRewardTotal;
+export type PolymarketClobRewardsUserMarketsResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobRewardsUserMarket>;
+export type PolymarketClobRewardsCurrentResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobCurrentRewardsMarket>;
+export type PolymarketClobRewardsMarketResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobRewardConfig>;
+export type PolymarketClobRewardsMultiMarketsResponse =
+  PolymarketClobPaginatedResponse<PolymarketClobMultiRewardsMarket>;
+
+export interface PolymarketClobRebatedFee {
+  condition_id?: string;
+  asset_address?: string;
+  amount?: number | string;
+  maker_address?: string;
+  [key: string]: unknown;
+}
+
+export type PolymarketClobRebatesCurrentResponse = PolymarketClobRebatedFee[];
+
+export interface PolymarketClobBuilderTrade {
+  id: string;
+  market?: string;
+  asset_id?: string;
+  side?: PolymarketClobSide;
+  size?: string;
+  price?: string;
+  builder_code?: string;
+  [key: string]: unknown;
+}
+
+export interface PolymarketClobBuilderTradesResponse {
+  limit: number;
+  next_cursor: string;
+  count: number;
+  data: PolymarketClobBuilderTrade[];
+}
+
 // -- Query types ------------------------------------------------------------
 
 export interface PolymarketClobTokenQuery {
@@ -517,12 +671,47 @@ export interface PolymarketClobLastTradePriceMethod {
   ): Promise<PolymarketClobLastTradePriceResponse>;
 }
 
+export interface PolymarketClobBooksMethod {
+  (
+    params: PolymarketClobTokenIdsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBooksResponse>;
+}
+
+export interface PolymarketClobPricesMethod {
+  (
+    params: PolymarketClobPricesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobPricesResponse>;
+}
+
+export interface PolymarketClobMidpointsMethod {
+  (
+    params: PolymarketClobTokenIdsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobMidpointsResponse>;
+}
+
+export interface PolymarketClobLastTradesPricesMethod {
+  (
+    params: PolymarketClobTokenIdsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLastTradesPricesResponse>;
+}
+
 // Polymarket exposes both /tick-size?token_id=X and /tick-size/{token_id} for
-// the same operation. We surface the path-var form only — the query form
-// returns identical data and would just clutter the namespace.
+// the same operation. The path-var form stays on `tickSize`; the query form is
+// available as `tickSizeByQuery` for parity with the current OpenAPI.
 export interface PolymarketClobTickSizeMethod {
   (
     tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobTickSizeResponse>;
+}
+
+export interface PolymarketClobTickSizeQueryMethod {
+  (
+    params: PolymarketClobTokenQuery,
     signal?: AbortSignal
   ): Promise<PolymarketClobTickSizeResponse>;
 }
@@ -532,6 +721,27 @@ export interface PolymarketClobFeeRateMethod {
     tokenId: string,
     signal?: AbortSignal
   ): Promise<PolymarketClobFeeRateResponse>;
+}
+
+export interface PolymarketClobFeeRateQueryMethod {
+  (
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobFeeRateResponse>;
+}
+
+export interface PolymarketClobNegRiskMethod {
+  (
+    tokenId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobNegRiskResponse>;
+}
+
+export interface PolymarketClobNegRiskQueryMethod {
+  (
+    params: PolymarketClobTokenQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobNegRiskResponse>;
 }
 
 export interface PolymarketClobPricesHistoryMethod {
@@ -588,6 +798,61 @@ export interface PolymarketClobMarketsCompactMethod {
   ): Promise<PolymarketClobMarketCompact>;
 }
 
+export interface PolymarketClobMarketLiveActivityMethod {
+  (
+    conditionId: string,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLiveActivityResponse>;
+}
+
+export interface PolymarketClobRewardsGetNamespace {
+  user(
+    params: PolymarketClobRewardsUserQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsUserResponse>;
+  userTotal(
+    params: PolymarketClobRewardsUserTotalQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsUserTotalResponse>;
+  userPercentages(
+    params?: PolymarketClobRewardPercentagesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardPercentagesResponse>;
+  userMarkets(
+    params?: PolymarketClobRewardsUserMarketsQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRewardsUserMarketsResponse>;
+  markets: {
+    current(
+      params?: PolymarketClobRewardsCurrentQuery,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobRewardsCurrentResponse>;
+    byCondition(
+      conditionId: string,
+      params?: PolymarketClobRewardsMarketQuery,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobRewardsMarketResponse>;
+    multi(
+      params?: PolymarketClobRewardsMultiMarketsQuery,
+      signal?: AbortSignal
+    ): Promise<PolymarketClobRewardsMultiMarketsResponse>;
+  };
+}
+
+export interface PolymarketClobRebatesGetNamespace {
+  current(
+    params: PolymarketClobRebatesCurrentQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobRebatesCurrentResponse>;
+}
+
+export interface PolymarketClobBuilderTradesMethod {
+  (
+    params: PolymarketClobBuilderTradesQuery,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBuilderTradesResponse>;
+}
+
 // -- Namespace interfaces ---------------------------------------------------
 
 export interface PolymarketClobGetNamespace {
@@ -598,8 +863,16 @@ export interface PolymarketClobGetNamespace {
   midpoint: PolymarketClobMidpointMethod;
   spread: PolymarketClobSpreadMethod;
   lastTradePrice: PolymarketClobLastTradePriceMethod;
+  books: PolymarketClobBooksMethod;
+  prices: PolymarketClobPricesMethod;
+  midpoints: PolymarketClobMidpointsMethod;
+  lastTradesPrices: PolymarketClobLastTradesPricesMethod;
   tickSize: PolymarketClobTickSizeMethod;
+  tickSizeByQuery: PolymarketClobTickSizeQueryMethod;
   feeRate: PolymarketClobFeeRateMethod;
+  feeRateByQuery: PolymarketClobFeeRateQueryMethod;
+  negRisk: PolymarketClobNegRiskMethod;
+  negRiskByQuery: PolymarketClobNegRiskQueryMethod;
   pricesHistory: PolymarketClobPricesHistoryMethod;
   markets: PolymarketClobMarketsMethod;
   samplingMarkets: PolymarketClobSamplingMarketsMethod;
@@ -607,6 +880,10 @@ export interface PolymarketClobGetNamespace {
   samplingSimplifiedMarkets: PolymarketClobSamplingSimplifiedMarketsMethod;
   marketsByToken: PolymarketClobMarketsByTokenMethod;
   clobMarkets: PolymarketClobMarketsCompactMethod;
+  marketLiveActivity: PolymarketClobMarketLiveActivityMethod;
+  rewards: PolymarketClobRewardsGetNamespace;
+  rebates: PolymarketClobRebatesGetNamespace;
+  builderTrades: PolymarketClobBuilderTradesMethod;
   data: PolymarketClobDataGetNamespace;
   balanceAllowance: PolymarketClobBalanceAllowanceMethod;
   notifications: PolymarketClobNotificationsMethod;
@@ -664,6 +941,14 @@ export interface PolymarketClobBatchPricesHistoryMethod {
   schema: z.ZodType<PolymarketClobBatchPricesHistoryRequest>;
 }
 
+export interface PolymarketClobMarketsLiveActivityMethod {
+  (
+    req: PolymarketClobLiveActivityRequest,
+    signal?: AbortSignal
+  ): Promise<PolymarketClobLiveActivityResponse>;
+  schema: z.ZodType<PolymarketClobLiveActivityRequest>;
+}
+
 export interface PolymarketClobL1AuthMethod<T> {
   (signal?: AbortSignal): Promise<T>;
   (headers: PolymarketClobL1Headers, signal?: AbortSignal): Promise<T>;
@@ -672,6 +957,9 @@ export interface PolymarketClobL1AuthMethod<T> {
 export interface PolymarketClobAuthGetNamespace {
   apiKeys: PolymarketClobL1AuthMethod<PolymarketClobApiKeysResponse>;
   deriveApiKey: PolymarketClobL1AuthMethod<PolymarketClobApiKeyResponse>;
+  builderApiKey(
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBuilderApiKeysResponse>;
   banStatus: {
     closedOnly(signal?: AbortSignal): Promise<PolymarketClobClosedOnlyResponse>;
   };
@@ -679,10 +967,14 @@ export interface PolymarketClobAuthGetNamespace {
 
 export interface PolymarketClobAuthPostNamespace {
   apiKey: PolymarketClobL1AuthMethod<PolymarketClobApiKeyResponse>;
+  builderApiKey(
+    signal?: AbortSignal
+  ): Promise<PolymarketClobBuilderApiKeyResponse>;
 }
 
 export interface PolymarketClobAuthDeleteNamespace {
   apiKey(signal?: AbortSignal): Promise<string>;
+  builderApiKey(signal?: AbortSignal): Promise<string>;
 }
 
 export interface PolymarketClobPostOrderMethod {
@@ -843,6 +1135,7 @@ export interface PolymarketClobPostNamespace {
   spreads: PolymarketClobSpreadsBatchMethod;
   lastTradesPrices: PolymarketClobLastTradesPricesBatchMethod;
   batchPricesHistory: PolymarketClobBatchPricesHistoryMethod;
+  marketsLiveActivity: PolymarketClobMarketsLiveActivityMethod;
   heartbeats: PolymarketClobHeartbeatMethod;
   v1: {
     heartbeats: PolymarketClobHeartbeatV1Method;

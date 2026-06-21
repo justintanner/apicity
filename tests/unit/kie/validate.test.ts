@@ -132,23 +132,30 @@ describe("kie Zod schema validation", () => {
       );
     });
 
-    it("should accept numeric duration for current image-to-video", () => {
+    it("should accept the current image-to-video sample with three images", () => {
       const request = {
         model: "grok-imagine/image-to-video",
         input: {
-          image_urls: ["https://example.com/reference.png"],
-          prompt: "@image1 turns and smiles at the camera",
+          image_urls: [
+            "https://tempfileb.aiquickdraw.com/kieai/market/1782021652978_JJVOCSKk.jpg",
+            "https://tempfileb.aiquickdraw.com/kieai/market/1782021652866_7WyovwDT.jpeg",
+            "https://tempfileb.aiquickdraw.com/kieai/market/1782021653019_DJmk5khc.jpeg",
+          ],
+          index: 0,
+          prompt:
+            "the thai sergent arrests the tourist for petting the cat wrong",
           aspect_ratio: "16:9",
-          mode: "fun",
-          duration: 6,
-          resolution: "720p",
-          nsfw_checker: false,
+          mode: "normal",
+          duration: 8,
+          resolution: "480p",
+          nsfw_checker: true,
         },
       };
 
-      expect(GrokImageToVideoRequestSchema.safeParse(request).success).toBe(
-        true
-      );
+      const result = GrokImageToVideoRequestSchema.safeParse(request);
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.image_urls).toEqual(request.input.image_urls);
       expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
         true
       );
@@ -187,7 +194,7 @@ describe("kie Zod schema validation", () => {
     });
 
     it("should validate external image URLs and image formats", () => {
-      const valid = GrokImageToVideoRequestSchema.safeParse({
+      const exactlySeven = GrokImageToVideoRequestSchema.safeParse({
         model: "grok-imagine/image-to-video",
         input: {
           image_urls: [
@@ -195,6 +202,9 @@ describe("kie Zod schema validation", () => {
             "https://example.com/second.jpeg",
             "https://example.com/third.png",
             "https://example.com/fourth.webp",
+            "https://example.com/fifth.jpg",
+            "https://example.com/sixth.jpeg",
+            "https://example.com/seventh.png",
           ],
         },
       });
@@ -226,10 +236,15 @@ describe("kie Zod schema validation", () => {
         },
       });
 
-      expect(valid.success).toBe(true);
+      expect(exactlySeven.success).toBe(true);
       expect(notUrl.success).toBe(false);
       expect(unsupportedFormat.success).toBe(false);
       expect(tooMany.success).toBe(false);
+      expect(
+        tooMany.error?.issues.some((i) =>
+          i.message.includes("at most 7 image_urls")
+        )
+      ).toBe(true);
     });
 
     it("should accept task_id plus index instead of image_urls", () => {

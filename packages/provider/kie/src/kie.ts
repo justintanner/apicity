@@ -22,6 +22,7 @@ import {
   FileUrlUploadRequestSchema,
   FileBase64UploadRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
+  GrokImageToVideoRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -53,6 +54,28 @@ const MIME_TYPES: Record<string, string> = {
   m4a: "audio/mp4",
 };
 
+function validateGrokImageToVideoRequest(req: MediaGenerationRequest): void {
+  if (req.model !== "grok-imagine/image-to-video") {
+    return;
+  }
+
+  const parsed = GrokImageToVideoRequestSchema.safeParse(req);
+  if (parsed.success) {
+    return;
+  }
+
+  const message = parsed.error.issues
+    .map((issue) => {
+      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
+      return `${path}${issue.message}`;
+    })
+    .join("; ");
+
+  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
+    issues: parsed.error.issues,
+  });
+}
+
 function inferMimeType(filename: string): string | undefined {
   const ext = filename.split(".").pop()?.toLowerCase();
   return ext ? MIME_TYPES[ext] : undefined;
@@ -74,6 +97,8 @@ export function createKie(opts: KieOptions): KieProvider {
   async function createTask(
     req: MediaGenerationRequest
   ): Promise<TaskResponse> {
+    validateGrokImageToVideoRequest(req);
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 

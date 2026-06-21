@@ -336,7 +336,11 @@ export const GrokImageToVideoRequestSchema = z
     callBackUrl: z.string().url().optional(),
     input: z.object({
       prompt: z.string().max(5000).optional(),
-      image_urls: z.array(GrokImagineImageUrlSchema).min(1).max(7).optional(),
+      image_urls: z
+        .array(GrokImagineImageUrlSchema)
+        .min(1)
+        .max(7, "grok-imagine/image-to-video accepts at most 7 image_urls")
+        .optional(),
       task_id: z.string().min(1).max(100).optional(),
       index: z.number().int().min(0).max(5).default(0),
       mode: GrokImagineModeSchema.default("normal"),

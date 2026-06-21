@@ -428,14 +428,18 @@ describe("KIE request utilities", () => {
         model: "grok-imagine/image-to-video",
         input: {
           image_urls: [
-            "https://tempfile.redpandaai.co/kieai/test/reference.webp",
+            "https://tempfileb.aiquickdraw.com/kieai/market/1782021652978_JJVOCSKk.jpg",
+            "https://tempfileb.aiquickdraw.com/kieai/market/1782021652866_7WyovwDT.jpeg",
+            "https://tempfileb.aiquickdraw.com/kieai/market/1782021653019_DJmk5khc.jpeg",
           ],
-          prompt: "@image1 turns toward the camera",
-          duration: 6,
-          resolution: "720p",
+          index: 0,
+          prompt:
+            "the thai sergent arrests the tourist for petting the cat wrong",
+          duration: 8,
+          resolution: "480p",
           aspect_ratio: "16:9",
-          mode: "fun",
-          nsfw_checker: false,
+          mode: "normal",
+          nsfw_checker: true,
         },
         callBackUrl: "https://example.com/kie-callback",
       };
@@ -459,6 +463,92 @@ describe("KIE request utilities", () => {
         "Content-Type": "application/json",
       });
       expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize seven Grok Imagine image-to-video URLs", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_grok-imagine-image-to-video_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const imageUrls = Array.from(
+        { length: 7 },
+        (_, i) => `https://example.com/reference-${i + 1}.jpg`
+      );
+      const request: GrokImageToVideoRequest = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: imageUrls,
+          duration: 8,
+          resolution: "480p",
+          aspect_ratio: "16:9",
+          mode: "normal",
+          nsfw_checker: true,
+        },
+      };
+
+      await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, init] = mockFetch.mock.calls[0];
+      expect(JSON.parse(init.body as string).input.image_urls).toEqual(
+        imageUrls
+      );
+    });
+
+    it("should reject eight Grok Imagine image-to-video URLs before fetch", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: GrokImageToVideoRequest = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: Array.from(
+            { length: 8 },
+            (_, i) => `https://example.com/reference-${i + 1}.jpg`
+          ),
+          duration: 8,
+          resolution: "480p",
+          aspect_ratio: "16:9",
+          mode: "normal",
+          nsfw_checker: true,
+        },
+      };
+
+      await expect(
+        provider.post.api.v1.jobs.createTask(request, {
+          otp: mintOtp(secret, {
+            dotPath: "api.v1.jobs.createTask",
+            request,
+          }),
+        })
+      ).rejects.toThrow("at most 7 image_urls");
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("should build multipart uploads with inferred MIME type", async () => {

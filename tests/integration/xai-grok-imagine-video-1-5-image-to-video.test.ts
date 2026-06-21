@@ -4,6 +4,7 @@ import { createXai, XaiError } from "@apicity/xai";
 import { TEST_PAYGATE_SECRET, mintXaiOtp } from "../harness";
 
 const MODEL = "grok-imagine-video-1.5-preview";
+const VIDEO_GENERATIONS_DOT_PATH = "v1.videos.generations";
 const DOT_PATH = "v1.videos.generations.imageToVideo";
 
 interface FetchCall {
@@ -58,6 +59,63 @@ function createProvider(fetch: ReturnType<typeof createQueuedFetch>["fetch"]) {
     paygate: { secret: TEST_PAYGATE_SECRET },
   });
 }
+
+describe("xai video generations default model", () => {
+  it("defaults model-less generation requests to Grok Imagine Video 1.5", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_default" },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "A cinematic tracking shot through a rain-lit city street",
+      duration: 10,
+      aspect_ratio: "16:9" as const,
+      resolution: "720p" as const,
+    };
+
+    const result = await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(result.request_id).toBe("vid_req_default");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({
+      url: "https://api.x.ai/v1/videos/generations",
+      method: "POST",
+      body: {
+        ...req,
+        model: MODEL,
+      },
+    });
+    expect(req).not.toHaveProperty("model");
+  });
+
+  it("preserves explicit generation model selections", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_explicit" },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "A bright product reveal against a white studio background",
+      model: "grok-imagine-video",
+      duration: 10,
+    };
+
+    const result = await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(result.request_id).toBe("vid_req_explicit");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({
+      url: "https://api.x.ai/v1/videos/generations",
+      method: "POST",
+      body: req,
+    });
+  });
+});
 
 describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
   it("submits a fixed-model image-to-video request and polls to completion", async () => {

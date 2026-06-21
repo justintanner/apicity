@@ -142,6 +142,16 @@ function normalizeVideoReference(
   return image;
 }
 
+function applyVideoGenerationDefaults(
+  req: XaiVideoGenerateRequest
+): XaiVideoGenerateRequest {
+  if (req.model !== undefined) return req;
+  return {
+    ...req,
+    model: XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
+  };
+}
+
 function waitForPollInterval(ms: number, signal?: AbortSignal): Promise<void> {
   if (ms <= 0) return Promise.resolve();
   if (signal?.aborted) {
@@ -1086,7 +1096,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                   return await makeRequest(
                     "POST",
                     "/videos/generations",
-                    req,
+                    applyVideoGenerationDefaults(req),
                     signal
                   );
                 },

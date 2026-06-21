@@ -13,6 +13,8 @@ import {
   KieClaudeRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
+  KlingV3TurboImageToVideoRequestSchema,
+  KlingV3TurboTextToVideoRequestSchema,
   MediaGenerationRequestSchema,
   HappyHorseImageToVideoRequestSchema,
   HappyHorseTextToVideoRequestSchema,
@@ -234,6 +236,83 @@ describe("kie Zod schema validation", () => {
 
         expect(result.success, `${aspect_ratio} should be accepted`).toBe(true);
       }
+    });
+  });
+
+  describe("kling 3.0 turbo", () => {
+    it("should accept the documented image-to-video request", () => {
+      const request = {
+        model: "kling/v3-turbo-image-to-video",
+        input: {
+          prompt: "A slow push-in on a studio product photo.",
+          image_urls: ["https://example.com/product.png"],
+          duration: 5,
+          resolution: "1080p",
+        },
+      };
+
+      expect(
+        KlingV3TurboImageToVideoRequestSchema.safeParse(request).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should reject image-to-video requests with more than one image", () => {
+      const result = KlingV3TurboImageToVideoRequestSchema.safeParse({
+        model: "kling/v3-turbo-image-to-video",
+        input: {
+          prompt: "Animate both photos.",
+          image_urls: [
+            "https://example.com/first.png",
+            "https://example.com/second.png",
+          ],
+          duration: 5,
+          resolution: "720p",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("image_urls"))
+      ).toBe(true);
+    });
+
+    it("should accept the documented text-to-video request", () => {
+      const request = {
+        model: "kling/v3-turbo-text-to-video",
+        input: {
+          prompt: "A cinematic drone shot over glass towers at sunrise.",
+          duration: 5,
+          aspect_ratio: "16:9",
+          resolution: "720p",
+        },
+      };
+
+      expect(
+        KlingV3TurboTextToVideoRequestSchema.safeParse(request).success
+      ).toBe(true);
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should reject text-to-video requests with unsupported aspect ratios", () => {
+      const result = KlingV3TurboTextToVideoRequestSchema.safeParse({
+        model: "kling/v3-turbo-text-to-video",
+        input: {
+          prompt: "A cinematic drone shot over glass towers at sunrise.",
+          duration: 5,
+          aspect_ratio: "4:3",
+          resolution: "720p",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("aspect_ratio"))
+      ).toBe(true);
     });
   });
 

@@ -30,6 +30,8 @@ describe("MODEL_SLUGS", () => {
       "kling-3.0/video/std": "kling3s",
       "kling-3.0/video/pro": "kling3p",
       "kling-3.0/motion-control": "kling3mc",
+      "kling/v3-turbo-image-to-video": "kling3t",
+      "kling/v3-turbo-text-to-video": "kling3t",
       "wan/2-7-text-to-video": "wan2p7",
       "grok-imagine/text-to-video": "grok",
       "happyhorse/text-to-video": "hh",
@@ -135,6 +137,11 @@ describe("modelSlug", () => {
     expect(modelSlug("kie", "veo3_fast")).toBe("veo3f");
   });
 
+  it("returns shared slug for kie Kling 3.0 Turbo variants", () => {
+    expect(modelSlug("kie", "kling/v3-turbo-image-to-video")).toBe("kling3t");
+    expect(modelSlug("kie", "kling/v3-turbo-text-to-video")).toBe("kling3t");
+  });
+
   it("returns correct slug for alibaba qwen3.6-plus", () => {
     expect(modelSlug("alibaba", "qwen3.6-plus")).toBe("qwen3p6");
   });
@@ -198,6 +205,8 @@ describe("MODEL_DISPLAY", () => {
       "bytedance/seedance-2": "Seedance 2",
       "kling-3.0/video": "Kling 3.0",
       "kling-3.0/video/pro": "Kling 3.0 Pro",
+      "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
+      "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
       veo3: "Veo 3",
       veo3_fast: "Veo 3 Fast",
       "suno/generate": "Suno",

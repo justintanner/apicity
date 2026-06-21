@@ -8,6 +8,8 @@ import type { PayGateConfig } from "./paygate";
 export const KieMediaModelSchema = z.enum([
   "kling-3.0/video",
   "kling-3.0/motion-control",
+  "kling/v3-turbo-image-to-video",
+  "kling/v3-turbo-text-to-video",
   "grok-imagine/text-to-image",
   "grok-imagine/image-to-image",
   "grok-imagine/text-to-video",
@@ -71,6 +73,10 @@ export const KlingDurationSchema = z.enum([
 export const KlingAspectRatioSchema = z.enum(["16:9", "9:16", "1:1"]);
 
 export const KlingModeSchema = z.enum(["std", "pro", "4K"]);
+
+export const KlingV3TurboResolutionSchema = z.enum(["720p", "1080p"]);
+
+export const KlingV3TurboAspectRatioSchema = z.enum(["1:1", "9:16", "16:9"]);
 
 export const GrokImagineModeSchema = z.enum(["fun", "normal", "spicy"]);
 
@@ -188,6 +194,28 @@ export const KlingVideoRequestSchema = z.object({
     multi_shots: z.boolean(),
     multi_prompt: z.array(MultiShotPromptSchema).optional(),
     kling_elements: z.array(KlingElementSchema).max(3).optional(),
+  }),
+});
+
+export const KlingV3TurboImageToVideoRequestSchema = z.object({
+  model: z.literal("kling/v3-turbo-image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1),
+    image_urls: z.array(z.string().min(1)).min(1).max(1),
+    duration: z.number().int().positive(),
+    resolution: KlingV3TurboResolutionSchema,
+  }),
+});
+
+export const KlingV3TurboTextToVideoRequestSchema = z.object({
+  model: z.literal("kling/v3-turbo-text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1),
+    duration: z.number().int().positive(),
+    aspect_ratio: KlingV3TurboAspectRatioSchema,
+    resolution: KlingV3TurboResolutionSchema,
   }),
 });
 
@@ -1159,6 +1187,8 @@ export type KieClaudeRequest = z.infer<typeof KieClaudeRequestSchema>;
 export const MediaGenerationRequestSchema = z.union([
   KlingVideoRequestSchema,
   KlingMotionControlRequestSchema,
+  KlingV3TurboImageToVideoRequestSchema,
+  KlingV3TurboTextToVideoRequestSchema,
   GrokTextToImageRequestSchema,
   GrokImageToImageRequestSchema,
   GrokTextToVideoRequestSchema,
@@ -1206,6 +1236,12 @@ export type MediaType = z.infer<typeof MediaTypeSchema>;
 export type KlingDuration = z.infer<typeof KlingDurationSchema>;
 export type KlingAspectRatio = z.infer<typeof KlingAspectRatioSchema>;
 export type KlingMode = z.infer<typeof KlingModeSchema>;
+export type KlingV3TurboResolution = z.infer<
+  typeof KlingV3TurboResolutionSchema
+>;
+export type KlingV3TurboAspectRatio = z.infer<
+  typeof KlingV3TurboAspectRatioSchema
+>;
 export type GrokImagineMode = z.infer<typeof GrokImagineModeSchema>;
 export type GrokImagineDuration = z.infer<typeof GrokImagineDurationSchema>;
 export type GrokImageToVideoDuration = z.infer<
@@ -1245,6 +1281,12 @@ export type Wan27ImageColorPalette = z.infer<
 export type KlingVideoRequest = z.infer<typeof KlingVideoRequestSchema>;
 export type KlingMotionControlRequest = z.infer<
   typeof KlingMotionControlRequestSchema
+>;
+export type KlingV3TurboImageToVideoRequest = z.infer<
+  typeof KlingV3TurboImageToVideoRequestSchema
+>;
+export type KlingV3TurboTextToVideoRequest = z.infer<
+  typeof KlingV3TurboTextToVideoRequestSchema
 >;
 export type GrokTextToImageRequest = z.infer<
   typeof GrokTextToImageRequestSchema

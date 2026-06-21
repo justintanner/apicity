@@ -200,6 +200,65 @@ function formatUsageSnippet(providerName, dotPath) {
       "});",
     ].join("\n");
   }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.heartbeat") {
+    return `const res = await ${call}();`;
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.markets") {
+    return [
+      `const res = await ${call}({`,
+      '  q: "newsom",',
+      '  venue: "kalshi",',
+      "});",
+    ].join("\n");
+  }
+  if (
+    providerName === "simplefunctions" &&
+    dotPath === "data.v1.markets.featured"
+  ) {
+    return `const res = await ${call}({ n: 50 });`;
+  }
+  if (
+    providerName === "simplefunctions" &&
+    dotPath === "data.v1.markets.retrieve"
+  ) {
+    return `const res = await ${call}("KXPRESNOMD-28-GN");`;
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.search") {
+    return [
+      `const res = await ${call}({`,
+      '  q: "rate cut",',
+      "  limit: 10,",
+      '  venue: "kalshi",',
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.snapshot") {
+    return `const res = await ${call}();`;
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.movers") {
+    return [
+      `const res = await ${call}({`,
+      '  window: "1h",',
+      "  n: 50,",
+      "  minVol: 1000,",
+      '  dir: "both",',
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.orderbook") {
+    return `const res = await ${call}("KXPRESNOMD-28-GN");`;
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.candles") {
+    return [
+      `const res = await ${call}("KXPRESNOMD-28-GN", {`,
+      '  tf: "1h",',
+      "  limit: 500,",
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "simplefunctions" && dotPath === "data.v1.trades") {
+    return `const res = await ${call}("KXPRESNOMD-28-GN", { limit: 50 });`;
+  }
   return `const res = await ${call}({ /* ... */ });`;
 }
 
@@ -267,6 +326,18 @@ const PROVIDER_NOTES = new Map([
       "Spot, USD-M Futures, COIN-M Futures, and Options.",
       "The COIN-M Old Trades Lookup endpoint (`GET /dapi/v1/historicalTrades`) is intentionally not exposed because Binance requires an API key for it.",
       "USD-M Old Trades Lookup (`GET /fapi/v1/historicalTrades`), signed trade, account, and user endpoints are out of scope.",
+    ].join(" "),
+  ],
+  [
+    "simplefunctions",
+    [
+      "SimpleFunctions exposes two REST surfaces here: analytical Query API",
+      "calls use `https://simplefunctions.dev`, while real-time market-data",
+      "calls under `simplefunctions.data.v1.*` use the separate",
+      "`https://data.simplefunctions.dev/v1` data API base URL.",
+      "The current public WebSocket endpoint is `wss://app.simplefunctions.dev/ws`;",
+      "do not model `wss://data.simplefunctions.dev/v1/ws` as active until",
+      "upstream routing changes.",
     ].join(" "),
   ],
 ]);
@@ -2379,7 +2450,7 @@ const PROVIDER_DOCS = {
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
-  simplefunctions: "https://docs.simplefunctions.dev/api-reference/query",
+  simplefunctions: "https://docs.simplefunctions.dev/llms.txt",
 };
 
 // Resolve the provider's factory function from the create* identifiers in

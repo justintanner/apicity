@@ -3,6 +3,7 @@ import { z } from "zod";
 export const SimpleFunctionsOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().url().optional(),
+  dataBaseURL: z.string().url().optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
@@ -17,6 +18,27 @@ export const SimpleFunctionsSourceSchema = z.enum([
 ]);
 export const SimpleFunctionsModelSchema = z.enum(["cheap", "medium", "heavy"]);
 export const SimpleFunctionsNextActionsSchema = z.literal("off");
+export const SimpleFunctionsNoRequestSchema = z.undefined();
+export const SimpleFunctionsVenueSchema = z.enum(["kalshi", "polymarket"]);
+export const SimpleFunctionsStrictSchema = z.union([
+  z.literal(0),
+  z.literal(1),
+  z.boolean(),
+]);
+export const SimpleFunctionsMoverWindowSchema = z.enum([
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "4h",
+  "24h",
+  "1d",
+]);
+export const SimpleFunctionsMoverDirectionSchema = z.enum([
+  "up",
+  "down",
+  "both",
+]);
 
 export const SimpleFunctionsQueryRequestSchema = z.object({
   q: z.string().refine((value) => value.trim().length >= 2, {
@@ -30,6 +52,46 @@ export const SimpleFunctionsQueryRequestSchema = z.object({
   nextActions: SimpleFunctionsNextActionsSchema.optional(),
 });
 
+export const SimpleFunctionsMarketsRequestSchema = z.object({
+  q: z.string().optional(),
+  venue: SimpleFunctionsVenueSchema.optional(),
+});
+
+export const SimpleFunctionsFeaturedMarketsRequestSchema = z.object({
+  n: z.number().int().positive().optional(),
+});
+
+export const SimpleFunctionsSearchRequestSchema = z.object({
+  q: z.string().refine((value) => value.trim().length > 0, {
+    message: 'Query parameter "q" is required',
+  }),
+  limit: z.number().int().min(1).max(50).optional(),
+  venue: SimpleFunctionsVenueSchema.optional(),
+  strict: SimpleFunctionsStrictSchema.optional(),
+});
+
+export const SimpleFunctionsMoversRequestSchema = z.object({
+  window: SimpleFunctionsMoverWindowSchema.optional(),
+  n: z.number().int().min(10).max(200).optional(),
+  minVol: z.number().nonnegative().optional(),
+  dir: SimpleFunctionsMoverDirectionSchema.optional(),
+});
+
+export const SimpleFunctionsCandlesRequestSchema = z.object({
+  tf: z.string().min(1).optional(),
+  limit: z.number().int().positive().optional(),
+});
+
+export const SimpleFunctionsTradesRequestSchema = z.object({
+  limit: z.number().int().positive().optional(),
+});
+
+export const SimpleFunctionsTickerSchema = z
+  .string()
+  .refine((value) => value.trim().length > 0, {
+    message: "Ticker is required",
+  });
+
 export type SimpleFunctionsOptions = z.infer<
   typeof SimpleFunctionsOptionsSchema
 >;
@@ -39,6 +101,36 @@ export type SimpleFunctionsModel = z.infer<typeof SimpleFunctionsModelSchema>;
 export type SimpleFunctionsNextActions = z.infer<
   typeof SimpleFunctionsNextActionsSchema
 >;
+export type SimpleFunctionsNoRequest = z.infer<
+  typeof SimpleFunctionsNoRequestSchema
+>;
+export type SimpleFunctionsVenue = z.infer<typeof SimpleFunctionsVenueSchema>;
+export type SimpleFunctionsStrict = z.infer<typeof SimpleFunctionsStrictSchema>;
+export type SimpleFunctionsMoverWindow = z.infer<
+  typeof SimpleFunctionsMoverWindowSchema
+>;
+export type SimpleFunctionsMoverDirection = z.infer<
+  typeof SimpleFunctionsMoverDirectionSchema
+>;
 export type SimpleFunctionsQueryRequest = z.infer<
   typeof SimpleFunctionsQueryRequestSchema
 >;
+export type SimpleFunctionsMarketsRequest = z.infer<
+  typeof SimpleFunctionsMarketsRequestSchema
+>;
+export type SimpleFunctionsFeaturedMarketsRequest = z.infer<
+  typeof SimpleFunctionsFeaturedMarketsRequestSchema
+>;
+export type SimpleFunctionsSearchRequest = z.infer<
+  typeof SimpleFunctionsSearchRequestSchema
+>;
+export type SimpleFunctionsMoversRequest = z.infer<
+  typeof SimpleFunctionsMoversRequestSchema
+>;
+export type SimpleFunctionsCandlesRequest = z.infer<
+  typeof SimpleFunctionsCandlesRequestSchema
+>;
+export type SimpleFunctionsTradesRequest = z.infer<
+  typeof SimpleFunctionsTradesRequestSchema
+>;
+export type SimpleFunctionsTicker = z.infer<typeof SimpleFunctionsTickerSchema>;

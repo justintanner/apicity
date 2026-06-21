@@ -1,7 +1,7 @@
 {
   "name": "@apicity/simplefunctions",
   "version": "0.5.2",
-  "description": "SimpleFunctions Query API provider for prediction-market search.",
+  "description": "SimpleFunctions Query and Real-Time Data API provider for prediction-market search and market data.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -38,6 +38,8 @@
     "prediction-markets",
     "kalshi",
     "polymarket",
+    "market-data",
+    "real-time",
     "search",
     "apicity"
   ],

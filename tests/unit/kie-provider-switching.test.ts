@@ -232,13 +232,36 @@ describe("KIE provider switching", () => {
         aspect_ratio: "16:9" as const,
       },
     };
+    const video15Payload = {
+      model: "grok-imagine/image-to-video" as const,
+      input: {
+        image_urls: ["https://example.com/reference.png"],
+        prompt: "Animate the glass greenhouse as lightning flashes",
+        duration: 6,
+        resolution: "480p" as const,
+        nsfw_checker: true,
+      },
+    };
 
     expect(provider.modelInputSchemas["grok-imagine/text-to-image"].type).toBe(
       "image"
     );
+    expect(provider.modelInputSchemas["grok-imagine/text-to-video"].type).toBe(
+      "video"
+    );
+    expect(provider.modelInputSchemas["grok-imagine/image-to-video"].type).toBe(
+      "video"
+    );
+    expect(
+      provider.modelInputSchemas["grok-imagine-video-1-5-preview"].type
+    ).toBe("video");
     const validationResult =
       provider.post.api.v1.jobs.createTask.schema.safeParse(payload);
     expect(validationResult.success).toBe(true);
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse(video15Payload)
+        .success
+    ).toBe(true);
 
     await provider.post.api.v1.jobs.createTask(
       payload,

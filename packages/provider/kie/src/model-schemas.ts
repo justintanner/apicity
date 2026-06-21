@@ -159,6 +159,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // KIE's current Grok Imagine 1.5 Quick Start keeps video generation on the
+  // existing suite slugs rather than a new stable "1.5" model slug.
   "grok-imagine/text-to-video": {
     type: "video",
     fields: {
@@ -203,14 +205,16 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       image_urls: {
         type: "array",
-        description: "Reference image URLs (max 7)",
+        description:
+          "External reference image URLs (max 7); mutually exclusive with task_id",
         items: { type: "string" },
       },
       task_id: {
         type: "string",
-        description: "Reference task ID (max 100 chars)",
+        description:
+          "Grok-generated image task ID; use with index and without image_urls",
       },
-      index: { type: "number", description: "Frame index (0-5, default 0)" },
+      index: { type: "number", description: "Image index (0-5, default 0)" },
       mode: {
         type: "string",
         enum: ["fun", "normal", "spicy"],
@@ -238,6 +242,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  // Legacy compatibility slug from KIE's earlier Grok Imagine Video 1.5 preview
+  // surface. Prefer grok-imagine/image-to-video for the current Quick Start.
   "grok-imagine-video-1-5-preview": {
     type: "video",
     fields: {

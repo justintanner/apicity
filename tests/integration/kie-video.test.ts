@@ -30,7 +30,7 @@ describe("kie grok-imagine video integration", () => {
         model: "grok-imagine/text-to-video",
         input: {
           prompt: "A golden sunset over calm ocean waves",
-          duration: "6",
+          duration: 6,
           resolution: "480p",
         },
       };

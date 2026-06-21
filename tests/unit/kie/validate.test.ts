@@ -11,6 +11,9 @@ import {
   SunoGenerateRequestSchema,
   KieChatRequestSchema,
   KieClaudeRequestSchema,
+  GrokImageToVideoRequestSchema,
+  GrokTextToVideoRequestSchema,
+  GrokVideo15PreviewRequestSchema,
   GptImage2ImageToImageRequestSchema,
   GptImage2TextToImageRequestSchema,
   MediaGenerationRequestSchema,
@@ -102,6 +105,131 @@ describe("kie Zod schema validation", () => {
         callBackUrl: undefined,
       });
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("grok imagine 1.5 current suite slugs", () => {
+    it("should accept the current text-to-video request shape", () => {
+      const request = {
+        model: "grok-imagine/text-to-video",
+        input: {
+          prompt: "A neon train moving through a rain-soaked city at night",
+          aspect_ratio: "16:9",
+          mode: "normal",
+          duration: 6,
+          resolution: "480p",
+          nsfw_checker: true,
+        },
+      };
+
+      expect(GrokTextToVideoRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should accept numeric duration for current image-to-video", () => {
+      const request = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["https://example.com/reference.png"],
+          prompt: "@image1 turns and smiles at the camera",
+          aspect_ratio: "16:9",
+          mode: "fun",
+          duration: 6,
+          resolution: "720p",
+          nsfw_checker: false,
+        },
+      };
+
+      expect(GrokImageToVideoRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should keep legacy image-to-video string durations compatible", () => {
+      const request = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["https://example.com/reference.png"],
+          duration: "6",
+        },
+      };
+
+      expect(GrokImageToVideoRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should accept task_id plus index instead of image_urls", () => {
+      const request = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          task_id: "grok-image-task",
+          index: 2,
+          prompt: "Animate this generated image",
+          duration: 6,
+        },
+      };
+
+      expect(GrokImageToVideoRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should reject missing or conflicting image references", () => {
+      const missingReference = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: { prompt: "Animate this" },
+      });
+      const conflictingReference = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["https://example.com/reference.png"],
+          task_id: "grok-image-task",
+        },
+      });
+
+      expect(missingReference.success).toBe(false);
+      expect(conflictingReference.success).toBe(false);
+    });
+
+    it("should retain the earlier preview slug for compatibility", () => {
+      const request = {
+        model: "grok-imagine-video-1-5-preview",
+        input: {
+          image_urls: ["https://example.com/reference.png"],
+          duration: 8,
+          resolution: "480p",
+          nsfw_checker: true,
+        },
+      };
+
+      expect(GrokVideo15PreviewRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should not invent a stable 1.5 slug absent from KIE docs", () => {
+      const request = {
+        model: "grok-imagine-video-1-5",
+        input: {
+          image_urls: ["https://example.com/reference.png"],
+          duration: 8,
+        },
+      };
+
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        false
+      );
     });
   });
 

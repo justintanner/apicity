@@ -78,8 +78,10 @@ export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
 export const GrokImagineResolutionSchema = z.enum(["480p", "720p"]);
 
-// Grok Imagine Video 1.5 Preview accepts a wider aspect-ratio set than the
-// older grok-imagine video models — it adds "auto", "4:3", and "3:4".
+// The current KIE Grok Imagine 1.5 Quick Start still publishes video calls under
+// the existing grok-imagine/text-to-video and grok-imagine/image-to-video suite
+// slugs. This preview-only slug is kept for compatibility with earlier KIE
+// recordings that exposed a separate image-to-video preview model.
 export const GrokVideo15AspectRatioSchema = z.enum([
   "auto",
   "1:1",
@@ -269,32 +271,41 @@ export const GrokTextToVideoRequestSchema = z.object({
   }),
 });
 
-// Spec types image-to-video duration as a string (e.g. "6"), even though the
-// underlying value is a 6–30 second integer. text-to-video uses a number.
-export const GrokImageToVideoDurationSchema = z
-  .string()
-  .regex(/^([6-9]|[12][0-9]|30)$/);
+// KIE now documents numeric seconds for Grok Imagine 1.5 image-to-video, while
+// older recordings and callers used bare digit strings. Accept both to preserve
+// compatibility while making the current numeric shape valid.
+export const GrokImageToVideoDurationSchema = z.union([
+  z.number().int().min(6).max(30),
+  z.string().regex(/^([6-9]|[12][0-9]|30)$/),
+]);
 
-export const GrokImageToVideoRequestSchema = z.object({
-  model: z.literal("grok-imagine/image-to-video"),
-  callBackUrl: z.string().optional(),
-  input: z.object({
-    prompt: z.string().max(5000).optional(),
-    image_urls: z.array(z.string()).max(7).optional(),
-    task_id: z.string().max(100).optional(),
-    index: z.number().int().min(0).max(5).optional(),
-    mode: GrokImagineModeSchema.optional(),
-    duration: GrokImageToVideoDurationSchema.optional(),
-    resolution: GrokImagineResolutionSchema.optional(),
-    aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
-    nsfw_checker: z.boolean().default(false),
-  }),
-});
+export const GrokImageToVideoRequestSchema = z
+  .object({
+    model: z.literal("grok-imagine/image-to-video"),
+    callBackUrl: z.string().optional(),
+    input: z.object({
+      prompt: z.string().max(5000).optional(),
+      image_urls: z.array(z.string()).max(7).optional(),
+      task_id: z.string().max(100).optional(),
+      index: z.number().int().min(0).max(5).optional(),
+      mode: GrokImagineModeSchema.optional(),
+      duration: GrokImageToVideoDurationSchema.optional(),
+      resolution: GrokImagineResolutionSchema.optional(),
+      aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
+      nsfw_checker: z.boolean().default(false),
+    }),
+  })
+  .refine(
+    (v) => Boolean(v.input.image_urls?.length) !== Boolean(v.input.task_id),
+    {
+      message:
+        "grok-imagine/image-to-video requires exactly one of image_urls or task_id",
+      path: ["input", "image_urls"],
+    }
+  );
 
-// Grok Imagine Video 1.5 Preview (grok-imagine-video-1-5-preview) is a new
-// image-to-video model on the createTask jobs endpoint. Unlike the older grok
-// video models it requires image_urls, takes a numeric duration (1–15s), and
-// defaults nsfw_checker to true.
+// Legacy preview compatibility slug. Current KIE Grok Imagine 1.5 public docs
+// use grok-imagine/image-to-video for image-to-video calls.
 export const GrokVideo15PreviewRequestSchema = z.object({
   model: z.literal("grok-imagine-video-1-5-preview"),
   callBackUrl: z.string().optional(),

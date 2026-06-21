@@ -72,7 +72,7 @@ describe("kie grok-imagine reference bake-off", () => {
         input: {
           prompt: PROMPT,
           image_urls: [cat1Url, cat2Url, manUrl, beachUrl],
-          duration: "6",
+          duration: 6,
           resolution: "480p",
           aspect_ratio: "16:9",
           mode: "fun",

@@ -1,0 +1,5 @@
+[pack]
+name = "apicity-release"
+version = "0.1.0"
+schema = 2
+description = "Gas City workflow formulas for Apicity release automation."

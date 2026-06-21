@@ -28,6 +28,20 @@ token must have publish access for the `@apicity` scope.
 """
 formula = "mol-apicity-release"
 version = 1
+contract = "graph.v2"
+target_required = false
+
+[requires]
+formula_compiler = ">=2.0.0"
+
+[catalog]
+name = "mol-apicity-release"
+description = "Cut an Apicity npm release from stable through publish, tagging, GitHub release notes, main sync, smoke install, and release tracking."
+
+[metadata.gc]
+workflow = "apicity-release"
+run_target = "{{run_target}}"
+control_path = "apicity/core.control-dispatcher"
 
 [vars]
 [vars.version]
@@ -42,9 +56,14 @@ default = "false"
 description = "The tracking bead this release is closing. Closed in the final step."
 required = true
 
+[vars.run_target]
+description = "Gas City run target for release step execution."
+default = "apicity/gastown.polecat"
+
 [[steps]]
 id = "load-context"
 title = "Load context and verify clean working tree"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Initialize the session and verify the repo is in a publishable state.
 
@@ -98,6 +117,7 @@ if (!/^[0-9]+\\.[0-9]+\\.[0-9]+$/.test(version)) {
 id = "verify-main-gates"
 title = "Verify tests and CI are green on main"
 needs = ["load-context"]
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Before changing `stable`, bumping versions, or publishing, prove that the exact
 `main` commit being released is green.
@@ -162,6 +182,7 @@ CI reports success for the same `origin/main` commit."""
 id = "sync-stable"
 title = "Fast-forward stable from main"
 needs = ["verify-main-gates"]
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Bring `stable` up to the head of `main` so the release reflects the agent
 working branch's tip.
@@ -182,6 +203,7 @@ missing commits. Mail Witness with the divergence summary; do not improvise.
 id = "preflight-gates"
 title = "Run the CI mirror locally"
 needs = ["sync-stable"]
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Mirror exactly what CI runs (`pnpm run ci:local` = build + lint + test:run).
 A red preflight here means CI on `stable` will be red — abort the release.
@@ -203,6 +225,7 @@ If `ci:local` fails:
 id = "verify-publish-config"
 title = "Verify every package is publish-ready"
 needs = ["preflight-gates"]
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Confirm every publishable package has the metadata it needs to ship cleanly.
 
@@ -256,6 +279,7 @@ green.
 id = "bump-versions"
 title = "Bump every @apicity/* package to {{version}}"
 needs = ["verify-publish-config"]
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Bump in lockstep — every public `@apicity/*` package ships under one version. Don't use
 `pnpm -r exec npm version` here — it implicitly runs `npm install`, which
@@ -315,6 +339,7 @@ git commit -m "chore(release): @apicity/* → {{version}}"
 id = "publish-dry-run"
 title = "Inspect tarballs with --dry-run"
 needs = ["bump-versions"]
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Preview every tarball before sending real bytes. This catches:
   - tarballs that ship `tests/recordings/` (they shouldn't — `files` is dist-only)
@@ -347,9 +372,31 @@ dry-run when {{dry_run}} = true.
 **Exit criteria:** Dry-run exits 0, every tarball inspected, ready to publish for real."""
 
 [[steps]]
+id = "dry-run-stop"
+title = "Stop after dry-run"
+needs = ["publish-dry-run"]
+condition = "{{dry_run}} == true"
+metadata = { "gc.run_target" = "{{run_target}}" }
+description = """
+The release was launched with `dry_run=true`, so the workflow intentionally
+ends after the publish dry-run. Do not publish to npm, tag, push, update
+GitHub releases, sync `main`, smoke install, or close the release tracking
+bead.
+
+Confirm the dry-run log path in a note and drain this session:
+
+```bash
+gc runtime drain-ack
+```
+
+**Exit criteria:** Dry-run end state recorded, session drained."""
+
+[[steps]]
 id = "publish"
 title = "Publish to npm"
 needs = ["publish-dry-run"]
+condition = "{{dry_run}} != true"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Publish with the npm token stored in 1Password. Do not write the token to the
 repo, shell history, or logs.
@@ -397,6 +444,8 @@ the whole filter.
 id = "tag-and-push"
 title = "Tag the release and push stable"
 needs = ["publish"]
+condition = "{{dry_run}} != true"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Annotate the release commit and propagate to the remote.
 
@@ -412,6 +461,8 @@ git push origin v{{version}}
 id = "update-github-release"
 title = "Update the GitHub release page"
 needs = ["tag-and-push"]
+condition = "{{dry_run}} != true"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = '''
 Create or update the GitHub release page for the pushed `v{{version}}` tag.
 This is the public release page humans see in GitHub.
@@ -734,6 +785,8 @@ bead-based notes, and is marked as the latest release.'''
 id = "sync-main-release"
 title = "Fast-forward main to the release commit"
 needs = ["update-github-release"]
+condition = "{{dry_run}} != true"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Propagate the release version bump back to `main` so `main` and `stable` do
 not drift after publishing.
@@ -757,6 +810,8 @@ commit, and the working branch is back on `stable`."""
 id = "smoke-install"
 title = "Install the published package in a clean dir"
 needs = ["sync-main-release"]
+condition = "{{dry_run}} != true"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 End-to-end sanity: a fresh consumer install resolves the just-published
 artifact and the entrypoint loads.
@@ -781,6 +836,8 @@ version before the next release.
 id = "close"
 title = "Close the release bead"
 needs = ["smoke-install"]
+condition = "{{dry_run}} != true"
+metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Record the release in beads memory and close the tracking bead.
 

@@ -32,21 +32,39 @@ step enforces this. Do not use suffix identifiers or alternate npm tags.
 
 ## How to release
 
-Releases are driven by the `mol-apicity-release` bd formula. Pour it into a
-fresh tracking bead:
+Releases are driven by the compiler-v2 `mol-apicity-release` Gas City workflow.
+The workflow root is handled by `apicity/core.control-dispatcher`; executable
+steps carry `gc.run_target=apicity/gastown.polecat` by default so closing one
+step lets the dispatcher route the next ready step without manual Mayor
+slinging.
+
+Register the Apicity release pack with the city once per checkout/update:
+
+```bash
+gc import add /gc/apicity --name apicity-release
+gc import install
+gc reload
+gc formula show mol-apicity-release
+```
+
+Start a release from a fresh tracking bead:
 
 ```bash
 # 1. File a release tracking bead
 bd create --title="Release Apicity v0.4.1" --type=task --priority=2
 # → returns na-XXX
 
-# 2. Pour the formula
-bd mol pour mol-apicity-release \
+# 2. Launch the workflow through the control dispatcher
+gc sling apicity/core.control-dispatcher mol-apicity-release --formula \
   --var release_bead=na-XXX \
   --var version=0.4.1
 ```
 
-The formula creates 13 chained beads. An agent (or you, manually) walks them:
+Do not manually sling child steps. If the dispatcher needs manual attention,
+inspect or run the control path directly with `gc convoy control <control-bead>`
+or `gc convoy control --serve --follow apicity/core.control-dispatcher`.
+
+The formula creates 14 workflow steps:
 
 1. `load-context` — verify clean working tree, read the release bead
 2. `verify-main-gates` — on `main`, run `pnpm run test:run`,
@@ -56,14 +74,15 @@ The formula creates 13 chained beads. An agent (or you, manually) walks them:
 5. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
 6. `bump-versions` — write `version` to all package manifests, commit
 7. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
-8. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the `apicity` 1Password vault
-9. `tag-and-push` — `git tag v<version>`, push `stable` + tag
-10. `update-github-release` — create or update the GitHub release page for
+8. `dry-run-stop` — terminal branch when `dry_run=true`
+9. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the `apicity` 1Password vault
+10. `tag-and-push` — `git tag v<version>`, push `stable` + tag
+11. `update-github-release` — create or update the GitHub release page for
     `v<version>` with a flat Summary list of closed bead work since the
     previous release, excluding release workflow noise
-11. `sync-main-release` — fast-forward `main` to the release commit and push it
-12. `smoke-install` — `npm install @apicity/openai@latest` in `/tmp` and dynamic-import
-13. `close` — close the release bead, `bd remember` the version
+12. `sync-main-release` — fast-forward `main` to the release commit and push it
+13. `smoke-install` — `npm install @apicity/openai@latest` in `/tmp` and dynamic-import
+14. `close` — close the release bead, `bd remember` the version
 
 ## What the formula does NOT do automatically
 
@@ -85,7 +104,7 @@ stop. No real publish, no git tag, no push. Useful for testing the formula
 itself or for sanity-checking tarball contents on a feature branch.
 
 ```bash
-bd mol pour mol-apicity-release \
+gc sling apicity/core.control-dispatcher mol-apicity-release --formula \
   --var release_bead=na-XXX \
   --var version=0.4.1 \
   --var dry_run=true

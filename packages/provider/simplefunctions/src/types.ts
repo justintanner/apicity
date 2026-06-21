@@ -1,7 +1,9 @@
 import type { z } from "zod";
 import type {
+  SimpleFunctionsAgentFeedRequest,
   SimpleFunctionsCandlesRequest,
   SimpleFunctionsFeaturedMarketsRequest,
+  SimpleFunctionsInspectRequest,
   SimpleFunctionsMarketsRequest,
   SimpleFunctionsMoversRequest,
   SimpleFunctionsNoRequest,
@@ -9,9 +11,15 @@ import type {
   SimpleFunctionsSearchRequest,
   SimpleFunctionsTicker,
   SimpleFunctionsTradesRequest,
+  SimpleFunctionsWorldDeltaRequest,
+  SimpleFunctionsWorldPathRequest,
+  SimpleFunctionsWorldRequest,
 } from "./zod";
 
 export type {
+  SimpleFunctionsAgentFeedRequest,
+  SimpleFunctionsFormat,
+  SimpleFunctionsInspectRequest,
   SimpleFunctionsModel,
   SimpleFunctionsMode,
   SimpleFunctionsMoverDirection,
@@ -30,6 +38,10 @@ export type {
   SimpleFunctionsTicker,
   SimpleFunctionsTradesRequest,
   SimpleFunctionsVenue,
+  SimpleFunctionsWorldDeltaRequest,
+  SimpleFunctionsWorldOperation,
+  SimpleFunctionsWorldPathRequest,
+  SimpleFunctionsWorldRequest,
 } from "./zod";
 
 export class SimpleFunctionsError extends Error {
@@ -93,12 +105,135 @@ export interface SimpleFunctionsQueryResponse {
   [key: string]: unknown;
 }
 
+export interface SimpleFunctionsWorldSnapshotResponse {
+  region?: Record<string, unknown>;
+  regime?: Record<string, unknown>;
+  salient?: Array<Record<string, unknown>>;
+  index?: Record<string, unknown>;
+  traditional?: Array<Record<string, unknown>>;
+  movers?: Array<Record<string, unknown>>;
+  opportunities?: Array<Record<string, unknown>>;
+  stableAnchors?: Array<Record<string, unknown>>;
+  divergences?: Array<Record<string, unknown>>;
+  regimeSummary?: Record<string, unknown>;
+  portfolio?: Record<string, unknown>;
+  marketCount?: number;
+  servedAt?: string;
+  [key: string]: unknown;
+}
+
+export interface SimpleFunctionsWorldDeltaResponse {
+  from?: string;
+  to?: string;
+  changes?: Array<Record<string, unknown>>;
+  markdown?: string;
+  latencyMs?: number;
+  indexDelta?: Record<string, unknown>;
+  movers?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface SimpleFunctionsInspectResponse {
+  ticker?: string;
+  venue?: string;
+  title?: string;
+  price?: number;
+  bestBid?: number;
+  bestAsk?: number;
+  volume24h?: number;
+  openInterest?: number;
+  status?: string;
+  suggestion?: Record<string, unknown>;
+  regime?: Record<string, unknown>;
+  indicators?: Record<string, unknown>;
+  edges?: Array<Record<string, unknown>>;
+  crossVenue?: Array<Record<string, unknown>>;
+  contagion?: Array<Record<string, unknown>>;
+  diff24h?: Record<string, unknown>;
+  trend7d?: Record<string, unknown> | Array<Record<string, unknown>>;
+  legislation?: Record<string, unknown> | Array<Record<string, unknown>>;
+  nextActions?: Record<string, unknown>;
+  latencyMs?: number;
+  [key: string]: unknown;
+}
+
+export interface SimpleFunctionsTopicFeedResponse {
+  topic?: string;
+  items?: Array<Record<string, unknown>>;
+  markdown?: string;
+  [key: string]: unknown;
+}
+
+export type SimpleFunctionsWorldResponse =
+  | SimpleFunctionsWorldSnapshotResponse
+  | string;
+
+export type SimpleFunctionsWorldDeltaResult =
+  | SimpleFunctionsWorldDeltaResponse
+  | string;
+
+export type SimpleFunctionsInspectResult =
+  | SimpleFunctionsInspectResponse
+  | string;
+
+export type SimpleFunctionsTopicFeedResult =
+  | SimpleFunctionsTopicFeedResponse
+  | string;
+
 export interface SimpleFunctionsQueryMethod {
   (
     req: SimpleFunctionsQueryRequest,
     signal?: AbortSignal
   ): Promise<SimpleFunctionsQueryResponse>;
   schema: z.ZodType<SimpleFunctionsQueryRequest>;
+}
+
+export interface SimpleFunctionsWorldPathMethod {
+  (
+    req: SimpleFunctionsWorldPathRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsWorldResponse>;
+  schema: z.ZodType<SimpleFunctionsWorldPathRequest>;
+}
+
+export interface SimpleFunctionsWorldDeltaMethod {
+  (
+    req: SimpleFunctionsWorldDeltaRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsWorldDeltaResult>;
+  schema: z.ZodType<SimpleFunctionsWorldDeltaRequest>;
+}
+
+export interface SimpleFunctionsWorldFeedMethod {
+  (signal?: AbortSignal): Promise<string>;
+  schema: z.ZodType<SimpleFunctionsNoRequest>;
+}
+
+export interface SimpleFunctionsWorldMethod {
+  (
+    req?: SimpleFunctionsWorldRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsWorldResponse>;
+  schema: z.ZodType<SimpleFunctionsWorldRequest>;
+  path: SimpleFunctionsWorldPathMethod;
+  delta: SimpleFunctionsWorldDeltaMethod;
+  feed: SimpleFunctionsWorldFeedMethod;
+}
+
+export interface SimpleFunctionsInspectMethod {
+  (
+    req: SimpleFunctionsInspectRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsInspectResult>;
+  schema: z.ZodType<SimpleFunctionsInspectRequest>;
+}
+
+export interface SimpleFunctionsAgentFeedMethod {
+  (
+    req: SimpleFunctionsAgentFeedRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsTopicFeedResult>;
+  schema: z.ZodType<SimpleFunctionsAgentFeedRequest>;
 }
 
 export interface SimpleFunctionsHeartbeatResponse {
@@ -303,7 +438,14 @@ export interface SimpleFunctionsApiPublicNamespace {
   query: SimpleFunctionsQueryMethod;
 }
 
+export interface SimpleFunctionsApiAgentNamespace {
+  world: SimpleFunctionsWorldMethod;
+  inspect: SimpleFunctionsInspectMethod;
+  feed: SimpleFunctionsAgentFeedMethod;
+}
+
 export interface SimpleFunctionsApiNamespace {
+  agent: SimpleFunctionsApiAgentNamespace;
   public: SimpleFunctionsApiPublicNamespace;
 }
 

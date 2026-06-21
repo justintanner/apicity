@@ -2,12 +2,16 @@ import { attachExamples } from "./example";
 import { SimpleFunctionsError } from "./types";
 import type { z } from "zod";
 import type {
+  SimpleFunctionsAgentFeedRequest,
   SimpleFunctionsCandlesRequest,
   SimpleFunctionsCandlesResponse,
   SimpleFunctionsDataMarket,
   SimpleFunctionsDataNamespace,
   SimpleFunctionsFeaturedMarketsRequest,
   SimpleFunctionsHeartbeatResponse,
+  SimpleFunctionsInspectRequest,
+  SimpleFunctionsInspectResponse,
+  SimpleFunctionsInspectResult,
   SimpleFunctionsMarketsRequest,
   SimpleFunctionsMarketsResponse,
   SimpleFunctionsMoversRequest,
@@ -23,10 +27,21 @@ import type {
   SimpleFunctionsStrict,
   SimpleFunctionsTradesRequest,
   SimpleFunctionsTradesResponse,
+  SimpleFunctionsTopicFeedResponse,
+  SimpleFunctionsTopicFeedResult,
+  SimpleFunctionsWorldDeltaRequest,
+  SimpleFunctionsWorldDeltaResponse,
+  SimpleFunctionsWorldDeltaResult,
+  SimpleFunctionsWorldPathRequest,
+  SimpleFunctionsWorldRequest,
+  SimpleFunctionsWorldResponse,
+  SimpleFunctionsWorldSnapshotResponse,
 } from "./types";
 import {
+  SimpleFunctionsAgentFeedRequestSchema,
   SimpleFunctionsCandlesRequestSchema,
   SimpleFunctionsFeaturedMarketsRequestSchema,
+  SimpleFunctionsInspectRequestSchema,
   SimpleFunctionsMarketsRequestSchema,
   SimpleFunctionsMoversRequestSchema,
   SimpleFunctionsNoRequestSchema,
@@ -34,6 +49,9 @@ import {
   SimpleFunctionsSearchRequestSchema,
   SimpleFunctionsTickerSchema,
   SimpleFunctionsTradesRequestSchema,
+  SimpleFunctionsWorldDeltaRequestSchema,
+  SimpleFunctionsWorldPathRequestSchema,
+  SimpleFunctionsWorldRequestSchema,
 } from "./zod";
 
 interface SimpleFunctionsErrorBody {
@@ -114,6 +132,49 @@ function parseTicker(ticker: string): string {
   return parseDataRequest(SimpleFunctionsTickerSchema, ticker).trim();
 }
 
+function trimWorldRequest(
+  req: SimpleFunctionsWorldRequest
+): SimpleFunctionsWorldRequest {
+  return {
+    ...req,
+    dt: req.dt?.trim(),
+    focus: req.focus?.trim(),
+    from: req.from?.trim(),
+    item: req.item?.trim(),
+    since: req.since?.trim(),
+    window: req.window?.trim(),
+  };
+}
+
+function parseWorldRequest(
+  req: SimpleFunctionsWorldRequest = {}
+): SimpleFunctionsWorldRequest {
+  return trimWorldRequest(
+    parseDataRequest(SimpleFunctionsWorldRequestSchema, req)
+  );
+}
+
+function parseWorldPathRequest(
+  req: SimpleFunctionsWorldPathRequest
+): SimpleFunctionsWorldPathRequest {
+  const parsed = parseDataRequest(SimpleFunctionsWorldPathRequestSchema, req);
+  return {
+    ...trimWorldRequest(parsed),
+    path: parsed.path,
+  };
+}
+
+function parseAgentFeedRequest(
+  req: SimpleFunctionsAgentFeedRequest
+): SimpleFunctionsAgentFeedRequest {
+  const parsed = parseDataRequest(SimpleFunctionsAgentFeedRequestSchema, req);
+  return {
+    ...parsed,
+    since: parsed.since?.trim(),
+    topic: parsed.topic.trim(),
+  };
+}
+
 type QueryValue = string | number | boolean | undefined;
 
 function buildQueryParams(params: Record<string, QueryValue>): string {
@@ -124,6 +185,19 @@ function buildQueryParams(params: Record<string, QueryValue>): string {
   }
   const query = qs.toString();
   return query ? `?${query}` : "";
+}
+
+function pathSegments(path: string | string[]): string[] {
+  const rawSegments = Array.isArray(path) ? path : path.split("/");
+  return rawSegments.map((segment) => segment.trim()).filter(Boolean);
+}
+
+function encodePath(path: string | string[]): string {
+  const segments = pathSegments(path);
+  if (segments.length === 0) {
+    throw createLocalError(400, "path is required");
+  }
+  return segments.map((segment) => encodeURIComponent(segment)).join("/");
 }
 
 function strictToQueryValue(value: SimpleFunctionsStrict | undefined): string {
@@ -144,6 +218,54 @@ function buildQuery(req: SimpleFunctionsQueryRequest): string {
   return `?${qs.toString()}`;
 }
 
+function buildWorldQuery(req: SimpleFunctionsWorldRequest): string {
+  return buildQueryParams({
+    format: req.format,
+    compact: req.compact,
+    limit: req.limit,
+    depth: req.depth,
+    since: req.since,
+    focus: req.focus,
+    op: req.op,
+    window: req.window,
+    dt: req.dt,
+    from: req.from,
+    item: req.item,
+  });
+}
+
+function buildWorldDeltaQuery(req: SimpleFunctionsWorldDeltaRequest): string {
+  return buildQueryParams({
+    since: req.since,
+    format: req.format,
+  });
+}
+
+function buildInspectQuery(req: SimpleFunctionsInspectRequest): string {
+  return buildQueryParams({
+    format: req.format,
+    contagion: req.contagion,
+    diff: req.diff,
+    trend: req.trend,
+    nextActions: req.nextActions,
+  });
+}
+
+function buildAgentFeedQuery(req: SimpleFunctionsAgentFeedRequest): string {
+  return buildQueryParams({
+    since: req.since,
+    limit: req.limit,
+    format: req.format,
+  });
+}
+
+function wantsJson(
+  format: "json" | "markdown" | undefined,
+  defaultJson: boolean
+): boolean {
+  return format === "json" || (format === undefined && defaultJson);
+}
+
 export function createSimpleFunctions(
   opts: SimpleFunctionsOptions = {}
 ): SimpleFunctionsProvider {
@@ -157,11 +279,11 @@ export function createSimpleFunctions(
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
-  async function makeGetRequest<T>(
+  async function makeGetResponse(
     path: string,
     signal?: AbortSignal,
     requestBaseURL = baseURL
-  ): Promise<T> {
+  ): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -197,7 +319,7 @@ export function createSimpleFunctions(
         );
       }
 
-      return (await res.json()) as T;
+      return res;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof SimpleFunctionsError) throw error;
@@ -206,6 +328,24 @@ export function createSimpleFunctions(
         500
       );
     }
+  }
+
+  async function makeGetRequest<T>(
+    path: string,
+    signal?: AbortSignal,
+    requestBaseURL = baseURL
+  ): Promise<T> {
+    const res = await makeGetResponse(path, signal, requestBaseURL);
+    return (await res.json()) as T;
+  }
+
+  async function makeGetTextRequest(
+    path: string,
+    signal?: AbortSignal,
+    requestBaseURL = baseURL
+  ): Promise<string> {
+    const res = await makeGetResponse(path, signal, requestBaseURL);
+    return res.text();
   }
 
   // GET https://simplefunctions.dev/api/public/query{query}
@@ -223,6 +363,136 @@ export function createSimpleFunctions(
       );
     },
     { schema: SimpleFunctionsQueryRequestSchema }
+  );
+
+  // GET https://simplefunctions.dev/api/agent/world/delta{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/world-state
+  const worldDelta = Object.assign(
+    async (
+      req: SimpleFunctionsWorldDeltaRequest,
+      signal?: AbortSignal
+    ): Promise<SimpleFunctionsWorldDeltaResult> => {
+      const parsed = parseDataRequest(
+        SimpleFunctionsWorldDeltaRequestSchema,
+        req
+      );
+      const query = buildWorldDeltaQuery({
+        ...parsed,
+        since: parsed.since.trim(),
+      });
+      if (wantsJson(parsed.format, false)) {
+        return makeGetRequest<SimpleFunctionsWorldDeltaResponse>(
+          `/api/agent/world/delta${query}`,
+          signal
+        );
+      }
+      return makeGetTextRequest(`/api/agent/world/delta${query}`, signal);
+    },
+    { schema: SimpleFunctionsWorldDeltaRequestSchema }
+  );
+
+  // GET https://simplefunctions.dev/api/agent/world/feed
+  // Docs: https://docs.simplefunctions.dev/api-reference/world-state
+  const worldFeed = Object.assign(
+    async (signal?: AbortSignal): Promise<string> => {
+      return makeGetTextRequest("/api/agent/world/feed", signal);
+    },
+    { schema: SimpleFunctionsNoRequestSchema }
+  );
+
+  // sig-ok: path helper represents the catch-all /world/{...path} route.
+  // GET https://simplefunctions.dev/api/agent/world/{path}{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/world-state
+  const worldPath = Object.assign(
+    async (
+      req: SimpleFunctionsWorldPathRequest,
+      signal?: AbortSignal
+    ): Promise<SimpleFunctionsWorldResponse> => {
+      const parsed = parseWorldPathRequest(req);
+      const query = buildWorldQuery(parsed);
+      const path = encodePath(parsed.path);
+      if (wantsJson(parsed.format, false)) {
+        return makeGetRequest<SimpleFunctionsWorldSnapshotResponse>(
+          `/api/agent/world/${path}${query}`,
+          signal
+        );
+      }
+      return makeGetTextRequest(`/api/agent/world/${path}${query}`, signal);
+    },
+    { schema: SimpleFunctionsWorldPathRequestSchema }
+  );
+
+  // GET https://simplefunctions.dev/api/agent/world{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/world-state
+  const world = Object.assign(
+    async (
+      req: SimpleFunctionsWorldRequest = {},
+      signal?: AbortSignal
+    ): Promise<SimpleFunctionsWorldResponse> => {
+      const parsed = parseWorldRequest(req);
+      const query = buildWorldQuery(parsed);
+      if (wantsJson(parsed.format, false)) {
+        return makeGetRequest<SimpleFunctionsWorldSnapshotResponse>(
+          `/api/agent/world${query}`,
+          signal
+        );
+      }
+      return makeGetTextRequest(`/api/agent/world${query}`, signal);
+    },
+    {
+      schema: SimpleFunctionsWorldRequestSchema,
+      delta: worldDelta,
+      feed: worldFeed,
+      path: worldPath,
+    }
+  );
+
+  // GET https://simplefunctions.dev/api/agent/inspect/{ticker}{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/agent
+  const inspect = Object.assign(
+    async (
+      req: SimpleFunctionsInspectRequest,
+      signal?: AbortSignal
+    ): Promise<SimpleFunctionsInspectResult> => {
+      const parsed = parseDataRequest(SimpleFunctionsInspectRequestSchema, req);
+      const query = buildInspectQuery(parsed);
+      const ticker = parsed.ticker.trim();
+      if (wantsJson(parsed.format, true)) {
+        return makeGetRequest<SimpleFunctionsInspectResponse>(
+          `/api/agent/inspect/${encodeURIComponent(ticker)}${query}`,
+          signal
+        );
+      }
+      return makeGetTextRequest(
+        `/api/agent/inspect/${encodeURIComponent(ticker)}${query}`,
+        signal
+      );
+    },
+    { schema: SimpleFunctionsInspectRequestSchema }
+  );
+
+  // GET https://simplefunctions.dev/api/agent/feed/{topic}{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/agent
+  const agentFeed = Object.assign(
+    async (
+      req: SimpleFunctionsAgentFeedRequest,
+      signal?: AbortSignal
+    ): Promise<SimpleFunctionsTopicFeedResult> => {
+      const parsed = parseAgentFeedRequest(req);
+      const query = buildAgentFeedQuery(parsed);
+      const topic = parsed.topic;
+      if (wantsJson(parsed.format, false)) {
+        return makeGetRequest<SimpleFunctionsTopicFeedResponse>(
+          `/api/agent/feed/${encodeURIComponent(topic)}${query}`,
+          signal
+        );
+      }
+      return makeGetTextRequest(
+        `/api/agent/feed/${encodeURIComponent(topic)}${query}`,
+        signal
+      );
+    },
+    { schema: SimpleFunctionsAgentFeedRequestSchema }
   );
 
   // GET https://data.simplefunctions.dev/v1/heartbeat
@@ -426,6 +696,11 @@ export function createSimpleFunctions(
   );
 
   const api = {
+    agent: {
+      world,
+      inspect,
+      feed: agentFeed,
+    },
     public: {
       query,
     },

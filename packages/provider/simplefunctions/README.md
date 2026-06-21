@@ -31,7 +31,99 @@ const simplefunctions = createSimpleFunctions({ apiKey: process.env.SIMPLEFUNCTI
 
 ## API Reference
 
-11 endpoints across 2 groups. Each method mirrors an upstream URL path.
+17 endpoints across 3 groups. Each method mirrors an upstream URL path.
+
+### agent
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.agent.feed</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/agent/feed/{topic}{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/agent)
+
+```typescript
+const res = await simplefunctions.api.agent.feed({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.agent.inspect</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/agent/inspect/{ticker}{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/agent)
+
+```typescript
+const res = await simplefunctions.api.agent.inspect({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.agent.world</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/agent/world{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
+
+```typescript
+const res = await simplefunctions.api.agent.world({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.agent.world.delta</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/agent/world/delta{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
+
+```typescript
+const res = await simplefunctions.api.agent.world.delta({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.agent.world.feed</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/agent/world/feed</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
+
+```typescript
+const res = await simplefunctions.api.agent.world.feed({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.agent.world.path</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/agent/world/{path}{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/world-state)
+
+```typescript
+const res = await simplefunctions.api.agent.world.path({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
 
 ### data
 

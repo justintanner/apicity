@@ -1,4 +1,10 @@
 provider	dotPath	method	fullUrl	docsUrl
+simplefunctions	api.agent.world	GET	https://simplefunctions.dev/api/agent/world{query}	https://docs.simplefunctions.dev/api-reference/world-state
+simplefunctions	api.agent.world.path	GET	https://simplefunctions.dev/api/agent/world/{path}{query}	https://docs.simplefunctions.dev/api-reference/world-state
+simplefunctions	api.agent.world.delta	GET	https://simplefunctions.dev/api/agent/world/delta{query}	https://docs.simplefunctions.dev/api-reference/world-state
+simplefunctions	api.agent.world.feed	GET	https://simplefunctions.dev/api/agent/world/feed	https://docs.simplefunctions.dev/api-reference/world-state
+simplefunctions	api.agent.inspect	GET	https://simplefunctions.dev/api/agent/inspect/{ticker}{query}	https://docs.simplefunctions.dev/api-reference/agent
+simplefunctions	api.agent.feed	GET	https://simplefunctions.dev/api/agent/feed/{topic}{query}	https://docs.simplefunctions.dev/api-reference/agent
 simplefunctions	api.public.query	GET	https://simplefunctions.dev/api/public/query{query}	https://docs.simplefunctions.dev/api-reference/query
 simplefunctions	data.v1.heartbeat	GET	https://data.simplefunctions.dev/v1/heartbeat	https://docs.simplefunctions.dev/reference/realtime-data
 simplefunctions	data.v1.markets	GET	https://data.simplefunctions.dev/v1/markets{query}	https://docs.simplefunctions.dev/reference/realtime-data

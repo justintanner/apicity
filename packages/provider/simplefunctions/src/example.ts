@@ -10,7 +10,39 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "GET api.agent.world": {
+    "source": "simplefunctions/agent-world-snapshot-json",
+    "payload": {
+      "format": "json",
+      "limit": 3,
+      "op": "snapshot"
+    }
+  },
+  "GET api.public.query": {
+    "source": "simplefunctions/query-fed-rate-cut",
+    "payload": {
+      "q": "federal reserve rate cut",
+      "mode": "raw",
+      "sources": "kalshi,polymarket",
+      "limit": 3
+    }
+  },
+  "GET api.public.search": {
+    "source": "simplefunctions/public-search-fed",
+    "payload": {
+      "q": "fed",
+      "limit": 3
+    }
+  },
+  "GET data.v1.search": {
+    "source": "simplefunctions/data-search-fed",
+    "payload": {
+      "q": "fed",
+      "limit": 3
+    }
+  }
+};
 
 export default EXAMPLES;
 

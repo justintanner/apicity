@@ -273,4 +273,76 @@ describe("KIE provider switching", () => {
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body as string)).toEqual(payload);
   });
+
+  it("keeps Kling 3.0 Turbo models on createTask and exposes their schema", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({ code: 200, data: { taskId: "kling-1" } }),
+            { status: 200 }
+          )
+        )
+      );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+
+    const imagePayload = {
+      model: "kling/v3-turbo-image-to-video" as const,
+      input: {
+        prompt: "A slow push-in on a studio product photo.",
+        image_urls: ["https://example.com/product.png"],
+        duration: 5,
+        resolution: "1080p" as const,
+      },
+    };
+    const textPayload = {
+      model: "kling/v3-turbo-text-to-video" as const,
+      input: {
+        prompt: "A cinematic drone shot over glass towers at sunrise.",
+        duration: 5,
+        aspect_ratio: "16:9" as const,
+        resolution: "720p" as const,
+      },
+    };
+
+    expect(
+      provider.modelInputSchemas["kling/v3-turbo-image-to-video"].type
+    ).toBe("video");
+    expect(
+      provider.modelInputSchemas["kling/v3-turbo-text-to-video"].type
+    ).toBe("video");
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse(imagePayload)
+        .success
+    ).toBe(true);
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse(textPayload).success
+    ).toBe(true);
+
+    await provider.post.api.v1.jobs.createTask(
+      imagePayload,
+      mintKieCreateTaskOtp(imagePayload)
+    );
+    await provider.post.api.v1.jobs.createTask(
+      textPayload,
+      mintKieCreateTaskOtp(textPayload)
+    );
+
+    const [imageUrl, imageInit] = mockFetch.mock.calls[0];
+    expect(imageUrl).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+    expect(imageInit.method).toBe("POST");
+    expect(JSON.parse(imageInit.body as string)).toEqual(imagePayload);
+
+    const [textUrl, textInit] = mockFetch.mock.calls[1];
+    expect(textUrl).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+    expect(textInit.method).toBe("POST");
+    expect(JSON.parse(textInit.body as string)).toEqual(textPayload);
+  });
 });

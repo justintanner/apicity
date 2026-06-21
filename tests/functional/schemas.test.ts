@@ -806,6 +806,26 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.mode).toBeDefined();
   });
 
+  it("kling 3.0 turbo exposes documented createTask fields", () => {
+    const imageToVideo = modelInputSchemas["kling/v3-turbo-image-to-video"];
+    expect(imageToVideo.type).toBe("video");
+    expect(imageToVideo.fields.prompt.required).toBe(true);
+    expect(imageToVideo.fields.image_urls.required).toBe(true);
+    expect(imageToVideo.fields.duration.type).toBe("number");
+    expect(imageToVideo.fields.resolution.enum).toEqual(["720p", "1080p"]);
+
+    const textToVideo = modelInputSchemas["kling/v3-turbo-text-to-video"];
+    expect(textToVideo.type).toBe("video");
+    expect(textToVideo.fields.prompt.required).toBe(true);
+    expect(textToVideo.fields.duration.type).toBe("number");
+    expect(textToVideo.fields.aspect_ratio.enum).toEqual([
+      "1:1",
+      "9:16",
+      "16:9",
+    ]);
+    expect(textToVideo.fields.resolution.enum).toEqual(["720p", "1080p"]);
+  });
+
   it("gpt-image-2 text-to-image exposes documented aspect ratios", () => {
     const schema = modelInputSchemas["gpt-image-2-text-to-image"];
     expect(schema.type).toBe("image");

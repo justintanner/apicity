@@ -23,6 +23,8 @@ export const MODEL_SLUGS = {
     "kling-3.0/video/std": "kling3s",
     "kling-3.0/video/pro": "kling3p",
     "kling-3.0/motion-control": "kling3mc",
+    "kling/v3-turbo-image-to-video": "kling3t",
+    "kling/v3-turbo-text-to-video": "kling3t",
 
     // Video — Wan 2.7
     "wan/2-7-text-to-video": "wan2p7",
@@ -204,6 +206,8 @@ export const MODEL_DISPLAY = {
     "kling-3.0/video/std": "Kling 3.0",
     "kling-3.0/video/pro": "Kling 3.0 Pro",
     "kling-3.0/motion-control": "Kling 3.0 Motion",
+    "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",
+    "kling/v3-turbo-text-to-video": "Kling 3.0 Turbo",
 
     "wan/2-7-text-to-video": "Wan 2.7",
     "wan/2-7-image-to-video": "Wan 2.7",

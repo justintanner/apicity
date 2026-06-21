@@ -113,6 +113,62 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "kling/v3-turbo-image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Video generation prompt",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        description: "Input image URL (exactly 1)",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "number",
+        required: true,
+        description: "Duration in seconds",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["720p", "1080p"],
+        description: "Output resolution",
+      },
+    },
+  },
+
+  "kling/v3-turbo-text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Video generation prompt",
+      },
+      duration: {
+        type: "number",
+        required: true,
+        description: "Duration in seconds",
+      },
+      aspect_ratio: {
+        type: "string",
+        required: true,
+        enum: ["1:1", "9:16", "16:9"],
+        description: "Output aspect ratio",
+      },
+      resolution: {
+        type: "string",
+        required: true,
+        enum: ["720p", "1080p"],
+        description: "Output resolution",
+      },
+    },
+  },
+
   "grok-imagine/text-to-image": {
     type: "image",
     fields: {

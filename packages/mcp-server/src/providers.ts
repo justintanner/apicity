@@ -95,6 +95,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/dolthub",
     factoryName: "createDoltHub",
   },
+  simplefunctions: {
+    envVar: "SIMPLEFUNCTIONS_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/simplefunctions",
+    factoryName: "createSimpleFunctions",
+  },
   kie: {
     envVar: "KIE_API_KEY",
     optionKey: "apiKey",
@@ -234,7 +240,14 @@ export async function instantiateProvider(
     );
   }
   const credential = spec.envVar ? process.env[spec.envVar] : undefined;
-  if (!credential && spec.envVar && name !== "youtube") return null;
+  if (
+    !credential &&
+    spec.envVar &&
+    name !== "youtube" &&
+    name !== "simplefunctions"
+  ) {
+    return null;
+  }
   const opts: Record<string, unknown> = {};
   if (credential) opts[spec.optionKey] = credential;
   // The MCP server is the code client: it holds the shared secret to *verify*

@@ -101,6 +101,7 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/x](packages/provider/x)                                 | X API posting and media upload                                     |
 | [@apicity/meta](packages/provider/meta)                           | Instagram Graph API reel publishing                                |
 | [@apicity/polymarket](packages/provider/polymarket)               | Polymarket Gamma, Data, and CLOB public market data                |
+| [@apicity/simplefunctions](packages/provider/simplefunctions)     | SimpleFunctions prediction-market Query API                        |
 | [@apicity/telegram](packages/provider/telegram)                   | Telegram Bot API text, photo, video, and audio sending             |
 | [@apicity/cost](packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)                        | MCP server exposing provider endpoints as tools                    |

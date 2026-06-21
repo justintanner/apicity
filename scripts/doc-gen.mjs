@@ -191,6 +191,15 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "elevenlabs" && dotPath === "v1.user.subscription") {
     return `const res = await ${call}();`;
   }
+  if (providerName === "simplefunctions" && dotPath === "api.public.query") {
+    return [
+      `const res = await ${call}({`,
+      '  q: "Fed rate cut",',
+      '  sources: ["kalshi", "polymarket"],',
+      "  limit: 3,",
+      "});",
+    ].join("\n");
+  }
   return `const res = await ${call}({ /* ... */ });`;
 }
 
@@ -2352,6 +2361,11 @@ const PROVIDER_AUTH = {
     env: "TELEGRAM_BOT_KEY",
     showMiddleware: false,
   },
+  simplefunctions: {
+    env: "SIMPLEFUNCTIONS_API_KEY",
+    optionalAuth: true,
+    showMiddleware: false,
+  },
 };
 
 // Per-provider upstream documentation URLs. When set, a docs badge is
@@ -2365,6 +2379,7 @@ const PROVIDER_DOCS = {
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
+  simplefunctions: "https://docs.simplefunctions.dev/api-reference/query",
 };
 
 // Resolve the provider's factory function from the create* identifiers in
@@ -2404,6 +2419,12 @@ const DEP_NOTES = {
   viem: "EIP-712 order signing for the CLOB trading endpoints",
 };
 
+const PROVIDER_DEP_NOTES = {
+  simplefunctions: {
+    zod: "request schemas attached to every GET endpoint as `.schema`",
+  },
+};
+
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
   const pkgName = pkg.name || `@apicity/${providerName}`;
@@ -2413,6 +2434,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
   const envKey = auth.env ?? `${providerName.toUpperCase()}_API_KEY`;
   const showMiddleware = auth.showMiddleware ?? true;
   const noAuth = auth.noAuth ?? false;
+  const optionalAuth = auth.optionalAuth ?? false;
 
   const sections = [];
 
@@ -2450,7 +2472,8 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push("Runtime dependencies:");
     sections.push("");
     for (const [depName, depRange] of runtimeDeps) {
-      const note = DEP_NOTES[depName];
+      const note =
+        PROVIDER_DEP_NOTES[providerName]?.[depName] ?? DEP_NOTES[depName];
       sections.push(`- \`${depName}@${depRange}\`${note ? ` — ${note}` : ""}`);
     }
     sections.push("");
@@ -2486,6 +2509,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
     sections.push("});");
   } else if (noAuth) {
     sections.push(`const ${providerName} = ${factory}();`);
+  } else if (optionalAuth) {
+    sections.push(
+      `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey} });`
+    );
   } else {
     sections.push(
       `const ${providerName} = ${factory}({ ${authField}: process.env.${envKey}! });`

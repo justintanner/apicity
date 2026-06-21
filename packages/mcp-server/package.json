@@ -67,6 +67,7 @@
     "@apicity/openai": "workspace:*",
     "@apicity/polymarket": "workspace:*",
     "@apicity/s3": "workspace:*",
+    "@apicity/simplefunctions": "workspace:*",
     "@apicity/telegram": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*",

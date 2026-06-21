@@ -145,6 +145,9 @@ importers:
       '@apicity/s3':
         specifier: workspace:*
         version: link:../provider/s3
+      '@apicity/simplefunctions':
+        specifier: workspace:*
+        version: link:../provider/simplefunctions
       '@apicity/telegram':
         specifier: workspace:*
         version: link:../provider/telegram
@@ -257,6 +260,12 @@ importers:
         version: 3.25.76
 
   packages/provider/s3:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/simplefunctions:
     dependencies:
       zod:
         specifier: ^3.24.0

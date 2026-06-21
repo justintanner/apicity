@@ -130,6 +130,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/dolthub/src/dolthub.ts"],
     factoryNames: ["createDoltHub"],
   },
+  {
+    name: "simplefunctions",
+    entryFiles: ["packages/provider/simplefunctions/src/simplefunctions.ts"],
+    factoryNames: ["createSimpleFunctions"],
+  },
 ];
 
 const METHOD_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);

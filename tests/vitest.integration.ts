@@ -155,6 +155,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/dolthub/src"
       ),
+      "@apicity/simplefunctions/zod": path.resolve(
+        __dirname,
+        "../packages/provider/simplefunctions/src/zod"
+      ),
+      "@apicity/simplefunctions": path.resolve(
+        __dirname,
+        "../packages/provider/simplefunctions/src"
+      ),
     },
     coverage: {
       provider: "v8",

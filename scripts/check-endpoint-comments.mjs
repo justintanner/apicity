@@ -55,6 +55,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   youtube: ["developers.google.com", "github.com"],
   telegram: ["core.telegram.org"],
   dolthub: ["www.dolthub.com", "dolthub.com"],
+  simplefunctions: ["docs.simplefunctions.dev"],
 };
 
 const METHOD_LINE_RE =

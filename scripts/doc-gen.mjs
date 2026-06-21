@@ -2450,7 +2450,8 @@ const PROVIDER_DOCS = {
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
-  simplefunctions: "https://docs.simplefunctions.dev/llms.txt",
+  simplefunctions:
+    "https://docs.simplefunctions.dev/api-reference/public-market-data",
 };
 
 // Resolve the provider's factory function from the create* identifiers in

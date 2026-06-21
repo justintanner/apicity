@@ -48,16 +48,51 @@ export const SimpleFunctionsWorldOperationSchema = z.enum([
   "trail",
   "explain",
 ]);
+export const SimpleFunctionsMarketTimeframeSchema = z.enum([
+  "1m",
+  "5m",
+  "15m",
+  "1h",
+  "1d",
+]);
+export const SimpleFunctionsOddsBandSchema = z.enum(["mid", "moving"]);
+export const SimpleFunctionsGovSourceSchema = z.enum([
+  "congress",
+  "openstates",
+  "kalshi",
+  "crs",
+]);
+export const SimpleFunctionsCalibrationSourceSchema = z.enum([
+  "kalshi",
+  "polymarket",
+]);
+export const SimpleFunctionsCalibrationPeriodSchema = z.enum([
+  "7d",
+  "30d",
+  "90d",
+  "all",
+]);
 
-const nonEmptyString = (name: string) =>
-  z.string().refine((value) => value.trim().length > 0, {
-    message: `${name} is required`,
+const NonEmptyStringSchema = z
+  .string()
+  .refine((value) => value.trim().length > 0, {
+    message: "Required string parameter must not be empty",
   });
 
-export const SimpleFunctionsQueryRequestSchema = z.object({
-  q: z.string().refine((value) => value.trim().length >= 2, {
+const QueryStringSchema = z
+  .string()
+  .refine((value) => value.trim().length >= 2, {
     message: 'Query parameter "q" is required (min 2 chars)',
-  }),
+  });
+
+const PositiveLimitSchema = z.number().int().min(1);
+const OptionalBooleanSchema = z.boolean().optional();
+const OptionalStringSchema = z.string().min(1).optional();
+
+export const SimpleFunctionsEmptyRequestSchema = z.object({});
+
+export const SimpleFunctionsQueryRequestSchema = z.object({
+  q: QueryStringSchema,
   mode: SimpleFunctionsModeSchema.optional(),
   sources: z.array(SimpleFunctionsSourceSchema).min(1).optional(),
   limit: z.number().int().min(1).max(20).optional(),
@@ -68,44 +103,41 @@ export const SimpleFunctionsQueryRequestSchema = z.object({
 
 export const SimpleFunctionsWorldRequestSchema = z.object({
   format: SimpleFunctionsFormatSchema.optional(),
-  compact: z.boolean().optional(),
+  compact: OptionalBooleanSchema,
   limit: z.number().int().min(1).max(30).optional(),
   depth: z.number().int().min(0).max(3).optional(),
-  since: nonEmptyString("since").optional(),
-  focus: nonEmptyString("focus").optional(),
+  since: NonEmptyStringSchema.optional(),
+  focus: NonEmptyStringSchema.optional(),
   op: SimpleFunctionsWorldOperationSchema.optional(),
-  window: nonEmptyString("window").optional(),
-  dt: nonEmptyString("dt").optional(),
-  from: nonEmptyString("from").optional(),
-  item: nonEmptyString("item").optional(),
+  window: NonEmptyStringSchema.optional(),
+  dt: NonEmptyStringSchema.optional(),
+  from: NonEmptyStringSchema.optional(),
+  item: NonEmptyStringSchema.optional(),
 });
 
 export const SimpleFunctionsWorldPathRequestSchema =
   SimpleFunctionsWorldRequestSchema.extend({
-    path: z.union([
-      nonEmptyString("path"),
-      z.array(nonEmptyString("path segment")).min(1),
-    ]),
+    path: z.union([NonEmptyStringSchema, z.array(NonEmptyStringSchema).min(1)]),
   });
 
 export const SimpleFunctionsWorldDeltaRequestSchema = z.object({
-  since: nonEmptyString("since"),
+  since: NonEmptyStringSchema,
   format: SimpleFunctionsFormatSchema.optional(),
 });
 
 export const SimpleFunctionsInspectRequestSchema = z.object({
-  ticker: nonEmptyString("ticker"),
+  ticker: NonEmptyStringSchema,
   format: SimpleFunctionsFormatSchema.optional(),
-  contagion: z.boolean().optional(),
-  diff: z.boolean().optional(),
-  trend: z.boolean().optional(),
+  contagion: OptionalBooleanSchema,
+  diff: OptionalBooleanSchema,
+  trend: OptionalBooleanSchema,
   nextActions: SimpleFunctionsNextActionsSchema.optional(),
 });
 
 export const SimpleFunctionsAgentFeedRequestSchema = z.object({
-  topic: nonEmptyString("topic"),
-  since: nonEmptyString("since").optional(),
-  limit: z.number().int().min(1).optional(),
+  topic: NonEmptyStringSchema,
+  since: NonEmptyStringSchema.optional(),
+  limit: PositiveLimitSchema.optional(),
   format: SimpleFunctionsFormatSchema.optional(),
 });
 
@@ -149,6 +181,201 @@ export const SimpleFunctionsTickerSchema = z
     message: "Ticker is required",
   });
 
+export const SimpleFunctionsPublicListRequestSchema = z.object({
+  q: OptionalStringSchema,
+  category: OptionalStringSchema,
+  venue: SimpleFunctionsVenueSchema.optional(),
+  limit: PositiveLimitSchema.optional(),
+  offset: z.number().int().min(0).optional(),
+});
+
+export const SimpleFunctionsMarketDetailRequestSchema = z.object({
+  ticker: NonEmptyStringSchema,
+  depth: OptionalBooleanSchema,
+  refresh: OptionalBooleanSchema,
+  cvPreset: OptionalStringSchema,
+  cvMinConf: z.number().min(0).max(1).optional(),
+  cvMaxDtDays: z.number().min(0).optional(),
+  nextActions: SimpleFunctionsNextActionsSchema.optional(),
+});
+
+export const SimpleFunctionsTickerRequestSchema = z.object({
+  ticker: NonEmptyStringSchema,
+});
+
+export const SimpleFunctionsMarketCandlesRequestSchema = z.object({
+  ticker: NonEmptyStringSchema,
+  venue: SimpleFunctionsVenueSchema.optional(),
+  timeframe: SimpleFunctionsMarketTimeframeSchema.optional(),
+  tf: SimpleFunctionsMarketTimeframeSchema.optional(),
+  limit: z.number().int().min(1).max(2000).optional(),
+});
+
+export const SimpleFunctionsScanRequestSchema = z.object({
+  q: OptionalStringSchema,
+  mode: z.enum(["keyword", "series", "market"]).optional(),
+  series: OptionalStringSchema,
+  market: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsScreenRequestSchema = z.object({
+  venue: SimpleFunctionsVenueSchema.optional(),
+  category: OptionalStringSchema,
+  minPrice: z.number().min(0).max(1).optional(),
+  maxPrice: z.number().min(0).max(1).optional(),
+  minVolume: z.number().min(0).optional(),
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsScreenByTickersRequestSchema = z.object({
+  tickers: z.array(NonEmptyStringSchema).min(1),
+  venue: SimpleFunctionsVenueSchema.optional(),
+  minVolume: z.number().min(0).optional(),
+});
+
+export const SimpleFunctionsPublicSearchRequestSchema = z.object({
+  q: QueryStringSchema,
+  limit: z.number().int().min(1).max(20).optional(),
+});
+
+export const SimpleFunctionsMicrostructureHistoryRequestSchema = z.object({
+  ticker: NonEmptyStringSchema,
+  venue: SimpleFunctionsVenueSchema.optional(),
+  days: z.number().int().min(1).max(365).optional(),
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsCrossVenueRequestSchema = z.object({
+  venue: SimpleFunctionsVenueSchema.optional(),
+  minConfidence: z.number().min(0).max(1).optional(),
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsIndexHistoryRequestSchema = z.object({
+  days: z.number().int().min(1).max(365).optional(),
+  theme: OptionalStringSchema,
+});
+
+export const SimpleFunctionsRegimeScanRequestSchema = z.object({
+  label: z.enum(["maker", "taker", "neutral"]).optional(),
+  venue: SimpleFunctionsVenueSchema.optional(),
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsOddsRequestSchema = z.object({
+  category: OptionalStringSchema,
+  band: SimpleFunctionsOddsBandSchema.optional(),
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsCalendarRequestSchema = z.object({
+  from: OptionalStringSchema,
+  to: OptionalStringSchema,
+  category: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsYieldCurveRequestSchema = z.object({
+  event: NonEmptyStringSchema,
+});
+
+export const SimpleFunctionsContagionRequestSchema = z.object({
+  ticker: OptionalStringSchema,
+  window: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsGovQueryRequestSchema = z.object({
+  q: QueryStringSchema,
+  mode: SimpleFunctionsModeSchema.optional(),
+  sources: z.array(SimpleFunctionsGovSourceSchema).min(1).optional(),
+  limit: z.number().int().min(1).max(20).optional(),
+  depth: OptionalBooleanSchema,
+});
+
+export const SimpleFunctionsLegislationRequestSchema = z.object({
+  q: OptionalStringSchema,
+  congress: z.number().int().min(1).optional(),
+  type: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsBillRequestSchema = z.object({
+  billId: NonEmptyStringSchema,
+});
+
+export const SimpleFunctionsCongressMembersRequestSchema = z.object({
+  q: OptionalStringSchema,
+  state: OptionalStringSchema,
+  party: OptionalStringSchema,
+  chamber: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsCongressMemberRequestSchema = z.object({
+  id: NonEmptyStringSchema,
+});
+
+export const SimpleFunctionsEconQueryRequestSchema = z.object({
+  q: QueryStringSchema,
+  mode: SimpleFunctionsModeSchema.optional(),
+  limit: z.number().int().min(1).max(10).optional(),
+  includeMarkets: OptionalBooleanSchema,
+});
+
+export const SimpleFunctionsFredRequestSchema = z.object({
+  series: NonEmptyStringSchema,
+  start: OptionalStringSchema,
+  end: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsChangesRequestSchema = z.object({
+  since: OptionalStringSchema,
+  type: OptionalStringSchema,
+  limit: PositiveLimitSchema.optional(),
+});
+
+export const SimpleFunctionsContextRequestSchema = z.object({
+  compact: OptionalBooleanSchema,
+});
+
+export const SimpleFunctionsBriefingRequestSchema = z.object({
+  topic: OptionalStringSchema,
+  date: OptionalStringSchema,
+  compact: OptionalBooleanSchema,
+});
+
+export const SimpleFunctionsSlugRequestSchema = z.object({
+  slug: NonEmptyStringSchema,
+});
+
+export const SimpleFunctionsIdeaRequestSchema = z.object({
+  id: z.union([NonEmptyStringSchema, z.number().int().min(1)]),
+});
+
+export const SimpleFunctionsDiscussRequestSchema = z
+  .record(z.string(), z.unknown())
+  .refine((value) => Object.keys(value).length > 0, {
+    message: "Request body must not be empty",
+  });
+
+export const SimpleFunctionsCalibrationRequestSchema = z.object({
+  source: SimpleFunctionsCalibrationSourceSchema.optional(),
+  period: SimpleFunctionsCalibrationPeriodSchema.optional(),
+  category: OptionalStringSchema,
+  topic: OptionalStringSchema,
+  minVolume: z.number().min(0).optional(),
+});
+
+export const SimpleFunctionsEdgesRequestSchema = z.object({
+  limit: PositiveLimitSchema.optional(),
+  minStrength: z.number().min(0).optional(),
+  theme: OptionalStringSchema,
+  venue: SimpleFunctionsVenueSchema.optional(),
+});
+
 export type SimpleFunctionsOptions = z.infer<
   typeof SimpleFunctionsOptionsSchema
 >;
@@ -172,6 +399,24 @@ export type SimpleFunctionsMoverDirection = z.infer<
 export type SimpleFunctionsFormat = z.infer<typeof SimpleFunctionsFormatSchema>;
 export type SimpleFunctionsWorldOperation = z.infer<
   typeof SimpleFunctionsWorldOperationSchema
+>;
+export type SimpleFunctionsMarketTimeframe = z.infer<
+  typeof SimpleFunctionsMarketTimeframeSchema
+>;
+export type SimpleFunctionsOddsBand = z.infer<
+  typeof SimpleFunctionsOddsBandSchema
+>;
+export type SimpleFunctionsGovSource = z.infer<
+  typeof SimpleFunctionsGovSourceSchema
+>;
+export type SimpleFunctionsCalibrationSource = z.infer<
+  typeof SimpleFunctionsCalibrationSourceSchema
+>;
+export type SimpleFunctionsCalibrationPeriod = z.infer<
+  typeof SimpleFunctionsCalibrationPeriodSchema
+>;
+export type SimpleFunctionsEmptyRequest = z.infer<
+  typeof SimpleFunctionsEmptyRequestSchema
 >;
 export type SimpleFunctionsQueryRequest = z.infer<
   typeof SimpleFunctionsQueryRequestSchema
@@ -210,3 +455,96 @@ export type SimpleFunctionsTradesRequest = z.infer<
   typeof SimpleFunctionsTradesRequestSchema
 >;
 export type SimpleFunctionsTicker = z.infer<typeof SimpleFunctionsTickerSchema>;
+export type SimpleFunctionsPublicListRequest = z.infer<
+  typeof SimpleFunctionsPublicListRequestSchema
+>;
+export type SimpleFunctionsMarketDetailRequest = z.infer<
+  typeof SimpleFunctionsMarketDetailRequestSchema
+>;
+export type SimpleFunctionsTickerRequest = z.infer<
+  typeof SimpleFunctionsTickerRequestSchema
+>;
+export type SimpleFunctionsMarketCandlesRequest = z.infer<
+  typeof SimpleFunctionsMarketCandlesRequestSchema
+>;
+export type SimpleFunctionsScanRequest = z.infer<
+  typeof SimpleFunctionsScanRequestSchema
+>;
+export type SimpleFunctionsScreenRequest = z.infer<
+  typeof SimpleFunctionsScreenRequestSchema
+>;
+export type SimpleFunctionsScreenByTickersRequest = z.infer<
+  typeof SimpleFunctionsScreenByTickersRequestSchema
+>;
+export type SimpleFunctionsPublicSearchRequest = z.infer<
+  typeof SimpleFunctionsPublicSearchRequestSchema
+>;
+export type SimpleFunctionsMicrostructureHistoryRequest = z.infer<
+  typeof SimpleFunctionsMicrostructureHistoryRequestSchema
+>;
+export type SimpleFunctionsCrossVenueRequest = z.infer<
+  typeof SimpleFunctionsCrossVenueRequestSchema
+>;
+export type SimpleFunctionsIndexHistoryRequest = z.infer<
+  typeof SimpleFunctionsIndexHistoryRequestSchema
+>;
+export type SimpleFunctionsRegimeScanRequest = z.infer<
+  typeof SimpleFunctionsRegimeScanRequestSchema
+>;
+export type SimpleFunctionsOddsRequest = z.infer<
+  typeof SimpleFunctionsOddsRequestSchema
+>;
+export type SimpleFunctionsCalendarRequest = z.infer<
+  typeof SimpleFunctionsCalendarRequestSchema
+>;
+export type SimpleFunctionsYieldCurveRequest = z.infer<
+  typeof SimpleFunctionsYieldCurveRequestSchema
+>;
+export type SimpleFunctionsContagionRequest = z.infer<
+  typeof SimpleFunctionsContagionRequestSchema
+>;
+export type SimpleFunctionsGovQueryRequest = z.infer<
+  typeof SimpleFunctionsGovQueryRequestSchema
+>;
+export type SimpleFunctionsLegislationRequest = z.infer<
+  typeof SimpleFunctionsLegislationRequestSchema
+>;
+export type SimpleFunctionsBillRequest = z.infer<
+  typeof SimpleFunctionsBillRequestSchema
+>;
+export type SimpleFunctionsCongressMembersRequest = z.infer<
+  typeof SimpleFunctionsCongressMembersRequestSchema
+>;
+export type SimpleFunctionsCongressMemberRequest = z.infer<
+  typeof SimpleFunctionsCongressMemberRequestSchema
+>;
+export type SimpleFunctionsEconQueryRequest = z.infer<
+  typeof SimpleFunctionsEconQueryRequestSchema
+>;
+export type SimpleFunctionsFredRequest = z.infer<
+  typeof SimpleFunctionsFredRequestSchema
+>;
+export type SimpleFunctionsChangesRequest = z.infer<
+  typeof SimpleFunctionsChangesRequestSchema
+>;
+export type SimpleFunctionsContextRequest = z.infer<
+  typeof SimpleFunctionsContextRequestSchema
+>;
+export type SimpleFunctionsBriefingRequest = z.infer<
+  typeof SimpleFunctionsBriefingRequestSchema
+>;
+export type SimpleFunctionsSlugRequest = z.infer<
+  typeof SimpleFunctionsSlugRequestSchema
+>;
+export type SimpleFunctionsIdeaRequest = z.infer<
+  typeof SimpleFunctionsIdeaRequestSchema
+>;
+export type SimpleFunctionsDiscussRequest = z.infer<
+  typeof SimpleFunctionsDiscussRequestSchema
+>;
+export type SimpleFunctionsCalibrationRequest = z.infer<
+  typeof SimpleFunctionsCalibrationRequestSchema
+>;
+export type SimpleFunctionsEdgesRequest = z.infer<
+  typeof SimpleFunctionsEdgesRequestSchema
+>;

@@ -3,9 +3,9 @@
 [![npm](https://img.shields.io/npm/v/@apicity/simplefunctions?color=cb0000)](https://www.npmjs.com/package/@apicity/simplefunctions)
 [![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
-[![docs](https://img.shields.io/badge/docs-docs.simplefunctions.dev-blue)](https://docs.simplefunctions.dev/llms.txt)
+[![docs](https://img.shields.io/badge/docs-docs.simplefunctions.dev-blue)](https://docs.simplefunctions.dev/api-reference/public-market-data)
 
-SimpleFunctions Query and Real-Time Data API provider for prediction-market search and market data.
+SimpleFunctions public analytical and real-time data API provider for prediction-market data.
 
 SimpleFunctions exposes two REST surfaces here: analytical Query API calls use `https://simplefunctions.dev`, while real-time market-data calls under `simplefunctions.data.v1.*` use the separate `https://data.simplefunctions.dev/v1` data API base URL. The current public WebSocket endpoint is `wss://app.simplefunctions.dev/ws`; do not model `wss://data.simplefunctions.dev/v1/ws` as active until upstream routing changes.
 
@@ -31,7 +31,7 @@ const simplefunctions = createSimpleFunctions({ apiKey: process.env.SIMPLEFUNCTI
 
 ## API Reference
 
-17 endpoints across 3 groups. Each method mirrors an upstream URL path.
+73 endpoints across 6 groups. Each method mirrors an upstream URL path.
 
 ### agent
 
@@ -119,6 +119,40 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 ```typescript
 const res = await simplefunctions.api.agent.world.path({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+### calibration
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.calibration</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/calibration{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.calibration({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+### changes
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.changes</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/changes{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.changes({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -292,7 +326,564 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 
 </details>
 
+### edges
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.edges</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/edges{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.edges({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
 ### public
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.answer</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/answer/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.answer({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.briefing</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/briefing{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.briefing({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.calendar</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/calendar{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.public.calendar({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.calibration</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/calibration{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.public.calibration({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.congress.member</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/congress/member/{id}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.congress.member({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.congress.members</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/congress/members{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.congress.members({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.contagion</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/contagion{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.contagion({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.context</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/context{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.context({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.crossVenue.pairs</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/cross-venue/pairs{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.crossVenue.pairs({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.crossVenue.stats</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/cross-venue/stats{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.crossVenue.stats({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.databento</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/databento{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.databento({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.diff</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/diff{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.diff({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>simplefunctions.api.public.discuss</code></b></summary>
+
+<code>POST https://simplefunctions.dev/api/public/discuss</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.discuss({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.fred</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/fred{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
+
+```typescript
+const res = await simplefunctions.api.public.fred({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.glossary</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/glossary{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.glossary({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.glossary.entry</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/glossary/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.glossary.entry({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.guide</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/guide</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.guide({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.highlights</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/highlights{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.highlights({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.ideas</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/ideas{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.ideas({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.ideas.byId</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/ideas/{id}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.ideas.byId({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.index</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/index</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.public.index({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.index.history</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/index/history{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.public.index.history({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.legislation</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/legislation{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
+
+```typescript
+const res = await simplefunctions.api.public.legislation({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.legislation.byBillId</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/legislation/{billId}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
+
+```typescript
+const res = await simplefunctions.api.public.legislation.byBillId({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.liquidityByTheme</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/liquidity-by-theme{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.liquidityByTheme({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.liveTickers</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/live-tickers{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.liveTickers({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.market</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/market/{ticker}{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-detail)
+
+```typescript
+const res = await simplefunctions.api.public.market({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.market.candles</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/market/{ticker}/candles{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.market.candles({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.market.history</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/market/{ticker}/history</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-detail)
+
+```typescript
+const res = await simplefunctions.api.public.market.history({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.marketMicrostructureHistory</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/market-microstructure-history{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.marketMicrostructureHistory({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.markets</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/markets{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.markets({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.newmarkets</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/newmarkets{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.newmarkets({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.odds</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/odds{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.odds({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.oddsMd</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/odds.md{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.oddsMd({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.opinions</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/opinions{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.opinions({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.opinions.entry</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/opinions/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.opinions.entry({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>simplefunctions.api.public.query</code></b></summary>
@@ -307,6 +898,261 @@ const res = await simplefunctions.api.public.query({
   sources: ["kalshi", "polymarket"],
   limit: 3,
 });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.queryEcon</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/query-econ{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
+
+```typescript
+const res = await simplefunctions.api.public.queryEcon({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.queryGov</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/query-gov{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/gov-econ)
+
+```typescript
+const res = await simplefunctions.api.public.queryGov({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.regime.scan</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/regime/scan{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/index-regime)
+
+```typescript
+const res = await simplefunctions.api.public.regime.scan({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.scan</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/scan{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.scan({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.screen</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/screen{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.screen({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.screenByTickers</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/screen-by-tickers{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.screenByTickers({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.search</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/search{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.search({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.skill</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/skill/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.skill({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.skills</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/skills{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.skills({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.technicals</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/technicals{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.technicals({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.technicals.entry</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/technicals/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.technicals.entry({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.theses</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/theses{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.theses({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.thesis</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/thesis/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/reference/daily-data)
+
+```typescript
+const res = await simplefunctions.api.public.thesis({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.topic</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/topic/{slug}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.topic({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.tradMarkets</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/trad-markets{query}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.tradMarkets({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.yieldCurves</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/yield-curves</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.yieldCurves({ /* ... */ });
+```
+
+Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>simplefunctions.api.public.yieldCurves.event</code></b></summary>
+
+<code>GET https://simplefunctions.dev/api/public/yield-curves/{event}</code>
+
+[Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/public-market-data)
+
+```typescript
+const res = await simplefunctions.api.public.yieldCurves.event({ /* ... */ });
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)

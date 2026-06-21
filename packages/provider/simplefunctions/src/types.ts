@@ -1,47 +1,116 @@
 import type { z } from "zod";
 import type {
   SimpleFunctionsAgentFeedRequest,
+  SimpleFunctionsBillRequest,
+  SimpleFunctionsBriefingRequest,
+  SimpleFunctionsCalendarRequest,
+  SimpleFunctionsCalibrationRequest,
   SimpleFunctionsCandlesRequest,
+  SimpleFunctionsChangesRequest,
+  SimpleFunctionsCongressMemberRequest,
+  SimpleFunctionsCongressMembersRequest,
+  SimpleFunctionsContextRequest,
+  SimpleFunctionsContagionRequest,
+  SimpleFunctionsCrossVenueRequest,
+  SimpleFunctionsDiscussRequest,
+  SimpleFunctionsEconQueryRequest,
+  SimpleFunctionsEdgesRequest,
+  SimpleFunctionsEmptyRequest,
   SimpleFunctionsFeaturedMarketsRequest,
+  SimpleFunctionsFredRequest,
+  SimpleFunctionsGovQueryRequest,
+  SimpleFunctionsIdeaRequest,
+  SimpleFunctionsIndexHistoryRequest,
   SimpleFunctionsInspectRequest,
+  SimpleFunctionsLegislationRequest,
+  SimpleFunctionsMarketCandlesRequest,
+  SimpleFunctionsMarketDetailRequest,
   SimpleFunctionsMarketsRequest,
+  SimpleFunctionsMicrostructureHistoryRequest,
   SimpleFunctionsMoversRequest,
   SimpleFunctionsNoRequest,
+  SimpleFunctionsOddsRequest,
+  SimpleFunctionsPublicListRequest,
+  SimpleFunctionsPublicSearchRequest,
   SimpleFunctionsQueryRequest,
+  SimpleFunctionsRegimeScanRequest,
+  SimpleFunctionsScanRequest,
+  SimpleFunctionsScreenByTickersRequest,
+  SimpleFunctionsScreenRequest,
   SimpleFunctionsSearchRequest,
+  SimpleFunctionsSlugRequest,
   SimpleFunctionsTicker,
+  SimpleFunctionsTickerRequest,
   SimpleFunctionsTradesRequest,
   SimpleFunctionsWorldDeltaRequest,
   SimpleFunctionsWorldPathRequest,
   SimpleFunctionsWorldRequest,
+  SimpleFunctionsYieldCurveRequest,
 } from "./zod";
 
 export type {
   SimpleFunctionsAgentFeedRequest,
+  SimpleFunctionsBillRequest,
+  SimpleFunctionsBriefingRequest,
+  SimpleFunctionsCalendarRequest,
+  SimpleFunctionsCalibrationPeriod,
+  SimpleFunctionsCalibrationRequest,
+  SimpleFunctionsCalibrationSource,
+  SimpleFunctionsCandlesRequest,
+  SimpleFunctionsChangesRequest,
+  SimpleFunctionsCongressMemberRequest,
+  SimpleFunctionsCongressMembersRequest,
+  SimpleFunctionsContextRequest,
+  SimpleFunctionsContagionRequest,
+  SimpleFunctionsCrossVenueRequest,
+  SimpleFunctionsDiscussRequest,
+  SimpleFunctionsEconQueryRequest,
+  SimpleFunctionsEdgesRequest,
+  SimpleFunctionsEmptyRequest,
+  SimpleFunctionsFeaturedMarketsRequest,
   SimpleFunctionsFormat,
+  SimpleFunctionsFredRequest,
+  SimpleFunctionsGovQueryRequest,
+  SimpleFunctionsGovSource,
+  SimpleFunctionsIdeaRequest,
+  SimpleFunctionsIndexHistoryRequest,
   SimpleFunctionsInspectRequest,
+  SimpleFunctionsLegislationRequest,
+  SimpleFunctionsMarketCandlesRequest,
+  SimpleFunctionsMarketDetailRequest,
+  SimpleFunctionsMarketTimeframe,
+  SimpleFunctionsMarketsRequest,
+  SimpleFunctionsMicrostructureHistoryRequest,
   SimpleFunctionsModel,
   SimpleFunctionsMode,
   SimpleFunctionsMoverDirection,
   SimpleFunctionsMoverWindow,
+  SimpleFunctionsMoversRequest,
   SimpleFunctionsNextActions,
   SimpleFunctionsNoRequest,
+  SimpleFunctionsOddsBand,
+  SimpleFunctionsOddsRequest,
   SimpleFunctionsOptions,
-  SimpleFunctionsCandlesRequest,
-  SimpleFunctionsFeaturedMarketsRequest,
-  SimpleFunctionsMarketsRequest,
-  SimpleFunctionsMoversRequest,
+  SimpleFunctionsPublicListRequest,
+  SimpleFunctionsPublicSearchRequest,
   SimpleFunctionsQueryRequest,
+  SimpleFunctionsRegimeScanRequest,
+  SimpleFunctionsScanRequest,
+  SimpleFunctionsScreenByTickersRequest,
+  SimpleFunctionsScreenRequest,
   SimpleFunctionsSearchRequest,
   SimpleFunctionsSource,
   SimpleFunctionsStrict,
+  SimpleFunctionsSlugRequest,
   SimpleFunctionsTicker,
+  SimpleFunctionsTickerRequest,
   SimpleFunctionsTradesRequest,
   SimpleFunctionsVenue,
   SimpleFunctionsWorldDeltaRequest,
   SimpleFunctionsWorldOperation,
   SimpleFunctionsWorldPathRequest,
   SimpleFunctionsWorldRequest,
+  SimpleFunctionsYieldCurveRequest,
 } from "./zod";
 
 export class SimpleFunctionsError extends Error {
@@ -186,54 +255,6 @@ export interface SimpleFunctionsQueryMethod {
     signal?: AbortSignal
   ): Promise<SimpleFunctionsQueryResponse>;
   schema: z.ZodType<SimpleFunctionsQueryRequest>;
-}
-
-export interface SimpleFunctionsWorldPathMethod {
-  (
-    req: SimpleFunctionsWorldPathRequest,
-    signal?: AbortSignal
-  ): Promise<SimpleFunctionsWorldResponse>;
-  schema: z.ZodType<SimpleFunctionsWorldPathRequest>;
-}
-
-export interface SimpleFunctionsWorldDeltaMethod {
-  (
-    req: SimpleFunctionsWorldDeltaRequest,
-    signal?: AbortSignal
-  ): Promise<SimpleFunctionsWorldDeltaResult>;
-  schema: z.ZodType<SimpleFunctionsWorldDeltaRequest>;
-}
-
-export interface SimpleFunctionsWorldFeedMethod {
-  (signal?: AbortSignal): Promise<string>;
-  schema: z.ZodType<SimpleFunctionsNoRequest>;
-}
-
-export interface SimpleFunctionsWorldMethod {
-  (
-    req?: SimpleFunctionsWorldRequest,
-    signal?: AbortSignal
-  ): Promise<SimpleFunctionsWorldResponse>;
-  schema: z.ZodType<SimpleFunctionsWorldRequest>;
-  path: SimpleFunctionsWorldPathMethod;
-  delta: SimpleFunctionsWorldDeltaMethod;
-  feed: SimpleFunctionsWorldFeedMethod;
-}
-
-export interface SimpleFunctionsInspectMethod {
-  (
-    req: SimpleFunctionsInspectRequest,
-    signal?: AbortSignal
-  ): Promise<SimpleFunctionsInspectResult>;
-  schema: z.ZodType<SimpleFunctionsInspectRequest>;
-}
-
-export interface SimpleFunctionsAgentFeedMethod {
-  (
-    req: SimpleFunctionsAgentFeedRequest,
-    signal?: AbortSignal
-  ): Promise<SimpleFunctionsTopicFeedResult>;
-  schema: z.ZodType<SimpleFunctionsAgentFeedRequest>;
 }
 
 export interface SimpleFunctionsHeartbeatResponse {
@@ -434,8 +455,157 @@ export interface SimpleFunctionsTradesMethod {
   schema: z.ZodType<SimpleFunctionsTradesRequest>;
 }
 
+export interface SimpleFunctionsWorldPathMethod {
+  (
+    req: SimpleFunctionsWorldPathRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsWorldResponse>;
+  schema: z.ZodType<SimpleFunctionsWorldPathRequest>;
+}
+
+export interface SimpleFunctionsWorldDeltaMethod {
+  (
+    req: SimpleFunctionsWorldDeltaRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsWorldDeltaResult>;
+  schema: z.ZodType<SimpleFunctionsWorldDeltaRequest>;
+}
+
+export interface SimpleFunctionsWorldFeedMethod {
+  (signal?: AbortSignal): Promise<string>;
+  schema: z.ZodType<SimpleFunctionsNoRequest>;
+}
+
+export interface SimpleFunctionsWorldMethod {
+  (
+    req?: SimpleFunctionsWorldRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsWorldResponse>;
+  schema: z.ZodType<SimpleFunctionsWorldRequest>;
+  path: SimpleFunctionsWorldPathMethod;
+  delta: SimpleFunctionsWorldDeltaMethod;
+  feed: SimpleFunctionsWorldFeedMethod;
+}
+
+export interface SimpleFunctionsInspectMethod {
+  (
+    req: SimpleFunctionsInspectRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsInspectResult>;
+  schema: z.ZodType<SimpleFunctionsInspectRequest>;
+}
+
+export interface SimpleFunctionsAgentFeedMethod {
+  (
+    req: SimpleFunctionsAgentFeedRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsTopicFeedResult>;
+  schema: z.ZodType<SimpleFunctionsAgentFeedRequest>;
+}
+
+export type SimpleFunctionsJsonResponse = Record<string, unknown>;
+
+export interface SimpleFunctionsMethod<
+  TRequest,
+  TResponse = SimpleFunctionsJsonResponse,
+> {
+  (req: TRequest, signal?: AbortSignal): Promise<TResponse>;
+  schema: z.ZodType<TRequest>;
+}
+
+export interface SimpleFunctionsOptionalMethod<
+  TRequest,
+  TResponse = SimpleFunctionsJsonResponse,
+> {
+  (req?: TRequest, signal?: AbortSignal): Promise<TResponse>;
+  schema: z.ZodType<TRequest>;
+}
+
+export interface SimpleFunctionsMarketMethod extends SimpleFunctionsMethod<SimpleFunctionsMarketDetailRequest> {
+  history: SimpleFunctionsMethod<SimpleFunctionsTickerRequest>;
+  candles: SimpleFunctionsMethod<SimpleFunctionsMarketCandlesRequest>;
+}
+
+export interface SimpleFunctionsIndexMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsEmptyRequest> {
+  history: SimpleFunctionsOptionalMethod<SimpleFunctionsIndexHistoryRequest>;
+}
+
+export interface SimpleFunctionsYieldCurvesMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsEmptyRequest> {
+  event: SimpleFunctionsMethod<SimpleFunctionsYieldCurveRequest>;
+}
+
+export interface SimpleFunctionsLegislationMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsLegislationRequest> {
+  byBillId: SimpleFunctionsMethod<SimpleFunctionsBillRequest>;
+}
+
+export interface SimpleFunctionsGlossaryMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest> {
+  entry: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+}
+
+export interface SimpleFunctionsOpinionsMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest> {
+  entry: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+}
+
+export interface SimpleFunctionsTechnicalsMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest> {
+  entry: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+}
+
+export interface SimpleFunctionsIdeasMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest> {
+  byId: SimpleFunctionsMethod<SimpleFunctionsIdeaRequest>;
+}
+
 export interface SimpleFunctionsApiPublicNamespace {
   query: SimpleFunctionsQueryMethod;
+  market: SimpleFunctionsMarketMethod;
+  markets: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  newmarkets: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  scan: SimpleFunctionsOptionalMethod<SimpleFunctionsScanRequest>;
+  screen: SimpleFunctionsOptionalMethod<SimpleFunctionsScreenRequest>;
+  screenByTickers: SimpleFunctionsMethod<SimpleFunctionsScreenByTickersRequest>;
+  search: SimpleFunctionsMethod<SimpleFunctionsPublicSearchRequest>;
+  liveTickers: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  marketMicrostructureHistory: SimpleFunctionsMethod<SimpleFunctionsMicrostructureHistoryRequest>;
+  crossVenue: {
+    pairs: SimpleFunctionsOptionalMethod<SimpleFunctionsCrossVenueRequest>;
+    stats: SimpleFunctionsOptionalMethod<SimpleFunctionsCrossVenueRequest>;
+  };
+  index: SimpleFunctionsIndexMethod;
+  regime: {
+    scan: SimpleFunctionsOptionalMethod<SimpleFunctionsRegimeScanRequest>;
+  };
+  odds: SimpleFunctionsOptionalMethod<SimpleFunctionsOddsRequest>;
+  oddsMd: SimpleFunctionsOptionalMethod<SimpleFunctionsOddsRequest, string>;
+  calendar: SimpleFunctionsOptionalMethod<SimpleFunctionsCalendarRequest>;
+  yieldCurves: SimpleFunctionsYieldCurvesMethod;
+  liquidityByTheme: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  contagion: SimpleFunctionsOptionalMethod<SimpleFunctionsContagionRequest>;
+  queryGov: SimpleFunctionsMethod<SimpleFunctionsGovQueryRequest>;
+  legislation: SimpleFunctionsLegislationMethod;
+  congress: {
+    members: SimpleFunctionsOptionalMethod<SimpleFunctionsCongressMembersRequest>;
+    member: SimpleFunctionsMethod<SimpleFunctionsCongressMemberRequest>;
+  };
+  queryEcon: SimpleFunctionsMethod<SimpleFunctionsEconQueryRequest>;
+  fred: SimpleFunctionsMethod<SimpleFunctionsFredRequest>;
+  databento: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  tradMarkets: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  context: SimpleFunctionsOptionalMethod<SimpleFunctionsContextRequest>;
+  briefing: SimpleFunctionsOptionalMethod<SimpleFunctionsBriefingRequest>;
+  topic: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+  answer: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+  glossary: SimpleFunctionsGlossaryMethod;
+  guide: SimpleFunctionsOptionalMethod<SimpleFunctionsEmptyRequest>;
+  highlights: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  diff: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  discuss: SimpleFunctionsMethod<SimpleFunctionsDiscussRequest>;
+  skills: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  skill: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+  theses: SimpleFunctionsOptionalMethod<SimpleFunctionsPublicListRequest>;
+  thesis: SimpleFunctionsMethod<SimpleFunctionsSlugRequest>;
+  opinions: SimpleFunctionsOpinionsMethod;
+  technicals: SimpleFunctionsTechnicalsMethod;
+  ideas: SimpleFunctionsIdeasMethod;
+  calibration: SimpleFunctionsOptionalMethod<SimpleFunctionsCalibrationRequest>;
 }
 
 export interface SimpleFunctionsApiAgentNamespace {
@@ -446,6 +616,9 @@ export interface SimpleFunctionsApiAgentNamespace {
 
 export interface SimpleFunctionsApiNamespace {
   agent: SimpleFunctionsApiAgentNamespace;
+  calibration: SimpleFunctionsOptionalMethod<SimpleFunctionsCalibrationRequest>;
+  changes: SimpleFunctionsOptionalMethod<SimpleFunctionsChangesRequest>;
+  edges: SimpleFunctionsOptionalMethod<SimpleFunctionsEdgesRequest>;
   public: SimpleFunctionsApiPublicNamespace;
 }
 
@@ -469,8 +642,17 @@ export interface SimpleFunctionsGetNamespace {
   data: SimpleFunctionsDataNamespace;
 }
 
+export interface SimpleFunctionsPostNamespace {
+  api: {
+    public: {
+      discuss: SimpleFunctionsMethod<SimpleFunctionsDiscussRequest>;
+    };
+  };
+}
+
 export interface SimpleFunctionsProvider {
   api: SimpleFunctionsApiNamespace;
   data: SimpleFunctionsDataNamespace;
   get: SimpleFunctionsGetNamespace;
+  post: SimpleFunctionsPostNamespace;
 }

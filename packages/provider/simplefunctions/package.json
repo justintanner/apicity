@@ -1,7 +1,7 @@
 {
   "name": "@apicity/simplefunctions",
   "version": "0.5.2",
-  "description": "SimpleFunctions Query and Real-Time Data API provider for prediction-market search and market data.",
+  "description": "SimpleFunctions public analytical and real-time data API provider for prediction-market data.",
   "license": "MIT",
   "repository": {
     "type": "git",

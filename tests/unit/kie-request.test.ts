@@ -4,7 +4,10 @@ import { createKie } from "../../packages/provider/kie/src/kie";
 import { mintOtp } from "../../packages/provider/kie/src/paygate";
 import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
-import type { VolcengineVideoToVideoLipSyncRequest } from "../../packages/provider/kie/src/types";
+import type {
+  GrokImageToVideoRequest,
+  VolcengineVideoToVideoLipSyncRequest,
+} from "../../packages/provider/kie/src/types";
 
 describe("KIE request utilities", () => {
   afterEach(() => {
@@ -388,6 +391,64 @@ describe("KIE request utilities", () => {
 
       expect(result.data?.taskId).toBe(
         "task_volcengine-video-to-video-lip-sync_1234567890"
+      );
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+      expect(init.method).toBe("POST");
+      expect(init.headers).toEqual({
+        Authorization: "Bearer test-key",
+        "Content-Type": "application/json",
+      });
+      expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize Grok Imagine image-to-video createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: {
+              taskId: "task_grok-imagine-image-to-video_1234567890",
+            },
+          }),
+          { status: 200 }
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: GrokImageToVideoRequest = {
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: [
+            "https://tempfile.redpandaai.co/kieai/test/reference.webp",
+          ],
+          prompt: "@image1 turns toward the camera",
+          duration: 6,
+          resolution: "720p",
+          aspect_ratio: "16:9",
+          mode: "fun",
+          nsfw_checker: false,
+        },
+        callBackUrl: "https://example.com/kie-callback",
+      };
+
+      const result = await provider.post.api.v1.jobs.createTask(request, {
+        otp: mintOtp(secret, {
+          dotPath: "api.v1.jobs.createTask",
+          request,
+        }),
+      });
+
+      expect(result.data?.taskId).toBe(
+        "task_grok-imagine-image-to-video_1234567890"
       );
       expect(mockFetch).toHaveBeenCalledTimes(1);
       const [url, init] = mockFetch.mock.calls[0];

@@ -262,6 +262,15 @@ describe("KIE provider switching", () => {
       provider.post.api.v1.jobs.createTask.schema.safeParse(video15Payload)
         .success
     ).toBe(true);
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["https://example.com/reference.png"],
+          mode: "spicy",
+        },
+      }).success
+    ).toBe(false);
 
     await provider.post.api.v1.jobs.createTask(
       payload,

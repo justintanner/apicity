@@ -262,7 +262,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       image_urls: {
         type: "array",
         description:
-          "External reference image URLs (max 7); mutually exclusive with task_id",
+          "External JPEG/PNG/WEBP image URLs (max 7, 10MB each); mutually exclusive with task_id",
         items: { type: "string" },
       },
       task_id: {
@@ -274,7 +274,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       mode: {
         type: "string",
         enum: ["fun", "normal", "spicy"],
-        description: "Generation mode (default normal)",
+        description:
+          "Generation mode (default normal; spicy is unavailable with external image_urls)",
       },
       duration: {
         type: "number",

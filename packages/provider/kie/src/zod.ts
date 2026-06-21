@@ -89,6 +89,24 @@ export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
 export const GrokImagineResolutionSchema = z.enum(["480p", "720p"]);
 
+const GROK_IMAGINE_IMAGE_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
+
+function isGrokImagineImageUrl(value: string): boolean {
+  try {
+    const pathname = new URL(value).pathname.toLowerCase();
+    return GROK_IMAGINE_IMAGE_EXTENSIONS.some((ext) => pathname.endsWith(ext));
+  } catch {
+    return false;
+  }
+}
+
+export const GrokImagineImageUrlSchema = z
+  .string()
+  .url()
+  .refine(isGrokImagineImageUrl, {
+    message: "image_urls entries must be JPEG, PNG, or WEBP URLs",
+  });
+
 // The current KIE Grok Imagine 1.5 Quick Start still publishes video calls under
 // the existing grok-imagine/text-to-video and grok-imagine/image-to-video suite
 // slugs. This preview-only slug is kept for compatibility with earlier KIE
@@ -315,27 +333,43 @@ export const GrokImageToVideoDurationSchema = z.union([
 export const GrokImageToVideoRequestSchema = z
   .object({
     model: z.literal("grok-imagine/image-to-video"),
-    callBackUrl: z.string().optional(),
+    callBackUrl: z.string().url().optional(),
     input: z.object({
       prompt: z.string().max(5000).optional(),
-      image_urls: z.array(z.string()).max(7).optional(),
-      task_id: z.string().max(100).optional(),
-      index: z.number().int().min(0).max(5).optional(),
-      mode: GrokImagineModeSchema.optional(),
-      duration: GrokImageToVideoDurationSchema.optional(),
-      resolution: GrokImagineResolutionSchema.optional(),
-      aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
+      image_urls: z.array(GrokImagineImageUrlSchema).min(1).max(7).optional(),
+      task_id: z.string().min(1).max(100).optional(),
+      index: z.number().int().min(0).max(5).default(0),
+      mode: GrokImagineModeSchema.default("normal"),
+      duration: GrokImageToVideoDurationSchema.default(6),
+      resolution: GrokImagineResolutionSchema.default("480p"),
+      aspect_ratio: z
+        .enum(["2:3", "3:2", "1:1", "16:9", "9:16"])
+        .default("16:9"),
       nsfw_checker: z.boolean().default(false),
     }),
   })
-  .refine(
-    (v) => Boolean(v.input.image_urls?.length) !== Boolean(v.input.task_id),
-    {
-      message:
-        "grok-imagine/image-to-video requires exactly one of image_urls or task_id",
-      path: ["input", "image_urls"],
+  .superRefine((v, ctx) => {
+    const hasImageUrls = Boolean(v.input.image_urls?.length);
+    const hasTaskId = Boolean(v.input.task_id);
+
+    if (hasImageUrls === hasTaskId) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "grok-imagine/image-to-video requires exactly one of image_urls or task_id",
+        path: ["input", "image_urls"],
+      });
     }
-  );
+
+    if (hasImageUrls && v.input.mode === "spicy") {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "grok-imagine/image-to-video spicy mode is unavailable with external image_urls",
+        path: ["input", "mode"],
+      });
+    }
+  });
 
 // Legacy preview compatibility slug. Current KIE Grok Imagine 1.5 public docs
 // use grok-imagine/image-to-video for image-to-video calls.
@@ -1037,12 +1071,7 @@ export const KieOptionsSchema = z.object({
   paygate: z.custom<PayGateConfig>().optional(),
 });
 
-// ---------------------------------------------------------------------------
-// CreateTask request (alias for MediaGenerationRequest — what the createTask
-// endpoint actually receives)
-// ---------------------------------------------------------------------------
-
-export const CreateTaskRequestSchema = z.object({
+const CreateTaskEnvelopeSchema = z.object({
   model: KieMediaModelSchema,
   callBackUrl: z.string().optional(),
   input: z.record(z.string(), z.unknown()),
@@ -1241,6 +1270,15 @@ export const MediaGenerationRequestSchema = z.union([
   ElevenLabsSoundEffectV2RequestSchema,
   SoraWatermarkRequestSchema,
 ]);
+
+// ---------------------------------------------------------------------------
+// CreateTask request (alias for MediaGenerationRequest — what the createTask
+// endpoint actually receives)
+// ---------------------------------------------------------------------------
+
+export const CreateTaskRequestSchema = CreateTaskEnvelopeSchema.pipe(
+  MediaGenerationRequestSchema
+);
 
 // ---------------------------------------------------------------------------
 // Inferred types (source of truth — replaces hand-written interfaces)

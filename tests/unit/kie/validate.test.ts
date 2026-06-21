@@ -154,6 +154,24 @@ describe("kie Zod schema validation", () => {
       );
     });
 
+    it("should apply current image-to-video defaults", () => {
+      const result = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          task_id: "grok-image-task",
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.index).toBe(0);
+      expect(result.data.input.mode).toBe("normal");
+      expect(result.data.input.duration).toBe(6);
+      expect(result.data.input.resolution).toBe("480p");
+      expect(result.data.input.aspect_ratio).toBe("16:9");
+      expect(result.data.input.nsfw_checker).toBe(false);
+    });
+
     it("should keep legacy image-to-video string durations compatible", () => {
       const request = {
         model: "grok-imagine/image-to-video",
@@ -168,6 +186,52 @@ describe("kie Zod schema validation", () => {
       );
     });
 
+    it("should validate external image URLs and image formats", () => {
+      const valid = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: [
+            "https://example.com/first.jpg",
+            "https://example.com/second.jpeg",
+            "https://example.com/third.png",
+            "https://example.com/fourth.webp",
+          ],
+        },
+      });
+      const notUrl = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["not-a-url.png"],
+        },
+      });
+      const unsupportedFormat = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["https://example.com/reference.gif"],
+        },
+      });
+      const tooMany = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: [
+            "https://example.com/1.jpg",
+            "https://example.com/2.jpg",
+            "https://example.com/3.jpg",
+            "https://example.com/4.jpg",
+            "https://example.com/5.jpg",
+            "https://example.com/6.jpg",
+            "https://example.com/7.jpg",
+            "https://example.com/8.jpg",
+          ],
+        },
+      });
+
+      expect(valid.success).toBe(true);
+      expect(notUrl.success).toBe(false);
+      expect(unsupportedFormat.success).toBe(false);
+      expect(tooMany.success).toBe(false);
+    });
+
     it("should accept task_id plus index instead of image_urls", () => {
       const request = {
         model: "grok-imagine/image-to-video",
@@ -180,6 +244,21 @@ describe("kie Zod schema validation", () => {
       };
 
       expect(GrokImageToVideoRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should reject spicy mode with external image URLs", () => {
+      const result = GrokImageToVideoRequestSchema.safeParse({
+        model: "grok-imagine/image-to-video",
+        input: {
+          image_urls: ["https://example.com/reference.webp"],
+          mode: "spicy",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("mode"))).toBe(
         true
       );
     });

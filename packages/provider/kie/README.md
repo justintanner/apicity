@@ -67,6 +67,17 @@ const imageVideo = await kie.post.api.v1.jobs.createTask({
 
 For image-to-video, send either `image_urls` or `task_id` plus `index`
 from an earlier Grok image generation. Do not send both in one request.
+External `image_urls` must point to JPEG, PNG, or WEBP images; KIE's
+upstream limit is 7 images and 10 MB per image. `mode: "spicy"` is
+only available when sourcing the image from a previous Grok `task_id`,
+not from external image URLs.
+
+`createTask` returns `{ code, msg, data: { taskId } }`. For production
+workloads, pass `callBackUrl` so KIE can notify you when the job
+finishes. Without a callback, poll
+`kie.get.api.v1.jobs.recordInfo(taskId)` until `state` is `success` or
+`fail`; successful responses carry generated media URLs in the
+`resultJson` string.
 
 ## Real-world example: Kling 3.0 Turbo createTask payloads
 

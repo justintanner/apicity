@@ -1,13 +1,15 @@
 import type { ModelPricing } from "./types";
 import { asNumber, asObject, asString, coerceSeconds } from "./helpers";
 
-// Source URL is the kie marketplace page for the relevant model. Rates
-// verified 2026-04-30. Rate keys mirror the upstream payload values verbatim
+// Source URL is the kie marketplace or product page for the relevant model.
+// Rates verified 2026-04-30 unless an entry notes a newer date. Rate keys mirror
+// the upstream payload values verbatim
 // (kling: payload.input.mode is "std"|"pro"|"4K"; seedance: payload.input.
 // resolution is "480p"|"720p"|"1080p"; etc.) — there is no internal
 // translation layer between the caller's payload and the rate selector.
 
 const src = (slug: string) => ({ url: `https://kie.ai/market/${slug}` });
+const page = (url: string) => ({ url });
 
 // Most kie video models read seconds from input.duration (top-level duration
 // is accepted as a fallback for veo, whose schema has no duration field).
@@ -134,6 +136,26 @@ export const kie: Record<string, ModelPricing> = {
     select: [{ name: "mode", pick: inputMode }],
     rates: { "720p": 0.1, "1080p": 0.135 },
     source: src("kwaivgi/kling-3.0"),
+  },
+
+  // Kling 3.0 Turbo: 2 tiers by resolution. Rates verified 2026-06-21 from
+  // KIE's pricing page: 720p = 18 credits/s ($0.09), 1080p = 22.5 credits/s
+  // ($0.1125).
+  "kling/v3-turbo-image-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [{ name: "resolution", pick: inputResolution }],
+    rates: { "720p": 0.09, "1080p": 0.1125 },
+    source: page("https://kie.ai/kling-3-0-turbo"),
+  },
+  "kling/v3-turbo-text-to-video": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [{ name: "resolution", pick: inputResolution }],
+    rates: { "720p": 0.09, "1080p": 0.1125 },
+    source: page("https://kie.ai/kling-3-0-turbo"),
   },
 
   // wan/2.7 video — all four variants share a flat $0.10/s rate.

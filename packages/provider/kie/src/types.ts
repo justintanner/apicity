@@ -53,6 +53,7 @@ export type {
   KlingDuration,
   KlingAspectRatio,
   KlingMode,
+  KlingV3TurboDuration,
   KlingV3TurboResolution,
   KlingV3TurboAspectRatio,
   GrokImagineMode,

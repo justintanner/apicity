@@ -98,6 +98,46 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.07 * 5, 6);
   });
 
+  it("kie kling/v3-turbo-image-to-video resolves 1080p pricing", () => {
+    const c = createCost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "kling/v3-turbo-image-to-video",
+        input: {
+          prompt: "x",
+          image_urls: ["https://example.com/product.png"],
+          duration: 5,
+          resolution: "1080p",
+        },
+      },
+    });
+    expect(r.source).toBe("per-unit-table");
+    expect(r.breakdown.unit).toBe("seconds");
+    expect(r.breakdown.units).toBe(5);
+    expect(r.breakdown.perUnitUsd).toBe(0.1125);
+    expect(r.usd).toBeCloseTo(0.1125 * 5, 6);
+  });
+
+  it("kie kling/v3-turbo-text-to-video coerces string duration", () => {
+    const c = createCost();
+    const r = c.estimate({
+      provider: "kie",
+      payload: {
+        model: "kling/v3-turbo-text-to-video",
+        input: {
+          prompt: "x",
+          duration: "5",
+          aspect_ratio: "16:9",
+          resolution: "720p",
+        },
+      },
+    });
+    expect(r.breakdown.units).toBe(5);
+    expect(r.breakdown.perUnitUsd).toBe(0.09);
+    expect(r.usd).toBeCloseTo(0.09 * 5, 6);
+  });
+
   it("kie unknown model → warning + $0", () => {
     const c = createCost();
     const r = c.estimate({

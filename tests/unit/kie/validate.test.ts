@@ -426,6 +426,31 @@ describe("kie Zod schema validation", () => {
       );
     });
 
+    it("should accept string durations from KIE docs examples", () => {
+      expect(
+        KlingV3TurboImageToVideoRequestSchema.safeParse({
+          model: "kling/v3-turbo-image-to-video",
+          input: {
+            prompt: "A slow push-in on a studio product photo.",
+            image_urls: ["https://example.com/product.png"],
+            duration: "5",
+            resolution: "1080p",
+          },
+        }).success
+      ).toBe(true);
+      expect(
+        KlingV3TurboTextToVideoRequestSchema.safeParse({
+          model: "kling/v3-turbo-text-to-video",
+          input: {
+            prompt: "A cinematic drone shot over glass towers at sunrise.",
+            duration: "5",
+            aspect_ratio: "16:9",
+            resolution: "720p",
+          },
+        }).success
+      ).toBe(true);
+    });
+
     it("should reject text-to-video requests with unsupported aspect ratios", () => {
       const result = KlingV3TurboTextToVideoRequestSchema.safeParse({
         model: "kling/v3-turbo-text-to-video",

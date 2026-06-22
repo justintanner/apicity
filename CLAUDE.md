@@ -44,12 +44,14 @@ pnpm run format                  # Format with Prettier
 # Test (replay-only; no network, no keys)
 pnpm run test:run                # Run all tests once (Polly.js replay)
 pnpm run test:run <file>         # Replay a single test file
+pnpm run test:provider <name>    # Replay ONLY one provider's tests, e.g. `pnpm test:provider openai`
 pnpm run test                    # Run tests in watch mode
 
 # Dev workflow (discrete per-phase aliases)
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
 pnpm run dev:preflight           # format + lint + test:run (run before `git push`)
+pnpm run dev:preflight:provider <name> # format + lint + ONE provider's tests (fast loop; full suite is CI's job)
 pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 
 # Harness viewer + screenshots
@@ -123,6 +125,8 @@ All tests use Polly.js HTTP record/replay (no mocks):
 - **Config**: `tests/vitest.integration.ts` — includes `tests/integration/**/*.test.ts`, 30s timeout
 - **Setup**: `tests/integration-setup.ts` — aliases `@apicity/*` to source directories so tests run against source (not dist)
 
+**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name>` (resolves `tests/integration/<name>-*.test.ts` + `<name>.test.ts`). The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm dev:preflight:provider <name>` does format + lint + that provider's tests.
+
 Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting.
 
 **Integration test recording workflow — NEVER skip this when adding/modifying integration tests:**
@@ -158,7 +162,7 @@ The recording system uses two modes, chosen based on whether you're adding new t
    pnpm vitest run --config tests/vitest.integration.ts tests/integration/<file>.test.ts
    ```
 
-Recordings are committed alongside source code and included in PRs. The CI harness-report job posts a summary of changed recordings as a PR comment for visibility, and uploads both a paginated interactive HAR viewer (directory with SPA shell + per-commit JSON files) and a full-page screenshot of the viewer index as artifacts.
+Recordings are committed alongside source code and included in PRs. CI no longer generates a harness report or screenshots on PRs; instead, on **push to main** the `endpoint-telegram` job sends one Telegram message per changed recording. To inspect recording diffs locally, use the harness viewer (`pnpm run harness`, `pnpm run harness:report`, `pnpm run harness:telegram -- --dry-run`).
 
 **Secrets management:**
 
@@ -166,7 +170,7 @@ API keys are resolved at runtime via the [1Password CLI](https://developer.1pass
 
 ### CI
 
-GitHub Actions (`ci.yml`): Three jobs — build (install, compile, verify artifacts), test (lint, integration tests via Polly.js replay), harness-report (PR-only, posts Markdown summary of changed recordings as a PR comment + uploads paginated interactive HAR viewer directory as artifact). Runs on push/PR to main.
+GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-recording, install, audit, build, verify artifacts, lint, integration tests via Polly.js replay; runs on push + PR) and **endpoint-telegram** (push-only; sends one Telegram message per changed recording). The old PR-only harness-report job (HTML report + Chromium screenshot + PR comment) has been removed — the harness viewer is now a local-only tool.
 
 ## Code Conventions
 
@@ -223,12 +227,12 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 | - | ----------------- | ---------------------------------------------------------------- |
 | 1 | Implement         | _(edit code — types, schema, factory, integration test)_         |
 | 2 | Record fixtures   | `pnpm run dev:record -- tests/integration/<file>.test.ts`        |
-| 3 | Verify replay     | `pnpm run test:run tests/integration/<file>.test.ts`             |
+| 3 | Verify replay     | `pnpm run test:provider <name>`  (just this provider; full suite is CI's job) |
 | 4 | Telegram preview  | `pnpm run harness:telegram -- --dry-run`                         |
-| 5 | Pre-push          | `pnpm run dev:preflight`                                         |
+| 5 | Pre-push          | `pnpm run dev:preflight:provider <name>`  (or `dev:preflight` for full)        |
 | 6 | CI dry-run        | `pnpm run ci:local`                                              |
 | 7 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
-| 8 | CI + harness diff | _(automatic — same 3 commands as `ci:local` + harness report)_   |
+| 8 | CI                | _(automatic — replay suite on PR; Telegram per changed recording on push to main)_ |
 
 **Escape hatches**
 
@@ -239,23 +243,22 @@ wired into `dev:preflight`, so you don't need a separate hook step.
   before recording.
 - `pnpm run harness` — local HAR viewer at `localhost:3475`.
 - `pnpm run harness:telegram -- --dry-run` — write
-  `harness-telegram-messages.json` without sending. PR and push CI send the
-  same per-endpoint HTML messages when Telegram secrets are present.
-- `pnpm run harness:screenshot:media` — generate the same media-only PNG that
-  the CI harness-report job attaches to PRs, useful when iterating on
-  `har-viewer.html` rendering.
+  `harness-telegram-messages.json` without sending. On **push to main** CI sends
+  these same per-endpoint HTML messages when Telegram secrets are present.
+- `pnpm run harness:screenshot:media` — generate a media-only PNG of the harness
+  viewer locally, useful when iterating on `har-viewer.html` rendering.
 
-### CI jobs (automatic on PR)
+### CI jobs
 
-- **build** — compile + verify artifacts
-- **test** — `ci:local` line-for-line: `pnpm run build && pnpm run lint && pnpm run test:run`
-- **harness-report** — generates a paginated interactive viewer (SPA shell
-  with per-commit JSON files) and two screenshots via the reusable
-  `.github/actions/screenshot-harness` composite action: a full report
-  (`harness-report.png`) and a media-only report (`harness-report-media.png`)
-  filtered to recordings that contain embedded images, video, or audio. The
-  viewer directory + PNGs are uploaded as artifacts and a Markdown summary is
-  posted as a PR comment.
+- **test** (push + PR) — guards against cassette re-recording
+  (`POLLY_MODE` must be `replay`), then audit + build + verify artifacts + lint +
+  integration tests via Polly.js replay. Equivalent to `ci:local`.
+- **endpoint-telegram** (push only) — diffs recordings since the previous push
+  and sends one Telegram message per changed recording (full headers, payloads,
+  response, inline media). Skips cleanly when nothing changed.
+
+The harness report/screenshot is no longer run in CI — it is a local-only tool
+(`pnpm run harness`, `harness:report`, `harness:screenshot`).
 
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:7510c1e2 -->

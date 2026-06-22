@@ -165,19 +165,24 @@ leaks no credentials."""
 
 [[steps]]
 id = "preflight"
-title = "Run the full local gates"
+title = "Run the local gates (provider-scoped)"
 needs = ["telegram-preview"]
 description = """
+Gate locally on {{provider}} only — the full suite is GitHub CI's job, so there
+is no need to replay every other provider's recordings here:
 ```bash
-pnpm run dev:preflight   # format + lint + full replay suite
-pnpm run ci:local        # exact CI mirror (audit + build + lint + test:run)
+pnpm run test:provider {{provider}}   # replay ONLY {{provider}}'s tests
+pnpm run lint                         # eslint + endpoint comments/signatures
 ```
 
-Fix anything red before continuing.
+Or the bundled equivalent: `pnpm run dev:preflight:provider {{provider}}`
+(format + lint + {{provider}} tests). Only run the full mirror
+(`pnpm run ci:local`) if you touched shared/test-harness code. Fix anything red
+before continuing.
 
-**Exit criteria:** Both commands green; `git status` shows only intended
-changes (source, zod, types, test, recording, endpoint-docs.tsv, regenerated
-README from doc-gen)."""
+**Exit criteria:** {{provider}} tests + lint green; `git status` shows only
+intended changes (source, zod, types, test, recording, endpoint-docs.tsv,
+regenerated README from doc-gen)."""
 
 [[steps]]
 id = "commit-pr"
@@ -193,9 +198,10 @@ git push -u origin HEAD
 gh pr create --fill
 ```
 
-CI re-runs the gates and the harness-report job posts the recording diff as
-a PR comment and sends the per-endpoint Telegram message. Merge to main once
-CI is green (maintainer authority applies for normal endpoint work).
+CI re-runs the full suite on the PR. CI no longer posts a harness report or
+screenshot to the PR; the per-endpoint Telegram message is sent when the change
+lands on main (the push-time endpoint-telegram job). Merge to main once CI is
+green (maintainer authority applies for normal endpoint work).
 
 **Exit criteria:** PR open and CI green (or merged)."""
 

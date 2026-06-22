@@ -21,6 +21,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # CI replays cassettes only. Re-recording is a deliberate, local-only act
+      # behind `pnpm run dev:record` / `dev:rerecord`; never let it run in CI.
+      - name: Guard against cassette re-recording
+        run: |
+          if [ "${POLLY_MODE:-replay}" != "replay" ]; then
+            echo "::error::POLLY_MODE=$POLLY_MODE in CI — cassette re-recording is forbidden; CI must replay only."
+            exit 1
+          fi
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -56,103 +65,6 @@ jobs:
 
       - name: Integration tests (replay)
         run: pnpm run test:run
-
-  harness-report:
-    if: github.event_name == 'pull_request'
-    needs: test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Ensure harness-generated dir
-        run: mkdir -p tests/fixtures/harness-generated
-
-      - name: Generate harness report
-        run: npx tsx tests/harness-report.ts --out-dir tests/fixtures/harness-generated
-        env:
-          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
-
-      - name: Start static server for harness
-        run: |
-          python3 -m http.server 8080 --directory tests/fixtures/harness-generated &
-          echo "SERVER_PID=$!" >> $GITHUB_ENV
-          sleep 2
-
-      - name: Screenshot harness viewer (index)
-        uses: ./.github/actions/screenshot-harness
-        with:
-          html-source: http://localhost:8080/harness-report.html
-          output: tests/fixtures/harness-generated/harness-report.png
-
-      - name: Generate harness summary
-        id: summary
-        run: npx tsx tests/harness-summary.ts
-        env:
-          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
-
-      - name: Commit harness assets
-        if: steps.summary.outputs.has_assets == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout ${{ github.head_ref }}
-          git add tests/fixtures/harness-generated/*.png
-          git commit -m "ci: add harness media assets [skip ci]" || true
-          git push
-
-      - name: Post harness summary to PR
-        if: steps.summary.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr comment ${{ github.event.pull_request.number }} \
-            --body-file harness-summary.md \
-            --edit-last 2>/dev/null || \
-          gh pr comment ${{ github.event.pull_request.number }} \
-            --body-file harness-summary.md
-
-      - name: Send endpoint summaries to Telegram
-        if: steps.summary.outputs.has_changes == 'true'
-        env:
-          TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          GITHUB_BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: |
-          if [ -z "$TELEGRAM_BOT_KEY" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
-            echo "Telegram secrets are not configured; skipping."
-            exit 0
-          fi
-          pnpm run harness:telegram
-
-      - name: Upload harness artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: harness-report
-          path: tests/fixtures/harness-generated
-          retention-days: 30
 
   endpoint-telegram:
     if: github.event_name == 'push'

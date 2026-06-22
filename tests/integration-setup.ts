@@ -1,5 +1,16 @@
 const pollyMode = process.env.POLLY_MODE ?? "replay";
 
+// CI replays cassettes only — never re-records. Re-recording is a deliberate,
+// local-only act behind `pnpm run dev:record` / `dev:rerecord`. This guard runs
+// inside the vitest workers (which inherit POLLY_MODE + CI via env), so it holds
+// regardless of how the suite is invoked in CI.
+if (process.env.CI && pollyMode !== "replay") {
+  throw new Error(
+    `POLLY_MODE=${pollyMode} is not allowed in CI — cassette re-recording is ` +
+      "forbidden. Record locally via `pnpm run dev:rerecord -- <file>`."
+  );
+}
+
 for (const [name, value] of Object.entries(process.env)) {
   if (!value?.startsWith("op://")) {
     continue;

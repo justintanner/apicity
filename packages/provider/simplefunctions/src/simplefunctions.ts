@@ -7,6 +7,7 @@ import type {
   SimpleFunctionsBriefingRequest,
   SimpleFunctionsCalendarRequest,
   SimpleFunctionsCalibrationRequest,
+  SimpleFunctionsBodyRequest,
   SimpleFunctionsCandlesRequest,
   SimpleFunctionsCandlesResponse,
   SimpleFunctionsChangesRequest,
@@ -25,6 +26,7 @@ import type {
   SimpleFunctionsFredRequest,
   SimpleFunctionsGovQueryRequest,
   SimpleFunctionsHeartbeatResponse,
+  SimpleFunctionsIdRequest,
   SimpleFunctionsIdeaRequest,
   SimpleFunctionsIndexHistoryRequest,
   SimpleFunctionsInspectRequest,
@@ -40,14 +42,17 @@ import type {
   SimpleFunctionsMicrostructureHistoryRequest,
   SimpleFunctionsMoversRequest,
   SimpleFunctionsMoversResponse,
+  SimpleFunctionsOptionalQueryRequest,
   SimpleFunctionsOddsRequest,
   SimpleFunctionsOptions,
   SimpleFunctionsOrderbookResponse,
+  SimpleFunctionsPositionRequest,
   SimpleFunctionsProvider,
   SimpleFunctionsPublicListRequest,
   SimpleFunctionsPublicSearchRequest,
   SimpleFunctionsQueryRequest,
   SimpleFunctionsQueryResponse,
+  SimpleFunctionsRecordRequest,
   SimpleFunctionsRegimeScanRequest,
   SimpleFunctionsScanRequest,
   SimpleFunctionsScreenByTickersRequest,
@@ -56,10 +61,14 @@ import type {
   SimpleFunctionsSearchResponse,
   SimpleFunctionsSlugRequest,
   SimpleFunctionsSnapshotResponse,
+  SimpleFunctionsStrategyRequest,
   SimpleFunctionsStrict,
+  SimpleFunctionsTickerPathRequest,
   SimpleFunctionsTickerRequest,
+  SimpleFunctionsTokenRequest,
   SimpleFunctionsTradesRequest,
   SimpleFunctionsTradesResponse,
+  SimpleFunctionsTransportRequest,
   SimpleFunctionsTopicFeedResponse,
   SimpleFunctionsTopicFeedResult,
   SimpleFunctionsWorldDeltaRequest,
@@ -77,6 +86,7 @@ import {
   SimpleFunctionsBriefingRequestSchema,
   SimpleFunctionsCalendarRequestSchema,
   SimpleFunctionsCalibrationRequestSchema,
+  SimpleFunctionsBodyRequestSchema,
   SimpleFunctionsCandlesRequestSchema,
   SimpleFunctionsChangesRequestSchema,
   SimpleFunctionsCongressMemberRequestSchema,
@@ -91,6 +101,7 @@ import {
   SimpleFunctionsFeaturedMarketsRequestSchema,
   SimpleFunctionsFredRequestSchema,
   SimpleFunctionsGovQueryRequestSchema,
+  SimpleFunctionsIdRequestSchema,
   SimpleFunctionsIdeaRequestSchema,
   SimpleFunctionsIndexHistoryRequestSchema,
   SimpleFunctionsInspectRequestSchema,
@@ -103,19 +114,26 @@ import {
   SimpleFunctionsMicrostructureHistoryRequestSchema,
   SimpleFunctionsMoversRequestSchema,
   SimpleFunctionsNoRequestSchema,
+  SimpleFunctionsOptionalQueryRequestSchema,
   SimpleFunctionsOddsRequestSchema,
+  SimpleFunctionsPositionRequestSchema,
   SimpleFunctionsPublicListRequestSchema,
   SimpleFunctionsPublicSearchRequestSchema,
   SimpleFunctionsQueryRequestSchema,
+  SimpleFunctionsRecordRequestSchema,
   SimpleFunctionsRegimeScanRequestSchema,
   SimpleFunctionsScanRequestSchema,
   SimpleFunctionsScreenByTickersRequestSchema,
   SimpleFunctionsScreenRequestSchema,
   SimpleFunctionsSearchRequestSchema,
   SimpleFunctionsSlugRequestSchema,
+  SimpleFunctionsStrategyRequestSchema,
+  SimpleFunctionsTickerPathRequestSchema,
   SimpleFunctionsTickerRequestSchema,
   SimpleFunctionsTickerSchema,
+  SimpleFunctionsTokenRequestSchema,
   SimpleFunctionsTradesRequestSchema,
+  SimpleFunctionsTransportRequestSchema,
   SimpleFunctionsWorldDeltaRequestSchema,
   SimpleFunctionsWorldPathRequestSchema,
   SimpleFunctionsWorldRequestSchema,
@@ -127,7 +145,9 @@ interface SimpleFunctionsErrorBody {
   message?: string;
 }
 
+type RequestMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type QueryValue = string | number | boolean | readonly string[] | undefined;
+type QueryRecord = Record<string, QueryValue>;
 
 function isErrorBody(value: unknown): value is SimpleFunctionsErrorBody {
   return typeof value === "object" && value !== null;
@@ -226,6 +246,60 @@ function buildQuery(params: Record<string, QueryValue>): string {
   }
   const query = qs.toString();
   return query ? `?${query}` : "";
+}
+
+function queryFromRecord(req: Record<string, unknown> = {}): string {
+  return buildQuery(req as QueryRecord);
+}
+
+function queryFromBodyRequest(req: SimpleFunctionsBodyRequest): string {
+  const query = req.query;
+  return query ? queryFromRecord(query) : "";
+}
+
+function queryFromRequest(
+  req: Record<string, unknown> = {},
+  omitKeys: readonly string[] = []
+): string {
+  const explicitQuery = req.query;
+  if (explicitQuery && typeof explicitQuery === "object") {
+    return queryFromRecord(explicitQuery as Record<string, unknown>);
+  }
+
+  const omitted = new Set(["body", "query", ...omitKeys]);
+  const query: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(req)) {
+    if (!omitted.has(key) && value !== undefined) {
+      query[key] = value;
+    }
+  }
+  return queryFromRecord(query);
+}
+
+function bodyFromRequest(
+  req: Record<string, unknown> = {},
+  omitKeys: readonly string[] = []
+): unknown {
+  if (Object.prototype.hasOwnProperty.call(req, "body")) {
+    return req.body;
+  }
+
+  const omitted = new Set(["query", ...omitKeys]);
+  const body: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(req)) {
+    if (!omitted.has(key) && value !== undefined) {
+      body[key] = value;
+    }
+  }
+  return Object.keys(body).length > 0 ? body : undefined;
+}
+
+function requestId(req: SimpleFunctionsIdRequest): string {
+  return pathSegment(req.id.trim());
+}
+
+function requestTicker(req: SimpleFunctionsTickerPathRequest): string {
+  return pathSegment(req.ticker.trim());
 }
 
 function buildQueryForQuery(req: SimpleFunctionsQueryRequest): string {
@@ -384,7 +458,7 @@ export function createSimpleFunctions(
   const timeout = opts.timeout ?? 30000;
 
   async function makeJsonRequest<T>(
-    method: "GET" | "POST",
+    method: RequestMethod,
     path: string,
     body?: unknown,
     signal?: AbortSignal,
@@ -432,7 +506,81 @@ export function createSimpleFunctions(
         );
       }
 
+      if (res.status === 204) {
+        return null as T;
+      }
+
       return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof SimpleFunctionsError) throw error;
+      throw new SimpleFunctionsError(
+        `SimpleFunctions request failed: ${error}`,
+        500
+      );
+    }
+  }
+
+  async function makeRawRequest(
+    method: RequestMethod,
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const headers: Record<string, string> = {};
+      if (opts.apiKey) {
+        headers.Authorization = `Bearer ${opts.apiKey}`;
+      }
+
+      let requestBody: BodyInit | undefined;
+      if (
+        body instanceof FormData ||
+        body instanceof Blob ||
+        body instanceof URLSearchParams ||
+        typeof body === "string"
+      ) {
+        requestBody = body;
+      } else if (body instanceof ArrayBuffer) {
+        requestBody = body;
+      } else if (ArrayBuffer.isView(body)) {
+        requestBody = body as BodyInit;
+      } else if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        requestBody = JSON.stringify(body);
+      }
+
+      const res = await doFetch(`${baseURL}${path}`, {
+        method,
+        headers,
+        body: requestBody,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new SimpleFunctionsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody
+        );
+      }
+
+      return res;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof SimpleFunctionsError) throw error;
@@ -492,6 +640,81 @@ export function createSimpleFunctions(
         500
       );
     }
+  }
+
+  function jsonGet<TReq extends Record<string, unknown>>(
+    schema: z.ZodType<TReq>,
+    path: (req: TReq) => string,
+    endpoint: string,
+    auth = true
+  ) {
+    return Object.assign(
+      async (
+        req: TReq = {} as TReq,
+        signal?: AbortSignal
+      ): Promise<Record<string, unknown>> => {
+        if (auth) requireApiKey(opts.apiKey, endpoint);
+        const parsed = parseWithSchema(schema, req ?? {});
+        return makeJsonRequest<Record<string, unknown>>(
+          "GET",
+          path(parsed),
+          undefined,
+          signal
+        );
+      },
+      { schema }
+    );
+  }
+
+  function jsonBody<TReq extends Record<string, unknown>>(
+    method: Exclude<RequestMethod, "GET">,
+    schema: z.ZodType<TReq>,
+    path: (req: TReq) => string,
+    endpoint: string,
+    omitKeys: readonly string[] = [],
+    auth = true
+  ) {
+    return Object.assign(
+      async (
+        req: TReq,
+        signal?: AbortSignal
+      ): Promise<Record<string, unknown>> => {
+        if (auth) requireApiKey(opts.apiKey, endpoint);
+        const parsed = parseWithSchema(schema, req ?? {});
+        return makeJsonRequest<Record<string, unknown>>(
+          method,
+          path(parsed),
+          bodyFromRequest(parsed, omitKeys),
+          signal
+        );
+      },
+      { schema }
+    );
+  }
+
+  function jsonOptionalBody<TReq extends Record<string, unknown>>(
+    method: Exclude<RequestMethod, "GET">,
+    schema: z.ZodType<TReq>,
+    path: (req: TReq) => string,
+    endpoint: string,
+    auth = true
+  ) {
+    return Object.assign(
+      async (
+        req: TReq = {} as TReq,
+        signal?: AbortSignal
+      ): Promise<Record<string, unknown>> => {
+        if (auth) requireApiKey(opts.apiKey, endpoint);
+        const parsed = parseWithSchema(schema, req ?? {});
+        return makeJsonRequest<Record<string, unknown>>(
+          method,
+          path(parsed),
+          bodyFromRequest(parsed),
+          signal
+        );
+      },
+      { schema }
+    );
   }
 
   // GET https://simplefunctions.dev/api/public/query{query}
@@ -2233,6 +2456,1278 @@ export function createSimpleFunctions(
     { schema: SimpleFunctionsEdgesRequestSchema }
   );
 
+  // GET https://simplefunctions.dev/api/keys{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const keysList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/keys${queryFromRequest(req)}`,
+    "/api/keys"
+  );
+
+  // POST https://simplefunctions.dev/api/keys
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const keysCreate = jsonBody<SimpleFunctionsBodyRequest>(
+    "POST",
+    SimpleFunctionsBodyRequestSchema,
+    () => "/api/keys",
+    "/api/keys"
+  );
+
+  // DELETE https://simplefunctions.dev/api/keys/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const keysDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/keys/${requestId(req)}`,
+    "/api/keys/{id}",
+    ["id"]
+  );
+
+  const keys = Object.assign(keysList, {
+    create: keysCreate,
+    delete: keysDelete,
+  });
+
+  // POST https://simplefunctions.dev/api/auth/cli
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const authCliInit = jsonBody<SimpleFunctionsBodyRequest>(
+    "POST",
+    SimpleFunctionsBodyRequestSchema,
+    () => "/api/auth/cli",
+    "/api/auth/cli",
+    [],
+    false
+  );
+
+  // GET https://simplefunctions.dev/api/auth/cli/poll{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const authCliPoll = jsonGet<SimpleFunctionsTokenRequest>(
+    SimpleFunctionsTokenRequestSchema,
+    (req) => `/api/auth/cli/poll${buildQuery({ token: req.token.trim() })}`,
+    "/api/auth/cli/poll",
+    false
+  );
+
+  // POST https://simplefunctions.dev/api/auth/cli/complete
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const authCliComplete = jsonBody<SimpleFunctionsBodyRequest>(
+    "POST",
+    SimpleFunctionsBodyRequestSchema,
+    () => "/api/auth/cli/complete",
+    "/api/auth/cli/complete",
+    [],
+    false
+  );
+
+  const authCli = Object.assign(authCliInit, {
+    poll: authCliPoll,
+    complete: authCliComplete,
+  });
+
+  // POST https://simplefunctions.dev/api/signup
+  // Docs: https://docs.simplefunctions.dev/api-reference/keys
+  const signup = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/signup",
+    "/api/signup",
+    [],
+    false
+  );
+
+  // GET https://simplefunctions.dev/api/feed{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/account
+  const feed = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/feed${queryFromRequest(req)}`,
+    "/api/feed"
+  );
+
+  // GET https://simplefunctions.dev/api/dashboard/usage{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/account
+  const dashboardUsage = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/dashboard/usage${queryFromRequest(req)}`,
+    "/api/dashboard/usage"
+  );
+
+  // GET https://simplefunctions.dev/api/thesis{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/thesis${queryFromRequest(req)}`,
+    "/api/thesis"
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/create{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisCreate = jsonBody<SimpleFunctionsBodyRequest>(
+    "POST",
+    SimpleFunctionsBodyRequestSchema,
+    (req) => `/api/thesis/create${queryFromBodyRequest(req)}`,
+    "/api/thesis/create"
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisRetrieve = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}${queryFromRequest(req, ["id"])}`,
+    "/api/thesis/{id}"
+  );
+
+  // PATCH https://simplefunctions.dev/api/thesis/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}`,
+    "/api/thesis/{id}",
+    ["id"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/thesis/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}`,
+    "/api/thesis/{id}",
+    ["id"]
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/by-ticker/{ticker}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisByTicker = jsonGet<SimpleFunctionsTickerPathRequest>(
+    SimpleFunctionsTickerPathRequestSchema,
+    (req) => `/api/thesis/by-ticker/${requestTicker(req)}`,
+    "/api/thesis/by-ticker/{ticker}",
+    false
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/signal
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisSignal = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/signal`,
+    "/api/thesis/{id}/signal",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/evaluate
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisEvaluate = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/evaluate`,
+    "/api/thesis/{id}/evaluate",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/augment{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisAugment = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) =>
+      `/api/thesis/${requestId(req)}/augment${queryFromRequest(req, ["id"])}`,
+    "/api/thesis/{id}/augment",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/nodes
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisNodes = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/nodes`,
+    "/api/thesis/{id}/nodes",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/fork
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisFork = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/fork`,
+    "/api/thesis/{id}/fork",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/whatif
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisWhatif = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/whatif`,
+    "/api/thesis/{id}/whatif",
+    ["id"]
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/context
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisContext = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/context`,
+    "/api/thesis/{id}/context"
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/changes{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisChanges = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) =>
+      `/api/thesis/${requestId(req)}/changes${queryFromRequest(req, ["id"])}`,
+    "/api/thesis/{id}/changes"
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/prompt
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisPrompt = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/prompt`,
+    "/api/thesis/{id}/prompt"
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/evaluations
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisEvaluations = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/evaluations`,
+    "/api/thesis/{id}/evaluations"
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/heartbeat
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisHeartbeatGet = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/heartbeat`,
+    "/api/thesis/{id}/heartbeat"
+  );
+
+  // PATCH https://simplefunctions.dev/api/thesis/{id}/heartbeat
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisHeartbeatUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/heartbeat`,
+    "/api/thesis/{id}/heartbeat",
+    ["id"]
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/positions
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisPositionsList = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/positions`,
+    "/api/thesis/{id}/positions"
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/positions
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisPositionsCreate = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/positions`,
+    "/api/thesis/{id}/positions",
+    ["id"]
+  );
+
+  // PATCH https://simplefunctions.dev/api/thesis/{id}/positions/{posId}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisPositionsUpdate = jsonBody<SimpleFunctionsPositionRequest>(
+    "PATCH",
+    SimpleFunctionsPositionRequestSchema,
+    (req) =>
+      `/api/thesis/${pathSegment(req.id.trim())}/positions/${pathSegment(
+        req.posId.trim()
+      )}`,
+    "/api/thesis/{id}/positions/{posId}",
+    ["id", "posId"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/thesis/{id}/positions/{posId}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisPositionsDelete = jsonBody<SimpleFunctionsPositionRequest>(
+    "DELETE",
+    SimpleFunctionsPositionRequestSchema,
+    (req) =>
+      `/api/thesis/${pathSegment(req.id.trim())}/positions/${pathSegment(
+        req.posId.trim()
+      )}`,
+    "/api/thesis/{id}/positions/{posId}",
+    ["id", "posId"]
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/strategies{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisStrategiesList = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) =>
+      `/api/thesis/${requestId(req)}/strategies${queryFromRequest(req, [
+        "id",
+      ])}`,
+    "/api/thesis/{id}/strategies"
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/strategies
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisStrategiesCreate = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/strategies`,
+    "/api/thesis/{id}/strategies",
+    ["id"]
+  );
+
+  // PATCH https://simplefunctions.dev/api/thesis/{id}/strategies/{sid}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisStrategiesUpdate = jsonBody<SimpleFunctionsStrategyRequest>(
+    "PATCH",
+    SimpleFunctionsStrategyRequestSchema,
+    (req) =>
+      `/api/thesis/${pathSegment(req.id.trim())}/strategies/${pathSegment(
+        req.sid.trim()
+      )}`,
+    "/api/thesis/{id}/strategies/{sid}",
+    ["id", "sid"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/thesis/{id}/strategies/{sid}
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisStrategiesDelete = jsonBody<SimpleFunctionsStrategyRequest>(
+    "DELETE",
+    SimpleFunctionsStrategyRequestSchema,
+    (req) =>
+      `/api/thesis/${pathSegment(req.id.trim())}/strategies/${pathSegment(
+        req.sid.trim()
+      )}`,
+    "/api/thesis/{id}/strategies/{sid}",
+    ["id", "sid"]
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/publish
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisPublish = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/publish`,
+    "/api/thesis/{id}/publish",
+    ["id"]
+  );
+
+  // sig-ok: unpublish is the JS-safe semantic alias for DELETE publish.
+  // DELETE https://simplefunctions.dev/api/thesis/{id}/publish
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisUnpublish = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/publish`,
+    "/api/thesis/{id}/publish",
+    ["id"]
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/videos
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisVideosList = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/videos`,
+    "/api/thesis/{id}/videos"
+  );
+
+  // POST https://simplefunctions.dev/api/thesis/{id}/videos
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisVideosCreate = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/videos`,
+    "/api/thesis/{id}/videos",
+    ["id"]
+  );
+
+  // GET https://simplefunctions.dev/api/thesis/{id}/video-data
+  // Docs: https://docs.simplefunctions.dev/api-reference/thesis
+  const thesisVideoData = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/thesis/${requestId(req)}/video-data`,
+    "/api/thesis/{id}/video-data"
+  );
+
+  const authThesis = Object.assign(thesisList, {
+    create: thesisCreate,
+    retrieve: thesisRetrieve,
+    update: thesisUpdate,
+    delete: thesisDelete,
+    byTicker: thesisByTicker,
+    signal: thesisSignal,
+    evaluate: thesisEvaluate,
+    augment: thesisAugment,
+    nodes: thesisNodes,
+    fork: thesisFork,
+    whatif: thesisWhatif,
+    context: thesisContext,
+    changes: thesisChanges,
+    prompt: thesisPrompt,
+    evaluations: thesisEvaluations,
+    heartbeat: {
+      get: thesisHeartbeatGet,
+      update: thesisHeartbeatUpdate,
+    },
+    positions: {
+      list: thesisPositionsList,
+      create: thesisPositionsCreate,
+      update: thesisPositionsUpdate,
+      delete: thesisPositionsDelete,
+    },
+    strategies: {
+      list: thesisStrategiesList,
+      create: thesisStrategiesCreate,
+      update: thesisStrategiesUpdate,
+      delete: thesisStrategiesDelete,
+    },
+    publish: thesisPublish,
+    unpublish: thesisUnpublish,
+    videos: {
+      list: thesisVideosList,
+      create: thesisVideosCreate,
+    },
+    videoData: thesisVideoData,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/state
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioStateGet = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    () => "/api/portfolio/state",
+    "/api/portfolio/state"
+  );
+
+  // PUT https://simplefunctions.dev/api/portfolio/state
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioStateUpdate = jsonBody<SimpleFunctionsRecordRequest>(
+    "PUT",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/state",
+    "/api/portfolio/state"
+  );
+
+  const portfolioState = Object.assign(portfolioStateGet, {
+    update: portfolioStateUpdate,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/config
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioConfigGet = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    () => "/api/portfolio/config",
+    "/api/portfolio/config"
+  );
+
+  // PUT https://simplefunctions.dev/api/portfolio/config
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioConfigUpdate = jsonBody<SimpleFunctionsRecordRequest>(
+    "PUT",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/config",
+    "/api/portfolio/config"
+  );
+
+  const portfolioConfig = Object.assign(portfolioConfigGet, {
+    update: portfolioConfigUpdate,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/ticks{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTicksList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/ticks${queryFromRequest(req)}`,
+    "/api/portfolio/ticks"
+  );
+
+  // GET https://simplefunctions.dev/api/portfolio/ticks/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTicksRetrieve = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/portfolio/ticks/${requestId(req)}`,
+    "/api/portfolio/ticks/{id}"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/ticks
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTicksCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/ticks",
+    "/api/portfolio/ticks"
+  );
+
+  const portfolioTicks = Object.assign(portfolioTicksList, {
+    retrieve: portfolioTicksRetrieve,
+    create: portfolioTicksCreate,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/trades{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTradesList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/trades${queryFromRequest(req)}`,
+    "/api/portfolio/trades"
+  );
+
+  // GET https://simplefunctions.dev/api/portfolio/trades/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTradesRetrieve = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/portfolio/trades/${requestId(req)}`,
+    "/api/portfolio/trades/{id}"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/trades
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTradesCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/trades",
+    "/api/portfolio/trades"
+  );
+
+  const portfolioTrades = Object.assign(portfolioTradesList, {
+    retrieve: portfolioTradesRetrieve,
+    create: portfolioTradesCreate,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/ledger{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioLedgerList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/ledger${queryFromRequest(req)}`,
+    "/api/portfolio/ledger"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioLedgerImportKalshi = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/ledger/import/kalshi",
+    "/api/portfolio/ledger/import/kalshi"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi/pull
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioLedgerImportKalshiPull =
+    jsonBody<SimpleFunctionsRecordRequest>(
+      "POST",
+      SimpleFunctionsRecordRequestSchema,
+      () => "/api/portfolio/ledger/import/kalshi/pull",
+      "/api/portfolio/ledger/import/kalshi/pull"
+    );
+
+  // POST https://simplefunctions.dev/api/portfolio/ledger/import/polymarket
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioLedgerImportPolymarket =
+    jsonBody<SimpleFunctionsRecordRequest>(
+      "POST",
+      SimpleFunctionsRecordRequestSchema,
+      () => "/api/portfolio/ledger/import/polymarket",
+      "/api/portfolio/ledger/import/polymarket"
+    );
+
+  const portfolioLedgerImport = {
+    kalshi: Object.assign(portfolioLedgerImportKalshi, {
+      pull: portfolioLedgerImportKalshiPull,
+    }),
+    polymarket: portfolioLedgerImportPolymarket,
+  };
+
+  const portfolioLedger = Object.assign(portfolioLedgerList, {
+    import: portfolioLedgerImport,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/fills{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioFills = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/fills${queryFromRequest(req)}`,
+    "/api/portfolio/fills"
+  );
+
+  // GET https://simplefunctions.dev/api/portfolio/positions{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioPositions = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/positions${queryFromRequest(req)}`,
+    "/api/portfolio/positions"
+  );
+
+  // GET https://simplefunctions.dev/api/portfolio/activity{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioActivity = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/activity${queryFromRequest(req)}`,
+    "/api/portfolio/activity"
+  );
+
+  // GET https://simplefunctions.dev/api/portfolio/attribution/daily{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioAttributionDaily =
+    jsonGet<SimpleFunctionsOptionalQueryRequest>(
+      SimpleFunctionsOptionalQueryRequestSchema,
+      (req) => `/api/portfolio/attribution/daily${queryFromRequest(req)}`,
+      "/api/portfolio/attribution/daily"
+    );
+
+  // GET https://simplefunctions.dev/api/portfolio/attribution/grouped{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioAttributionGrouped =
+    jsonGet<SimpleFunctionsOptionalQueryRequest>(
+      SimpleFunctionsOptionalQueryRequestSchema,
+      (req) => `/api/portfolio/attribution/grouped${queryFromRequest(req)}`,
+      "/api/portfolio/attribution/grouped"
+    );
+
+  // GET https://simplefunctions.dev/api/portfolio/risk{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioRisk = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/risk${queryFromRequest(req)}`,
+    "/api/portfolio/risk"
+  );
+
+  // GET https://simplefunctions.dev/api/portfolio/views{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioViewsList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/views${queryFromRequest(req)}`,
+    "/api/portfolio/views"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/views
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioViewsCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/views",
+    "/api/portfolio/views"
+  );
+
+  // PUT https://simplefunctions.dev/api/portfolio/views
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioViewsUpdate = jsonBody<SimpleFunctionsRecordRequest>(
+    "PUT",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/views",
+    "/api/portfolio/views"
+  );
+
+  // DELETE https://simplefunctions.dev/api/portfolio/views
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioViewsDelete = jsonBody<SimpleFunctionsRecordRequest>(
+    "DELETE",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/views",
+    "/api/portfolio/views"
+  );
+
+  const portfolioViews = Object.assign(portfolioViewsList, {
+    create: portfolioViewsCreate,
+    update: portfolioViewsUpdate,
+    delete: portfolioViewsDelete,
+  });
+
+  // GET https://simplefunctions.dev/api/portfolio/strategy{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioStrategyList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/portfolio/strategy${queryFromRequest(req)}`,
+    "/api/portfolio/strategy"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/strategy
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioStrategyCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/strategy",
+    "/api/portfolio/strategy"
+  );
+
+  // PUT https://simplefunctions.dev/api/portfolio/strategy
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioStrategyUpdate = jsonBody<SimpleFunctionsRecordRequest>(
+    "PUT",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/strategy",
+    "/api/portfolio/strategy"
+  );
+
+  // DELETE https://simplefunctions.dev/api/portfolio/strategy
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioStrategyDelete = jsonBody<SimpleFunctionsRecordRequest>(
+    "DELETE",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/strategy",
+    "/api/portfolio/strategy"
+  );
+
+  const portfolioStrategy = Object.assign(portfolioStrategyList, {
+    create: portfolioStrategyCreate,
+    update: portfolioStrategyUpdate,
+    delete: portfolioStrategyDelete,
+  });
+
+  // POST https://simplefunctions.dev/api/portfolio/secrets
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioSecretsCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/secrets",
+    "/api/portfolio/secrets"
+  );
+
+  // DELETE https://simplefunctions.dev/api/portfolio/secrets
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioSecretsDelete = jsonOptionalBody<SimpleFunctionsRecordRequest>(
+    "DELETE",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/secrets",
+    "/api/portfolio/secrets"
+  );
+
+  // POST https://simplefunctions.dev/api/portfolio/trigger
+  // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
+  const portfolioTrigger = jsonOptionalBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/portfolio/trigger",
+    "/api/portfolio/trigger"
+  );
+
+  const portfolio = {
+    state: portfolioState,
+    config: portfolioConfig,
+    ticks: portfolioTicks,
+    trades: portfolioTrades,
+    ledger: portfolioLedger,
+    fills: portfolioFills,
+    positions: portfolioPositions,
+    activity: portfolioActivity,
+    attribution: {
+      daily: portfolioAttributionDaily,
+      grouped: portfolioAttributionGrouped,
+    },
+    risk: portfolioRisk,
+    views: portfolioViews,
+    strategy: portfolioStrategy,
+    secrets: {
+      create: portfolioSecretsCreate,
+      delete: portfolioSecretsDelete,
+    },
+    trigger: portfolioTrigger,
+  };
+
+  // GET https://simplefunctions.dev/api/intents{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const intentsList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/intents${queryFromRequest(req)}`,
+    "/api/intents"
+  );
+
+  // POST https://simplefunctions.dev/api/intents
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const intentsCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/intents",
+    "/api/intents"
+  );
+
+  // GET https://simplefunctions.dev/api/intents/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const intentsRetrieve = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/intents/${requestId(req)}`,
+    "/api/intents/{id}"
+  );
+
+  // PATCH https://simplefunctions.dev/api/intents/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const intentsUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/intents/${requestId(req)}`,
+    "/api/intents/{id}",
+    ["id"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/intents/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const intentsDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/intents/${requestId(req)}`,
+    "/api/intents/{id}",
+    ["id"]
+  );
+
+  const intents = Object.assign(intentsList, {
+    create: intentsCreate,
+    retrieve: intentsRetrieve,
+    update: intentsUpdate,
+    delete: intentsDelete,
+  });
+
+  // GET https://simplefunctions.dev/api/runtime/exec{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const runtimeExecStatus = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/runtime/exec${queryFromRequest(req)}`,
+    "/api/runtime/exec"
+  );
+
+  // sig-ok: trigger distinguishes POST execution from GET status.
+  // POST https://simplefunctions.dev/api/runtime/exec
+  // Docs: https://docs.simplefunctions.dev/api-reference/execution-intents
+  const runtimeExecTrigger = jsonOptionalBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/runtime/exec",
+    "/api/runtime/exec"
+  );
+
+  const runtimeExec = Object.assign(runtimeExecStatus, {
+    trigger: runtimeExecTrigger,
+  });
+
+  // GET https://simplefunctions.dev/api/watch{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/watch${queryFromRequest(req)}`,
+    "/api/watch"
+  );
+
+  // POST https://simplefunctions.dev/api/watch
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/watch",
+    "/api/watch"
+  );
+
+  // POST https://simplefunctions.dev/api/watch/identify
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchIdentify = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/watch/identify",
+    "/api/watch/identify"
+  );
+
+  // GET https://simplefunctions.dev/api/watch/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchRetrieve = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/watch/${requestId(req)}`,
+    "/api/watch/{id}"
+  );
+
+  // PATCH https://simplefunctions.dev/api/watch/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/watch/${requestId(req)}`,
+    "/api/watch/{id}",
+    ["id"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/watch/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/watch/${requestId(req)}`,
+    "/api/watch/{id}",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/watch/{id}/refresh
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const watchRefresh = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/watch/${requestId(req)}/refresh`,
+    "/api/watch/{id}/refresh",
+    ["id"]
+  );
+
+  const watch = Object.assign(watchList, {
+    create: watchCreate,
+    identify: watchIdentify,
+    retrieve: watchRetrieve,
+    update: watchUpdate,
+    delete: watchDelete,
+    refresh: watchRefresh,
+  });
+
+  // GET https://simplefunctions.dev/api/alert-rules{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertRulesList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/alert-rules${queryFromRequest(req)}`,
+    "/api/alert-rules"
+  );
+
+  // POST https://simplefunctions.dev/api/alert-rules
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertRulesCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/alert-rules",
+    "/api/alert-rules"
+  );
+
+  // GET https://simplefunctions.dev/api/alert-rules/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertRulesRetrieve = jsonGet<SimpleFunctionsIdRequest>(
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/alert-rules/${requestId(req)}`,
+    "/api/alert-rules/{id}"
+  );
+
+  // PATCH https://simplefunctions.dev/api/alert-rules/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertRulesUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/alert-rules/${requestId(req)}`,
+    "/api/alert-rules/{id}",
+    ["id"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/alert-rules/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertRulesDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/alert-rules/${requestId(req)}`,
+    "/api/alert-rules/{id}",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/alert-rules/{id}/test
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertRulesTest = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/alert-rules/${requestId(req)}/test`,
+    "/api/alert-rules/{id}/test",
+    ["id"]
+  );
+
+  const alertRules = Object.assign(alertRulesList, {
+    create: alertRulesCreate,
+    retrieve: alertRulesRetrieve,
+    update: alertRulesUpdate,
+    delete: alertRulesDelete,
+    test: alertRulesTest,
+  });
+
+  // GET https://simplefunctions.dev/api/webhook-endpoints{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const webhookEndpointsList = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/webhook-endpoints${queryFromRequest(req)}`,
+    "/api/webhook-endpoints"
+  );
+
+  // POST https://simplefunctions.dev/api/webhook-endpoints
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const webhookEndpointsCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/webhook-endpoints",
+    "/api/webhook-endpoints"
+  );
+
+  // PATCH https://simplefunctions.dev/api/webhook-endpoints/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const webhookEndpointsUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/webhook-endpoints/${requestId(req)}`,
+    "/api/webhook-endpoints/{id}",
+    ["id"]
+  );
+
+  // DELETE https://simplefunctions.dev/api/webhook-endpoints/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const webhookEndpointsDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/webhook-endpoints/${requestId(req)}`,
+    "/api/webhook-endpoints/{id}",
+    ["id"]
+  );
+
+  // POST https://simplefunctions.dev/api/webhook-endpoints/{id}/test
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const webhookEndpointsTest = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/webhook-endpoints/${requestId(req)}/test`,
+    "/api/webhook-endpoints/{id}/test",
+    ["id"]
+  );
+
+  const webhookEndpoints = Object.assign(webhookEndpointsList, {
+    create: webhookEndpointsCreate,
+    update: webhookEndpointsUpdate,
+    delete: webhookEndpointsDelete,
+    test: webhookEndpointsTest,
+  });
+
+  // GET https://simplefunctions.dev/api/alert-deliveries{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/watch-alerts
+  const alertDeliveries = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/alert-deliveries${queryFromRequest(req)}`,
+    "/api/alert-deliveries"
+  );
+
+  // GET https://simplefunctions.dev/api/contracts/tools
+  // Docs: https://docs.simplefunctions.dev/api-reference/contract-tools
+  const contractTools = jsonGet<SimpleFunctionsEmptyRequest>(
+    SimpleFunctionsEmptyRequestSchema,
+    () => "/api/contracts/tools",
+    "/api/contracts/tools",
+    false
+  );
+
+  // GET https://simplefunctions.dev/api/tools{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const tools = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/tools${queryFromRequest(req)}`,
+    "/api/tools",
+    false
+  );
+
+  // GET https://simplefunctions.dev/api/skills{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const apiSkills = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/skills${queryFromRequest(req)}`,
+    "/api/skills",
+    false
+  );
+
+  // GET https://simplefunctions.dev/api/prompt
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const prompt = jsonGet<SimpleFunctionsEmptyRequest>(
+    SimpleFunctionsEmptyRequestSchema,
+    () => "/api/prompt",
+    "/api/prompt"
+  );
+
+  // GET https://simplefunctions.dev/api/mcp/{transport}
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const mcpGet = Object.assign(
+    async (
+      req: SimpleFunctionsTransportRequest,
+      signal?: AbortSignal
+    ): Promise<string> => {
+      const parsed = parseWithSchema(
+        SimpleFunctionsTransportRequestSchema,
+        req
+      );
+      const transport = pathSegment(parsed.transport.trim());
+      return makeGetTextRequest(`/api/mcp/${transport}`, signal);
+    },
+    { schema: SimpleFunctionsTransportRequestSchema }
+  );
+
+  // sig-ok: call distinguishes POST MCP calls from GET MCP metadata.
+  // POST https://simplefunctions.dev/api/mcp/{transport}
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const mcpCall = jsonBody<SimpleFunctionsTransportRequest>(
+    "POST",
+    SimpleFunctionsTransportRequestSchema,
+    (req) => `/api/mcp/${pathSegment(req.transport.trim())}`,
+    "/api/mcp/{transport}",
+    ["transport"],
+    false
+  );
+
+  const mcp = Object.assign(mcpGet, {
+    call: mcpCall,
+  });
+
+  // POST https://simplefunctions.dev/api/proxy/tts
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const proxyTts = Object.assign(
+    async (
+      req: SimpleFunctionsBodyRequest,
+      signal?: AbortSignal
+    ): Promise<Response> => {
+      requireApiKey(opts.apiKey, "/api/proxy/tts");
+      const parsed = parseWithSchema(SimpleFunctionsBodyRequestSchema, req);
+      return makeRawRequest(
+        "POST",
+        "/api/proxy/tts",
+        bodyFromRequest(parsed),
+        signal
+      );
+    },
+    { schema: SimpleFunctionsBodyRequestSchema }
+  );
+
+  // POST https://simplefunctions.dev/api/proxy/stt
+  // Docs: https://docs.simplefunctions.dev/api-reference/tools
+  const proxyStt = Object.assign(
+    async (
+      req: SimpleFunctionsBodyRequest,
+      signal?: AbortSignal
+    ): Promise<Response> => {
+      requireApiKey(opts.apiKey, "/api/proxy/stt");
+      const parsed = parseWithSchema(SimpleFunctionsBodyRequestSchema, req);
+      return makeRawRequest(
+        "POST",
+        "/api/proxy/stt",
+        bodyFromRequest(parsed),
+        signal
+      );
+    },
+    { schema: SimpleFunctionsBodyRequestSchema }
+  );
+
+  const proxy = {
+    tts: proxyTts,
+    stt: proxyStt,
+  };
+
+  // GET https://simplefunctions.dev/api/x/search{query}
+  // Docs: https://docs.simplefunctions.dev/inventory/surface-map
+  const xSearch = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/x/search${queryFromRequest(req)}`,
+    "/api/x/search"
+  );
+
+  // GET https://simplefunctions.dev/api/x/volume{query}
+  // Docs: https://docs.simplefunctions.dev/inventory/surface-map
+  const xVolume = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/x/volume${queryFromRequest(req)}`,
+    "/api/x/volume"
+  );
+
+  // GET https://simplefunctions.dev/api/x/news{query}
+  // Docs: https://docs.simplefunctions.dev/inventory/surface-map
+  const xNews = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/x/news${queryFromRequest(req)}`,
+    "/api/x/news"
+  );
+
+  // GET https://simplefunctions.dev/api/x/account{query}
+  // Docs: https://docs.simplefunctions.dev/inventory/surface-map
+  const xAccount = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/x/account${queryFromRequest(req)}`,
+    "/api/x/account"
+  );
+
+  const x = {
+    search: xSearch,
+    volume: xVolume,
+    news: xNews,
+    account: xAccount,
+  };
+
+  // GET https://simplefunctions.dev/api/dashboard2/market-watch-v2{query}
+  // Docs: https://docs.simplefunctions.dev/api-reference/market-watch
+  const marketWatchV2 = jsonGet<SimpleFunctionsOptionalQueryRequest>(
+    SimpleFunctionsOptionalQueryRequestSchema,
+    (req) => `/api/dashboard2/market-watch-v2${queryFromRequest(req)}`,
+    "/api/dashboard2/market-watch-v2",
+    false
+  );
+
+  // POST https://simplefunctions.dev/api/dashboard2/market-watch/panels
+  // Docs: https://docs.simplefunctions.dev/api-reference/market-watch
+  const marketWatchPanelsCreate = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/dashboard2/market-watch/panels",
+    "/api/dashboard2/market-watch/panels",
+    [],
+    false
+  );
+
+  // PATCH https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/market-watch
+  const marketWatchPanelsUpdate = jsonBody<SimpleFunctionsIdRequest>(
+    "PATCH",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/dashboard2/market-watch/panels/${requestId(req)}`,
+    "/api/dashboard2/market-watch/panels/{id}",
+    ["id"],
+    false
+  );
+
+  // DELETE https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}
+  // Docs: https://docs.simplefunctions.dev/api-reference/market-watch
+  const marketWatchPanelsDelete = jsonBody<SimpleFunctionsIdRequest>(
+    "DELETE",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/dashboard2/market-watch/panels/${requestId(req)}`,
+    "/api/dashboard2/market-watch/panels/{id}",
+    ["id"],
+    false
+  );
+
+  // POST https://simplefunctions.dev/api/dashboard2/market-watch/panels/reorder
+  // Docs: https://docs.simplefunctions.dev/api-reference/market-watch
+  const marketWatchPanelsReorder = jsonBody<SimpleFunctionsRecordRequest>(
+    "POST",
+    SimpleFunctionsRecordRequestSchema,
+    () => "/api/dashboard2/market-watch/panels/reorder",
+    "/api/dashboard2/market-watch/panels/reorder",
+    [],
+    false
+  );
+
+  // sig-ok: run is an action method on the panel resource.
+  // POST https://simplefunctions.dev/api/dashboard2/market-watch/panels/{id}/run
+  // Docs: https://docs.simplefunctions.dev/api-reference/market-watch
+  const marketWatchPanelsRun = jsonBody<SimpleFunctionsIdRequest>(
+    "POST",
+    SimpleFunctionsIdRequestSchema,
+    (req) => `/api/dashboard2/market-watch/panels/${requestId(req)}/run`,
+    "/api/dashboard2/market-watch/panels/{id}/run",
+    ["id"],
+    false
+  );
+
+  const dashboard2 = {
+    marketWatchV2,
+    marketWatch: {
+      panels: {
+        create: marketWatchPanelsCreate,
+        update: marketWatchPanelsUpdate,
+        delete: marketWatchPanelsDelete,
+        reorder: marketWatchPanelsReorder,
+        run: marketWatchPanelsRun,
+      },
+    },
+  };
+
   const publicApi = {
     query,
     market,
@@ -2293,10 +3788,39 @@ export function createSimpleFunctions(
       inspect,
       feed: agentFeed,
     },
+    auth: {
+      cli: authCli,
+    },
     calibration,
     changes,
+    contracts: {
+      tools: contractTools,
+    },
+    dashboard: {
+      usage: dashboardUsage,
+    },
+    dashboard2,
     edges,
+    feed,
+    intents,
+    keys,
+    mcp,
+    portfolio,
+    prompt,
+    proxy,
     public: publicApi,
+    runtime: {
+      exec: runtimeExec,
+    },
+    signup,
+    skills: apiSkills,
+    thesis: authThesis,
+    tools,
+    watch,
+    alertRules,
+    webhookEndpoints,
+    alertDeliveries,
+    x,
   };
   const data: SimpleFunctionsDataNamespace = {
     v1: {
@@ -2320,8 +3844,189 @@ export function createSimpleFunctions(
     },
     post: {
       api: {
+        auth: {
+          cli: authCli,
+        },
+        dashboard2: {
+          marketWatch: {
+            panels: {
+              create: marketWatchPanelsCreate,
+              reorder: marketWatchPanelsReorder,
+              run: marketWatchPanelsRun,
+            },
+          },
+        },
+        intents: {
+          create: intentsCreate,
+        },
+        keys: {
+          create: keysCreate,
+        },
+        mcp: {
+          call: mcpCall,
+        },
+        portfolio: {
+          ledger: {
+            import: portfolioLedgerImport,
+          },
+          secrets: {
+            create: portfolioSecretsCreate,
+          },
+          strategy: {
+            create: portfolioStrategyCreate,
+          },
+          ticks: {
+            create: portfolioTicksCreate,
+          },
+          trades: {
+            create: portfolioTradesCreate,
+          },
+          trigger: portfolioTrigger,
+          views: {
+            create: portfolioViewsCreate,
+          },
+        },
+        proxy,
         public: {
           discuss,
+        },
+        runtime: {
+          exec: {
+            trigger: runtimeExecTrigger,
+          },
+        },
+        signup,
+        thesis: {
+          create: thesisCreate,
+          signal: thesisSignal,
+          evaluate: thesisEvaluate,
+          augment: thesisAugment,
+          nodes: thesisNodes,
+          fork: thesisFork,
+          whatif: thesisWhatif,
+          positions: {
+            create: thesisPositionsCreate,
+          },
+          strategies: {
+            create: thesisStrategiesCreate,
+          },
+          publish: thesisPublish,
+          videos: {
+            create: thesisVideosCreate,
+          },
+        },
+        watch: {
+          create: watchCreate,
+          identify: watchIdentify,
+          refresh: watchRefresh,
+        },
+        alertRules: {
+          create: alertRulesCreate,
+          test: alertRulesTest,
+        },
+        webhookEndpoints: {
+          create: webhookEndpointsCreate,
+          test: webhookEndpointsTest,
+        },
+      },
+    },
+    put: {
+      api: {
+        portfolio: {
+          config: {
+            update: portfolioConfigUpdate,
+          },
+          state: {
+            update: portfolioStateUpdate,
+          },
+          strategy: {
+            update: portfolioStrategyUpdate,
+          },
+          views: {
+            update: portfolioViewsUpdate,
+          },
+        },
+      },
+    },
+    patch: {
+      api: {
+        dashboard2: {
+          marketWatch: {
+            panels: {
+              update: marketWatchPanelsUpdate,
+            },
+          },
+        },
+        intents: {
+          update: intentsUpdate,
+        },
+        thesis: {
+          update: thesisUpdate,
+          heartbeat: {
+            update: thesisHeartbeatUpdate,
+          },
+          positions: {
+            update: thesisPositionsUpdate,
+          },
+          strategies: {
+            update: thesisStrategiesUpdate,
+          },
+        },
+        watch: {
+          update: watchUpdate,
+        },
+        alertRules: {
+          update: alertRulesUpdate,
+        },
+        webhookEndpoints: {
+          update: webhookEndpointsUpdate,
+        },
+      },
+    },
+    delete: {
+      api: {
+        dashboard2: {
+          marketWatch: {
+            panels: {
+              delete: marketWatchPanelsDelete,
+            },
+          },
+        },
+        intents: {
+          delete: intentsDelete,
+        },
+        keys: {
+          delete: keysDelete,
+        },
+        portfolio: {
+          secrets: {
+            delete: portfolioSecretsDelete,
+          },
+          strategy: {
+            delete: portfolioStrategyDelete,
+          },
+          views: {
+            delete: portfolioViewsDelete,
+          },
+        },
+        thesis: {
+          delete: thesisDelete,
+          unpublish: thesisUnpublish,
+          positions: {
+            delete: thesisPositionsDelete,
+          },
+          strategies: {
+            delete: thesisStrategiesDelete,
+          },
+        },
+        watch: {
+          delete: watchDelete,
+        },
+        alertRules: {
+          delete: alertRulesDelete,
+        },
+        webhookEndpoints: {
+          delete: webhookEndpointsDelete,
         },
       },
     },

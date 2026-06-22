@@ -366,6 +366,8 @@ const PROVIDER_NOTES = new Map([
       "calls use `https://simplefunctions.dev`, while real-time market-data",
       "calls under `simplefunctions.data.v1.*` use the separate",
       "`https://data.simplefunctions.dev/v1` data API base URL.",
+      "Authenticated dashboard, thesis, portfolio, alerting, tool, and runtime",
+      "routes also live under `simplefunctions.api.*` on the analytical host.",
       "`simplefunctions.api.public.market({ ticker })` mirrors",
       "`sf inspect <ticker> --json`; pass `depth: true` for the public",
       "orderbook view used by `sf book <ticker> --json`.",
@@ -498,6 +500,31 @@ function renderSimpleFunctionsPublicMarketGuide() {
     "`GET /api/public/regime/history` is deprecated and returns `410 Gone`.",
     "Use `regime.scan` for current regime labels and",
     "`marketMicrostructureHistory` for spread/depth history.",
+    "",
+  ].join("\n");
+}
+
+function renderSimpleFunctionsAuthenticatedGuide() {
+  return [
+    "## Authenticated APIs",
+    "",
+    "Passing `createSimpleFunctions({ apiKey })` adds",
+    "`Authorization: Bearer ...` to authenticated dashboard, thesis,",
+    "portfolio, alerting, tool, and runtime routes. The CLI-auth and",
+    "session-oriented Market Watch routes can also be called with a custom",
+    "`fetch` implementation that supplies browser/session cookies instead of",
+    "a local API key.",
+    "",
+    "| Group | Methods | Purpose |",
+    "|-------|---------|---------|",
+    "| API keys and auth | `api.keys`, `api.keys.create`, `api.keys.delete`, `api.auth.cli.*`, `api.signup` | API-key lifecycle, CLI login handshakes, and signup. |",
+    "| Account | `api.feed`, `api.dashboard.usage` | Authenticated feed and usage telemetry. |",
+    "| Theses | `api.thesis.*` | Create, retrieve, update, fork, evaluate, augment, publish, and attach positions, strategies, videos, or context to private theses. |",
+    "| Portfolio | `api.portfolio.*` | Portfolio state, config, ticks, trades, ledger imports, fills, positions, activity, attribution, risk, views, strategy, secrets, and triggers. |",
+    "| Execution | `api.intents.*`, `api.runtime.exec.*` | Execution-intent lifecycle and runtime execution triggers. |",
+    "| Watch and alerts | `api.watch.*`, `api.alertRules.*`, `api.webhookEndpoints.*`, `api.alertDeliveries.*` | Watch objects, alert rules, webhook endpoints, delivery history, and test/refresh actions. |",
+    "| Tools | `api.contracts.tools`, `api.tools`, `api.skills`, `api.prompt`, `api.mcp.*`, `api.proxy.*` | Tool catalogs, prompt payloads, MCP transport, and raw speech proxy responses. |",
+    "| Market Watch | `api.dashboard2.marketWatchV2`, `api.dashboard2.marketWatch.panels.*` | Session-backed Market Watch dashboard reads and panel CRUD. |",
     "",
   ].join("\n");
 }
@@ -2627,7 +2654,7 @@ const DEP_NOTES = {
 
 const PROVIDER_DEP_NOTES = {
   simplefunctions: {
-    zod: "request schemas attached to every GET endpoint as `.schema`",
+    zod: "request schemas attached to provider endpoints as `.schema`",
   },
 };
 
@@ -2738,6 +2765,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "simplefunctions") {
     sections.push(renderSimpleFunctionsPublicMarketGuide());
+    sections.push(renderSimpleFunctionsAuthenticatedGuide());
   }
 
   if (providerName === "xai") {

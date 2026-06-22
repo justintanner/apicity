@@ -5,6 +5,7 @@ import type {
   SimpleFunctionsBriefingRequest,
   SimpleFunctionsCalendarRequest,
   SimpleFunctionsCalibrationRequest,
+  SimpleFunctionsBodyRequest,
   SimpleFunctionsCandlesRequest,
   SimpleFunctionsChangesRequest,
   SimpleFunctionsCongressMemberRequest,
@@ -19,6 +20,7 @@ import type {
   SimpleFunctionsFeaturedMarketsRequest,
   SimpleFunctionsFredRequest,
   SimpleFunctionsGovQueryRequest,
+  SimpleFunctionsIdRequest,
   SimpleFunctionsIdeaRequest,
   SimpleFunctionsIndexHistoryRequest,
   SimpleFunctionsInspectRequest,
@@ -29,19 +31,26 @@ import type {
   SimpleFunctionsMicrostructureHistoryRequest,
   SimpleFunctionsMoversRequest,
   SimpleFunctionsNoRequest,
+  SimpleFunctionsOptionalQueryRequest,
   SimpleFunctionsOddsRequest,
+  SimpleFunctionsPositionRequest,
   SimpleFunctionsPublicListRequest,
   SimpleFunctionsPublicSearchRequest,
   SimpleFunctionsQueryRequest,
+  SimpleFunctionsRecordRequest,
   SimpleFunctionsRegimeScanRequest,
   SimpleFunctionsScanRequest,
   SimpleFunctionsScreenByTickersRequest,
   SimpleFunctionsScreenRequest,
   SimpleFunctionsSearchRequest,
   SimpleFunctionsSlugRequest,
+  SimpleFunctionsStrategyRequest,
   SimpleFunctionsTicker,
+  SimpleFunctionsTickerPathRequest,
   SimpleFunctionsTickerRequest,
+  SimpleFunctionsTokenRequest,
   SimpleFunctionsTradesRequest,
+  SimpleFunctionsTransportRequest,
   SimpleFunctionsWorldDeltaRequest,
   SimpleFunctionsWorldPathRequest,
   SimpleFunctionsWorldRequest,
@@ -56,6 +65,7 @@ export type {
   SimpleFunctionsCalibrationPeriod,
   SimpleFunctionsCalibrationRequest,
   SimpleFunctionsCalibrationSource,
+  SimpleFunctionsBodyRequest,
   SimpleFunctionsCandlesRequest,
   SimpleFunctionsChangesRequest,
   SimpleFunctionsCongressMemberRequest,
@@ -72,6 +82,7 @@ export type {
   SimpleFunctionsFredRequest,
   SimpleFunctionsGovQueryRequest,
   SimpleFunctionsGovSource,
+  SimpleFunctionsIdRequest,
   SimpleFunctionsIdeaRequest,
   SimpleFunctionsIndexHistoryRequest,
   SimpleFunctionsInspectRequest,
@@ -88,12 +99,15 @@ export type {
   SimpleFunctionsMoversRequest,
   SimpleFunctionsNextActions,
   SimpleFunctionsNoRequest,
+  SimpleFunctionsOptionalQueryRequest,
   SimpleFunctionsOddsBand,
   SimpleFunctionsOddsRequest,
   SimpleFunctionsOptions,
+  SimpleFunctionsPositionRequest,
   SimpleFunctionsPublicListRequest,
   SimpleFunctionsPublicSearchRequest,
   SimpleFunctionsQueryRequest,
+  SimpleFunctionsRecordRequest,
   SimpleFunctionsRegimeScanRequest,
   SimpleFunctionsScanRequest,
   SimpleFunctionsScreenByTickersRequest,
@@ -102,9 +116,13 @@ export type {
   SimpleFunctionsSource,
   SimpleFunctionsStrict,
   SimpleFunctionsSlugRequest,
+  SimpleFunctionsStrategyRequest,
   SimpleFunctionsTicker,
+  SimpleFunctionsTickerPathRequest,
   SimpleFunctionsTickerRequest,
+  SimpleFunctionsTokenRequest,
   SimpleFunctionsTradesRequest,
+  SimpleFunctionsTransportRequest,
   SimpleFunctionsVenue,
   SimpleFunctionsWorldDeltaRequest,
   SimpleFunctionsWorldOperation,
@@ -649,6 +667,197 @@ export interface SimpleFunctionsOptionalMethod<
   schema: z.ZodType<TRequest>;
 }
 
+export interface SimpleFunctionsTextMethod<TRequest> {
+  (req: TRequest, signal?: AbortSignal): Promise<string>;
+  schema: z.ZodType<TRequest>;
+}
+
+export interface SimpleFunctionsOptionalTextMethod<TRequest> {
+  (req?: TRequest, signal?: AbortSignal): Promise<string>;
+  schema: z.ZodType<TRequest>;
+}
+
+export interface SimpleFunctionsRawMethod<TRequest> {
+  (req: TRequest, signal?: AbortSignal): Promise<Response>;
+  schema: z.ZodType<TRequest>;
+}
+
+export interface SimpleFunctionsKeysMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsBodyRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsAuthCliMethod extends SimpleFunctionsMethod<SimpleFunctionsBodyRequest> {
+  poll: SimpleFunctionsMethod<SimpleFunctionsTokenRequest>;
+  complete: SimpleFunctionsMethod<SimpleFunctionsBodyRequest>;
+}
+
+export interface SimpleFunctionsThesisPositionsNamespace {
+  list: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  create: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsPositionRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsPositionRequest>;
+}
+
+export interface SimpleFunctionsThesisStrategiesNamespace {
+  list: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  create: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsStrategyRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsStrategyRequest>;
+}
+
+export interface SimpleFunctionsThesisHeartbeatNamespace {
+  get: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsThesisVideosNamespace {
+  list: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  create: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsThesisMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsBodyRequest>;
+  retrieve: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  byTicker: SimpleFunctionsMethod<SimpleFunctionsTickerPathRequest>;
+  signal: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  evaluate: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  augment: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  nodes: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  fork: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  whatif: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  context: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  changes: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  prompt: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  evaluations: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  heartbeat: SimpleFunctionsThesisHeartbeatNamespace;
+  positions: SimpleFunctionsThesisPositionsNamespace;
+  strategies: SimpleFunctionsThesisStrategiesNamespace;
+  publish: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  unpublish: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  videos: SimpleFunctionsThesisVideosNamespace;
+  videoData: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsPortfolioResourceMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  update: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsPortfolioRowsMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  retrieve: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsPortfolioLedgerImportNamespace {
+  kalshi: SimpleFunctionsMethod<SimpleFunctionsRecordRequest> & {
+    pull: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  };
+  polymarket: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsPortfolioLedgerMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  import: SimpleFunctionsPortfolioLedgerImportNamespace;
+}
+
+export interface SimpleFunctionsPortfolioCrudBodyMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsPortfolioSecretsMethod {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  delete: SimpleFunctionsOptionalMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsPortfolioNamespace {
+  state: SimpleFunctionsPortfolioResourceMethod;
+  config: SimpleFunctionsPortfolioResourceMethod;
+  ticks: SimpleFunctionsPortfolioRowsMethod;
+  trades: SimpleFunctionsPortfolioRowsMethod;
+  ledger: SimpleFunctionsPortfolioLedgerMethod;
+  fills: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  positions: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  activity: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  attribution: {
+    daily: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+    grouped: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  };
+  risk: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  views: SimpleFunctionsPortfolioCrudBodyMethod;
+  strategy: SimpleFunctionsPortfolioCrudBodyMethod;
+  secrets: SimpleFunctionsPortfolioSecretsMethod;
+  trigger: SimpleFunctionsOptionalMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsIntentsMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  retrieve: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsRuntimeExecMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  trigger: SimpleFunctionsOptionalMethod<SimpleFunctionsRecordRequest>;
+}
+
+export interface SimpleFunctionsWatchedObjectsMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  identify: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  retrieve: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  refresh: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsAlertRulesMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  retrieve: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  test: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsWebhookEndpointsMethod extends SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest> {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  test: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsMcpMethod extends SimpleFunctionsTextMethod<SimpleFunctionsTransportRequest> {
+  call: SimpleFunctionsMethod<SimpleFunctionsTransportRequest>;
+}
+
+export interface SimpleFunctionsProxyNamespace {
+  tts: SimpleFunctionsRawMethod<SimpleFunctionsBodyRequest>;
+  stt: SimpleFunctionsRawMethod<SimpleFunctionsBodyRequest>;
+}
+
+export interface SimpleFunctionsXNamespace {
+  search: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  volume: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  news: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  account: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+}
+
+export interface SimpleFunctionsMarketWatchPanelsMethod {
+  create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+  reorder: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  run: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+}
+
+export interface SimpleFunctionsDashboard2Namespace {
+  marketWatchV2: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  marketWatch: {
+    panels: SimpleFunctionsMarketWatchPanelsMethod;
+  };
+}
+
 export interface SimpleFunctionsMarketMethod extends SimpleFunctionsMarketDetailMethod {
   history: SimpleFunctionsMarketHistoryMethod;
   candles: SimpleFunctionsMethod<SimpleFunctionsMarketCandlesRequest>;
@@ -744,10 +953,39 @@ export interface SimpleFunctionsApiAgentNamespace {
 
 export interface SimpleFunctionsApiNamespace {
   agent: SimpleFunctionsApiAgentNamespace;
+  auth: {
+    cli: SimpleFunctionsAuthCliMethod;
+  };
   calibration: SimpleFunctionsOptionalMethod<SimpleFunctionsCalibrationRequest>;
   changes: SimpleFunctionsOptionalMethod<SimpleFunctionsChangesRequest>;
+  contracts: {
+    tools: SimpleFunctionsOptionalMethod<SimpleFunctionsEmptyRequest>;
+  };
+  dashboard: {
+    usage: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  };
+  dashboard2: SimpleFunctionsDashboard2Namespace;
   edges: SimpleFunctionsOptionalMethod<SimpleFunctionsEdgesRequest>;
+  feed: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  intents: SimpleFunctionsIntentsMethod;
+  keys: SimpleFunctionsKeysMethod;
+  mcp: SimpleFunctionsMcpMethod;
+  portfolio: SimpleFunctionsPortfolioNamespace;
+  prompt: SimpleFunctionsOptionalMethod<SimpleFunctionsEmptyRequest>;
+  proxy: SimpleFunctionsProxyNamespace;
   public: SimpleFunctionsApiPublicNamespace;
+  runtime: {
+    exec: SimpleFunctionsRuntimeExecMethod;
+  };
+  signup: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+  skills: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  thesis: SimpleFunctionsThesisMethod;
+  tools: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  watch: SimpleFunctionsWatchedObjectsMethod;
+  alertRules: SimpleFunctionsAlertRulesMethod;
+  webhookEndpoints: SimpleFunctionsWebhookEndpointsMethod;
+  alertDeliveries: SimpleFunctionsOptionalMethod<SimpleFunctionsOptionalQueryRequest>;
+  x: SimpleFunctionsXNamespace;
 }
 
 export interface SimpleFunctionsDataV1Namespace {
@@ -772,8 +1010,192 @@ export interface SimpleFunctionsGetNamespace {
 
 export interface SimpleFunctionsPostNamespace {
   api: {
+    auth: {
+      cli: SimpleFunctionsAuthCliMethod;
+    };
+    dashboard2: {
+      marketWatch: {
+        panels: {
+          create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+          reorder: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+          run: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+        };
+      };
+    };
+    intents: {
+      create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+    };
+    keys: {
+      create: SimpleFunctionsMethod<SimpleFunctionsBodyRequest>;
+    };
+    mcp: {
+      call: SimpleFunctionsMethod<SimpleFunctionsTransportRequest>;
+    };
+    portfolio: {
+      ledger: {
+        import: SimpleFunctionsPortfolioLedgerImportNamespace;
+      };
+      secrets: {
+        create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      strategy: {
+        create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      ticks: {
+        create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      trades: {
+        create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      trigger: SimpleFunctionsOptionalMethod<SimpleFunctionsRecordRequest>;
+      views: {
+        create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+    };
+    proxy: SimpleFunctionsProxyNamespace;
     public: {
       discuss: SimpleFunctionsMethod<SimpleFunctionsDiscussRequest>;
+    };
+    runtime: {
+      exec: {
+        trigger: SimpleFunctionsOptionalMethod<SimpleFunctionsRecordRequest>;
+      };
+    };
+    signup: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+    thesis: {
+      create: SimpleFunctionsMethod<SimpleFunctionsBodyRequest>;
+      signal: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      evaluate: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      augment: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      nodes: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      fork: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      whatif: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      positions: {
+        create: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      };
+      strategies: {
+        create: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      };
+      publish: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      videos: {
+        create: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      };
+    };
+    watch: {
+      create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      identify: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      refresh: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    alertRules: {
+      create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      test: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    webhookEndpoints: {
+      create: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      test: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+  };
+}
+
+export interface SimpleFunctionsPutNamespace {
+  api: {
+    portfolio: {
+      config: {
+        update: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      state: {
+        update: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      strategy: {
+        update: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      views: {
+        update: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+    };
+  };
+}
+
+export interface SimpleFunctionsPatchNamespace {
+  api: {
+    dashboard2: {
+      marketWatch: {
+        panels: {
+          update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+        };
+      };
+    };
+    intents: {
+      update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    thesis: {
+      update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      heartbeat: {
+        update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      };
+      positions: {
+        update: SimpleFunctionsMethod<SimpleFunctionsPositionRequest>;
+      };
+      strategies: {
+        update: SimpleFunctionsMethod<SimpleFunctionsStrategyRequest>;
+      };
+    };
+    watch: {
+      update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    alertRules: {
+      update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    webhookEndpoints: {
+      update: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+  };
+}
+
+export interface SimpleFunctionsDeleteNamespace {
+  api: {
+    dashboard2: {
+      marketWatch: {
+        panels: {
+          delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+        };
+      };
+    };
+    intents: {
+      delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    keys: {
+      delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    portfolio: {
+      secrets: {
+        delete: SimpleFunctionsOptionalMethod<SimpleFunctionsRecordRequest>;
+      };
+      strategy: {
+        delete: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+      views: {
+        delete: SimpleFunctionsMethod<SimpleFunctionsRecordRequest>;
+      };
+    };
+    thesis: {
+      delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      unpublish: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+      positions: {
+        delete: SimpleFunctionsMethod<SimpleFunctionsPositionRequest>;
+      };
+      strategies: {
+        delete: SimpleFunctionsMethod<SimpleFunctionsStrategyRequest>;
+      };
+    };
+    watch: {
+      delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    alertRules: {
+      delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
+    };
+    webhookEndpoints: {
+      delete: SimpleFunctionsMethod<SimpleFunctionsIdRequest>;
     };
   };
 }
@@ -783,4 +1205,7 @@ export interface SimpleFunctionsProvider {
   data: SimpleFunctionsDataNamespace;
   get: SimpleFunctionsGetNamespace;
   post: SimpleFunctionsPostNamespace;
+  put: SimpleFunctionsPutNamespace;
+  patch: SimpleFunctionsPatchNamespace;
+  delete: SimpleFunctionsDeleteNamespace;
 }

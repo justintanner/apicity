@@ -89,11 +89,61 @@ const PositiveLimitSchema = z.number().int().min(1);
 const OptionalBooleanSchema = z.boolean().optional();
 const OptionalStringSchema = z.string().min(1).optional();
 const UnknownRecordSchema = z.record(z.string(), z.unknown());
+const QueryParamValueSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+  z.array(z.string()),
+]);
+const QueryParamSchema = QueryParamValueSchema.optional();
+const QueryRecordSchema = z.record(z.string(), QueryParamSchema);
 const NullableNumberSchema = z.number().nullable().optional();
 const NullableStringSchema = z.string().nullable().optional();
 const NullableBooleanSchema = z.boolean().nullable().optional();
 
 export const SimpleFunctionsEmptyRequestSchema = z.object({});
+export const SimpleFunctionsRecordRequestSchema = UnknownRecordSchema;
+export const SimpleFunctionsOptionalQueryRequestSchema = z
+  .object({})
+  .catchall(QueryParamSchema);
+export const SimpleFunctionsIdRequestSchema = z
+  .object({
+    id: NonEmptyStringSchema,
+  })
+  .catchall(z.unknown());
+export const SimpleFunctionsTickerPathRequestSchema = z
+  .object({
+    ticker: NonEmptyStringSchema,
+  })
+  .catchall(z.unknown());
+export const SimpleFunctionsTokenRequestSchema = z.object({
+  token: NonEmptyStringSchema,
+});
+export const SimpleFunctionsTransportRequestSchema = z
+  .object({
+    transport: NonEmptyStringSchema,
+  })
+  .catchall(z.unknown());
+export const SimpleFunctionsPositionRequestSchema = z
+  .object({
+    id: NonEmptyStringSchema,
+    posId: NonEmptyStringSchema,
+  })
+  .catchall(z.unknown());
+export const SimpleFunctionsStrategyRequestSchema = z
+  .object({
+    id: NonEmptyStringSchema,
+    sid: NonEmptyStringSchema,
+  })
+  .catchall(z.unknown());
+export const SimpleFunctionsBodyRequestSchema = z
+  .object({
+    body: z.unknown().optional(),
+    query: QueryRecordSchema.optional(),
+  })
+  .catchall(z.unknown());
+export const SimpleFunctionsOptionalBodyRequestSchema =
+  SimpleFunctionsBodyRequestSchema.optional();
 
 export const SimpleFunctionsQueryRequestSchema = z.object({
   q: QueryStringSchema,
@@ -543,6 +593,36 @@ export type SimpleFunctionsCalibrationPeriod = z.infer<
 >;
 export type SimpleFunctionsEmptyRequest = z.infer<
   typeof SimpleFunctionsEmptyRequestSchema
+>;
+export type SimpleFunctionsRecordRequest = z.infer<
+  typeof SimpleFunctionsRecordRequestSchema
+>;
+export type SimpleFunctionsOptionalQueryRequest = z.infer<
+  typeof SimpleFunctionsOptionalQueryRequestSchema
+>;
+export type SimpleFunctionsIdRequest = z.infer<
+  typeof SimpleFunctionsIdRequestSchema
+>;
+export type SimpleFunctionsTickerPathRequest = z.infer<
+  typeof SimpleFunctionsTickerPathRequestSchema
+>;
+export type SimpleFunctionsTokenRequest = z.infer<
+  typeof SimpleFunctionsTokenRequestSchema
+>;
+export type SimpleFunctionsTransportRequest = z.infer<
+  typeof SimpleFunctionsTransportRequestSchema
+>;
+export type SimpleFunctionsPositionRequest = z.infer<
+  typeof SimpleFunctionsPositionRequestSchema
+>;
+export type SimpleFunctionsStrategyRequest = z.infer<
+  typeof SimpleFunctionsStrategyRequestSchema
+>;
+export type SimpleFunctionsBodyRequest = z.infer<
+  typeof SimpleFunctionsBodyRequestSchema
+>;
+export type SimpleFunctionsOptionalBodyRequest = z.infer<
+  typeof SimpleFunctionsOptionalBodyRequestSchema
 >;
 export type SimpleFunctionsQueryRequest = z.infer<
   typeof SimpleFunctionsQueryRequestSchema

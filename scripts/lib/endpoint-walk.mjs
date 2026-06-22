@@ -443,6 +443,9 @@ function findDeclarationsByName(fromNode, name) {
 
 function isAsyncCallable(node) {
   if (!node) return false;
+  if (node.getKind() === SyntaxKind.CallExpression) {
+    return !!extractEndpointFactoryCall(node);
+  }
   const k = node.getKind();
   if (
     k === SyntaxKind.ArrowFunction ||
@@ -457,6 +460,12 @@ function isAsyncCallable(node) {
 }
 
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD"];
+
+const ENDPOINT_FACTORY_HELPERS = new Set([
+  "jsonGet",
+  "jsonBody",
+  "jsonOptionalBody",
+]);
 
 // Helper-function name → implied HTTP method when first arg is a path.
 const HELPER_METHOD_HINTS = {
@@ -521,6 +530,10 @@ const HELPER_BASE_URLS = {
 function extractMethodAndPath(fnNode, visited = new Set()) {
   if (visited.has(fnNode)) return { method: null, path: null };
   visited.add(fnNode);
+  if (fnNode.getKind() === SyntaxKind.CallExpression) {
+    const helper = extractEndpointFactoryCall(fnNode);
+    if (helper) return helper;
+  }
   const body = fnNode.getBody?.();
   if (!body) return { method: null, path: null };
 
@@ -670,6 +683,37 @@ function extractMethodAndPath(fnNode, visited = new Set()) {
   }
 
   return { method: null, path: null };
+}
+
+function extractEndpointFactoryCall(call) {
+  const expr = call.getExpression();
+  if (expr.getKind() !== SyntaxKind.Identifier) return null;
+  const helper = expr.getText();
+  if (!ENDPOINT_FACTORY_HELPERS.has(helper)) return null;
+
+  const args = call.getArguments();
+  let method = null;
+  let pathBuilder = null;
+  let pathArg = null;
+
+  if (helper === "jsonGet") {
+    method = "GET";
+    pathBuilder = args[1] ?? null;
+    pathArg = args[2] ?? null;
+  } else {
+    const methodArg = args[0];
+    if (methodArg?.getKind() === SyntaxKind.StringLiteral) {
+      method = methodArg.getLiteralText().toUpperCase();
+    }
+    pathBuilder = args[2] ?? null;
+    pathArg = args[3] ?? null;
+  }
+
+  let path = extractPath(pathArg);
+  if (path && pathBuilder?.getText().match(/queryFrom|buildQuery/)) {
+    path += "{query}";
+  }
+  return { method, path };
 }
 
 /**
@@ -887,6 +931,10 @@ function* walkReturnTree(node, pathStack, visited) {
       k === SyntaxKind.FunctionExpression ||
       k === SyntaxKind.FunctionDeclaration
     ) {
+      yield { dotPath: pathStack.slice(), leafNode: n };
+      continue;
+    }
+    if (k === SyntaxKind.CallExpression && extractEndpointFactoryCall(n)) {
       yield { dotPath: pathStack.slice(), leafNode: n };
       continue;
     }

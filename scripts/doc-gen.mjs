@@ -277,6 +277,19 @@ function formatUsageSnippet(providerName, dotPath) {
       "});",
     ].join("\n");
   }
+  if (
+    providerName === "simplefunctions" &&
+    dotPath === "api.public.market.candles"
+  ) {
+    return [
+      `const res = await ${call}({`,
+      '  ticker: "KXRATECUT-26DEC31",',
+      '  venue: "kalshi",',
+      '  timeframe: "1m",',
+      "  limit: 500,",
+      "});",
+    ].join("\n");
+  }
   return `const res = await ${call}({ /* ... */ });`;
 }
 
@@ -418,6 +431,73 @@ function renderBinancePublicDataGuide() {
     "checksum files for historical Spot, USD-M, and COIN-M datasets. It is",
     "intentionally outside this JSON REST provider; archive downloads need",
     "separate binary/checksum handling and tests.",
+    "",
+  ].join("\n");
+}
+
+function renderSimpleFunctionsPublicMarketGuide() {
+  return [
+    "## Public Market APIs",
+    "",
+    "`simplefunctions.api.public.*` mirrors the hosted `/api/public/*`",
+    "surface on `https://simplefunctions.dev`. Most basic reads work without",
+    "an API key. Passing `createSimpleFunctions({ apiKey })` adds the",
+    "`Authorization: Bearer ...` header and may unlock higher rate limits,",
+    "higher model tiers, or user-specific overlays on routes that support",
+    "them.",
+    "",
+    "Most public routes are CDN cached with `Cache-Control: public,",
+    "s-maxage=N`; route TTLs vary. Common TTLs are: markets, scan, and",
+    "screen at 60 seconds; query, query-gov, and query-econ at 5-10 minutes",
+    "in memory plus 5 minute CDN stale-while-revalidate; index and regime at",
+    "30 seconds; legislation and congress members at 1 hour ISR.",
+    "",
+    "| Group | Methods | Purpose |",
+    "|-------|---------|---------|",
+    "| Markets | `markets`, `newmarkets`, `scan`, `screen`, `screenByTickers`, `search`, `market`, `market.history`, `marketMicrostructureHistory`, `liveTickers`, `market.candles` | Market universe, recently listed markets, keyword/series/market scans, indicator screens, explicit ticker screens, search, detail, history, spread/depth/flow history, live-priced tickers, and OHLCV candles. |",
+    "| Cross-venue | `crossVenue.pairs`, `crossVenue.stats` | Kalshi to Polymarket pairs, pair counts, and confidence distribution. |",
+    "| Regime and index | `regime.scan`, `index`, `index.history`, `calibration` | Current regime labels, SimpleFunctions Index v2 gauges, index history, and calibration. |",
+    "| Probability index | `odds`, `oddsMd` | Liquidity-weighted YES probability snapshot for the `/odds` page, refreshed every 15 minutes; `oddsMd` is the Markdown variant for agents, capped at 500 slugs upstream. |",
+    "| Calendar and milestones | `calendar`, `yieldCurves`, `yieldCurves.event` | Upcoming resolutions and event yield curves. |",
+    "| Liquidity and contagion | `liquidityByTheme`, `contagion` | Liquidity grouped by theme and lagging related markets. |",
+    "| Government data | `queryGov`, `legislation`, `legislation.byBillId`, `congress.members`, `congress.member` | Congress-mirror-backed bill, member, and treaty search plus bill/member detail. |",
+    "| Economic data | `queryEcon`, `fred`, `databento`, `tradMarkets` | FRED-mirror-backed series search, FRED details, Databento traditional markets, and traditional market anchors. |",
+    "| Content | `query`, `topic`, `answer`, `glossary`, `glossary.entry`, `guide`, `highlights`, `briefing`, `diff`, `discuss` | Headline cross-venue search, topic and stable answer data, glossary, agent guide, editorial highlights, briefing, daily diff, and discussion topics. |",
+    "| Skills | `skills`, `skill` | Public skill catalog and one skill by slug. |",
+    "| Theses and opinions | `theses`, `thesis`, `opinions`, `opinions.entry` | Public theses and editorial opinions. |",
+    "| Technicals | `technicals`, `technicals.entry` | Technical guides and one guide by slug. |",
+    "| Ideas | `ideas`, `ideas.byId` | Trade ideas and one idea by id. |",
+    "| Context | `context` | Global market context without thesis payloads. |",
+    "",
+    "### Market candles",
+    "",
+    "`simplefunctions.api.public.market.candles` is the hosted API mapping for",
+    "the strict `market.candles` SDK/Agent contract. The Vercel API route",
+    "proxies to the terminal/Fly candle service and normalizes the response",
+    "for SDK consumers.",
+    "",
+    "```typescript",
+    "const candles = await simplefunctions.api.public.market.candles({",
+    '  ticker: "KXRATECUT-26DEC31",',
+    '  venue: "kalshi",',
+    '  timeframe: "1m",',
+    "  limit: 500,",
+    "});",
+    "```",
+    "",
+    "| Parameter | Values | Notes |",
+    "|-----------|--------|-------|",
+    "| `venue` | `kalshi`, `polymarket` | Optional. Use it when the ticker or id is ambiguous. |",
+    "| `timeframe` / `tf` | `1m`, `5m`, `15m`, `1h`, `1d` | Default is `1m`. |",
+    "| `limit` | number | Default is 500, max is 2000 upstream. |",
+    "",
+    "The probability index routes accept `category`, `band`, and `limit`.",
+    "`band` can be `mid` for probabilities near 50% or `moving` for recently",
+    "shifted questions.",
+    "",
+    "`GET /api/public/regime/history` is deprecated and returns `410 Gone`.",
+    "Use `regime.scan` for current regime labels and",
+    "`marketMicrostructureHistory` for spread/depth history.",
     "",
   ].join("\n");
 }
@@ -2654,6 +2734,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "binance") {
     sections.push(renderBinancePublicDataGuide());
+  }
+
+  if (providerName === "simplefunctions") {
+    sections.push(renderSimpleFunctionsPublicMarketGuide());
   }
 
   if (providerName === "xai") {

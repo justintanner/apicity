@@ -1,6 +1,6 @@
 {
   "name": "@apicity/fal",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Fal Platform API provider for model management, pricing, usage, and analytics.",
   "license": "MIT",
   "repository": {

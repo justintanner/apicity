@@ -1,6 +1,6 @@
 {
   "name": "@apicity/dolthub",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "DoltHub API provider for executing SQL and managing Dolt databases.",
   "license": "MIT",
   "repository": {

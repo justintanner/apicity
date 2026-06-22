@@ -7,7 +7,7 @@
 
 SimpleFunctions public analytical and real-time data API provider for prediction-market data.
 
-SimpleFunctions exposes two REST surfaces here: analytical Query API calls use `https://simplefunctions.dev`, while real-time market-data calls under `simplefunctions.data.v1.*` use the separate `https://data.simplefunctions.dev/v1` data API base URL. The current public WebSocket endpoint is `wss://app.simplefunctions.dev/ws`; do not model `wss://data.simplefunctions.dev/v1/ws` as active until upstream routing changes.
+SimpleFunctions exposes two REST surfaces here: analytical Query API calls use `https://simplefunctions.dev`, while real-time market-data calls under `simplefunctions.data.v1.*` use the separate `https://data.simplefunctions.dev/v1` data API base URL. `simplefunctions.api.public.market({ ticker })` mirrors `sf inspect <ticker> --json`; pass `depth: true` for the public orderbook view used by `sf book <ticker> --json`. The current public WebSocket endpoint is `wss://app.simplefunctions.dev/ws`; do not model `wss://data.simplefunctions.dev/v1/ws` as active until upstream routing changes.
 
 Runtime dependencies:
 
@@ -743,7 +743,10 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-detail)
 
 ```typescript
-const res = await simplefunctions.api.public.market({ /* ... */ });
+const res = await simplefunctions.api.public.market({
+  ticker: "KXRATECUT-26DEC31",
+  depth: true,
+});
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)
@@ -773,7 +776,9 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/market-detail)
 
 ```typescript
-const res = await simplefunctions.api.public.market.history({ /* ... */ });
+const res = await simplefunctions.api.public.market.history({
+  ticker: "KXRATECUT-26DEC31",
+});
 ```
 
 Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplefunctions.ts)

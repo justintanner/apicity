@@ -32,7 +32,9 @@ import type {
   SimpleFunctionsInspectResult,
   SimpleFunctionsLegislationRequest,
   SimpleFunctionsMarketCandlesRequest,
+  SimpleFunctionsMarketDetailResponse,
   SimpleFunctionsMarketDetailRequest,
+  SimpleFunctionsMarketHistoryResponse,
   SimpleFunctionsMarketsRequest,
   SimpleFunctionsMarketsResponse,
   SimpleFunctionsMicrostructureHistoryRequest,
@@ -95,6 +97,8 @@ import {
   SimpleFunctionsLegislationRequestSchema,
   SimpleFunctionsMarketCandlesRequestSchema,
   SimpleFunctionsMarketDetailRequestSchema,
+  SimpleFunctionsMarketDetailResponseSchema,
+  SimpleFunctionsMarketHistoryResponseSchema,
   SimpleFunctionsMarketsRequestSchema,
   SimpleFunctionsMicrostructureHistoryRequestSchema,
   SimpleFunctionsMoversRequestSchema,
@@ -884,7 +888,7 @@ export function createSimpleFunctions(
     async (
       req: SimpleFunctionsMarketDetailRequest,
       signal?: AbortSignal
-    ): Promise<Record<string, unknown>> => {
+    ): Promise<SimpleFunctionsMarketDetailResponse> => {
       const parsed = parseWithSchema(
         SimpleFunctionsMarketDetailRequestSchema,
         req
@@ -892,7 +896,7 @@ export function createSimpleFunctions(
       if (parsed.refresh) {
         requireApiKey(opts.apiKey, "refresh=true");
       }
-      const ticker = pathSegment(parsed.ticker);
+      const ticker = pathSegment(parsed.ticker.trim());
       const query = buildQuery({
         depth: parsed.depth,
         refresh: parsed.refresh,
@@ -901,14 +905,17 @@ export function createSimpleFunctions(
         cv_max_dt_days: parsed.cvMaxDtDays,
         nextActions: parsed.nextActions,
       });
-      return makeJsonRequest<Record<string, unknown>>(
+      return makeJsonRequest<SimpleFunctionsMarketDetailResponse>(
         "GET",
         `/api/public/market/${ticker}${query}`,
         undefined,
         signal
       );
     },
-    { schema: SimpleFunctionsMarketDetailRequestSchema }
+    {
+      schema: SimpleFunctionsMarketDetailRequestSchema,
+      responseSchema: SimpleFunctionsMarketDetailResponseSchema,
+    }
   );
 
   // GET https://simplefunctions.dev/api/public/market/{ticker}/history
@@ -917,17 +924,20 @@ export function createSimpleFunctions(
     async (
       req: SimpleFunctionsTickerRequest,
       signal?: AbortSignal
-    ): Promise<Record<string, unknown>> => {
+    ): Promise<SimpleFunctionsMarketHistoryResponse> => {
       const parsed = parseWithSchema(SimpleFunctionsTickerRequestSchema, req);
-      const ticker = pathSegment(parsed.ticker);
-      return makeJsonRequest<Record<string, unknown>>(
+      const ticker = pathSegment(parsed.ticker.trim());
+      return makeJsonRequest<SimpleFunctionsMarketHistoryResponse>(
         "GET",
         `/api/public/market/${ticker}/history`,
         undefined,
         signal
       );
     },
-    { schema: SimpleFunctionsTickerRequestSchema }
+    {
+      schema: SimpleFunctionsTickerRequestSchema,
+      responseSchema: SimpleFunctionsMarketHistoryResponseSchema,
+    }
   );
 
   // GET https://simplefunctions.dev/api/public/market/{ticker}/candles{query}
@@ -941,7 +951,7 @@ export function createSimpleFunctions(
         SimpleFunctionsMarketCandlesRequestSchema,
         req
       );
-      const ticker = pathSegment(parsed.ticker);
+      const ticker = pathSegment(parsed.ticker.trim());
       const query = buildQuery({
         venue: parsed.venue,
         timeframe: parsed.timeframe,

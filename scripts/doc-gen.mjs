@@ -259,6 +259,24 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "simplefunctions" && dotPath === "data.v1.trades") {
     return `const res = await ${call}("KXPRESNOMD-28-GN", { limit: 50 });`;
   }
+  if (providerName === "simplefunctions" && dotPath === "api.public.market") {
+    return [
+      `const res = await ${call}({`,
+      '  ticker: "KXRATECUT-26DEC31",',
+      "  depth: true,",
+      "});",
+    ].join("\n");
+  }
+  if (
+    providerName === "simplefunctions" &&
+    dotPath === "api.public.market.history"
+  ) {
+    return [
+      `const res = await ${call}({`,
+      '  ticker: "KXRATECUT-26DEC31",',
+      "});",
+    ].join("\n");
+  }
   return `const res = await ${call}({ /* ... */ });`;
 }
 
@@ -335,6 +353,9 @@ const PROVIDER_NOTES = new Map([
       "calls use `https://simplefunctions.dev`, while real-time market-data",
       "calls under `simplefunctions.data.v1.*` use the separate",
       "`https://data.simplefunctions.dev/v1` data API base URL.",
+      "`simplefunctions.api.public.market({ ticker })` mirrors",
+      "`sf inspect <ticker> --json`; pass `depth: true` for the public",
+      "orderbook view used by `sf book <ticker> --json`.",
       "The current public WebSocket endpoint is `wss://app.simplefunctions.dev/ws`;",
       "do not model `wss://data.simplefunctions.dev/v1/ws` as active until",
       "upstream routing changes.",

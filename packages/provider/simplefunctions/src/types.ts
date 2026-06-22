@@ -377,6 +377,116 @@ export interface SimpleFunctionsTradesResponse {
   [key: string]: unknown;
 }
 
+export interface SimpleFunctionsMarketDepthLevelObject {
+  price: number;
+  size: number;
+  [key: string]: unknown;
+}
+
+export type SimpleFunctionsMarketDepthLevel =
+  | [price: number, size: number]
+  | SimpleFunctionsMarketDepthLevelObject;
+
+export interface SimpleFunctionsMarketIndicators {
+  tauDays?: number | null;
+  iyYes?: number | null;
+  iyNo?: number | null;
+  cri?: number | null;
+  ee?: number | null;
+  eeSource?: string | null;
+  las?: number | null;
+  cvr?: number | null;
+  overround?: number | null;
+  rv?: number | null;
+  vr?: number | null;
+  iar?: number | null;
+  adjIy?: number | null;
+  daysToEvent?: number | null;
+  expectedVr?: number | null;
+  residualVr?: number | null;
+  hasThesis?: boolean | null;
+  hasOrderbook?: boolean | null;
+  lastComputedAt?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SimpleFunctionsMarketRegime {
+  label?: "maker" | "taker" | "neutral";
+  score?: number | null;
+  adverseSelection?: number | null;
+  adverseSelectionScore?: number | null;
+  signals?: Record<string, unknown>;
+  freshness?: string | number | Record<string, unknown> | null;
+  fresh?: boolean | null;
+  computedAt?: string | null;
+  lastComputedAt?: string | null;
+  [key: string]: unknown;
+}
+
+export interface SimpleFunctionsMarketDetailResponse {
+  ticker: string;
+  venue?: string;
+  title?: string;
+  description?: string | null;
+  price?: number;
+  bestBid?: number;
+  bestAsk?: number;
+  spread?: number;
+  volume?: number;
+  volume24h?: number;
+  openInterest?: number;
+  status?: string;
+  closeTime?: string | number;
+  category?: string;
+  liquidityScore?: number | string;
+  slug?: string;
+  bidLevels?: SimpleFunctionsMarketDepthLevel[];
+  askLevels?: SimpleFunctionsMarketDepthLevel[];
+  edges?: Array<Record<string, unknown>>;
+  indicators?: SimpleFunctionsMarketIndicators | null;
+  crossVenue?: Array<Record<string, unknown>> | Record<string, unknown> | null;
+  regime?: SimpleFunctionsMarketRegime | null;
+  pageUrl?: string;
+  apiUrl?: string;
+  inspectUrl?: string;
+  fetchedAt?: string;
+  nextActions?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface SimpleFunctionsMarketIndicatorHistoryRow extends SimpleFunctionsMarketIndicators {
+  at?: string | number;
+  ts?: string | number;
+  t?: string | number;
+  timestamp?: string | number;
+  fetchedAt?: string;
+  price?: number;
+  delta?: number;
+  iy?: number | null;
+}
+
+export interface SimpleFunctionsMarketRegimeHistoryRow extends SimpleFunctionsMarketRegime {
+  at?: string | number;
+  ts?: string | number;
+  t?: string | number;
+  timestamp?: string | number;
+  fetchedAt?: string;
+  spreadCents?: number;
+  bidDepthUsd?: number | null;
+  askDepthUsd?: number | null;
+  volume24h?: number | null;
+}
+
+export interface SimpleFunctionsMarketHistoryResponse {
+  ticker?: string;
+  windowDays?: number;
+  indicatorHistory: SimpleFunctionsMarketIndicatorHistoryRow[];
+  regimeHistory: SimpleFunctionsMarketRegimeHistoryRow[];
+  indicatorCount?: number;
+  regimeCount?: number;
+  [key: string]: unknown;
+}
+
 export interface SimpleFunctionsHeartbeatMethod {
   (signal?: AbortSignal): Promise<SimpleFunctionsHeartbeatResponse>;
   schema: z.ZodType<SimpleFunctionsNoRequest>;
@@ -505,6 +615,24 @@ export interface SimpleFunctionsAgentFeedMethod {
 
 export type SimpleFunctionsJsonResponse = Record<string, unknown>;
 
+export interface SimpleFunctionsMarketDetailMethod {
+  (
+    req: SimpleFunctionsMarketDetailRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsMarketDetailResponse>;
+  schema: z.ZodType<SimpleFunctionsMarketDetailRequest>;
+  responseSchema: z.ZodType<SimpleFunctionsMarketDetailResponse>;
+}
+
+export interface SimpleFunctionsMarketHistoryMethod {
+  (
+    req: SimpleFunctionsTickerRequest,
+    signal?: AbortSignal
+  ): Promise<SimpleFunctionsMarketHistoryResponse>;
+  schema: z.ZodType<SimpleFunctionsTickerRequest>;
+  responseSchema: z.ZodType<SimpleFunctionsMarketHistoryResponse>;
+}
+
 export interface SimpleFunctionsMethod<
   TRequest,
   TResponse = SimpleFunctionsJsonResponse,
@@ -521,8 +649,8 @@ export interface SimpleFunctionsOptionalMethod<
   schema: z.ZodType<TRequest>;
 }
 
-export interface SimpleFunctionsMarketMethod extends SimpleFunctionsMethod<SimpleFunctionsMarketDetailRequest> {
-  history: SimpleFunctionsMethod<SimpleFunctionsTickerRequest>;
+export interface SimpleFunctionsMarketMethod extends SimpleFunctionsMarketDetailMethod {
+  history: SimpleFunctionsMarketHistoryMethod;
   candles: SimpleFunctionsMethod<SimpleFunctionsMarketCandlesRequest>;
 }
 

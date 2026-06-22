@@ -88,6 +88,10 @@ const QueryStringSchema = z
 const PositiveLimitSchema = z.number().int().min(1);
 const OptionalBooleanSchema = z.boolean().optional();
 const OptionalStringSchema = z.string().min(1).optional();
+const UnknownRecordSchema = z.record(z.string(), z.unknown());
+const NullableNumberSchema = z.number().nullable().optional();
+const NullableStringSchema = z.string().nullable().optional();
+const NullableBooleanSchema = z.boolean().nullable().optional();
 
 export const SimpleFunctionsEmptyRequestSchema = z.object({});
 
@@ -202,6 +206,128 @@ export const SimpleFunctionsMarketDetailRequestSchema = z.object({
 export const SimpleFunctionsTickerRequestSchema = z.object({
   ticker: NonEmptyStringSchema,
 });
+
+export const SimpleFunctionsMarketDepthLevelSchema = z.union([
+  z.tuple([z.number(), z.number()]),
+  z
+    .object({
+      price: z.number(),
+      size: z.number(),
+    })
+    .catchall(z.unknown()),
+]);
+
+export const SimpleFunctionsMarketIndicatorsSchema = z
+  .object({
+    tauDays: NullableNumberSchema,
+    iyYes: NullableNumberSchema,
+    iyNo: NullableNumberSchema,
+    cri: NullableNumberSchema,
+    ee: NullableNumberSchema,
+    eeSource: NullableStringSchema,
+    las: NullableNumberSchema,
+    cvr: NullableNumberSchema,
+    overround: NullableNumberSchema,
+    rv: NullableNumberSchema,
+    vr: NullableNumberSchema,
+    iar: NullableNumberSchema,
+    adjIy: NullableNumberSchema,
+    daysToEvent: NullableNumberSchema,
+    expectedVr: NullableNumberSchema,
+    residualVr: NullableNumberSchema,
+    hasThesis: NullableBooleanSchema,
+    hasOrderbook: NullableBooleanSchema,
+    lastComputedAt: NullableStringSchema,
+  })
+  .catchall(z.unknown());
+
+export const SimpleFunctionsMarketRegimeSchema = z
+  .object({
+    label: z.enum(["maker", "taker", "neutral"]).optional(),
+    score: NullableNumberSchema,
+    adverseSelection: NullableNumberSchema,
+    adverseSelectionScore: NullableNumberSchema,
+    signals: UnknownRecordSchema.optional(),
+    freshness: z
+      .union([z.string(), z.number(), UnknownRecordSchema])
+      .nullable()
+      .optional(),
+    fresh: NullableBooleanSchema,
+    computedAt: NullableStringSchema,
+    lastComputedAt: NullableStringSchema,
+  })
+  .catchall(z.unknown());
+
+export const SimpleFunctionsMarketDetailResponseSchema = z
+  .object({
+    ticker: z.string(),
+    venue: z.string().optional(),
+    title: z.string().optional(),
+    description: NullableStringSchema,
+    price: z.number().optional(),
+    bestBid: z.number().optional(),
+    bestAsk: z.number().optional(),
+    spread: z.number().optional(),
+    volume: z.number().optional(),
+    volume24h: z.number().optional(),
+    openInterest: z.number().optional(),
+    status: z.string().optional(),
+    closeTime: z.union([z.string(), z.number()]).optional(),
+    category: z.string().optional(),
+    liquidityScore: z.union([z.number(), z.string()]).optional(),
+    slug: z.string().optional(),
+    bidLevels: z.array(SimpleFunctionsMarketDepthLevelSchema).optional(),
+    askLevels: z.array(SimpleFunctionsMarketDepthLevelSchema).optional(),
+    edges: z.array(UnknownRecordSchema).optional(),
+    indicators: SimpleFunctionsMarketIndicatorsSchema.nullable().optional(),
+    crossVenue: z
+      .union([z.array(UnknownRecordSchema), UnknownRecordSchema])
+      .nullable()
+      .optional(),
+    regime: SimpleFunctionsMarketRegimeSchema.nullable().optional(),
+    pageUrl: z.string().optional(),
+    apiUrl: z.string().optional(),
+    inspectUrl: z.string().optional(),
+    fetchedAt: z.string().optional(),
+    nextActions: UnknownRecordSchema.optional(),
+  })
+  .catchall(z.unknown());
+
+export const SimpleFunctionsMarketIndicatorHistoryRowSchema =
+  SimpleFunctionsMarketIndicatorsSchema.extend({
+    at: z.union([z.string(), z.number()]).optional(),
+    ts: z.union([z.string(), z.number()]).optional(),
+    t: z.union([z.string(), z.number()]).optional(),
+    timestamp: z.union([z.string(), z.number()]).optional(),
+    fetchedAt: z.string().optional(),
+    price: z.number().optional(),
+    delta: z.number().optional(),
+    iy: z.number().nullable().optional(),
+  }).catchall(z.unknown());
+
+export const SimpleFunctionsMarketRegimeHistoryRowSchema =
+  SimpleFunctionsMarketRegimeSchema.extend({
+    at: z.union([z.string(), z.number()]).optional(),
+    ts: z.union([z.string(), z.number()]).optional(),
+    t: z.union([z.string(), z.number()]).optional(),
+    timestamp: z.union([z.string(), z.number()]).optional(),
+    fetchedAt: z.string().optional(),
+    spreadCents: z.number().optional(),
+    bidDepthUsd: NullableNumberSchema,
+    askDepthUsd: NullableNumberSchema,
+    volume24h: NullableNumberSchema,
+  }).catchall(z.unknown());
+
+export const SimpleFunctionsMarketHistoryResponseSchema = z
+  .object({
+    ticker: z.string().optional(),
+    windowDays: z.number().optional(),
+    indicatorHistory: z.array(SimpleFunctionsMarketIndicatorHistoryRowSchema),
+    regimeHistory: z.array(SimpleFunctionsMarketRegimeHistoryRowSchema),
+    indicatorCount: z.number().int().nonnegative().optional(),
+    regimeCount: z.number().int().nonnegative().optional(),
+  })
+  .catchall(z.unknown());
 
 export const SimpleFunctionsMarketCandlesRequestSchema = z.object({
   ticker: NonEmptyStringSchema,

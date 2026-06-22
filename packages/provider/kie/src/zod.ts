@@ -38,6 +38,7 @@ export const KieMediaModelSchema = z.enum([
   "happyhorse/image-to-video",
   "happyhorse/reference-to-video",
   "happyhorse/video-edit",
+  "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
   "elevenlabs/audio-isolation",
   "elevenlabs/text-to-dialogue-v3",
@@ -175,6 +176,8 @@ export const HappyHorseAspectRatioSchema = z.enum([
 ]);
 
 export const HappyHorseAudioSettingSchema = z.enum(["auto", "origin"]);
+
+export const Omnihuman15OutputResolutionSchema = z.enum(["720", "1080"]);
 
 export const VolcengineVideoToVideoLipSyncModeSchema = z.enum([
   "lite",
@@ -727,6 +730,20 @@ export const HappyHorseVideoEditRequestSchema = z.object({
   }),
 });
 
+export const Omnihuman15RequestSchema = z.object({
+  model: z.literal("omnihuman-1-5"),
+  callBackUrl: z.string().url().optional(),
+  input: z.object({
+    image_url: z.string().url(),
+    mask_url: z.array(z.string().url()).max(5).optional(),
+    audio_url: z.string().url(),
+    prompt: z.string().max(1000).optional(),
+    output_resolution: Omnihuman15OutputResolutionSchema.default("1080"),
+    pe_fast_mode: z.boolean().default(false),
+    seed: z.number().int().min(-1).default(-1),
+  }),
+});
+
 export const VolcengineVideoToVideoLipSyncRequestSchema = z.object({
   model: z.literal("volcengine/video-to-video-lip-sync"),
   callBackUrl: z.string().optional(),
@@ -1266,6 +1283,7 @@ export const MediaGenerationRequestSchema = z.union([
   HappyHorseImageToVideoRequestSchema,
   HappyHorseReferenceToVideoRequestSchema,
   HappyHorseVideoEditRequestSchema,
+  Omnihuman15RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
@@ -1326,6 +1344,9 @@ export type HappyHorseResolution = z.infer<typeof HappyHorseResolutionSchema>;
 export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
 export type HappyHorseAudioSetting = z.infer<
   typeof HappyHorseAudioSettingSchema
+>;
+export type Omnihuman15OutputResolution = z.infer<
+  typeof Omnihuman15OutputResolutionSchema
 >;
 export type VolcengineVideoToVideoLipSyncMode = z.infer<
   typeof VolcengineVideoToVideoLipSyncModeSchema
@@ -1430,6 +1451,7 @@ export type HappyHorseReferenceToVideoRequest = z.infer<
 export type HappyHorseVideoEditRequest = z.infer<
   typeof HappyHorseVideoEditRequestSchema
 >;
+export type Omnihuman15Request = z.infer<typeof Omnihuman15RequestSchema>;
 export type VolcengineVideoToVideoLipSyncRequest = z.infer<
   typeof VolcengineVideoToVideoLipSyncRequestSchema
 >;

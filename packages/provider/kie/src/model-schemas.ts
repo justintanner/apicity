@@ -1515,6 +1515,48 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "omnihuman-1-5": {
+    type: "video",
+    fields: {
+      image_url: {
+        type: "string",
+        required: true,
+        description:
+          "Portrait image URL (jpeg/png/webp, max 10MB; supports people, pets, anime, and other subjects)",
+      },
+      mask_url: {
+        type: "array",
+        description:
+          "Optional subject mask image URLs (jpeg/png/webp, max 5, max 10MB each)",
+        items: { type: "string" },
+      },
+      audio_url: {
+        type: "string",
+        required: true,
+        description:
+          "Driving audio URL (mp3/wav/aac/ogg/mp4, max 10MB, less than 60 seconds)",
+      },
+      prompt: {
+        type: "string",
+        description:
+          "Optional motion prompt (max 1000 chars; Chinese, English, Japanese, Korean, Spanish, or Indonesian)",
+      },
+      output_resolution: {
+        type: "string",
+        enum: ["720", "1080"],
+        description: "Output resolution (default 1080)",
+      },
+      pe_fast_mode: {
+        type: "boolean",
+        description: "Fast mode trades quality for speed (default false)",
+      },
+      seed: {
+        type: "number",
+        description: "Random seed (-1 for random, default -1)",
+      },
+    },
+  },
+
   "volcengine/video-to-video-lip-sync": {
     type: "video",
     fields: {

@@ -59,6 +59,7 @@ import {
   SunoGenerateRequestSchema,
   KieChatRequestSchema,
   KieClaudeRequestSchema,
+  Omnihuman15RequestSchema,
 } from "../../packages/provider/kie/src/zod";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import {
@@ -360,6 +361,80 @@ describe("schema + validatePayload integration", () => {
       input: { prompt: "sunset" },
     });
     expect(result.success).toBe(true);
+  });
+
+  it("kie omnihuman 1.5: accepts valid request and applies defaults", () => {
+    const result = Omnihuman15RequestSchema.safeParse({
+      model: "omnihuman-1-5",
+      input: {
+        image_url: "https://example.com/portrait.png",
+        audio_url: "https://example.com/speech.mp3",
+      },
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.input.output_resolution).toBe("1080");
+      expect(result.data.input.pe_fast_mode).toBe(false);
+      expect(result.data.input.seed).toBe(-1);
+    }
+  });
+
+  it("kie omnihuman 1.5: rejects missing required media fields and bad callback URL", () => {
+    const result = Omnihuman15RequestSchema.safeParse({
+      model: "omnihuman-1-5",
+      callBackUrl: "not-a-url",
+      input: {},
+    });
+
+    expect(result.success).toBe(false);
+    expect(
+      result.error?.issues.some((i) => i.path.join(".") === "input.image_url")
+    ).toBe(true);
+    expect(
+      result.error?.issues.some((i) => i.path.join(".") === "input.audio_url")
+    ).toBe(true);
+    expect(
+      result.error?.issues.some((i) => i.path.includes("callBackUrl"))
+    ).toBe(true);
+  });
+
+  it("kie omnihuman 1.5: rejects too many mask URLs", () => {
+    const result = Omnihuman15RequestSchema.safeParse({
+      model: "omnihuman-1-5",
+      input: {
+        image_url: "https://example.com/portrait.png",
+        audio_url: "https://example.com/speech.mp3",
+        mask_url: [
+          "https://example.com/mask-1.png",
+          "https://example.com/mask-2.png",
+          "https://example.com/mask-3.png",
+          "https://example.com/mask-4.png",
+          "https://example.com/mask-5.png",
+          "https://example.com/mask-6.png",
+        ],
+      },
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.some((i) => i.path.includes("mask_url"))).toBe(
+      true
+    );
+  });
+
+  it("kie omnihuman 1.5: rejects invalid prompt and resolution", () => {
+    const result = CreateTaskRequestSchema.safeParse({
+      model: "omnihuman-1-5",
+      input: {
+        image_url: "https://example.com/portrait.png",
+        audio_url: "https://example.com/speech.mp3",
+        prompt: "x".repeat(1001),
+        output_resolution: "4K",
+      },
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.length).toBeGreaterThan(0);
   });
 
   it("kie veoGenerate: accepts valid request", () => {
@@ -891,5 +966,19 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.align_audio.type).toBe("boolean");
     expect(schema.fields.align_audio_reverse.type).toBe("boolean");
     expect(schema.fields.templ_start_seconds.type).toBe("number");
+  });
+
+  it("omnihuman 1.5 exposes required portrait and audio fields", () => {
+    const schema = modelInputSchemas["omnihuman-1-5"];
+
+    expect(schema.type).toBe("video");
+    expect(schema.fields.image_url.required).toBe(true);
+    expect(schema.fields.audio_url.required).toBe(true);
+    expect(schema.fields.mask_url.type).toBe("array");
+    expect(schema.fields.mask_url.items).toEqual({ type: "string" });
+    expect(schema.fields.prompt.type).toBe("string");
+    expect(schema.fields.output_resolution.enum).toEqual(["720", "1080"]);
+    expect(schema.fields.pe_fast_mode.type).toBe("boolean");
+    expect(schema.fields.seed.type).toBe("number");
   });
 });

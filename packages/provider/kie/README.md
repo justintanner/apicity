@@ -4,7 +4,7 @@
 [![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 
-Kie provider for video and image generation (Kling 3.0, Grok Imagine, Nano Banana Pro).
+Kie provider for video and image generation (Kling 3.0, Grok Imagine, Omnihuman 1.5, Nano Banana Pro).
 
 Runtime dependencies:
 
@@ -25,6 +25,39 @@ import { createKie } from "@apicity/kie";
 
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 ```
+
+## Omnihuman 1.5 model slug
+
+KIE's Omnihuman 1.5 model uses the shared
+`kie.post.api.v1.jobs.createTask` endpoint. Send the
+`omnihuman-1-5` model slug with a portrait image URL and a driving
+audio URL; KIE returns `{ code, msg, data: { taskId } }`, and final
+video results are retrieved through
+`kie.get.api.v1.jobs.recordInfo(taskId)` or delivered to
+`callBackUrl`.
+
+```typescript
+const task = await kie.post.api.v1.jobs.createTask({
+  model: "omnihuman-1-5",
+  input: {
+    image_url: "https://example.com/portrait.png",
+    mask_url: ["https://example.com/mask.png"],
+    audio_url: "https://example.com/speech.mp3",
+    prompt: "A person speaking naturally with gentle expressions.",
+    output_resolution: "1080",
+    pe_fast_mode: false,
+    seed: -1,
+  },
+  callBackUrl: "https://example.com/api/callback",
+});
+```
+
+`image_url` accepts JPEG, PNG, or WEBP portrait images up to 10 MB.
+`mask_url` is optional and accepts at most 5 subject mask image URLs.
+`audio_url` accepts MP3, WAV, AAC, OGG, or MP4 audio up to 10 MB and
+less than 60 seconds. Use `output_resolution: "720"` or `"1080"`;
+defaults are `"1080"` for resolution, `false` for `pe_fast_mode`, and
+`-1` for a random seed.
 
 ## Grok Imagine 1.5 model slugs
 

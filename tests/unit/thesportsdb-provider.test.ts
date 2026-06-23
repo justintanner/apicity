@@ -440,7 +440,7 @@ describe("thesportsdb provider", () => {
       }
       return jsonResponse({ lookup: null });
     });
-    const thesportsdb = createTheSportsDB({ fetch });
+    const thesportsdb = createTheSportsDB({ apiKey: "premium-key", fetch });
 
     const equipment = await thesportsdb.v2.lookup.teamEquipment({
       idTeam: 133597,
@@ -451,7 +451,7 @@ describe("thesportsdb provider", () => {
     expect(venue.lookup).toBeNull();
   });
 
-  it("throws TheSportsDBError for V2 premium auth errors", async () => {
+  it("throws a local TheSportsDBError when V2 apiKey is missing", async () => {
     const fetch = vi.fn<typeof globalThis.fetch>(async () =>
       jsonResponse({ message: "premium key required" }, 403)
     );
@@ -461,10 +461,13 @@ describe("thesportsdb provider", () => {
       thesportsdb.v2.lookup.league({ idLeague: 4328 })
     ).rejects.toMatchObject({
       name: "TheSportsDBError",
-      status: 403,
-      body: { message: "premium key required" },
-      message: "TheSportsDB API error 403: premium key required",
+      status: 401,
+      body: {
+        error: "TheSportsDB V2 requires apiKey for X-API-KEY authentication",
+      },
+      message:
+        "TheSportsDB API error 401: TheSportsDB V2 requires apiKey for X-API-KEY authentication",
     });
-    expect(requestHeaders(fetch.mock.calls[0][1])["X-API-KEY"]).toBe("123");
+    expect(fetch).not.toHaveBeenCalled();
   });
 });

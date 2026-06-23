@@ -22,7 +22,7 @@ Restored on 2026-06-23 because `docs/apicity-gaps.md` was absent from
 | xAI video duration              | `ac-sh9k.10` | Constrain relevant video durations to supported values.              |
 | Alibaba video schemas           | `ac-sh9k.11` | Export standalone video model enum and unwrap-safe schemas.          |
 | Alibaba Qwen image schemas      | `ac-sh9k.12` | Split Qwen generation/edit models and image slot schemas.            |
-| fal WAN r2v duration            | `ac-sh9k.13` | Remove invalid `0` duration from reference-to-video.                 |
+| fal WAN r2v duration            | `ac-sh9k.13` | Implemented: r2v rejects `0`; edit-video keeps source-clip `0`.      |
 | X users/me endpoint             | `ac-sh9k.14` | Add authenticated `GET /2/users/me` support.                         |
 
 ## Workspace-Wide Schema Gaps
@@ -84,9 +84,9 @@ slot schemas and export coverage.
 
 ### `@apicity/fal`
 
-WAN 2.7 reference-to-video accepts `duration: 0` in the schema, but r2v has no
-source clip where 0/full-source semantics apply. That value should remain valid
-only on surfaces that actually operate on a source clip.
+WAN 2.7 reference-to-video now rejects `duration: 0` and exposes a generated
+duration range of 2-10 seconds through its Zod/MCP schemas. Source-clip
+`duration: 0` semantics remain valid on edit-video.
 
 ### `@apicity/x`
 

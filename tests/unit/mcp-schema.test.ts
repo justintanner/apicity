@@ -16,6 +16,10 @@ import {
   Wan27VideoEditRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 import {
+  FalWanV2p7EditVideoRequestSchema,
+  FalWanV2p7ReferenceToVideoRequestSchema,
+} from "../../packages/provider/fal/src/zod";
+import {
   getZodDefaultValue,
   getZodEnumValues,
   getZodObjectShape,
@@ -228,6 +232,27 @@ describe("MCP Zod schema introspection helpers", () => {
     expect(wanInput.audio_setting).toMatchObject({
       type: "string",
       enum: ["auto", "origin"],
+    });
+  });
+
+  it("exposes fal WAN 2.7 reference duration bounds in MCP JSON Schema", () => {
+    const referenceJson = zodToJsonSchema(
+      FalWanV2p7ReferenceToVideoRequestSchema
+    );
+    const referenceProperties = propertiesOf(referenceJson);
+
+    expect(referenceProperties.duration).toMatchObject({
+      type: "integer",
+      minimum: 2,
+      maximum: 10,
+    });
+
+    const editJson = zodToJsonSchema(FalWanV2p7EditVideoRequestSchema);
+    const editProperties = propertiesOf(editJson);
+    expect(editProperties.duration).toMatchObject({
+      type: "integer",
+      minimum: 0,
+      maximum: 10,
     });
   });
 });

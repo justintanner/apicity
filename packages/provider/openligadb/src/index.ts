@@ -1,4 +1,10 @@
 export { createOpenLigaDB } from "./openligadb";
+export {
+  buildOpenLigaDBPath,
+  buildOpenLigaDBQuery,
+  createOpenLigaDBRequest,
+  encodeOpenLigaDBPathSegment,
+} from "./openligadb";
 export { OpenLigaDBError } from "./types";
 
 export type {
@@ -29,9 +35,19 @@ export type {
   OpenLigaDBMatchResult,
   OpenLigaDBMethod,
   OpenLigaDBOptions,
+  OpenLigaDBJsonObject,
+  OpenLigaDBPathSegment,
   OpenLigaDBProvider,
+  OpenLigaDBQueryValue,
+  OpenLigaDBRequestFunction,
+  OpenLigaDBRequestMethod,
+  OpenLigaDBRequestOptions,
   OpenLigaDBResultInfo,
   OpenLigaDBSport,
+  OpenLigaDBSwaggerDocument,
+  OpenLigaDBSwaggerJsonMethod,
+  OpenLigaDBSwaggerNamespace,
+  OpenLigaDBSwaggerV1Namespace,
   OpenLigaDBTeam,
 } from "./types";
 
@@ -53,5 +69,6 @@ export {
   OpenLigaDBOptionsSchema,
   OpenLigaDBResultInfoSchema,
   OpenLigaDBSportSchema,
+  OpenLigaDBSwaggerDocumentSchema,
   OpenLigaDBTeamSchema,
 } from "./zod";

@@ -132,6 +132,7 @@ One of `--op-vault` + `--op-token`, or `--env-file`, is required.
 | `kimicoding` | `KIMI_CODING_API_KEY`                                     |
 | `alibaba`    | `DASHSCOPE_API_KEY`                                       |
 | `binance`    | _(none — public APIs)_                                    |
+| `openligadb` | _(none — public APIs)_                                    |
 | `elevenlabs` | `ELEVENLABS_API_KEY`                                      |
 | `s3`         | `S3_ACCESS_KEY_ID` + `S3_SECRET_ACCESS_KEY`               |
 | `b2`         | `B2_ACCESS_KEY_ID` + `B2_SECRET_ACCESS_KEY` + `B2_REGION` |

@@ -196,8 +196,8 @@ Important behavior:
 - Existing exported environment variables are not overwritten.
 - Values that start with `op://` are skipped by `--env-file` because they are
   1Password references, not usable provider credentials.
-- If no provider credentials are resolved, public providers such as `binance`
-  and `free-media-upload` can still load, but credentialed providers are
+- If no provider credentials are resolved, public providers such as `binance`,
+  `openligadb`, and `free-media-upload` can still load, but credentialed providers are
   skipped.
 
 Use `--providers` to keep the server focused on the providers you expect:
@@ -321,6 +321,7 @@ credentials.
 | `kimicoding`                    | `KIMI_CODING_API_KEY`                                                                                                                                                                                                                               |
 | `alibaba`                       | `DASHSCOPE_API_KEY`                                                                                                                                                                                                                                 |
 | `binance`                       | none                                                                                                                                                                                                                                                |
+| `openligadb`                    | none                                                                                                                                                                                                                                                |
 | `elevenlabs`                    | `ELEVENLABS_API_KEY`                                                                                                                                                                                                                                |
 | `s3`                            | `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`; optional `S3_REGION`, `S3_ENDPOINT`                                                                                                                                                                     |
 | `b2`                            | `B2_ACCESS_KEY_ID`, `B2_SECRET_ACCESS_KEY`, `B2_REGION`; optional `B2_ENDPOINT`                                                                                                                                                                     |

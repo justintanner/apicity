@@ -259,6 +259,9 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "simplefunctions" && dotPath === "data.v1.trades") {
     return `const res = await ${call}("KXPRESNOMD-28-GN", { limit: 50 });`;
   }
+  if (providerName === "openligadb" && dotPath === "swagger.v1.swaggerJson") {
+    return `const res = await ${call}();`;
+  }
   if (providerName === "openligadb" && dotPath === "getmatchdata.byId") {
     return `const res = await ${call}({ matchId: 68720 });`;
   }

@@ -16,6 +16,7 @@ import type {
   OpenLigaDBOptions,
   OpenLigaDBResultInfo,
   OpenLigaDBSport,
+  OpenLigaDBSwaggerDocument,
   OpenLigaDBTeam,
 } from "./types";
 
@@ -29,6 +30,9 @@ export const OpenLigaDBOptionsSchema: z.ZodType<OpenLigaDBOptions> = z.object({
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
+
+export const OpenLigaDBSwaggerDocumentSchema: z.ZodType<OpenLigaDBSwaggerDocument> =
+  z.record(z.string(), z.unknown());
 
 export const OpenLigaDBSportSchema: z.ZodType<OpenLigaDBSport> = z.object({
   sportId: z.number().int(),

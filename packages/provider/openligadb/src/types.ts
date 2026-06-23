@@ -18,6 +18,54 @@ export interface OpenLigaDBOptions {
   fetch?: typeof fetch;
 }
 
+export type OpenLigaDBRequestMethod =
+  | "GET"
+  | "POST"
+  | "PUT"
+  | "DELETE"
+  | "PATCH"
+  | "HEAD";
+
+export type OpenLigaDBPathSegment = string | number | boolean;
+
+export type OpenLigaDBQueryValue =
+  | string
+  | number
+  | boolean
+  | readonly (string | number | boolean)[]
+  | null
+  | undefined;
+
+export interface OpenLigaDBRequestOptions {
+  method?: OpenLigaDBRequestMethod;
+  path: string | readonly OpenLigaDBPathSegment[];
+  query?: Record<string, OpenLigaDBQueryValue>;
+  body?: unknown;
+  signal?: AbortSignal;
+  emptyResponse?: unknown;
+}
+
+export interface OpenLigaDBRequestFunction {
+  <T = unknown>(options: OpenLigaDBRequestOptions): Promise<T>;
+}
+
+export type OpenLigaDBJsonObject = Record<string, unknown>;
+
+export type OpenLigaDBSwaggerDocument = OpenLigaDBJsonObject;
+
+export interface OpenLigaDBSwaggerJsonMethod {
+  (signal?: AbortSignal): Promise<OpenLigaDBSwaggerDocument>;
+  schema?: undefined;
+}
+
+export interface OpenLigaDBSwaggerV1Namespace {
+  swaggerJson: OpenLigaDBSwaggerJsonMethod;
+}
+
+export interface OpenLigaDBSwaggerNamespace {
+  v1: OpenLigaDBSwaggerV1Namespace;
+}
+
 export interface OpenLigaDBSport {
   sportId: number;
   sportName: string | null;
@@ -199,5 +247,6 @@ export interface OpenLigaDBGetMatchdataNamespace {
 }
 
 export interface OpenLigaDBProvider {
+  swagger: OpenLigaDBSwaggerNamespace;
   getmatchdata: OpenLigaDBGetMatchdataNamespace;
 }

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and a few carry one more — `viem` in polymarket (EIP-712 order signing), `@apicity/s3` in b2 (the S3 core it wraps), and `@apicity/cost` in kie and xai (pay-gate). Based on [TetherAI](https://github.com/nbursa/TetherAI).
+Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/openligadb`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and a few carry one more — `viem` in polymarket (EIP-712 order signing), `@apicity/s3` in b2 (the S3 core it wraps), and `@apicity/cost` in kie and xai (pay-gate). Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
 `@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the OTP pay-gate (`withPaidGate`) that kie and xai use to gate paid endpoints.
 
@@ -36,7 +36,7 @@ over raw `vitest` / `op run` invocations.
 # Build / lint / format
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
-pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
+pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
 pnpm run lint                    # Lint (runs build first via prelint)
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
@@ -105,6 +105,7 @@ packages/provider/<name>/
 **fireworks** — Chat, completions, embeddings, rerank, messages, workflows, audio, models, deployments, training
 **alibaba** — Chat (Qwen3), streaming, models
 **binance** — Spot REST public/general endpoints
+**openligadb** — Public soccer and sports data
 **elevenlabs** — Sound effect generation, text-to-speech, voices, user/subscription
 **s3** — S3-compatible object storage (signing, buckets, objects)
 **b2** — Backblaze B2 S3-compatible storage; thin wrapper delegating signing/transport/schemas to `@apicity/s3` (docs-only in `endpoint-docs.tsv`, excluded from the endpoint-walk lint)

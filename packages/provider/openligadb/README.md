@@ -49,7 +49,7 @@ The overloaded upstream `/getmatchdata` paths are exposed as explicit
 
 ## API Reference
 
-5 endpoints across 1 group. Each method mirrors an upstream URL path.
+6 endpoints across 2 groups. Each method mirrors an upstream URL path.
 
 ### getmatchdata
 
@@ -133,6 +133,19 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 ```typescript
 const res = await openligadb.getmatchdata.byTeams({ teamId1: 16, teamId2: 40 });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### swagger
+
+<details>
+<summary><b><code>openligadb.swagger.v1.swaggerJson</code></b></summary>
+
+```typescript
+const res = await openligadb.swagger.v1.swaggerJson();
 ```
 
 Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)

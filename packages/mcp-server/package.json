@@ -64,6 +64,7 @@
     "@apicity/meta": "workspace:*",
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
+    "@apicity/openligadb": "workspace:*",
     "@apicity/openai": "workspace:*",
     "@apicity/openligadb": "workspace:*",
     "@apicity/polymarket": "workspace:*",

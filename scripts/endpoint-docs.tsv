@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+openligadb	swagger.v1.swaggerJson	GET	https://api.openligadb.de/swagger/v1/swagger.json	https://api.openligadb.de/swagger/v1/swagger.json
 simplefunctions	api.agent.feed	GET	https://simplefunctions.dev/api/agent/feed/{topic}{query}	https://docs.simplefunctions.dev/api-reference/agent
 simplefunctions	api.agent.inspect	GET	https://simplefunctions.dev/api/agent/inspect/{ticker}{query}	https://docs.simplefunctions.dev/api-reference/agent
 simplefunctions	api.agent.world	GET	https://simplefunctions.dev/api/agent/world{query}	https://docs.simplefunctions.dev/api-reference/world-state
@@ -1094,6 +1095,7 @@ youtube	transcripts	GET	https://www.youtube.com/watch?v={videoId}
 youtube	videoMetadata	?	?	https://developers.google.com/youtube/player_parameters
 youtube	videos.insert	POST	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/insert
 youtube	videos.list	GET	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/list
+openligadb	swagger.v1.swaggerJson	GET	https://api.openligadb.de/swagger/v1/swagger.json	https://api.openligadb.de/swagger/v1/swagger.json
 openligadb	getmatchdata.byId	GET	https://api.openligadb.de/getmatchdata/{matchId}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byLeagueSeason	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byLeagueSeasonGroup	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{groupOrderId}	https://api.openligadb.de/swagger/index.html

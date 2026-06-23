@@ -7,7 +7,7 @@ import {
   getPollyMode,
   type PollyContext,
 } from "../harness";
-import { createKie } from "@apicity/kie";
+import { createKie, Wan27VideoEditDurationValues } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie wan/2-7-videoedit integration", () => {
@@ -131,6 +131,7 @@ describe("kie wan/2-7-videoedit integration", () => {
     expect(schema.fields.aspect_ratio.enum).toContain("4:3");
     expect(schema.fields.aspect_ratio.enum).toContain("3:4");
     expect(schema.fields.duration.type).toBe("number");
+    expect(schema.fields.duration.enum).toEqual(Wan27VideoEditDurationValues);
     expect(schema.fields.audio_setting.enum).toContain("auto");
     expect(schema.fields.audio_setting.enum).toContain("origin");
     expect(schema.fields.prompt_extend.type).toBe("boolean");

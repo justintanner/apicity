@@ -1,6 +1,12 @@
 // Export main provider function and helpers
 export { createKie, submitMediaJob, uploadFile } from "./kie";
 
+// Export reusable schema metadata
+export {
+  Wan27VideoEditDurationSchema,
+  Wan27VideoEditDurationValues,
+} from "./zod";
+
 // Export error class
 export { KieError } from "./types";
 
@@ -111,6 +117,7 @@ export type {
   Wan27AudioSetting,
   Wan27ImageResolution,
   Wan27ImageAspectRatio,
+  Wan27VideoEditDuration,
   HappyHorseResolution,
   HappyHorseAspectRatio,
   HappyHorseAudioSetting,

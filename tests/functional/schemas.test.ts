@@ -63,6 +63,9 @@ import {
   GrokImageToVideoRequestSchema,
   GrokVideo15PreviewRequestSchema,
   Omnihuman15RequestSchema,
+  Wan27VideoEditDurationSchema,
+  Wan27VideoEditDurationValues,
+  Wan27VideoEditRequestSchema,
 } from "../../packages/provider/kie/src/zod";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
 import {
@@ -929,6 +932,50 @@ describe("schema + validatePayload integration", () => {
   });
 });
 
+describe("kie wan/2-7-videoedit duration schema", () => {
+  const videoEditPayload = (duration?: number) => ({
+    model: "wan/2-7-videoedit",
+    input: {
+      video_url: "https://example.com/demo.mp4",
+      ...(duration === undefined ? {} : { duration }),
+    },
+  });
+
+  it("accepts omitted, 0, 2, and 10 second durations", () => {
+    expect(
+      Wan27VideoEditRequestSchema.safeParse(videoEditPayload()).success
+    ).toBe(true);
+
+    for (const duration of [0, 2, 10]) {
+      expect(
+        Wan27VideoEditRequestSchema.safeParse(videoEditPayload(duration))
+          .success
+      ).toBe(true);
+    }
+  });
+
+  it("rejects 1, 11, and non-integer durations", () => {
+    for (const duration of [1, 11, 2.5]) {
+      expect(
+        Wan27VideoEditRequestSchema.safeParse(videoEditPayload(duration))
+          .success
+      ).toBe(false);
+    }
+  });
+
+  it("exports the accepted duration domain for introspection", () => {
+    expect(Wan27VideoEditDurationValues).toEqual([
+      0, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    ]);
+
+    for (const duration of Wan27VideoEditDurationValues) {
+      expect(Wan27VideoEditDurationSchema.safeParse(duration).success).toBe(
+        true
+      );
+    }
+  });
+});
+
 describe("kie modelInputSchemas", () => {
   it("has entries for all expected models", () => {
     const keys = Object.keys(modelInputSchemas);
@@ -1014,6 +1061,16 @@ describe("kie modelInputSchemas", () => {
     const preview = modelInputSchemas["grok-imagine-video-1-5-preview"];
     expect(preview.fields.prompt.description).toContain("4096");
     expect(preview.fields.aspect_ratio.enum).toContain("auto");
+  });
+
+  it("wan 2.7 videoedit exposes the duration domain", () => {
+    const schema = modelInputSchemas["wan/2-7-videoedit"];
+
+    expect(schema.type).toBe("video");
+    expect(schema.fields.duration.type).toBe("number");
+    expect(schema.fields.duration.enum).toEqual([
+      0, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+    ]);
   });
 
   it("gpt-image-2 text-to-image exposes documented aspect ratios", () => {

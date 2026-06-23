@@ -2,6 +2,7 @@ import type { KieMediaModel, ModelInputSchema } from "./types";
 import {
   HAPPYHORSE_DURATION_MAX_SECONDS,
   HAPPYHORSE_DURATION_MIN_SECONDS,
+  Wan27VideoEditDurationValues,
 } from "./zod";
 
 const happyHorseDurationField = {
@@ -1070,6 +1071,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: {
         type: "number",
+        enum: Wan27VideoEditDurationValues,
         description:
           "Duration in seconds, 0 or 2-10 (default 0 = full input duration)",
       },

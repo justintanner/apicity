@@ -189,6 +189,23 @@ export const Wan27ImageAspectRatioSchema = z.enum([
   "1:8",
 ]);
 
+export const Wan27VideoEditDurationValues = [
+  0, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+] as const;
+
+export const Wan27VideoEditDurationSchema = z.union([
+  z.literal(0),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+  z.literal(6),
+  z.literal(7),
+  z.literal(8),
+  z.literal(9),
+  z.literal(10),
+]);
+
 export const HappyHorseResolutionSchema = z.enum(["720p", "1080p"]);
 
 export const HappyHorseAspectRatioSchema = z.enum([
@@ -928,36 +945,24 @@ export const Wan27RefToVideoRequestSchema = z.object({
   }),
 });
 
-export const Wan27VideoEditRequestSchema = z
-  .object({
-    model: z.literal("wan/2-7-videoedit"),
-    callBackUrl: z.string().optional(),
-    input: z.object({
-      prompt: z.string().max(5000).optional(),
-      negative_prompt: z.string().max(500).optional(),
-      video_url: z.string().min(1),
-      reference_image: z.string().optional(),
-      resolution: Wan27ResolutionSchema.optional(),
-      aspect_ratio: Wan27AspectRatioSchema.optional(),
-      duration: z.number().int().optional(),
-      audio_setting: Wan27AudioSettingSchema.optional(),
-      prompt_extend: z.boolean().optional(),
-      watermark: z.boolean().optional(),
-      seed: z.number().int().min(0).max(2147483647).optional(),
-      nsfw_checker: z.boolean().default(false),
-    }),
-  })
-  .refine(
-    (v) => {
-      const d = v.input.duration;
-      return d === undefined || d === 0 || (d >= 2 && d <= 10);
-    },
-    {
-      message:
-        "wan/2-7-videoedit duration must be 0 (full input) or between 2 and 10 seconds",
-      path: ["input", "duration"],
-    }
-  );
+export const Wan27VideoEditRequestSchema = z.object({
+  model: z.literal("wan/2-7-videoedit"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().max(5000).optional(),
+    negative_prompt: z.string().max(500).optional(),
+    video_url: z.string().min(1),
+    reference_image: z.string().optional(),
+    resolution: Wan27ResolutionSchema.optional(),
+    aspect_ratio: Wan27AspectRatioSchema.optional(),
+    duration: Wan27VideoEditDurationSchema.optional(),
+    audio_setting: Wan27AudioSettingSchema.optional(),
+    prompt_extend: z.boolean().optional(),
+    watermark: z.boolean().optional(),
+    seed: z.number().int().min(0).max(2147483647).optional(),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
 
 const Wan27ImageInputShape = {
   prompt: z.string().min(1).max(5000),
@@ -1373,6 +1378,9 @@ export type Wan27AspectRatio = z.infer<typeof Wan27AspectRatioSchema>;
 export type Wan27AudioSetting = z.infer<typeof Wan27AudioSettingSchema>;
 export type Wan27ImageResolution = z.infer<typeof Wan27ImageResolutionSchema>;
 export type Wan27ImageAspectRatio = z.infer<typeof Wan27ImageAspectRatioSchema>;
+export type Wan27VideoEditDuration = z.infer<
+  typeof Wan27VideoEditDurationSchema
+>;
 export type HappyHorseResolution = z.infer<typeof HappyHorseResolutionSchema>;
 export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
 export type HappyHorseAudioSetting = z.infer<

@@ -78,6 +78,7 @@ export type {
   Wan27AudioSetting,
   Wan27ImageResolution,
   Wan27ImageAspectRatio,
+  Wan27VideoEditDuration,
   HappyHorseResolution,
   HappyHorseAspectRatio,
   HappyHorseAudioSetting,

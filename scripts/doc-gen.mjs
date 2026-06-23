@@ -259,6 +259,47 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "simplefunctions" && dotPath === "data.v1.trades") {
     return `const res = await ${call}("KXPRESNOMD-28-GN", { limit: 50 });`;
   }
+  if (providerName === "openligadb" && dotPath === "getmatchdata.byId") {
+    return `const res = await ${call}({ matchId: 68720 });`;
+  }
+  if (
+    providerName === "openligadb" &&
+    dotPath === "getmatchdata.byLeagueSeason"
+  ) {
+    return [
+      `const res = await ${call}({`,
+      '  leagueShortcut: "bl1",',
+      "  leagueSeason: 2024,",
+      "});",
+    ].join("\n");
+  }
+  if (
+    providerName === "openligadb" &&
+    dotPath === "getmatchdata.byLeagueSeasonGroup"
+  ) {
+    return [
+      `const res = await ${call}({`,
+      '  leagueShortcut: "bl1",',
+      "  leagueSeason: 2024,",
+      "  groupOrderId: 1,",
+      "});",
+    ].join("\n");
+  }
+  if (
+    providerName === "openligadb" &&
+    dotPath === "getmatchdata.byLeagueSeasonTeam"
+  ) {
+    return [
+      `const res = await ${call}({`,
+      '  leagueShortcut: "bl1",',
+      "  leagueSeason: 2024,",
+      '  teamFilterstring: "Bayern",',
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "openligadb" && dotPath === "getmatchdata.byTeams") {
+    return `const res = await ${call}({ teamId1: 16, teamId2: 40 });`;
+  }
   if (providerName === "simplefunctions" && dotPath === "api.public.market") {
     return [
       `const res = await ${call}({`,
@@ -2513,6 +2554,31 @@ function renderFreeExample() {
   ].join("\n");
 }
 
+function renderOpenLigaDBExample() {
+  return [
+    "## Matchdata Examples",
+    "",
+    "OpenLigaDB is public and does not require an API key.",
+    "",
+    "```typescript",
+    'import { createOpenLigaDB } from "@apicity/openligadb";',
+    "",
+    "const openligadb = createOpenLigaDB();",
+    "",
+    "const match = await openligadb.getmatchdata.byId({ matchId: 68720 });",
+    "",
+    "const season = await openligadb.getmatchdata.byLeagueSeason({",
+    '  leagueShortcut: "bl1",',
+    "  leagueSeason: 2024,",
+    "});",
+    "```",
+    "",
+    "The overloaded upstream `/getmatchdata` paths are exposed as explicit",
+    "`by*` methods so team, group, season, and match-id routes cannot collide.",
+    "",
+  ].join("\n");
+}
+
 function renderTelegramSetup() {
   return [
     "## Setup",
@@ -2578,6 +2644,10 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  openligadb: {
+    noAuth: true,
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -2609,6 +2679,7 @@ const PROVIDER_DOCS = {
   telegram: "https://core.telegram.org/bots/api",
   binance:
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
+  openligadb: "https://api.openligadb.de/swagger/index.html",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -2655,6 +2726,9 @@ const DEP_NOTES = {
 const PROVIDER_DEP_NOTES = {
   simplefunctions: {
     zod: "request schemas attached to provider endpoints as `.schema`",
+  },
+  openligadb: {
+    zod: "request schemas attached to OpenLigaDB endpoint methods as `.schema`",
   },
 };
 
@@ -2761,6 +2835,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "binance") {
     sections.push(renderBinancePublicDataGuide());
+  }
+
+  if (providerName === "openligadb") {
+    sections.push(renderOpenLigaDBExample());
   }
 
   if (providerName === "simplefunctions") {

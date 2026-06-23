@@ -125,6 +125,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/binance",
     factoryName: "createBinance",
   },
+  openligadb: {
+    envVar: "",
+    optionKey: "apiKey",
+    importPath: "@apicity/openligadb",
+    factoryName: "createOpenLigaDB",
+  },
   elevenlabs: {
     envVar: "ELEVENLABS_API_KEY",
     optionKey: "apiKey",

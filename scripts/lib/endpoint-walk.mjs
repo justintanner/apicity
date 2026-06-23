@@ -61,6 +61,11 @@ const PROVIDERS = [
     factoryNames: ["createBinance"],
   },
   {
+    name: "openligadb",
+    entryFiles: ["packages/provider/openligadb/src/openligadb.ts"],
+    factoryNames: ["createOpenLigaDB"],
+  },
+  {
     name: "s3",
     entryFiles: ["packages/provider/s3/src/s3.ts"],
     factoryNames: ["createS3"],

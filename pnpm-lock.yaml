@@ -139,6 +139,9 @@ importers:
       '@apicity/openai':
         specifier: workspace:*
         version: link:../provider/openai
+      '@apicity/openligadb':
+        specifier: workspace:*
+        version: link:../provider/openligadb
       '@apicity/polymarket':
         specifier: workspace:*
         version: link:../provider/polymarket
@@ -245,6 +248,12 @@ importers:
         version: 3.25.76
 
   packages/provider/openai:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/openligadb:
     dependencies:
       zod:
         specifier: ^3.24.0

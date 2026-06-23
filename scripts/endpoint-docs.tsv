@@ -1094,3 +1094,8 @@ youtube	transcripts	GET	https://www.youtube.com/watch?v={videoId}
 youtube	videoMetadata	?	?	https://developers.google.com/youtube/player_parameters
 youtube	videos.insert	POST	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/insert
 youtube	videos.list	GET	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/list
+openligadb	getmatchdata.byId	GET	https://api.openligadb.de/getmatchdata/{matchId}	https://api.openligadb.de/swagger/index.html
+openligadb	getmatchdata.byLeagueSeason	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/index.html
+openligadb	getmatchdata.byLeagueSeasonGroup	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{groupOrderId}	https://api.openligadb.de/swagger/index.html
+openligadb	getmatchdata.byLeagueSeasonTeam	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{teamFilterstring}	https://api.openligadb.de/swagger/index.html
+openligadb	getmatchdata.byTeams	GET	https://api.openligadb.de/getmatchdata/{teamId1}/{teamId2}	https://api.openligadb.de/swagger/index.html

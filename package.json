@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/openligadb, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {
     "node": ">=18.12.0",
@@ -25,6 +25,7 @@
     "build:anthropic": "pnpm --filter @apicity/anthropic run build",
     "build:alibaba": "pnpm --filter @apicity/alibaba run build",
     "build:binance": "pnpm --filter @apicity/binance run build",
+    "build:openligadb": "pnpm --filter @apicity/openligadb run build",
     "build:elevenlabs": "pnpm --filter @apicity/elevenlabs run build",
     "build:s3": "pnpm --filter @apicity/s3 run build",
     "build:b2": "pnpm --filter @apicity/b2 run build",
@@ -51,6 +52,7 @@
     "doc-gen:kimicoding": "node scripts/doc-gen.mjs kimicoding",
     "doc-gen:alibaba": "node scripts/doc-gen.mjs alibaba",
     "doc-gen:binance": "node scripts/doc-gen.mjs binance",
+    "doc-gen:openligadb": "node scripts/doc-gen.mjs openligadb",
     "doc-gen:elevenlabs": "node scripts/doc-gen.mjs elevenlabs",
     "doc-gen:s3": "node scripts/doc-gen.mjs s3",
     "doc-gen:b2": "node scripts/doc-gen.mjs b2",

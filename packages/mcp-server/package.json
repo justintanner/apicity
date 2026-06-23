@@ -65,6 +65,7 @@
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",
     "@apicity/openai": "workspace:*",
+    "@apicity/openligadb": "workspace:*",
     "@apicity/polymarket": "workspace:*",
     "@apicity/s3": "workspace:*",
     "@apicity/simplefunctions": "workspace:*",

@@ -104,6 +104,7 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/polymarket](packages/provider/polymarket)               | Polymarket Gamma, Data, and CLOB public market data                |
 | [@apicity/simplefunctions](packages/provider/simplefunctions)     | SimpleFunctions public prediction-market and analytical APIs       |
 | [@apicity/telegram](packages/provider/telegram)                   | Telegram Bot API text, photo, video, and audio sending             |
+| [@apicity/thesportsdb](packages/provider/thesportsdb)             | TheSportsDB public sports player data                              |
 | [@apicity/cost](packages/provider/cost)                           | Pure local cost/token estimates across providers                   |
 | [@apicity/mcp-server](packages/mcp-server)                        | MCP server exposing provider endpoints as tools                    |
 

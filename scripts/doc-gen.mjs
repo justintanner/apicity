@@ -2704,6 +2704,31 @@ function renderTheSportsDBSearchExample() {
   ].join("\n");
 }
 
+function renderTheSportsDBPlayerExample() {
+  return [
+    "## Player Lookup Examples",
+    "",
+    "Player lookup, honours, former-team, milestone, contract, result, and",
+    "statistics routes use TheSportsDB's numeric player id.",
+    "",
+    "```typescript",
+    'import { createTheSportsDB } from "@apicity/thesportsdb";',
+    "",
+    "const thesportsdb = createTheSportsDB({",
+    "  apiKey: process.env.THESPORTSDB_API_KEY,",
+    "});",
+    "",
+    "const player = await thesportsdb.v1.lookupplayer({ idPlayer: 34145937 });",
+    "const honours = await thesportsdb.v1.lookuphonours({ idPlayer: 34147178 });",
+    "const stats = await thesportsdb.v1.lookupplayerstats({ idPlayer: 34146304 });",
+    "```",
+    "",
+    "No-result responses preserve TheSportsDB's wrapper key with a `null`",
+    "value, for example `{ players: null }`.",
+    "",
+  ].join("\n");
+}
+
 function renderTelegramSetup() {
   return [
     "## Setup",
@@ -2901,7 +2926,7 @@ const PROVIDER_DEP_NOTES = {
     zod: "request schemas attached to provider endpoints as `.schema`",
   },
   thesportsdb: {
-    zod: "request schemas attached to provider endpoints as `.schema`",
+    zod: "request schemas attached to endpoint methods as `.schema`; response schemas exported",
   },
 };
 
@@ -3033,6 +3058,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "thesportsdb") {
     sections.push(renderTheSportsDBSearchExample());
+    sections.push(renderTheSportsDBPlayerExample());
   }
 
   if (providerName === "simplefunctions") {

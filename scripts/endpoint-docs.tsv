@@ -1124,3 +1124,10 @@ youtube	transcripts	GET	https://www.youtube.com/watch?v={videoId}
 youtube	videoMetadata	?	?	https://developers.google.com/youtube/player_parameters
 youtube	videos.insert	POST	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/insert
 youtube	videos.list	GET	https://www.googleapis.com/youtube/v3/videos{query}	https://developers.google.com/youtube/v3/docs/videos/list
+thesportsdb	v1.lookupplayer	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayer.php?id={idPlayer}	https://thedatadb.readme.io/reference/getplayerbyid
+thesportsdb	v1.lookuphonours	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuphonours.php?id={idPlayer}	https://thedatadb.readme.io/reference/gethonourbyid
+thesportsdb	v1.lookupformerteams	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupformerteams.php?id={idPlayer}	https://thedatadb.readme.io/reference/getformerteamsbyplayerid
+thesportsdb	v1.lookupmilestones	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupmilestones.php?id={idPlayer}	https://thedatadb.readme.io/reference/getmilestonesbyplayerid
+thesportsdb	v1.lookupcontracts	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupcontracts.php?id={idPlayer}	https://thedatadb.readme.io/reference/getcontractsbyplayerid
+thesportsdb	v1.playerresults	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/playerresults.php?id={idPlayer}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.lookupplayerstats	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayerstats.php?id={idPlayer}	https://www.thesportsdb.com/docs_api_guide

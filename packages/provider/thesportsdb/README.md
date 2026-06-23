@@ -9,7 +9,7 @@ TheSportsDB V1 sports data API provider.
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to provider endpoints as `.schema`
+- `zod@^3.24.0` — request schemas attached to endpoint methods as `.schema`; response schemas exported
 
 ## Installation
 
@@ -63,6 +63,26 @@ const venues = await thesportsdb.v1.searchVenues({
 No-result V1 searches preserve TheSportsDB's nullable wrapper arrays,
 such as `{ teams: null }` or `{ player: null }`.
 
+## Player Lookup Examples
+
+Player lookup, honours, former-team, milestone, contract, result, and
+statistics routes use TheSportsDB's numeric player id.
+
+```typescript
+import { createTheSportsDB } from "@apicity/thesportsdb";
+
+const thesportsdb = createTheSportsDB({
+  apiKey: process.env.THESPORTSDB_API_KEY,
+});
+
+const player = await thesportsdb.v1.lookupplayer({ idPlayer: 34145937 });
+const honours = await thesportsdb.v1.lookuphonours({ idPlayer: 34147178 });
+const stats = await thesportsdb.v1.lookupplayerstats({ idPlayer: 34146304 });
+```
+
+No-result responses preserve TheSportsDB's wrapper key with a `null`
+value, for example `{ players: null }`.
+
 V1 uses an API key in the URL path. The provider defaults to the public
 free key `123`; pass `apiKey` to use your own key.
 
@@ -77,7 +97,7 @@ const team = await thesportsdb.v1.lookup.team({ idTeam: 133604 });
 
 ## API Reference
 
-13 endpoints across 9 groups. Each method mirrors an upstream URL path.
+20 endpoints across 16 groups. Each method mirrors an upstream URL path.
 
 ### allCountries
 
@@ -201,6 +221,125 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.lookup.venue({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupcontracts
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupcontracts</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupcontracts.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getcontractsbyplayerid)
+
+```typescript
+const res = await thesportsdb.v1.lookupcontracts({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupformerteams
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupformerteams</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupformerteams.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getformerteamsbyplayerid)
+
+```typescript
+const res = await thesportsdb.v1.lookupformerteams({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookuphonours
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookuphonours</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuphonours.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/gethonourbyid)
+
+```typescript
+const res = await thesportsdb.v1.lookuphonours({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupmilestones
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupmilestones</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupmilestones.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getmilestonesbyplayerid)
+
+```typescript
+const res = await thesportsdb.v1.lookupmilestones({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupplayer
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupplayer</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayer.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getplayerbyid)
+
+```typescript
+const res = await thesportsdb.v1.lookupplayer({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupplayerstats
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupplayerstats</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayerstats.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
+
+```typescript
+const res = await thesportsdb.v1.lookupplayerstats({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### playerresults
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.playerresults</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/playerresults.php?id={idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide)
+
+```typescript
+const res = await thesportsdb.v1.playerresults({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

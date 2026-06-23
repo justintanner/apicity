@@ -1,5 +1,20 @@
 import { z } from "zod";
 import type {
+  TheSportsDBContract,
+  TheSportsDBFormerTeam,
+  TheSportsDBHonour,
+  TheSportsDBLookupContractsResponse,
+  TheSportsDBLookupFormerTeamsResponse,
+  TheSportsDBLookupHonoursResponse,
+  TheSportsDBLookupMilestonesResponse,
+  TheSportsDBLookupPlayerResponse,
+  TheSportsDBLookupPlayerStatsResponse,
+  TheSportsDBMilestone,
+  TheSportsDBPlayer,
+  TheSportsDBPlayerIdRequest,
+  TheSportsDBPlayerResult,
+  TheSportsDBPlayerResultsResponse,
+  TheSportsDBPlayerStat,
   TheSportsDBSearchEventsRequest,
   TheSportsDBSearchFilenameRequest,
   TheSportsDBSearchPlayersRequest,
@@ -18,6 +33,7 @@ export type TheSportsDBOptions = z.infer<typeof TheSportsDBOptionsSchema>;
 
 const idSchema = z.union([z.string().min(1), z.number().int()]);
 const nonEmptyQueryString = z.string().min(1);
+const nullableString = z.string().nullable().optional();
 
 export const TheSportsDBLeagueLookupRequestSchema = z.object({
   idLeague: idSchema,
@@ -88,3 +104,231 @@ export const TheSportsDBSearchVenuesRequestSchema: z.ZodType<TheSportsDBSearchVe
   z.object({
     venue: nonEmptyQueryString,
   });
+
+export const TheSportsDBPlayerIdRequestSchema: z.ZodType<TheSportsDBPlayerIdRequest> =
+  z.object({
+    idPlayer: z.number().int(),
+  });
+
+export const TheSportsDBPlayerSchema: z.ZodType<TheSportsDBPlayer> = z
+  .object({
+    idPlayer: nullableString,
+    idTeam: nullableString,
+    idTeam2: nullableString,
+    idTeamNational: nullableString,
+    idAPIfootball: nullableString,
+    idPlayerManager: nullableString,
+    idWikidata: nullableString,
+    idTransferMkt: nullableString,
+    idESPN: nullableString,
+    intSoccerXMLTeamID: nullableString,
+    intLoved: nullableString,
+    strNationality: nullableString,
+    strPlayer: nullableString,
+    strPlayerAlternate: nullableString,
+    strTeam: nullableString,
+    strTeam2: nullableString,
+    strSport: nullableString,
+    dateBorn: nullableString,
+    dateDied: nullableString,
+    dateSigned: nullableString,
+    strNumber: nullableString,
+    strSigning: nullableString,
+    strWage: nullableString,
+    strOutfitter: nullableString,
+    strKit: nullableString,
+    strAgent: nullableString,
+    strBirthLocation: nullableString,
+    strDeathLocation: nullableString,
+    strEthnicity: nullableString,
+    strStatus: nullableString,
+    strDescriptionEN: nullableString,
+    strDescriptionDE: nullableString,
+    strDescriptionFR: nullableString,
+    strDescriptionCN: nullableString,
+    strDescriptionIT: nullableString,
+    strDescriptionJP: nullableString,
+    strDescriptionRU: nullableString,
+    strDescriptionES: nullableString,
+    strDescriptionPT: nullableString,
+    strDescriptionSE: nullableString,
+    strDescriptionNL: nullableString,
+    strDescriptionHU: nullableString,
+    strDescriptionNO: nullableString,
+    strDescriptionIL: nullableString,
+    strDescriptionPL: nullableString,
+    strGender: nullableString,
+    strSide: nullableString,
+    strPosition: nullableString,
+    strCollege: nullableString,
+    strFacebook: nullableString,
+    strWebsite: nullableString,
+    strTwitter: nullableString,
+    strInstagram: nullableString,
+    strYoutube: nullableString,
+    strHeight: nullableString,
+    strWeight: nullableString,
+    strThumb: nullableString,
+    strPoster: nullableString,
+    strCutout: nullableString,
+    strRender: nullableString,
+    strBanner: nullableString,
+    strFanart1: nullableString,
+    strFanart2: nullableString,
+    strFanart3: nullableString,
+    strFanart4: nullableString,
+    strCreativeCommons: nullableString,
+    strLocked: nullableString,
+    relevance: nullableString,
+  })
+  .passthrough();
+
+export const TheSportsDBHonourSchema: z.ZodType<TheSportsDBHonour> = z
+  .object({
+    id: nullableString,
+    idPlayer: nullableString,
+    idTeam: nullableString,
+    idLeague: nullableString,
+    idHonour: nullableString,
+    strSport: nullableString,
+    strPlayer: nullableString,
+    strTeam: nullableString,
+    strTeamBadge: nullableString,
+    strHonour: nullableString,
+    strHonourLogo: nullableString,
+    strHonourTrophy: nullableString,
+    strSeason: nullableString,
+  })
+  .passthrough();
+
+export const TheSportsDBFormerTeamSchema: z.ZodType<TheSportsDBFormerTeam> = z
+  .object({
+    id: nullableString,
+    idPlayer: nullableString,
+    idFormerTeam: nullableString,
+    strSport: nullableString,
+    strPlayer: nullableString,
+    strFormerTeam: nullableString,
+    strMoveType: nullableString,
+    strBadge: nullableString,
+    strJoined: nullableString,
+    strDeparted: nullableString,
+  })
+  .passthrough();
+
+export const TheSportsDBMilestoneSchema: z.ZodType<TheSportsDBMilestone> = z
+  .object({
+    id: nullableString,
+    idPlayer: nullableString,
+    strPlayer: nullableString,
+    idTeam: nullableString,
+    idMilestone: nullableString,
+    strTeam: nullableString,
+    strSport: nullableString,
+    strMilestone: nullableString,
+    strMilestoneLogo: nullableString,
+    dateMilestone: nullableString,
+  })
+  .passthrough();
+
+export const TheSportsDBContractSchema: z.ZodType<TheSportsDBContract> = z
+  .object({
+    id: nullableString,
+    idPlayer: nullableString,
+    idTeam: nullableString,
+    strSport: nullableString,
+    strPlayer: nullableString,
+    strTeam: nullableString,
+    strBadge: nullableString,
+    strYearStart: nullableString,
+    strYearEnd: nullableString,
+    strWage: nullableString,
+  })
+  .passthrough();
+
+export const TheSportsDBPlayerResultSchema: z.ZodType<TheSportsDBPlayerResult> =
+  z
+    .object({
+      idResult: nullableString,
+      idPlayer: nullableString,
+      strPlayer: nullableString,
+      idTeam: nullableString,
+      idEvent: nullableString,
+      strEvent: nullableString,
+      strResult: nullableString,
+      intPosition: nullableString,
+      intPoints: nullableString,
+      strDetail: nullableString,
+      dateEvent: nullableString,
+      strSeason: nullableString,
+      strCountry: nullableString,
+      strSport: nullableString,
+    })
+    .passthrough();
+
+export const TheSportsDBPlayerStatSchema: z.ZodType<TheSportsDBPlayerStat> = z
+  .object({
+    id: nullableString,
+    idPlayer: nullableString,
+    idTeam: nullableString,
+    idLeague: nullableString,
+    strSport: nullableString,
+    strPlayer: nullableString,
+    strTeam: nullableString,
+    strTeamBadge: nullableString,
+    strLeague: nullableString,
+    strLeagueBadge: nullableString,
+    strStatistic: nullableString,
+    strValue: nullableString,
+    strSeason: nullableString,
+  })
+  .passthrough();
+
+export const TheSportsDBLookupPlayerResponseSchema: z.ZodType<TheSportsDBLookupPlayerResponse> =
+  z
+    .object({
+      players: z.array(TheSportsDBPlayerSchema).nullable(),
+    })
+    .passthrough();
+
+export const TheSportsDBLookupHonoursResponseSchema: z.ZodType<TheSportsDBLookupHonoursResponse> =
+  z
+    .object({
+      honours: z.array(TheSportsDBHonourSchema).nullable(),
+    })
+    .passthrough();
+
+export const TheSportsDBLookupFormerTeamsResponseSchema: z.ZodType<TheSportsDBLookupFormerTeamsResponse> =
+  z
+    .object({
+      formerteams: z.array(TheSportsDBFormerTeamSchema).nullable(),
+    })
+    .passthrough();
+
+export const TheSportsDBLookupMilestonesResponseSchema: z.ZodType<TheSportsDBLookupMilestonesResponse> =
+  z
+    .object({
+      milestones: z.array(TheSportsDBMilestoneSchema).nullable(),
+    })
+    .passthrough();
+
+export const TheSportsDBLookupContractsResponseSchema: z.ZodType<TheSportsDBLookupContractsResponse> =
+  z
+    .object({
+      contracts: z.array(TheSportsDBContractSchema).nullable(),
+    })
+    .passthrough();
+
+export const TheSportsDBPlayerResultsResponseSchema: z.ZodType<TheSportsDBPlayerResultsResponse> =
+  z
+    .object({
+      results: z.array(TheSportsDBPlayerResultSchema).nullable(),
+    })
+    .passthrough();
+
+export const TheSportsDBLookupPlayerStatsResponseSchema: z.ZodType<TheSportsDBLookupPlayerStatsResponse> =
+  z
+    .object({
+      playerstats: z.array(TheSportsDBPlayerStatSchema).nullable(),
+    })
+    .passthrough();

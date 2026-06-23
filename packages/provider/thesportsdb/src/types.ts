@@ -3,6 +3,7 @@ import type { z } from "zod";
 import type {
   TheSportsDBEquipmentLookupRequestSchema,
   TheSportsDBLeagueLookupRequestSchema,
+  TheSportsDBPlayerIdRequestSchema,
   TheSportsDBSearchEventsRequestSchema,
   TheSportsDBSearchFilenameRequestSchema,
   TheSportsDBSearchPlayersRequestSchema,
@@ -278,14 +279,26 @@ export interface TheSportsDBFilenameSearchResponse extends TheSportsDBRecord {
 export interface TheSportsDBPlayer extends TheSportsDBRecord {
   idPlayer?: TheSportsDBField;
   idTeam?: TheSportsDBField;
+  idTeam2?: TheSportsDBField;
+  idTeamNational?: TheSportsDBField;
+  idAPIfootball?: string | null;
+  idPlayerManager?: TheSportsDBField;
+  idWikidata?: string | null;
+  idTransferMkt?: string | null;
+  idESPN?: string | null;
+  intSoccerXMLTeamID?: TheSportsDBField;
+  intLoved?: TheSportsDBField;
   strPlayer?: string | null;
+  strPlayerAlternate?: string | null;
   strTeam?: string | null;
+  strTeam2?: string | null;
   strSport?: string | null;
   strThumb?: string | null;
   strCutout?: string | null;
   strRender?: string | null;
   strNationality?: string | null;
   dateBorn?: string | null;
+  dateDied?: string | null;
   dateSigned?: string | null;
   strNumber?: string | null;
   strStatus?: string | null;
@@ -294,7 +307,24 @@ export interface TheSportsDBPlayer extends TheSportsDBRecord {
   strHeight?: string | null;
   strWeight?: string | null;
   strBirthLocation?: string | null;
+  strDeathLocation?: string | null;
+  strEthnicity?: string | null;
   strDescriptionEN?: string | null;
+  strDescriptionDE?: string | null;
+  strDescriptionFR?: string | null;
+  strDescriptionCN?: string | null;
+  strDescriptionIT?: string | null;
+  strDescriptionJP?: string | null;
+  strDescriptionRU?: string | null;
+  strDescriptionES?: string | null;
+  strDescriptionPT?: string | null;
+  strDescriptionSE?: string | null;
+  strDescriptionNL?: string | null;
+  strDescriptionHU?: string | null;
+  strDescriptionNO?: string | null;
+  strDescriptionIL?: string | null;
+  strDescriptionPL?: string | null;
+  strCollege?: string | null;
   strWebsite?: string | null;
   strFacebook?: string | null;
   strTwitter?: string | null;
@@ -306,17 +336,135 @@ export interface TheSportsDBPlayer extends TheSportsDBRecord {
   strKit?: string | null;
   strSide?: string | null;
   strAgent?: string | null;
+  strPoster?: string | null;
   strBanner?: string | null;
   strFanart1?: string | null;
   strFanart2?: string | null;
   strFanart3?: string | null;
   strFanart4?: string | null;
+  strCreativeCommons?: string | null;
   strLocked?: string | null;
   relevance?: TheSportsDBField;
 }
 
 export interface TheSportsDBPlayersResponse extends TheSportsDBRecord {
   player: TheSportsDBPlayer[] | null;
+}
+
+export interface TheSportsDBHonour extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  idLeague?: TheSportsDBField;
+  idHonour?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strTeam?: string | null;
+  strTeamBadge?: string | null;
+  strHonour?: string | null;
+  strHonourLogo?: string | null;
+  strHonourTrophy?: string | null;
+  strSeason?: string | null;
+}
+
+export interface TheSportsDBFormerTeam extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idFormerTeam?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strFormerTeam?: string | null;
+  strMoveType?: string | null;
+  strBadge?: string | null;
+  strJoined?: string | null;
+  strDeparted?: string | null;
+}
+
+export interface TheSportsDBMilestone extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  idMilestone?: TheSportsDBField;
+  strTeam?: string | null;
+  strSport?: string | null;
+  strMilestone?: string | null;
+  strMilestoneLogo?: string | null;
+  dateMilestone?: string | null;
+}
+
+export interface TheSportsDBContract extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strTeam?: string | null;
+  strBadge?: string | null;
+  strYearStart?: string | null;
+  strYearEnd?: string | null;
+  strWage?: string | null;
+}
+
+export interface TheSportsDBPlayerResult extends TheSportsDBRecord {
+  idResult?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strEvent?: string | null;
+  strResult?: string | null;
+  intPosition?: TheSportsDBField;
+  intPoints?: TheSportsDBField;
+  strDetail?: string | null;
+  dateEvent?: string | null;
+  strSeason?: string | null;
+  strCountry?: string | null;
+  strSport?: string | null;
+}
+
+export interface TheSportsDBPlayerStat extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  idLeague?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strTeam?: string | null;
+  strTeamBadge?: string | null;
+  strLeague?: string | null;
+  strLeagueBadge?: string | null;
+  strStatistic?: string | null;
+  strValue?: string | null;
+  strSeason?: string | null;
+}
+
+export interface TheSportsDBLookupPlayerResponse extends TheSportsDBRecord {
+  players: TheSportsDBPlayer[] | null;
+}
+
+export interface TheSportsDBLookupHonoursResponse extends TheSportsDBRecord {
+  honours: TheSportsDBHonour[] | null;
+}
+
+export interface TheSportsDBLookupFormerTeamsResponse extends TheSportsDBRecord {
+  formerteams: TheSportsDBFormerTeam[] | null;
+}
+
+export interface TheSportsDBLookupMilestonesResponse extends TheSportsDBRecord {
+  milestones: TheSportsDBMilestone[] | null;
+}
+
+export interface TheSportsDBLookupContractsResponse extends TheSportsDBRecord {
+  contracts: TheSportsDBContract[] | null;
+}
+
+export interface TheSportsDBPlayerResultsResponse extends TheSportsDBRecord {
+  results: TheSportsDBPlayerResult[] | null;
+}
+
+export interface TheSportsDBLookupPlayerStatsResponse extends TheSportsDBRecord {
+  playerstats: TheSportsDBPlayerStat[] | null;
 }
 
 export interface TheSportsDBLeagueLookupRequest {
@@ -338,6 +486,10 @@ export interface TheSportsDBEquipmentLookupRequest {
 
 export interface TheSportsDBVenueLookupRequest {
   idVenue: TheSportsDBId;
+}
+
+export interface TheSportsDBPlayerIdRequest {
+  idPlayer: number;
 }
 
 export interface TheSportsDBSearchTeamsRequest {
@@ -444,6 +596,62 @@ export interface TheSportsDBSearchVenuesMethod {
   schema: z.ZodType<z.infer<typeof TheSportsDBSearchVenuesRequestSchema>>;
 }
 
+export interface TheSportsDBLookupPlayerMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLookupPlayerResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
+export interface TheSportsDBLookupHonoursMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLookupHonoursResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
+export interface TheSportsDBLookupFormerTeamsMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLookupFormerTeamsResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
+export interface TheSportsDBLookupMilestonesMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLookupMilestonesResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
+export interface TheSportsDBLookupContractsMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLookupContractsResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
+export interface TheSportsDBPlayerResultsMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBPlayerResultsResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
+export interface TheSportsDBLookupPlayerStatsMethod {
+  (
+    req: TheSportsDBPlayerIdRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLookupPlayerStatsResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
+}
+
 export type TheSportsDBAllSportsMethod =
   TheSportsDBEndpointMethod<TheSportsDBSportsResponse>;
 export type TheSportsDBAllCountriesMethod =
@@ -469,6 +677,13 @@ export interface TheSportsDBV1Namespace {
   searchFilename: TheSportsDBSearchFilenameMethod;
   searchPlayers: TheSportsDBSearchPlayersMethod;
   searchVenues: TheSportsDBSearchVenuesMethod;
+  lookupplayer: TheSportsDBLookupPlayerMethod;
+  lookuphonours: TheSportsDBLookupHonoursMethod;
+  lookupformerteams: TheSportsDBLookupFormerTeamsMethod;
+  lookupmilestones: TheSportsDBLookupMilestonesMethod;
+  lookupcontracts: TheSportsDBLookupContractsMethod;
+  playerresults: TheSportsDBPlayerResultsMethod;
+  lookupplayerstats: TheSportsDBLookupPlayerStatsMethod;
 }
 
 export interface TheSportsDBGetNamespace {

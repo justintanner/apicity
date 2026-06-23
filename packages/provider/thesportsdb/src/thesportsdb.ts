@@ -9,7 +9,15 @@ import type {
   TheSportsDBLeagueLookupRequest,
   TheSportsDBLeagueLookupResponse,
   TheSportsDBLeaguesResponse,
+  TheSportsDBLookupContractsResponse,
+  TheSportsDBLookupFormerTeamsResponse,
+  TheSportsDBLookupHonoursResponse,
+  TheSportsDBLookupMilestonesResponse,
+  TheSportsDBLookupPlayerResponse,
+  TheSportsDBLookupPlayerStatsResponse,
   TheSportsDBOptions,
+  TheSportsDBPlayerIdRequest,
+  TheSportsDBPlayerResultsResponse,
   TheSportsDBPlayersResponse,
   TheSportsDBProvider,
   TheSportsDBSearchEventsRequest,
@@ -30,6 +38,7 @@ import type {
 import {
   TheSportsDBEquipmentLookupRequestSchema,
   TheSportsDBLeagueLookupRequestSchema,
+  TheSportsDBPlayerIdRequestSchema,
   TheSportsDBSearchEventsRequestSchema,
   TheSportsDBSearchFilenameRequestSchema,
   TheSportsDBSearchPlayersRequestSchema,
@@ -385,6 +394,132 @@ export function createTheSportsDB(
     { schema: TheSportsDBSearchVenuesRequestSchema }
   );
 
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayer.php?id={idPlayer}
+  // Docs: https://thedatadb.readme.io/reference/getplayerbyid
+  const lookupplayer = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLookupPlayerResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBLookupPlayerResponse>(
+        "GET",
+        `/${apiKey}/lookupplayer.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuphonours.php?id={idPlayer}
+  // Docs: https://thedatadb.readme.io/reference/gethonourbyid
+  const lookuphonours = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLookupHonoursResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBLookupHonoursResponse>(
+        "GET",
+        `/${apiKey}/lookuphonours.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupformerteams.php?id={idPlayer}
+  // Docs: https://thedatadb.readme.io/reference/getformerteamsbyplayerid
+  const lookupformerteams = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLookupFormerTeamsResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBLookupFormerTeamsResponse>(
+        "GET",
+        `/${apiKey}/lookupformerteams.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupmilestones.php?id={idPlayer}
+  // Docs: https://thedatadb.readme.io/reference/getmilestonesbyplayerid
+  const lookupmilestones = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLookupMilestonesResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBLookupMilestonesResponse>(
+        "GET",
+        `/${apiKey}/lookupmilestones.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupcontracts.php?id={idPlayer}
+  // Docs: https://thedatadb.readme.io/reference/getcontractsbyplayerid
+  const lookupcontracts = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLookupContractsResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBLookupContractsResponse>(
+        "GET",
+        `/${apiKey}/lookupcontracts.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/playerresults.php?id={idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const playerresults = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBPlayerResultsResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBPlayerResultsResponse>(
+        "GET",
+        `/${apiKey}/playerresults.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as player lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayerstats.php?id={idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const lookupplayerstats = Object.assign(
+    async (
+      req: TheSportsDBPlayerIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLookupPlayerStatsResponse> => {
+      const idPlayer = encodeURIComponent(String(req.idPlayer));
+      return makeJsonRequest<TheSportsDBLookupPlayerStatsResponse>(
+        "GET",
+        `/${apiKey}/lookupplayerstats.php?id=${idPlayer}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBPlayerIdRequestSchema }
+  );
+
   const v1 = {
     allSports,
     allCountries,
@@ -395,6 +530,13 @@ export function createTheSportsDB(
     searchFilename,
     searchPlayers,
     searchVenues,
+    lookupplayer,
+    lookuphonours,
+    lookupformerteams,
+    lookupmilestones,
+    lookupcontracts,
+    playerresults,
+    lookupplayerstats,
   };
 
   return attachExamples({

@@ -1,19 +1,42 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import type { SimpleFunctionsProvider } from "@apicity/simplefunctions";
 import {
   createSimpleFunctions,
+  SimpleFunctionsContagionRequestSchema,
+  SimpleFunctionsCrossVenueRequestSchema,
+  SimpleFunctionsMarketCandlesRequestSchema,
+  SimpleFunctionsMarketDetailRequestSchema,
   SimpleFunctionsMarketDetailResponseSchema,
   SimpleFunctionsMarketHistoryResponseSchema,
+  SimpleFunctionsMicrostructureHistoryRequestSchema,
+  SimpleFunctionsPublicListRequestSchema,
+  SimpleFunctionsPublicSearchRequestSchema,
+  SimpleFunctionsScanRequestSchema,
+  SimpleFunctionsScreenByTickersRequestSchema,
+  SimpleFunctionsScreenRequestSchema,
+  SimpleFunctionsTickerRequestSchema,
 } from "@apicity/simplefunctions";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
 const MARKET_TICKER = "KXRATECUT-26DEC31";
+const SPECIAL_TICKER = " KX RATE/CUT ";
+const ENCODED_SPECIAL_TICKER = "KX%20RATE%2FCUT";
 
-type SimpleFunctionsProvider = ReturnType<typeof createSimpleFunctions>;
-
-interface CapturedFetchCall {
+interface FetchCall {
   url: string;
-  init?: RequestInit;
+  method?: string;
+  headers: Record<string, string>;
+  body?: BodyInit | null;
+}
+
+interface PublicEndpointCase {
+  name: string;
+  invoke: (provider: SimpleFunctionsProvider) => Promise<unknown>;
+  path: string;
+  searchParams?: Record<string, string>;
+  schema: unknown;
+  getSchema: (provider: SimpleFunctionsProvider) => unknown;
 }
 
 function expectObject(value: unknown): Record<string, unknown> {
@@ -23,18 +46,64 @@ function expectObject(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
-function createJsonFetch(
-  calls: CapturedFetchCall[],
-  body: unknown
-): typeof fetch {
-  return async (input, init) => {
-    if (typeof input === "string") {
-      calls.push({ url: input, init });
-    } else if (input instanceof URL) {
-      calls.push({ url: input.toString(), init });
-    } else {
-      calls.push({ url: input.url, init });
+function headersToRecord(
+  headers: HeadersInit | undefined
+): Record<string, string> {
+  const record: Record<string, string> = {};
+  if (!headers) return record;
+
+  if (headers instanceof Headers) {
+    headers.forEach((value, key) => {
+      record[key.toLowerCase()] = value;
+    });
+    return record;
+  }
+
+  if (Array.isArray(headers)) {
+    for (const [key, value] of headers) {
+      record[key.toLowerCase()] = value;
     }
+    return record;
+  }
+
+  for (const [key, value] of Object.entries(headers)) {
+    record[key.toLowerCase()] = value;
+  }
+  return record;
+}
+
+function fetchUrl(input: RequestInfo | URL): string {
+  if (typeof input === "string") return input;
+  if (input instanceof URL) return input.toString();
+  return input.url;
+}
+
+function fetchMethod(
+  input: RequestInfo | URL,
+  init: RequestInit | undefined
+): string | undefined {
+  if (init?.method) return init.method;
+  if (input instanceof Request) return input.method;
+  return undefined;
+}
+
+function fetchHeaders(
+  input: RequestInfo | URL,
+  init: RequestInit | undefined
+): HeadersInit | undefined {
+  if (init?.headers) return init.headers;
+  if (input instanceof Request) return input.headers;
+  return undefined;
+}
+
+function createJsonFetch(calls: FetchCall[], body: unknown): typeof fetch {
+  return async (input, init) => {
+    calls.push({
+      url: fetchUrl(input),
+      method: fetchMethod(input, init),
+      headers: headersToRecord(fetchHeaders(input, init)),
+      body: init?.body,
+    });
 
     return new Response(JSON.stringify(body), {
       headers: { "content-type": "application/json" },
@@ -42,7 +111,7 @@ function createJsonFetch(
   };
 }
 
-function expectOnlyCall(calls: CapturedFetchCall[]): CapturedFetchCall {
+function expectOnlyCall(calls: FetchCall[]): FetchCall {
   expect(calls).toHaveLength(1);
   const call = calls[0];
   if (!call) {
@@ -51,13 +120,13 @@ function expectOnlyCall(calls: CapturedFetchCall[]): CapturedFetchCall {
   return call;
 }
 
-function expectNoBearer(call: CapturedFetchCall): void {
-  expect(new Headers(call.init?.headers).has("Authorization")).toBe(false);
+function expectNoBearer(call: FetchCall): void {
+  expect(call.headers.authorization).toBeUndefined();
 }
 
 async function expectPublicGet(
   provider: SimpleFunctionsProvider,
-  calls: CapturedFetchCall[],
+  calls: FetchCall[],
   invoke: (provider: SimpleFunctionsProvider) => Promise<unknown>,
   expectedPath: string,
   expectedQuery: Record<string, string> = {}
@@ -71,13 +140,281 @@ async function expectPublicGet(
     throw new Error(`Expected fetch call for ${expectedPath}`);
   }
   const url = new URL(call.url);
-  expect(call.init?.method).toBe("GET");
+  expect(call.method).toBe("GET");
   expect(url.pathname).toBe(expectedPath);
   expectNoBearer(call);
 
   const entries = Array.from(url.searchParams.entries()).sort();
   expect(entries).toEqual(Object.entries(expectedQuery).sort());
 }
+
+const publicDiscoveryCases: PublicEndpointCase[] = [
+  {
+    name: "markets",
+    invoke: (provider) =>
+      provider.api.public.markets({
+        q: "fed",
+        category: "macro",
+        venue: "kalshi",
+        limit: 5,
+        offset: 10,
+      }),
+    path: "/api/public/markets",
+    searchParams: {
+      q: "fed",
+      category: "macro",
+      venue: "kalshi",
+      limit: "5",
+      offset: "10",
+    },
+    schema: SimpleFunctionsPublicListRequestSchema,
+    getSchema: (provider) => provider.api.public.markets.schema,
+  },
+  {
+    name: "newmarkets",
+    invoke: (provider) =>
+      provider.api.public.newmarkets({
+        category: "macro",
+        limit: 4,
+      }),
+    path: "/api/public/newmarkets",
+    searchParams: {
+      category: "macro",
+      limit: "4",
+    },
+    schema: SimpleFunctionsPublicListRequestSchema,
+    getSchema: (provider) => provider.api.public.newmarkets.schema,
+  },
+  {
+    name: "scan",
+    invoke: (provider) =>
+      provider.api.public.scan({
+        q: "rate",
+        mode: "market",
+        series: "fed",
+        market: MARKET_TICKER,
+        limit: 6,
+      }),
+    path: "/api/public/scan",
+    searchParams: {
+      q: "rate",
+      mode: "market",
+      series: "fed",
+      market: MARKET_TICKER,
+      limit: "6",
+    },
+    schema: SimpleFunctionsScanRequestSchema,
+    getSchema: (provider) => provider.api.public.scan.schema,
+  },
+  {
+    name: "screen",
+    invoke: (provider) =>
+      provider.api.public.screen({
+        venue: "polymarket",
+        category: "macro",
+        minPrice: 0.2,
+        maxPrice: 0.8,
+        minVolume: 1000,
+        limit: 12,
+      }),
+    path: "/api/public/screen",
+    searchParams: {
+      venue: "polymarket",
+      category: "macro",
+      minPrice: "0.2",
+      maxPrice: "0.8",
+      minVolume: "1000",
+      limit: "12",
+    },
+    schema: SimpleFunctionsScreenRequestSchema,
+    getSchema: (provider) => provider.api.public.screen.schema,
+  },
+  {
+    name: "screen-by-tickers",
+    invoke: (provider) =>
+      provider.api.public.screenByTickers({
+        tickers: ["FED-YES", "FED-NO"],
+        venue: "kalshi",
+        minVolume: 25,
+      }),
+    path: "/api/public/screen-by-tickers",
+    searchParams: {
+      tickers: "FED-YES,FED-NO",
+      venue: "kalshi",
+      minVolume: "25",
+    },
+    schema: SimpleFunctionsScreenByTickersRequestSchema,
+    getSchema: (provider) => provider.api.public.screenByTickers.schema,
+  },
+  {
+    name: "search",
+    invoke: (provider) =>
+      provider.api.public.search({
+        q: " fed ",
+        limit: 3,
+      }),
+    path: "/api/public/search",
+    searchParams: {
+      q: "fed",
+      limit: "3",
+    },
+    schema: SimpleFunctionsPublicSearchRequestSchema,
+    getSchema: (provider) => provider.api.public.search.schema,
+  },
+  {
+    name: "market",
+    invoke: (provider) =>
+      provider.api.public.market({
+        ticker: SPECIAL_TICKER,
+        depth: true,
+        cvPreset: "detail",
+        cvMinConf: 0.7,
+        cvMaxDtDays: 14,
+        nextActions: "off",
+      }),
+    path: `/api/public/market/${ENCODED_SPECIAL_TICKER}`,
+    searchParams: {
+      depth: "true",
+      cv_preset: "detail",
+      cv_min_conf: "0.7",
+      cv_max_dt_days: "14",
+      nextActions: "off",
+    },
+    schema: SimpleFunctionsMarketDetailRequestSchema,
+    getSchema: (provider) => provider.api.public.market.schema,
+  },
+  {
+    name: "market-history",
+    invoke: (provider) =>
+      provider.api.public.market.history({
+        ticker: SPECIAL_TICKER,
+      }),
+    path: `/api/public/market/${ENCODED_SPECIAL_TICKER}/history`,
+    schema: SimpleFunctionsTickerRequestSchema,
+    getSchema: (provider) => provider.api.public.market.history.schema,
+  },
+  {
+    name: "market-candles",
+    invoke: (provider) =>
+      provider.api.public.market.candles({
+        ticker: SPECIAL_TICKER,
+        venue: "kalshi",
+        timeframe: "1h",
+        tf: "5m",
+        limit: 120,
+      }),
+    path: `/api/public/market/${ENCODED_SPECIAL_TICKER}/candles`,
+    searchParams: {
+      venue: "kalshi",
+      timeframe: "1h",
+      tf: "5m",
+      limit: "120",
+    },
+    schema: SimpleFunctionsMarketCandlesRequestSchema,
+    getSchema: (provider) => provider.api.public.market.candles.schema,
+  },
+  {
+    name: "market-microstructure-history",
+    invoke: (provider) =>
+      provider.api.public.marketMicrostructureHistory({
+        ticker: MARKET_TICKER,
+        venue: "kalshi",
+        days: 30,
+        limit: 20,
+      }),
+    path: "/api/public/market-microstructure-history",
+    searchParams: {
+      ticker: MARKET_TICKER,
+      venue: "kalshi",
+      days: "30",
+      limit: "20",
+    },
+    schema: SimpleFunctionsMicrostructureHistoryRequestSchema,
+    getSchema: (provider) =>
+      provider.api.public.marketMicrostructureHistory.schema,
+  },
+  {
+    name: "live-tickers",
+    invoke: (provider) =>
+      provider.api.public.liveTickers({
+        q: "fed",
+        venue: "polymarket",
+        limit: 8,
+      }),
+    path: "/api/public/live-tickers",
+    searchParams: {
+      q: "fed",
+      venue: "polymarket",
+      limit: "8",
+    },
+    schema: SimpleFunctionsPublicListRequestSchema,
+    getSchema: (provider) => provider.api.public.liveTickers.schema,
+  },
+  {
+    name: "cross-venue-pairs",
+    invoke: (provider) =>
+      provider.api.public.crossVenue.pairs({
+        venue: "kalshi",
+        minConfidence: 0.8,
+        limit: 7,
+      }),
+    path: "/api/public/cross-venue/pairs",
+    searchParams: {
+      venue: "kalshi",
+      minConfidence: "0.8",
+      limit: "7",
+    },
+    schema: SimpleFunctionsCrossVenueRequestSchema,
+    getSchema: (provider) => provider.api.public.crossVenue.pairs.schema,
+  },
+  {
+    name: "cross-venue-stats",
+    invoke: (provider) =>
+      provider.api.public.crossVenue.stats({
+        minConfidence: 0.6,
+        limit: 9,
+      }),
+    path: "/api/public/cross-venue/stats",
+    searchParams: {
+      minConfidence: "0.6",
+      limit: "9",
+    },
+    schema: SimpleFunctionsCrossVenueRequestSchema,
+    getSchema: (provider) => provider.api.public.crossVenue.stats.schema,
+  },
+  {
+    name: "liquidity-by-theme",
+    invoke: (provider) =>
+      provider.api.public.liquidityByTheme({
+        category: "macro",
+        limit: 11,
+      }),
+    path: "/api/public/liquidity-by-theme",
+    searchParams: {
+      category: "macro",
+      limit: "11",
+    },
+    schema: SimpleFunctionsPublicListRequestSchema,
+    getSchema: (provider) => provider.api.public.liquidityByTheme.schema,
+  },
+  {
+    name: "contagion",
+    invoke: (provider) =>
+      provider.api.public.contagion({
+        ticker: MARKET_TICKER,
+        window: "7d",
+        limit: 13,
+      }),
+    path: "/api/public/contagion",
+    searchParams: {
+      ticker: MARKET_TICKER,
+      window: "7d",
+      limit: "13",
+    },
+    schema: SimpleFunctionsContagionRequestSchema,
+    getSchema: (provider) => provider.api.public.contagion.schema,
+  },
+];
 
 describe("simplefunctions public integration", () => {
   let ctx: PollyContext | undefined;
@@ -203,8 +540,58 @@ describe("simplefunctions public integration", () => {
     expect(history.regimeCount).toBe(history.regimeHistory.length);
   });
 
+  it("serializes public market discovery endpoints without auth", async () => {
+    const calls: FetchCall[] = [];
+    const provider = createSimpleFunctions({
+      fetch: createJsonFetch(calls, { ok: true }),
+    });
+
+    for (const endpoint of publicDiscoveryCases) {
+      const before = calls.length;
+
+      expect(endpoint.getSchema(provider)).toBe(endpoint.schema);
+      await endpoint.invoke(provider);
+
+      const call = calls[before];
+      if (!call) {
+        throw new Error(`Expected fetch call for ${endpoint.name}`);
+      }
+      const url = new URL(call.url);
+      const expectedParams = endpoint.searchParams ?? {};
+
+      expect(call.method).toBe("GET");
+      expect(call.body).toBeUndefined();
+      expectNoBearer(call);
+      expect(url.origin).toBe("https://simplefunctions.dev");
+      expect(url.pathname).toBe(endpoint.path);
+      expect(Array.from(url.searchParams.keys()).sort()).toEqual(
+        Object.keys(expectedParams).sort()
+      );
+
+      for (const [key, value] of Object.entries(expectedParams)) {
+        expect(url.searchParams.get(key), endpoint.name).toBe(value);
+      }
+    }
+
+    expect(calls).toHaveLength(publicDiscoveryCases.length);
+  });
+
+  it("passes configured auth through public market discovery reads", async () => {
+    const calls: FetchCall[] = [];
+    const provider = createSimpleFunctions({
+      apiKey: "sf_live_test",
+      fetch: createJsonFetch(calls, { ok: true }),
+    });
+
+    await provider.api.public.markets({ limit: 1 });
+
+    expect(expectOnlyCall(calls).headers.authorization).toBe(
+      "Bearer sf_live_test"
+    );
+  });
+
   it("serializes public market detail query parameters", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       apiKey: "sf_live_test",
       fetch: createJsonFetch(calls, { ticker: MARKET_TICKER }),
@@ -231,7 +618,7 @@ describe("simplefunctions public integration", () => {
   });
 
   it("requires an API key for public market refresh", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       fetch: createJsonFetch(calls, { ticker: MARKET_TICKER }),
     });
@@ -246,7 +633,7 @@ describe("simplefunctions public integration", () => {
   });
 
   it("serializes public market history paths", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       fetch: createJsonFetch(calls, {
         indicatorHistory: [],
@@ -264,7 +651,7 @@ describe("simplefunctions public integration", () => {
   });
 
   it("serializes public index, calendar, and yield-curve reads", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       fetch: createJsonFetch(calls, { ok: true }),
     });
@@ -349,7 +736,7 @@ describe("simplefunctions public integration", () => {
   });
 
   it("serializes public government and economic context reads", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       fetch: createJsonFetch(calls, { ok: true }),
     });
@@ -491,7 +878,7 @@ describe("simplefunctions public integration", () => {
   });
 
   it("passes optional bearer auth through public reads", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       apiKey: "sf_live_test",
       fetch: createJsonFetch(calls, { ok: true }),
@@ -499,14 +886,13 @@ describe("simplefunctions public integration", () => {
 
     await provider.api.public.calendar({ limit: 1 });
 
-    const call = expectOnlyCall(calls);
-    expect(new Headers(call.init?.headers).get("Authorization")).toBe(
+    expect(expectOnlyCall(calls).headers.authorization).toBe(
       "Bearer sf_live_test"
     );
   });
 
   it("validates required public gov/econ path and query values locally", async () => {
-    const calls: CapturedFetchCall[] = [];
+    const calls: FetchCall[] = [];
     const provider = createSimpleFunctions({
       fetch: createJsonFetch(calls, { ok: true }),
     });

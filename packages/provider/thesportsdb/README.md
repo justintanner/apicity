@@ -106,7 +106,7 @@ const liveSoccer = await thesportsdb.v2.livescore.bySport({
 
 ## API Reference
 
-37 endpoints across 24 groups. Each method mirrors an upstream URL path.
+49 endpoints across 36 groups. Each method mirrors an upstream URL path.
 
 ### allCountries
 
@@ -170,6 +170,142 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.eventResults({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventsday
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventsday</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsday.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventsday({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventshighlights
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventshighlights</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventshighlights.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-video)
+
+```typescript
+const res = await thesportsdb.v1.eventshighlights({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventslast
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventslast</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventslast.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventslast({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventsnext
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventsnext</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsnext.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventsnext({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventsnextleague
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventsnextleague</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsnextleague.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventsnextleague({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventspastleague
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventspastleague</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventspastleague.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventspastleague({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventsseason
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventsseason</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsseason.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventsseason({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventstv
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventstv</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventstv.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-schedule)
+
+```typescript
+const res = await thesportsdb.v1.eventstv({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -294,6 +430,23 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.lookup.venue({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupAllPlayers
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupAllPlayers</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookup_all_players.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
+
+```typescript
+const res = await thesportsdb.v1.lookupAllPlayers({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -620,6 +773,57 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v2.schedule.previous.venue({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchAllLeagues
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchAllLeagues</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_leagues.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
+
+```typescript
+const res = await thesportsdb.v1.searchAllLeagues({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchAllSeasons
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchAllSeasons</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_seasons.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
+
+```typescript
+const res = await thesportsdb.v1.searchAllSeasons({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchAllTeams
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchAllTeams</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_teams.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-list)
+
+```typescript
+const res = await thesportsdb.v1.searchAllTeams({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

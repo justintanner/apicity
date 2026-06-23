@@ -52,6 +52,10 @@ const eventIdSchema = z.union([
 const nonEmptyQueryString = z.string().min(1);
 const nullableString = z.string().nullable().optional();
 const optionalNullableString = nullableString;
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const flagSchema = z
+  .union([z.boolean(), z.literal(0), z.literal(1)])
+  .optional();
 
 export const TheSportsDBLeagueLookupRequestSchema = z.object({
   idLeague: idSchema,
@@ -122,6 +126,118 @@ export const TheSportsDBSearchVenuesRequestSchema: z.ZodType<TheSportsDBSearchVe
   z.object({
     venue: nonEmptyQueryString,
   });
+
+export const TheSportsDBSearchAllLeaguesRequestSchema = z.object({
+  country: nonEmptyQueryString,
+  sport: nonEmptyQueryString,
+});
+
+export type TheSportsDBSearchAllLeaguesRequest = z.infer<
+  typeof TheSportsDBSearchAllLeaguesRequestSchema
+>;
+
+export const TheSportsDBSearchAllSeasonsRequestSchema = z.object({
+  idLeague: idSchema,
+  poster: flagSchema,
+  badge: flagSchema,
+  description: flagSchema,
+});
+
+export type TheSportsDBSearchAllSeasonsRequest = z.infer<
+  typeof TheSportsDBSearchAllSeasonsRequestSchema
+>;
+
+export const TheSportsDBSearchAllTeamsRequestSchema = z
+  .object({
+    league: nonEmptyQueryString.optional(),
+    sport: nonEmptyQueryString.optional(),
+    country: nonEmptyQueryString.optional(),
+  })
+  .refine((req) => req.league || req.sport || req.country, {
+    message: "At least one of league, sport, or country is required",
+  });
+
+export type TheSportsDBSearchAllTeamsRequest = z.infer<
+  typeof TheSportsDBSearchAllTeamsRequestSchema
+>;
+
+export const TheSportsDBLookupAllPlayersRequestSchema = z.object({
+  idTeam: idSchema,
+});
+
+export type TheSportsDBLookupAllPlayersRequest = z.infer<
+  typeof TheSportsDBLookupAllPlayersRequestSchema
+>;
+
+export const TheSportsDBTeamEventsRequestSchema = z.object({
+  idTeam: idSchema,
+});
+
+export type TheSportsDBTeamEventsRequest = z.infer<
+  typeof TheSportsDBTeamEventsRequestSchema
+>;
+
+export const TheSportsDBLeagueEventsRequestSchema = z.object({
+  idLeague: idSchema,
+});
+
+export type TheSportsDBLeagueEventsRequest = z.infer<
+  typeof TheSportsDBLeagueEventsRequestSchema
+>;
+
+export const TheSportsDBEventsDayRequestSchema = z.object({
+  date: dateSchema,
+  sport: nonEmptyQueryString.optional(),
+  league: idSchema.optional(),
+});
+
+export type TheSportsDBEventsDayRequest = z.infer<
+  typeof TheSportsDBEventsDayRequestSchema
+>;
+
+export const TheSportsDBEventsSeasonRequestSchema = z.object({
+  idLeague: idSchema,
+  season: z.string().min(1),
+});
+
+export type TheSportsDBEventsSeasonRequest = z.infer<
+  typeof TheSportsDBEventsSeasonRequestSchema
+>;
+
+export const TheSportsDBEventsTVRequestSchema = z
+  .object({
+    date: dateSchema.optional(),
+    country: nonEmptyQueryString.optional(),
+    sport: nonEmptyQueryString.optional(),
+    channel: nonEmptyQueryString.optional(),
+    idChannel: idSchema.optional(),
+  })
+  .refine(
+    (req) =>
+      req.date ||
+      req.country ||
+      req.sport ||
+      req.channel ||
+      req.idChannel !== undefined,
+    {
+      message:
+        "At least one of date, country, sport, channel, or idChannel is required",
+    }
+  );
+
+export type TheSportsDBEventsTVRequest = z.infer<
+  typeof TheSportsDBEventsTVRequestSchema
+>;
+
+export const TheSportsDBEventsHighlightsRequestSchema = z.object({
+  date: dateSchema,
+  idLeague: idSchema.optional(),
+  sport: nonEmptyQueryString.optional(),
+});
+
+export type TheSportsDBEventsHighlightsRequest = z.infer<
+  typeof TheSportsDBEventsHighlightsRequestSchema
+>;
 
 export const TheSportsDBPlayerIdRequestSchema: z.ZodType<TheSportsDBPlayerIdRequest> =
   z.object({

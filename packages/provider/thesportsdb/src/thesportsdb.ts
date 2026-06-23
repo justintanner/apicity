@@ -5,12 +5,17 @@ import type {
   TheSportsDBEquipmentLookupRequest,
   TheSportsDBEquipmentLookupResponse,
   TheSportsDBEventScheduleList,
+  TheSportsDBEventsDayRequest,
+  TheSportsDBEventsHighlightsRequest,
   TheSportsDBEventsResponse,
   TheSportsDBEventLookupRequest,
   TheSportsDBEventResponse,
   TheSportsDBEventResultsResponse,
   TheSportsDBEventStatsResponse,
+  TheSportsDBEventsSeasonRequest,
+  TheSportsDBEventsTVRequest,
   TheSportsDBFilenameSearchResponse,
+  TheSportsDBLeagueEventsRequest,
   TheSportsDBLeagueLookupRequest,
   TheSportsDBLeagueLookupResponse,
   TheSportsDBLeagueScheduleRequest,
@@ -20,6 +25,7 @@ import type {
   TheSportsDBLiveScoreLeagueRequest,
   TheSportsDBLiveScoreList,
   TheSportsDBLiveScoreSportRequest,
+  TheSportsDBLookupAllPlayersRequest,
   TheSportsDBLookupContractsResponse,
   TheSportsDBLookupFormerTeamsResponse,
   TheSportsDBLookupHonoursResponse,
@@ -31,20 +37,29 @@ import type {
   TheSportsDBPlayerResultsResponse,
   TheSportsDBPlayersResponse,
   TheSportsDBProvider,
+  TheSportsDBResultsResponse,
+  TheSportsDBSearchAllLeaguesRequest,
+  TheSportsDBSearchAllLeaguesResponse,
+  TheSportsDBSearchAllSeasonsRequest,
+  TheSportsDBSearchAllTeamsRequest,
   TheSportsDBSearchEventsRequest,
   TheSportsDBSearchFilenameRequest,
   TheSportsDBSearchPlayersRequest,
   TheSportsDBSearchTeamsRequest,
   TheSportsDBSearchVenuesRequest,
+  TheSportsDBSeasonsResponse,
   TheSportsDBSportsResponse,
   TheSportsDBTableLookupRequest,
   TheSportsDBTableLookupResponse,
+  TheSportsDBTeamEventsRequest,
   TheSportsDBTeamLookupRequest,
   TheSportsDBTeamLookupResponse,
   TheSportsDBTeamScheduleRequest,
   TheSportsDBTeamsResponse,
   TheSportsDBTimelineResponse,
   TheSportsDBTvEventResponse,
+  TheSportsDBTVEventsResponse,
+  TheSportsDBTVHighlightsResponse,
   TheSportsDBVenueLookupRequest,
   TheSportsDBVenueLookupResponse,
   TheSportsDBVenueScheduleRequest,
@@ -53,18 +68,28 @@ import type {
 import {
   TheSportsDBEquipmentLookupRequestSchema,
   TheSportsDBEventLookupRequestSchema,
-  TheSportsDBPlayerIdRequestSchema,
+  TheSportsDBEventsDayRequestSchema,
+  TheSportsDBEventsHighlightsRequestSchema,
+  TheSportsDBEventsSeasonRequestSchema,
+  TheSportsDBEventsTVRequestSchema,
+  TheSportsDBLeagueEventsRequestSchema,
+  TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBLeagueScheduleRequestSchema,
   TheSportsDBLeagueSeasonScheduleRequestSchema,
-  TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBLiveScoreLeagueRequestSchema,
   TheSportsDBLiveScoreSportRequestSchema,
+  TheSportsDBLookupAllPlayersRequestSchema,
+  TheSportsDBPlayerIdRequestSchema,
+  TheSportsDBSearchAllLeaguesRequestSchema,
+  TheSportsDBSearchAllSeasonsRequestSchema,
+  TheSportsDBSearchAllTeamsRequestSchema,
   TheSportsDBSearchEventsRequestSchema,
   TheSportsDBSearchFilenameRequestSchema,
   TheSportsDBSearchPlayersRequestSchema,
   TheSportsDBSearchTeamsRequestSchema,
   TheSportsDBSearchVenuesRequestSchema,
   TheSportsDBTableLookupRequestSchema,
+  TheSportsDBTeamEventsRequestSchema,
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBTeamScheduleRequestSchema,
   TheSportsDBVenueLookupRequestSchema,
@@ -194,6 +219,18 @@ export function createTheSportsDB(
 
   function v2Headers(): Record<string, string> {
     return { "X-API-KEY": rawApiKey };
+  }
+
+  function flagQueryValue(
+    value: boolean | 0 | 1 | undefined
+  ): number | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+    if (typeof value === "boolean") {
+      return value ? 1 : 0;
+    }
+    return value;
   }
 
   // sig-ok: V1 PHP script names exposed as catalog methods.
@@ -338,6 +375,261 @@ export function createTheSportsDB(
     equipment,
     venue,
   };
+
+  // sig-ok: V1 PHP script names exposed as list methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_leagues.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-list
+  const searchAllLeagues = Object.assign(
+    async (
+      req: TheSportsDBSearchAllLeaguesRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBSearchAllLeaguesResponse> => {
+      const query = buildQuery({
+        c: req.country,
+        s: req.sport,
+      });
+      return makeJsonRequest<TheSportsDBSearchAllLeaguesResponse>(
+        "GET",
+        `/${apiKey}/search_all_leagues.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchAllLeaguesRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as list methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_seasons.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-list
+  const searchAllSeasons = Object.assign(
+    async (
+      req: TheSportsDBSearchAllSeasonsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBSeasonsResponse> => {
+      const query = buildQuery({
+        id: req.idLeague,
+        poster: flagQueryValue(req.poster),
+        badge: flagQueryValue(req.badge),
+        description: flagQueryValue(req.description),
+      });
+      return makeJsonRequest<TheSportsDBSeasonsResponse>(
+        "GET",
+        `/${apiKey}/search_all_seasons.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchAllSeasonsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as list methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_teams.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-list
+  const searchAllTeams = Object.assign(
+    async (
+      req: TheSportsDBSearchAllTeamsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTeamsResponse> => {
+      const query = buildQuery({
+        l: req.league,
+        s: req.sport,
+        c: req.country,
+      });
+      return makeJsonRequest<TheSportsDBTeamsResponse>(
+        "GET",
+        `/${apiKey}/search_all_teams.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchAllTeamsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as list methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookup_all_players.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-list
+  const lookupAllPlayers = Object.assign(
+    async (
+      req: TheSportsDBLookupAllPlayersRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBPlayersResponse> => {
+      const query = buildQuery({
+        id: req.idTeam,
+      });
+      return makeJsonRequest<TheSportsDBPlayersResponse>(
+        "GET",
+        `/${apiKey}/lookup_all_players.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBLookupAllPlayersRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsnext.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventsnext = Object.assign(
+    async (
+      req: TheSportsDBTeamEventsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventsResponse> => {
+      const query = buildQuery({
+        id: req.idTeam,
+      });
+      return makeJsonRequest<TheSportsDBEventsResponse>(
+        "GET",
+        `/${apiKey}/eventsnext.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBTeamEventsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventslast.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventslast = Object.assign(
+    async (
+      req: TheSportsDBTeamEventsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBResultsResponse> => {
+      const query = buildQuery({
+        id: req.idTeam,
+      });
+      return makeJsonRequest<TheSportsDBResultsResponse>(
+        "GET",
+        `/${apiKey}/eventslast.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBTeamEventsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsnextleague.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventsnextleague = Object.assign(
+    async (
+      req: TheSportsDBLeagueEventsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventsResponse> => {
+      const query = buildQuery({
+        id: req.idLeague,
+      });
+      return makeJsonRequest<TheSportsDBEventsResponse>(
+        "GET",
+        `/${apiKey}/eventsnextleague.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBLeagueEventsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventspastleague.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventspastleague = Object.assign(
+    async (
+      req: TheSportsDBLeagueEventsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventsResponse> => {
+      const query = buildQuery({
+        id: req.idLeague,
+      });
+      return makeJsonRequest<TheSportsDBEventsResponse>(
+        "GET",
+        `/${apiKey}/eventspastleague.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBLeagueEventsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsday.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventsday = Object.assign(
+    async (
+      req: TheSportsDBEventsDayRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventsResponse> => {
+      const query = buildQuery({
+        d: req.date,
+        s: req.sport,
+        l: req.league,
+      });
+      return makeJsonRequest<TheSportsDBEventsResponse>(
+        "GET",
+        `/${apiKey}/eventsday.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventsDayRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventsseason.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventsseason = Object.assign(
+    async (
+      req: TheSportsDBEventsSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventsResponse> => {
+      const query = buildQuery({
+        id: req.idLeague,
+        s: req.season,
+      });
+      return makeJsonRequest<TheSportsDBEventsResponse>(
+        "GET",
+        `/${apiKey}/eventsseason.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventsSeasonRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as schedule methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventstv.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-schedule
+  const eventstv = Object.assign(
+    async (
+      req: TheSportsDBEventsTVRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTVEventsResponse> => {
+      const query = buildQuery({
+        d: req.date,
+        a: req.country,
+        s: req.sport,
+        c: req.channel,
+        id: req.idChannel,
+      });
+      return makeJsonRequest<TheSportsDBTVEventsResponse>(
+        "GET",
+        `/${apiKey}/eventstv.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventsTVRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as video methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventshighlights.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-video
+  const eventshighlights = Object.assign(
+    async (
+      req: TheSportsDBEventsHighlightsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTVHighlightsResponse> => {
+      const query = buildQuery({
+        d: req.date,
+        l: req.idLeague,
+        s: req.sport,
+      });
+      return makeJsonRequest<TheSportsDBTVHighlightsResponse>(
+        "GET",
+        `/${apiKey}/eventshighlights.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventsHighlightsRequestSchema }
+  );
 
   // sig-ok: V1 PHP script names exposed as search methods.
   // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchteams.php{query}
@@ -676,11 +968,23 @@ export function createTheSportsDB(
     allCountries,
     allLeagues,
     lookup,
+    searchAllLeagues,
+    searchAllSeasons,
+    searchAllTeams,
+    lookupAllPlayers,
     searchTeams,
     searchEvents,
     searchFilename,
     searchPlayers,
     searchVenues,
+    eventsnext,
+    eventslast,
+    eventsnextleague,
+    eventspastleague,
+    eventsday,
+    eventsseason,
+    eventstv,
+    eventshighlights,
     lookupplayer,
     lookuphonours,
     lookupformerteams,

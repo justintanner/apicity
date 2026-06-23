@@ -96,6 +96,58 @@ export interface OpenF1CarDataRequest {
   csv?: boolean;
 }
 
+export interface OpenF1Driver {
+  broadcast_name: string;
+  country_code?: string;
+  driver_number: number;
+  first_name: string;
+  full_name: string;
+  headshot_url: string;
+  last_name: string;
+  meeting_key: number;
+  name_acronym: string;
+  session_key: number;
+  team_colour: string;
+  team_name: string;
+  [key: string]: unknown;
+}
+
+export type OpenF1DriversResponse = OpenF1Driver[];
+
+export type OpenF1DriversFilterField =
+  | "broadcast_name"
+  | "country_code"
+  | "driver_number"
+  | "first_name"
+  | "full_name"
+  | "headshot_url"
+  | "last_name"
+  | "meeting_key"
+  | "name_acronym"
+  | "session_key"
+  | "team_colour"
+  | "team_name";
+
+export type OpenF1DriversFilter =
+  OpenF1ComparisonFilter<OpenF1DriversFilterField>;
+
+export interface OpenF1DriversRequest {
+  broadcast_name?: OpenF1FilterValue<string>;
+  country_code?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  first_name?: OpenF1FilterValue<string>;
+  full_name?: OpenF1FilterValue<string>;
+  headshot_url?: OpenF1FilterValue<string>;
+  last_name?: OpenF1FilterValue<string>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  name_acronym?: OpenF1FilterValue<string>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  team_colour?: OpenF1FilterValue<string>;
+  team_name?: OpenF1FilterValue<string>;
+  filters?: readonly OpenF1DriversFilter[];
+  csv?: boolean;
+}
+
 export interface OpenF1Meeting {
   circuit_key: number;
   circuit_image: string | null;
@@ -571,6 +623,11 @@ export type OpenF1ChampionshipTeamsMethod = OpenF1Method<
   OpenF1ChampionshipTeamResponse
 >;
 
+export type OpenF1DriversMethod = OpenF1Method<
+  OpenF1DriversRequest,
+  OpenF1DriversResponse
+>;
+
 export type OpenF1IntervalsMethod = OpenF1Method<
   OpenF1IntervalsRequest,
   OpenF1IntervalsResponse
@@ -890,6 +947,7 @@ export interface OpenF1V1Namespace {
   carData: OpenF1CarDataMethod;
   championshipDrivers: OpenF1ChampionshipDriversMethod;
   championshipTeams: OpenF1ChampionshipTeamsMethod;
+  drivers: OpenF1DriversMethod;
   intervals: OpenF1IntervalsMethod;
   laps: OpenF1LapsMethod;
   location: OpenF1LocationMethod;

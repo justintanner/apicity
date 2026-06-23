@@ -14,6 +14,10 @@ import type {
   OpenF1ChampionshipTeamRequest,
   OpenF1ComparisonFilter,
   OpenF1ComparisonOperator,
+  OpenF1Driver,
+  OpenF1DriversFilter,
+  OpenF1DriversFilterField,
+  OpenF1DriversRequest,
   OpenF1FilterScalar,
   OpenF1Interval,
   OpenF1IntervalGap,
@@ -138,6 +142,22 @@ export const OpenF1CarDataFilterFieldSchema: z.ZodType<OpenF1CarDataFilterField>
     "throttle",
   ]);
 
+export const OpenF1DriversFilterFieldSchema: z.ZodType<OpenF1DriversFilterField> =
+  z.enum([
+    "broadcast_name",
+    "country_code",
+    "driver_number",
+    "first_name",
+    "full_name",
+    "headshot_url",
+    "last_name",
+    "meeting_key",
+    "name_acronym",
+    "session_key",
+    "team_colour",
+    "team_name",
+  ]);
+
 export const OpenF1MeetingsFilterFieldSchema: z.ZodType<OpenF1MeetingsFilterField> =
   z.enum([
     "circuit_key",
@@ -184,6 +204,11 @@ export const OpenF1CarDataFilterSchema: z.ZodType<OpenF1CarDataFilter> =
     field: OpenF1CarDataFilterFieldSchema,
   });
 
+export const OpenF1DriversFilterSchema: z.ZodType<OpenF1DriversFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1DriversFilterFieldSchema,
+  });
+
 export const OpenF1MeetingsFilterSchema: z.ZodType<OpenF1MeetingsFilter> =
   openF1ComparisonFilterObject.extend({
     field: OpenF1MeetingsFilterFieldSchema,
@@ -206,6 +231,23 @@ export const OpenF1CarDataSchema: z.ZodType<OpenF1CarData> = z
     session_key: z.number(),
     speed: z.number(),
     throttle: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1DriverSchema: z.ZodType<OpenF1Driver> = z
+  .object({
+    broadcast_name: z.string(),
+    country_code: z.string().optional(),
+    driver_number: z.number(),
+    first_name: z.string(),
+    full_name: z.string(),
+    headshot_url: z.string(),
+    last_name: z.string(),
+    meeting_key: z.number(),
+    name_acronym: z.string(),
+    session_key: z.number(),
+    team_colour: z.string(),
+    team_name: z.string(),
   })
   .catchall(z.unknown());
 
@@ -265,6 +307,26 @@ export const OpenF1CarDataRequestSchema: z.ZodType<OpenF1CarDataRequest> =
   });
 
 export const OpenF1CarDataResponseSchema = z.array(OpenF1CarDataSchema);
+
+export const OpenF1DriversRequestSchema: z.ZodType<OpenF1DriversRequest> =
+  z.object({
+    broadcast_name: stringFilterValue.optional(),
+    country_code: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    first_name: stringFilterValue.optional(),
+    full_name: stringFilterValue.optional(),
+    headshot_url: stringFilterValue.optional(),
+    last_name: stringFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    name_acronym: stringFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    team_colour: stringFilterValue.optional(),
+    team_name: stringFilterValue.optional(),
+    filters: z.array(OpenF1DriversFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1DriversResponseSchema = z.array(OpenF1DriverSchema);
 
 export const OpenF1MeetingsRequestSchema: z.ZodType<OpenF1MeetingsRequest> =
   z.object({

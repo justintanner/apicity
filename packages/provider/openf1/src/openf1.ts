@@ -11,6 +11,9 @@ import type {
   OpenF1ChampionshipTeamResponse,
   OpenF1ChampionshipTeamsMethod,
   OpenF1ComparisonFilter,
+  OpenF1DriversMethod,
+  OpenF1DriversRequest,
+  OpenF1DriversResponse,
   OpenF1FilterScalar,
   OpenF1IntervalsMethod,
   OpenF1IntervalsRequest,
@@ -64,6 +67,7 @@ import {
   OpenF1CarDataRequestSchema,
   OpenF1ChampionshipDriverRequestSchema,
   OpenF1ChampionshipTeamRequestSchema,
+  OpenF1DriversRequestSchema,
   OpenF1IntervalsRequestSchema,
   OpenF1LapRequestSchema,
   OpenF1LocationRequestSchema,
@@ -93,6 +97,21 @@ const CAR_DATA_QUERY_FIELDS = [
   "speed",
   "throttle",
 ] as const satisfies readonly (keyof OpenF1CarDataRequest)[];
+
+const DRIVERS_QUERY_FIELDS = [
+  "broadcast_name",
+  "country_code",
+  "driver_number",
+  "first_name",
+  "full_name",
+  "headshot_url",
+  "last_name",
+  "meeting_key",
+  "name_acronym",
+  "session_key",
+  "team_colour",
+  "team_name",
+] as const satisfies readonly (keyof OpenF1DriversRequest)[];
 
 const MEETINGS_QUERY_FIELDS = [
   "circuit_key",
@@ -528,6 +547,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1CarDataRequestSchema }
   ) as OpenF1CarDataMethod;
 
+  // GET https://api.openf1.org/v1/drivers{query}
+  // Docs: https://openf1.org/docs/#drivers
+  const drivers = Object.assign(
+    async (
+      req: OpenF1DriversRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1DriversResponse | string> => {
+      const query = buildQuery(req, DRIVERS_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/drivers${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1DriversResponse>(
+        `/v1/drivers${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1DriversRequestSchema }
+  ) as OpenF1DriversMethod;
+
   // GET https://api.openf1.org/v1/meetings{query}
   // Docs: https://openf1.org/docs/#meetings
   const meetings = Object.assign(
@@ -849,6 +887,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       carData,
       championshipDrivers,
       championshipTeams,
+      drivers,
       intervals,
       laps,
       location,

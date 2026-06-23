@@ -74,6 +74,20 @@ export interface OpenF1Meeting {
 
 export type OpenF1MeetingsResponse = OpenF1Meeting[];
 
+export type OpenF1IntervalGap = number | string | null;
+
+export interface OpenF1Interval {
+  date: string;
+  driver_number: number;
+  gap_to_leader: OpenF1IntervalGap;
+  interval: OpenF1IntervalGap;
+  meeting_key: number;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1IntervalsResponse = OpenF1Interval[];
+
 export type OpenF1MeetingsFilterField =
   | "circuit_key"
   | "circuit_image"
@@ -96,6 +110,17 @@ export type OpenF1MeetingsFilterField =
 
 export type OpenF1MeetingsFilter =
   OpenF1ComparisonFilter<OpenF1MeetingsFilterField>;
+
+export type OpenF1IntervalsFilterField =
+  | "date"
+  | "driver_number"
+  | "gap_to_leader"
+  | "interval"
+  | "meeting_key"
+  | "session_key";
+
+export type OpenF1IntervalsFilter =
+  OpenF1ComparisonFilter<OpenF1IntervalsFilterField>;
 
 export interface OpenF1MeetingsRequest {
   circuit_key?: OpenF1FilterValue<number>;
@@ -185,6 +210,17 @@ export interface OpenF1PositionRequest {
   position?: OpenF1FilterValue<number>;
   session_key?: OpenF1FilterValue<OpenF1LatestKey>;
   filters?: readonly OpenF1PositionFilter[];
+  csv?: boolean;
+}
+
+export interface OpenF1IntervalsRequest {
+  date?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  gap_to_leader?: OpenF1FilterValue<number | string>;
+  interval?: OpenF1FilterValue<number | string>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1IntervalsFilter[];
   csv?: boolean;
 }
 
@@ -406,6 +442,11 @@ export type OpenF1StintsMethod = OpenF1Method<
 export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse
+>;
+
+export type OpenF1IntervalsMethod = OpenF1Method<
+  OpenF1IntervalsRequest,
+  OpenF1IntervalsResponse
 >;
 
 export interface OpenF1Lap {
@@ -637,6 +678,7 @@ export type OpenF1TeamRadioMethod = OpenF1Method<
 
 export interface OpenF1V1Namespace {
   championshipDrivers: OpenF1ChampionshipDriversMethod;
+  intervals: OpenF1IntervalsMethod;
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
   position: OpenF1PositionMethod;

@@ -91,7 +91,7 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-12 endpoints across 12 groups. Each method mirrors an upstream URL path.
+13 endpoints across 13 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -104,6 +104,23 @@ const openf1 = createOpenF1({
 
 ```typescript
 const res = await openf1.v1.championshipDrivers({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### intervals
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.intervals</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/intervals{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#intervals)
+
+```typescript
+const res = await openf1.v1.intervals({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

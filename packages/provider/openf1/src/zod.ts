@@ -7,6 +7,11 @@ import type {
   OpenF1ComparisonFilter,
   OpenF1ComparisonOperator,
   OpenF1FilterScalar,
+  OpenF1Interval,
+  OpenF1IntervalGap,
+  OpenF1IntervalsFilter,
+  OpenF1IntervalsFilterField,
+  OpenF1IntervalsRequest,
   OpenF1Lap,
   OpenF1LapFilter,
   OpenF1LapFilterField,
@@ -68,6 +73,7 @@ const numberOrStringFilterValue = z.union([
 const booleanFilterValue = z.union([z.boolean(), z.array(z.boolean())]);
 const latestKey = z.union([z.number(), z.literal("latest")]);
 const latestKeyFilterValue = z.union([latestKey, z.array(latestKey)]);
+const intervalGap = z.union([z.number(), z.string(), z.null()]);
 
 export const OpenF1OptionsSchema: z.ZodType<OpenF1Options> = z.object({
   baseURL: z.string().optional(),
@@ -120,6 +126,16 @@ export const OpenF1MeetingsFilterFieldSchema: z.ZodType<OpenF1MeetingsFilterFiel
     "year",
   ]);
 
+export const OpenF1IntervalsFilterFieldSchema: z.ZodType<OpenF1IntervalsFilterField> =
+  z.enum([
+    "date",
+    "driver_number",
+    "gap_to_leader",
+    "interval",
+    "meeting_key",
+    "session_key",
+  ]);
+
 const openF1ComparisonFilterObject = z.object({
   field: z.string(),
   op: OpenF1ComparisonOperatorSchema,
@@ -132,6 +148,11 @@ export const OpenF1ComparisonFilterSchema: z.ZodType<OpenF1ComparisonFilter> =
 export const OpenF1MeetingsFilterSchema: z.ZodType<OpenF1MeetingsFilter> =
   openF1ComparisonFilterObject.extend({
     field: OpenF1MeetingsFilterFieldSchema,
+  });
+
+export const OpenF1IntervalsFilterSchema: z.ZodType<OpenF1IntervalsFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1IntervalsFilterFieldSchema,
   });
 
 export const OpenF1MeetingSchema: z.ZodType<OpenF1Meeting> = z
@@ -154,6 +175,20 @@ export const OpenF1MeetingSchema: z.ZodType<OpenF1Meeting> = z
     meeting_name: z.string(),
     meeting_official_name: z.string(),
     year: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1IntervalGapSchema: z.ZodType<OpenF1IntervalGap> =
+  intervalGap;
+
+export const OpenF1IntervalSchema: z.ZodType<OpenF1Interval> = z
+  .object({
+    date: z.string(),
+    driver_number: z.number(),
+    gap_to_leader: intervalGap,
+    interval: intervalGap,
+    meeting_key: z.number(),
+    session_key: z.number(),
   })
   .catchall(z.unknown());
 
@@ -228,6 +263,20 @@ export const OpenF1ChampionshipDriverRequestSchema: z.ZodType<OpenF1Championship
 export const OpenF1ChampionshipDriverResponseSchema = z.array(
   OpenF1ChampionshipDriverSchema
 );
+
+export const OpenF1IntervalsRequestSchema: z.ZodType<OpenF1IntervalsRequest> =
+  z.object({
+    date: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    gap_to_leader: numberOrStringFilterValue.optional(),
+    interval: numberOrStringFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1IntervalsFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1IntervalsResponseSchema = z.array(OpenF1IntervalSchema);
 
 export const OpenF1LapFilterFieldSchema: z.ZodType<OpenF1LapFilterField> =
   z.enum([

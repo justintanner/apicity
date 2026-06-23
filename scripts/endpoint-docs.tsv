@@ -1184,6 +1184,7 @@ openligadb	getmatchdata.byLeagueSeason	GET	https://api.openligadb.de/getmatchdat
 openligadb	getmatchdata.byLeagueSeasonGroup	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{groupOrderId}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byLeagueSeasonTeam	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{teamFilterstring}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byTeams	GET	https://api.openligadb.de/getmatchdata/{teamId1}/{teamId2}	https://api.openligadb.de/swagger/index.html
+openf1	v1.intervals	GET	https://api.openf1.org/v1/intervals{query}	https://openf1.org/docs/#intervals
 openf1	v1.meetings	GET	https://api.openf1.org/v1/meetings{query}	https://openf1.org/docs/#meetings
 openf1	v1.championshipDrivers	GET	https://api.openf1.org/v1/championship_drivers{query}	https://openf1.org/docs/#drivers-championship-beta
 openf1	v1.laps	GET	https://api.openf1.org/v1/laps{query}	https://openf1.org/docs/#laps

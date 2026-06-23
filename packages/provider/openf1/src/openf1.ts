@@ -6,6 +6,9 @@ import type {
   OpenF1ChampionshipDriversMethod,
   OpenF1ComparisonFilter,
   OpenF1FilterScalar,
+  OpenF1IntervalsMethod,
+  OpenF1IntervalsRequest,
+  OpenF1IntervalsResponse,
   OpenF1LapRequest,
   OpenF1LapResponse,
   OpenF1LapsMethod,
@@ -44,6 +47,7 @@ import type {
 } from "./types";
 import {
   OpenF1ChampionshipDriverRequestSchema,
+  OpenF1IntervalsRequestSchema,
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
   OpenF1PositionRequestSchema,
@@ -87,6 +91,15 @@ const CHAMPIONSHIP_DRIVER_QUERY_FIELDS = [
   "position_start",
   "session_key",
 ] as const satisfies readonly (keyof OpenF1ChampionshipDriverRequest)[];
+
+const INTERVALS_QUERY_FIELDS = [
+  "date",
+  "driver_number",
+  "gap_to_leader",
+  "interval",
+  "meeting_key",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1IntervalsRequest)[];
 
 const LAPS_QUERY_FIELDS = [
   "date_start",
@@ -468,6 +481,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1ChampionshipDriverRequestSchema }
   ) as OpenF1ChampionshipDriversMethod;
 
+  // GET https://api.openf1.org/v1/intervals{query}
+  // Docs: https://openf1.org/docs/#intervals
+  const intervals = Object.assign(
+    async (
+      req: OpenF1IntervalsRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1IntervalsResponse | string> => {
+      const query = buildQuery(req, INTERVALS_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/intervals${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1IntervalsResponse>(
+        `/v1/intervals${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1IntervalsRequestSchema }
+  ) as OpenF1IntervalsMethod;
+
   // GET https://api.openf1.org/v1/laps{query}
   // Docs: https://openf1.org/docs/#laps
   const laps = Object.assign(
@@ -642,6 +674,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     token,
     v1: {
       championshipDrivers,
+      intervals,
       laps,
       meetings,
       position,

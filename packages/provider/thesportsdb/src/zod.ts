@@ -56,6 +56,10 @@ const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
 const flagSchema = z
   .union([z.boolean(), z.literal(0), z.literal(1)])
   .optional();
+const integerPathIdSchema = z.union([
+  z.string().regex(/^\d+$/),
+  z.number().int(),
+]);
 
 export const TheSportsDBLeagueLookupRequestSchema = z.object({
   idLeague: idSchema,
@@ -693,4 +697,44 @@ export const TheSportsDBLiveScoreLeagueRequestSchema = z.object({
 
 export type TheSportsDBLiveScoreLeagueRequest = z.infer<
   typeof TheSportsDBLiveScoreLeagueRequestSchema
+>;
+
+export const TheSportsDBV2LeagueLookupRequestSchema = z.object({
+  idLeague: integerPathIdSchema,
+});
+
+export type TheSportsDBV2LeagueLookupRequest = z.infer<
+  typeof TheSportsDBV2LeagueLookupRequestSchema
+>;
+
+export const TheSportsDBV2TeamLookupRequestSchema = z.object({
+  idTeam: integerPathIdSchema,
+});
+
+export type TheSportsDBV2TeamLookupRequest = z.infer<
+  typeof TheSportsDBV2TeamLookupRequestSchema
+>;
+
+export const TheSportsDBV2PlayerLookupRequestSchema = z.object({
+  idPlayer: integerPathIdSchema,
+});
+
+export type TheSportsDBV2PlayerLookupRequest = z.infer<
+  typeof TheSportsDBV2PlayerLookupRequestSchema
+>;
+
+export const TheSportsDBV2EventLookupRequestSchema = z.object({
+  idEvent: integerPathIdSchema,
+});
+
+export type TheSportsDBV2EventLookupRequest = z.infer<
+  typeof TheSportsDBV2EventLookupRequestSchema
+>;
+
+export const TheSportsDBV2VenueLookupRequestSchema = z.object({
+  idVenue: integerPathIdSchema,
+});
+
+export type TheSportsDBV2VenueLookupRequest = z.infer<
+  typeof TheSportsDBV2VenueLookupRequestSchema
 >;

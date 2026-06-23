@@ -769,6 +769,8 @@ const BASE_URL_IDENTIFIERS = new Set([
   "baseUrl",
   "apiBase",
   "apiBaseURL",
+  "v1BaseURL",
+  "v2BaseURL",
   "dataBaseURL",
   "eapiBaseURL",
   "coinMBaseURL",

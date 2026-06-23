@@ -104,9 +104,22 @@ const liveSoccer = await thesportsdb.v2.livescore.bySport({
 });
 ```
 
+V2 is premium-only and sends the same `apiKey` as an `X-API-KEY`
+header. V2 lookup method names mirror the path segments:
+
+```typescript
+const player = await thesportsdb.v2.lookup.player({ idPlayer: 34172575 });
+const lineup = await thesportsdb.v2.lookup.eventLineup({
+  idEvent: 1937584,
+});
+const highlights = await thesportsdb.v2.lookup.eventHighlights({
+  idEvent: 2044892,
+});
+```
+
 ## API Reference
 
-49 endpoints across 36 groups. Each method mirrors an upstream URL path.
+67 endpoints across 36 groups. Each method mirrors an upstream URL path.
 
 ### allCountries
 
@@ -360,6 +373,276 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 </details>
 
 ### lookup
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.event</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.event({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventHighlights</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_highlights/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.eventHighlights({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventLineup</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_lineup/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.eventLineup({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventResults</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_results/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.eventResults({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventStats</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_stats/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.eventStats({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventTimeline</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_timeline/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.eventTimeline({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.eventTv</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/event_tv/{idEvent}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.eventTv({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.league</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/league/{idLeague}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.league({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.player</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.player({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerContracts</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_contracts/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.playerContracts({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerHonours</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_honours/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.playerHonours({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerMilestones</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_milestones/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.playerMilestones({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerResults</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_results/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.playerResults({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerStats</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_stats/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.playerStats({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.playerTeams</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/player_teams/{idPlayer}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.playerTeams({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.team</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/team/{idTeam}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.team({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.teamEquipment</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/team_equipment/{idTeam}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.teamEquipment({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.lookup.venue</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/lookup/venue/{idVenue}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-lookup)
+
+```typescript
+const res = await thesportsdb.v2.lookup.venue({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>thesportsdb.v1.lookup.equipment</code></b></summary>

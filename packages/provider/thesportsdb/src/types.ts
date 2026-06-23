@@ -28,6 +28,11 @@ import type {
   TheSportsDBTeamEventsRequest,
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBTeamScheduleRequestSchema,
+  TheSportsDBV2EventLookupRequestSchema,
+  TheSportsDBV2LeagueLookupRequestSchema,
+  TheSportsDBV2PlayerLookupRequestSchema,
+  TheSportsDBV2TeamLookupRequestSchema,
+  TheSportsDBV2VenueLookupRequestSchema,
   TheSportsDBVenueLookupRequestSchema,
   TheSportsDBVenueScheduleRequestSchema,
 } from "./zod";
@@ -686,6 +691,358 @@ export interface TheSportsDBLiveScoreLeagueRequest {
   leagueId: TheSportsDBId;
 }
 
+export interface TheSportsDBV2LookupResponse<
+  TItem extends TheSportsDBRecord,
+> extends TheSportsDBRecord {
+  lookup: TItem[] | null;
+}
+
+export interface TheSportsDBV2League extends TheSportsDBLeague {
+  idAPIfootball?: TheSportsDBField;
+  strCurrentSeason?: string | null;
+  intFormedYear?: TheSportsDBField;
+  dateFirstEvent?: string | null;
+  strGender?: string | null;
+  strWebsite?: string | null;
+  strDescriptionEN?: string | null;
+  strTvRights?: string | null;
+  strBanner?: string | null;
+  strNaming?: string | null;
+  strComplete?: string | null;
+  strLocked?: string | null;
+}
+
+export interface TheSportsDBV2TeamInfo extends TheSportsDBTeam {
+  idESPN?: TheSportsDBField;
+  idAPIfootball?: TheSportsDBField;
+  intLoved?: TheSportsDBField;
+  strTeamAlternate?: string | null;
+  strTeamShort?: string | null;
+  intFormedYear?: TheSportsDBField;
+  strLeague2?: string | null;
+  idLeague2?: TheSportsDBField;
+  strDivision?: string | null;
+  strStadium?: string | null;
+  strKeywords?: string | null;
+  strLocation?: string | null;
+  intStadiumCapacity?: TheSportsDBField;
+  strWebsite?: string | null;
+  strDescriptionEN?: string | null;
+  strColour1?: string | null;
+  strColour2?: string | null;
+  strColour3?: string | null;
+  strGender?: string | null;
+  strYoutube?: string | null;
+  strLocked?: string | null;
+}
+
+export interface TheSportsDBV2TeamEquipment extends TheSportsDBEquipment {
+  date?: string | null;
+}
+
+export interface TheSportsDBV2PlayerLookup extends TheSportsDBRecord {
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  idTeam2?: TheSportsDBField;
+  idTeamNational?: TheSportsDBField;
+  idAPIfootball?: TheSportsDBField;
+  strNationality?: string | null;
+  strPlayer?: string | null;
+  strPlayerAlternate?: string | null;
+  strTeam?: string | null;
+  strTeam2?: string | null;
+  strSport?: string | null;
+  dateBorn?: string | null;
+  dateDied?: string | null;
+  strNumber?: string | null;
+  strStatus?: string | null;
+  strDescriptionEN?: string | null;
+  strGender?: string | null;
+  strPosition?: string | null;
+  strHeight?: string | null;
+  strWeight?: string | null;
+  strThumb?: string | null;
+  strCutout?: string | null;
+  strRender?: string | null;
+  strLocked?: string | null;
+}
+
+export interface TheSportsDBV2PlayerCareerHistory extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strTeam?: string | null;
+  strBadge?: string | null;
+  strYearStart?: string | null;
+  strYearEnd?: string | null;
+  strWage?: string | null;
+}
+
+export interface TheSportsDBV2PlayerResult extends TheSportsDBRecord {
+  idResult?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strEvent?: string | null;
+  strResult?: string | null;
+  intPosition?: TheSportsDBField;
+  intPoints?: TheSportsDBField;
+  strDetail?: string | null;
+  dateEvent?: string | null;
+  strSeason?: string | null;
+  strCountry?: string | null;
+  strSport?: string | null;
+}
+
+export interface TheSportsDBV2PlayerHonour extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  idLeague?: TheSportsDBField;
+  idHonour?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strTeam?: string | null;
+  strTeamBadge?: string | null;
+  strHonour?: string | null;
+  strHonourLogo?: string | null;
+  strHonourTrophy?: string | null;
+  strSeason?: string | null;
+}
+
+export interface TheSportsDBV2PlayerMilestone extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  idMilestone?: TheSportsDBField;
+  strTeam?: string | null;
+  strSport?: string | null;
+  strMilestone?: string | null;
+  strMilestoneLogo?: string | null;
+  dateMilestone?: string | null;
+}
+
+export interface TheSportsDBV2FormerTeam extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idFormerTeam?: TheSportsDBField;
+  strSport?: string | null;
+  strPlayer?: string | null;
+  strFormerTeam?: string | null;
+  strMoveType?: string | null;
+  strBadge?: string | null;
+  strJoined?: string | null;
+  strDeparted?: string | null;
+}
+
+export interface TheSportsDBV2PlayerStatistic extends TheSportsDBRecord {
+  idStatistic?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strPlayer?: string | null;
+  strTeam?: string | null;
+  strEvent?: string | null;
+  strStat?: string | null;
+  intValue?: TheSportsDBField;
+  strSeason?: string | null;
+  strSport?: string | null;
+}
+
+export interface TheSportsDBV2EventLookup extends TheSportsDBRecord {
+  idEvent?: TheSportsDBField;
+  idAPIfootball?: TheSportsDBField;
+  strEvent?: string | null;
+  strEventAlternate?: string | null;
+  strFilename?: string | null;
+  strSport?: string | null;
+  idLeague?: TheSportsDBField;
+  strLeague?: string | null;
+  strLeagueBadge?: string | null;
+  strSeason?: string | null;
+  strHomeTeam?: string | null;
+  strAwayTeam?: string | null;
+  intHomeScore?: TheSportsDBField;
+  intRound?: TheSportsDBField;
+  intAwayScore?: TheSportsDBField;
+  strTimestamp?: string | null;
+  dateEvent?: string | null;
+  strTime?: string | null;
+  idVenue?: TheSportsDBField;
+  strVenue?: string | null;
+  strCountry?: string | null;
+  strVideo?: string | null;
+  strStatus?: string | null;
+}
+
+export interface TheSportsDBV2EventLineup extends TheSportsDBRecord {
+  idLineup?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strEvent?: string | null;
+  strPosition?: string | null;
+  strPositionShort?: string | null;
+  strFormation?: string | null;
+  strHome?: string | null;
+  strSubstitute?: string | null;
+  intSquadNumber?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  strTeam?: string | null;
+  strCountry?: string | null;
+  strSeason?: string | null;
+}
+
+export interface TheSportsDBV2EventResult extends TheSportsDBRecord {
+  idResult?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strEvent?: string | null;
+  strResult?: string | null;
+  intPosition?: TheSportsDBField;
+  intPoints?: TheSportsDBField;
+  strDetail?: string | null;
+  dateEvent?: string | null;
+  strSeason?: string | null;
+  strCountry?: string | null;
+  strSport?: string | null;
+}
+
+export interface TheSportsDBV2EventStatistic extends TheSportsDBRecord {
+  idStatistic?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  idApiFootball?: TheSportsDBField;
+  strEvent?: string | null;
+  strStat?: string | null;
+  intHome?: TheSportsDBField;
+  intAway?: TheSportsDBField;
+}
+
+export interface TheSportsDBV2EventTimeline extends TheSportsDBRecord {
+  idTimeline?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strTimeline?: string | null;
+  strTimelineDetail?: string | null;
+  strHome?: string | null;
+  strEvent?: string | null;
+  idAPIfootball?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idAssist?: TheSportsDBField;
+  strAssist?: string | null;
+  intTime?: TheSportsDBField;
+  idTeam?: TheSportsDBField;
+  strTeam?: string | null;
+  strComment?: string | null;
+  dateEvent?: string | null;
+  strSeason?: string | null;
+}
+
+export interface TheSportsDBV2EventBroadcast extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strSport?: string | null;
+  strEvent?: string | null;
+  idChannel?: TheSportsDBField;
+  strCountry?: string | null;
+  strLogo?: string | null;
+  strChannel?: string | null;
+  strSeason?: string | null;
+  strTime?: string | null;
+  dateEvent?: string | null;
+  strTimeStamp?: string | null;
+}
+
+export interface TheSportsDBV2Venue extends TheSportsDBVenue {
+  idDupe?: TheSportsDBField;
+  strVenueAlternate?: string | null;
+  strVenueSponsor?: string | null;
+  strDescriptionEN?: string | null;
+  strArchitect?: string | null;
+  intCapacity?: TheSportsDBField;
+  strCost?: string | null;
+  strTimezone?: string | null;
+  intFormedYear?: TheSportsDBField;
+}
+
+export interface TheSportsDBV2LeagueLookupResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2League[] | null;
+}
+export interface TheSportsDBV2TeamInfoResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2TeamInfo[] | null;
+}
+export interface TheSportsDBV2TeamEquipmentsResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2TeamEquipment[] | null;
+}
+export interface TheSportsDBV2PlayerLookupResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2PlayerLookup[] | null;
+}
+export interface TheSportsDBV2PlayerCareerHistoryResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2PlayerCareerHistory[] | null;
+}
+export interface TheSportsDBV2PlayerResultsResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2PlayerResult[] | null;
+}
+export interface TheSportsDBV2PlayerHonourLookupResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2PlayerHonour[] | null;
+}
+export interface TheSportsDBV2PlayerMilestonesResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2PlayerMilestone[] | null;
+}
+export interface TheSportsDBV2FormerTeamsResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2FormerTeam[] | null;
+}
+export interface TheSportsDBV2PlayerStatsResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2PlayerStatistic[] | null;
+}
+export interface TheSportsDBV2EventLookupResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2EventLookup[] | null;
+}
+export interface TheSportsDBV2EventLineupResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2EventLineup[] | null;
+}
+export interface TheSportsDBV2EventResultsResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2EventResult[] | null;
+}
+export interface TheSportsDBV2EventStatisticsResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2EventStatistic[] | null;
+}
+export interface TheSportsDBV2EventTimelineResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2EventTimeline[] | null;
+}
+export interface TheSportsDBV2EventBroadcastResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2EventBroadcast[] | null;
+}
+export interface TheSportsDBV2VenueResponse extends TheSportsDBRecord {
+  lookup: TheSportsDBV2Venue[] | null;
+}
+
+export interface TheSportsDBV2LeagueLookupRequest {
+  idLeague: TheSportsDBId;
+}
+
+export interface TheSportsDBV2TeamLookupRequest {
+  idTeam: TheSportsDBId;
+}
+
+export interface TheSportsDBV2PlayerLookupRequest {
+  idPlayer: TheSportsDBId;
+}
+
+export interface TheSportsDBV2EventLookupRequest {
+  idEvent: TheSportsDBId;
+}
+
+export interface TheSportsDBV2VenueLookupRequest {
+  idVenue: TheSportsDBId;
+}
+
 export interface TheSportsDBLeagueLookupMethod {
   (
     req: TheSportsDBLeagueLookupRequest,
@@ -982,6 +1339,118 @@ export interface TheSportsDBLiveScoreLeagueMethod {
 export type TheSportsDBLiveScoreAllMethod =
   TheSportsDBEndpointMethod<TheSportsDBLiveScoreList>;
 
+export interface TheSportsDBRequestEndpointMethod<
+  TRequest,
+  TResponse,
+  TSchema extends z.ZodTypeAny,
+> {
+  (req: TRequest, signal?: AbortSignal): Promise<TResponse>;
+  schema: z.ZodType<z.infer<TSchema>>;
+}
+
+export type TheSportsDBV2LeagueLookupMethod = TheSportsDBRequestEndpointMethod<
+  TheSportsDBV2LeagueLookupRequest,
+  TheSportsDBV2LeagueLookupResponse,
+  typeof TheSportsDBV2LeagueLookupRequestSchema
+>;
+export type TheSportsDBV2TeamLookupMethod = TheSportsDBRequestEndpointMethod<
+  TheSportsDBV2TeamLookupRequest,
+  TheSportsDBV2TeamInfoResponse,
+  typeof TheSportsDBV2TeamLookupRequestSchema
+>;
+export type TheSportsDBV2TeamEquipmentLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2TeamLookupRequest,
+    TheSportsDBV2TeamEquipmentsResponse,
+    typeof TheSportsDBV2TeamLookupRequestSchema
+  >;
+export type TheSportsDBV2PlayerLookupMethod = TheSportsDBRequestEndpointMethod<
+  TheSportsDBV2PlayerLookupRequest,
+  TheSportsDBV2PlayerLookupResponse,
+  typeof TheSportsDBV2PlayerLookupRequestSchema
+>;
+export type TheSportsDBV2PlayerContractsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2PlayerLookupRequest,
+    TheSportsDBV2PlayerCareerHistoryResponse,
+    typeof TheSportsDBV2PlayerLookupRequestSchema
+  >;
+export type TheSportsDBV2PlayerResultsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2PlayerLookupRequest,
+    TheSportsDBV2PlayerResultsResponse,
+    typeof TheSportsDBV2PlayerLookupRequestSchema
+  >;
+export type TheSportsDBV2PlayerHonoursLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2PlayerLookupRequest,
+    TheSportsDBV2PlayerHonourLookupResponse,
+    typeof TheSportsDBV2PlayerLookupRequestSchema
+  >;
+export type TheSportsDBV2PlayerMilestonesLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2PlayerLookupRequest,
+    TheSportsDBV2PlayerMilestonesResponse,
+    typeof TheSportsDBV2PlayerLookupRequestSchema
+  >;
+export type TheSportsDBV2PlayerTeamsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2PlayerLookupRequest,
+    TheSportsDBV2FormerTeamsResponse,
+    typeof TheSportsDBV2PlayerLookupRequestSchema
+  >;
+export type TheSportsDBV2PlayerStatsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2PlayerLookupRequest,
+    TheSportsDBV2PlayerStatsResponse,
+    typeof TheSportsDBV2PlayerLookupRequestSchema
+  >;
+export type TheSportsDBV2EventLookupMethod = TheSportsDBRequestEndpointMethod<
+  TheSportsDBV2EventLookupRequest,
+  TheSportsDBV2EventLookupResponse,
+  typeof TheSportsDBV2EventLookupRequestSchema
+>;
+export type TheSportsDBV2EventLineupLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2EventLookupRequest,
+    TheSportsDBV2EventLineupResponse,
+    typeof TheSportsDBV2EventLookupRequestSchema
+  >;
+export type TheSportsDBV2EventResultsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2EventLookupRequest,
+    TheSportsDBV2EventResultsResponse,
+    typeof TheSportsDBV2EventLookupRequestSchema
+  >;
+export type TheSportsDBV2EventStatsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2EventLookupRequest,
+    TheSportsDBV2EventStatisticsResponse,
+    typeof TheSportsDBV2EventLookupRequestSchema
+  >;
+export type TheSportsDBV2EventTimelineLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2EventLookupRequest,
+    TheSportsDBV2EventTimelineResponse,
+    typeof TheSportsDBV2EventLookupRequestSchema
+  >;
+export type TheSportsDBV2EventTvLookupMethod = TheSportsDBRequestEndpointMethod<
+  TheSportsDBV2EventLookupRequest,
+  TheSportsDBV2EventBroadcastResponse,
+  typeof TheSportsDBV2EventLookupRequestSchema
+>;
+export type TheSportsDBV2EventHighlightsLookupMethod =
+  TheSportsDBRequestEndpointMethod<
+    TheSportsDBV2EventLookupRequest,
+    TheSportsDBV2EventLookupResponse,
+    typeof TheSportsDBV2EventLookupRequestSchema
+  >;
+export type TheSportsDBV2VenueLookupMethod = TheSportsDBRequestEndpointMethod<
+  TheSportsDBV2VenueLookupRequest,
+  TheSportsDBV2VenueResponse,
+  typeof TheSportsDBV2VenueLookupRequestSchema
+>;
+
 export type TheSportsDBAllSportsMethod =
   TheSportsDBEndpointMethod<TheSportsDBSportsResponse>;
 export type TheSportsDBAllCountriesMethod =
@@ -1153,7 +1622,29 @@ export interface TheSportsDBV2LiveScoreNamespace {
   all: TheSportsDBLiveScoreAllMethod;
 }
 
+export interface TheSportsDBV2LookupNamespace {
+  league: TheSportsDBV2LeagueLookupMethod;
+  team: TheSportsDBV2TeamLookupMethod;
+  teamEquipment: TheSportsDBV2TeamEquipmentLookupMethod;
+  player: TheSportsDBV2PlayerLookupMethod;
+  playerContracts: TheSportsDBV2PlayerContractsLookupMethod;
+  playerResults: TheSportsDBV2PlayerResultsLookupMethod;
+  playerHonours: TheSportsDBV2PlayerHonoursLookupMethod;
+  playerMilestones: TheSportsDBV2PlayerMilestonesLookupMethod;
+  playerTeams: TheSportsDBV2PlayerTeamsLookupMethod;
+  playerStats: TheSportsDBV2PlayerStatsLookupMethod;
+  event: TheSportsDBV2EventLookupMethod;
+  eventLineup: TheSportsDBV2EventLineupLookupMethod;
+  eventResults: TheSportsDBV2EventResultsLookupMethod;
+  eventStats: TheSportsDBV2EventStatsLookupMethod;
+  eventTimeline: TheSportsDBV2EventTimelineLookupMethod;
+  eventTv: TheSportsDBV2EventTvLookupMethod;
+  eventHighlights: TheSportsDBV2EventHighlightsLookupMethod;
+  venue: TheSportsDBV2VenueLookupMethod;
+}
+
 export interface TheSportsDBV2Namespace {
+  lookup: TheSportsDBV2LookupNamespace;
   schedule: TheSportsDBV2ScheduleNamespace;
   livescore: TheSportsDBV2LiveScoreNamespace;
 }

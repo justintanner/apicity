@@ -60,6 +60,28 @@ import type {
   TheSportsDBTvEventResponse,
   TheSportsDBTVEventsResponse,
   TheSportsDBTVHighlightsResponse,
+  TheSportsDBV2EventBroadcastResponse,
+  TheSportsDBV2EventLineupResponse,
+  TheSportsDBV2EventLookupRequest,
+  TheSportsDBV2EventLookupResponse,
+  TheSportsDBV2EventResultsResponse,
+  TheSportsDBV2EventStatisticsResponse,
+  TheSportsDBV2EventTimelineResponse,
+  TheSportsDBV2FormerTeamsResponse,
+  TheSportsDBV2LeagueLookupRequest,
+  TheSportsDBV2LeagueLookupResponse,
+  TheSportsDBV2PlayerCareerHistoryResponse,
+  TheSportsDBV2PlayerHonourLookupResponse,
+  TheSportsDBV2PlayerLookupRequest,
+  TheSportsDBV2PlayerLookupResponse,
+  TheSportsDBV2PlayerMilestonesResponse,
+  TheSportsDBV2PlayerResultsResponse,
+  TheSportsDBV2PlayerStatsResponse,
+  TheSportsDBV2TeamEquipmentsResponse,
+  TheSportsDBV2TeamInfoResponse,
+  TheSportsDBV2TeamLookupRequest,
+  TheSportsDBV2VenueLookupRequest,
+  TheSportsDBV2VenueResponse,
   TheSportsDBVenueLookupRequest,
   TheSportsDBVenueLookupResponse,
   TheSportsDBVenueScheduleRequest,
@@ -92,6 +114,11 @@ import {
   TheSportsDBTeamEventsRequestSchema,
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBTeamScheduleRequestSchema,
+  TheSportsDBV2EventLookupRequestSchema,
+  TheSportsDBV2LeagueLookupRequestSchema,
+  TheSportsDBV2PlayerLookupRequestSchema,
+  TheSportsDBV2TeamLookupRequestSchema,
+  TheSportsDBV2VenueLookupRequestSchema,
   TheSportsDBVenueLookupRequestSchema,
   TheSportsDBVenueScheduleRequestSchema,
 } from "./zod";
@@ -101,10 +128,10 @@ type TheSportsDBQueryValue = string | number | boolean | null | undefined;
 export function createTheSportsDB(
   opts?: TheSportsDBOptions
 ): TheSportsDBProvider {
-  const baseURL = (
+  const v1BaseURL = (
     opts?.baseURL ?? "https://www.thesportsdb.com/api/v1/json"
   ).replace(/\/+$/, "");
-  const apiBaseURL = (
+  const v2BaseURL = (
     opts?.v2BaseURL ?? "https://www.thesportsdb.com/api/v2/json"
   ).replace(/\/+$/, "");
   const rawApiKey = opts?.apiKey ?? "123";
@@ -159,10 +186,10 @@ export function createTheSportsDB(
 
   async function makeJsonRequest<T>(
     method: "GET",
+    requestBaseURL: string,
     path: string,
     signal?: AbortSignal,
-    requestBaseURL = baseURL,
-    headers?: Record<string, string>
+    headers?: HeadersInit
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -172,11 +199,14 @@ export function createTheSportsDB(
     }
 
     try {
-      const res = await doFetch(`${requestBaseURL}${path}`, {
+      const init: RequestInit = {
         method,
-        headers,
         signal: controller.signal,
-      });
+      };
+      if (headers) {
+        init.headers = headers;
+      }
+      const res = await doFetch(`${requestBaseURL}${path}`, init);
 
       clearTimeout(timeoutId);
 
@@ -198,6 +228,30 @@ export function createTheSportsDB(
     }
   }
 
+  async function makeV1Request<T>(
+    method: "GET",
+    path: string,
+    requestBaseURL: string,
+    signal?: AbortSignal
+  ): Promise<T> {
+    return makeJsonRequest<T>(method, requestBaseURL, path, signal);
+  }
+
+  async function makeV2Request<T>(
+    method: "GET",
+    path: string,
+    requestBaseURL: string,
+    signal?: AbortSignal
+  ): Promise<T> {
+    return makeJsonRequest<T>(method, requestBaseURL, path, signal, {
+      "X-API-KEY": rawApiKey,
+    });
+  }
+
+  function buildPath(...segments: Array<string | number>): string {
+    return `/${segments.map((s) => encodeURIComponent(String(s))).join("/")}`;
+  }
+
   function buildQuery(params: Record<string, TheSportsDBQueryValue>): string {
     const qs = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
@@ -211,14 +265,6 @@ export function createTheSportsDB(
 
   function eventIdQuery(req: TheSportsDBEventLookupRequest): string {
     return buildQuery({ id: req.idEvent });
-  }
-
-  function pathSegment(value: string | number): string {
-    return encodeURIComponent(String(value));
-  }
-
-  function v2Headers(): Record<string, string> {
-    return { "X-API-KEY": rawApiKey };
   }
 
   function flagQueryValue(
@@ -238,9 +284,10 @@ export function createTheSportsDB(
   // Docs: https://thedatadb.readme.io/reference/getallsports
   const allSports = Object.assign(
     async (signal?: AbortSignal): Promise<TheSportsDBSportsResponse> => {
-      return makeJsonRequest<TheSportsDBSportsResponse>(
+      return makeV1Request<TheSportsDBSportsResponse>(
         "GET",
         `/${apiKey}/all_sports.php`,
+        v1BaseURL,
         signal
       );
     },
@@ -252,9 +299,10 @@ export function createTheSportsDB(
   // Docs: https://thedatadb.readme.io/reference/getallcountries
   const allCountries = Object.assign(
     async (signal?: AbortSignal): Promise<TheSportsDBCountriesResponse> => {
-      return makeJsonRequest<TheSportsDBCountriesResponse>(
+      return makeV1Request<TheSportsDBCountriesResponse>(
         "GET",
         `/${apiKey}/all_countries.php`,
+        v1BaseURL,
         signal
       );
     },
@@ -266,9 +314,10 @@ export function createTheSportsDB(
   // Docs: https://www.thesportsdb.com/docs_api_guide#v1-list
   const allLeagues = Object.assign(
     async (signal?: AbortSignal): Promise<TheSportsDBLeaguesResponse> => {
-      return makeJsonRequest<TheSportsDBLeaguesResponse>(
+      return makeV1Request<TheSportsDBLeaguesResponse>(
         "GET",
         `/${apiKey}/all_leagues.php`,
+        v1BaseURL,
         signal
       );
     },
@@ -284,9 +333,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLeagueLookupResponse> => {
       const query = buildQuery({ id: req.idLeague });
-      return makeJsonRequest<TheSportsDBLeagueLookupResponse>(
+      return makeV1Request<TheSportsDBLeagueLookupResponse>(
         "GET",
         `/${apiKey}/lookupleague.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -305,9 +355,10 @@ export function createTheSportsDB(
         l: req.idLeague,
         s: req.season,
       });
-      return makeJsonRequest<TheSportsDBTableLookupResponse>(
+      return makeV1Request<TheSportsDBTableLookupResponse>(
         "GET",
         `/${apiKey}/lookuptable.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -323,9 +374,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBTeamLookupResponse> => {
       const query = buildQuery({ id: req.idTeam });
-      return makeJsonRequest<TheSportsDBTeamLookupResponse>(
+      return makeV1Request<TheSportsDBTeamLookupResponse>(
         "GET",
         `/${apiKey}/lookupteam.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -341,9 +393,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBEquipmentLookupResponse> => {
       const query = buildQuery({ id: req.idTeam });
-      return makeJsonRequest<TheSportsDBEquipmentLookupResponse>(
+      return makeV1Request<TheSportsDBEquipmentLookupResponse>(
         "GET",
         `/${apiKey}/lookupequipment.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -359,13 +412,320 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBVenueLookupResponse> => {
       const query = buildQuery({ id: req.idVenue });
-      return makeJsonRequest<TheSportsDBVenueLookupResponse>(
+      return makeV1Request<TheSportsDBVenueLookupResponse>(
         "GET",
         `/${apiKey}/lookupvenue.php${query}`,
+        v1BaseURL,
         signal
       );
     },
     { schema: TheSportsDBVenueLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/league/{idLeague}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2League = Object.assign(
+    async (
+      req: TheSportsDBV2LeagueLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2LeagueLookupResponse> => {
+      return makeV2Request<TheSportsDBV2LeagueLookupResponse>(
+        "GET",
+        buildPath("lookup", "league", req.idLeague),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2LeagueLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/team/{idTeam}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2Team = Object.assign(
+    async (
+      req: TheSportsDBV2TeamLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2TeamInfoResponse> => {
+      return makeV2Request<TheSportsDBV2TeamInfoResponse>(
+        "GET",
+        buildPath("lookup", "team", req.idTeam),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2TeamLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/team_equipment/{idTeam}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2TeamEquipment = Object.assign(
+    async (
+      req: TheSportsDBV2TeamLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2TeamEquipmentsResponse> => {
+      return makeV2Request<TheSportsDBV2TeamEquipmentsResponse>(
+        "GET",
+        buildPath("lookup", "team_equipment", req.idTeam),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2TeamLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2Player = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2PlayerLookupResponse> => {
+      return makeV2Request<TheSportsDBV2PlayerLookupResponse>(
+        "GET",
+        buildPath("lookup", "player", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player_contracts/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2PlayerContracts = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2PlayerCareerHistoryResponse> => {
+      return makeV2Request<TheSportsDBV2PlayerCareerHistoryResponse>(
+        "GET",
+        buildPath("lookup", "player_contracts", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player_results/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2PlayerResults = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2PlayerResultsResponse> => {
+      return makeV2Request<TheSportsDBV2PlayerResultsResponse>(
+        "GET",
+        buildPath("lookup", "player_results", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player_honours/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2PlayerHonours = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2PlayerHonourLookupResponse> => {
+      return makeV2Request<TheSportsDBV2PlayerHonourLookupResponse>(
+        "GET",
+        buildPath("lookup", "player_honours", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player_milestones/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2PlayerMilestones = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2PlayerMilestonesResponse> => {
+      return makeV2Request<TheSportsDBV2PlayerMilestonesResponse>(
+        "GET",
+        buildPath("lookup", "player_milestones", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player_teams/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2PlayerTeams = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2FormerTeamsResponse> => {
+      return makeV2Request<TheSportsDBV2FormerTeamsResponse>(
+        "GET",
+        buildPath("lookup", "player_teams", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/player_stats/{idPlayer}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2PlayerStats = Object.assign(
+    async (
+      req: TheSportsDBV2PlayerLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2PlayerStatsResponse> => {
+      return makeV2Request<TheSportsDBV2PlayerStatsResponse>(
+        "GET",
+        buildPath("lookup", "player_stats", req.idPlayer),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2PlayerLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2Event = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventLookupResponse> => {
+      return makeV2Request<TheSportsDBV2EventLookupResponse>(
+        "GET",
+        buildPath("lookup", "event", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event_lineup/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2EventLineup = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventLineupResponse> => {
+      return makeV2Request<TheSportsDBV2EventLineupResponse>(
+        "GET",
+        buildPath("lookup", "event_lineup", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event_results/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2EventResults = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventResultsResponse> => {
+      return makeV2Request<TheSportsDBV2EventResultsResponse>(
+        "GET",
+        buildPath("lookup", "event_results", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event_stats/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2EventStats = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventStatisticsResponse> => {
+      return makeV2Request<TheSportsDBV2EventStatisticsResponse>(
+        "GET",
+        buildPath("lookup", "event_stats", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event_timeline/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2EventTimeline = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventTimelineResponse> => {
+      return makeV2Request<TheSportsDBV2EventTimelineResponse>(
+        "GET",
+        buildPath("lookup", "event_timeline", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event_tv/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2EventTv = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventBroadcastResponse> => {
+      return makeV2Request<TheSportsDBV2EventBroadcastResponse>(
+        "GET",
+        buildPath("lookup", "event_tv", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/event_highlights/{idEvent}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2EventHighlights = Object.assign(
+    async (
+      req: TheSportsDBV2EventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2EventLookupResponse> => {
+      return makeV2Request<TheSportsDBV2EventLookupResponse>(
+        "GET",
+        buildPath("lookup", "event_highlights", req.idEvent),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2EventLookupRequestSchema }
+  );
+
+  // GET https://www.thesportsdb.com/api/v2/json/lookup/venue/{idVenue}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-lookup
+  const v2Venue = Object.assign(
+    async (
+      req: TheSportsDBV2VenueLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBV2VenueResponse> => {
+      return makeV2Request<TheSportsDBV2VenueResponse>(
+        "GET",
+        buildPath("lookup", "venue", req.idVenue),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBV2VenueLookupRequestSchema }
   );
 
   const lookup = {
@@ -388,9 +748,10 @@ export function createTheSportsDB(
         c: req.country,
         s: req.sport,
       });
-      return makeJsonRequest<TheSportsDBSearchAllLeaguesResponse>(
+      return makeV1Request<TheSportsDBSearchAllLeaguesResponse>(
         "GET",
         `/${apiKey}/search_all_leagues.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -411,9 +772,10 @@ export function createTheSportsDB(
         badge: flagQueryValue(req.badge),
         description: flagQueryValue(req.description),
       });
-      return makeJsonRequest<TheSportsDBSeasonsResponse>(
+      return makeV1Request<TheSportsDBSeasonsResponse>(
         "GET",
         `/${apiKey}/search_all_seasons.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -433,9 +795,10 @@ export function createTheSportsDB(
         s: req.sport,
         c: req.country,
       });
-      return makeJsonRequest<TheSportsDBTeamsResponse>(
+      return makeV1Request<TheSportsDBTeamsResponse>(
         "GET",
         `/${apiKey}/search_all_teams.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -453,9 +816,10 @@ export function createTheSportsDB(
       const query = buildQuery({
         id: req.idTeam,
       });
-      return makeJsonRequest<TheSportsDBPlayersResponse>(
+      return makeV1Request<TheSportsDBPlayersResponse>(
         "GET",
         `/${apiKey}/lookup_all_players.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -473,9 +837,10 @@ export function createTheSportsDB(
       const query = buildQuery({
         id: req.idTeam,
       });
-      return makeJsonRequest<TheSportsDBEventsResponse>(
+      return makeV1Request<TheSportsDBEventsResponse>(
         "GET",
         `/${apiKey}/eventsnext.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -493,9 +858,10 @@ export function createTheSportsDB(
       const query = buildQuery({
         id: req.idTeam,
       });
-      return makeJsonRequest<TheSportsDBResultsResponse>(
+      return makeV1Request<TheSportsDBResultsResponse>(
         "GET",
         `/${apiKey}/eventslast.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -513,9 +879,10 @@ export function createTheSportsDB(
       const query = buildQuery({
         id: req.idLeague,
       });
-      return makeJsonRequest<TheSportsDBEventsResponse>(
+      return makeV1Request<TheSportsDBEventsResponse>(
         "GET",
         `/${apiKey}/eventsnextleague.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -533,9 +900,10 @@ export function createTheSportsDB(
       const query = buildQuery({
         id: req.idLeague,
       });
-      return makeJsonRequest<TheSportsDBEventsResponse>(
+      return makeV1Request<TheSportsDBEventsResponse>(
         "GET",
         `/${apiKey}/eventspastleague.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -555,9 +923,10 @@ export function createTheSportsDB(
         s: req.sport,
         l: req.league,
       });
-      return makeJsonRequest<TheSportsDBEventsResponse>(
+      return makeV1Request<TheSportsDBEventsResponse>(
         "GET",
         `/${apiKey}/eventsday.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -576,9 +945,10 @@ export function createTheSportsDB(
         id: req.idLeague,
         s: req.season,
       });
-      return makeJsonRequest<TheSportsDBEventsResponse>(
+      return makeV1Request<TheSportsDBEventsResponse>(
         "GET",
         `/${apiKey}/eventsseason.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -600,9 +970,10 @@ export function createTheSportsDB(
         c: req.channel,
         id: req.idChannel,
       });
-      return makeJsonRequest<TheSportsDBTVEventsResponse>(
+      return makeV1Request<TheSportsDBTVEventsResponse>(
         "GET",
         `/${apiKey}/eventstv.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -622,9 +993,10 @@ export function createTheSportsDB(
         l: req.idLeague,
         s: req.sport,
       });
-      return makeJsonRequest<TheSportsDBTVHighlightsResponse>(
+      return makeV1Request<TheSportsDBTVHighlightsResponse>(
         "GET",
         `/${apiKey}/eventshighlights.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -640,9 +1012,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBTeamsResponse> => {
       const query = buildQuery({ t: req.team });
-      return makeJsonRequest<TheSportsDBTeamsResponse>(
+      return makeV1Request<TheSportsDBTeamsResponse>(
         "GET",
         `/${apiKey}/searchteams.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -663,9 +1036,10 @@ export function createTheSportsDB(
         d: req.date,
         f: req.filename,
       });
-      return makeJsonRequest<TheSportsDBEventsResponse>(
+      return makeV1Request<TheSportsDBEventsResponse>(
         "GET",
         `/${apiKey}/searchevents.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -684,9 +1058,10 @@ export function createTheSportsDB(
         e: req.filename,
         s: req.season,
       });
-      return makeJsonRequest<TheSportsDBFilenameSearchResponse>(
+      return makeV1Request<TheSportsDBFilenameSearchResponse>(
         "GET",
         `/${apiKey}/searchfilename.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -702,9 +1077,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBPlayersResponse> => {
       const query = buildQuery({ p: req.player });
-      return makeJsonRequest<TheSportsDBPlayersResponse>(
+      return makeV1Request<TheSportsDBPlayersResponse>(
         "GET",
         `/${apiKey}/searchplayers.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -720,9 +1096,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBVenuesResponse> => {
       const query = buildQuery({ v: req.venue });
-      return makeJsonRequest<TheSportsDBVenuesResponse>(
+      return makeV1Request<TheSportsDBVenuesResponse>(
         "GET",
         `/${apiKey}/searchvenues.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -738,9 +1115,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLookupPlayerResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBLookupPlayerResponse>(
+      return makeV1Request<TheSportsDBLookupPlayerResponse>(
         "GET",
         `/${apiKey}/lookupplayer.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -756,9 +1134,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLookupHonoursResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBLookupHonoursResponse>(
+      return makeV1Request<TheSportsDBLookupHonoursResponse>(
         "GET",
         `/${apiKey}/lookuphonours.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -774,9 +1153,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLookupFormerTeamsResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBLookupFormerTeamsResponse>(
+      return makeV1Request<TheSportsDBLookupFormerTeamsResponse>(
         "GET",
         `/${apiKey}/lookupformerteams.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -792,9 +1172,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLookupMilestonesResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBLookupMilestonesResponse>(
+      return makeV1Request<TheSportsDBLookupMilestonesResponse>(
         "GET",
         `/${apiKey}/lookupmilestones.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -810,9 +1191,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLookupContractsResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBLookupContractsResponse>(
+      return makeV1Request<TheSportsDBLookupContractsResponse>(
         "GET",
         `/${apiKey}/lookupcontracts.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -828,9 +1210,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBPlayerResultsResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBPlayerResultsResponse>(
+      return makeV1Request<TheSportsDBPlayerResultsResponse>(
         "GET",
         `/${apiKey}/playerresults.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -846,9 +1229,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLookupPlayerStatsResponse> => {
       const idPlayer = encodeURIComponent(String(req.idPlayer));
-      return makeJsonRequest<TheSportsDBLookupPlayerStatsResponse>(
+      return makeV1Request<TheSportsDBLookupPlayerStatsResponse>(
         "GET",
         `/${apiKey}/lookupplayerstats.php?id=${idPlayer}`,
+        v1BaseURL,
         signal
       );
     },
@@ -864,9 +1248,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBEventResponse> => {
       const query = eventIdQuery(req);
-      return makeJsonRequest<TheSportsDBEventResponse>(
+      return makeV1Request<TheSportsDBEventResponse>(
         "GET",
         `/${apiKey}/lookupevent.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -882,9 +1267,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBEventResultsResponse> => {
       const query = eventIdQuery(req);
-      return makeJsonRequest<TheSportsDBEventResultsResponse>(
+      return makeV1Request<TheSportsDBEventResultsResponse>(
         "GET",
         `/${apiKey}/eventresults.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -900,9 +1286,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBLineupResponse> => {
       const query = eventIdQuery(req);
-      return makeJsonRequest<TheSportsDBLineupResponse>(
+      return makeV1Request<TheSportsDBLineupResponse>(
         "GET",
         `/${apiKey}/lookuplineup.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -918,9 +1305,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBTimelineResponse> => {
       const query = eventIdQuery(req);
-      return makeJsonRequest<TheSportsDBTimelineResponse>(
+      return makeV1Request<TheSportsDBTimelineResponse>(
         "GET",
         `/${apiKey}/lookuptimeline.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -936,9 +1324,10 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBEventStatsResponse> => {
       const query = eventIdQuery(req);
-      return makeJsonRequest<TheSportsDBEventStatsResponse>(
+      return makeV1Request<TheSportsDBEventStatsResponse>(
         "GET",
         `/${apiKey}/lookupeventstats.php${query}`,
+        v1BaseURL,
         signal
       );
     },
@@ -954,14 +1343,36 @@ export function createTheSportsDB(
       signal?: AbortSignal
     ): Promise<TheSportsDBTvEventResponse> => {
       const query = eventIdQuery(req);
-      return makeJsonRequest<TheSportsDBTvEventResponse>(
+      return makeV1Request<TheSportsDBTvEventResponse>(
         "GET",
         `/${apiKey}/lookuptv.php${query}`,
+        v1BaseURL,
         signal
       );
     },
     { schema: TheSportsDBEventLookupRequestSchema }
   );
+
+  const v2Lookup = {
+    league: v2League,
+    team: v2Team,
+    teamEquipment: v2TeamEquipment,
+    player: v2Player,
+    playerContracts: v2PlayerContracts,
+    playerResults: v2PlayerResults,
+    playerHonours: v2PlayerHonours,
+    playerMilestones: v2PlayerMilestones,
+    playerTeams: v2PlayerTeams,
+    playerStats: v2PlayerStats,
+    event: v2Event,
+    eventLineup: v2EventLineup,
+    eventResults: v2EventResults,
+    eventStats: v2EventStats,
+    eventTimeline: v2EventTimeline,
+    eventTv: v2EventTv,
+    eventHighlights: v2EventHighlights,
+    venue: v2Venue,
+  };
 
   const v1 = {
     allSports,
@@ -1008,13 +1419,11 @@ export function createTheSportsDB(
       req: TheSportsDBLeagueScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idLeague = pathSegment(req.idLeague);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/next/league/${idLeague}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "next", "league", req.idLeague),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBLeagueScheduleRequestSchema }
@@ -1028,13 +1437,11 @@ export function createTheSportsDB(
       req: TheSportsDBLeagueScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idLeague = pathSegment(req.idLeague);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/previous/league/${idLeague}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "previous", "league", req.idLeague),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBLeagueScheduleRequestSchema }
@@ -1048,13 +1455,11 @@ export function createTheSportsDB(
       req: TheSportsDBTeamScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idTeam = pathSegment(req.idTeam);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/next/team/${idTeam}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "next", "team", req.idTeam),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBTeamScheduleRequestSchema }
@@ -1068,13 +1473,11 @@ export function createTheSportsDB(
       req: TheSportsDBTeamScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idTeam = pathSegment(req.idTeam);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/previous/team/${idTeam}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "previous", "team", req.idTeam),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBTeamScheduleRequestSchema }
@@ -1088,13 +1491,11 @@ export function createTheSportsDB(
       req: TheSportsDBVenueScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idVenue = pathSegment(req.idVenue);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/next/venue/${idVenue}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "next", "venue", req.idVenue),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBVenueScheduleRequestSchema }
@@ -1108,13 +1509,11 @@ export function createTheSportsDB(
       req: TheSportsDBVenueScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idVenue = pathSegment(req.idVenue);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/previous/venue/${idVenue}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "previous", "venue", req.idVenue),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBVenueScheduleRequestSchema }
@@ -1128,13 +1527,11 @@ export function createTheSportsDB(
       req: TheSportsDBTeamScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idTeam = pathSegment(req.idTeam);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/full/team/${idTeam}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "full", "team", req.idTeam),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBTeamScheduleRequestSchema }
@@ -1148,14 +1545,11 @@ export function createTheSportsDB(
       req: TheSportsDBLeagueSeasonScheduleRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBEventScheduleList> => {
-      const idLeague = pathSegment(req.idLeague);
-      const season = pathSegment(req.season);
-      return makeJsonRequest<TheSportsDBEventScheduleList>(
+      return makeV2Request<TheSportsDBEventScheduleList>(
         "GET",
-        `/schedule/league/${idLeague}/${season}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("schedule", "league", req.idLeague, req.season),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBLeagueSeasonScheduleRequestSchema }
@@ -1169,13 +1563,11 @@ export function createTheSportsDB(
       req: TheSportsDBLiveScoreSportRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBLiveScoreList> => {
-      const sport = pathSegment(req.sport);
-      return makeJsonRequest<TheSportsDBLiveScoreList>(
+      return makeV2Request<TheSportsDBLiveScoreList>(
         "GET",
-        `/livescore/${sport}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("livescore", req.sport),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBLiveScoreSportRequestSchema }
@@ -1189,13 +1581,11 @@ export function createTheSportsDB(
       req: TheSportsDBLiveScoreLeagueRequest,
       signal?: AbortSignal
     ): Promise<TheSportsDBLiveScoreList> => {
-      const leagueId = pathSegment(req.leagueId);
-      return makeJsonRequest<TheSportsDBLiveScoreList>(
+      return makeV2Request<TheSportsDBLiveScoreList>(
         "GET",
-        `/livescore/${leagueId}`,
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("livescore", req.leagueId),
+        v2BaseURL,
+        signal
       );
     },
     { schema: TheSportsDBLiveScoreLeagueRequestSchema }
@@ -1206,12 +1596,11 @@ export function createTheSportsDB(
   // Docs: https://www.thesportsdb.com/docs_api_guide#v2-livescores
   const livescoreAll = Object.assign(
     async (signal?: AbortSignal): Promise<TheSportsDBLiveScoreList> => {
-      return makeJsonRequest<TheSportsDBLiveScoreList>(
+      return makeV2Request<TheSportsDBLiveScoreList>(
         "GET",
-        "/livescore/all",
-        signal,
-        apiBaseURL,
-        v2Headers()
+        buildPath("livescore", "all"),
+        v2BaseURL,
+        signal
       );
     },
     { schema: undefined }
@@ -1241,6 +1630,7 @@ export function createTheSportsDB(
   };
 
   const v2 = {
+    lookup: v2Lookup,
     schedule,
     livescore,
   };

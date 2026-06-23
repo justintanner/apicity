@@ -2991,6 +2991,19 @@ function renderTheSportsDBLookupGuide() {
     "});",
     "```",
     "",
+    "V2 is premium-only and sends the same `apiKey` as an `X-API-KEY`",
+    "header. V2 lookup method names mirror the path segments:",
+    "",
+    "```typescript",
+    "const player = await thesportsdb.v2.lookup.player({ idPlayer: 34172575 });",
+    "const lineup = await thesportsdb.v2.lookup.eventLineup({",
+    "  idEvent: 1937584,",
+    "});",
+    "const highlights = await thesportsdb.v2.lookup.eventHighlights({",
+    "  idEvent: 2044892,",
+    "});",
+    "```",
+    "",
   ].join("\n");
 }
 

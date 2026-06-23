@@ -109,6 +109,7 @@ export type {
   HappyHorseResolution,
   HappyHorseAspectRatio,
   HappyHorseAudioSetting,
+  HappyHorseDuration,
   Omnihuman15OutputResolution,
   VolcengineVideoToVideoLipSyncMode,
   HappyHorseTextToVideoRequest,
@@ -126,6 +127,8 @@ export type {
   GeminiOmniAudioCreateData,
   GeminiOmniAudioCreateResponse,
 } from "./types";
+
+export { HappyHorseDurationSchema } from "./zod";
 
 // Export sub-provider types
 export type {

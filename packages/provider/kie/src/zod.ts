@@ -177,6 +177,14 @@ export const HappyHorseAspectRatioSchema = z.enum([
 
 export const HappyHorseAudioSettingSchema = z.enum(["auto", "origin"]);
 
+export const HAPPYHORSE_DURATION_MIN_SECONDS = 3;
+export const HAPPYHORSE_DURATION_MAX_SECONDS = 15;
+export const HappyHorseDurationSchema = z
+  .number()
+  .int()
+  .min(HAPPYHORSE_DURATION_MIN_SECONDS)
+  .max(HAPPYHORSE_DURATION_MAX_SECONDS);
+
 export const Omnihuman15OutputResolutionSchema = z.enum(["720", "1080"]);
 
 export const VolcengineVideoToVideoLipSyncModeSchema = z.enum([
@@ -687,7 +695,7 @@ export const HappyHorseTextToVideoRequestSchema = z.object({
     prompt: z.string().min(1).max(5000),
     resolution: HappyHorseResolutionSchema.optional(),
     aspect_ratio: HappyHorseAspectRatioSchema.optional(),
-    duration: z.number().int().min(3).max(15).optional(),
+    duration: HappyHorseDurationSchema.optional(),
     seed: z.number().int().min(0).max(2147483647).optional(),
   }),
 });
@@ -699,7 +707,7 @@ export const HappyHorseImageToVideoRequestSchema = z.object({
     prompt: z.string().max(5000).optional(),
     image_urls: z.array(z.string()).min(1).max(1),
     resolution: HappyHorseResolutionSchema.optional(),
-    duration: z.number().int().min(3).max(15).optional(),
+    duration: HappyHorseDurationSchema.optional(),
     seed: z.number().int().min(0).max(2147483647).optional(),
   }),
 });
@@ -712,7 +720,7 @@ export const HappyHorseReferenceToVideoRequestSchema = z.object({
     reference_image: z.array(z.string()).min(1).max(9),
     resolution: HappyHorseResolutionSchema.optional(),
     aspect_ratio: HappyHorseAspectRatioSchema.optional(),
-    duration: z.number().int().min(3).max(15).optional(),
+    duration: HappyHorseDurationSchema.optional(),
     seed: z.number().int().min(0).max(2147483647).optional(),
   }),
 });
@@ -1345,6 +1353,7 @@ export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
 export type HappyHorseAudioSetting = z.infer<
   typeof HappyHorseAudioSettingSchema
 >;
+export type HappyHorseDuration = z.infer<typeof HappyHorseDurationSchema>;
 export type Omnihuman15OutputResolution = z.infer<
   typeof Omnihuman15OutputResolutionSchema
 >;

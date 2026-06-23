@@ -76,6 +76,7 @@ export type {
   HappyHorseResolution,
   HappyHorseAspectRatio,
   HappyHorseAudioSetting,
+  HappyHorseDuration,
   Omnihuman15OutputResolution,
   VolcengineVideoToVideoLipSyncMode,
   HappyHorseTextToVideoRequest,
@@ -164,6 +165,8 @@ export interface PayloadFieldSchema {
   required?: boolean;
   description?: string;
   enum?: readonly (string | number | boolean)[];
+  minimum?: number;
+  maximum?: number;
   items?: PayloadFieldSchema;
   properties?: Record<string, PayloadFieldSchema>;
 }

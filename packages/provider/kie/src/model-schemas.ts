@@ -1,4 +1,15 @@
 import type { KieMediaModel, ModelInputSchema } from "./types";
+import {
+  HAPPYHORSE_DURATION_MAX_SECONDS,
+  HAPPYHORSE_DURATION_MIN_SECONDS,
+} from "./zod";
+
+const happyHorseDurationField = {
+  type: "number",
+  minimum: HAPPYHORSE_DURATION_MIN_SECONDS,
+  maximum: HAPPYHORSE_DURATION_MAX_SECONDS,
+  description: `Duration in seconds, ${HAPPYHORSE_DURATION_MIN_SECONDS}-${HAPPYHORSE_DURATION_MAX_SECONDS} (default 5)`,
+} as const;
 
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "kling-3.0/video": {
@@ -1399,10 +1410,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         enum: ["16:9", "9:16", "1:1", "4:3", "3:4"],
         description: "Output aspect ratio (default 16:9)",
       },
-      duration: {
-        type: "number",
-        description: "Duration in seconds, 3-15 (default 5)",
-      },
+      duration: happyHorseDurationField,
       seed: {
         type: "number",
         description: "Random seed (0-2147483647)",
@@ -1429,10 +1437,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         enum: ["720p", "1080p"],
         description: "Output resolution (default 1080p)",
       },
-      duration: {
-        type: "number",
-        description: "Duration in seconds, 3-15 (default 5)",
-      },
+      duration: happyHorseDurationField,
       seed: {
         type: "number",
         description: "Random seed (0-2147483647)",
@@ -1466,10 +1471,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         enum: ["16:9", "9:16", "1:1", "4:3", "3:4"],
         description: "Output aspect ratio (default 16:9)",
       },
-      duration: {
-        type: "number",
-        description: "Duration in seconds, 3-15 (default 5)",
-      },
+      duration: happyHorseDurationField,
       seed: {
         type: "number",
         description: "Random seed (0-2147483647)",

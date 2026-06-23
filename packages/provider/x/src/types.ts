@@ -2,6 +2,7 @@ import type { z } from "zod";
 import type {
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
+  XUsersMeRequest,
   XTweetCreateRequest,
   XOAuthTokenRequest,
 } from "./zod";
@@ -11,6 +12,7 @@ export type {
   XOAuthOptions,
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
+  XUsersMeRequest,
   XTweetCreateRequest,
   XOAuthTokenRequest,
 } from "./zod";
@@ -72,6 +74,43 @@ export interface XTweetCreateResponse {
   };
 }
 
+export interface XUser {
+  [key: string]: unknown;
+  id: string;
+  name: string;
+  username: string;
+}
+
+export interface XTweet {
+  [key: string]: unknown;
+  id: string;
+  text?: string;
+}
+
+export interface XApiProblem {
+  [key: string]: unknown;
+  title?: string;
+  type?: string;
+  detail?: string;
+  status?: number;
+}
+
+export interface XUsersMeIncludes {
+  [key: string]: unknown;
+  media?: Array<Record<string, unknown>>;
+  places?: Array<Record<string, unknown>>;
+  polls?: Array<Record<string, unknown>>;
+  topics?: Array<Record<string, unknown>>;
+  tweets?: XTweet[];
+  users?: XUser[];
+}
+
+export interface XUsersMeResponse {
+  data: XUser;
+  errors?: XApiProblem[];
+  includes?: XUsersMeIncludes;
+}
+
 // refresh_token is present on authorization_code grants that requested the
 // offline.access scope; refresh grants may rotate it or omit it (keep the
 // old one when omitted).
@@ -108,6 +147,11 @@ export interface XMediaUploadFinalizeMethod {
 
 export interface XMediaUploadStatusMethod {
   (mediaId: string, signal?: AbortSignal): Promise<XMediaUploadStatusResponse>;
+}
+
+export interface XUsersMeMethod {
+  (req?: XUsersMeRequest, signal?: AbortSignal): Promise<XUsersMeResponse>;
+  schema: z.ZodType<XUsersMeRequest>;
 }
 
 export interface XTweetCreateMethod {
@@ -148,8 +192,13 @@ export interface XGetMediaNamespace {
   upload: XMediaUploadStatusMethod;
 }
 
+export interface XGetUsersNamespace {
+  me: XUsersMeMethod;
+}
+
 export interface XGetV2Namespace {
   media: XGetMediaNamespace;
+  users: XGetUsersNamespace;
 }
 
 export interface XGetNamespace {

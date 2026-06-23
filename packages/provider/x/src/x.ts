@@ -6,6 +6,8 @@ import {
   XMediaUploadAppendResponse,
   XMediaUploadFinalizeResponse,
   XMediaUploadStatusResponse,
+  XUsersMeRequest,
+  XUsersMeResponse,
   XTweetCreateRequest,
   XTweetCreateResponse,
   XProvider,
@@ -14,6 +16,7 @@ import {
 import {
   XMediaUploadInitializeRequestSchema,
   XMediaUploadAppendRequestSchema,
+  XUsersMeRequestSchema,
   XTweetCreateRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
@@ -155,6 +158,26 @@ export function createX(opts: XOptions): XProvider {
     }
   }
 
+  function appendArrayQuery(
+    params: URLSearchParams,
+    key: string,
+    values: readonly string[] | undefined
+  ): void {
+    if (values && values.length > 0) {
+      params.set(key, values.join(","));
+    }
+  }
+
+  function makeUsersMeQuery(req: XUsersMeRequest | undefined): string {
+    const params = new URLSearchParams();
+    appendArrayQuery(params, "user.fields", req?.["user.fields"]);
+    appendArrayQuery(params, "expansions", req?.expansions);
+    appendArrayQuery(params, "tweet.fields", req?.["tweet.fields"]);
+
+    const query = params.toString();
+    return query ? `?${query}` : "";
+  }
+
   // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
   // POST https://api.x.com/2/media/upload/initialize
   // Docs: https://docs.x.com/x-api/media/media-upload-initialize
@@ -226,6 +249,25 @@ export function createX(opts: XOptions): XProvider {
   }
 
   // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
+  // GET https://api.x.com/2/users/me{query}
+  // Docs: https://docs.x.com/x-api/users/get-my-user
+  const usersMe = Object.assign(
+    async (
+      req?: XUsersMeRequest,
+      signal?: AbortSignal
+    ): Promise<XUsersMeResponse> => {
+      const query = makeUsersMeQuery(req);
+      return makeJsonRequest<XUsersMeResponse>(
+        "GET",
+        `/2/users/me${query}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: XUsersMeRequestSchema }
+  );
+
+  // sig-ok: numeric URL segments (`/2/`) become identifier-safe (`v2`)
   // POST https://api.x.com/2/tweets
   // Docs: https://docs.x.com/x-api/posts/create-post
   const tweetsCreate = Object.assign(
@@ -260,6 +302,9 @@ export function createX(opts: XOptions): XProvider {
       v2: {
         media: {
           upload: mediaUploadStatus,
+        },
+        users: {
+          me: usersMe,
         },
       },
     },

@@ -258,7 +258,7 @@ console.log(tweet.data.text);
 
 ## API Reference
 
-5 endpoints across 2 groups. Each method mirrors an upstream URL path.
+6 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### media
 
@@ -333,6 +333,23 @@ Source: [`packages/provider/x/src/x.ts`](src/x.ts)
 
 ```typescript
 const res = await x.v2.tweets({ /* ... */ });
+```
+
+Source: [`packages/provider/x/src/x.ts`](src/x.ts)
+
+</details>
+
+### users
+
+<details>
+<summary><code>GET</code> <b><code>x.v2.users.me</code></b></summary>
+
+<code>GET https://api.x.com/2/users/me{query}</code>
+
+[Upstream docs ↗](https://docs.x.com/x-api/users/get-my-user)
+
+```typescript
+const res = await x.v2.users.me({ /* ... */ });
 ```
 
 Source: [`packages/provider/x/src/x.ts`](src/x.ts)

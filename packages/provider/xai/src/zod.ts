@@ -206,10 +206,42 @@ const XaiVideoAspectRatioSchema = z.enum([
 
 const XaiVideoResolutionSchema = z.enum(["480p", "720p"]);
 
+// Keep finite literal unions so exported request types and MCP schemas show
+// the supported second values, not an unbounded number.
+const XaiVideoGenerateDurationSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+  z.literal(6),
+  z.literal(7),
+  z.literal(8),
+  z.literal(9),
+  z.literal(10),
+  z.literal(11),
+  z.literal(12),
+  z.literal(13),
+  z.literal(14),
+  z.literal(15),
+]);
+
+const XaiVideoExtendDurationSchema = z.union([
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
+  z.literal(6),
+  z.literal(7),
+  z.literal(8),
+  z.literal(9),
+  z.literal(10),
+]);
+
 export const XaiVideoGenerateRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.string().optional(),
-  duration: z.number().optional(),
+  duration: XaiVideoGenerateDurationSchema.optional(),
   aspect_ratio: XaiVideoAspectRatioSchema.optional(),
   resolution: XaiVideoResolutionSchema.optional(),
   image: XaiVideoReferenceSchema.optional(),
@@ -221,7 +253,7 @@ export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.literal(XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW).optional(),
   image: XaiVideoReferenceInputSchema,
-  duration: z.number().int().min(1).max(15).optional(),
+  duration: XaiVideoGenerateDurationSchema.optional(),
   aspect_ratio: XaiVideoAspectRatioSchema.optional(),
   resolution: XaiVideoResolutionSchema.optional(),
   pollIntervalMs: z.number().int().min(0).optional(),
@@ -239,7 +271,7 @@ export const XaiVideoEditRequestSchema = z.object({
 export const XaiVideoExtendRequestSchema = z.object({
   prompt: z.string().min(1),
   model: z.string().optional(),
-  duration: z.number().optional(),
+  duration: XaiVideoExtendDurationSchema.optional(),
   video: XaiVideoReferenceSchema,
 });
 

@@ -95,7 +95,7 @@ describe("kie wan/2-7-r2v integration", () => {
     expect(schema.fields.aspect_ratio.enum).toContain("1:1");
     expect(schema.fields.aspect_ratio.enum).toContain("4:3");
     expect(schema.fields.aspect_ratio.enum).toContain("3:4");
-    expect(schema.fields.duration.type).toBe("number");
+    expect(schema.fields.duration.type).toBe("integer");
     expect(schema.fields.reference_image).toBeDefined();
     expect(schema.fields.reference_image.type).toBe("array");
     expect(schema.fields.reference_video).toBeDefined();
@@ -105,7 +105,7 @@ describe("kie wan/2-7-r2v integration", () => {
     expect(schema.fields.negative_prompt).toBeDefined();
     expect(schema.fields.prompt_extend.type).toBe("boolean");
     expect(schema.fields.watermark.type).toBe("boolean");
-    expect(schema.fields.seed.type).toBe("number");
+    expect(schema.fields.seed.type).toBe("integer");
     expect(schema.fields.nsfw_checker).toBeDefined();
     expect(schema.fields.nsfw_checker.type).toBe("boolean");
   });

@@ -2,6 +2,14 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import {
+  getZodDefaultValue,
+  getZodEnumValues,
+  getZodObjectShape,
+  isOptionalZodSchema,
+  zodToJsonSchema,
+  type JsonSchema,
+} from "../../packages/mcp-server/src/schema";
+import {
   AlibabaMultimodalGenerationRequestSchema,
   AlibabaQwenImageEditSlotsSchema,
   AlibabaQwenImageGenerationSlotsSchema,
@@ -11,28 +19,16 @@ import {
   AlibabaVideoSynthesisRequestSchema,
 } from "../../packages/provider/alibaba/src/zod";
 import {
-  GrokImageToVideoRequestSchema,
-  Seedance2FastRequestSchema,
-  Wan27VideoEditRequestSchema,
-} from "../../packages/provider/kie/src/zod";
-import {
   FalWanV2p7EditVideoRequestSchema,
   FalWanV2p7ReferenceToVideoRequestSchema,
 } from "../../packages/provider/fal/src/zod";
 import {
-  getZodDefaultValue,
-  getZodEnumValues,
-  getZodObjectShape,
-  isOptionalZodSchema,
-  zodToJsonSchema,
-} from "../../packages/mcp-server/src/schema";
-
-function propertiesOf(schema: unknown): Record<string, unknown> {
-  expect(schema).toMatchObject({ type: "object" });
-  const properties = (schema as { properties?: unknown }).properties;
-  expect(properties).toBeDefined();
-  return properties as Record<string, unknown>;
-}
+  CreateTaskRequestSchema,
+  GrokImageToVideoRequestSchema,
+  GrokTextToVideoRequestSchema,
+  Seedance2FastRequestSchema,
+  Wan27VideoEditRequestSchema,
+} from "../../packages/provider/kie/src/zod";
 
 describe("MCP Zod schema introspection helpers", () => {
   it("extracts enum values without direct unwrap/options access", () => {
@@ -50,7 +46,7 @@ describe("MCP Zod schema introspection helpers", () => {
     const refinedString = z
       .string()
       .min(1)
-      .refine((v) => v !== "nope");
+      .refine((value) => value !== "nope");
     const schema = z.object({
       bare: z.string(),
       optional: z.string().optional(),
@@ -126,6 +122,48 @@ describe("MCP Zod schema introspection helpers", () => {
       enum: ["wan2.7-i2v", "wan2.7-videoedit"],
     });
   });
+});
+
+describe("MCP Zod schema conversion", () => {
+  it("preserves Zod 4 string, integer, array, regex, and default metadata", () => {
+    const schema = zodToJsonSchema(
+      z.object({
+        title: z
+          .string()
+          .min(2)
+          .max(20)
+          .regex(/^[a-z]+$/),
+        count: z.number().int().min(1).max(10).default(3),
+        tags: z.array(z.string().min(1)).min(1).max(5),
+        link: z.string().url().optional(),
+      })
+    );
+
+    const props = propertiesOf(schema);
+    expect(schema.required).toEqual(["title", "tags"]);
+    expect(props.title.minLength).toBe(2);
+    expect(props.title.maxLength).toBe(20);
+    expect(props.title.pattern).toBe("^[a-z]+$");
+    expect(props.count.type).toBe("integer");
+    expect(props.count.minimum).toBe(1);
+    expect(props.count.maximum).toBe(10);
+    expect(props.count.default).toBe(3);
+    expect(props.tags.minItems).toBe(1);
+    expect(props.tags.maxItems).toBe(5);
+    expect((props.tags.items as JsonSchema).minLength).toBe(1);
+    expect(props.link.format).toBe("uri");
+  });
+
+  it("preserves constraints from a KIE Zod-derived model request schema", () => {
+    const schema = zodToJsonSchema(GrokTextToVideoRequestSchema);
+    const inputProps = propertiesOf(propertiesOf(schema).input);
+
+    expect(inputProps.prompt.minLength).toBe(1);
+    expect(inputProps.prompt.maxLength).toBe(5000);
+    expect(inputProps.duration.type).toBe("integer");
+    expect(inputProps.duration.minimum).toBe(6);
+    expect(inputProps.duration.maximum).toBe(30);
+  });
 
   it("exposes split Alibaba Qwen image model and slot schemas", () => {
     const requestJson = zodToJsonSchema(
@@ -189,8 +227,7 @@ describe("MCP Zod schema introspection helpers", () => {
   it("lists KIE Zod 4 media enum defaults in MCP JSON Schema output", () => {
     const json = zodToJsonSchema(GrokImageToVideoRequestSchema);
     const requestProperties = propertiesOf(json);
-    const input = requestProperties.input;
-    const inputProperties = propertiesOf(input);
+    const inputProperties = propertiesOf(requestProperties.input);
 
     expect(inputProperties.mode).toMatchObject({
       type: "string",
@@ -255,4 +292,22 @@ describe("MCP Zod schema introspection helpers", () => {
       maximum: 10,
     });
   });
+
+  it("keeps KIE createTask pipeline output visible to MCP consumers", () => {
+    const schema = zodToJsonSchema(CreateTaskRequestSchema);
+    const variants = schema.anyOf as JsonSchema[];
+
+    expect(schema.type).toBe("object");
+    expect(propertiesOf(schema).model).toBeDefined();
+    expect(propertiesOf(schema).input).toBeDefined();
+    expect(Array.isArray(variants)).toBe(true);
+    expect(variants.length).toBeGreaterThan(1);
+  });
 });
+
+function propertiesOf(schema: unknown): Record<string, JsonSchema> {
+  expect(schema).toMatchObject({ type: "object" });
+  const properties = (schema as JsonSchema).properties;
+  expect(properties).toBeDefined();
+  return properties as Record<string, JsonSchema>;
+}

@@ -1033,7 +1033,10 @@ describe("kie modelInputSchemas", () => {
     expect(textToVideo.type).toBe("video");
     expect(textToVideo.fields.prompt.description).toContain("5000");
     expect(textToVideo.fields.mode.enum).toEqual(["fun", "normal", "spicy"]);
-    expect(textToVideo.fields.duration.type).toBe("number");
+    expect(textToVideo.fields.duration.type).toBe("integer");
+    expect(textToVideo.fields.duration.minimum).toBe(6);
+    expect(textToVideo.fields.duration.maximum).toBe(30);
+    expect(textToVideo.fields.duration.default).toBe(6);
     expect(textToVideo.fields.aspect_ratio.enum).toEqual([
       "2:3",
       "3:2",
@@ -1047,7 +1050,10 @@ describe("kie modelInputSchemas", () => {
     expect(imageToVideo.fields.prompt.description).toContain("4096");
     expect(imageToVideo.fields.mode.enum).toEqual(["fun", "normal", "spicy"]);
     expect(imageToVideo.fields.mode.description).toContain("task_id");
-    expect(imageToVideo.fields.duration.type).toBe("number");
+    expect(imageToVideo.fields.duration.type).toBe("integer");
+    expect(imageToVideo.fields.duration.minimum).toBe(6);
+    expect(imageToVideo.fields.duration.maximum).toBe(30);
+    expect(imageToVideo.fields.duration.default).toBe(6);
     expect(imageToVideo.fields.duration.description).toContain("6-30");
     expect(imageToVideo.fields.aspect_ratio.enum).toEqual([
       "2:3",
@@ -1067,10 +1073,13 @@ describe("kie modelInputSchemas", () => {
     const schema = modelInputSchemas["wan/2-7-videoedit"];
 
     expect(schema.type).toBe("video");
-    expect(schema.fields.duration.type).toBe("number");
+    expect(schema.fields.duration.type).toBe("integer");
     expect(schema.fields.duration.enum).toEqual([
       0, 2, 3, 4, 5, 6, 7, 8, 9, 10,
     ]);
+    expect(schema.fields.duration.minimum).toBe(0);
+    expect(schema.fields.duration.maximum).toBe(10);
+    expect(schema.fields.duration.default).toBe(0);
   });
 
   it("gpt-image-2 text-to-image exposes documented aspect ratios", () => {
@@ -1151,6 +1160,6 @@ describe("kie modelInputSchemas", () => {
     expect(schema.fields.prompt.type).toBe("string");
     expect(schema.fields.output_resolution.enum).toEqual(["720", "1080"]);
     expect(schema.fields.pe_fast_mode.type).toBe("boolean");
-    expect(schema.fields.seed.type).toBe("number");
+    expect(schema.fields.seed.type).toBe("integer");
   });
 });

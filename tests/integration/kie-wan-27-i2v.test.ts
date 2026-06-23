@@ -86,7 +86,7 @@ describe("kie wan/2-7-image-to-video integration", () => {
     expect(schema.fields.prompt.required).toBe(true);
     expect(schema.fields.resolution.enum).toContain("720p");
     expect(schema.fields.resolution.enum).toContain("1080p");
-    expect(schema.fields.duration.type).toBe("number");
+    expect(schema.fields.duration.type).toBe("integer");
     expect(schema.fields.first_frame_url).toBeDefined();
     expect(schema.fields.last_frame_url).toBeDefined();
     expect(schema.fields.first_clip_url).toBeDefined();
@@ -94,7 +94,7 @@ describe("kie wan/2-7-image-to-video integration", () => {
     expect(schema.fields.negative_prompt).toBeDefined();
     expect(schema.fields.prompt_extend.type).toBe("boolean");
     expect(schema.fields.watermark.type).toBe("boolean");
-    expect(schema.fields.seed.type).toBe("number");
+    expect(schema.fields.seed.type).toBe("integer");
     expect(schema.fields.nsfw_checker).toBeDefined();
     expect(schema.fields.nsfw_checker.type).toBe("boolean");
   });

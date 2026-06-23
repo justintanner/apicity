@@ -213,12 +213,20 @@ export type GeminiOmniAudioCreateResponse =
 // ---------------------------------------------------------------------------
 
 export interface PayloadFieldSchema {
-  type: "string" | "number" | "boolean" | "array" | "object";
+  type: "string" | "number" | "integer" | "boolean" | "array" | "object";
   required?: boolean;
   description?: string;
   enum?: readonly (string | number | boolean)[];
   minimum?: number;
   maximum?: number;
+  exclusiveMinimum?: number;
+  exclusiveMaximum?: number;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;
+  minItems?: number;
+  maxItems?: number;
+  default?: string | number | boolean | null | readonly unknown[];
   items?: PayloadFieldSchema;
   properties?: Record<string, PayloadFieldSchema>;
 }

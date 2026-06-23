@@ -67,9 +67,10 @@ describe("kie happyhorse duration schema", () => {
     for (const model of Object.keys(validInputs)) {
       const duration = provider.modelInputSchemas[model].fields.duration;
 
-      expect(duration.type).toBe("number");
+      expect(duration.type).toBe("integer");
       expect(duration.minimum).toBe(3);
       expect(duration.maximum).toBe(15);
+      expect(duration.default).toBe(5);
     }
 
     expect(

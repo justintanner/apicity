@@ -6,9 +6,10 @@ import {
 } from "./zod";
 
 const happyHorseDurationField = {
-  type: "number",
+  type: "integer",
   minimum: HAPPYHORSE_DURATION_MIN_SECONDS,
   maximum: HAPPYHORSE_DURATION_MAX_SECONDS,
+  default: 5,
   description: `Duration in seconds, ${HAPPYHORSE_DURATION_MIN_SECONDS}-${HAPPYHORSE_DURATION_MAX_SECONDS} (default 5)`,
 } as const;
 
@@ -187,6 +188,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Image generation prompt (max 5000 chars)",
       },
       aspect_ratio: {
@@ -211,11 +214,14 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       prompt: {
         type: "string",
+        maxLength: 390000,
         description: "Modification prompt (max 390000 chars)",
       },
       image_urls: {
         type: "array",
         required: true,
+        minItems: 1,
+        maxItems: 1,
         description: "Input image URL (exactly 1)",
         items: { type: "string" },
       },
@@ -235,6 +241,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Video generation prompt (max 5000 chars)",
       },
       aspect_ratio: {
@@ -248,7 +256,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Generation mode (default normal)",
       },
       duration: {
-        type: "number",
+        type: "integer",
+        minimum: 6,
+        maximum: 30,
+        default: 6,
         description: "Duration in seconds (6-30, default 6)",
       },
       resolution: {
@@ -269,10 +280,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       prompt: {
         type: "string",
+        maxLength: 4096,
         description: "Video generation prompt (max 4096 chars)",
       },
       image_urls: {
         type: "array",
+        minItems: 1,
+        maxItems: 7,
         description:
           "External JPEG/PNG/WEBP image URLs (max 7, 10MB each); mutually exclusive with task_id",
         items: { type: "string" },
@@ -282,7 +296,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description:
           "Grok-generated image task ID; use with index and without image_urls",
       },
-      index: { type: "number", description: "Image index (0-5, default 0)" },
+      index: {
+        type: "integer",
+        minimum: 0,
+        maximum: 5,
+        default: 0,
+        description: "Image index (0-5, default 0)",
+      },
       mode: {
         type: "string",
         enum: ["fun", "normal", "spicy"],
@@ -290,7 +310,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "Generation mode (default normal; spicy requires task_id and is unavailable with external image_urls)",
       },
       duration: {
-        type: "number",
+        type: "integer",
+        minimum: 6,
+        maximum: 30,
+        default: 6,
         description: "Duration in whole seconds (6-30, default 6)",
       },
       resolution: {
@@ -318,11 +341,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       prompt: {
         type: "string",
+        maxLength: 4096,
         description: "Video generation prompt (max 4096 chars)",
       },
       image_urls: {
         type: "array",
         required: true,
+        minItems: 1,
         description: "Input image URLs (jpeg/png/webp, max 20MB each)",
         items: { type: "string" },
       },
@@ -338,7 +363,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Output resolution (default 480p)",
       },
       duration: {
-        type: "number",
+        type: "integer",
+        minimum: 1,
+        maximum: 15,
+        default: 8,
         description: "Duration in seconds (1-15, default 8)",
       },
       nsfw_checker: {
@@ -354,11 +382,14 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       task_id: {
         type: "string",
         required: true,
+        maxLength: 100,
         description: "Video task ID to extend (max 100 chars)",
       },
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Extension prompt",
       },
       extend_at: {
@@ -381,6 +412,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       task_id: {
         type: "string",
         required: true,
+        maxLength: 100,
         description: "Video task ID to upscale (max 100 chars)",
       },
     },
@@ -878,10 +910,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Positive prompt (max 5000 chars)",
       },
       negative_prompt: {
         type: "string",
+        maxLength: 500,
         description: "Negative prompt (max 500 chars)",
       },
       first_frame_url: {
@@ -906,7 +941,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Video resolution (default 1080p)",
       },
       duration: {
-        type: "number",
+        type: "integer",
+        minimum: 2,
+        maximum: 15,
+        default: 5,
         description: "Duration in seconds, 2-15 (default 5)",
       },
       prompt_extend: {
@@ -918,7 +956,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "AI-generated watermark (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
       nsfw_checker: {
@@ -934,10 +974,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Positive prompt (max 5000 chars)",
       },
       negative_prompt: {
         type: "string",
+        maxLength: 500,
         description: "Negative prompt (max 500 chars)",
       },
       audio_url: {
@@ -955,7 +998,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Video aspect ratio (default 16:9)",
       },
       duration: {
-        type: "number",
+        type: "integer",
+        minimum: 2,
+        maximum: 15,
+        default: 5,
         description: "Duration in seconds, 2-15 (default 5)",
       },
       prompt_extend: {
@@ -967,7 +1013,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "AI-generated watermark (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
       nsfw_checker: {
@@ -983,18 +1031,23 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Positive prompt (max 5000 chars)",
       },
       negative_prompt: {
         type: "string",
+        maxLength: 500,
         description: "Negative prompt (max 500 chars)",
       },
       reference_image: {
         type: "array",
+        maxItems: 5,
         description: "Array of reference image URLs (max 5 total with videos)",
       },
       reference_video: {
         type: "array",
+        maxItems: 5,
         description: "Array of reference video URLs (max 5 total with images)",
       },
       first_frame: {
@@ -1017,7 +1070,10 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "Video aspect ratio (default 16:9, ignored if first_frame set)",
       },
       duration: {
-        type: "number",
+        type: "integer",
+        minimum: 2,
+        maximum: 10,
+        default: 5,
         description: "Duration in seconds, 2-10 (default 5)",
       },
       prompt_extend: {
@@ -1029,7 +1085,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "AI-generated watermark (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
       nsfw_checker: {
@@ -1044,10 +1102,12 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       prompt: {
         type: "string",
+        maxLength: 5000,
         description: "Positive prompt (max 5000 chars)",
       },
       negative_prompt: {
         type: "string",
+        maxLength: 500,
         description: "Negative prompt (max 500 chars)",
       },
       video_url: {
@@ -1070,8 +1130,11 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Output aspect ratio (default matches input video)",
       },
       duration: {
-        type: "number",
+        type: "integer",
         enum: Wan27VideoEditDurationValues,
+        minimum: 0,
+        maximum: 10,
+        default: 0,
         description:
           "Duration in seconds, 0 or 2-10 (default 0 = full input duration)",
       },
@@ -1090,7 +1153,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "AI-generated watermark (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
       nsfw_checker: {
@@ -1106,10 +1171,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Prompt for image generation or editing (max 5000 chars)",
       },
       input_urls: {
         type: "array",
+        maxItems: 9,
         description: "Array of input image URLs (max 9)",
       },
       aspect_ratio: {
@@ -1123,7 +1191,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Enable sequential/group image mode (default false)",
       },
       n: {
-        type: "number",
+        type: "integer",
+        minimum: 1,
+        maximum: 12,
         description:
           "Number of images to generate: 1-4 when sequential=false (default 4), 1-12 when sequential=true (default 12)",
       },
@@ -1139,6 +1209,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       color_palette: {
         type: "array",
+        minItems: 3,
+        maxItems: 10,
         description:
           "Custom color theme with 3-10 {hex, ratio} entries (only when sequential=false)",
       },
@@ -1152,7 +1224,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Add watermark (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
       nsfw_checker: {
@@ -1168,10 +1242,13 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description: "Prompt for image generation or editing (max 5000 chars)",
       },
       input_urls: {
         type: "array",
+        maxItems: 9,
         description: "Array of input image URLs (max 9)",
       },
       aspect_ratio: {
@@ -1185,7 +1262,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Enable sequential/group image mode (default false)",
       },
       n: {
-        type: "number",
+        type: "integer",
+        minimum: 1,
+        maximum: 12,
         description:
           "Number of images to generate: 1-4 when sequential=false (default 4), 1-12 when sequential=true (default 12)",
       },
@@ -1202,6 +1281,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       color_palette: {
         type: "array",
+        minItems: 3,
+        maxItems: 10,
         description:
           "Custom color theme with 3-10 {hex, ratio} entries (only when sequential=false)",
       },
@@ -1215,7 +1296,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Add watermark (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
       nsfw_checker: {
@@ -1399,6 +1482,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description:
           "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
       },
@@ -1414,7 +1499,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: happyHorseDurationField,
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
     },
@@ -1425,12 +1512,15 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       prompt: {
         type: "string",
+        maxLength: 5000,
         description:
           "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
       },
       image_urls: {
         type: "array",
         required: true,
+        minItems: 1,
+        maxItems: 1,
         description: "First-frame image URL list (exactly 1 image required)",
         items: { type: "string" },
       },
@@ -1441,7 +1531,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: happyHorseDurationField,
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
     },
@@ -1453,12 +1545,16 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description:
           "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
       },
       reference_image: {
         type: "array",
         required: true,
+        minItems: 1,
+        maxItems: 9,
         description:
           "Reference image URLs (1-9 images; order defines character1, character2, ...)",
         items: { type: "string" },
@@ -1475,7 +1571,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       duration: happyHorseDurationField,
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
     },
@@ -1487,6 +1585,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        minLength: 1,
+        maxLength: 5000,
         description:
           "Edit instruction (max 5000 non-Chinese / 2500 Chinese chars)",
       },
@@ -1498,6 +1598,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       reference_image: {
         type: "array",
+        maxItems: 5,
         description: "Optional reference image URLs (0-5)",
         items: { type: "string" },
       },
@@ -1513,7 +1614,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
           "Audio handling: auto (model decides) or origin (keep original) (default auto)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
     },
@@ -1530,6 +1633,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       mask_url: {
         type: "array",
+        maxItems: 5,
         description:
           "Optional subject mask image URLs (jpeg/png/webp, max 5, max 10MB each)",
         items: { type: "string" },
@@ -1542,6 +1646,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       prompt: {
         type: "string",
+        maxLength: 1000,
         description:
           "Optional motion prompt (max 1000 chars; Chinese, English, Japanese, Korean, Spanish, or Indonesian)",
       },
@@ -1555,7 +1660,9 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         description: "Fast mode trades quality for speed (default false)",
       },
       seed: {
-        type: "number",
+        type: "integer",
+        minimum: -1,
+        default: -1,
         description: "Random seed (-1 for random, default -1)",
       },
     },

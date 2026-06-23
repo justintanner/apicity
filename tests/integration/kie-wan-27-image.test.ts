@@ -110,7 +110,7 @@ describe("kie wan/2-7-image integration", () => {
     expect(schema.fields.aspect_ratio.enum).toContain("8:1");
     expect(schema.fields.aspect_ratio.enum).toContain("1:8");
     expect(schema.fields.enable_sequential.type).toBe("boolean");
-    expect(schema.fields.n.type).toBe("number");
+    expect(schema.fields.n.type).toBe("integer");
     expect(schema.fields.resolution.enum).toContain("1K");
     expect(schema.fields.resolution.enum).toContain("2K");
     expect(schema.fields.resolution.enum).toContain("4K");
@@ -118,7 +118,7 @@ describe("kie wan/2-7-image integration", () => {
     expect(schema.fields.color_palette.type).toBe("array");
     expect(schema.fields.bbox_list.type).toBe("array");
     expect(schema.fields.watermark.type).toBe("boolean");
-    expect(schema.fields.seed.type).toBe("number");
+    expect(schema.fields.seed.type).toBe("integer");
     expect(schema.fields.nsfw_checker.type).toBe("boolean");
   });
 });

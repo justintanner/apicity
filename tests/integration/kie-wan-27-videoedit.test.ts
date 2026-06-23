@@ -130,13 +130,16 @@ describe("kie wan/2-7-videoedit integration", () => {
     expect(schema.fields.aspect_ratio.enum).toContain("1:1");
     expect(schema.fields.aspect_ratio.enum).toContain("4:3");
     expect(schema.fields.aspect_ratio.enum).toContain("3:4");
-    expect(schema.fields.duration.type).toBe("number");
+    expect(schema.fields.duration.type).toBe("integer");
     expect(schema.fields.duration.enum).toEqual(Wan27VideoEditDurationValues);
+    expect(schema.fields.duration.minimum).toBe(0);
+    expect(schema.fields.duration.maximum).toBe(10);
+    expect(schema.fields.duration.default).toBe(0);
     expect(schema.fields.audio_setting.enum).toContain("auto");
     expect(schema.fields.audio_setting.enum).toContain("origin");
     expect(schema.fields.prompt_extend.type).toBe("boolean");
     expect(schema.fields.watermark.type).toBe("boolean");
-    expect(schema.fields.seed.type).toBe("number");
+    expect(schema.fields.seed.type).toBe("integer");
     expect(schema.fields.nsfw_checker).toBeDefined();
     expect(schema.fields.nsfw_checker.type).toBe("boolean");
   });

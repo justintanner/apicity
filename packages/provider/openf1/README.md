@@ -110,6 +110,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 </details>
 
+### championshipTeams
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.championshipTeams</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/championship_teams{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#teams-championship-beta)
+
+```typescript
+const res = await openf1.v1.championshipTeams({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
 ### intervals
 
 <details>

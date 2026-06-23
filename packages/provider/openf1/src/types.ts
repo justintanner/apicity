@@ -182,6 +182,43 @@ export interface OpenF1ChampionshipDriverRequest {
   csv?: boolean;
 }
 
+export interface OpenF1ChampionshipTeam {
+  meeting_key: number;
+  points_current: number;
+  points_start: number;
+  position_current: number;
+  position_start: number;
+  session_key: number;
+  team_name: string;
+  [key: string]: unknown;
+}
+
+export type OpenF1ChampionshipTeamResponse = OpenF1ChampionshipTeam[];
+
+export type OpenF1ChampionshipTeamFilterField =
+  | "meeting_key"
+  | "points_current"
+  | "points_start"
+  | "position_current"
+  | "position_start"
+  | "session_key"
+  | "team_name";
+
+export type OpenF1ChampionshipTeamFilter =
+  OpenF1ComparisonFilter<OpenF1ChampionshipTeamFilterField>;
+
+export interface OpenF1ChampionshipTeamRequest {
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  points_current?: OpenF1FilterValue<number>;
+  points_start?: OpenF1FilterValue<number>;
+  position_current?: OpenF1FilterValue<number>;
+  position_start?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  team_name?: OpenF1FilterValue<string>;
+  filters?: readonly OpenF1ChampionshipTeamFilter[];
+  csv?: boolean;
+}
+
 export interface OpenF1Overtake {
   date: string;
   meeting_key: number;
@@ -478,6 +515,11 @@ export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverResponse
 >;
 
+export type OpenF1ChampionshipTeamsMethod = OpenF1Method<
+  OpenF1ChampionshipTeamRequest,
+  OpenF1ChampionshipTeamResponse
+>;
+
 export type OpenF1IntervalsMethod = OpenF1Method<
   OpenF1IntervalsRequest,
   OpenF1IntervalsResponse
@@ -753,6 +795,7 @@ export type OpenF1TeamRadioMethod = OpenF1Method<
 
 export interface OpenF1V1Namespace {
   championshipDrivers: OpenF1ChampionshipDriversMethod;
+  championshipTeams: OpenF1ChampionshipTeamsMethod;
   intervals: OpenF1IntervalsMethod;
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;

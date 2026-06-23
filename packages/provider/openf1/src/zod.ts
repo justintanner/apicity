@@ -4,6 +4,10 @@ import type {
   OpenF1ChampionshipDriverFilter,
   OpenF1ChampionshipDriverFilterField,
   OpenF1ChampionshipDriverRequest,
+  OpenF1ChampionshipTeam,
+  OpenF1ChampionshipTeamFilter,
+  OpenF1ChampionshipTeamFilterField,
+  OpenF1ChampionshipTeamRequest,
   OpenF1ComparisonFilter,
   OpenF1ComparisonOperator,
   OpenF1FilterScalar,
@@ -270,6 +274,51 @@ export const OpenF1ChampionshipDriverRequestSchema: z.ZodType<OpenF1Championship
 
 export const OpenF1ChampionshipDriverResponseSchema = z.array(
   OpenF1ChampionshipDriverSchema
+);
+
+export const OpenF1ChampionshipTeamFilterFieldSchema: z.ZodType<OpenF1ChampionshipTeamFilterField> =
+  z.enum([
+    "meeting_key",
+    "points_current",
+    "points_start",
+    "position_current",
+    "position_start",
+    "session_key",
+    "team_name",
+  ]);
+
+export const OpenF1ChampionshipTeamFilterSchema: z.ZodType<OpenF1ChampionshipTeamFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1ChampionshipTeamFilterFieldSchema,
+  });
+
+export const OpenF1ChampionshipTeamSchema: z.ZodType<OpenF1ChampionshipTeam> = z
+  .object({
+    meeting_key: z.number(),
+    points_current: z.number(),
+    points_start: z.number(),
+    position_current: z.number(),
+    position_start: z.number(),
+    session_key: z.number(),
+    team_name: z.string(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1ChampionshipTeamRequestSchema: z.ZodType<OpenF1ChampionshipTeamRequest> =
+  z.object({
+    meeting_key: latestKeyFilterValue.optional(),
+    points_current: numberFilterValue.optional(),
+    points_start: numberFilterValue.optional(),
+    position_current: numberFilterValue.optional(),
+    position_start: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    team_name: stringFilterValue.optional(),
+    filters: z.array(OpenF1ChampionshipTeamFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1ChampionshipTeamResponseSchema = z.array(
+  OpenF1ChampionshipTeamSchema
 );
 
 export const OpenF1IntervalsRequestSchema: z.ZodType<OpenF1IntervalsRequest> =

@@ -1187,6 +1187,7 @@ openligadb	getmatchdata.byTeams	GET	https://api.openligadb.de/getmatchdata/{team
 openf1	v1.intervals	GET	https://api.openf1.org/v1/intervals{query}	https://openf1.org/docs/#intervals
 openf1	v1.meetings	GET	https://api.openf1.org/v1/meetings{query}	https://openf1.org/docs/#meetings
 openf1	v1.championshipDrivers	GET	https://api.openf1.org/v1/championship_drivers{query}	https://openf1.org/docs/#drivers-championship-beta
+openf1	v1.championshipTeams	GET	https://api.openf1.org/v1/championship_teams{query}	https://openf1.org/docs/#teams-championship-beta
 openf1	v1.laps	GET	https://api.openf1.org/v1/laps{query}	https://openf1.org/docs/#laps
 openf1	v1.overtakes	GET	https://api.openf1.org/v1/overtakes{query}	https://openf1.org/docs/#overtakes
 openf1	v1.position	GET	https://api.openf1.org/v1/position{query}	https://openf1.org/docs/#position

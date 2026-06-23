@@ -4,6 +4,9 @@ import type {
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse,
   OpenF1ChampionshipDriversMethod,
+  OpenF1ChampionshipTeamRequest,
+  OpenF1ChampionshipTeamResponse,
+  OpenF1ChampionshipTeamsMethod,
   OpenF1ComparisonFilter,
   OpenF1FilterScalar,
   OpenF1IntervalsMethod,
@@ -53,6 +56,7 @@ import type {
 } from "./types";
 import {
   OpenF1ChampionshipDriverRequestSchema,
+  OpenF1ChampionshipTeamRequestSchema,
   OpenF1IntervalsRequestSchema,
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
@@ -99,6 +103,16 @@ const CHAMPIONSHIP_DRIVER_QUERY_FIELDS = [
   "position_start",
   "session_key",
 ] as const satisfies readonly (keyof OpenF1ChampionshipDriverRequest)[];
+
+const CHAMPIONSHIP_TEAM_QUERY_FIELDS = [
+  "meeting_key",
+  "points_current",
+  "points_start",
+  "position_current",
+  "position_start",
+  "session_key",
+  "team_name",
+] as const satisfies readonly (keyof OpenF1ChampionshipTeamRequest)[];
 
 const INTERVALS_QUERY_FIELDS = [
   "date",
@@ -506,6 +520,29 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1ChampionshipDriverRequestSchema }
   ) as OpenF1ChampionshipDriversMethod;
 
+  // GET https://api.openf1.org/v1/championship_teams{query}
+  // Docs: https://openf1.org/docs/#teams-championship-beta
+  const championshipTeams = Object.assign(
+    async (
+      req: OpenF1ChampionshipTeamRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1ChampionshipTeamResponse | string> => {
+      const query = buildQuery(req, CHAMPIONSHIP_TEAM_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(
+          `/v1/championship_teams${query}`,
+          signal,
+          "text"
+        );
+      }
+      return makeGetRequest<OpenF1ChampionshipTeamResponse>(
+        `/v1/championship_teams${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1ChampionshipTeamRequestSchema }
+  ) as OpenF1ChampionshipTeamsMethod;
+
   // GET https://api.openf1.org/v1/intervals{query}
   // Docs: https://openf1.org/docs/#intervals
   const intervals = Object.assign(
@@ -741,6 +778,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     token,
     v1: {
       championshipDrivers,
+      championshipTeams,
       intervals,
       laps,
       meetings,

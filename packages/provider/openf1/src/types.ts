@@ -136,6 +136,37 @@ export interface OpenF1ChampionshipDriverRequest {
   csv?: boolean;
 }
 
+export interface OpenF1Position {
+  date: string;
+  driver_number: number;
+  meeting_key: number;
+  position: number;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1PositionResponse = OpenF1Position[];
+
+export type OpenF1PositionFilterField =
+  | "date"
+  | "driver_number"
+  | "meeting_key"
+  | "position"
+  | "session_key";
+
+export type OpenF1PositionFilter =
+  OpenF1ComparisonFilter<OpenF1PositionFilterField>;
+
+export interface OpenF1PositionRequest {
+  date?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  position?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1PositionFilter[];
+  csv?: boolean;
+}
+
 export interface OpenF1Method<Request extends { csv?: boolean }, Response> {
   (req: Request & { csv: true }, signal?: AbortSignal): Promise<string>;
   (
@@ -223,10 +254,16 @@ export type OpenF1LapsMethod = OpenF1Method<
   OpenF1LapResponse
 >;
 
+export type OpenF1PositionMethod = OpenF1Method<
+  OpenF1PositionRequest,
+  OpenF1PositionResponse
+>;
+
 export interface OpenF1V1Namespace {
   championshipDrivers: OpenF1ChampionshipDriversMethod;
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
+  position: OpenF1PositionMethod;
 }
 
 export interface OpenF1Provider {

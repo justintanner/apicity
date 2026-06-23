@@ -13,12 +13,16 @@ import type {
   OpenF1MeetingsRequest,
   OpenF1MeetingsResponse,
   OpenF1Options,
+  OpenF1PositionMethod,
+  OpenF1PositionRequest,
+  OpenF1PositionResponse,
   OpenF1Provider,
 } from "./types";
 import {
   OpenF1ChampionshipDriverRequestSchema,
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
+  OpenF1PositionRequestSchema,
 } from "./zod";
 
 const MEETINGS_QUERY_FIELDS = [
@@ -70,6 +74,14 @@ const LAPS_QUERY_FIELDS = [
   "session_key",
   "st_speed",
 ] as const satisfies readonly (keyof OpenF1LapRequest)[];
+
+const POSITION_QUERY_FIELDS = [
+  "date",
+  "driver_number",
+  "meeting_key",
+  "position",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1PositionRequest)[];
 
 type OpenF1QueryValue =
   | OpenF1FilterScalar
@@ -283,11 +295,31 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1LapRequestSchema }
   ) as OpenF1LapsMethod;
 
+  // GET https://api.openf1.org/v1/position{query}
+  // Docs: https://openf1.org/docs/#position
+  const position = Object.assign(
+    async (
+      req: OpenF1PositionRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1PositionResponse | string> => {
+      const query = buildQuery(req, POSITION_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/position${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1PositionResponse>(
+        `/v1/position${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1PositionRequestSchema }
+  ) as OpenF1PositionMethod;
+
   return attachExamples({
     v1: {
       championshipDrivers,
       laps,
       meetings,
+      position,
     },
   });
 }

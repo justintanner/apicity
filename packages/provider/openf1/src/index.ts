@@ -27,6 +27,12 @@ export type {
   OpenF1MeetingsResponse,
   OpenF1Method,
   OpenF1Options,
+  OpenF1Position,
+  OpenF1PositionFilter,
+  OpenF1PositionFilterField,
+  OpenF1PositionMethod,
+  OpenF1PositionRequest,
+  OpenF1PositionResponse,
   OpenF1Provider,
   OpenF1V1Namespace,
 } from "./types";
@@ -51,4 +57,9 @@ export {
   OpenF1MeetingsFilterSchema,
   OpenF1MeetingsRequestSchema,
   OpenF1OptionsSchema,
+  OpenF1PositionFilterFieldSchema,
+  OpenF1PositionFilterSchema,
+  OpenF1PositionRequestSchema,
+  OpenF1PositionResponseSchema,
+  OpenF1PositionSchema,
 } from "./zod";

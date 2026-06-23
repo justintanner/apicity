@@ -104,7 +104,9 @@ const NullableBooleanSchema = z.boolean().nullable().optional();
 export const SimpleFunctionsEmptyRequestSchema = z.object({});
 export const SimpleFunctionsRecordRequestSchema = UnknownRecordSchema;
 export const SimpleFunctionsOptionalQueryRequestSchema = z
-  .object({})
+  .object({
+    query: QueryRecordSchema.optional(),
+  })
   .catchall(QueryParamSchema);
 export const SimpleFunctionsIdRequestSchema = z
   .object({

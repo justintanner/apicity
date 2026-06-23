@@ -336,20 +336,94 @@ export const AlibabaImageGenerationRequestSchema = z.object({
 export const AlibabaImageReferenceSlotsSchema = z.array(z.string()).max(9);
 
 // ---------------------------------------------------------------------------
-// Multimodal generation (Qwen image editing — sync)
+// Multimodal generation (Qwen image generation/editing — sync)
 //
-// Covers the DashScope Qwen image-editing protocol at
-// /api/v1/services/aigc/multimodal-generation/generation. Accepts 1–3 input
-// images plus one text instruction and returns image URLs synchronously.
+// Covers the DashScope Qwen image multimodal protocol at
+// /api/v1/services/aigc/multimodal-generation/generation. Generation-capable
+// qwen-image-* models accept one text instruction plus 0-3 optional images.
+// Edit-only qwen-image-edit* models require one text instruction plus 1-3
+// images. Stable IDs and dated snapshots are kept in separate model schemas so
+// downstream tools can expose the two capability surfaces independently.
 // ---------------------------------------------------------------------------
+
+const QWEN_IMAGE_GENERATION_MODELS = [
+  "qwen-image-2.0-pro",
+  "qwen-image-2.0-pro-2026-03-03",
+  "qwen-image-2.0",
+  "qwen-image-2.0-2026-03-03",
+] as const;
+
+const QWEN_IMAGE_EDIT_MODELS = [
+  "qwen-image-edit-max",
+  "qwen-image-edit-max-2026-01-16",
+  "qwen-image-edit-plus",
+  "qwen-image-edit-plus-2025-12-15",
+  "qwen-image-edit-plus-2025-10-30",
+  "qwen-image-edit",
+] as const;
+
+const QWEN_IMAGE_EDIT_MODEL_SET = new Set<string>(QWEN_IMAGE_EDIT_MODELS);
+
+export const AlibabaQwenImageGenerationModelSchema = z.enum(
+  QWEN_IMAGE_GENERATION_MODELS
+);
+
+export const AlibabaQwenImageEditModelSchema = z.enum(QWEN_IMAGE_EDIT_MODELS);
+
+export const AlibabaQwenImageModelSchema = z.union([
+  AlibabaQwenImageGenerationModelSchema,
+  AlibabaQwenImageEditModelSchema,
+]);
+
+export const AlibabaQwenImageTextSlotsSchema = z
+  .array(z.string())
+  .min(1)
+  .max(1);
+
+export const AlibabaQwenImageGenerationImageSlotsSchema = z
+  .array(z.string())
+  .max(3);
+
+export const AlibabaQwenImageEditImageSlotsSchema = z
+  .array(z.string())
+  .min(1)
+  .max(3);
+
+export const AlibabaQwenImageGenerationSlotsSchema = z.object({
+  text: AlibabaQwenImageTextSlotsSchema,
+  images: AlibabaQwenImageGenerationImageSlotsSchema,
+});
+
+export const AlibabaQwenImageEditSlotsSchema = z.object({
+  text: AlibabaQwenImageTextSlotsSchema,
+  images: AlibabaQwenImageEditImageSlotsSchema,
+});
 
 export const AlibabaMultimodalGenerationMessageSchema = z.object({
   role: z.literal("user"),
   content: z.array(AlibabaImageContentSchema).min(1).max(4),
 });
 
+export const AlibabaQwenImageGenerationMessageSchema = z.object({
+  role: z.literal("user"),
+  content: z.array(AlibabaImageContentSchema).min(1).max(4),
+});
+
+export const AlibabaQwenImageEditMessageSchema = z.object({
+  role: z.literal("user"),
+  content: z.array(AlibabaImageContentSchema).min(2).max(4),
+});
+
 export const AlibabaMultimodalGenerationInputSchema = z.object({
   messages: z.array(AlibabaMultimodalGenerationMessageSchema).length(1),
+});
+
+export const AlibabaQwenImageGenerationInputSchema = z.object({
+  messages: z.array(AlibabaQwenImageGenerationMessageSchema).length(1),
+});
+
+export const AlibabaQwenImageEditInputSchema = z.object({
+  messages: z.array(AlibabaQwenImageEditMessageSchema).length(1),
 });
 
 export const AlibabaMultimodalGenerationParametersSchema = z.object({
@@ -361,29 +435,35 @@ export const AlibabaMultimodalGenerationParametersSchema = z.object({
   seed: z.number().int().min(0).max(2147483647).optional(),
 });
 
+export const AlibabaQwenImageGenerationRequestSchema = z.object({
+  model: AlibabaQwenImageGenerationModelSchema,
+  input: AlibabaQwenImageGenerationInputSchema,
+  parameters: AlibabaMultimodalGenerationParametersSchema.optional(),
+});
+
+export const AlibabaQwenImageEditRequestSchema = z.object({
+  model: AlibabaQwenImageEditModelSchema,
+  input: AlibabaQwenImageEditInputSchema,
+  parameters: AlibabaMultimodalGenerationParametersSchema.optional(),
+});
+
+const countAlibabaImageContentParts = (
+  parts: Array<z.infer<typeof AlibabaImageContentSchema>>
+): { text: number; image: number } => ({
+  text: parts.filter((p) => "text" in p).length,
+  image: parts.filter((p) => "image" in p).length,
+});
+
 export const AlibabaMultimodalGenerationRequestSchema = z
-  .object({
-    model: z.enum([
-      "qwen-image-2.0-pro",
-      "qwen-image-2.0-pro-2026-03-03",
-      "qwen-image-2.0",
-      "qwen-image-2.0-2026-03-03",
-      "qwen-image-edit-max",
-      "qwen-image-edit-max-2026-01-16",
-      "qwen-image-edit-plus",
-      "qwen-image-edit-plus-2025-12-15",
-      "qwen-image-edit-plus-2025-10-30",
-      "qwen-image-edit",
-    ]),
-    input: AlibabaMultimodalGenerationInputSchema,
-    parameters: AlibabaMultimodalGenerationParametersSchema.optional(),
-  })
+  .discriminatedUnion("model", [
+    AlibabaQwenImageGenerationRequestSchema,
+    AlibabaQwenImageEditRequestSchema,
+  ])
   .refine(
     (v) => {
       const parts = v.input.messages[0].content;
-      const text = parts.filter((p) => "text" in p).length;
-      const img = parts.filter((p) => "image" in p).length;
-      return text === 1 && img <= 3;
+      const { text, image } = countAlibabaImageContentParts(parts);
+      return text === 1 && image <= 3;
     },
     {
       message: "content must contain exactly 1 text and 0–3 image parts",
@@ -392,10 +472,9 @@ export const AlibabaMultimodalGenerationRequestSchema = z
   )
   .refine(
     (v) => {
-      // qwen-image-edit family requires at least 1 image (pure editing model).
-      if (!v.model.startsWith("qwen-image-edit")) return true;
+      if (!QWEN_IMAGE_EDIT_MODEL_SET.has(v.model)) return true;
       const parts = v.input.messages[0].content;
-      return parts.some((p) => "image" in p);
+      return countAlibabaImageContentParts(parts).image >= 1;
     },
     {
       message: "qwen-image-edit* models require at least 1 image part",
@@ -501,6 +580,46 @@ export type AlibabaImageGenerationRequest = z.infer<
 >;
 export type AlibabaImageReferenceSlots = z.infer<
   typeof AlibabaImageReferenceSlotsSchema
+>;
+export type AlibabaQwenImageGenerationModel = z.infer<
+  typeof AlibabaQwenImageGenerationModelSchema
+>;
+export type AlibabaQwenImageEditModel = z.infer<
+  typeof AlibabaQwenImageEditModelSchema
+>;
+export type AlibabaQwenImageModel = z.infer<typeof AlibabaQwenImageModelSchema>;
+export type AlibabaQwenImageTextSlots = z.infer<
+  typeof AlibabaQwenImageTextSlotsSchema
+>;
+export type AlibabaQwenImageGenerationImageSlots = z.infer<
+  typeof AlibabaQwenImageGenerationImageSlotsSchema
+>;
+export type AlibabaQwenImageEditImageSlots = z.infer<
+  typeof AlibabaQwenImageEditImageSlotsSchema
+>;
+export type AlibabaQwenImageGenerationSlots = z.infer<
+  typeof AlibabaQwenImageGenerationSlotsSchema
+>;
+export type AlibabaQwenImageEditSlots = z.infer<
+  typeof AlibabaQwenImageEditSlotsSchema
+>;
+export type AlibabaQwenImageGenerationMessage = z.infer<
+  typeof AlibabaQwenImageGenerationMessageSchema
+>;
+export type AlibabaQwenImageEditMessage = z.infer<
+  typeof AlibabaQwenImageEditMessageSchema
+>;
+export type AlibabaQwenImageGenerationInput = z.infer<
+  typeof AlibabaQwenImageGenerationInputSchema
+>;
+export type AlibabaQwenImageEditInput = z.infer<
+  typeof AlibabaQwenImageEditInputSchema
+>;
+export type AlibabaQwenImageGenerationRequest = z.infer<
+  typeof AlibabaQwenImageGenerationRequestSchema
+>;
+export type AlibabaQwenImageEditRequest = z.infer<
+  typeof AlibabaQwenImageEditRequestSchema
 >;
 export type AlibabaMultimodalGenerationMessage = z.infer<
   typeof AlibabaMultimodalGenerationMessageSchema

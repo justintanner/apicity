@@ -27,6 +27,10 @@ interface ZodCheck {
   };
 }
 
+interface ZodLengthLimit {
+  value?: number;
+}
+
 interface ZodDef {
   typeName?: string;
   type?: string | ZodSchemaLike;
@@ -47,6 +51,9 @@ interface ZodDef {
   description?: string;
   defaultValue?: unknown | (() => unknown);
   checks?: ReadonlyArray<ZodCheck>;
+  minLength?: ZodLengthLimit | null;
+  maxLength?: ZodLengthLimit | null;
+  exactLength?: ZodLengthLimit | null;
 }
 
 export interface ZodSchemaLike {
@@ -286,7 +293,7 @@ export function zodToJsonSchema(schema: unknown): JsonSchema {
         items: zodToJsonSchema(getArrayElement(def)),
         ...desc,
       };
-      applyArrayChecks(out, def.checks);
+      applyArrayChecks(out, def);
       return out;
     }
     case "tuple":
@@ -452,17 +459,31 @@ function applyNumberChecks(
   }
 }
 
-function applyArrayChecks(
-  out: JsonSchema,
-  checks: ReadonlyArray<ZodCheck> | undefined
-): void {
-  for (const check of checks ?? []) {
-    const def = getCheckDef(check);
-    if (def.check === "min_length") out.minItems = def.minimum;
-    if (def.check === "max_length") out.maxItems = def.maximum;
+function applyArrayChecks(out: JsonSchema, def: ZodDef): void {
+  const exact = getLengthLimitValue(def.exactLength);
+  if (exact !== undefined) {
+    out.minItems = exact;
+    out.maxItems = exact;
+  }
+
+  const min = getLengthLimitValue(def.minLength);
+  if (min !== undefined) out.minItems = min;
+  const max = getLengthLimitValue(def.maxLength);
+  if (max !== undefined) out.maxItems = max;
+
+  for (const check of def.checks ?? []) {
+    const checkDef = getCheckDef(check);
+    if (checkDef.check === "min_length") out.minItems = checkDef.minimum;
+    if (checkDef.check === "max_length") out.maxItems = checkDef.maximum;
   }
 }
 
 function getCheckDef(check: ZodCheck): ZodCheckDef {
   return check._zod?.def ?? check.def ?? {};
+}
+
+function getLengthLimitValue(
+  limit: ZodLengthLimit | null | undefined
+): number | undefined {
+  return typeof limit?.value === "number" ? limit.value : undefined;
 }

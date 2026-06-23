@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
 import {
+  AlibabaMultimodalGenerationRequestSchema,
+  AlibabaQwenImageEditSlotsSchema,
+  AlibabaQwenImageGenerationSlotsSchema,
   AlibabaVideoMediaTypeSchema,
   AlibabaVideoSynthesisModelSchema,
   AlibabaVideoSynthesisRequestObjectSchema,
@@ -117,6 +120,65 @@ describe("MCP Zod schema introspection helpers", () => {
     expect(properties.model).toMatchObject({
       type: "string",
       enum: ["wan2.7-i2v", "wan2.7-videoedit"],
+    });
+  });
+
+  it("exposes split Alibaba Qwen image model and slot schemas", () => {
+    const requestJson = zodToJsonSchema(
+      AlibabaMultimodalGenerationRequestSchema
+    );
+    const branches = requestJson.anyOf as Array<Record<string, unknown>>;
+    expect(branches).toHaveLength(2);
+
+    const generationModel = propertiesOf(branches[0]).model;
+    expect(generationModel).toMatchObject({
+      type: "string",
+      enum: [
+        "qwen-image-2.0-pro",
+        "qwen-image-2.0-pro-2026-03-03",
+        "qwen-image-2.0",
+        "qwen-image-2.0-2026-03-03",
+      ],
+    });
+
+    const editModel = propertiesOf(branches[1]).model;
+    expect(editModel).toMatchObject({
+      type: "string",
+      enum: [
+        "qwen-image-edit-max",
+        "qwen-image-edit-max-2026-01-16",
+        "qwen-image-edit-plus",
+        "qwen-image-edit-plus-2025-12-15",
+        "qwen-image-edit-plus-2025-10-30",
+        "qwen-image-edit",
+      ],
+    });
+
+    const generationSlots = propertiesOf(
+      zodToJsonSchema(AlibabaQwenImageGenerationSlotsSchema)
+    );
+    expect(generationSlots.text).toMatchObject({
+      type: "array",
+      minItems: 1,
+      maxItems: 1,
+    });
+    expect(generationSlots.images).toMatchObject({
+      type: "array",
+      maxItems: 3,
+    });
+
+    const editSlots = propertiesOf(
+      zodToJsonSchema(AlibabaQwenImageEditSlotsSchema)
+    );
+    expect(editSlots.text).toMatchObject({
+      type: "array",
+      minItems: 1,
+      maxItems: 1,
+    });
+    expect(editSlots.images).toMatchObject({
+      type: "array",
+      minItems: 1,
+      maxItems: 3,
     });
   });
 

@@ -6,6 +6,10 @@ import {
   AlibabaVideoSynthesisRequestObjectSchema,
   AlibabaVideoSynthesisRequestSchema,
   AlibabaImageGenerationRequestSchema,
+  AlibabaQwenImageGenerationModelSchema,
+  AlibabaQwenImageEditModelSchema,
+  AlibabaQwenImageGenerationSlotsSchema,
+  AlibabaQwenImageEditSlotsSchema,
   AlibabaMultimodalGenerationRequestSchema,
   AlibabaOptionsSchema,
 } from "../../packages/provider/alibaba/src/zod";
@@ -653,6 +657,56 @@ describe("Alibaba Zod schema validation", () => {
   });
 
   describe("AlibabaMultimodalGenerationRequestSchema", () => {
+    it("should expose separate qwen generation and edit model sets", () => {
+      expect(AlibabaQwenImageGenerationModelSchema.options).toEqual([
+        "qwen-image-2.0-pro",
+        "qwen-image-2.0-pro-2026-03-03",
+        "qwen-image-2.0",
+        "qwen-image-2.0-2026-03-03",
+      ]);
+      expect(AlibabaQwenImageEditModelSchema.options).toEqual([
+        "qwen-image-edit-max",
+        "qwen-image-edit-max-2026-01-16",
+        "qwen-image-edit-plus",
+        "qwen-image-edit-plus-2025-12-15",
+        "qwen-image-edit-plus-2025-10-30",
+        "qwen-image-edit",
+      ]);
+    });
+
+    it("should expose qwen generation and edit slot limits", () => {
+      expect(
+        AlibabaQwenImageGenerationSlotsSchema.safeParse({
+          text: ["Draw a lantern"],
+          images: [],
+        }).success
+      ).toBe(true);
+      expect(
+        AlibabaQwenImageGenerationSlotsSchema.safeParse({
+          text: ["Draw a lantern"],
+          images: ["1", "2", "3", "4"],
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaQwenImageEditSlotsSchema.safeParse({
+          text: ["Make it blue"],
+          images: ["1"],
+        }).success
+      ).toBe(true);
+      expect(
+        AlibabaQwenImageEditSlotsSchema.safeParse({
+          text: ["Make it blue"],
+          images: [],
+        }).success
+      ).toBe(false);
+      expect(
+        AlibabaQwenImageEditSlotsSchema.safeParse({
+          text: ["First", "Second"],
+          images: ["1"],
+        }).success
+      ).toBe(false);
+    });
+
     it("should accept valid qwen-image-2.0-pro request", () => {
       const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
         model: "qwen-image-2.0-pro",
@@ -676,6 +730,36 @@ describe("Alibaba Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
+    it("should accept qwen-image generation with no images", () => {
+      const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+        model: "qwen-image-2.0",
+        input: {
+          messages: [
+            {
+              role: "user",
+              content: [{ text: "A watercolor koi pond" }],
+            },
+          ],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should accept dated qwen-image generation snapshot IDs", () => {
+      const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+        model: "qwen-image-2.0-pro-2026-03-03",
+        input: {
+          messages: [
+            {
+              role: "user",
+              content: [{ text: "A cyberpunk storefront" }],
+            },
+          ],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
     it("should accept valid qwen-image-edit request", () => {
       const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
         model: "qwen-image-edit",
@@ -686,6 +770,44 @@ describe("Alibaba Zod schema validation", () => {
               content: [
                 { text: "Remove the background" },
                 { image: "https://example.com/img.jpg" },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should accept dated qwen-image-edit snapshot IDs with images", () => {
+      const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+        model: "qwen-image-edit-plus-2025-12-15",
+        input: {
+          messages: [
+            {
+              role: "user",
+              content: [
+                { text: "Replace the sign text" },
+                { image: "https://example.com/img.jpg" },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should accept 3 images for qwen-image-edit models", () => {
+      const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+        model: "qwen-image-edit-max",
+        input: {
+          messages: [
+            {
+              role: "user",
+              content: [
+                { text: "Blend these references" },
+                { image: "https://example.com/img1.jpg" },
+                { image: "https://example.com/img2.jpg" },
+                { image: "https://example.com/img3.jpg" },
               ],
             },
           ],
@@ -785,6 +907,30 @@ describe("Alibaba Zod schema validation", () => {
               role: "user",
               content: [
                 { text: "Make it blue" },
+                { image: "https://example.com/img1.jpg" },
+                { image: "https://example.com/img2.jpg" },
+                { image: "https://example.com/img3.jpg" },
+                { image: "https://example.com/img4.jpg" },
+              ],
+            },
+          ],
+        },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("content"))).toBe(
+        true
+      );
+    });
+
+    it("should reject more than 3 images for qwen-image-edit models", () => {
+      const result = AlibabaMultimodalGenerationRequestSchema.safeParse({
+        model: "qwen-image-edit-plus",
+        input: {
+          messages: [
+            {
+              role: "user",
+              content: [
+                { text: "Blend these references" },
                 { image: "https://example.com/img1.jpg" },
                 { image: "https://example.com/img2.jpg" },
                 { image: "https://example.com/img3.jpg" },

@@ -3,6 +3,11 @@ import { createSimpleFunctions } from "@apicity/simplefunctions";
 
 const BASE_URL = "https://simplefunctions.example.test";
 
+interface CapturedRequest {
+  url: string;
+  init?: RequestInit;
+}
+
 function jsonResponse(body: unknown): Response {
   return new Response(JSON.stringify(body), {
     headers: { "content-type": "application/json" },
@@ -19,7 +24,7 @@ function createClient(
   apiKey = "sf_live_test",
   response = jsonResponse({ ok: true })
 ) {
-  const requests: Array<{ url: string; init?: RequestInit }> = [];
+  const requests: CapturedRequest[] = [];
   const fetchImpl: typeof fetch = async (url, init) => {
     requests.push({ url: String(url), init });
     return response.clone();
@@ -36,7 +41,7 @@ function createClient(
 }
 
 function createAnonymousClient(response = jsonResponse({ ok: true })) {
-  const requests: Array<{ url: string; init?: RequestInit }> = [];
+  const requests: CapturedRequest[] = [];
   const fetchImpl: typeof fetch = async (url, init) => {
     requests.push({ url: String(url), init });
     return response.clone();
@@ -52,7 +57,7 @@ function createAnonymousClient(response = jsonResponse({ ok: true })) {
 }
 
 function requestUrl(
-  requests: Array<{ url: string; init?: RequestInit }>,
+  requests: CapturedRequest[],
   index: number,
   path: string,
   method: string
@@ -63,6 +68,23 @@ function requestUrl(
   expect(`${url.origin}${url.pathname}`).toBe(`${BASE_URL}${path}`);
   expect(req.init?.method).toBe(method);
   return url;
+}
+
+function expectBearerAuth(requests: CapturedRequest[], index: number): void {
+  expect(requests[index].init?.headers).toMatchObject({
+    Authorization: "Bearer sf_live_test",
+  });
+}
+
+function expectJsonBody(
+  requests: CapturedRequest[],
+  index: number,
+  body: unknown
+): void {
+  expect(requests[index].init?.headers).toMatchObject({
+    "Content-Type": "application/json",
+  });
+  expect(requests[index].init?.body).toBe(JSON.stringify(body));
 }
 
 describe("simplefunctions authenticated API provider", () => {
@@ -174,6 +196,175 @@ describe("simplefunctions authenticated API provider", () => {
     requestUrl(requests, 3, "/api/prompt", "GET");
     requestUrl(requests, 4, "/api/contracts/tools", "GET");
     requestUrl(requests, 5, "/api/mcp/mcp", "POST");
+  });
+
+  it("serializes watch workflow mutations with auth, IDs, and bodies", async () => {
+    const { provider, requests } = createClient();
+
+    await provider.api.watch.create({
+      ticker: "KXINFLATION-26DEC",
+      threshold: 0.42,
+      channels: ["webhook", "email"],
+    });
+    await provider.api.watch.update({
+      id: " watched/object ",
+      threshold: 0.52,
+      active: false,
+    });
+    await provider.api.watch.delete({
+      id: "watched object",
+      reason: "stale",
+    });
+    await provider.api.watch.identify({
+      url: "https://kalshi.com/markets/KXINFLATION",
+    });
+    await provider.api.watch.refresh({
+      id: "watched/refresh",
+      force: true,
+    });
+
+    requestUrl(requests, 0, "/api/watch", "POST");
+    requestUrl(requests, 1, "/api/watch/watched%2Fobject", "PATCH");
+    requestUrl(requests, 2, "/api/watch/watched%20object", "DELETE");
+    requestUrl(requests, 3, "/api/watch/identify", "POST");
+    requestUrl(requests, 4, "/api/watch/watched%2Frefresh/refresh", "POST");
+
+    for (let i = 0; i < requests.length; i += 1) {
+      expectBearerAuth(requests, i);
+    }
+    expectJsonBody(requests, 0, {
+      ticker: "KXINFLATION-26DEC",
+      threshold: 0.42,
+      channels: ["webhook", "email"],
+    });
+    expectJsonBody(requests, 1, {
+      threshold: 0.52,
+      active: false,
+    });
+    expectJsonBody(requests, 2, { reason: "stale" });
+    expectJsonBody(requests, 3, {
+      url: "https://kalshi.com/markets/KXINFLATION",
+    });
+    expectJsonBody(requests, 4, { force: true });
+  });
+
+  it("serializes alert-rule mutations and test actions", async () => {
+    const { provider, requests } = createClient();
+
+    await provider.api.alertRules.create({
+      watchId: "watch_123",
+      predicate: { type: "price-above", value: 0.65 },
+    });
+    await provider.api.alertRules.update({
+      id: "rule/primary",
+      enabled: true,
+      throttleSeconds: 300,
+    });
+    await provider.api.alertRules.delete({
+      id: "rule primary",
+      audit: "cleanup",
+    });
+    await provider.api.alertRules.test({
+      id: "rule/test",
+      body: { dryRun: true, destination: "preview" },
+    });
+
+    requestUrl(requests, 0, "/api/alert-rules", "POST");
+    requestUrl(requests, 1, "/api/alert-rules/rule%2Fprimary", "PATCH");
+    requestUrl(requests, 2, "/api/alert-rules/rule%20primary", "DELETE");
+    requestUrl(requests, 3, "/api/alert-rules/rule%2Ftest/test", "POST");
+
+    for (let i = 0; i < requests.length; i += 1) {
+      expectBearerAuth(requests, i);
+    }
+    expectJsonBody(requests, 0, {
+      watchId: "watch_123",
+      predicate: { type: "price-above", value: 0.65 },
+    });
+    expectJsonBody(requests, 1, {
+      enabled: true,
+      throttleSeconds: 300,
+    });
+    expectJsonBody(requests, 2, { audit: "cleanup" });
+    expectJsonBody(requests, 3, {
+      dryRun: true,
+      destination: "preview",
+    });
+  });
+
+  it("serializes webhook endpoint mutations and validates workflow IDs", async () => {
+    const { provider, requests } = createClient();
+
+    await provider.api.webhookEndpoints.create({
+      url: "https://example.test/hook",
+      events: ["alert.triggered"],
+      secret: "whsec_test",
+    });
+    await provider.api.webhookEndpoints.update({
+      id: "webhook/primary",
+      url: "https://example.test/hook-v2",
+      enabled: false,
+    });
+    await provider.api.webhookEndpoints.delete({
+      id: "webhook primary",
+      body: { revokeSecret: true },
+    });
+    await provider.api.webhookEndpoints.test({
+      id: "webhook/test",
+      payload: { ping: true },
+    });
+
+    requestUrl(requests, 0, "/api/webhook-endpoints", "POST");
+    requestUrl(
+      requests,
+      1,
+      "/api/webhook-endpoints/webhook%2Fprimary",
+      "PATCH"
+    );
+    requestUrl(
+      requests,
+      2,
+      "/api/webhook-endpoints/webhook%20primary",
+      "DELETE"
+    );
+    requestUrl(
+      requests,
+      3,
+      "/api/webhook-endpoints/webhook%2Ftest/test",
+      "POST"
+    );
+
+    for (let i = 0; i < requests.length; i += 1) {
+      expectBearerAuth(requests, i);
+    }
+    expectJsonBody(requests, 0, {
+      url: "https://example.test/hook",
+      events: ["alert.triggered"],
+      secret: "whsec_test",
+    });
+    expectJsonBody(requests, 1, {
+      url: "https://example.test/hook-v2",
+      enabled: false,
+    });
+    expectJsonBody(requests, 2, { revokeSecret: true });
+    expectJsonBody(requests, 3, { payload: { ping: true } });
+
+    await expect(
+      provider.api.watch.update({
+        id: " ",
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    await expect(
+      provider.api.alertRules.test({
+        id: "",
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    await expect(
+      provider.api.webhookEndpoints.delete({
+        id: "",
+      })
+    ).rejects.toMatchObject({ status: 400 });
+    expect(requests).toHaveLength(4);
   });
 
   it("supports session-style Market Watch calls without a local API key", async () => {

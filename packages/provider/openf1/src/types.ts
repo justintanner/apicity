@@ -14,8 +14,29 @@ export class OpenF1Error extends Error {
 
 export interface OpenF1Options {
   baseURL?: string;
+  accessToken?: string;
+  tokenProvider?: OpenF1TokenProvider;
   timeout?: number;
   fetch?: typeof fetch;
+}
+
+export type OpenF1TokenProvider = () => string | Promise<string>;
+
+export interface OpenF1TokenRequest {
+  username: string;
+  password: string;
+}
+
+export interface OpenF1TokenResponse {
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+  [key: string]: unknown;
+}
+
+export interface OpenF1TokenMethod {
+  (req: OpenF1TokenRequest, signal?: AbortSignal): Promise<OpenF1TokenResponse>;
+  schema: z.ZodType<OpenF1TokenRequest>;
 }
 
 export type OpenF1FilterScalar = string | number | boolean;
@@ -446,5 +467,6 @@ export interface OpenF1V1Namespace {
 }
 
 export interface OpenF1Provider {
+  token: OpenF1TokenMethod;
   v1: OpenF1V1Namespace;
 }

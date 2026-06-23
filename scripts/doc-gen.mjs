@@ -143,6 +143,14 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "openligadb" && dotPath === "getavailablesports") {
     return `const sports = await ${call}();`;
   }
+  if (providerName === "openf1" && dotPath === "token") {
+    return [
+      `const token = await ${call}({`,
+      '  username: "driver@example.com",',
+      '  password: "placeholder-password",',
+      "});",
+    ].join("\n");
+  }
   if (providerName === "openligadb" && dotPath === "getavailableleagues") {
     return `const leagues = await ${call}();`;
   }
@@ -2790,10 +2798,9 @@ function renderTheSportsDBPlayerExample() {
 
 function renderOpenF1Example() {
   return [
-    "## Historical Data Examples",
+    "## REST Examples",
     "",
     "OpenF1 historical REST data is public and does not require an API key.",
-    "The paid live surfaces are intentionally outside this package.",
     "",
     "```typescript",
     'import { createOpenF1 } from "@apicity/openf1";',
@@ -2814,6 +2821,44 @@ function renderOpenF1Example() {
     "",
     "Use arrays for repeated equality filters and `filters` for OpenF1",
     "comparison operators such as `>=`, `<`, and `>`.",
+    "",
+    "## Authenticated REST",
+    "",
+    "OpenF1 live REST access uses the same `/v1/{collection}` endpoints with",
+    "a Bearer token. See the [OpenF1 auth guide](https://openf1.org/auth.html)",
+    "for the upstream token contract.",
+    "",
+    "```typescript",
+    'import { createOpenF1 } from "@apicity/openf1";',
+    "",
+    "const openf1 = createOpenF1();",
+    "",
+    "const token = await openf1.token({",
+    '  username: "driver@example.com",',
+    '  password: "placeholder-password",',
+    "});",
+    "",
+    "const liveOpenF1 = createOpenF1({",
+    "  accessToken: token.access_token,",
+    "});",
+    "",
+    "const liveSessions = await liveOpenF1.v1.sessions({",
+    '  session_key: "latest",',
+    "});",
+    "```",
+    "",
+    "For refreshable tokens, provide a `tokenProvider`. The provider is called",
+    "for REST reads and this package does not store credentials or tokens",
+    "outside the client instance.",
+    "",
+    "```typescript",
+    "const openf1 = createOpenF1({",
+    "  tokenProvider: async () => {",
+    "    const token = await fetchTokenSomewhereElse();",
+    "    return token.access_token;",
+    "  },",
+    "});",
+    "```",
     "",
   ].join("\n");
 }

@@ -31,6 +31,9 @@ import type {
   OpenF1SessionFilter,
   OpenF1SessionFilterField,
   OpenF1SessionRequest,
+  OpenF1TokenProvider,
+  OpenF1TokenRequest,
+  OpenF1TokenResponse,
   OpenF1Weather,
   OpenF1WeatherFilter,
   OpenF1WeatherFilterField,
@@ -52,9 +55,26 @@ const latestKeyFilterValue = z.union([latestKey, z.array(latestKey)]);
 
 export const OpenF1OptionsSchema: z.ZodType<OpenF1Options> = z.object({
   baseURL: z.string().optional(),
+  accessToken: z.string().optional(),
+  tokenProvider: z.custom<OpenF1TokenProvider>().optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
+
+export const OpenF1TokenRequestSchema: z.ZodType<OpenF1TokenRequest> = z.object(
+  {
+    username: z.string().min(1),
+    password: z.string().min(1),
+  }
+);
+
+export const OpenF1TokenResponseSchema: z.ZodType<OpenF1TokenResponse> = z
+  .object({
+    access_token: z.string(),
+    expires_in: z.number(),
+    token_type: z.string(),
+  })
+  .catchall(z.unknown());
 
 export const OpenF1FilterScalarSchema: z.ZodType<OpenF1FilterScalar> =
   filterScalar;

@@ -23,6 +23,9 @@ import type {
   OpenF1SessionRequest,
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
+  OpenF1TokenMethod,
+  OpenF1TokenRequest,
+  OpenF1TokenResponse,
   OpenF1WeatherMethod,
   OpenF1WeatherRequest,
   OpenF1WeatherResponse,
@@ -34,6 +37,7 @@ import {
   OpenF1PositionRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
+  OpenF1TokenRequestSchema,
   OpenF1WeatherRequestSchema,
 } from "./zod";
 
@@ -251,6 +255,13 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     }
   }
 
+  async function resolveAccessToken(): Promise<string | undefined> {
+    if (opts?.tokenProvider) {
+      return opts.tokenProvider();
+    }
+    return opts?.accessToken;
+  }
+
   async function makeGetRequest<T>(
     path: string,
     signal?: AbortSignal,
@@ -264,8 +275,15 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     }
 
     try {
+      const headers: Record<string, string> = {};
+      const accessToken = await resolveAccessToken();
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`;
+      }
+
       const res = await doFetch(`${baseURL}${path}`, {
         method: "GET",
+        headers,
         signal: controller.signal,
       });
 
@@ -292,6 +310,61 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       throw new OpenF1Error(`OpenF1 request failed: ${error}`, 500);
     }
   }
+
+  async function makeTokenRequest(
+    req: OpenF1TokenRequest,
+    signal?: AbortSignal
+  ): Promise<OpenF1TokenResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    const form = new URLSearchParams();
+    form.set("username", req.username);
+    form.set("password", req.password);
+
+    try {
+      const res = await doFetch(`${baseURL}/token`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: form.toString(),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const body = await parseBody(res);
+        throw new OpenF1Error(
+          formatErrorMessage(res.status, body),
+          res.status,
+          body
+        );
+      }
+
+      const body = await parseBody(res);
+      return body as OpenF1TokenResponse;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof OpenF1Error) throw error;
+      throw new OpenF1Error(`OpenF1 request failed: ${error}`, 500);
+    }
+  }
+
+  // POST https://api.openf1.org/token
+  // Docs: https://openf1.org/auth.html
+  const token = Object.assign(
+    async (
+      req: OpenF1TokenRequest,
+      signal?: AbortSignal
+    ): Promise<OpenF1TokenResponse> => makeTokenRequest(req, signal),
+    { schema: OpenF1TokenRequestSchema }
+  ) as OpenF1TokenMethod;
 
   // GET https://api.openf1.org/v1/meetings{query}
   // Docs: https://openf1.org/docs/#meetings
@@ -432,6 +505,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
   ) as OpenF1WeatherMethod;
 
   return attachExamples({
+    token,
     v1: {
       championshipDrivers,
       laps,

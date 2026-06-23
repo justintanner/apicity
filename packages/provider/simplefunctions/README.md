@@ -945,7 +945,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.config.update</code></b></summary>
 
-<code>PUT https://simplefunctions.dev/api/portfolio/config</code>
+<code>PUT https://simplefunctions.dev/api/portfolio/config{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -990,7 +990,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ledger.import.kalshi</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi</code>
+<code>POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1005,7 +1005,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ledger.import.kalshi.pull</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi/pull</code>
+<code>POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi/pull{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1020,7 +1020,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ledger.import.polymarket</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/ledger/import/polymarket</code>
+<code>POST https://simplefunctions.dev/api/portfolio/ledger/import/polymarket{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1065,7 +1065,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.secrets.create</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/secrets</code>
+<code>POST https://simplefunctions.dev/api/portfolio/secrets{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1080,7 +1080,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>DELETE</code> <b><code>simplefunctions.api.portfolio.secrets</code></b></summary>
 
-<code>DELETE https://simplefunctions.dev/api/portfolio/secrets</code>
+<code>DELETE https://simplefunctions.dev/api/portfolio/secrets{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1110,7 +1110,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.state.update</code></b></summary>
 
-<code>PUT https://simplefunctions.dev/api/portfolio/state</code>
+<code>PUT https://simplefunctions.dev/api/portfolio/state{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1140,7 +1140,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.strategy.create</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/strategy</code>
+<code>POST https://simplefunctions.dev/api/portfolio/strategy{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1155,7 +1155,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>DELETE</code> <b><code>simplefunctions.api.portfolio.strategy</code></b></summary>
 
-<code>DELETE https://simplefunctions.dev/api/portfolio/strategy</code>
+<code>DELETE https://simplefunctions.dev/api/portfolio/strategy{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1170,7 +1170,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.strategy.update</code></b></summary>
 
-<code>PUT https://simplefunctions.dev/api/portfolio/strategy</code>
+<code>PUT https://simplefunctions.dev/api/portfolio/strategy{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1200,7 +1200,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.ticks.create</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/ticks</code>
+<code>POST https://simplefunctions.dev/api/portfolio/ticks{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1245,7 +1245,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.trades.create</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/trades</code>
+<code>POST https://simplefunctions.dev/api/portfolio/trades{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1275,7 +1275,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.trigger</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/trigger</code>
+<code>POST https://simplefunctions.dev/api/portfolio/trigger{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1305,7 +1305,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>POST</code> <b><code>simplefunctions.api.portfolio.views.create</code></b></summary>
 
-<code>POST https://simplefunctions.dev/api/portfolio/views</code>
+<code>POST https://simplefunctions.dev/api/portfolio/views{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1320,7 +1320,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>DELETE</code> <b><code>simplefunctions.api.portfolio.views</code></b></summary>
 
-<code>DELETE https://simplefunctions.dev/api/portfolio/views</code>
+<code>DELETE https://simplefunctions.dev/api/portfolio/views{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 
@@ -1335,7 +1335,7 @@ Source: [`packages/provider/simplefunctions/src/simplefunctions.ts`](src/simplef
 <details>
 <summary><code>PUT</code> <b><code>simplefunctions.api.portfolio.views.update</code></b></summary>
 
-<code>PUT https://simplefunctions.dev/api/portfolio/views</code>
+<code>PUT https://simplefunctions.dev/api/portfolio/views{query}</code>
 
 [Upstream docs ↗](https://docs.simplefunctions.dev/api-reference/portfolio)
 

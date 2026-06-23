@@ -257,6 +257,14 @@ function queryFromBodyRequest(req: SimpleFunctionsBodyRequest): string {
   return query ? queryFromRecord(query) : "";
 }
 
+function queryFromExplicitQuery(req: Record<string, unknown> = {}): string {
+  const query = req.query;
+  if (query && typeof query === "object") {
+    return queryFromRecord(query as Record<string, unknown>);
+  }
+  return "";
+}
+
 function queryFromRequest(
   req: Record<string, unknown> = {},
   omitKeys: readonly string[] = []
@@ -2904,12 +2912,12 @@ export function createSimpleFunctions(
     "/api/portfolio/state"
   );
 
-  // PUT https://simplefunctions.dev/api/portfolio/state
+  // PUT https://simplefunctions.dev/api/portfolio/state{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioStateUpdate = jsonBody<SimpleFunctionsRecordRequest>(
     "PUT",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/state",
+    (req) => `/api/portfolio/state${queryFromExplicitQuery(req)}`,
     "/api/portfolio/state"
   );
 
@@ -2925,12 +2933,12 @@ export function createSimpleFunctions(
     "/api/portfolio/config"
   );
 
-  // PUT https://simplefunctions.dev/api/portfolio/config
+  // PUT https://simplefunctions.dev/api/portfolio/config{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioConfigUpdate = jsonBody<SimpleFunctionsRecordRequest>(
     "PUT",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/config",
+    (req) => `/api/portfolio/config${queryFromExplicitQuery(req)}`,
     "/api/portfolio/config"
   );
 
@@ -2954,12 +2962,12 @@ export function createSimpleFunctions(
     "/api/portfolio/ticks/{id}"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/ticks
+  // POST https://simplefunctions.dev/api/portfolio/ticks{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioTicksCreate = jsonBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/ticks",
+    (req) => `/api/portfolio/ticks${queryFromExplicitQuery(req)}`,
     "/api/portfolio/ticks"
   );
 
@@ -2984,12 +2992,12 @@ export function createSimpleFunctions(
     "/api/portfolio/trades/{id}"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/trades
+  // POST https://simplefunctions.dev/api/portfolio/trades{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioTradesCreate = jsonBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/trades",
+    (req) => `/api/portfolio/trades${queryFromExplicitQuery(req)}`,
     "/api/portfolio/trades"
   );
 
@@ -3006,32 +3014,37 @@ export function createSimpleFunctions(
     "/api/portfolio/ledger"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi
+  // POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioLedgerImportKalshi = jsonBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/ledger/import/kalshi",
+    (req) =>
+      `/api/portfolio/ledger/import/kalshi${queryFromExplicitQuery(req)}`,
     "/api/portfolio/ledger/import/kalshi"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi/pull
+  // POST https://simplefunctions.dev/api/portfolio/ledger/import/kalshi/pull{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioLedgerImportKalshiPull =
     jsonBody<SimpleFunctionsRecordRequest>(
       "POST",
       SimpleFunctionsRecordRequestSchema,
-      () => "/api/portfolio/ledger/import/kalshi/pull",
+      (req) =>
+        `/api/portfolio/ledger/import/kalshi/pull${queryFromExplicitQuery(
+          req
+        )}`,
       "/api/portfolio/ledger/import/kalshi/pull"
     );
 
-  // POST https://simplefunctions.dev/api/portfolio/ledger/import/polymarket
+  // POST https://simplefunctions.dev/api/portfolio/ledger/import/polymarket{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioLedgerImportPolymarket =
     jsonBody<SimpleFunctionsRecordRequest>(
       "POST",
       SimpleFunctionsRecordRequestSchema,
-      () => "/api/portfolio/ledger/import/polymarket",
+      (req) =>
+        `/api/portfolio/ledger/import/polymarket${queryFromExplicitQuery(req)}`,
       "/api/portfolio/ledger/import/polymarket"
     );
 
@@ -3104,30 +3117,30 @@ export function createSimpleFunctions(
     "/api/portfolio/views"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/views
+  // POST https://simplefunctions.dev/api/portfolio/views{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioViewsCreate = jsonBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/views",
+    (req) => `/api/portfolio/views${queryFromExplicitQuery(req)}`,
     "/api/portfolio/views"
   );
 
-  // PUT https://simplefunctions.dev/api/portfolio/views
+  // PUT https://simplefunctions.dev/api/portfolio/views{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioViewsUpdate = jsonBody<SimpleFunctionsRecordRequest>(
     "PUT",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/views",
+    (req) => `/api/portfolio/views${queryFromExplicitQuery(req)}`,
     "/api/portfolio/views"
   );
 
-  // DELETE https://simplefunctions.dev/api/portfolio/views
+  // DELETE https://simplefunctions.dev/api/portfolio/views{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioViewsDelete = jsonBody<SimpleFunctionsRecordRequest>(
     "DELETE",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/views",
+    (req) => `/api/portfolio/views${queryFromExplicitQuery(req)}`,
     "/api/portfolio/views"
   );
 
@@ -3145,30 +3158,30 @@ export function createSimpleFunctions(
     "/api/portfolio/strategy"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/strategy
+  // POST https://simplefunctions.dev/api/portfolio/strategy{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioStrategyCreate = jsonBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/strategy",
+    (req) => `/api/portfolio/strategy${queryFromExplicitQuery(req)}`,
     "/api/portfolio/strategy"
   );
 
-  // PUT https://simplefunctions.dev/api/portfolio/strategy
+  // PUT https://simplefunctions.dev/api/portfolio/strategy{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioStrategyUpdate = jsonBody<SimpleFunctionsRecordRequest>(
     "PUT",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/strategy",
+    (req) => `/api/portfolio/strategy${queryFromExplicitQuery(req)}`,
     "/api/portfolio/strategy"
   );
 
-  // DELETE https://simplefunctions.dev/api/portfolio/strategy
+  // DELETE https://simplefunctions.dev/api/portfolio/strategy{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioStrategyDelete = jsonBody<SimpleFunctionsRecordRequest>(
     "DELETE",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/strategy",
+    (req) => `/api/portfolio/strategy${queryFromExplicitQuery(req)}`,
     "/api/portfolio/strategy"
   );
 
@@ -3178,30 +3191,30 @@ export function createSimpleFunctions(
     delete: portfolioStrategyDelete,
   });
 
-  // POST https://simplefunctions.dev/api/portfolio/secrets
+  // POST https://simplefunctions.dev/api/portfolio/secrets{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioSecretsCreate = jsonBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/secrets",
+    (req) => `/api/portfolio/secrets${queryFromExplicitQuery(req)}`,
     "/api/portfolio/secrets"
   );
 
-  // DELETE https://simplefunctions.dev/api/portfolio/secrets
+  // DELETE https://simplefunctions.dev/api/portfolio/secrets{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioSecretsDelete = jsonOptionalBody<SimpleFunctionsRecordRequest>(
     "DELETE",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/secrets",
+    (req) => `/api/portfolio/secrets${queryFromExplicitQuery(req)}`,
     "/api/portfolio/secrets"
   );
 
-  // POST https://simplefunctions.dev/api/portfolio/trigger
+  // POST https://simplefunctions.dev/api/portfolio/trigger{query}
   // Docs: https://docs.simplefunctions.dev/api-reference/portfolio
   const portfolioTrigger = jsonOptionalBody<SimpleFunctionsRecordRequest>(
     "POST",
     SimpleFunctionsRecordRequestSchema,
-    () => "/api/portfolio/trigger",
+    (req) => `/api/portfolio/trigger${queryFromExplicitQuery(req)}`,
     "/api/portfolio/trigger"
   );
 

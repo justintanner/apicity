@@ -139,6 +139,9 @@ importers:
       '@apicity/openai':
         specifier: workspace:*
         version: link:../provider/openai
+      '@apicity/openf1':
+        specifier: workspace:*
+        version: link:../provider/openf1
       '@apicity/openligadb':
         specifier: workspace:*
         version: link:../provider/openligadb
@@ -251,6 +254,12 @@ importers:
         version: 3.25.76
 
   packages/provider/openai:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/openf1:
     dependencies:
       zod:
         specifier: ^3.24.0

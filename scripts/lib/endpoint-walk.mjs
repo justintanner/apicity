@@ -66,6 +66,11 @@ const PROVIDERS = [
     factoryNames: ["createOpenLigaDB"],
   },
   {
+    name: "openf1",
+    entryFiles: ["packages/provider/openf1/src/openf1.ts"],
+    factoryNames: ["createOpenF1"],
+  },
+  {
     name: "s3",
     entryFiles: ["packages/provider/s3/src/s3.ts"],
     factoryNames: ["createS3"],

@@ -1119,6 +1119,7 @@ openligadb	getmatchdata.byLeagueSeason	GET	https://api.openligadb.de/getmatchdat
 openligadb	getmatchdata.byLeagueSeasonGroup	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{groupOrderId}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byLeagueSeasonTeam	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{teamFilterstring}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byTeams	GET	https://api.openligadb.de/getmatchdata/{teamId1}/{teamId2}	https://api.openligadb.de/swagger/index.html
+openf1	v1.meetings	GET	https://api.openf1.org/v1/meetings{query}	https://openf1.org/docs/#meetings
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list
 youtube	transcripts	GET	https://www.youtube.com/watch?v={videoId}
 youtube	videoMetadata	?	?	https://developers.google.com/youtube/player_parameters

@@ -38,6 +38,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   ],
   binance: ["developers.binance.com"],
   openligadb: ["api.openligadb.de", "github.com"],
+  openf1: ["openf1.org"],
   s3: ["docs.aws.amazon.com"],
   "free-media-upload": [
     "tmpfiles.org",

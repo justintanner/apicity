@@ -2729,6 +2729,36 @@ function renderTheSportsDBPlayerExample() {
   ].join("\n");
 }
 
+function renderOpenF1Example() {
+  return [
+    "## Historical Data Examples",
+    "",
+    "OpenF1 historical REST data is public and does not require an API key.",
+    "The paid live surfaces are intentionally outside this package.",
+    "",
+    "```typescript",
+    'import { createOpenF1 } from "@apicity/openf1";',
+    "",
+    "const openf1 = createOpenF1();",
+    "",
+    "const meetings = await openf1.v1.meetings({",
+    "  year: 2024,",
+    '  country_name: ["Singapore", "Monaco"],',
+    "});",
+    "",
+    "const recentMeetings = await openf1.v1.meetings({",
+    "  filters: [",
+    '    { field: "date_start", op: ">=", value: "2024-01-01T00:00:00Z" },',
+    "  ],",
+    "});",
+    "```",
+    "",
+    "Use arrays for repeated equality filters and `filters` for OpenF1",
+    "comparison operators such as `>=`, `<`, and `>`.",
+    "",
+  ].join("\n");
+}
+
 function renderTelegramSetup() {
   return [
     "## Setup",
@@ -2842,6 +2872,10 @@ const PROVIDER_AUTH = {
     optionalAuth: true,
     showMiddleware: false,
   },
+  openf1: {
+    noAuth: true,
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -2873,6 +2907,7 @@ const PROVIDER_DOCS = {
   telegram: "https://core.telegram.org/bots/api",
   binance:
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
+  openf1: "https://openf1.org/docs/",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
@@ -2927,6 +2962,9 @@ const PROVIDER_DEP_NOTES = {
   },
   thesportsdb: {
     zod: "request schemas attached to endpoint methods as `.schema`; response schemas exported",
+  },
+  openf1: {
+    zod: "request schemas attached to OpenF1 endpoint methods as `.schema`",
   },
 };
 
@@ -3059,6 +3097,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
   if (providerName === "thesportsdb") {
     sections.push(renderTheSportsDBSearchExample());
     sections.push(renderTheSportsDBPlayerExample());
+  }
+
+  if (providerName === "openf1") {
+    sections.push(renderOpenF1Example());
   }
 
   if (providerName === "simplefunctions") {

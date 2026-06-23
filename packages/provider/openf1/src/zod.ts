@@ -1,0 +1,117 @@
+import { z } from "zod";
+import type {
+  OpenF1ComparisonFilter,
+  OpenF1ComparisonOperator,
+  OpenF1FilterScalar,
+  OpenF1LatestKey,
+  OpenF1Meeting,
+  OpenF1MeetingsFilter,
+  OpenF1MeetingsFilterField,
+  OpenF1MeetingsRequest,
+  OpenF1Options,
+} from "./types";
+
+const nullableString = z.string().nullable();
+const filterScalar = z.union([z.string(), z.number(), z.boolean()]);
+const stringFilterValue = z.union([z.string(), z.array(z.string())]);
+const numberFilterValue = z.union([z.number(), z.array(z.number())]);
+const booleanFilterValue = z.union([z.boolean(), z.array(z.boolean())]);
+const latestKey = z.union([z.number(), z.literal("latest")]);
+const latestKeyFilterValue = z.union([latestKey, z.array(latestKey)]);
+
+export const OpenF1OptionsSchema: z.ZodType<OpenF1Options> = z.object({
+  baseURL: z.string().optional(),
+  timeout: z.number().optional(),
+  fetch: z.custom<typeof fetch>().optional(),
+});
+
+export const OpenF1FilterScalarSchema: z.ZodType<OpenF1FilterScalar> =
+  filterScalar;
+
+export const OpenF1ComparisonOperatorSchema: z.ZodType<OpenF1ComparisonOperator> =
+  z.enum(["=", "<", "<=", ">", ">="]);
+
+export const OpenF1MeetingsFilterFieldSchema: z.ZodType<OpenF1MeetingsFilterField> =
+  z.enum([
+    "circuit_key",
+    "circuit_image",
+    "circuit_info_url",
+    "circuit_short_name",
+    "circuit_type",
+    "country_code",
+    "country_flag",
+    "country_key",
+    "country_name",
+    "date_end",
+    "date_start",
+    "gmt_offset",
+    "is_cancelled",
+    "location",
+    "meeting_key",
+    "meeting_name",
+    "meeting_official_name",
+    "year",
+  ]);
+
+const openF1ComparisonFilterObject = z.object({
+  field: z.string(),
+  op: OpenF1ComparisonOperatorSchema,
+  value: OpenF1FilterScalarSchema,
+});
+
+export const OpenF1ComparisonFilterSchema: z.ZodType<OpenF1ComparisonFilter> =
+  openF1ComparisonFilterObject;
+
+export const OpenF1MeetingsFilterSchema: z.ZodType<OpenF1MeetingsFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1MeetingsFilterFieldSchema,
+  });
+
+export const OpenF1MeetingSchema: z.ZodType<OpenF1Meeting> = z
+  .object({
+    circuit_key: z.number(),
+    circuit_image: nullableString,
+    circuit_info_url: nullableString,
+    circuit_short_name: z.string(),
+    circuit_type: nullableString,
+    country_code: z.string(),
+    country_flag: nullableString,
+    country_key: z.number(),
+    country_name: z.string(),
+    date_end: z.string(),
+    date_start: z.string(),
+    gmt_offset: z.string(),
+    is_cancelled: z.boolean(),
+    location: z.string(),
+    meeting_key: z.number(),
+    meeting_name: z.string(),
+    meeting_official_name: z.string(),
+    year: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1LatestKeySchema: z.ZodType<OpenF1LatestKey> = latestKey;
+
+export const OpenF1MeetingsRequestSchema: z.ZodType<OpenF1MeetingsRequest> =
+  z.object({
+    circuit_key: numberFilterValue.optional(),
+    circuit_image: stringFilterValue.optional(),
+    circuit_info_url: stringFilterValue.optional(),
+    circuit_short_name: stringFilterValue.optional(),
+    circuit_type: stringFilterValue.optional(),
+    country_code: stringFilterValue.optional(),
+    country_flag: stringFilterValue.optional(),
+    country_key: numberFilterValue.optional(),
+    country_name: stringFilterValue.optional(),
+    date_end: stringFilterValue.optional(),
+    date_start: stringFilterValue.optional(),
+    gmt_offset: stringFilterValue.optional(),
+    is_cancelled: booleanFilterValue.optional(),
+    location: stringFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    meeting_name: stringFilterValue.optional(),
+    meeting_official_name: stringFilterValue.optional(),
+    year: numberFilterValue.optional(),
+    filters: z.array(OpenF1MeetingsFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });

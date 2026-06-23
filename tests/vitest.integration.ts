@@ -86,6 +86,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/openligadb/src"
       ),
+      "@apicity/openf1/zod": path.resolve(
+        __dirname,
+        "../packages/provider/openf1/src/zod"
+      ),
+      "@apicity/openf1": path.resolve(
+        __dirname,
+        "../packages/provider/openf1/src"
+      ),
       "@apicity/s3/zod": path.resolve(
         __dirname,
         "../packages/provider/s3/src/zod"

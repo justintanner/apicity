@@ -155,8 +155,77 @@ export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverResponse
 >;
 
+export interface OpenF1Lap {
+  date_start: string;
+  driver_number: number;
+  duration_sector_1: number | null;
+  duration_sector_2: number | null;
+  duration_sector_3: number | null;
+  i1_speed: number | null;
+  i2_speed: number | null;
+  is_pit_out_lap: boolean;
+  lap_duration: number | null;
+  lap_number: number;
+  meeting_key: number;
+  segments_sector_1: number[] | null;
+  segments_sector_2: number[] | null;
+  segments_sector_3: number[] | null;
+  session_key: number;
+  st_speed: number | null;
+  [key: string]: unknown;
+}
+
+export type OpenF1LapResponse = OpenF1Lap[];
+
+export type OpenF1LapFilterField =
+  | "date_start"
+  | "driver_number"
+  | "duration_sector_1"
+  | "duration_sector_2"
+  | "duration_sector_3"
+  | "i1_speed"
+  | "i2_speed"
+  | "is_pit_out_lap"
+  | "lap_duration"
+  | "lap_number"
+  | "meeting_key"
+  | "segments_sector_1"
+  | "segments_sector_2"
+  | "segments_sector_3"
+  | "session_key"
+  | "st_speed";
+
+export type OpenF1LapFilter = OpenF1ComparisonFilter<OpenF1LapFilterField>;
+
+export interface OpenF1LapRequest {
+  date_start?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  duration_sector_1?: OpenF1FilterValue<number>;
+  duration_sector_2?: OpenF1FilterValue<number>;
+  duration_sector_3?: OpenF1FilterValue<number>;
+  i1_speed?: OpenF1FilterValue<number>;
+  i2_speed?: OpenF1FilterValue<number>;
+  is_pit_out_lap?: OpenF1FilterValue<boolean>;
+  lap_duration?: OpenF1FilterValue<number>;
+  lap_number?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  segments_sector_1?: OpenF1FilterValue<number>;
+  segments_sector_2?: OpenF1FilterValue<number>;
+  segments_sector_3?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  st_speed?: OpenF1FilterValue<number>;
+  filters?: readonly OpenF1LapFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1LapsMethod = OpenF1Method<
+  OpenF1LapRequest,
+  OpenF1LapResponse
+>;
+
 export interface OpenF1V1Namespace {
   championshipDrivers: OpenF1ChampionshipDriversMethod;
+  laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
 }
 

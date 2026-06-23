@@ -7,6 +7,10 @@ import type {
   OpenF1ComparisonFilter,
   OpenF1ComparisonOperator,
   OpenF1FilterScalar,
+  OpenF1Lap,
+  OpenF1LapFilter,
+  OpenF1LapFilterField,
+  OpenF1LapRequest,
   OpenF1LatestKey,
   OpenF1Meeting,
   OpenF1MeetingsFilter,
@@ -165,3 +169,72 @@ export const OpenF1ChampionshipDriverRequestSchema: z.ZodType<OpenF1Championship
 export const OpenF1ChampionshipDriverResponseSchema = z.array(
   OpenF1ChampionshipDriverSchema
 );
+
+export const OpenF1LapFilterFieldSchema: z.ZodType<OpenF1LapFilterField> =
+  z.enum([
+    "date_start",
+    "driver_number",
+    "duration_sector_1",
+    "duration_sector_2",
+    "duration_sector_3",
+    "i1_speed",
+    "i2_speed",
+    "is_pit_out_lap",
+    "lap_duration",
+    "lap_number",
+    "meeting_key",
+    "segments_sector_1",
+    "segments_sector_2",
+    "segments_sector_3",
+    "session_key",
+    "st_speed",
+  ]);
+
+export const OpenF1LapFilterSchema: z.ZodType<OpenF1LapFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1LapFilterFieldSchema,
+  });
+
+export const OpenF1LapSchema: z.ZodType<OpenF1Lap> = z
+  .object({
+    date_start: z.string(),
+    driver_number: z.number(),
+    duration_sector_1: z.number().nullable(),
+    duration_sector_2: z.number().nullable(),
+    duration_sector_3: z.number().nullable(),
+    i1_speed: z.number().nullable(),
+    i2_speed: z.number().nullable(),
+    is_pit_out_lap: z.boolean(),
+    lap_duration: z.number().nullable(),
+    lap_number: z.number(),
+    meeting_key: z.number(),
+    segments_sector_1: z.array(z.number()).nullable(),
+    segments_sector_2: z.array(z.number()).nullable(),
+    segments_sector_3: z.array(z.number()).nullable(),
+    session_key: z.number(),
+    st_speed: z.number().nullable(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1LapRequestSchema: z.ZodType<OpenF1LapRequest> = z.object({
+  date_start: stringFilterValue.optional(),
+  driver_number: numberFilterValue.optional(),
+  duration_sector_1: numberFilterValue.optional(),
+  duration_sector_2: numberFilterValue.optional(),
+  duration_sector_3: numberFilterValue.optional(),
+  i1_speed: numberFilterValue.optional(),
+  i2_speed: numberFilterValue.optional(),
+  is_pit_out_lap: booleanFilterValue.optional(),
+  lap_duration: numberFilterValue.optional(),
+  lap_number: numberFilterValue.optional(),
+  meeting_key: latestKeyFilterValue.optional(),
+  segments_sector_1: numberFilterValue.optional(),
+  segments_sector_2: numberFilterValue.optional(),
+  segments_sector_3: numberFilterValue.optional(),
+  session_key: latestKeyFilterValue.optional(),
+  st_speed: numberFilterValue.optional(),
+  filters: z.array(OpenF1LapFilterSchema).optional(),
+  csv: z.boolean().optional(),
+});
+
+export const OpenF1LapResponseSchema = z.array(OpenF1LapSchema);

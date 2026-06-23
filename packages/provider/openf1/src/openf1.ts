@@ -6,6 +6,9 @@ import type {
   OpenF1ChampionshipDriversMethod,
   OpenF1ComparisonFilter,
   OpenF1FilterScalar,
+  OpenF1LapRequest,
+  OpenF1LapResponse,
+  OpenF1LapsMethod,
   OpenF1MeetingsMethod,
   OpenF1MeetingsRequest,
   OpenF1MeetingsResponse,
@@ -14,6 +17,7 @@ import type {
 } from "./types";
 import {
   OpenF1ChampionshipDriverRequestSchema,
+  OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
 } from "./zod";
 
@@ -47,6 +51,25 @@ const CHAMPIONSHIP_DRIVER_QUERY_FIELDS = [
   "position_start",
   "session_key",
 ] as const satisfies readonly (keyof OpenF1ChampionshipDriverRequest)[];
+
+const LAPS_QUERY_FIELDS = [
+  "date_start",
+  "driver_number",
+  "duration_sector_1",
+  "duration_sector_2",
+  "duration_sector_3",
+  "i1_speed",
+  "i2_speed",
+  "is_pit_out_lap",
+  "lap_duration",
+  "lap_number",
+  "meeting_key",
+  "segments_sector_1",
+  "segments_sector_2",
+  "segments_sector_3",
+  "session_key",
+  "st_speed",
+] as const satisfies readonly (keyof OpenF1LapRequest)[];
 
 type OpenF1QueryValue =
   | OpenF1FilterScalar
@@ -244,9 +267,26 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1ChampionshipDriverRequestSchema }
   ) as OpenF1ChampionshipDriversMethod;
 
+  // GET https://api.openf1.org/v1/laps{query}
+  // Docs: https://openf1.org/docs/#laps
+  const laps = Object.assign(
+    async (
+      req: OpenF1LapRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1LapResponse | string> => {
+      const query = buildQuery(req, LAPS_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/laps${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1LapResponse>(`/v1/laps${query}`, signal);
+    },
+    { schema: OpenF1LapRequestSchema }
+  ) as OpenF1LapsMethod;
+
   return attachExamples({
     v1: {
       championshipDrivers,
+      laps,
       meetings,
     },
   });

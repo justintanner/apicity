@@ -54,7 +54,7 @@ comparison operators such as `>=`, `<`, and `>`.
 
 ## API Reference
 
-2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+3 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -67,6 +67,23 @@ comparison operators such as `>=`, `<`, and `>`.
 
 ```typescript
 const res = await openf1.v1.championshipDrivers({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### laps
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.laps</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/laps{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#laps)
+
+```typescript
+const res = await openf1.v1.laps({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

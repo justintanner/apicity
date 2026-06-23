@@ -54,7 +54,7 @@ comparison operators such as `>=`, `<`, and `>`.
 
 ## API Reference
 
-5 endpoints across 5 groups. Each method mirrors an upstream URL path.
+6 endpoints across 6 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -118,6 +118,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 ```typescript
 const res = await openf1.v1.position({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### sessionResult
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.sessionResult</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/session_result{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#session-result)
+
+```typescript
+const res = await openf1.v1.sessionResult({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

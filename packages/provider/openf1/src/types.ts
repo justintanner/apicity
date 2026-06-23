@@ -325,11 +325,71 @@ export type OpenF1PositionMethod = OpenF1Method<
   OpenF1PositionResponse
 >;
 
+export type OpenF1SessionResultDuration = number | null | Array<number | null>;
+
+export type OpenF1SessionResultGapToLeader =
+  | number
+  | string
+  | null
+  | Array<number | string | null>;
+
+export interface OpenF1SessionResult {
+  dnf: boolean;
+  dns: boolean;
+  dsq: boolean;
+  driver_number: number;
+  duration: OpenF1SessionResultDuration;
+  gap_to_leader: OpenF1SessionResultGapToLeader;
+  number_of_laps: number;
+  meeting_key: number;
+  position: number;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1SessionResultResponse = OpenF1SessionResult[];
+
+export type OpenF1SessionResultFilterField =
+  | "dnf"
+  | "dns"
+  | "dsq"
+  | "driver_number"
+  | "duration"
+  | "gap_to_leader"
+  | "number_of_laps"
+  | "meeting_key"
+  | "position"
+  | "session_key";
+
+export type OpenF1SessionResultFilter =
+  OpenF1ComparisonFilter<OpenF1SessionResultFilterField>;
+
+export interface OpenF1SessionResultRequest {
+  dnf?: OpenF1FilterValue<boolean>;
+  dns?: OpenF1FilterValue<boolean>;
+  dsq?: OpenF1FilterValue<boolean>;
+  driver_number?: OpenF1FilterValue<number>;
+  duration?: OpenF1FilterValue<number | string>;
+  gap_to_leader?: OpenF1FilterValue<number | string>;
+  number_of_laps?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  position?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1SessionResultFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1SessionResultMethod = OpenF1Method<
+  OpenF1SessionResultRequest,
+  OpenF1SessionResultResponse
+>;
+
 export interface OpenF1V1Namespace {
   championshipDrivers: OpenF1ChampionshipDriversMethod;
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
   position: OpenF1PositionMethod;
+  sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
 }
 

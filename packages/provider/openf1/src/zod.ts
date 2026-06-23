@@ -22,6 +22,12 @@ import type {
   OpenF1PositionFilterField,
   OpenF1PositionRequest,
   OpenF1Session,
+  OpenF1SessionResult,
+  OpenF1SessionResultDuration,
+  OpenF1SessionResultFilter,
+  OpenF1SessionResultFilterField,
+  OpenF1SessionResultGapToLeader,
+  OpenF1SessionResultRequest,
   OpenF1SessionFilter,
   OpenF1SessionFilterField,
   OpenF1SessionRequest,
@@ -31,6 +37,11 @@ const nullableString = z.string().nullable();
 const filterScalar = z.union([z.string(), z.number(), z.boolean()]);
 const stringFilterValue = z.union([z.string(), z.array(z.string())]);
 const numberFilterValue = z.union([z.number(), z.array(z.number())]);
+const numberOrStringFilterValue = z.union([
+  z.string(),
+  z.number(),
+  z.array(z.union([z.string(), z.number()])),
+]);
 const booleanFilterValue = z.union([z.boolean(), z.array(z.boolean())]);
 const latestKey = z.union([z.number(), z.literal("latest")]);
 const latestKeyFilterValue = z.union([latestKey, z.array(latestKey)]);
@@ -277,6 +288,71 @@ export const OpenF1PositionRequestSchema: z.ZodType<OpenF1PositionRequest> =
   });
 
 export const OpenF1PositionResponseSchema = z.array(OpenF1PositionSchema);
+
+export const OpenF1SessionResultDurationSchema: z.ZodType<OpenF1SessionResultDuration> =
+  z.union([z.number(), z.null(), z.array(z.union([z.number(), z.null()]))]);
+
+export const OpenF1SessionResultGapToLeaderSchema: z.ZodType<OpenF1SessionResultGapToLeader> =
+  z.union([
+    z.string(),
+    z.number(),
+    z.null(),
+    z.array(z.union([z.string(), z.number(), z.null()])),
+  ]);
+
+export const OpenF1SessionResultFilterFieldSchema: z.ZodType<OpenF1SessionResultFilterField> =
+  z.enum([
+    "dnf",
+    "dns",
+    "dsq",
+    "driver_number",
+    "duration",
+    "gap_to_leader",
+    "number_of_laps",
+    "meeting_key",
+    "position",
+    "session_key",
+  ]);
+
+export const OpenF1SessionResultFilterSchema: z.ZodType<OpenF1SessionResultFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1SessionResultFilterFieldSchema,
+  });
+
+export const OpenF1SessionResultSchema: z.ZodType<OpenF1SessionResult> = z
+  .object({
+    dnf: z.boolean(),
+    dns: z.boolean(),
+    dsq: z.boolean(),
+    driver_number: z.number(),
+    duration: OpenF1SessionResultDurationSchema,
+    gap_to_leader: OpenF1SessionResultGapToLeaderSchema,
+    number_of_laps: z.number(),
+    meeting_key: z.number(),
+    position: z.number(),
+    session_key: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1SessionResultRequestSchema: z.ZodType<OpenF1SessionResultRequest> =
+  z.object({
+    dnf: booleanFilterValue.optional(),
+    dns: booleanFilterValue.optional(),
+    dsq: booleanFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    duration: numberOrStringFilterValue.optional(),
+    gap_to_leader: numberOrStringFilterValue.optional(),
+    number_of_laps: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    position: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1SessionResultFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1SessionResultResponseSchema = z.array(
+  OpenF1SessionResultSchema
+);
 
 export const OpenF1SessionFilterFieldSchema: z.ZodType<OpenF1SessionFilterField> =
   z.enum([

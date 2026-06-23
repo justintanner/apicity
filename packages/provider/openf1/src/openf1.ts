@@ -17,6 +17,9 @@ import type {
   OpenF1PositionRequest,
   OpenF1PositionResponse,
   OpenF1Provider,
+  OpenF1SessionResultMethod,
+  OpenF1SessionResultRequest,
+  OpenF1SessionResultResponse,
   OpenF1SessionRequest,
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
@@ -26,6 +29,7 @@ import {
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
   OpenF1PositionRequestSchema,
+  OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
 } from "./zod";
 
@@ -86,6 +90,19 @@ const POSITION_QUERY_FIELDS = [
   "position",
   "session_key",
 ] as const satisfies readonly (keyof OpenF1PositionRequest)[];
+
+const SESSION_RESULT_QUERY_FIELDS = [
+  "dnf",
+  "dns",
+  "dsq",
+  "driver_number",
+  "duration",
+  "gap_to_leader",
+  "number_of_laps",
+  "meeting_key",
+  "position",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1SessionResultRequest)[];
 
 const SESSIONS_QUERY_FIELDS = [
   "circuit_key",
@@ -336,6 +353,29 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1PositionRequestSchema }
   ) as OpenF1PositionMethod;
 
+  // GET https://api.openf1.org/v1/session_result{query}
+  // Docs: https://openf1.org/docs/#session-result
+  const sessionResult = Object.assign(
+    async (
+      req: OpenF1SessionResultRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1SessionResultResponse | string> => {
+      const query = buildQuery(req, SESSION_RESULT_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(
+          `/v1/session_result${query}`,
+          signal,
+          "text"
+        );
+      }
+      return makeGetRequest<OpenF1SessionResultResponse>(
+        `/v1/session_result${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1SessionResultRequestSchema }
+  ) as OpenF1SessionResultMethod;
+
   // GET https://api.openf1.org/v1/sessions{query}
   // Docs: https://openf1.org/docs/#sessions
   const sessions = Object.assign(
@@ -361,6 +401,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       laps,
       meetings,
       position,
+      sessionResult,
       sessions,
     },
   });

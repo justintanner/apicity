@@ -193,18 +193,20 @@ export const Wan27VideoEditDurationValues = [
   0, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 ] as const;
 
-export const Wan27VideoEditDurationSchema = z.union([
-  z.literal(0),
-  z.literal(2),
-  z.literal(3),
-  z.literal(4),
-  z.literal(5),
-  z.literal(6),
-  z.literal(7),
-  z.literal(8),
-  z.literal(9),
-  z.literal(10),
-]);
+export type Wan27VideoEditDuration =
+  (typeof Wan27VideoEditDurationValues)[number];
+
+export const Wan27VideoEditDurationSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(10)
+  .refine((duration) => duration === 0 || duration >= 2, {
+    message: "Duration must be 0 or an integer from 2 to 10.",
+  })
+  .describe(
+    "Duration in seconds, 0 or 2-10."
+  ) as z.ZodType<Wan27VideoEditDuration>;
 
 export const HappyHorseResolutionSchema = z.enum(["720p", "1080p"]);
 
@@ -1378,9 +1380,6 @@ export type Wan27AspectRatio = z.infer<typeof Wan27AspectRatioSchema>;
 export type Wan27AudioSetting = z.infer<typeof Wan27AudioSettingSchema>;
 export type Wan27ImageResolution = z.infer<typeof Wan27ImageResolutionSchema>;
 export type Wan27ImageAspectRatio = z.infer<typeof Wan27ImageAspectRatioSchema>;
-export type Wan27VideoEditDuration = z.infer<
-  typeof Wan27VideoEditDurationSchema
->;
 export type HappyHorseResolution = z.infer<typeof HappyHorseResolutionSchema>;
 export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
 export type HappyHorseAudioSetting = z.infer<

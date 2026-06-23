@@ -44,6 +44,10 @@ import type {
   OpenF1SessionFilter,
   OpenF1SessionFilterField,
   OpenF1SessionRequest,
+  OpenF1StartingGridEntry,
+  OpenF1StartingGridEntryFilter,
+  OpenF1StartingGridEntryFilterField,
+  OpenF1StartingGridEntryRequest,
   OpenF1Stint,
   OpenF1StintFilter,
   OpenF1StintFilterField,
@@ -613,6 +617,46 @@ export const OpenF1SessionRequestSchema: z.ZodType<OpenF1SessionRequest> =
   });
 
 export const OpenF1SessionResponseSchema = z.array(OpenF1SessionSchema);
+
+export const OpenF1StartingGridEntryFilterFieldSchema: z.ZodType<OpenF1StartingGridEntryFilterField> =
+  z.enum([
+    "driver_number",
+    "lap_duration",
+    "meeting_key",
+    "position",
+    "session_key",
+  ]);
+
+export const OpenF1StartingGridEntryFilterSchema: z.ZodType<OpenF1StartingGridEntryFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1StartingGridEntryFilterFieldSchema,
+  });
+
+export const OpenF1StartingGridEntrySchema: z.ZodType<OpenF1StartingGridEntry> =
+  z
+    .object({
+      driver_number: z.number(),
+      lap_duration: z.number(),
+      meeting_key: z.number(),
+      position: z.number(),
+      session_key: z.number(),
+    })
+    .catchall(z.unknown());
+
+export const OpenF1StartingGridEntryRequestSchema: z.ZodType<OpenF1StartingGridEntryRequest> =
+  z.object({
+    driver_number: numberFilterValue.optional(),
+    lap_duration: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    position: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1StartingGridEntryFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1StartingGridEntryResponseSchema = z.array(
+  OpenF1StartingGridEntrySchema
+);
 
 export const OpenF1TeamRadioFilterFieldSchema: z.ZodType<OpenF1TeamRadioFilterField> =
   z.enum([

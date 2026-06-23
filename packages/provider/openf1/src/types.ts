@@ -640,6 +640,42 @@ export type OpenF1SessionResultMethod = OpenF1Method<
   OpenF1SessionResultResponse
 >;
 
+export interface OpenF1StartingGridEntry {
+  driver_number: number;
+  lap_duration: number;
+  meeting_key: number;
+  position: number;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1StartingGridEntryResponse = OpenF1StartingGridEntry[];
+
+export type OpenF1StartingGridEntryFilterField =
+  | "driver_number"
+  | "lap_duration"
+  | "meeting_key"
+  | "position"
+  | "session_key";
+
+export type OpenF1StartingGridEntryFilter =
+  OpenF1ComparisonFilter<OpenF1StartingGridEntryFilterField>;
+
+export interface OpenF1StartingGridEntryRequest {
+  driver_number?: OpenF1FilterValue<number>;
+  lap_duration?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  position?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1StartingGridEntryFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1StartingGridMethod = OpenF1Method<
+  OpenF1StartingGridEntryRequest,
+  OpenF1StartingGridEntryResponse
+>;
+
 export interface OpenF1TeamRadio {
   date: string;
   driver_number: number;
@@ -686,6 +722,7 @@ export interface OpenF1V1Namespace {
   raceControl: OpenF1RaceControlMethod;
   sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
+  startingGrid: OpenF1StartingGridMethod;
   stints: OpenF1StintsMethod;
   teamRadio: OpenF1TeamRadioMethod;
   weather: OpenF1WeatherMethod;

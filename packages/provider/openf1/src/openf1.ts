@@ -32,6 +32,9 @@ import type {
   OpenF1SessionRequest,
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
+  OpenF1StartingGridEntryRequest,
+  OpenF1StartingGridEntryResponse,
+  OpenF1StartingGridMethod,
   OpenF1StintRequest,
   OpenF1StintResponse,
   OpenF1StintsMethod,
@@ -55,6 +58,7 @@ import {
   OpenF1RaceControlMessageRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
+  OpenF1StartingGridEntryRequestSchema,
   OpenF1StintRequestSchema,
   OpenF1TeamRadioRequestSchema,
   OpenF1TokenRequestSchema,
@@ -183,6 +187,14 @@ const SESSIONS_QUERY_FIELDS = [
   "session_type",
   "year",
 ] as const satisfies readonly (keyof OpenF1SessionRequest)[];
+
+const STARTING_GRID_QUERY_FIELDS = [
+  "driver_number",
+  "lap_duration",
+  "meeting_key",
+  "position",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1StartingGridEntryRequest)[];
 
 const TEAM_RADIO_QUERY_FIELDS = [
   "date",
@@ -616,6 +628,29 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1SessionRequestSchema }
   ) as OpenF1SessionsMethod;
 
+  // GET https://api.openf1.org/v1/starting_grid{query}
+  // Docs: https://openf1.org/docs/#starting-grid
+  const startingGrid = Object.assign(
+    async (
+      req: OpenF1StartingGridEntryRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1StartingGridEntryResponse | string> => {
+      const query = buildQuery(req, STARTING_GRID_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(
+          `/v1/starting_grid${query}`,
+          signal,
+          "text"
+        );
+      }
+      return makeGetRequest<OpenF1StartingGridEntryResponse>(
+        `/v1/starting_grid${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1StartingGridEntryRequestSchema }
+  ) as OpenF1StartingGridMethod;
+
   // GET https://api.openf1.org/v1/team_radio{query}
   // Docs: https://openf1.org/docs/#team-radio
   const teamRadio = Object.assign(
@@ -682,6 +717,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       raceControl,
       sessionResult,
       sessions,
+      startingGrid,
       stints,
       teamRadio,
       weather,

@@ -140,6 +140,39 @@ function formatUsageSnippet(providerName, dotPath) {
       ");",
     ].join("\n");
   }
+  if (providerName === "openligadb" && dotPath === "getavailablesports") {
+    return `const sports = await ${call}();`;
+  }
+  if (providerName === "openligadb" && dotPath === "getavailableleagues") {
+    return `const leagues = await ${call}();`;
+  }
+  if (
+    providerName === "openligadb" &&
+    dotPath === "getavailableleagues.bySeason"
+  ) {
+    return `const leagues = await ${call}({ season: 2024 });`;
+  }
+  if (providerName === "openligadb" && dotPath === "getavailablegroups") {
+    return `const groups = await ${call}({ leagueShortcut: "bl1", leagueSeason: 2024 });`;
+  }
+  if (providerName === "openligadb" && dotPath === "getcurrentgroup") {
+    return `const group = await ${call}({ leagueShortcut: "bl1" });`;
+  }
+  if (providerName === "openligadb" && dotPath === "getlastchangedate") {
+    return [
+      `const changedAt = await ${call}({`,
+      '  leagueShortcut: "bl1",',
+      "  leagueSeason: 2024,",
+      "  groupOrderId: 1,",
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "openligadb" && dotPath === "getresultinfos") {
+    return `const resultInfo = await ${call}({ leagueId: 4500 });`;
+  }
+  if (providerName === "openligadb" && dotPath === "getavailableteams") {
+    return `const teams = await ${call}({ leagueShortcut: "bl1", leagueSeason: 2024 });`;
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.textToSpeech") {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }
@@ -418,6 +451,13 @@ const PROVIDER_NOTES = new Map([
       "The current public WebSocket endpoint is `wss://app.simplefunctions.dev/ws`;",
       "do not model `wss://data.simplefunctions.dev/v1/ws` as active until",
       "upstream routing changes.",
+    ].join(" "),
+  ],
+  [
+    "openligadb",
+    [
+      "OpenLigaDB is a public read-only API. `createOpenLigaDB()` does not",
+      "take credentials, and the provider does not send auth headers.",
     ].join(" "),
   ],
 ]);
@@ -2622,6 +2662,45 @@ function renderTelegramSetup() {
   ].join("\n");
 }
 
+function renderOpenLigaDBDiscoveryGuide() {
+  return [
+    "## Catalog Discovery Flow",
+    "",
+    "OpenLigaDB's public catalog endpoints work without credentials. A common",
+    "flow is sports -> leagues -> groups, teams, and result metadata:",
+    "",
+    "```typescript",
+    'import { createOpenLigaDB } from "@apicity/openligadb";',
+    "",
+    "const openligadb = createOpenLigaDB();",
+    "",
+    "const sports = await openligadb.getavailablesports();",
+    "const leagues = await openligadb.getavailableleagues.bySeason({",
+    "  season: 2024,",
+    "});",
+    "",
+    'const league = leagues.find((item) => item.leagueShortcut === "bl1");',
+    "if (league) {",
+    "  const groups = await openligadb.getavailablegroups({",
+    "    leagueShortcut: league.leagueShortcut!,",
+    "    leagueSeason: Number(league.leagueSeason),",
+    "  });",
+    "  const teams = await openligadb.getavailableteams({",
+    "    leagueShortcut: league.leagueShortcut!,",
+    "    leagueSeason: Number(league.leagueSeason),",
+    "  });",
+    "  const resultInfo = await openligadb.getresultinfos({",
+    "    leagueId: league.leagueId,",
+    "  });",
+    "}",
+    "```",
+    "",
+    "All path-parameter methods expose request schemas via `.schema`, for",
+    "example `openligadb.getavailablegroups.schema.safeParse(input)`.",
+    "",
+  ].join("\n");
+}
+
 // Providers whose options object uses a non-default auth field/env-var or
 // who don't re-export the shared middleware helpers. Anything not listed here
 // gets the default `apiKey` / `<PROVIDER>_API_KEY` / middleware-section.
@@ -2643,11 +2722,11 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
-  binance: {
+  openligadb: {
     noAuth: true,
     showMiddleware: false,
   },
-  openligadb: {
+  binance: {
     noAuth: true,
     showMiddleware: false,
   },
@@ -2687,12 +2766,12 @@ const PROVIDER_DOCS = {
   telegram: "https://core.telegram.org/bots/api",
   binance:
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
-  openligadb: "https://api.openligadb.de/swagger/index.html",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
     "https://docs.simplefunctions.dev/api-reference/public-market-data",
   thesportsdb: "https://www.thesportsdb.com/docs_api_guide",
+  openligadb: "https://api.openligadb.de/swagger/v1/swagger.json",
 };
 
 // Resolve the provider's factory function from the create* identifiers in
@@ -2737,7 +2816,7 @@ const PROVIDER_DEP_NOTES = {
     zod: "request schemas attached to provider endpoints as `.schema`",
   },
   openligadb: {
-    zod: "request schemas attached to OpenLigaDB endpoint methods as `.schema`",
+    zod: "request and response schemas for OpenLigaDB public data",
   },
 };
 
@@ -2894,6 +2973,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "telegram") {
     sections.push(renderTelegramSetup());
+  }
+
+  if (providerName === "openligadb") {
+    sections.push(renderOpenLigaDBDiscoveryGuide());
   }
 
   if (providerName === "polymarket") {

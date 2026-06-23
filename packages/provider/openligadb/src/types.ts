@@ -176,9 +176,46 @@ export interface OpenLigaDBMatch {
   numberOfViewers: number | null;
 }
 
+export interface OpenLigaDBSeasonRequest {
+  season: number;
+}
+
+export interface OpenLigaDBLeagueSeasonRequest {
+  leagueShortcut: string;
+  leagueSeason: number;
+}
+
+export interface OpenLigaDBCurrentGroupRequest {
+  leagueShortcut: string;
+}
+
+export interface OpenLigaDBLastChangeDateRequest {
+  leagueShortcut: string;
+  leagueSeason: number;
+  groupOrderId: number;
+}
+
+export interface OpenLigaDBResultInfosRequest {
+  leagueId: number;
+}
+
 export interface OpenLigaDBMatchByIdRequest {
   matchId: number;
 }
+
+export type OpenLigaDBAvailableSportsResponse = OpenLigaDBSport[];
+
+export type OpenLigaDBAvailableLeaguesResponse = OpenLigaDBLeague[];
+
+export type OpenLigaDBAvailableGroupsResponse = OpenLigaDBGroup[];
+
+export type OpenLigaDBCurrentGroupResponse = OpenLigaDBGroup;
+
+export type OpenLigaDBLastChangeDateResponse = string;
+
+export type OpenLigaDBResultInfosResponse = OpenLigaDBResultInfo;
+
+export type OpenLigaDBAvailableTeamsResponse = OpenLigaDBTeam[];
 
 export type OpenLigaDBMatchByIdResponse = OpenLigaDBMatch;
 
@@ -208,10 +245,50 @@ export interface OpenLigaDBMatchesByTeamsRequest {
 
 export type OpenLigaDBMatchesByTeamsResponse = OpenLigaDBMatch[];
 
+export interface OpenLigaDBNoRequestMethod<Response> {
+  (signal?: AbortSignal): Promise<Response>;
+  schema?: undefined;
+}
+
 export interface OpenLigaDBMethod<Request, Response> {
   (req: Request, signal?: AbortSignal): Promise<Response>;
   schema: z.ZodType<Request>;
 }
+
+export type OpenLigaDBAvailableSportsMethod =
+  OpenLigaDBNoRequestMethod<OpenLigaDBAvailableSportsResponse>;
+
+export interface OpenLigaDBAvailableLeaguesMethod extends OpenLigaDBNoRequestMethod<OpenLigaDBAvailableLeaguesResponse> {
+  bySeason: OpenLigaDBMethod<
+    OpenLigaDBSeasonRequest,
+    OpenLigaDBAvailableLeaguesResponse
+  >;
+}
+
+export type OpenLigaDBAvailableGroupsMethod = OpenLigaDBMethod<
+  OpenLigaDBLeagueSeasonRequest,
+  OpenLigaDBAvailableGroupsResponse
+>;
+
+export type OpenLigaDBCurrentGroupMethod = OpenLigaDBMethod<
+  OpenLigaDBCurrentGroupRequest,
+  OpenLigaDBCurrentGroupResponse
+>;
+
+export type OpenLigaDBLastChangeDateMethod = OpenLigaDBMethod<
+  OpenLigaDBLastChangeDateRequest,
+  OpenLigaDBLastChangeDateResponse
+>;
+
+export type OpenLigaDBResultInfosMethod = OpenLigaDBMethod<
+  OpenLigaDBResultInfosRequest,
+  OpenLigaDBResultInfosResponse
+>;
+
+export type OpenLigaDBAvailableTeamsMethod = OpenLigaDBMethod<
+  OpenLigaDBLeagueSeasonRequest,
+  OpenLigaDBAvailableTeamsResponse
+>;
 
 export type OpenLigaDBMatchByIdMethod = OpenLigaDBMethod<
   OpenLigaDBMatchByIdRequest,
@@ -248,5 +325,12 @@ export interface OpenLigaDBGetMatchdataNamespace {
 
 export interface OpenLigaDBProvider {
   swagger: OpenLigaDBSwaggerNamespace;
+  getavailablesports: OpenLigaDBAvailableSportsMethod;
+  getavailableleagues: OpenLigaDBAvailableLeaguesMethod;
+  getavailablegroups: OpenLigaDBAvailableGroupsMethod;
+  getcurrentgroup: OpenLigaDBCurrentGroupMethod;
+  getlastchangedate: OpenLigaDBLastChangeDateMethod;
+  getresultinfos: OpenLigaDBResultInfosMethod;
+  getavailableteams: OpenLigaDBAvailableTeamsMethod;
   getmatchdata: OpenLigaDBGetMatchdataNamespace;
 }

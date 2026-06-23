@@ -1,5 +1,10 @@
 import { OpenLigaDBError } from "./types";
 import type {
+  OpenLigaDBCurrentGroupRequest,
+  OpenLigaDBGroup,
+  OpenLigaDBLastChangeDateRequest,
+  OpenLigaDBLeague,
+  OpenLigaDBLeagueSeasonRequest,
   OpenLigaDBMatch,
   OpenLigaDBMatchByIdRequest,
   OpenLigaDBMatchesByLeagueSeasonGroupRequest,
@@ -12,14 +17,24 @@ import type {
   OpenLigaDBQueryValue,
   OpenLigaDBRequestFunction,
   OpenLigaDBRequestOptions,
+  OpenLigaDBResultInfo,
+  OpenLigaDBResultInfosRequest,
+  OpenLigaDBSeasonRequest,
+  OpenLigaDBSport,
   OpenLigaDBSwaggerDocument,
+  OpenLigaDBTeam,
 } from "./types";
 import {
+  OpenLigaDBCurrentGroupRequestSchema,
+  OpenLigaDBLastChangeDateRequestSchema,
+  OpenLigaDBLeagueSeasonRequestSchema,
   OpenLigaDBMatchByIdRequestSchema,
   OpenLigaDBMatchesByLeagueSeasonGroupRequestSchema,
   OpenLigaDBMatchesByLeagueSeasonRequestSchema,
   OpenLigaDBMatchesByLeagueSeasonTeamRequestSchema,
   OpenLigaDBMatchesByTeamsRequestSchema,
+  OpenLigaDBResultInfosRequestSchema,
+  OpenLigaDBSeasonRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -38,6 +53,138 @@ export function createOpenLigaDB(opts?: OpenLigaDBOptions): OpenLigaDBProvider {
       });
     },
     { schema: undefined }
+  );
+
+  // GET https://api.openligadb.de/getavailablesports
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getavailablesports = Object.assign(
+    async (signal?: AbortSignal): Promise<OpenLigaDBSport[]> => {
+      return request<OpenLigaDBSport[]>({
+        method: "GET",
+        path: ["getavailablesports"],
+        signal,
+      });
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.openligadb.de/getavailableleagues
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getavailableleaguesBase = Object.assign(
+    async (signal?: AbortSignal): Promise<OpenLigaDBLeague[]> => {
+      return request<OpenLigaDBLeague[]>({
+        method: "GET",
+        path: ["getavailableleagues"],
+        signal,
+      });
+    },
+    { schema: undefined }
+  );
+
+  // sig-ok: OpenLigaDB season overload hangs off getavailableleagues.
+  // GET https://api.openligadb.de/getavailableleagues/{season}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getavailableleaguesBySeason = Object.assign(
+    async (
+      req: OpenLigaDBSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBLeague[]> => {
+      return request<OpenLigaDBLeague[]>({
+        method: "GET",
+        path: ["getavailableleagues", req.season],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBSeasonRequestSchema }
+  );
+
+  const getavailableleagues = Object.assign(getavailableleaguesBase, {
+    bySeason: getavailableleaguesBySeason,
+  });
+
+  // GET https://api.openligadb.de/getavailablegroups/{leagueShortcut}/{leagueSeason}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getavailablegroups = Object.assign(
+    async (
+      req: OpenLigaDBLeagueSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBGroup[]> => {
+      return request<OpenLigaDBGroup[]>({
+        method: "GET",
+        path: ["getavailablegroups", req.leagueShortcut, req.leagueSeason],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLeagueSeasonRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getcurrentgroup/{leagueShortcut}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getcurrentgroup = Object.assign(
+    async (
+      req: OpenLigaDBCurrentGroupRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBGroup> => {
+      return request<OpenLigaDBGroup>({
+        method: "GET",
+        path: ["getcurrentgroup", req.leagueShortcut],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBCurrentGroupRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getlastchangedate/{leagueShortcut}/{leagueSeason}/{groupOrderId}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getlastchangedate = Object.assign(
+    async (
+      req: OpenLigaDBLastChangeDateRequest,
+      signal?: AbortSignal
+    ): Promise<string> => {
+      return request<string>({
+        method: "GET",
+        path: [
+          "getlastchangedate",
+          req.leagueShortcut,
+          req.leagueSeason,
+          req.groupOrderId,
+        ],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLastChangeDateRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getresultinfos/{leagueId}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getresultinfos = Object.assign(
+    async (
+      req: OpenLigaDBResultInfosRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBResultInfo> => {
+      return request<OpenLigaDBResultInfo>({
+        method: "GET",
+        path: ["getresultinfos", req.leagueId],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBResultInfosRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getavailableteams/{leagueShortcut}/{leagueSeason}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getavailableteams = Object.assign(
+    async (
+      req: OpenLigaDBLeagueSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBTeam[]> => {
+      return request<OpenLigaDBTeam[]>({
+        method: "GET",
+        path: ["getavailableteams", req.leagueShortcut, req.leagueSeason],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLeagueSeasonRequestSchema }
   );
 
   // sig-ok: OpenLigaDB getmatchdata overload split into typed callables
@@ -141,6 +288,13 @@ export function createOpenLigaDB(opts?: OpenLigaDBOptions): OpenLigaDBProvider {
         swaggerJson,
       },
     },
+    getavailablesports,
+    getavailableleagues,
+    getavailablegroups,
+    getcurrentgroup,
+    getlastchangedate,
+    getresultinfos,
+    getavailableteams,
     getmatchdata: {
       byId,
       byLeagueSeason,

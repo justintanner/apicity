@@ -1,10 +1,13 @@
 import { z } from "zod";
 import type {
   OpenLigaDBBlTableTeam,
+  OpenLigaDBCurrentGroupRequest,
   OpenLigaDBGoal,
   OpenLigaDBGoalGetter,
   OpenLigaDBGroup,
+  OpenLigaDBLastChangeDateRequest,
   OpenLigaDBLeague,
+  OpenLigaDBLeagueSeasonRequest,
   OpenLigaDBLocation,
   OpenLigaDBMatch,
   OpenLigaDBMatchByIdRequest,
@@ -15,6 +18,8 @@ import type {
   OpenLigaDBMatchesByTeamsRequest,
   OpenLigaDBOptions,
   OpenLigaDBResultInfo,
+  OpenLigaDBResultInfosRequest,
+  OpenLigaDBSeasonRequest,
   OpenLigaDBSport,
   OpenLigaDBSwaggerDocument,
   OpenLigaDBTeam,
@@ -150,26 +155,49 @@ export const OpenLigaDBMatchSchema: z.ZodType<OpenLigaDBMatch> = z.object({
   numberOfViewers: nullableInt,
 });
 
+export const OpenLigaDBSeasonRequestSchema: z.ZodType<OpenLigaDBSeasonRequest> =
+  z.object({
+    season: intPathParam,
+  });
+
+const openLigaDBLeagueSeasonRequestObject = z.object({
+  leagueShortcut: nonEmptyPathString,
+  leagueSeason: intPathParam,
+});
+
+export const OpenLigaDBLeagueSeasonRequestSchema: z.ZodType<OpenLigaDBLeagueSeasonRequest> =
+  openLigaDBLeagueSeasonRequestObject;
+
+export const OpenLigaDBCurrentGroupRequestSchema: z.ZodType<OpenLigaDBCurrentGroupRequest> =
+  z.object({
+    leagueShortcut: nonEmptyPathString,
+  });
+
+export const OpenLigaDBLastChangeDateRequestSchema: z.ZodType<OpenLigaDBLastChangeDateRequest> =
+  openLigaDBLeagueSeasonRequestObject.extend({
+    groupOrderId: intPathParam,
+  });
+
+export const OpenLigaDBResultInfosRequestSchema: z.ZodType<OpenLigaDBResultInfosRequest> =
+  z.object({
+    leagueId: intPathParam,
+  });
+
 export const OpenLigaDBMatchByIdRequestSchema: z.ZodType<OpenLigaDBMatchByIdRequest> =
   z.object({
     matchId: intPathParam,
   });
 
-const openLigaDBMatchesByLeagueSeasonRequestObject = z.object({
-  leagueShortcut: nonEmptyPathString,
-  leagueSeason: intPathParam,
-});
-
 export const OpenLigaDBMatchesByLeagueSeasonRequestSchema: z.ZodType<OpenLigaDBMatchesByLeagueSeasonRequest> =
-  openLigaDBMatchesByLeagueSeasonRequestObject;
+  openLigaDBLeagueSeasonRequestObject;
 
 export const OpenLigaDBMatchesByLeagueSeasonGroupRequestSchema: z.ZodType<OpenLigaDBMatchesByLeagueSeasonGroupRequest> =
-  openLigaDBMatchesByLeagueSeasonRequestObject.extend({
+  openLigaDBLeagueSeasonRequestObject.extend({
     groupOrderId: intPathParam,
   });
 
 export const OpenLigaDBMatchesByLeagueSeasonTeamRequestSchema: z.ZodType<OpenLigaDBMatchesByLeagueSeasonTeamRequest> =
-  openLigaDBMatchesByLeagueSeasonRequestObject.extend({
+  openLigaDBLeagueSeasonRequestObject.extend({
     teamFilterstring: nonEmptyPathString,
   });
 

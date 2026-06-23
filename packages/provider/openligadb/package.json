@@ -1,7 +1,7 @@
 {
   "name": "@apicity/openligadb",
   "version": "0.5.4",
-  "description": "OpenLigaDB API provider for public soccer match data.",
+  "description": "OpenLigaDB API provider for public soccer match data and metadata.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -35,9 +35,10 @@
   "sideEffects": false,
   "keywords": [
     "openligadb",
+    "sports",
     "soccer",
     "football",
-    "sports",
+    "bundesliga",
     "match-data",
     "apicity"
   ],

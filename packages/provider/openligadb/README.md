@@ -3,13 +3,15 @@
 [![npm](https://img.shields.io/npm/v/@apicity/openligadb?color=cb0000)](https://www.npmjs.com/package/@apicity/openligadb)
 [![dependencies](https://img.shields.io/badge/dependencies-1-blue)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
-[![docs](https://img.shields.io/badge/docs-api.openligadb.de-blue)](https://api.openligadb.de/swagger/index.html)
+[![docs](https://img.shields.io/badge/docs-api.openligadb.de-blue)](https://api.openligadb.de/swagger/v1/swagger.json)
 
-OpenLigaDB API provider for public soccer match data.
+OpenLigaDB API provider for public soccer match data and metadata.
+
+OpenLigaDB is a public read-only API. `createOpenLigaDB()` does not take credentials, and the provider does not send auth headers.
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to OpenLigaDB endpoint methods as `.schema`
+- `zod@^3.24.0` — request and response schemas for OpenLigaDB public data
 
 ## Installation
 
@@ -47,9 +49,164 @@ const season = await openligadb.getmatchdata.byLeagueSeason({
 The overloaded upstream `/getmatchdata` paths are exposed as explicit
 `by*` methods so team, group, season, and match-id routes cannot collide.
 
+## Catalog Discovery Flow
+
+OpenLigaDB's public catalog endpoints work without credentials. A common
+flow is sports -> leagues -> groups, teams, and result metadata:
+
+```typescript
+import { createOpenLigaDB } from "@apicity/openligadb";
+
+const openligadb = createOpenLigaDB();
+
+const sports = await openligadb.getavailablesports();
+const leagues = await openligadb.getavailableleagues.bySeason({
+  season: 2024,
+});
+
+const league = leagues.find((item) => item.leagueShortcut === "bl1");
+if (league) {
+  const groups = await openligadb.getavailablegroups({
+    leagueShortcut: league.leagueShortcut!,
+    leagueSeason: Number(league.leagueSeason),
+  });
+  const teams = await openligadb.getavailableteams({
+    leagueShortcut: league.leagueShortcut!,
+    leagueSeason: Number(league.leagueSeason),
+  });
+  const resultInfo = await openligadb.getresultinfos({
+    leagueId: league.leagueId,
+  });
+}
+```
+
+All path-parameter methods expose request schemas via `.schema`, for
+example `openligadb.getavailablegroups.schema.safeParse(input)`.
+
 ## API Reference
 
-6 endpoints across 2 groups. Each method mirrors an upstream URL path.
+14 endpoints across 9 groups. Each method mirrors an upstream URL path.
+
+### getavailablegroups
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getavailablegroups</code></b></summary>
+
+<code>GET https://api.openligadb.de/getavailablegroups/{leagueShortcut}/{leagueSeason}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const groups = await openligadb.getavailablegroups({ leagueShortcut: "bl1", leagueSeason: 2024 });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getavailableleagues
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getavailableleagues</code></b></summary>
+
+<code>GET https://api.openligadb.de/getavailableleagues</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const leagues = await openligadb.getavailableleagues();
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getavailableleagues.bySeason</code></b></summary>
+
+<code>GET https://api.openligadb.de/getavailableleagues/{season}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const leagues = await openligadb.getavailableleagues.bySeason({ season: 2024 });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getavailablesports
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getavailablesports</code></b></summary>
+
+<code>GET https://api.openligadb.de/getavailablesports</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const sports = await openligadb.getavailablesports();
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getavailableteams
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getavailableteams</code></b></summary>
+
+<code>GET https://api.openligadb.de/getavailableteams/{leagueShortcut}/{leagueSeason}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const teams = await openligadb.getavailableteams({ leagueShortcut: "bl1", leagueSeason: 2024 });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getcurrentgroup
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getcurrentgroup</code></b></summary>
+
+<code>GET https://api.openligadb.de/getcurrentgroup/{leagueShortcut}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const group = await openligadb.getcurrentgroup({ leagueShortcut: "bl1" });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getlastchangedate
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getlastchangedate</code></b></summary>
+
+<code>GET https://api.openligadb.de/getlastchangedate/{leagueShortcut}/{leagueSeason}/{groupOrderId}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const changedAt = await openligadb.getlastchangedate({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+  groupOrderId: 1,
+});
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
 
 ### getmatchdata
 
@@ -139,10 +296,31 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 </details>
 
+### getresultinfos
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getresultinfos</code></b></summary>
+
+<code>GET https://api.openligadb.de/getresultinfos/{leagueId}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const resultInfo = await openligadb.getresultinfos({ leagueId: 4500 });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
 ### swagger
 
 <details>
-<summary><b><code>openligadb.swagger.v1.swaggerJson</code></b></summary>
+<summary><code>GET</code> <b><code>openligadb.swagger.v1.swaggerJson</code></b></summary>
+
+<code>GET https://api.openligadb.de/swagger/v1/swagger.json</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
 
 ```typescript
 const res = await openligadb.swagger.v1.swaggerJson();

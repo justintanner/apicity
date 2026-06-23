@@ -22,12 +22,15 @@ function binaryResponse(body = "audio"): Response {
 
 function createClient(
   apiKey = "sf_live_test",
-  response = jsonResponse({ ok: true })
+  response: Response | Response[] = jsonResponse({ ok: true })
 ) {
   const requests: CapturedRequest[] = [];
+  const responses = Array.isArray(response) ? response : [response];
+  const fallback = jsonResponse({ ok: true });
   const fetchImpl: typeof fetch = async (url, init) => {
+    const index = requests.length;
     requests.push({ url: String(url), init });
-    return response.clone();
+    return (responses[index] ?? responses.at(-1) ?? fallback).clone();
   };
 
   return {
@@ -172,6 +175,194 @@ describe("simplefunctions authenticated API provider", () => {
     expect(intents.searchParams.get("status")).toBe("pending");
     requestUrl(requests, 3, "/api/intents/intent_1", "PATCH");
     requestUrl(requests, 4, "/api/runtime/exec", "POST");
+  });
+
+  it("serializes portfolio read endpoints with filters and bearer auth", async () => {
+    const responses = [
+      { cashCents: 125_000, positions: [] },
+      { baseCurrency: "USD", venues: ["kalshi"] },
+      { rows: [{ id: "tick_1", ticker: "KXRATECUT-26DEC31" }] },
+      { id: "tick/2026 06 22", price: 42 },
+      { rows: [{ id: "trade_1", venue: "kalshi" }] },
+      { id: "trade/2026 06 22", side: "yes" },
+      { rows: [{ id: "ledger_1", type: "deposit" }] },
+      { rows: [{ id: "fill_1", price: 43 }] },
+      { rows: [{ ticker: "KXRATECUT-26DEC31", qty: 10 }] },
+      { rows: [{ type: "rebalance", at: "2026-06-22" }] },
+      { rows: [{ date: "2026-06-22", pnlCents: 1200 }] },
+      { groups: [{ key: "venue", pnlCents: 1200 }] },
+      { grossExposureCents: 50_000, concentration: 0.25 },
+      { views: [{ id: "main", name: "Primary" }] },
+      { strategies: [{ id: "carry", active: true }] },
+    ];
+    const { provider, requests } = createClient(
+      "sf_live_test",
+      responses.map(jsonResponse)
+    );
+
+    await expect(provider.api.portfolio.state()).resolves.toEqual(responses[0]);
+    await expect(provider.api.portfolio.config()).resolves.toEqual(
+      responses[1]
+    );
+    await expect(
+      provider.api.portfolio.ticks({
+        venue: "kalshi",
+        ticker: "KXRATECUT-26DEC31",
+        statuses: ["open", "closed"],
+        limit: 25,
+      })
+    ).resolves.toEqual(responses[2]);
+    await expect(
+      provider.api.portfolio.ticks.retrieve({ id: "tick/2026 06 22" })
+    ).resolves.toEqual(responses[3]);
+    await expect(
+      provider.api.portfolio.trades({
+        account: "main",
+        from: "2026-06-01",
+        to: "2026-06-22",
+        window: "7d",
+      })
+    ).resolves.toEqual(responses[4]);
+    await expect(
+      provider.api.portfolio.trades.retrieve({ id: "trade/2026 06 22" })
+    ).resolves.toEqual(responses[5]);
+    await expect(
+      provider.api.portfolio.ledger({
+        type: "deposit",
+        since: "2026-06-01T00:00:00Z",
+      })
+    ).resolves.toEqual(responses[6]);
+    await expect(
+      provider.api.portfolio.fills({
+        market: "KXRATECUT-26DEC31",
+        venues: ["kalshi", "polymarket"],
+      })
+    ).resolves.toEqual(responses[7]);
+    await expect(
+      provider.api.portfolio.positions({ open: true, minQty: 1 })
+    ).resolves.toEqual(responses[8]);
+    await expect(
+      provider.api.portfolio.activity({
+        from: "2026-06-01",
+        to: "2026-06-22",
+        window: "24h",
+      })
+    ).resolves.toEqual(responses[9]);
+    await expect(
+      provider.api.portfolio.attribution.daily({
+        from: "2026-06-01",
+        to: "2026-06-22",
+      })
+    ).resolves.toEqual(responses[10]);
+    await expect(
+      provider.api.portfolio.attribution.grouped({
+        groupBy: "venue",
+        window: "30d",
+      })
+    ).resolves.toEqual(responses[11]);
+    await expect(
+      provider.api.portfolio.risk({ window: "7d" })
+    ).resolves.toEqual(responses[12]);
+    await expect(
+      provider.api.portfolio.views({ includeShared: false })
+    ).resolves.toEqual(responses[13]);
+    await expect(
+      provider.api.portfolio.strategy({ active: true })
+    ).resolves.toEqual(responses[14]);
+
+    requestUrl(requests, 0, "/api/portfolio/state", "GET");
+    requestUrl(requests, 1, "/api/portfolio/config", "GET");
+
+    const ticks = requestUrl(requests, 2, "/api/portfolio/ticks", "GET");
+    expect(ticks.searchParams.get("venue")).toBe("kalshi");
+    expect(ticks.searchParams.get("ticker")).toBe("KXRATECUT-26DEC31");
+    expect(ticks.searchParams.get("statuses")).toBe("open,closed");
+    expect(ticks.searchParams.get("limit")).toBe("25");
+
+    requestUrl(
+      requests,
+      3,
+      "/api/portfolio/ticks/tick%2F2026%2006%2022",
+      "GET"
+    );
+
+    const trades = requestUrl(requests, 4, "/api/portfolio/trades", "GET");
+    expect(trades.searchParams.get("account")).toBe("main");
+    expect(trades.searchParams.get("from")).toBe("2026-06-01");
+    expect(trades.searchParams.get("to")).toBe("2026-06-22");
+    expect(trades.searchParams.get("window")).toBe("7d");
+
+    requestUrl(
+      requests,
+      5,
+      "/api/portfolio/trades/trade%2F2026%2006%2022",
+      "GET"
+    );
+
+    const ledger = requestUrl(requests, 6, "/api/portfolio/ledger", "GET");
+    expect(ledger.searchParams.get("type")).toBe("deposit");
+    expect(ledger.searchParams.get("since")).toBe("2026-06-01T00:00:00Z");
+
+    const fills = requestUrl(requests, 7, "/api/portfolio/fills", "GET");
+    expect(fills.searchParams.get("market")).toBe("KXRATECUT-26DEC31");
+    expect(fills.searchParams.get("venues")).toBe("kalshi,polymarket");
+
+    const positions = requestUrl(
+      requests,
+      8,
+      "/api/portfolio/positions",
+      "GET"
+    );
+    expect(positions.searchParams.get("open")).toBe("true");
+    expect(positions.searchParams.get("minQty")).toBe("1");
+
+    const activity = requestUrl(requests, 9, "/api/portfolio/activity", "GET");
+    expect(activity.searchParams.get("from")).toBe("2026-06-01");
+    expect(activity.searchParams.get("to")).toBe("2026-06-22");
+    expect(activity.searchParams.get("window")).toBe("24h");
+
+    const daily = requestUrl(
+      requests,
+      10,
+      "/api/portfolio/attribution/daily",
+      "GET"
+    );
+    expect(daily.searchParams.get("from")).toBe("2026-06-01");
+    expect(daily.searchParams.get("to")).toBe("2026-06-22");
+
+    const grouped = requestUrl(
+      requests,
+      11,
+      "/api/portfolio/attribution/grouped",
+      "GET"
+    );
+    expect(grouped.searchParams.get("groupBy")).toBe("venue");
+    expect(grouped.searchParams.get("window")).toBe("30d");
+
+    const risk = requestUrl(requests, 12, "/api/portfolio/risk", "GET");
+    expect(risk.searchParams.get("window")).toBe("7d");
+
+    const views = requestUrl(requests, 13, "/api/portfolio/views", "GET");
+    expect(views.searchParams.get("includeShared")).toBe("false");
+
+    const strategy = requestUrl(requests, 14, "/api/portfolio/strategy", "GET");
+    expect(strategy.searchParams.get("active")).toBe("true");
+
+    for (const req of requests) {
+      expect(req.init?.headers).toEqual({
+        Authorization: "Bearer sf_live_test",
+      });
+    }
+  });
+
+  it("rejects portfolio reads before fetch when no API key is configured", async () => {
+    const { provider, requests } = createAnonymousClient();
+
+    await expect(provider.api.portfolio.state()).rejects.toMatchObject({
+      status: 401,
+    });
+
+    expect(requests).toHaveLength(0);
   });
 
   it("serializes watch, alert, webhook, and prompt/tool endpoints", async () => {

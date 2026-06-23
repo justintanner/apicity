@@ -3,6 +3,8 @@ import { z } from "zod";
 
 import {
   AlibabaVideoMediaTypeSchema,
+  AlibabaVideoSynthesisModelSchema,
+  AlibabaVideoSynthesisRequestObjectSchema,
   AlibabaVideoSynthesisRequestSchema,
 } from "../../packages/provider/alibaba/src/zod";
 import {
@@ -83,6 +85,24 @@ describe("MCP Zod schema introspection helpers", () => {
       "first_clip",
       "video",
       "reference_image",
+    ]);
+
+    expect(getZodEnumValues(AlibabaVideoSynthesisModelSchema)).toEqual([
+      "wan2.7-i2v",
+      "wan2.7-videoedit",
+    ]);
+
+    const objectShape = getZodObjectShape(
+      AlibabaVideoSynthesisRequestObjectSchema
+    );
+    expect(Object.keys(objectShape ?? {})).toEqual([
+      "model",
+      "input",
+      "parameters",
+    ]);
+    expect(getZodEnumValues(objectShape?.model)).toEqual([
+      "wan2.7-i2v",
+      "wan2.7-videoedit",
     ]);
 
     const shape = getZodObjectShape(AlibabaVideoSynthesisRequestSchema);

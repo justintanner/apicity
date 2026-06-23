@@ -22,8 +22,10 @@ export type {
   // Video request
   AlibabaVideoMediaType,
   AlibabaVideoMedia,
+  AlibabaVideoSynthesisModel,
   AlibabaVideoSynthesisInput,
   AlibabaVideoSynthesisParameters,
+  AlibabaVideoSynthesisRequestObject,
   AlibabaVideoSynthesisRequest,
   // Image-gen request
   AlibabaImageTextContent,

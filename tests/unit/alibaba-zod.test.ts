@@ -2,11 +2,17 @@ import { describe, it, expect } from "vitest";
 
 import {
   AlibabaChatRequestSchema,
+  AlibabaVideoSynthesisModelSchema,
+  AlibabaVideoSynthesisRequestObjectSchema,
   AlibabaVideoSynthesisRequestSchema,
   AlibabaImageGenerationRequestSchema,
   AlibabaMultimodalGenerationRequestSchema,
   AlibabaOptionsSchema,
 } from "../../packages/provider/alibaba/src/zod";
+import {
+  AlibabaVideoSynthesisModelSchema as PublicAlibabaVideoSynthesisModelSchema,
+  AlibabaVideoSynthesisRequestObjectSchema as PublicAlibabaVideoSynthesisRequestObjectSchema,
+} from "../../packages/provider/alibaba/src/index";
 
 describe("Alibaba Zod schema validation", () => {
   describe("null and undefined handling", () => {
@@ -194,6 +200,56 @@ describe("Alibaba Zod schema validation", () => {
   });
 
   describe("AlibabaVideoSynthesisRequestSchema", () => {
+    it("should expose video model options without unwrapping refinements", () => {
+      expect(AlibabaVideoSynthesisModelSchema.options).toEqual([
+        "wan2.7-i2v",
+        "wan2.7-videoedit",
+      ]);
+      expect(PublicAlibabaVideoSynthesisModelSchema.options).toEqual(
+        AlibabaVideoSynthesisModelSchema.options
+      );
+
+      const shape = AlibabaVideoSynthesisRequestObjectSchema.shape;
+      expect(Object.keys(shape)).toEqual(["model", "input", "parameters"]);
+      expect(shape.model).toBe(AlibabaVideoSynthesisModelSchema);
+      expect(PublicAlibabaVideoSynthesisRequestObjectSchema.shape.model).toBe(
+        AlibabaVideoSynthesisModelSchema
+      );
+    });
+
+    it("should keep media and duration business rules on the refined schema", () => {
+      const invalidI2vMedia = {
+        model: "wan2.7-i2v",
+        input: {
+          media: [{ type: "video", url: "https://example.com/vid.mp4" }],
+        },
+      };
+      const invalidVideoEditDuration = {
+        model: "wan2.7-videoedit",
+        input: {
+          media: [{ type: "video", url: "https://example.com/vid.mp4" }],
+        },
+        parameters: { duration: 12 },
+      };
+
+      expect(
+        AlibabaVideoSynthesisRequestObjectSchema.safeParse(invalidI2vMedia)
+          .success
+      ).toBe(true);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse(invalidI2vMedia).success
+      ).toBe(false);
+      expect(
+        AlibabaVideoSynthesisRequestObjectSchema.safeParse(
+          invalidVideoEditDuration
+        ).success
+      ).toBe(true);
+      expect(
+        AlibabaVideoSynthesisRequestSchema.safeParse(invalidVideoEditDuration)
+          .success
+      ).toBe(false);
+    });
+
     it("should accept valid wan2.7-i2v request with first_frame", () => {
       const result = AlibabaVideoSynthesisRequestSchema.safeParse({
         model: "wan2.7-i2v",

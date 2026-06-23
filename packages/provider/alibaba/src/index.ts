@@ -18,6 +18,12 @@ export type {
 
 export { sseToIterable } from "./sse";
 
+export {
+  AlibabaVideoSynthesisModelSchema,
+  AlibabaVideoSynthesisRequestObjectSchema,
+  AlibabaVideoSynthesisRequestSchema,
+} from "./zod";
+
 // Export all types (request types now flow from zod.ts via types.ts)
 export type {
   AlibabaOptions,
@@ -44,8 +50,10 @@ export type {
   AlibabaModelListResponse,
   AlibabaVideoMediaType,
   AlibabaVideoMedia,
+  AlibabaVideoSynthesisModel,
   AlibabaVideoSynthesisInput,
   AlibabaVideoSynthesisParameters,
+  AlibabaVideoSynthesisRequestObject,
   AlibabaVideoSynthesisRequest,
   AlibabaVideoSynthesisSubmitOutput,
   AlibabaVideoSynthesisSubmitResponse,

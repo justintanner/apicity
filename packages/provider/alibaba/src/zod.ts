@@ -118,6 +118,11 @@ export const AlibabaVideoMediaSchema = z.object({
   url: z.string().min(1),
 });
 
+export const AlibabaVideoSynthesisModelSchema = z.enum([
+  "wan2.7-i2v",
+  "wan2.7-videoedit",
+]);
+
 export const AlibabaVideoSynthesisInputSchema = z.object({
   prompt: z.string().max(5000).optional(),
   negative_prompt: z.string().max(500).optional(),
@@ -134,26 +139,28 @@ export const AlibabaVideoSynthesisParametersSchema = z.object({
   seed: z.number().int().min(0).max(2147483647).optional(),
 });
 
-export const AlibabaVideoSynthesisRequestSchema = z
-  .object({
-    model: z.enum(["wan2.7-i2v", "wan2.7-videoedit"]),
-    input: AlibabaVideoSynthesisInputSchema,
-    parameters: AlibabaVideoSynthesisParametersSchema.optional(),
-  })
-  .refine(
-    (v) => {
-      // reference_image may repeat (up to 4); all other types must be unique.
-      const nonRef = v.input.media
-        .map((m) => m.type)
-        .filter((t) => t !== "reference_image");
-      return new Set(nonRef).size === nonRef.length;
-    },
-    {
-      message:
-        "media entries must have unique `type` values (except reference_image)",
-      path: ["input", "media"],
-    }
-  )
+export const AlibabaVideoSynthesisRequestObjectSchema = z.object({
+  model: AlibabaVideoSynthesisModelSchema,
+  input: AlibabaVideoSynthesisInputSchema,
+  parameters: AlibabaVideoSynthesisParametersSchema.optional(),
+});
+
+const VideoSynthesisRequest = AlibabaVideoSynthesisRequestObjectSchema;
+
+export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
+  (v) => {
+    // reference_image may repeat (up to 4); all other types must be unique.
+    const nonRef = v.input.media
+      .map((m) => m.type)
+      .filter((t) => t !== "reference_image");
+    return new Set(nonRef).size === nonRef.length;
+  },
+  {
+    message:
+      "media entries must have unique `type` values (except reference_image)",
+    path: ["input", "media"],
+  }
+)
   .refine(
     (v) => {
       if (v.model !== "wan2.7-i2v") return true;
@@ -455,11 +462,17 @@ export type AlibabaResponseFormat = z.infer<typeof AlibabaResponseFormatSchema>;
 export type AlibabaChatRequest = z.infer<typeof AlibabaChatRequestSchema>;
 export type AlibabaVideoMediaType = z.infer<typeof AlibabaVideoMediaTypeSchema>;
 export type AlibabaVideoMedia = z.infer<typeof AlibabaVideoMediaSchema>;
+export type AlibabaVideoSynthesisModel = z.infer<
+  typeof AlibabaVideoSynthesisModelSchema
+>;
 export type AlibabaVideoSynthesisInput = z.infer<
   typeof AlibabaVideoSynthesisInputSchema
 >;
 export type AlibabaVideoSynthesisParameters = z.infer<
   typeof AlibabaVideoSynthesisParametersSchema
+>;
+export type AlibabaVideoSynthesisRequestObject = z.infer<
+  typeof AlibabaVideoSynthesisRequestObjectSchema
 >;
 export type AlibabaVideoSynthesisRequest = z.infer<
   typeof AlibabaVideoSynthesisRequestSchema

@@ -31,7 +31,15 @@ export {
   type BuildRegistryOptions,
 } from "./registry.js";
 export { PROVIDERS, type ProviderSpec } from "./providers.js";
-export { zodToJsonSchema, type JsonSchema } from "./schema.js";
+export {
+  getZodDefaultValue,
+  getZodEnumValues,
+  getZodObjectShape,
+  isOptionalZodSchema,
+  unwrapZodSchema,
+  zodToJsonSchema,
+  type JsonSchema,
+} from "./schema.js";
 export {
   writeBinary,
   downloadUrlsInResult,

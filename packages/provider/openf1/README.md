@@ -91,7 +91,7 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-10 endpoints across 10 groups. Each method mirrors an upstream URL path.
+11 endpoints across 11 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 

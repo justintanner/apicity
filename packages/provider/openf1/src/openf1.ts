@@ -18,6 +18,9 @@ import type {
   OpenF1LapRequest,
   OpenF1LapResponse,
   OpenF1LapsMethod,
+  OpenF1LocationMethod,
+  OpenF1LocationRequest,
+  OpenF1LocationResponse,
   OpenF1MeetingsMethod,
   OpenF1MeetingsRequest,
   OpenF1MeetingsResponse,
@@ -63,6 +66,7 @@ import {
   OpenF1ChampionshipTeamRequestSchema,
   OpenF1IntervalsRequestSchema,
   OpenF1LapRequestSchema,
+  OpenF1LocationRequestSchema,
   OpenF1MeetingsRequestSchema,
   OpenF1OvertakeRequestSchema,
   OpenF1PositionRequestSchema,
@@ -158,6 +162,16 @@ const LAPS_QUERY_FIELDS = [
   "session_key",
   "st_speed",
 ] as const satisfies readonly (keyof OpenF1LapRequest)[];
+
+const LOCATION_QUERY_FIELDS = [
+  "date",
+  "driver_number",
+  "meeting_key",
+  "session_key",
+  "x",
+  "y",
+  "z",
+] as const satisfies readonly (keyof OpenF1LocationRequest)[];
 
 const OVERTAKES_QUERY_FIELDS = [
   "date",
@@ -614,6 +628,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1LapRequestSchema }
   ) as OpenF1LapsMethod;
 
+  // GET https://api.openf1.org/v1/location{query}
+  // Docs: https://openf1.org/docs/#location
+  const location = Object.assign(
+    async (
+      req: OpenF1LocationRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1LocationResponse | string> => {
+      const query = buildQuery(req, LOCATION_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/location${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1LocationResponse>(
+        `/v1/location${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1LocationRequestSchema }
+  ) as OpenF1LocationMethod;
+
   // GET https://api.openf1.org/v1/overtakes{query}
   // Docs: https://openf1.org/docs/#overtakes
   const overtakes = Object.assign(
@@ -818,6 +851,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       championshipTeams,
       intervals,
       laps,
+      location,
       meetings,
       overtakes,
       position,

@@ -340,7 +340,7 @@ describe("simplefunctions public analytical endpoints", () => {
     expect(url.searchParams.get("series")).toBe("UNRATE");
   });
 
-  it("serializes daily content, catalog, and discuss endpoints", async () => {
+  it("serializes public content endpoints without auth", async () => {
     const { provider, requests } = createClient();
 
     await provider.api.changes({ since: "1h", type: "price_move" });
@@ -352,29 +352,150 @@ describe("simplefunctions public analytical endpoints", () => {
     await provider.api.public.context({ compact: true });
     url = requestUrl(requests, "/api/public/context");
     expect(url.searchParams.get("compact")).toBe("true");
+    expect(requests[0].init?.headers).toEqual({});
 
     requests.length = 0;
-    await provider.api.public.topic({ slug: "fed-rates" });
-    requestUrl(requests, "/api/public/topic/fed-rates");
+    await provider.api.public.briefing({
+      topic: "macro",
+      date: "2026-06-23",
+      compact: false,
+    });
+    url = requestUrl(requests, "/api/public/briefing");
+    expect(url.searchParams.get("topic")).toBe("macro");
+    expect(url.searchParams.get("date")).toBe("2026-06-23");
+    expect(url.searchParams.get("compact")).toBe("false");
+
+    requests.length = 0;
+    await provider.api.public.topic({ slug: "fed rates" });
+    requestUrl(requests, "/api/public/topic/fed%20rates");
+
+    requests.length = 0;
+    await provider.api.public.answer({ slug: "fed/rates" });
+    requestUrl(requests, "/api/public/answer/fed%2Frates");
+
+    requests.length = 0;
+    await provider.api.public.glossary({
+      q: "yield",
+      category: "education",
+      limit: 5,
+      offset: 10,
+    });
+    url = requestUrl(requests, "/api/public/glossary");
+    expect(url.searchParams.get("q")).toBe("yield");
+    expect(url.searchParams.get("category")).toBe("education");
+    expect(url.searchParams.get("limit")).toBe("5");
+    expect(url.searchParams.get("offset")).toBe("10");
 
     requests.length = 0;
     await provider.api.public.glossary.entry({ slug: "implied-yield" });
     requestUrl(requests, "/api/public/glossary/implied-yield");
 
     requests.length = 0;
-    await provider.api.public.skill({ slug: "market-monitor" });
-    requestUrl(requests, "/api/public/skill/market-monitor");
+    await provider.api.public.guide();
+    requestUrl(requests, "/api/public/guide");
 
     requests.length = 0;
-    await provider.api.public.ideas.byId({ id: 42 });
-    requestUrl(requests, "/api/public/ideas/42");
+    await provider.api.public.highlights({ venue: "kalshi", limit: 4 });
+    url = requestUrl(requests, "/api/public/highlights");
+    expect(url.searchParams.get("venue")).toBe("kalshi");
+    expect(url.searchParams.get("limit")).toBe("4");
 
     requests.length = 0;
-    await provider.api.public.discuss({ topic: "fed", question: "why now?" });
+    await provider.api.public.diff({ q: "rates", offset: 2 });
+    url = requestUrl(requests, "/api/public/diff");
+    expect(url.searchParams.get("q")).toBe("rates");
+    expect(url.searchParams.get("offset")).toBe("2");
+  });
+
+  it("serializes public catalog, thesis, opinion, and guide endpoints", async () => {
+    const { provider, requests } = createClient();
+
+    await provider.api.public.skills({ q: "risk", limit: 3 });
+    let url = requestUrl(requests, "/api/public/skills");
+    expect(url.searchParams.get("q")).toBe("risk");
+    expect(url.searchParams.get("limit")).toBe("3");
+    expect(requests[0].init?.headers).toEqual({});
+
+    requests.length = 0;
+    await provider.api.public.skill({ slug: "market monitor" });
+    requestUrl(requests, "/api/public/skill/market%20monitor");
+
+    requests.length = 0;
+    await provider.api.public.ideas({
+      category: "macro",
+      venue: "kalshi",
+      limit: 2,
+      offset: 1,
+    });
+    url = requestUrl(requests, "/api/public/ideas");
+    expect(url.searchParams.get("category")).toBe("macro");
+    expect(url.searchParams.get("venue")).toBe("kalshi");
+    expect(url.searchParams.get("limit")).toBe("2");
+    expect(url.searchParams.get("offset")).toBe("1");
+
+    requests.length = 0;
+    await provider.api.public.ideas.byId({ id: "idea 42" });
+    requestUrl(requests, "/api/public/ideas/idea%2042");
+
+    requests.length = 0;
+    await provider.api.public.theses({ q: "inflation", limit: 6 });
+    url = requestUrl(requests, "/api/public/theses");
+    expect(url.searchParams.get("q")).toBe("inflation");
+    expect(url.searchParams.get("limit")).toBe("6");
+
+    requests.length = 0;
+    await provider.api.public.thesis({ slug: "inflation thesis" });
+    requestUrl(requests, "/api/public/thesis/inflation%20thesis");
+
+    requests.length = 0;
+    await provider.api.public.opinions({ category: "macro", limit: 7 });
+    url = requestUrl(requests, "/api/public/opinions");
+    expect(url.searchParams.get("category")).toBe("macro");
+    expect(url.searchParams.get("limit")).toBe("7");
+
+    requests.length = 0;
+    await provider.api.public.opinions.entry({ slug: "powell path" });
+    requestUrl(requests, "/api/public/opinions/powell%20path");
+
+    requests.length = 0;
+    await provider.api.public.technicals({ q: "yield curve", limit: 8 });
+    url = requestUrl(requests, "/api/public/technicals");
+    expect(url.searchParams.get("q")).toBe("yield curve");
+    expect(url.searchParams.get("limit")).toBe("8");
+
+    requests.length = 0;
+    await provider.api.public.technicals.entry({ slug: "term premium" });
+    requestUrl(requests, "/api/public/technicals/term%20premium");
+  });
+
+  it("serializes public discuss as JSON POST without credentials", async () => {
+    const { provider, requests } = createClient();
+
+    await provider.api.public.discuss({
+      topic: "fed",
+      question: "why now?",
+      context: { tickers: ["KXFED"] },
+    });
     requestUrl(requests, "/api/public/discuss", "POST");
-    expect(requests[0].init?.body).toBe(
-      JSON.stringify({ topic: "fed", question: "why now?" })
-    );
+    expect(requests[0].init?.headers).toEqual({
+      "Content-Type": "application/json",
+    });
+    expect(JSON.parse(requests[0].init?.body as string)).toEqual({
+      topic: "fed",
+      question: "why now?",
+      context: { tickers: ["KXFED"] },
+    });
+
+    requests.length = 0;
+    await provider.post.api.public.discuss({
+      topic: "rates",
+      question: "what changed?",
+    });
+    requestUrl(requests, "/api/public/discuss", "POST");
+    expect(JSON.parse(requests[0].init?.body as string)).toEqual({
+      topic: "rates",
+      question: "what changed?",
+    });
   });
 
   it("validates required params, ranges, auth requirements, and deprecations", async () => {

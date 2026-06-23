@@ -486,6 +486,60 @@ export type OpenF1PitStopsMethod = OpenF1Method<
   OpenF1PitStopResponse
 >;
 
+export interface OpenF1RaceControlMessage {
+  category: string;
+  date: string;
+  driver_number: number | null;
+  flag: string | null;
+  lap_number: number | null;
+  meeting_key: number;
+  message: string;
+  qualifying_phase: number | null;
+  scope: string | null;
+  sector: number | null;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1RaceControlMessageResponse = OpenF1RaceControlMessage[];
+
+export type OpenF1RaceControlMessageFilterField =
+  | "category"
+  | "date"
+  | "driver_number"
+  | "flag"
+  | "lap_number"
+  | "meeting_key"
+  | "message"
+  | "qualifying_phase"
+  | "scope"
+  | "sector"
+  | "session_key";
+
+export type OpenF1RaceControlMessageFilter =
+  OpenF1ComparisonFilter<OpenF1RaceControlMessageFilterField>;
+
+export interface OpenF1RaceControlMessageRequest {
+  category?: OpenF1FilterValue<string>;
+  date?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  flag?: OpenF1FilterValue<string>;
+  lap_number?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  message?: OpenF1FilterValue<string>;
+  qualifying_phase?: OpenF1FilterValue<number>;
+  scope?: OpenF1FilterValue<string>;
+  sector?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1RaceControlMessageFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1RaceControlMethod = OpenF1Method<
+  OpenF1RaceControlMessageRequest,
+  OpenF1RaceControlMessageResponse
+>;
+
 export type OpenF1SessionResultDuration = number | null | Array<number | null>;
 
 export type OpenF1SessionResultGapToLeader =
@@ -587,6 +641,7 @@ export interface OpenF1V1Namespace {
   meetings: OpenF1MeetingsMethod;
   position: OpenF1PositionMethod;
   pit: OpenF1PitStopsMethod;
+  raceControl: OpenF1RaceControlMethod;
   sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
   stints: OpenF1StintsMethod;

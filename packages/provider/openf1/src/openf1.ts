@@ -20,6 +20,9 @@ import type {
   OpenF1PitStopResponse,
   OpenF1PitStopsMethod,
   OpenF1Provider,
+  OpenF1RaceControlMessageRequest,
+  OpenF1RaceControlMessageResponse,
+  OpenF1RaceControlMethod,
   OpenF1SessionResultMethod,
   OpenF1SessionResultRequest,
   OpenF1SessionResultResponse,
@@ -45,6 +48,7 @@ import {
   OpenF1MeetingsRequestSchema,
   OpenF1PositionRequestSchema,
   OpenF1PitStopRequestSchema,
+  OpenF1RaceControlMessageRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
   OpenF1StintRequestSchema,
@@ -121,6 +125,20 @@ const PIT_STOP_QUERY_FIELDS = [
   "session_key",
   "stop_duration",
 ] as const satisfies readonly (keyof OpenF1PitStopRequest)[];
+
+const RACE_CONTROL_QUERY_FIELDS = [
+  "category",
+  "date",
+  "driver_number",
+  "flag",
+  "lap_number",
+  "meeting_key",
+  "message",
+  "qualifying_phase",
+  "scope",
+  "sector",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1RaceControlMessageRequest)[];
 
 const SESSION_RESULT_QUERY_FIELDS = [
   "dnf",
@@ -501,6 +519,29 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1PitStopRequestSchema }
   ) as OpenF1PitStopsMethod;
 
+  // GET https://api.openf1.org/v1/race_control{query}
+  // Docs: https://openf1.org/docs/#race-control
+  const raceControl = Object.assign(
+    async (
+      req: OpenF1RaceControlMessageRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1RaceControlMessageResponse | string> => {
+      const query = buildQuery(req, RACE_CONTROL_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(
+          `/v1/race_control${query}`,
+          signal,
+          "text"
+        );
+      }
+      return makeGetRequest<OpenF1RaceControlMessageResponse>(
+        `/v1/race_control${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1RaceControlMessageRequestSchema }
+  ) as OpenF1RaceControlMethod;
+
   // GET https://api.openf1.org/v1/session_result{query}
   // Docs: https://openf1.org/docs/#session-result
   const sessionResult = Object.assign(
@@ -605,6 +646,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       meetings,
       position,
       pit,
+      raceControl,
       sessionResult,
       sessions,
       stints,

@@ -91,7 +91,7 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-11 endpoints across 11 groups. Each method mirrors an upstream URL path.
+12 endpoints across 12 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -172,6 +172,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 ```typescript
 const res = await openf1.v1.position({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### raceControl
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.raceControl</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/race_control{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#race-control)
+
+```typescript
+const res = await openf1.v1.raceControl({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

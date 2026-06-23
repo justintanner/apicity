@@ -25,6 +25,10 @@ import type {
   OpenF1PitStopFilter,
   OpenF1PitStopFilterField,
   OpenF1PitStopRequest,
+  OpenF1RaceControlMessage,
+  OpenF1RaceControlMessageFilter,
+  OpenF1RaceControlMessageFilterField,
+  OpenF1RaceControlMessageRequest,
   OpenF1Session,
   OpenF1SessionResult,
   OpenF1SessionResultDuration,
@@ -370,6 +374,64 @@ export const OpenF1PitStopRequestSchema: z.ZodType<OpenF1PitStopRequest> =
   });
 
 export const OpenF1PitStopResponseSchema = z.array(OpenF1PitStopSchema);
+
+export const OpenF1RaceControlMessageFilterFieldSchema: z.ZodType<OpenF1RaceControlMessageFilterField> =
+  z.enum([
+    "category",
+    "date",
+    "driver_number",
+    "flag",
+    "lap_number",
+    "meeting_key",
+    "message",
+    "qualifying_phase",
+    "scope",
+    "sector",
+    "session_key",
+  ]);
+
+export const OpenF1RaceControlMessageFilterSchema: z.ZodType<OpenF1RaceControlMessageFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1RaceControlMessageFilterFieldSchema,
+  });
+
+export const OpenF1RaceControlMessageSchema: z.ZodType<OpenF1RaceControlMessage> =
+  z
+    .object({
+      category: z.string(),
+      date: z.string(),
+      driver_number: z.number().nullable(),
+      flag: nullableString,
+      lap_number: z.number().nullable(),
+      meeting_key: z.number(),
+      message: z.string(),
+      qualifying_phase: z.number().nullable(),
+      scope: nullableString,
+      sector: z.number().nullable(),
+      session_key: z.number(),
+    })
+    .catchall(z.unknown());
+
+export const OpenF1RaceControlMessageRequestSchema: z.ZodType<OpenF1RaceControlMessageRequest> =
+  z.object({
+    category: stringFilterValue.optional(),
+    date: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    flag: stringFilterValue.optional(),
+    lap_number: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    message: stringFilterValue.optional(),
+    qualifying_phase: numberFilterValue.optional(),
+    scope: stringFilterValue.optional(),
+    sector: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1RaceControlMessageFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1RaceControlMessageResponseSchema = z.array(
+  OpenF1RaceControlMessageSchema
+);
 
 export const OpenF1SessionResultDurationSchema: z.ZodType<OpenF1SessionResultDuration> =
   z.union([z.number(), z.null(), z.array(z.union([z.number(), z.null()]))]);

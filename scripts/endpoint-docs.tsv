@@ -1189,6 +1189,7 @@ openf1	v1.championshipDrivers	GET	https://api.openf1.org/v1/championship_drivers
 openf1	v1.laps	GET	https://api.openf1.org/v1/laps{query}	https://openf1.org/docs/#laps
 openf1	v1.position	GET	https://api.openf1.org/v1/position{query}	https://openf1.org/docs/#position
 openf1	v1.pit	GET	https://api.openf1.org/v1/pit{query}	https://openf1.org/docs/#pit
+openf1	v1.raceControl	GET	https://api.openf1.org/v1/race_control{query}	https://openf1.org/docs/#race-control
 openf1	v1.sessionResult	GET	https://api.openf1.org/v1/session_result{query}	https://openf1.org/docs/#session-result
 openf1	v1.sessions	GET	https://api.openf1.org/v1/sessions{query}	https://openf1.org/docs/#sessions
 openf1	v1.stints	GET	https://api.openf1.org/v1/stints{query}	https://openf1.org/docs/#stints

@@ -8,7 +8,13 @@ import type {
   TheSportsDBEventsHighlightsRequest,
   TheSportsDBEventsSeasonRequest,
   TheSportsDBEventsTVRequest,
+  TheSportsDBFilterTvChannelIdRequest,
+  TheSportsDBFilterTvChannelRequest,
+  TheSportsDBFilterTvCountryRequest,
+  TheSportsDBFilterTvDayRequest,
+  TheSportsDBFilterTvSportRequest,
   TheSportsDBLeagueEventsRequest,
+  TheSportsDBLeagueIdRequest,
   TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBLookupAllPlayersRequest,
   TheSportsDBPlayerIdRequestSchema,
@@ -19,13 +25,19 @@ import type {
   TheSportsDBSearchAllLeaguesRequest,
   TheSportsDBSearchAllSeasonsRequest,
   TheSportsDBSearchAllTeamsRequest,
+  TheSportsDBSearchEventRequest,
   TheSportsDBSearchEventsRequestSchema,
   TheSportsDBSearchFilenameRequestSchema,
+  TheSportsDBSearchLeagueRequest,
+  TheSportsDBSearchPlayerRequest,
   TheSportsDBSearchPlayersRequestSchema,
+  TheSportsDBSearchTeamRequest,
   TheSportsDBSearchTeamsRequestSchema,
+  TheSportsDBSearchVenueRequest,
   TheSportsDBSearchVenuesRequestSchema,
   TheSportsDBTableLookupRequestSchema,
   TheSportsDBTeamEventsRequest,
+  TheSportsDBTeamIdRequest,
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBTeamScheduleRequestSchema,
   TheSportsDBV2EventLookupRequestSchema,
@@ -43,13 +55,25 @@ export type {
   TheSportsDBEventsHighlightsRequest,
   TheSportsDBEventsSeasonRequest,
   TheSportsDBEventsTVRequest,
+  TheSportsDBFilterTvChannelIdRequest,
+  TheSportsDBFilterTvChannelRequest,
+  TheSportsDBFilterTvCountryRequest,
+  TheSportsDBFilterTvDayRequest,
+  TheSportsDBFilterTvSportRequest,
   TheSportsDBLeagueEventsRequest,
+  TheSportsDBLeagueIdRequest,
   TheSportsDBLookupAllPlayersRequest,
   TheSportsDBOptions,
   TheSportsDBSearchAllLeaguesRequest,
   TheSportsDBSearchAllSeasonsRequest,
   TheSportsDBSearchAllTeamsRequest,
+  TheSportsDBSearchEventRequest,
+  TheSportsDBSearchLeagueRequest,
+  TheSportsDBSearchPlayerRequest,
+  TheSportsDBSearchTeamRequest,
+  TheSportsDBSearchVenueRequest,
   TheSportsDBTeamEventsRequest,
+  TheSportsDBTeamIdRequest,
 } from "./zod";
 
 export class TheSportsDBError extends Error {
@@ -94,12 +118,20 @@ export interface TheSportsDBSportsResponse extends TheSportsDBRecord {
   sports: TheSportsDBSport[] | null;
 }
 
+export interface TheSportsDBSportListResponse extends TheSportsDBRecord {
+  all: TheSportsDBSport[] | null;
+}
+
 export interface TheSportsDBCountry extends TheSportsDBRecord {
   name_en?: string;
 }
 
 export interface TheSportsDBCountriesResponse extends TheSportsDBRecord {
   countries: TheSportsDBCountry[] | null;
+}
+
+export interface TheSportsDBCountryLookupResponse extends TheSportsDBRecord {
+  all: TheSportsDBCountry[] | null;
 }
 
 export interface TheSportsDBLeague extends TheSportsDBRecord {
@@ -135,6 +167,14 @@ export interface TheSportsDBLeagueLookupResponse extends TheSportsDBRecord {
   leagues: TheSportsDBLeague[] | null;
 }
 
+export interface TheSportsDBLeagueSearchResponse extends TheSportsDBRecord {
+  search: TheSportsDBLeague[] | null;
+}
+
+export interface TheSportsDBLeagueListResponse extends TheSportsDBRecord {
+  all: TheSportsDBLeague[] | null;
+}
+
 export interface TheSportsDBSearchAllLeaguesResponse extends TheSportsDBRecord {
   countries: TheSportsDBLeague[] | null;
 }
@@ -148,6 +188,19 @@ export interface TheSportsDBSeason extends TheSportsDBRecord {
 
 export interface TheSportsDBSeasonsResponse extends TheSportsDBRecord {
   seasons: TheSportsDBSeason[] | null;
+}
+
+export interface TheSportsDBSeasonListResponse extends TheSportsDBRecord {
+  list: TheSportsDBSeason[] | null;
+}
+
+export interface TheSportsDBSeasonPoster extends TheSportsDBRecord {
+  strSeason?: string;
+  strPoster?: string | null;
+}
+
+export interface TheSportsDBSeasonPosterListResponse extends TheSportsDBRecord {
+  list: TheSportsDBSeasonPoster[] | null;
 }
 
 export interface TheSportsDBTableRow extends TheSportsDBRecord {
@@ -239,6 +292,14 @@ export interface TheSportsDBTeamsResponse extends TheSportsDBRecord {
   teams: TheSportsDBTeam[] | null;
 }
 
+export interface TheSportsDBTeamSearchResponse extends TheSportsDBRecord {
+  search: TheSportsDBTeam[] | null;
+}
+
+export interface TheSportsDBTeamListResponse extends TheSportsDBRecord {
+  list: TheSportsDBTeam[] | null;
+}
+
 export interface TheSportsDBEquipment extends TheSportsDBRecord {
   idEquipment?: TheSportsDBField;
   idTeam?: TheSportsDBField;
@@ -292,6 +353,10 @@ export interface TheSportsDBVenuesResponse extends TheSportsDBRecord {
   venues: TheSportsDBVenue[] | null;
 }
 
+export interface TheSportsDBVenueSearchResponse extends TheSportsDBRecord {
+  search: TheSportsDBVenue[] | null;
+}
+
 export interface TheSportsDBEvent extends TheSportsDBRecord {
   idEvent?: TheSportsDBField;
   idAPIfootball?: TheSportsDBField;
@@ -340,6 +405,10 @@ export interface TheSportsDBEventsResponse extends TheSportsDBRecord {
 
 export interface TheSportsDBFilenameSearchResponse extends TheSportsDBRecord {
   event: TheSportsDBEvent[] | null;
+}
+
+export interface TheSportsDBEventSearchResponse extends TheSportsDBRecord {
+  search: TheSportsDBEvent[] | null;
 }
 
 export interface TheSportsDBEventSchedule extends TheSportsDBEvent {
@@ -430,6 +499,14 @@ export interface TheSportsDBPlayer extends TheSportsDBRecord {
 
 export interface TheSportsDBPlayersResponse extends TheSportsDBRecord {
   player: TheSportsDBPlayer[] | null;
+}
+
+export interface TheSportsDBPlayerSearchResponse extends TheSportsDBRecord {
+  search: TheSportsDBPlayer[] | null;
+}
+
+export interface TheSportsDBPlayerListResponse extends TheSportsDBRecord {
+  list: TheSportsDBPlayer[] | null;
 }
 
 export interface TheSportsDBTVEvent extends TheSportsDBRecord {
@@ -1286,6 +1363,10 @@ export interface TheSportsDBTvEventResponse extends TheSportsDBRecord {
   tvevent: TheSportsDBTvEvent[] | null;
 }
 
+export interface TheSportsDBEventFilterResponse extends TheSportsDBRecord {
+  filter: TheSportsDBTvEvent[] | null;
+}
+
 export interface TheSportsDBLeagueScheduleMethod {
   (
     req: TheSportsDBLeagueScheduleRequest,
@@ -1449,6 +1530,69 @@ export type TheSportsDBV2VenueLookupMethod = TheSportsDBRequestEndpointMethod<
   TheSportsDBV2VenueLookupRequest,
   TheSportsDBV2VenueResponse,
   typeof TheSportsDBV2VenueLookupRequestSchema
+>;
+
+export type TheSportsDBV2SearchLeagueMethod = TheSportsDBRequestMethod<
+  TheSportsDBSearchLeagueRequest,
+  TheSportsDBLeagueSearchResponse
+>;
+export type TheSportsDBV2SearchTeamMethod = TheSportsDBRequestMethod<
+  TheSportsDBSearchTeamRequest,
+  TheSportsDBTeamSearchResponse
+>;
+export type TheSportsDBV2SearchPlayerMethod = TheSportsDBRequestMethod<
+  TheSportsDBSearchPlayerRequest,
+  TheSportsDBPlayerSearchResponse
+>;
+export type TheSportsDBV2SearchEventMethod = TheSportsDBRequestMethod<
+  TheSportsDBSearchEventRequest,
+  TheSportsDBEventSearchResponse
+>;
+export type TheSportsDBV2SearchVenueMethod = TheSportsDBRequestMethod<
+  TheSportsDBSearchVenueRequest,
+  TheSportsDBVenueSearchResponse
+>;
+export type TheSportsDBV2AllCountriesMethod =
+  TheSportsDBEndpointMethod<TheSportsDBCountryLookupResponse>;
+export type TheSportsDBV2AllSportsMethod =
+  TheSportsDBEndpointMethod<TheSportsDBSportListResponse>;
+export type TheSportsDBV2AllLeaguesMethod =
+  TheSportsDBEndpointMethod<TheSportsDBLeagueListResponse>;
+export type TheSportsDBV2ListTeamsMethod = TheSportsDBRequestMethod<
+  TheSportsDBLeagueIdRequest,
+  TheSportsDBTeamListResponse
+>;
+export type TheSportsDBV2ListSeasonsMethod = TheSportsDBRequestMethod<
+  TheSportsDBLeagueIdRequest,
+  TheSportsDBSeasonListResponse
+>;
+export type TheSportsDBV2ListSeasonPostersMethod = TheSportsDBRequestMethod<
+  TheSportsDBLeagueIdRequest,
+  TheSportsDBSeasonPosterListResponse
+>;
+export type TheSportsDBV2ListPlayersMethod = TheSportsDBRequestMethod<
+  TheSportsDBTeamIdRequest,
+  TheSportsDBPlayerListResponse
+>;
+export type TheSportsDBV2FilterTvDayMethod = TheSportsDBRequestMethod<
+  TheSportsDBFilterTvDayRequest,
+  TheSportsDBEventFilterResponse
+>;
+export type TheSportsDBV2FilterTvCountryMethod = TheSportsDBRequestMethod<
+  TheSportsDBFilterTvCountryRequest,
+  TheSportsDBEventFilterResponse
+>;
+export type TheSportsDBV2FilterTvSportMethod = TheSportsDBRequestMethod<
+  TheSportsDBFilterTvSportRequest,
+  TheSportsDBEventFilterResponse
+>;
+export type TheSportsDBV2FilterTvChannelMethod = TheSportsDBRequestMethod<
+  TheSportsDBFilterTvChannelRequest,
+  TheSportsDBEventFilterResponse
+>;
+export type TheSportsDBV2FilterTvChannelIdMethod = TheSportsDBRequestMethod<
+  TheSportsDBFilterTvChannelIdRequest,
+  TheSportsDBEventFilterResponse
 >;
 
 export type TheSportsDBAllSportsMethod =
@@ -1643,10 +1787,47 @@ export interface TheSportsDBV2LookupNamespace {
   venue: TheSportsDBV2VenueLookupMethod;
 }
 
+export interface TheSportsDBV2SearchNamespace {
+  league: TheSportsDBV2SearchLeagueMethod;
+  team: TheSportsDBV2SearchTeamMethod;
+  player: TheSportsDBV2SearchPlayerMethod;
+  event: TheSportsDBV2SearchEventMethod;
+  venue: TheSportsDBV2SearchVenueMethod;
+}
+
+export interface TheSportsDBV2AllNamespace {
+  countries: TheSportsDBV2AllCountriesMethod;
+  sports: TheSportsDBV2AllSportsMethod;
+  leagues: TheSportsDBV2AllLeaguesMethod;
+}
+
+export interface TheSportsDBV2ListNamespace {
+  teams: TheSportsDBV2ListTeamsMethod;
+  seasons: TheSportsDBV2ListSeasonsMethod;
+  seasonposters: TheSportsDBV2ListSeasonPostersMethod;
+  players: TheSportsDBV2ListPlayersMethod;
+}
+
+export interface TheSportsDBV2FilterTvNamespace {
+  day: TheSportsDBV2FilterTvDayMethod;
+  country: TheSportsDBV2FilterTvCountryMethod;
+  sport: TheSportsDBV2FilterTvSportMethod;
+  channel: TheSportsDBV2FilterTvChannelMethod;
+  channelid: TheSportsDBV2FilterTvChannelIdMethod;
+}
+
+export interface TheSportsDBV2FilterNamespace {
+  tv: TheSportsDBV2FilterTvNamespace;
+}
+
 export interface TheSportsDBV2Namespace {
   lookup: TheSportsDBV2LookupNamespace;
   schedule: TheSportsDBV2ScheduleNamespace;
   livescore: TheSportsDBV2LiveScoreNamespace;
+  search: TheSportsDBV2SearchNamespace;
+  all: TheSportsDBV2AllNamespace;
+  list: TheSportsDBV2ListNamespace;
+  filter: TheSportsDBV2FilterNamespace;
 }
 
 export interface TheSportsDBGetNamespace {

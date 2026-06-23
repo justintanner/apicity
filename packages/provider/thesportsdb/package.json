@@ -1,7 +1,7 @@
 {
   "name": "@apicity/thesportsdb",
   "version": "0.5.4",
-  "description": "TheSportsDB sports data API provider.",
+  "description": "TheSportsDB V1 and V2 sports data API provider.",
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -607,6 +607,27 @@ function renderSimpleFunctionsPublicMarketGuide() {
   ].join("\n");
 }
 
+function renderTheSportsDBAuthGuide() {
+  return [
+    "## V2 Authentication",
+    "",
+    "V1 calls default to TheSportsDB's free `123` key in the URL path when",
+    "`apiKey` is omitted. V2 is premium-only and sends the same `apiKey` in",
+    "the `X-API-KEY` header; V2 methods throw locally if no key is configured.",
+    "",
+    "```typescript",
+    "const thesportsdb = createTheSportsDB({",
+    "  apiKey: process.env.THESPORTSDB_API_KEY!,",
+    "});",
+    "",
+    "const teams = await thesportsdb.v2.search.team({",
+    '  teamName: "Manchester United",',
+    "});",
+    "```",
+    "",
+  ].join("\n");
+}
+
 function renderSimpleFunctionsAuthenticatedGuide() {
   return [
     "## Authenticated APIs",
@@ -3110,6 +3131,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "binance") {
     sections.push(renderBinancePublicDataGuide());
+  }
+
+  if (providerName === "thesportsdb") {
+    sections.push(renderTheSportsDBAuthGuide());
   }
 
   if (providerName === "openligadb") {

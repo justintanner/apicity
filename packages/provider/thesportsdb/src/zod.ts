@@ -50,6 +50,10 @@ const eventIdSchema = z.union([
   z.number().int().nonnegative(),
 ]);
 const nonEmptyQueryString = z.string().min(1);
+const stringPathParamSchema = z.string().min(1);
+const datePathParamSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Expected YYYY-MM-DD date string");
 const nullableString = z.string().nullable().optional();
 const optionalNullableString = nullableString;
 const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
@@ -100,6 +104,90 @@ export const TheSportsDBVenueLookupRequestSchema = z.object({
 
 export type TheSportsDBVenueLookupRequest = z.infer<
   typeof TheSportsDBVenueLookupRequestSchema
+>;
+
+export const TheSportsDBSearchLeagueRequestSchema = z.object({
+  leagueName: stringPathParamSchema,
+});
+export type TheSportsDBSearchLeagueRequest = z.infer<
+  typeof TheSportsDBSearchLeagueRequestSchema
+>;
+
+export const TheSportsDBSearchTeamRequestSchema = z.object({
+  teamName: stringPathParamSchema,
+});
+export type TheSportsDBSearchTeamRequest = z.infer<
+  typeof TheSportsDBSearchTeamRequestSchema
+>;
+
+export const TheSportsDBSearchPlayerRequestSchema = z.object({
+  playerName: stringPathParamSchema,
+});
+export type TheSportsDBSearchPlayerRequest = z.infer<
+  typeof TheSportsDBSearchPlayerRequestSchema
+>;
+
+export const TheSportsDBSearchEventRequestSchema = z.object({
+  eventName: stringPathParamSchema,
+});
+export type TheSportsDBSearchEventRequest = z.infer<
+  typeof TheSportsDBSearchEventRequestSchema
+>;
+
+export const TheSportsDBSearchVenueRequestSchema = z.object({
+  venueName: stringPathParamSchema,
+});
+export type TheSportsDBSearchVenueRequest = z.infer<
+  typeof TheSportsDBSearchVenueRequestSchema
+>;
+
+export const TheSportsDBLeagueIdRequestSchema = z.object({
+  idLeague: idSchema,
+});
+export type TheSportsDBLeagueIdRequest = z.infer<
+  typeof TheSportsDBLeagueIdRequestSchema
+>;
+
+export const TheSportsDBTeamIdRequestSchema = z.object({
+  idTeam: idSchema,
+});
+export type TheSportsDBTeamIdRequest = z.infer<
+  typeof TheSportsDBTeamIdRequestSchema
+>;
+
+export const TheSportsDBFilterTvDayRequestSchema = z.object({
+  date: datePathParamSchema,
+});
+export type TheSportsDBFilterTvDayRequest = z.infer<
+  typeof TheSportsDBFilterTvDayRequestSchema
+>;
+
+export const TheSportsDBFilterTvCountryRequestSchema = z.object({
+  country: stringPathParamSchema,
+});
+export type TheSportsDBFilterTvCountryRequest = z.infer<
+  typeof TheSportsDBFilterTvCountryRequestSchema
+>;
+
+export const TheSportsDBFilterTvSportRequestSchema = z.object({
+  sport: stringPathParamSchema,
+});
+export type TheSportsDBFilterTvSportRequest = z.infer<
+  typeof TheSportsDBFilterTvSportRequestSchema
+>;
+
+export const TheSportsDBFilterTvChannelRequestSchema = z.object({
+  channel: stringPathParamSchema,
+});
+export type TheSportsDBFilterTvChannelRequest = z.infer<
+  typeof TheSportsDBFilterTvChannelRequestSchema
+>;
+
+export const TheSportsDBFilterTvChannelIdRequestSchema = z.object({
+  idChannel: idSchema,
+});
+export type TheSportsDBFilterTvChannelIdRequest = z.infer<
+  typeof TheSportsDBFilterTvChannelIdRequestSchema
 >;
 
 export const TheSportsDBSearchTeamsRequestSchema: z.ZodType<TheSportsDBSearchTeamsRequest> =

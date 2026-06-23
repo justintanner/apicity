@@ -2,8 +2,10 @@ import { attachExamples } from "./example";
 import { TheSportsDBError } from "./types";
 import type {
   TheSportsDBCountriesResponse,
+  TheSportsDBCountryLookupResponse,
   TheSportsDBEquipmentLookupRequest,
   TheSportsDBEquipmentLookupResponse,
+  TheSportsDBEventFilterResponse,
   TheSportsDBEventScheduleList,
   TheSportsDBEventsDayRequest,
   TheSportsDBEventsHighlightsRequest,
@@ -11,15 +13,18 @@ import type {
   TheSportsDBEventLookupRequest,
   TheSportsDBEventResponse,
   TheSportsDBEventResultsResponse,
+  TheSportsDBEventSearchResponse,
   TheSportsDBEventStatsResponse,
   TheSportsDBEventsSeasonRequest,
   TheSportsDBEventsTVRequest,
   TheSportsDBFilenameSearchResponse,
   TheSportsDBLeagueEventsRequest,
+  TheSportsDBLeagueListResponse,
   TheSportsDBLeagueLookupRequest,
   TheSportsDBLeagueLookupResponse,
   TheSportsDBLeagueScheduleRequest,
   TheSportsDBLeagueSeasonScheduleRequest,
+  TheSportsDBLeagueSearchResponse,
   TheSportsDBLeaguesResponse,
   TheSportsDBLineupResponse,
   TheSportsDBLiveScoreLeagueRequest,
@@ -33,11 +38,15 @@ import type {
   TheSportsDBLookupPlayerResponse,
   TheSportsDBLookupPlayerStatsResponse,
   TheSportsDBOptions,
+  TheSportsDBPlayerListResponse,
   TheSportsDBPlayerIdRequest,
   TheSportsDBPlayerResultsResponse,
+  TheSportsDBPlayerSearchResponse,
   TheSportsDBPlayersResponse,
   TheSportsDBProvider,
   TheSportsDBResultsResponse,
+  TheSportsDBSeasonListResponse,
+  TheSportsDBSeasonPosterListResponse,
   TheSportsDBSearchAllLeaguesRequest,
   TheSportsDBSearchAllLeaguesResponse,
   TheSportsDBSearchAllSeasonsRequest,
@@ -48,13 +57,16 @@ import type {
   TheSportsDBSearchTeamsRequest,
   TheSportsDBSearchVenuesRequest,
   TheSportsDBSeasonsResponse,
+  TheSportsDBSportListResponse,
   TheSportsDBSportsResponse,
   TheSportsDBTableLookupRequest,
   TheSportsDBTableLookupResponse,
   TheSportsDBTeamEventsRequest,
+  TheSportsDBTeamListResponse,
   TheSportsDBTeamLookupRequest,
   TheSportsDBTeamLookupResponse,
   TheSportsDBTeamScheduleRequest,
+  TheSportsDBTeamSearchResponse,
   TheSportsDBTeamsResponse,
   TheSportsDBTimelineResponse,
   TheSportsDBTvEventResponse,
@@ -85,6 +97,7 @@ import type {
   TheSportsDBVenueLookupRequest,
   TheSportsDBVenueLookupResponse,
   TheSportsDBVenueScheduleRequest,
+  TheSportsDBVenueSearchResponse,
   TheSportsDBVenuesResponse,
 } from "./types";
 import {
@@ -94,7 +107,19 @@ import {
   TheSportsDBEventsHighlightsRequestSchema,
   TheSportsDBEventsSeasonRequestSchema,
   TheSportsDBEventsTVRequestSchema,
+  TheSportsDBFilterTvChannelIdRequestSchema,
+  type TheSportsDBFilterTvChannelIdRequest,
+  TheSportsDBFilterTvChannelRequestSchema,
+  type TheSportsDBFilterTvChannelRequest,
+  TheSportsDBFilterTvCountryRequestSchema,
+  type TheSportsDBFilterTvCountryRequest,
+  TheSportsDBFilterTvDayRequestSchema,
+  type TheSportsDBFilterTvDayRequest,
+  TheSportsDBFilterTvSportRequestSchema,
+  type TheSportsDBFilterTvSportRequest,
   TheSportsDBLeagueEventsRequestSchema,
+  TheSportsDBLeagueIdRequestSchema,
+  type TheSportsDBLeagueIdRequest,
   TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBLeagueScheduleRequestSchema,
   TheSportsDBLeagueSeasonScheduleRequestSchema,
@@ -105,13 +130,25 @@ import {
   TheSportsDBSearchAllLeaguesRequestSchema,
   TheSportsDBSearchAllSeasonsRequestSchema,
   TheSportsDBSearchAllTeamsRequestSchema,
+  TheSportsDBSearchEventRequestSchema,
+  type TheSportsDBSearchEventRequest,
   TheSportsDBSearchEventsRequestSchema,
   TheSportsDBSearchFilenameRequestSchema,
+  TheSportsDBSearchLeagueRequestSchema,
+  type TheSportsDBSearchLeagueRequest,
+  TheSportsDBSearchPlayerRequestSchema,
+  type TheSportsDBSearchPlayerRequest,
   TheSportsDBSearchPlayersRequestSchema,
+  TheSportsDBSearchTeamRequestSchema,
+  type TheSportsDBSearchTeamRequest,
   TheSportsDBSearchTeamsRequestSchema,
+  TheSportsDBSearchVenueRequestSchema,
+  type TheSportsDBSearchVenueRequest,
   TheSportsDBSearchVenuesRequestSchema,
   TheSportsDBTableLookupRequestSchema,
   TheSportsDBTeamEventsRequestSchema,
+  TheSportsDBTeamIdRequestSchema,
+  type TheSportsDBTeamIdRequest,
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBTeamScheduleRequestSchema,
   TheSportsDBV2EventLookupRequestSchema,
@@ -134,8 +171,8 @@ export function createTheSportsDB(
   const v2BaseURL = (
     opts?.v2BaseURL ?? "https://www.thesportsdb.com/api/v2/json"
   ).replace(/\/+$/, "");
-  const rawApiKey = opts?.apiKey ?? "123";
-  const apiKey = encodeURIComponent(rawApiKey);
+  const apiKey = encodeURIComponent(opts?.apiKey ?? "123");
+  const v2ApiKey = opts?.apiKey;
   const doFetch = opts?.fetch ?? fetch;
   const timeout = opts?.timeout ?? 30000;
 
@@ -170,6 +207,24 @@ export function createTheSportsDB(
       return `TheSportsDB API error ${status}: ${body}`;
     }
     return `TheSportsDB API error: ${status}`;
+  }
+
+  function createLocalError(status: number, message: string): TheSportsDBError {
+    return new TheSportsDBError(
+      formatErrorMessage(status, { error: message }),
+      status,
+      { error: message }
+    );
+  }
+
+  function requireV2ApiKey(): string {
+    if (!v2ApiKey || v2ApiKey.trim().length === 0) {
+      throw createLocalError(
+        401,
+        "TheSportsDB V2 requires apiKey for X-API-KEY authentication"
+      );
+    }
+    return v2ApiKey;
   }
 
   async function parseResponseBody(res: Response): Promise<unknown> {
@@ -244,7 +299,7 @@ export function createTheSportsDB(
     signal?: AbortSignal
   ): Promise<T> {
     return makeJsonRequest<T>(method, requestBaseURL, path, signal, {
-      "X-API-KEY": rawApiKey,
+      "X-API-KEY": requireV2ApiKey(),
     });
   }
 
@@ -735,6 +790,303 @@ export function createTheSportsDB(
     equipment,
     venue,
   };
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/search/league/{leagueName}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-search
+  const searchLeague = Object.assign(
+    async (
+      req: TheSportsDBSearchLeagueRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLeagueSearchResponse> => {
+      return makeV2Request<TheSportsDBLeagueSearchResponse>(
+        "GET",
+        buildPath("search", "league", req.leagueName),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchLeagueRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/search/team/{teamName}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-search
+  const searchTeam = Object.assign(
+    async (
+      req: TheSportsDBSearchTeamRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTeamSearchResponse> => {
+      return makeV2Request<TheSportsDBTeamSearchResponse>(
+        "GET",
+        buildPath("search", "team", req.teamName),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchTeamRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/search/player/{playerName}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-search
+  const searchPlayer = Object.assign(
+    async (
+      req: TheSportsDBSearchPlayerRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBPlayerSearchResponse> => {
+      return makeV2Request<TheSportsDBPlayerSearchResponse>(
+        "GET",
+        buildPath("search", "player", req.playerName),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchPlayerRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/search/event/{eventName}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-search
+  const searchEvent = Object.assign(
+    async (
+      req: TheSportsDBSearchEventRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventSearchResponse> => {
+      return makeV2Request<TheSportsDBEventSearchResponse>(
+        "GET",
+        buildPath("search", "event", req.eventName),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchEventRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/search/venue/{venueName}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-search
+  const searchVenue = Object.assign(
+    async (
+      req: TheSportsDBSearchVenueRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBVenueSearchResponse> => {
+      return makeV2Request<TheSportsDBVenueSearchResponse>(
+        "GET",
+        buildPath("search", "venue", req.venueName),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchVenueRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/all/countries
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-all
+  const v2AllCountries = Object.assign(
+    async (signal?: AbortSignal): Promise<TheSportsDBCountryLookupResponse> => {
+      return makeV2Request<TheSportsDBCountryLookupResponse>(
+        "GET",
+        buildPath("all", "countries"),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/all/sports
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-all
+  const v2AllSports = Object.assign(
+    async (signal?: AbortSignal): Promise<TheSportsDBSportListResponse> => {
+      return makeV2Request<TheSportsDBSportListResponse>(
+        "GET",
+        buildPath("all", "sports"),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/all/leagues
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-all
+  const v2AllLeagues = Object.assign(
+    async (signal?: AbortSignal): Promise<TheSportsDBLeagueListResponse> => {
+      return makeV2Request<TheSportsDBLeagueListResponse>(
+        "GET",
+        buildPath("all", "leagues"),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/list/teams/{idLeague}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-list
+  const listTeams = Object.assign(
+    async (
+      req: TheSportsDBLeagueIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTeamListResponse> => {
+      return makeV2Request<TheSportsDBTeamListResponse>(
+        "GET",
+        buildPath("list", "teams", req.idLeague),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBLeagueIdRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/list/seasons/{idLeague}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-list
+  const listSeasons = Object.assign(
+    async (
+      req: TheSportsDBLeagueIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBSeasonListResponse> => {
+      return makeV2Request<TheSportsDBSeasonListResponse>(
+        "GET",
+        buildPath("list", "seasons", req.idLeague),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBLeagueIdRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/list/seasonposters/{idLeague}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-list
+  const listSeasonposters = Object.assign(
+    async (
+      req: TheSportsDBLeagueIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBSeasonPosterListResponse> => {
+      return makeV2Request<TheSportsDBSeasonPosterListResponse>(
+        "GET",
+        buildPath("list", "seasonposters", req.idLeague),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBLeagueIdRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/list/players/{idTeam}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-list
+  const listPlayers = Object.assign(
+    async (
+      req: TheSportsDBTeamIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBPlayerListResponse> => {
+      return makeV2Request<TheSportsDBPlayerListResponse>(
+        "GET",
+        buildPath("list", "players", req.idTeam),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBTeamIdRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/filter/tv/day/{date}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-filter
+  const filterTvDay = Object.assign(
+    async (
+      req: TheSportsDBFilterTvDayRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventFilterResponse> => {
+      return makeV2Request<TheSportsDBEventFilterResponse>(
+        "GET",
+        buildPath("filter", "tv", "day", req.date),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBFilterTvDayRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/filter/tv/country/{country}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-filter
+  const filterTvCountry = Object.assign(
+    async (
+      req: TheSportsDBFilterTvCountryRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventFilterResponse> => {
+      return makeV2Request<TheSportsDBEventFilterResponse>(
+        "GET",
+        buildPath("filter", "tv", "country", req.country),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBFilterTvCountryRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/filter/tv/sport/{sport}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-filter
+  const filterTvSport = Object.assign(
+    async (
+      req: TheSportsDBFilterTvSportRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventFilterResponse> => {
+      return makeV2Request<TheSportsDBEventFilterResponse>(
+        "GET",
+        buildPath("filter", "tv", "sport", req.sport),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBFilterTvSportRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/filter/tv/channel/{channel}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-filter
+  const filterTvChannel = Object.assign(
+    async (
+      req: TheSportsDBFilterTvChannelRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventFilterResponse> => {
+      return makeV2Request<TheSportsDBEventFilterResponse>(
+        "GET",
+        buildPath("filter", "tv", "channel", req.channel),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBFilterTvChannelRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/filter/tv/channelid/{idChannel}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-filter
+  const filterTvChannelid = Object.assign(
+    async (
+      req: TheSportsDBFilterTvChannelIdRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventFilterResponse> => {
+      return makeV2Request<TheSportsDBEventFilterResponse>(
+        "GET",
+        buildPath("filter", "tv", "channelid", req.idChannel),
+        v2BaseURL,
+        signal
+      );
+    },
+    { schema: TheSportsDBFilterTvChannelIdRequestSchema }
+  );
 
   // sig-ok: V1 PHP script names exposed as list methods.
   // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/search_all_leagues.php{query}
@@ -1633,6 +1985,33 @@ export function createTheSportsDB(
     lookup: v2Lookup,
     schedule,
     livescore,
+    search: {
+      league: searchLeague,
+      team: searchTeam,
+      player: searchPlayer,
+      event: searchEvent,
+      venue: searchVenue,
+    },
+    all: {
+      countries: v2AllCountries,
+      sports: v2AllSports,
+      leagues: v2AllLeagues,
+    },
+    list: {
+      teams: listTeams,
+      seasons: listSeasons,
+      seasonposters: listSeasonposters,
+      players: listPlayers,
+    },
+    filter: {
+      tv: {
+        day: filterTvDay,
+        country: filterTvCountry,
+        sport: filterTvSport,
+        channel: filterTvChannel,
+        channelid: filterTvChannelid,
+      },
+    },
   };
 
   return attachExamples({

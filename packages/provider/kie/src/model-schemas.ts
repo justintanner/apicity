@@ -268,7 +268,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     fields: {
       prompt: {
         type: "string",
-        description: "Video generation prompt (max 5000 chars)",
+        description: "Video generation prompt (max 4096 chars)",
       },
       image_urls: {
         type: "array",
@@ -286,11 +286,11 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         type: "string",
         enum: ["fun", "normal", "spicy"],
         description:
-          "Generation mode (default normal; spicy is unavailable with external image_urls)",
+          "Generation mode (default normal; spicy requires task_id and is unavailable with external image_urls)",
       },
       duration: {
         type: "number",
-        description: "Duration in seconds (6-30, default 6)",
+        description: "Duration in whole seconds (6-30, default 6)",
       },
       resolution: {
         type: "string",

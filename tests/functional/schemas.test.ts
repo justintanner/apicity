@@ -59,6 +59,9 @@ import {
   SunoGenerateRequestSchema,
   KieChatRequestSchema,
   KieClaudeRequestSchema,
+  GrokTextToVideoRequestSchema,
+  GrokImageToVideoRequestSchema,
+  GrokVideo15PreviewRequestSchema,
   Omnihuman15RequestSchema,
 } from "../../packages/provider/kie/src/zod";
 import { modelInputSchemas } from "../../packages/provider/kie/src/model-schemas";
@@ -435,6 +438,83 @@ describe("schema + validatePayload integration", () => {
 
     expect(result.success).toBe(false);
     expect(result.error?.issues.length).toBeGreaterThan(0);
+  });
+
+  it("kie grok text-to-video: accepts spicy mode and numeric duration", () => {
+    const result = GrokTextToVideoRequestSchema.safeParse({
+      model: "grok-imagine/text-to-video",
+      input: {
+        prompt: "A cinematic sunset over calm ocean waves",
+        aspect_ratio: "16:9",
+        mode: "spicy",
+        duration: 30,
+        resolution: "720p",
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("kie grok image-to-video: accepts task_id spicy mode", () => {
+    const result = GrokImageToVideoRequestSchema.safeParse({
+      model: "grok-imagine/image-to-video",
+      input: {
+        task_id: "task_grok_12345678",
+        index: 5,
+        prompt: "x".repeat(4096),
+        aspect_ratio: "16:9",
+        mode: "spicy",
+        duration: 30,
+        resolution: "720p",
+      },
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("kie grok image-to-video: rejects unsupported active i2v values", () => {
+    const result = GrokImageToVideoRequestSchema.safeParse({
+      model: "grok-imagine/image-to-video",
+      input: {
+        image_urls: ["https://example.com/reference.png"],
+        prompt: "x".repeat(4097),
+        aspect_ratio: "auto",
+        mode: "normal",
+        duration: "6",
+      },
+    });
+
+    expect(result.success).toBe(false);
+    const paths = result.error?.issues.map((i) => i.path.join(".")) ?? [];
+    expect(paths).toContain("input.prompt");
+    expect(paths).toContain("input.aspect_ratio");
+    expect(paths).toContain("input.duration");
+  });
+
+  it("kie grok image-to-video: rejects external image spicy mode", () => {
+    const result = GrokImageToVideoRequestSchema.safeParse({
+      model: "grok-imagine/image-to-video",
+      input: {
+        image_urls: ["https://example.com/reference.png"],
+        mode: "spicy",
+      },
+    });
+
+    expect(result.success).toBe(false);
+    const paths = result.error?.issues.map((i) => i.path.join(".")) ?? [];
+    expect(paths).toContain("input.mode");
+  });
+
+  it("kie grok preview i2v: keeps legacy auto aspect ratio", () => {
+    const result = GrokVideo15PreviewRequestSchema.safeParse({
+      model: "grok-imagine-video-1-5-preview",
+      input: {
+        image_urls: ["https://example.com/reference.png"],
+        aspect_ratio: "auto",
+      },
+    });
+
+    expect(result.success).toBe(true);
   });
 
   it("kie veoGenerate: accepts valid request", () => {
@@ -899,6 +979,41 @@ describe("kie modelInputSchemas", () => {
       "16:9",
     ]);
     expect(textToVideo.fields.resolution.enum).toEqual(["720p", "1080p"]);
+  });
+
+  it("grok imagine video schemas expose separate t2v and i2v metadata", () => {
+    const textToVideo = modelInputSchemas["grok-imagine/text-to-video"];
+    expect(textToVideo.type).toBe("video");
+    expect(textToVideo.fields.prompt.description).toContain("5000");
+    expect(textToVideo.fields.mode.enum).toEqual(["fun", "normal", "spicy"]);
+    expect(textToVideo.fields.duration.type).toBe("number");
+    expect(textToVideo.fields.aspect_ratio.enum).toEqual([
+      "2:3",
+      "3:2",
+      "1:1",
+      "16:9",
+      "9:16",
+    ]);
+
+    const imageToVideo = modelInputSchemas["grok-imagine/image-to-video"];
+    expect(imageToVideo.type).toBe("video");
+    expect(imageToVideo.fields.prompt.description).toContain("4096");
+    expect(imageToVideo.fields.mode.enum).toEqual(["fun", "normal", "spicy"]);
+    expect(imageToVideo.fields.mode.description).toContain("task_id");
+    expect(imageToVideo.fields.duration.type).toBe("number");
+    expect(imageToVideo.fields.duration.description).toContain("6-30");
+    expect(imageToVideo.fields.aspect_ratio.enum).toEqual([
+      "2:3",
+      "3:2",
+      "1:1",
+      "16:9",
+      "9:16",
+    ]);
+    expect(imageToVideo.fields.aspect_ratio.enum).not.toContain("auto");
+
+    const preview = modelInputSchemas["grok-imagine-video-1-5-preview"];
+    expect(preview.fields.prompt.description).toContain("4096");
+    expect(preview.fields.aspect_ratio.enum).toContain("auto");
   });
 
   it("gpt-image-2 text-to-image exposes documented aspect ratios", () => {

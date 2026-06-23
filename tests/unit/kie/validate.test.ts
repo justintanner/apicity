@@ -179,7 +179,7 @@ describe("kie Zod schema validation", () => {
       expect(result.data.input.nsfw_checker).toBe(false);
     });
 
-    it("should keep legacy image-to-video string durations compatible", () => {
+    it("should reject string durations on current image-to-video", () => {
       const request = {
         model: "grok-imagine/image-to-video",
         input: {
@@ -188,9 +188,12 @@ describe("kie Zod schema validation", () => {
         },
       };
 
-      expect(GrokImageToVideoRequestSchema.safeParse(request).success).toBe(
-        true
-      );
+      const result = GrokImageToVideoRequestSchema.safeParse(request);
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
     });
 
     it("should validate external image URLs and image formats", () => {

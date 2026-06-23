@@ -104,6 +104,8 @@ External `image_urls` must point to JPEG, PNG, or WEBP images; KIE's
 upstream limit is 7 images and 10 MB per image. `mode: "spicy"` is
 only available when sourcing the image from a previous Grok `task_id`,
 not from external image URLs.
+Active image-to-video prompts are capped at 4096 characters, and
+`duration` must be a whole number from 6 to 30 seconds.
 
 `createTask` returns `{ code, msg, data: { taskId } }`. For production
 workloads, pass `callBackUrl` so KIE can notify you when the job

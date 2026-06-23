@@ -84,7 +84,31 @@ export const KlingV3TurboDurationSchema = z.union([
   z.string().regex(/^[1-9]\d*$/),
 ]);
 
+export const GrokTextToVideoModeSchema = z.enum(["fun", "normal", "spicy"]);
+
+export const GrokImageToVideoModeSchema = z.enum(["fun", "normal", "spicy"]);
+
 export const GrokImagineModeSchema = z.enum(["fun", "normal", "spicy"]);
+
+export const GrokTextToVideoAspectRatioSchema = z.enum([
+  "2:3",
+  "3:2",
+  "1:1",
+  "16:9",
+  "9:16",
+]);
+
+export const GrokImageToVideoAspectRatioSchema = z.enum([
+  "2:3",
+  "3:2",
+  "1:1",
+  "16:9",
+  "9:16",
+]);
+
+export const GrokTextToVideoDurationSchema = z.number().int().min(6).max(30);
+
+export const GrokImageToVideoDurationSchema = z.number().int().min(6).max(30);
 
 export const GrokImagineDurationSchema = z.enum(["6", "10"]);
 
@@ -325,28 +349,20 @@ export const GrokTextToVideoRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     prompt: z.string().min(1).max(5000),
-    aspect_ratio: z.enum(["2:3", "3:2", "1:1", "16:9", "9:16"]).optional(),
-    mode: GrokImagineModeSchema.optional(),
-    duration: z.number().int().min(6).max(30).optional(),
+    aspect_ratio: GrokTextToVideoAspectRatioSchema.optional(),
+    mode: GrokTextToVideoModeSchema.optional(),
+    duration: GrokTextToVideoDurationSchema.optional(),
     resolution: GrokImagineResolutionSchema.optional(),
     nsfw_checker: z.boolean().default(false),
   }),
 });
-
-// KIE now documents numeric seconds for Grok Imagine 1.5 image-to-video, while
-// older recordings and callers used bare digit strings. Accept both to preserve
-// compatibility while making the current numeric shape valid.
-export const GrokImageToVideoDurationSchema = z.union([
-  z.number().int().min(6).max(30),
-  z.string().regex(/^([6-9]|[12][0-9]|30)$/),
-]);
 
 export const GrokImageToVideoRequestSchema = z
   .object({
     model: z.literal("grok-imagine/image-to-video"),
     callBackUrl: z.string().url().optional(),
     input: z.object({
-      prompt: z.string().max(5000).optional(),
+      prompt: z.string().max(4096).optional(),
       image_urls: z
         .array(GrokImagineImageUrlSchema)
         .min(1)
@@ -354,12 +370,10 @@ export const GrokImageToVideoRequestSchema = z
         .optional(),
       task_id: z.string().min(1).max(100).optional(),
       index: z.number().int().min(0).max(5).default(0),
-      mode: GrokImagineModeSchema.default("normal"),
+      mode: GrokImageToVideoModeSchema.default("normal"),
       duration: GrokImageToVideoDurationSchema.default(6),
       resolution: GrokImagineResolutionSchema.default("480p"),
-      aspect_ratio: z
-        .enum(["2:3", "3:2", "1:1", "16:9", "9:16"])
-        .default("16:9"),
+      aspect_ratio: GrokImageToVideoAspectRatioSchema.default("16:9"),
       nsfw_checker: z.boolean().default(false),
     }),
   })
@@ -1328,6 +1342,17 @@ export type KlingV3TurboAspectRatio = z.infer<
   typeof KlingV3TurboAspectRatioSchema
 >;
 export type GrokImagineMode = z.infer<typeof GrokImagineModeSchema>;
+export type GrokTextToVideoMode = z.infer<typeof GrokTextToVideoModeSchema>;
+export type GrokImageToVideoMode = z.infer<typeof GrokImageToVideoModeSchema>;
+export type GrokTextToVideoAspectRatio = z.infer<
+  typeof GrokTextToVideoAspectRatioSchema
+>;
+export type GrokImageToVideoAspectRatio = z.infer<
+  typeof GrokImageToVideoAspectRatioSchema
+>;
+export type GrokTextToVideoDuration = z.infer<
+  typeof GrokTextToVideoDurationSchema
+>;
 export type GrokImagineDuration = z.infer<typeof GrokImagineDurationSchema>;
 export type GrokImageToVideoDuration = z.infer<
   typeof GrokImageToVideoDurationSchema

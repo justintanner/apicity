@@ -91,7 +91,7 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-17 endpoints across 17 groups. Each method mirrors an upstream URL path.
+18 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### carData
 

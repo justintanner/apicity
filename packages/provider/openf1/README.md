@@ -212,6 +212,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 </details>
 
+### stints
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.stints</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/stints{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#stints)
+
+```typescript
+const res = await openf1.v1.stints({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
 ### teamRadio
 
 <details>

@@ -26,6 +26,9 @@ import type {
   OpenF1SessionRequest,
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
+  OpenF1StintRequest,
+  OpenF1StintResponse,
+  OpenF1StintsMethod,
   OpenF1TeamRadioMethod,
   OpenF1TeamRadioRequest,
   OpenF1TeamRadioResponse,
@@ -44,6 +47,7 @@ import {
   OpenF1PitStopRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
+  OpenF1StintRequestSchema,
   OpenF1TeamRadioRequestSchema,
   OpenF1TokenRequestSchema,
   OpenF1WeatherRequestSchema,
@@ -169,6 +173,17 @@ const WEATHER_QUERY_FIELDS = [
   "wind_direction",
   "wind_speed",
 ] as const satisfies readonly (keyof OpenF1WeatherRequest)[];
+
+const STINTS_QUERY_FIELDS = [
+  "compound",
+  "driver_number",
+  "lap_end",
+  "lap_start",
+  "meeting_key",
+  "session_key",
+  "stint_number",
+  "tyre_age_at_start",
+] as const satisfies readonly (keyof OpenF1StintRequest)[];
 
 type OpenF1QueryValue =
   | OpenF1FilterScalar
@@ -566,6 +581,22 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1WeatherRequestSchema }
   ) as OpenF1WeatherMethod;
 
+  // GET https://api.openf1.org/v1/stints{query}
+  // Docs: https://openf1.org/docs/#stints
+  const stints = Object.assign(
+    async (
+      req: OpenF1StintRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1StintResponse | string> => {
+      const query = buildQuery(req, STINTS_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/stints${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1StintResponse>(`/v1/stints${query}`, signal);
+    },
+    { schema: OpenF1StintRequestSchema }
+  ) as OpenF1StintsMethod;
+
   return attachExamples({
     token,
     v1: {
@@ -576,6 +607,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       pit,
       sessionResult,
       sessions,
+      stints,
       teamRadio,
       weather,
     },

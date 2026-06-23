@@ -35,6 +35,10 @@ import type {
   OpenF1SessionFilter,
   OpenF1SessionFilterField,
   OpenF1SessionRequest,
+  OpenF1Stint,
+  OpenF1StintFilter,
+  OpenF1StintFilterField,
+  OpenF1StintRequest,
   OpenF1TeamRadio,
   OpenF1TeamRadioFilter,
   OpenF1TeamRadioFilterField,
@@ -587,3 +591,50 @@ export const OpenF1WeatherRequestSchema: z.ZodType<OpenF1WeatherRequest> =
   });
 
 export const OpenF1WeatherResponseSchema = z.array(OpenF1WeatherSchema);
+
+export const OpenF1StintFilterFieldSchema: z.ZodType<OpenF1StintFilterField> =
+  z.enum([
+    "compound",
+    "driver_number",
+    "lap_end",
+    "lap_start",
+    "meeting_key",
+    "session_key",
+    "stint_number",
+    "tyre_age_at_start",
+  ]);
+
+export const OpenF1StintFilterSchema: z.ZodType<OpenF1StintFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1StintFilterFieldSchema,
+  });
+
+export const OpenF1StintSchema: z.ZodType<OpenF1Stint> = z
+  .object({
+    compound: z.string(),
+    driver_number: z.number(),
+    lap_end: z.number(),
+    lap_start: z.number(),
+    meeting_key: z.number(),
+    session_key: z.number(),
+    stint_number: z.number(),
+    tyre_age_at_start: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1StintRequestSchema: z.ZodType<OpenF1StintRequest> = z.object(
+  {
+    compound: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    lap_end: numberFilterValue.optional(),
+    lap_start: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    stint_number: numberFilterValue.optional(),
+    tyre_age_at_start: numberFilterValue.optional(),
+    filters: z.array(OpenF1StintFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  }
+);
+
+export const OpenF1StintResponseSchema = z.array(OpenF1StintSchema);

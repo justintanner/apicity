@@ -359,6 +359,50 @@ export type OpenF1WeatherMethod = OpenF1Method<
   OpenF1WeatherResponse
 >;
 
+export interface OpenF1Stint {
+  compound: string;
+  driver_number: number;
+  lap_end: number;
+  lap_start: number;
+  meeting_key: number;
+  session_key: number;
+  stint_number: number;
+  tyre_age_at_start: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1StintResponse = OpenF1Stint[];
+
+export type OpenF1StintFilterField =
+  | "compound"
+  | "driver_number"
+  | "lap_end"
+  | "lap_start"
+  | "meeting_key"
+  | "session_key"
+  | "stint_number"
+  | "tyre_age_at_start";
+
+export type OpenF1StintFilter = OpenF1ComparisonFilter<OpenF1StintFilterField>;
+
+export interface OpenF1StintRequest {
+  compound?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  lap_end?: OpenF1FilterValue<number>;
+  lap_start?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  stint_number?: OpenF1FilterValue<number>;
+  tyre_age_at_start?: OpenF1FilterValue<number>;
+  filters?: readonly OpenF1StintFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1StintsMethod = OpenF1Method<
+  OpenF1StintRequest,
+  OpenF1StintResponse
+>;
+
 export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse
@@ -545,6 +589,7 @@ export interface OpenF1V1Namespace {
   pit: OpenF1PitStopsMethod;
   sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
+  stints: OpenF1StintsMethod;
   teamRadio: OpenF1TeamRadioMethod;
   weather: OpenF1WeatherMethod;
 }

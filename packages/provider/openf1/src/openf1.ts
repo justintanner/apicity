@@ -16,6 +16,9 @@ import type {
   OpenF1PositionMethod,
   OpenF1PositionRequest,
   OpenF1PositionResponse,
+  OpenF1PitStopRequest,
+  OpenF1PitStopResponse,
+  OpenF1PitStopsMethod,
   OpenF1Provider,
   OpenF1SessionResultMethod,
   OpenF1SessionResultRequest,
@@ -38,6 +41,7 @@ import {
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
   OpenF1PositionRequestSchema,
+  OpenF1PitStopRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
   OpenF1TeamRadioRequestSchema,
@@ -102,6 +106,17 @@ const POSITION_QUERY_FIELDS = [
   "position",
   "session_key",
 ] as const satisfies readonly (keyof OpenF1PositionRequest)[];
+
+const PIT_STOP_QUERY_FIELDS = [
+  "date",
+  "driver_number",
+  "lane_duration",
+  "lap_number",
+  "meeting_key",
+  "pit_duration",
+  "session_key",
+  "stop_duration",
+] as const satisfies readonly (keyof OpenF1PitStopRequest)[];
 
 const SESSION_RESULT_QUERY_FIELDS = [
   "dnf",
@@ -455,6 +470,22 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1PositionRequestSchema }
   ) as OpenF1PositionMethod;
 
+  // GET https://api.openf1.org/v1/pit{query}
+  // Docs: https://openf1.org/docs/#pit
+  const pit = Object.assign(
+    async (
+      req: OpenF1PitStopRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1PitStopResponse | string> => {
+      const query = buildQuery(req, PIT_STOP_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/pit${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1PitStopResponse>(`/v1/pit${query}`, signal);
+    },
+    { schema: OpenF1PitStopRequestSchema }
+  ) as OpenF1PitStopsMethod;
+
   // GET https://api.openf1.org/v1/session_result{query}
   // Docs: https://openf1.org/docs/#session-result
   const sessionResult = Object.assign(
@@ -542,6 +573,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       laps,
       meetings,
       position,
+      pit,
       sessionResult,
       sessions,
       teamRadio,

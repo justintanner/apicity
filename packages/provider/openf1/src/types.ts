@@ -188,6 +188,46 @@ export interface OpenF1PositionRequest {
   csv?: boolean;
 }
 
+export interface OpenF1PitStop {
+  date: string;
+  driver_number: number;
+  lane_duration: number;
+  lap_number: number;
+  meeting_key: number;
+  pit_duration: number;
+  session_key: number;
+  stop_duration: number | null;
+  [key: string]: unknown;
+}
+
+export type OpenF1PitStopResponse = OpenF1PitStop[];
+
+export type OpenF1PitStopFilterField =
+  | "date"
+  | "driver_number"
+  | "lane_duration"
+  | "lap_number"
+  | "meeting_key"
+  | "pit_duration"
+  | "session_key"
+  | "stop_duration";
+
+export type OpenF1PitStopFilter =
+  OpenF1ComparisonFilter<OpenF1PitStopFilterField>;
+
+export interface OpenF1PitStopRequest {
+  date?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  lane_duration?: OpenF1FilterValue<number>;
+  lap_number?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  pit_duration?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  stop_duration?: OpenF1FilterValue<number>;
+  filters?: readonly OpenF1PitStopFilter[];
+  csv?: boolean;
+}
+
 export interface OpenF1Method<Request extends { csv?: boolean }, Response> {
   (req: Request & { csv: true }, signal?: AbortSignal): Promise<string>;
   (
@@ -397,6 +437,11 @@ export type OpenF1PositionMethod = OpenF1Method<
   OpenF1PositionResponse
 >;
 
+export type OpenF1PitStopsMethod = OpenF1Method<
+  OpenF1PitStopRequest,
+  OpenF1PitStopResponse
+>;
+
 export type OpenF1SessionResultDuration = number | null | Array<number | null>;
 
 export type OpenF1SessionResultGapToLeader =
@@ -497,6 +542,7 @@ export interface OpenF1V1Namespace {
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
   position: OpenF1PositionMethod;
+  pit: OpenF1PitStopsMethod;
   sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
   teamRadio: OpenF1TeamRadioMethod;

@@ -21,6 +21,10 @@ import type {
   OpenF1PositionFilter,
   OpenF1PositionFilterField,
   OpenF1PositionRequest,
+  OpenF1PitStop,
+  OpenF1PitStopFilter,
+  OpenF1PitStopFilterField,
+  OpenF1PitStopRequest,
   OpenF1Session,
   OpenF1SessionResult,
   OpenF1SessionResultDuration,
@@ -316,6 +320,52 @@ export const OpenF1PositionRequestSchema: z.ZodType<OpenF1PositionRequest> =
   });
 
 export const OpenF1PositionResponseSchema = z.array(OpenF1PositionSchema);
+
+export const OpenF1PitStopFilterFieldSchema: z.ZodType<OpenF1PitStopFilterField> =
+  z.enum([
+    "date",
+    "driver_number",
+    "lane_duration",
+    "lap_number",
+    "meeting_key",
+    "pit_duration",
+    "session_key",
+    "stop_duration",
+  ]);
+
+export const OpenF1PitStopFilterSchema: z.ZodType<OpenF1PitStopFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1PitStopFilterFieldSchema,
+  });
+
+export const OpenF1PitStopSchema: z.ZodType<OpenF1PitStop> = z
+  .object({
+    date: z.string(),
+    driver_number: z.number(),
+    lane_duration: z.number(),
+    lap_number: z.number(),
+    meeting_key: z.number(),
+    pit_duration: z.number(),
+    session_key: z.number(),
+    stop_duration: z.number().nullable(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1PitStopRequestSchema: z.ZodType<OpenF1PitStopRequest> =
+  z.object({
+    date: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    lane_duration: numberFilterValue.optional(),
+    lap_number: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    pit_duration: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    stop_duration: numberFilterValue.optional(),
+    filters: z.array(OpenF1PitStopFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1PitStopResponseSchema = z.array(OpenF1PitStopSchema);
 
 export const OpenF1SessionResultDurationSchema: z.ZodType<OpenF1SessionResultDuration> =
   z.union([z.number(), z.null(), z.array(z.union([z.number(), z.null()]))]);

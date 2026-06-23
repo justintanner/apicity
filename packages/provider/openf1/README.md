@@ -91,7 +91,7 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-9 endpoints across 9 groups. Each method mirrors an upstream URL path.
+10 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -138,6 +138,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 ```typescript
 const res = await openf1.v1.meetings({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### pit
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.pit</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/pit{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#pit)
+
+```typescript
+const res = await openf1.v1.pit({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

@@ -95,11 +95,14 @@ describe("X Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
-    it("should validate missing media due to z.custom<Blob>() accepting any value", () => {
+    it("should reject missing media", () => {
       const result = XMediaUploadAppendRequestSchema.safeParse({
         segment_index: 0,
       });
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("media"))).toBe(
+        true
+      );
     });
 
     it("should reject missing segment_index", () => {

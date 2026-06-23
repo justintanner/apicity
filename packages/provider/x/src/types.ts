@@ -1,4 +1,3 @@
-import type { z } from "zod";
 import type {
   XMediaUploadInitializeRequest,
   XMediaUploadAppendRequest,
@@ -6,6 +5,26 @@ import type {
   XTweetCreateRequest,
   XOAuthTokenRequest,
 } from "./zod";
+
+export interface ApicitySchemaIssue {
+  path: readonly PropertyKey[];
+  message: string;
+  code?: string;
+}
+
+export interface ApicitySchemaError {
+  issues: readonly ApicitySchemaIssue[];
+}
+
+export type ApicitySafeParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApicitySchemaError };
+
+export interface ApicitySchema<T = unknown> {
+  parse(data: unknown): T;
+  safeParse(data: unknown): ApicitySafeParseResult<T>;
+  description?: string;
+}
 
 export type {
   XOptions,
@@ -133,7 +152,7 @@ export interface XMediaUploadInitializeMethod {
     req: XMediaUploadInitializeRequest,
     signal?: AbortSignal
   ): Promise<XMediaUploadInitializeResponse>;
-  schema: z.ZodType<XMediaUploadInitializeRequest>;
+  schema: ApicitySchema<XMediaUploadInitializeRequest>;
 }
 
 export interface XMediaUploadAppendMethod {
@@ -142,7 +161,7 @@ export interface XMediaUploadAppendMethod {
     req: XMediaUploadAppendRequest,
     signal?: AbortSignal
   ): Promise<XMediaUploadAppendResponse>;
-  schema: z.ZodType<XMediaUploadAppendRequest>;
+  schema: ApicitySchema<XMediaUploadAppendRequest>;
 }
 
 export interface XMediaUploadFinalizeMethod {
@@ -155,7 +174,7 @@ export interface XMediaUploadStatusMethod {
 
 export interface XUsersMeMethod {
   (req?: XUsersMeRequest, signal?: AbortSignal): Promise<XUsersMeResponse>;
-  schema: z.ZodType<XUsersMeRequest>;
+  schema: ApicitySchema<XUsersMeRequest>;
 }
 
 export interface XTweetCreateMethod {
@@ -163,12 +182,12 @@ export interface XTweetCreateMethod {
     req: XTweetCreateRequest,
     signal?: AbortSignal
   ): Promise<XTweetCreateResponse>;
-  schema: z.ZodType<XTweetCreateRequest>;
+  schema: ApicitySchema<XTweetCreateRequest>;
 }
 
 export interface XOAuthTokenMethod {
   (req: XOAuthTokenRequest, signal?: AbortSignal): Promise<XOAuthTokenResponse>;
-  schema: z.ZodType<XOAuthTokenRequest>;
+  schema: ApicitySchema<XOAuthTokenRequest>;
 }
 
 // -- Namespace interfaces ----------------------------------------------------

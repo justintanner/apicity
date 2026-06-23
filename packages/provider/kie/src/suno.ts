@@ -1,7 +1,7 @@
 import { kieRequest } from "./request";
 import { SunoGenerateRequestSchema } from "./zod";
 import { z } from "zod";
-import type { ZodType } from "zod";
+import type { ApicitySchema } from "./types";
 
 export type SunoModel =
   | "V3_5"
@@ -277,7 +277,7 @@ interface SunoSubmitResponse {
 
 interface SunoGenerateCallable {
   (req: SunoGenerateRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoGenerateRequest>;
+  schema: ApicitySchema<SunoGenerateRequest>;
   extend: SunoExtendMethod;
   uploadCover: SunoUploadCoverMethod;
   uploadExtend: SunoUploadExtendMethod;
@@ -290,72 +290,72 @@ interface SunoGenerateCallable {
 
 interface SunoExtendMethod {
   (req: SunoExtendRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoExtendRequest>;
+  schema: ApicitySchema<SunoExtendRequest>;
 }
 
 interface SunoWavMethod {
   (req: SunoWavRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoWavRequest>;
+  schema: ApicitySchema<SunoWavRequest>;
 }
 
 interface SunoVocalRemovalMethod {
   (req: SunoVocalRemovalRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoVocalRemovalRequest>;
+  schema: ApicitySchema<SunoVocalRemovalRequest>;
 }
 
 interface SunoMp4Method {
   (req: SunoMp4Request): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoMp4Request>;
+  schema: ApicitySchema<SunoMp4Request>;
 }
 
 interface SunoLyricsMethod {
   (req: SunoLyricsRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoLyricsRequest>;
+  schema: ApicitySchema<SunoLyricsRequest>;
 }
 
 interface SunoBoostStyleMethod {
   (req: SunoBoostStyleRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoBoostStyleRequest>;
+  schema: ApicitySchema<SunoBoostStyleRequest>;
 }
 
 interface SunoUploadCoverMethod {
   (req: SunoUploadCoverRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoUploadCoverRequest>;
+  schema: ApicitySchema<SunoUploadCoverRequest>;
 }
 
 interface SunoUploadExtendMethod {
   (req: SunoUploadExtendRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoUploadExtendRequest>;
+  schema: ApicitySchema<SunoUploadExtendRequest>;
 }
 
 interface SunoMidiMethod {
   (req: SunoMidiRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoMidiRequest>;
+  schema: ApicitySchema<SunoMidiRequest>;
 }
 
 interface SunoMashupMethod {
   (req: SunoMashupRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoMashupRequest>;
+  schema: ApicitySchema<SunoMashupRequest>;
 }
 
 interface SunoReplaceSectionMethod {
   (req: SunoReplaceSectionRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoReplaceSectionRequest>;
+  schema: ApicitySchema<SunoReplaceSectionRequest>;
 }
 
 interface SunoSoundsMethod {
   (req: SunoSoundsRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoSoundsRequest>;
+  schema: ApicitySchema<SunoSoundsRequest>;
 }
 
 interface SunoAddInstrumentalMethod {
   (req: SunoAddInstrumentalRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoAddInstrumentalRequest>;
+  schema: ApicitySchema<SunoAddInstrumentalRequest>;
 }
 
 interface SunoAddVocalsMethod {
   (req: SunoAddVocalsRequest): Promise<SunoSubmitResponse>;
-  schema: ZodType<SunoAddVocalsRequest>;
+  schema: ApicitySchema<SunoAddVocalsRequest>;
 }
 
 interface SunoWavNamespace {

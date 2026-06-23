@@ -1,6 +1,6 @@
 import { KieError } from "./types";
 import { KieClaudeRequestSchema } from "./zod";
-import type { z } from "zod";
+import type { ApicitySchema } from "./types";
 
 // Helper function to safely handle AbortSignal across different environments
 function attachAbortHandler(
@@ -99,7 +99,7 @@ export interface KieClaudeResponse {
 
 interface KieClaudeMessagesMethod {
   (req: KieClaudeRequest, signal?: AbortSignal): Promise<KieClaudeResponse>;
-  schema: z.ZodType<KieClaudeRequest>;
+  schema: ApicitySchema<KieClaudeRequest>;
 }
 
 interface KieClaudeV1Namespace {

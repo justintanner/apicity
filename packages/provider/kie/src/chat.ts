@@ -1,6 +1,6 @@
 import { KieError } from "./types";
 import { KieChatRequestSchema } from "./zod";
-import type { z } from "zod";
+import type { ApicitySchema } from "./types";
 import { withFallback } from "./middleware";
 
 // Helper function to safely handle AbortSignal across different environments
@@ -71,7 +71,7 @@ export interface KieChatResponse {
 
 interface KieChatCompletionsMethod {
   (req: KieChatRequest, signal?: AbortSignal): Promise<KieChatResponse>;
-  schema: z.ZodType<KieChatRequest>;
+  schema: ApicitySchema<KieChatRequest>;
 }
 
 export interface KieChatProvider {

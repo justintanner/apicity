@@ -8,7 +8,7 @@ X.AI / Grok provider for chat and search.
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.0.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

@@ -20,6 +20,8 @@ media APIs, and more.
 - **Schemas for agents.** Every POST endpoint ships a zod request schema
   (`endpoint.schema`) — hosts and agents catch a hallucinated call locally
   instead of at the API; the MCP server uses it as the tool's input schema.
+  Provider packages may carry Zod 3 or Zod 4 at runtime; the compatibility
+  policy is documented in [docs/zod-compatibility.md](docs/zod-compatibility.md).
 - **MCP server.** Every endpoint exposed 1:1 as an MCP tool.
 - **Composable middleware.** `withRetry` / `withFallback` / `withRateLimit` as
   plain function wrappers.

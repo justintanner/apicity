@@ -19,13 +19,16 @@ interface ZodDef {
   valueType?: unknown;
   keyType?: unknown;
   schema?: unknown;
+  left?: ZodSchemaLike;
+  right?: ZodSchemaLike;
+  in?: ZodSchemaLike;
+  out?: ZodSchemaLike;
   description?: string;
   checks?: readonly ZodCheckLike[];
   defaultValue?: unknown;
-  left?: unknown;
-  right?: unknown;
-  in?: unknown;
-  out?: unknown;
+  minLength?: unknown;
+  maxLength?: unknown;
+  exactLength?: unknown;
 }
 
 interface ZodCheckDef {
@@ -53,6 +56,8 @@ export interface ZodSchemaLike {
   def?: ZodDef;
   description?: string;
   enum?: Record<string, unknown>;
+  format?: string | null;
+  isInt?: boolean;
   isOptional?: () => boolean;
   options?: readonly unknown[];
   shape?: Record<string, ZodSchemaLike>;
@@ -143,8 +148,8 @@ export function unwrapZodSchema(schema: unknown): unknown {
       current = def.schema;
       continue;
     }
-    if (kind === "pipe" && def.in) {
-      current = def.in;
+    if (kind === "pipe" && (def.in ?? def.out)) {
+      current = def.in ?? def.out;
       continue;
     }
     break;
@@ -199,8 +204,8 @@ export function getZodDefaultValue(schema: unknown): unknown {
       current = def.schema;
       continue;
     }
-    if (kind === "pipe" && def.in) {
-      current = def.in;
+    if (kind === "pipe" && (def.in ?? def.out)) {
+      current = def.in ?? def.out;
       continue;
     }
     return undefined;
@@ -223,7 +228,9 @@ export function isOptionalZodSchema(schema: unknown): boolean {
     return isOptionalZodSchema(def.innerType);
   }
   if (kind === "effects" && def?.schema) return isOptionalZodSchema(def.schema);
-  if (kind === "pipe" && def?.in) return isOptionalZodSchema(def.in);
+  if (kind === "pipe" && (def?.in ?? def?.out)) {
+    return isOptionalZodSchema(def.in ?? def.out);
+  }
   try {
     return schema.isOptional?.() === true;
   } catch {
@@ -258,12 +265,12 @@ export function zodToJsonSchema(schema: unknown): JsonSchema {
     }
     case "string": {
       const out: JsonSchema = { type: "string", ...desc };
-      applyStringChecks(out, def);
+      applyStringChecks(out, def.checks, schema.format ?? undefined);
       return out;
     }
     case "number": {
       const out: JsonSchema = { type: "number", ...desc };
-      applyNumberChecks(out, def);
+      applyNumberChecks(out, def.checks, schema.isInt);
       return out;
     }
     case "bigint":
@@ -424,8 +431,15 @@ function jsonTypeForValue(value: unknown): string | undefined {
   return undefined;
 }
 
-function applyStringChecks(out: JsonSchema, def: ZodDef): void {
-  for (const check of def.checks ?? []) {
+function applyStringChecks(
+  out: JsonSchema,
+  checks: readonly ZodCheckLike[] | undefined,
+  format: string | undefined
+): void {
+  if (format === "url") out.format = "uri";
+  if (format === "email") out.format = "email";
+
+  for (const check of checks ?? []) {
     const details = checkDetails(check);
     if (check.kind === "min" || details.check === "min_length") {
       setNumber(out, "minLength", details.minimum ?? check.value);
@@ -453,13 +467,20 @@ function applyStringChecks(out: JsonSchema, def: ZodDef): void {
   }
 }
 
-function applyNumberChecks(out: JsonSchema, def: ZodDef): void {
-  for (const check of def.checks ?? []) {
+function applyNumberChecks(
+  out: JsonSchema,
+  checks: readonly ZodCheckLike[] | undefined,
+  isInt: boolean | undefined
+): void {
+  if (isInt) out.type = "integer";
+
+  for (const check of checks ?? []) {
     const details = checkDetails(check);
     const format = details.format ?? check.format;
     if (
       check.kind === "int" ||
       check.isInt === true ||
+      details.check === "number_format" ||
       format === "safeint" ||
       format === "int32" ||
       format === "int64"

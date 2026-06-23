@@ -125,7 +125,7 @@ export type XMediaUploadInitializeParsedRequest = z.output<
 // schema validates the *typed* request object the user passes; the factory
 // constructs the FormData from it and lets fetch set the boundary header.
 export const XMediaUploadAppendRequestSchema = z.object({
-  media: z.custom<Blob>(),
+  media: z.instanceof(Blob),
   segment_index: z.number().int().min(0).max(999),
 });
 

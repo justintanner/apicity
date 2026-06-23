@@ -8,7 +8,7 @@ X (formerly Twitter) social API provider for posting content (api.x.com).
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.0.0` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

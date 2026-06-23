@@ -176,8 +176,8 @@ importers:
   packages/provider/alibaba:
     dependencies:
       zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+        specifier: ^4.0.0
+        version: 4.4.3
 
   packages/provider/anthropic:
     dependencies:
@@ -214,8 +214,8 @@ importers:
   packages/provider/fal:
     dependencies:
       zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+        specifier: ^4.0.0
+        version: 4.4.3
 
   packages/provider/fireworks:
     dependencies:
@@ -307,14 +307,14 @@ importers:
   packages/provider/x:
     dependencies:
       zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+        specifier: ^4.0.0
+        version: 4.4.3
 
   packages/provider/xai:
     dependencies:
       zod:
-        specifier: ^3.24.0
-        version: 3.25.76
+        specifier: ^4.0.0
+        version: 4.4.3
 
   packages/provider/youtube:
     dependencies:

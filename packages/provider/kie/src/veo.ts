@@ -1,7 +1,7 @@
 import { kieRequest } from "./request";
 import { VeoGenerateRequestSchema, VeoExtendRequestSchema } from "./zod";
 import type { PayGateApproval } from "./paygate";
-import type { z } from "zod";
+import type { ApicitySchema } from "./types";
 
 export type VeoModel = "veo3" | "veo3_fast";
 
@@ -41,7 +41,7 @@ interface VeoGenerateMethod {
     req: VeoGenerateRequest,
     approval?: PayGateApproval
   ): Promise<VeoSubmitResponse>;
-  schema: z.ZodType<VeoGenerateRequest>;
+  schema: ApicitySchema<VeoGenerateRequest>;
 }
 
 interface VeoExtendMethod {
@@ -49,7 +49,7 @@ interface VeoExtendMethod {
     req: VeoExtendRequest,
     approval?: PayGateApproval
   ): Promise<VeoSubmitResponse>;
-  schema: z.ZodType<VeoExtendRequest>;
+  schema: ApicitySchema<VeoExtendRequest>;
 }
 
 interface VeoVeoNamespace {

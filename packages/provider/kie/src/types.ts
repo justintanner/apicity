@@ -1,5 +1,24 @@
-import type { z } from "zod";
 import type { KieMediaModel } from "./zod";
+
+export interface ApicitySchemaIssue {
+  path: readonly PropertyKey[];
+  message: string;
+  code?: string;
+}
+
+export interface ApicitySchemaError {
+  issues: readonly ApicitySchemaIssue[];
+}
+
+export type ApicitySafeParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApicitySchemaError };
+
+export interface ApicitySchema<T = unknown> {
+  parse(data: unknown): T;
+  safeParse(data: unknown): ApicitySafeParseResult<T>;
+  description?: string;
+}
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -254,32 +273,32 @@ import type { PayGateApproval as KieApproval } from "./paygate";
 
 interface KieCreateTaskMethod {
   (req: MediaGenerationRequest, approval?: KieApproval): Promise<TaskResponse>;
-  schema: z.ZodType;
+  schema: ApicitySchema<MediaGenerationRequest>;
 }
 
 interface KieDownloadUrlMethod {
   (req: DownloadUrlRequest): Promise<DownloadUrlResponse>;
-  schema: z.ZodType<DownloadUrlRequest>;
+  schema: ApicitySchema<DownloadUrlRequest>;
 }
 
 interface KieFileStreamUploadMethod {
   (req: UploadMediaRequest): Promise<UploadMediaResponse>;
-  schema: z.ZodType<UploadMediaRequest>;
+  schema: ApicitySchema<UploadMediaRequest>;
 }
 
 interface KieFileUrlUploadMethod {
   (req: FileUrlUploadRequest): Promise<UploadMediaResponse>;
-  schema: z.ZodType<FileUrlUploadRequest>;
+  schema: ApicitySchema<FileUrlUploadRequest>;
 }
 
 interface KieFileBase64UploadMethod {
   (req: FileBase64UploadRequest): Promise<UploadMediaResponse>;
-  schema: z.ZodType<FileBase64UploadRequest>;
+  schema: ApicitySchema<FileBase64UploadRequest>;
 }
 
 interface KieGeminiOmniAudioCreateMethod {
   (req: GeminiOmniAudioCreateRequest): Promise<GeminiOmniAudioCreateResponse>;
-  schema: z.ZodType<GeminiOmniAudioCreateRequest>;
+  schema: ApicitySchema<GeminiOmniAudioCreateRequest>;
 }
 
 // POST namespace

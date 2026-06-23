@@ -1,4 +1,22 @@
-import type { z } from "zod";
+export interface ApicitySchemaIssue {
+  path: readonly PropertyKey[];
+  message: string;
+  code?: string;
+}
+
+export interface ApicitySchemaError {
+  issues: readonly ApicitySchemaIssue[];
+}
+
+export type ApicitySafeParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApicitySchemaError };
+
+export interface ApicitySchema<T = unknown> {
+  parse(data: unknown): T;
+  safeParse(data: unknown): ApicitySafeParseResult<T>;
+  description?: string;
+}
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -1118,7 +1136,7 @@ export interface FalAppsQueueResponse {
 // Namespace types
 interface FalPricingEstimateMethod {
   (req: FalEstimateRequest, signal?: AbortSignal): Promise<FalEstimateResponse>;
-  schema: z.ZodType<FalEstimateRequest>;
+  schema: ApicitySchema<FalEstimateRequest>;
 }
 
 interface FalModelsPricingNamespace {
@@ -1135,7 +1153,7 @@ interface FalDeletePayloadsMethod {
     params: FalDeletePayloadsParams,
     signal?: AbortSignal
   ): Promise<FalDeletePayloadsResponse>;
-  schema: z.ZodType<FalDeletePayloadsParams>;
+  schema: ApicitySchema<FalDeletePayloadsParams>;
 }
 
 interface FalModelsRequestsNamespace {
@@ -1168,7 +1186,7 @@ interface FalQueueSubmitMethod {
     params: FalQueueSubmitParams,
     signal?: AbortSignal
   ): Promise<FalQueueSubmitResponse>;
-  schema: z.ZodType<FalQueueSubmitParams>;
+  schema: ApicitySchema<FalQueueSubmitParams>;
 }
 
 interface FalQueueNamespace {
@@ -1190,7 +1208,7 @@ interface FalLogsStreamMethod {
     body?: FalLabelFilter[],
     signal?: AbortSignal
   ): Promise<AsyncIterable<FalLogEntry>>;
-  schema: z.ZodType<FalLogsStreamParams>;
+  schema: ApicitySchema<FalLogsStreamParams>;
 }
 
 interface FalServerlessLogsNamespace {
@@ -1200,12 +1218,12 @@ interface FalServerlessLogsNamespace {
 // Serverless files namespace types
 interface FalFilesUploadUrlMethod {
   (params: FalFilesUploadUrlParams, signal?: AbortSignal): Promise<boolean>;
-  schema: z.ZodType<FalFilesUploadUrlParams>;
+  schema: ApicitySchema<FalFilesUploadUrlParams>;
 }
 
 interface FalFilesUploadLocalMethod {
   (params: FalFilesUploadLocalParams, signal?: AbortSignal): Promise<boolean>;
-  schema: z.ZodType<FalFilesUploadLocalParams>;
+  schema: ApicitySchema<FalFilesUploadLocalParams>;
 }
 
 interface FalServerlessFilesNamespace {
@@ -1259,42 +1277,42 @@ type FalSeedance2p0ImageToVideoFn = ((
   params: FalSeedance2p0ImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0ImageToVideoResponse>) & {
-  schema: z.ZodType<FalSeedance2p0ImageToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0ImageToVideoParams>;
 };
 
 type FalSeedance2p0TextToVideoFn = ((
   params: FalSeedance2p0TextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0TextToVideoResponse>) & {
-  schema: z.ZodType<FalSeedance2p0TextToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0TextToVideoParams>;
 };
 
 type FalSeedance2p0FastImageToVideoFn = ((
   params: FalSeedance2p0FastImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0FastImageToVideoResponse>) & {
-  schema: z.ZodType<FalSeedance2p0FastImageToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0FastImageToVideoParams>;
 };
 
 type FalSeedance2p0FastTextToVideoFn = ((
   params: FalSeedance2p0FastTextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0FastTextToVideoResponse>) & {
-  schema: z.ZodType<FalSeedance2p0FastTextToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0FastTextToVideoParams>;
 };
 
 type FalSeedance2p0ReferenceToVideoFn = ((
   params: FalSeedance2p0ReferenceToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0ReferenceToVideoResponse>) & {
-  schema: z.ZodType<FalSeedance2p0ReferenceToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0ReferenceToVideoParams>;
 };
 
 type FalSeedance2p0FastReferenceToVideoFn = ((
   params: FalSeedance2p0FastReferenceToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSeedance2p0FastReferenceToVideoResponse>) & {
-  schema: z.ZodType<FalSeedance2p0FastReferenceToVideoParams>;
+  schema: ApicitySchema<FalSeedance2p0FastReferenceToVideoParams>;
 };
 
 export interface FalRunBytedanceSeedance2p0FastNamespace {
@@ -1327,7 +1345,7 @@ type FalSeedSpeechTtsV2Fn = ((
   params: FalSeedSpeechTtsV2Params,
   signal?: AbortSignal
 ) => Promise<FalSeedSpeechTtsV2Response>) & {
-  schema: z.ZodType<FalSeedSpeechTtsV2Params>;
+  schema: ApicitySchema<FalSeedSpeechTtsV2Params>;
 };
 
 export interface FalRunBytedanceSeedSpeechTtsNamespace {
@@ -1348,14 +1366,14 @@ type FalNanoBananaProEditFn = ((
   params: FalNanoBananaProEditParams,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaProEditResponse>) & {
-  schema: z.ZodType<FalNanoBananaProEditParams>;
+  schema: ApicitySchema<FalNanoBananaProEditParams>;
 };
 
 type FalNanoBananaProTextToImageFn = ((
   params: FalNanoBananaProTextToImageParams,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaProTextToImageResponse>) & {
-  schema: z.ZodType<FalNanoBananaProTextToImageParams>;
+  schema: ApicitySchema<FalNanoBananaProTextToImageParams>;
 };
 
 export interface FalRunNanoBananaProNamespace {
@@ -1367,14 +1385,14 @@ type FalNanoBanana2TextToImageFn = ((
   params: FalNanoBanana2TextToImageParams,
   signal?: AbortSignal
 ) => Promise<FalNanoBanana2TextToImageResponse>) & {
-  schema: z.ZodType<FalNanoBanana2TextToImageParams>;
+  schema: ApicitySchema<FalNanoBanana2TextToImageParams>;
 };
 
 type FalNanoBanana2EditFn = ((
   params: FalNanoBanana2EditParams,
   signal?: AbortSignal
 ) => Promise<FalNanoBanana2EditResponse>) & {
-  schema: z.ZodType<FalNanoBanana2EditParams>;
+  schema: ApicitySchema<FalNanoBanana2EditParams>;
 };
 
 export interface FalRunNanoBanana2Namespace {
@@ -1386,56 +1404,56 @@ type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditParams,
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteEditResponse>) & {
-  schema: z.ZodType<FalSeedreamV5LiteEditParams>;
+  schema: ApicitySchema<FalSeedreamV5LiteEditParams>;
 };
 
 type FalSeedreamV5LiteTextToImageFn = ((
   params: FalSeedreamV5LiteTextToImageParams,
   signal?: AbortSignal
 ) => Promise<FalSeedreamV5LiteTextToImageResponse>) & {
-  schema: z.ZodType<FalSeedreamV5LiteTextToImageParams>;
+  schema: ApicitySchema<FalSeedreamV5LiteTextToImageParams>;
 };
 
 type FalWanV2p7TextToImageFn = ((
   params: FalWanV2p7TextToImageParams,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7TextToImageResponse>) & {
-  schema: z.ZodType<FalWanV2p7TextToImageParams>;
+  schema: ApicitySchema<FalWanV2p7TextToImageParams>;
 };
 
 type FalWanV2p7EditFn = ((
   params: FalWanV2p7EditParams,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7EditResponse>) & {
-  schema: z.ZodType<FalWanV2p7EditParams>;
+  schema: ApicitySchema<FalWanV2p7EditParams>;
 };
 
 type FalWanV2p7TextToVideoFn = ((
   params: FalWanV2p7TextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7TextToVideoResponse>) & {
-  schema: z.ZodType<FalWanV2p7TextToVideoParams>;
+  schema: ApicitySchema<FalWanV2p7TextToVideoParams>;
 };
 
 type FalWanV2p7ImageToVideoFn = ((
   params: FalWanV2p7ImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7ImageToVideoResponse>) & {
-  schema: z.ZodType<FalWanV2p7ImageToVideoParams>;
+  schema: ApicitySchema<FalWanV2p7ImageToVideoParams>;
 };
 
 type FalWanV2p7ReferenceToVideoFn = ((
   params: FalWanV2p7ReferenceToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7ReferenceToVideoResponse>) & {
-  schema: z.ZodType<FalWanV2p7ReferenceToVideoParams>;
+  schema: ApicitySchema<FalWanV2p7ReferenceToVideoParams>;
 };
 
 type FalWanV2p7EditVideoFn = ((
   params: FalWanV2p7EditVideoParams,
   signal?: AbortSignal
 ) => Promise<FalWanV2p7EditVideoResponse>) & {
-  schema: z.ZodType<FalWanV2p7EditVideoParams>;
+  schema: ApicitySchema<FalWanV2p7EditVideoParams>;
 };
 
 export interface FalRunWanV2p7ProNamespace {
@@ -1461,14 +1479,14 @@ type FalXaiGrokImagineImageEditFn = ((
   params: FalXaiGrokImagineImageEditParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineImageEditResponse>) & {
-  schema: z.ZodType<FalXaiGrokImagineImageEditParams>;
+  schema: ApicitySchema<FalXaiGrokImagineImageEditParams>;
 };
 
 type FalXaiGrokImagineImageFn = ((
   params: FalXaiGrokImagineImageParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineImageResponse>) & {
-  schema: z.ZodType<FalXaiGrokImagineImageParams>;
+  schema: ApicitySchema<FalXaiGrokImagineImageParams>;
   edit: FalXaiGrokImagineImageEditFn;
 };
 
@@ -1476,28 +1494,28 @@ type FalXaiGrokImagineVideoImageToVideoFn = ((
   params: FalXaiGrokImagineVideoImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoImageToVideoResponse>) & {
-  schema: z.ZodType<FalXaiGrokImagineVideoImageToVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoImageToVideoParams>;
 };
 
 type FalXaiGrokImagineVideoReferenceToVideoFn = ((
   params: FalXaiGrokImagineVideoReferenceToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoReferenceToVideoResponse>) & {
-  schema: z.ZodType<FalXaiGrokImagineVideoReferenceToVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoReferenceToVideoParams>;
 };
 
 type FalXaiGrokImagineVideoExtendVideoFn = ((
   params: FalXaiGrokImagineVideoExtendVideoParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoExtendVideoResponse>) & {
-  schema: z.ZodType<FalXaiGrokImagineVideoExtendVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoExtendVideoParams>;
 };
 
 type FalXaiGrokImagineVideoEditVideoFn = ((
   params: FalXaiGrokImagineVideoEditVideoParams,
   signal?: AbortSignal
 ) => Promise<FalXaiGrokImagineVideoEditVideoResponse>) & {
-  schema: z.ZodType<FalXaiGrokImagineVideoEditVideoParams>;
+  schema: ApicitySchema<FalXaiGrokImagineVideoEditVideoParams>;
 };
 
 export interface FalRunXaiGrokImagineVideoNamespace {
@@ -1516,14 +1534,14 @@ type FalQwenImageEditFn = ((
   params: FalQwenImageEditParams,
   signal?: AbortSignal
 ) => Promise<FalQwenImageEditResponse>) & {
-  schema: z.ZodType<FalQwenImageEditParams>;
+  schema: ApicitySchema<FalQwenImageEditParams>;
 };
 
 type FalQwenImageFn = ((
   params: FalQwenImageParams,
   signal?: AbortSignal
 ) => Promise<FalQwenImageResponse>) & {
-  schema: z.ZodType<FalQwenImageParams>;
+  schema: ApicitySchema<FalQwenImageParams>;
   edit: FalQwenImageEditFn;
 };
 
@@ -1531,14 +1549,14 @@ type FalGptImage1p5EditFn = ((
   params: FalGptImage1p5EditParams,
   signal?: AbortSignal
 ) => Promise<FalGptImage1p5EditResponse>) & {
-  schema: z.ZodType<FalGptImage1p5EditParams>;
+  schema: ApicitySchema<FalGptImage1p5EditParams>;
 };
 
 type FalGptImage1p5Fn = ((
   params: FalGptImage1p5Params,
   signal?: AbortSignal
 ) => Promise<FalGptImage1p5Response>) & {
-  schema: z.ZodType<FalGptImage1p5Params>;
+  schema: ApicitySchema<FalGptImage1p5Params>;
   edit: FalGptImage1p5EditFn;
 };
 
@@ -1546,14 +1564,14 @@ type FalNanoBananaTextToImageFn = ((
   params: FalNanoBananaTextToImageParams,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaTextToImageResponse>) & {
-  schema: z.ZodType<FalNanoBananaTextToImageParams>;
+  schema: ApicitySchema<FalNanoBananaTextToImageParams>;
 };
 
 type FalNanoBananaEditFn = ((
   params: FalNanoBananaEditParams,
   signal?: AbortSignal
 ) => Promise<FalNanoBananaEditResponse>) & {
-  schema: z.ZodType<FalNanoBananaEditParams>;
+  schema: ApicitySchema<FalNanoBananaEditParams>;
 };
 
 export interface FalRunNanoBananaNamespace {
@@ -1565,14 +1583,14 @@ type FalVeo3p1TextToVideoFn = ((
   params: FalVeo3p1TextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalVeo3p1TextToVideoResponse>) & {
-  schema: z.ZodType<FalVeo3p1TextToVideoParams>;
+  schema: ApicitySchema<FalVeo3p1TextToVideoParams>;
 };
 
 type FalVeo3p1ImageToVideoFn = ((
   params: FalVeo3p1ImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalVeo3p1ImageToVideoResponse>) & {
-  schema: z.ZodType<FalVeo3p1ImageToVideoParams>;
+  schema: ApicitySchema<FalVeo3p1ImageToVideoParams>;
 };
 
 export interface FalRunVeo3p1Namespace {
@@ -1584,28 +1602,28 @@ type FalKlingVideoV3ProImageToVideoFn = ((
   params: FalKlingVideoV3ProImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3ProImageToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoV3ProImageToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3ProImageToVideoParams>;
 };
 
 type FalKlingVideoV3ProTextToVideoFn = ((
   params: FalKlingVideoV3ProTextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3ProTextToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoV3ProTextToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3ProTextToVideoParams>;
 };
 
 type FalKlingVideoV3StandardImageToVideoFn = ((
   params: FalKlingVideoV3StandardImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3StandardImageToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoV3StandardImageToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3StandardImageToVideoParams>;
 };
 
 type FalKlingVideoV3StandardTextToVideoFn = ((
   params: FalKlingVideoV3StandardTextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoV3StandardTextToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoV3StandardTextToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoV3StandardTextToVideoParams>;
 };
 
 export interface FalRunKlingVideoV3ProNamespace {
@@ -1627,21 +1645,21 @@ type FalKlingVideoO3p4kImageToVideoFn = ((
   params: FalKlingVideoO3p4kImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoO3p4kImageToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoO3p4kImageToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoO3p4kImageToVideoParams>;
 };
 
 type FalKlingVideoO3p4kReferenceToVideoFn = ((
   params: FalKlingVideoO3p4kReferenceToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoO3p4kReferenceToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoO3p4kReferenceToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoO3p4kReferenceToVideoParams>;
 };
 
 type FalKlingVideoO3p4kTextToVideoFn = ((
   params: FalKlingVideoO3p4kTextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalKlingVideoO3p4kTextToVideoResponse>) & {
-  schema: z.ZodType<FalKlingVideoO3p4kTextToVideoParams>;
+  schema: ApicitySchema<FalKlingVideoO3p4kTextToVideoParams>;
 };
 
 export interface FalRunKlingVideoO3p4kNamespace {
@@ -1659,14 +1677,14 @@ type FalSora2TextToVideoFn = ((
   params: FalSora2TextToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSora2TextToVideoResponse>) & {
-  schema: z.ZodType<FalSora2TextToVideoParams>;
+  schema: ApicitySchema<FalSora2TextToVideoParams>;
 };
 
 type FalSora2ImageToVideoFn = ((
   params: FalSora2ImageToVideoParams,
   signal?: AbortSignal
 ) => Promise<FalSora2ImageToVideoResponse>) & {
-  schema: z.ZodType<FalSora2ImageToVideoParams>;
+  schema: ApicitySchema<FalSora2ImageToVideoParams>;
 };
 
 export interface FalRunSora2Namespace {
@@ -1678,7 +1696,7 @@ type FalHunyuanImageV3InstructEditFn = ((
   params: FalHunyuanImageV3InstructEditParams,
   signal?: AbortSignal
 ) => Promise<FalHunyuanImageV3InstructEditResponse>) & {
-  schema: z.ZodType<FalHunyuanImageV3InstructEditParams>;
+  schema: ApicitySchema<FalHunyuanImageV3InstructEditParams>;
 };
 
 export interface FalRunHunyuanV3Namespace {
@@ -1711,7 +1729,7 @@ type FalElevenlabsSpeechToTextScribeV2Fn = ((
   params: FalElevenlabsSpeechToTextScribeV2Params,
   signal?: AbortSignal
 ) => Promise<FalElevenlabsSpeechToTextScribeV2Response>) & {
-  schema: z.ZodType<FalElevenlabsSpeechToTextScribeV2Params>;
+  schema: ApicitySchema<FalElevenlabsSpeechToTextScribeV2Params>;
 };
 
 export interface FalRunElevenlabsSpeechToTextNamespace {
@@ -1889,21 +1907,21 @@ type FalStorageUploadInitiateFn = ((
   params: FalStorageUploadInitiateParams,
   signal?: AbortSignal
 ) => Promise<FalStorageUploadInitiateResponse>) & {
-  schema: z.ZodType<FalStorageUploadInitiateParams>;
+  schema: ApicitySchema<FalStorageUploadInitiateParams>;
 };
 
 type FalStorageUploadInitiateMultipartFn = ((
   params: FalStorageUploadInitiateMultipartParams,
   signal?: AbortSignal
 ) => Promise<FalStorageUploadInitiateResponse>) & {
-  schema: z.ZodType<FalStorageUploadInitiateMultipartParams>;
+  schema: ApicitySchema<FalStorageUploadInitiateMultipartParams>;
 };
 
 type FalStorageUploadCompleteMultipartFn = ((
   params: FalStorageUploadCompleteMultipartParams,
   signal?: AbortSignal
 ) => Promise<Response>) & {
-  schema: z.ZodType<FalStorageUploadCompleteMultipartParams>;
+  schema: ApicitySchema<FalStorageUploadCompleteMultipartParams>;
 };
 
 export interface FalStorageUploadNamespace {

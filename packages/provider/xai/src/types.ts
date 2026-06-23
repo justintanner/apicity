@@ -1,5 +1,24 @@
-import type { z } from "zod";
 import type { XaiGrokImagineVideo15ImageToVideoRequest } from "./zod";
+
+export interface ApicitySchemaIssue {
+  path: readonly PropertyKey[];
+  message: string;
+  code?: string;
+}
+
+export interface ApicitySchemaError {
+  issues: readonly ApicitySchemaIssue[];
+}
+
+export type ApicitySafeParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApicitySchemaError };
+
+export interface ApicitySchema<T = unknown> {
+  parse(data: unknown): T;
+  safeParse(data: unknown): ApicitySafeParseResult<T>;
+  description?: string;
+}
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -1072,7 +1091,7 @@ import type {
 
 interface XaiChatCompletionsMethod {
   (req: XaiChatRequest, signal?: AbortSignal): Promise<XaiChatResponse>;
-  schema: z.ZodType<XaiChatRequest>;
+  schema: ApicitySchema<XaiChatRequest>;
 }
 
 interface XaiImageGenerationsMethod {
@@ -1080,12 +1099,12 @@ interface XaiImageGenerationsMethod {
     req: XaiImageGenerateRequest,
     signal?: AbortSignal
   ): Promise<XaiImageResponse>;
-  schema: z.ZodType<XaiImageGenerateRequest>;
+  schema: ApicitySchema<XaiImageGenerateRequest>;
 }
 
 interface XaiImageEditsMethod {
   (req: XaiImageEditRequest, signal?: AbortSignal): Promise<XaiImageResponse>;
-  schema: z.ZodType<XaiImageEditRequest>;
+  schema: ApicitySchema<XaiImageEditRequest>;
 }
 
 interface XaiVideoGenerationsMethod {
@@ -1093,7 +1112,7 @@ interface XaiVideoGenerationsMethod {
     req: XaiVideoGenerateRequest,
     signal?: AbortSignal
   ): Promise<XaiVideoAsyncResponse>;
-  schema: z.ZodType<XaiVideoGenerateRequest>;
+  schema: ApicitySchema<XaiVideoGenerateRequest>;
   imageToVideo: XaiGrokImagineVideo15ImageToVideoMethod;
 }
 
@@ -1102,7 +1121,7 @@ interface XaiGrokImagineVideo15ImageToVideoMethod {
     req: XaiGrokImagineVideo15ImageToVideoRequest,
     signal?: AbortSignal
   ): Promise<XaiGrokImagineVideo15ImageToVideoResponse>;
-  schema: z.ZodType<XaiGrokImagineVideo15ImageToVideoRequest>;
+  schema: ApicitySchema<XaiGrokImagineVideo15ImageToVideoRequest>;
 }
 
 interface XaiVideoEditsMethod {
@@ -1110,7 +1129,7 @@ interface XaiVideoEditsMethod {
     req: XaiVideoEditRequest,
     signal?: AbortSignal
   ): Promise<XaiVideoAsyncResponse>;
-  schema: z.ZodType<XaiVideoEditRequest>;
+  schema: ApicitySchema<XaiVideoEditRequest>;
 }
 
 interface XaiVideoExtensionsMethod {
@@ -1118,12 +1137,12 @@ interface XaiVideoExtensionsMethod {
     req: XaiVideoExtendRequest,
     signal?: AbortSignal
   ): Promise<XaiVideoAsyncResponse>;
-  schema: z.ZodType<XaiVideoExtendRequest>;
+  schema: ApicitySchema<XaiVideoExtendRequest>;
 }
 
 interface XaiPostResponsesMethod {
   (req: XaiResponseRequest, signal?: AbortSignal): Promise<XaiResponseResponse>;
-  schema: z.ZodType<XaiResponseRequest>;
+  schema: ApicitySchema<XaiResponseRequest>;
 }
 
 interface XaiBillingUsageMethod {
@@ -1132,7 +1151,7 @@ interface XaiBillingUsageMethod {
     req: XaiBillingUsageRequest,
     signal?: AbortSignal
   ): Promise<XaiBillingUsageResponse>;
-  schema: z.ZodType<XaiBillingUsageRequest>;
+  schema: ApicitySchema<XaiBillingUsageRequest>;
 }
 
 interface XaiPostFilesMethod {
@@ -1146,7 +1165,7 @@ interface XaiPostFilesMethod {
 
 interface XaiPostBatchesMethod {
   (req: XaiBatchCreateRequest, signal?: AbortSignal): Promise<XaiBatch>;
-  schema: z.ZodType<XaiBatchCreateRequest>;
+  schema: ApicitySchema<XaiBatchCreateRequest>;
   cancel(batchId: string, signal?: AbortSignal): Promise<XaiBatch>;
   requests(
     batchId: string,
@@ -1160,7 +1179,7 @@ interface XaiPostCollectionsMethod {
     req: XaiCollectionCreateRequest,
     signal?: AbortSignal
   ): Promise<XaiCollection>;
-  schema: z.ZodType<XaiCollectionCreateRequest>;
+  schema: ApicitySchema<XaiCollectionCreateRequest>;
   documents(
     collectionId: string,
     fileId: string,
@@ -1174,7 +1193,7 @@ interface XaiDocumentSearchMethod {
     req: XaiDocumentSearchRequest,
     signal?: AbortSignal
   ): Promise<XaiDocumentSearchResponse>;
-  schema: z.ZodType<XaiDocumentSearchRequest>;
+  schema: ApicitySchema<XaiDocumentSearchRequest>;
 }
 
 interface XaiTokenizeTextMethod {
@@ -1182,7 +1201,7 @@ interface XaiTokenizeTextMethod {
     req: XaiTokenizeTextRequest,
     signal?: AbortSignal
   ): Promise<XaiTokenizeTextResponse>;
-  schema: z.ZodType<XaiTokenizeTextRequest>;
+  schema: ApicitySchema<XaiTokenizeTextRequest>;
 }
 
 interface XaiRealtimeClientSecretsMethod {
@@ -1190,17 +1209,17 @@ interface XaiRealtimeClientSecretsMethod {
     req: XaiRealtimeClientSecretRequest,
     signal?: AbortSignal
   ): Promise<XaiRealtimeClientSecretResponse>;
-  schema: z.ZodType<XaiRealtimeClientSecretRequest>;
+  schema: ApicitySchema<XaiRealtimeClientSecretRequest>;
 }
 
 interface XaiTtsMethod {
   (req: XaiTtsRequest, signal?: AbortSignal): Promise<ArrayBuffer>;
-  schema: z.ZodType<XaiTtsRequest>;
+  schema: ApicitySchema<XaiTtsRequest>;
 }
 
 interface XaiSttMethod {
   (req: XaiSttRequest, signal?: AbortSignal): Promise<XaiSttResponse>;
-  schema: z.ZodType<XaiSttRequest>;
+  schema: ApicitySchema<XaiSttRequest>;
 }
 
 interface XaiCustomVoicesMethod {
@@ -1208,7 +1227,7 @@ interface XaiCustomVoicesMethod {
     req: XaiCustomVoiceCreateRequest,
     signal?: AbortSignal
   ): Promise<XaiCustomVoice>;
-  schema: z.ZodType<XaiCustomVoiceCreateRequest>;
+  schema: ApicitySchema<XaiCustomVoiceCreateRequest>;
 }
 
 // Generic list/get method type for models
@@ -1410,7 +1429,7 @@ interface XaiPutCollectionsMethod {
     req: XaiCollectionUpdateRequest,
     signal?: AbortSignal
   ): Promise<XaiCollection>;
-  schema: z.ZodType<XaiCollectionUpdateRequest>;
+  schema: ApicitySchema<XaiCollectionUpdateRequest>;
 }
 
 interface XaiManagementPutV1 {

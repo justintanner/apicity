@@ -1,4 +1,22 @@
-import type { z } from "zod";
+export interface ApicitySchemaIssue {
+  path: readonly PropertyKey[];
+  message: string;
+  code?: string;
+}
+
+export interface ApicitySchemaError {
+  issues: readonly ApicitySchemaIssue[];
+}
+
+export type ApicitySafeParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; error: ApicitySchemaError };
+
+export interface ApicitySchema<T = unknown> {
+  parse(data: unknown): T;
+  safeParse(data: unknown): ApicitySafeParseResult<T>;
+  description?: string;
+}
 
 // ---------------------------------------------------------------------------
 // Request and response types — derived from Zod schemas (source of truth in zod.ts)
@@ -145,7 +163,7 @@ import type {
 
 export interface AlibabaChatCompletionsMethod {
   (req: AlibabaChatRequest, signal?: AbortSignal): Promise<AlibabaChatResponse>;
-  schema: z.ZodType<AlibabaChatRequest>;
+  schema: ApicitySchema<AlibabaChatRequest>;
 }
 
 export interface AlibabaChatCompletionsStreamMethod {
@@ -153,7 +171,7 @@ export interface AlibabaChatCompletionsStreamMethod {
     req: AlibabaChatRequest,
     signal?: AbortSignal
   ): AsyncIterable<AlibabaChatStreamChunk>;
-  schema: z.ZodType<AlibabaChatRequest>;
+  schema: ApicitySchema<AlibabaChatRequest>;
 }
 
 export interface AlibabaVideoSynthesisMethod {
@@ -161,7 +179,7 @@ export interface AlibabaVideoSynthesisMethod {
     req: AlibabaVideoSynthesisRequest,
     signal?: AbortSignal
   ): Promise<AlibabaVideoSynthesisSubmitResponse>;
-  schema: z.ZodType<AlibabaVideoSynthesisRequest>;
+  schema: ApicitySchema<AlibabaVideoSynthesisRequest>;
 }
 
 export interface AlibabaImageGenerationMethod {
@@ -169,7 +187,7 @@ export interface AlibabaImageGenerationMethod {
     req: AlibabaImageGenerationRequest,
     signal?: AbortSignal
   ): Promise<AlibabaImageGenerationSubmitResponse>;
-  schema: z.ZodType<AlibabaImageGenerationRequest>;
+  schema: ApicitySchema<AlibabaImageGenerationRequest>;
 }
 
 export interface AlibabaMultimodalGenerationMethod {
@@ -177,7 +195,7 @@ export interface AlibabaMultimodalGenerationMethod {
     req: AlibabaMultimodalGenerationRequest,
     signal?: AbortSignal
   ): Promise<AlibabaMultimodalGenerationResponse>;
-  schema: z.ZodType<AlibabaMultimodalGenerationRequest>;
+  schema: ApicitySchema<AlibabaMultimodalGenerationRequest>;
 }
 
 // -- Namespace interfaces ---------------------------------------------------

@@ -97,7 +97,7 @@ const team = await thesportsdb.v1.lookup.team({ idTeam: 133604 });
 
 ## API Reference
 
-20 endpoints across 16 groups. Each method mirrors an upstream URL path.
+26 endpoints across 22 groups. Each method mirrors an upstream URL path.
 
 ### allCountries
 
@@ -144,6 +144,23 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.allSports({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### eventResults
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.eventResults</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventresults.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
+
+```typescript
+const res = await thesportsdb.v1.eventResults({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -244,6 +261,40 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 </details>
 
+### lookupEvent
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupEvent</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupevent.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
+
+```typescript
+const res = await thesportsdb.v1.lookupEvent({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupEventStats
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupEventStats</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupeventstats.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
+
+```typescript
+const res = await thesportsdb.v1.lookupEventStats({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
 ### lookupformerteams
 
 <details>
@@ -272,6 +323,23 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.lookuphonours({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupLineup
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupLineup</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuplineup.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
+
+```typescript
+const res = await thesportsdb.v1.lookupLineup({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -323,6 +391,40 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.lookupplayerstats({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupTimeline
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupTimeline</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptimeline.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
+
+```typescript
+const res = await thesportsdb.v1.lookupTimeline({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### lookupTv
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.lookupTv</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptv.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-lookup)
+
+```typescript
+const res = await thesportsdb.v1.lookupTv({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

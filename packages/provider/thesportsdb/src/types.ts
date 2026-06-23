@@ -2,6 +2,8 @@ import type { z } from "zod";
 
 import type {
   TheSportsDBEquipmentLookupRequestSchema,
+  TheSportsDBEventLookupRequest,
+  TheSportsDBEventLookupRequestSchema,
   TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBPlayerIdRequestSchema,
   TheSportsDBSearchEventsRequestSchema,
@@ -14,7 +16,7 @@ import type {
   TheSportsDBVenueLookupRequestSchema,
 } from "./zod";
 
-export type { TheSportsDBOptions } from "./zod";
+export type { TheSportsDBEventLookupRequest, TheSportsDBOptions } from "./zod";
 
 export class TheSportsDBError extends Error {
   readonly status: number;
@@ -652,6 +654,113 @@ export interface TheSportsDBLookupPlayerStatsMethod {
   schema: z.ZodType<z.infer<typeof TheSportsDBPlayerIdRequestSchema>>;
 }
 
+export interface TheSportsDBEventResponse extends TheSportsDBRecord {
+  events: TheSportsDBEvent[] | null;
+}
+
+export interface TheSportsDBEventResult extends TheSportsDBRecord {
+  idResult?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strEvent?: string | null;
+  strResult?: string | null;
+  intPosition?: TheSportsDBField;
+  intPoints?: TheSportsDBField;
+  strDetail?: string | null;
+  dateEvent?: string | null;
+  strSeason?: string | null;
+  strCountry?: string | null;
+  strSport?: string | null;
+}
+
+export interface TheSportsDBEventResultsResponse extends TheSportsDBRecord {
+  results: TheSportsDBEventResult[] | null;
+}
+
+export interface TheSportsDBLineup extends TheSportsDBRecord {
+  idLineup?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strPosition?: string | null;
+  strHome?: string | null;
+  strSubstitute?: string | null;
+  intSquadNumber?: TheSportsDBField;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idTeam?: TheSportsDBField;
+  strTeam?: string | null;
+  strCutout?: string | null;
+  strThumb?: string | null;
+  strRender?: string | null;
+}
+
+export interface TheSportsDBLineupResponse extends TheSportsDBRecord {
+  lineup: TheSportsDBLineup[] | null;
+}
+
+export interface TheSportsDBTimeline extends TheSportsDBRecord {
+  idTimeline?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strTimeline?: string | null;
+  strTimelineDetail?: string | null;
+  strHome?: string | null;
+  strEvent?: string | null;
+  idPlayer?: TheSportsDBField;
+  strPlayer?: string | null;
+  idAssist?: TheSportsDBField;
+  strAssist?: string | null;
+  intTime?: TheSportsDBField;
+  strPeriod?: string | null;
+  idTeam?: TheSportsDBField;
+  strTeam?: string | null;
+  strComment?: string | null;
+  dateEvent?: string | null;
+  strSeason?: string | null;
+}
+
+export interface TheSportsDBTimelineResponse extends TheSportsDBRecord {
+  timeline: TheSportsDBTimeline[] | null;
+}
+
+export interface TheSportsDBEventStat extends TheSportsDBRecord {
+  idStatistic?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  idApiFootball?: TheSportsDBField;
+  strEvent?: string | null;
+  strStat?: string | null;
+  intHome?: TheSportsDBField;
+  intAway?: TheSportsDBField;
+}
+
+export interface TheSportsDBEventStatsResponse extends TheSportsDBRecord {
+  eventstats: TheSportsDBEventStat[] | null;
+}
+
+export interface TheSportsDBTvEvent extends TheSportsDBRecord {
+  id?: TheSportsDBField;
+  idEvent?: TheSportsDBField;
+  strSport?: string | null;
+  strEvent?: string | null;
+  strEventThumb?: string | null;
+  strEventPoster?: string | null;
+  strEventBanner?: string | null;
+  strEventSquare?: string | null;
+  idChannel?: TheSportsDBField;
+  strCountry?: string | null;
+  strEventCountry?: string | null;
+  strLogo?: string | null;
+  strChannel?: string | null;
+  strSeason?: string | null;
+  strTime?: string | null;
+  dateEvent?: string | null;
+  strTimeStamp?: string | null;
+}
+
+export interface TheSportsDBTvEventResponse extends TheSportsDBRecord {
+  tvevent: TheSportsDBTvEvent[] | null;
+}
+
 export type TheSportsDBAllSportsMethod =
   TheSportsDBEndpointMethod<TheSportsDBSportsResponse>;
 export type TheSportsDBAllCountriesMethod =
@@ -665,6 +774,54 @@ export interface TheSportsDBV1LookupNamespace {
   team: TheSportsDBTeamLookupMethod;
   equipment: TheSportsDBEquipmentLookupMethod;
   venue: TheSportsDBVenueLookupMethod;
+}
+
+export interface TheSportsDBLookupEventMethod {
+  (
+    req: TheSportsDBEventLookupRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBEventResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBEventLookupRequestSchema>>;
+}
+
+export interface TheSportsDBEventResultsMethod {
+  (
+    req: TheSportsDBEventLookupRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBEventResultsResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBEventLookupRequestSchema>>;
+}
+
+export interface TheSportsDBLookupLineupMethod {
+  (
+    req: TheSportsDBEventLookupRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBLineupResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBEventLookupRequestSchema>>;
+}
+
+export interface TheSportsDBLookupTimelineMethod {
+  (
+    req: TheSportsDBEventLookupRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBTimelineResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBEventLookupRequestSchema>>;
+}
+
+export interface TheSportsDBLookupEventStatsMethod {
+  (
+    req: TheSportsDBEventLookupRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBEventStatsResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBEventLookupRequestSchema>>;
+}
+
+export interface TheSportsDBLookupTvMethod {
+  (
+    req: TheSportsDBEventLookupRequest,
+    signal?: AbortSignal
+  ): Promise<TheSportsDBTvEventResponse>;
+  schema: z.ZodType<z.infer<typeof TheSportsDBEventLookupRequestSchema>>;
 }
 
 export interface TheSportsDBV1Namespace {
@@ -684,6 +841,12 @@ export interface TheSportsDBV1Namespace {
   lookupcontracts: TheSportsDBLookupContractsMethod;
   playerresults: TheSportsDBPlayerResultsMethod;
   lookupplayerstats: TheSportsDBLookupPlayerStatsMethod;
+  lookupEvent: TheSportsDBLookupEventMethod;
+  eventResults: TheSportsDBEventResultsMethod;
+  lookupLineup: TheSportsDBLookupLineupMethod;
+  lookupTimeline: TheSportsDBLookupTimelineMethod;
+  lookupEventStats: TheSportsDBLookupEventStatsMethod;
+  lookupTv: TheSportsDBLookupTvMethod;
 }
 
 export interface TheSportsDBGetNamespace {

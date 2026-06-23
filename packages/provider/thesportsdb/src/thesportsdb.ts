@@ -5,10 +5,15 @@ import type {
   TheSportsDBEquipmentLookupRequest,
   TheSportsDBEquipmentLookupResponse,
   TheSportsDBEventsResponse,
+  TheSportsDBEventLookupRequest,
+  TheSportsDBEventResponse,
+  TheSportsDBEventResultsResponse,
+  TheSportsDBEventStatsResponse,
   TheSportsDBFilenameSearchResponse,
   TheSportsDBLeagueLookupRequest,
   TheSportsDBLeagueLookupResponse,
   TheSportsDBLeaguesResponse,
+  TheSportsDBLineupResponse,
   TheSportsDBLookupContractsResponse,
   TheSportsDBLookupFormerTeamsResponse,
   TheSportsDBLookupHonoursResponse,
@@ -31,12 +36,15 @@ import type {
   TheSportsDBTeamLookupRequest,
   TheSportsDBTeamLookupResponse,
   TheSportsDBTeamsResponse,
+  TheSportsDBTimelineResponse,
+  TheSportsDBTvEventResponse,
   TheSportsDBVenueLookupRequest,
   TheSportsDBVenueLookupResponse,
   TheSportsDBVenuesResponse,
 } from "./types";
 import {
   TheSportsDBEquipmentLookupRequestSchema,
+  TheSportsDBEventLookupRequestSchema,
   TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBPlayerIdRequestSchema,
   TheSportsDBSearchEventsRequestSchema,
@@ -48,6 +56,8 @@ import {
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBVenueLookupRequestSchema,
 } from "./zod";
+
+type TheSportsDBQueryValue = string | number | boolean | null | undefined;
 
 export function createTheSportsDB(
   opts?: TheSportsDBOptions
@@ -142,15 +152,19 @@ export function createTheSportsDB(
     }
   }
 
-  function buildQuery(params: Record<string, string | number | undefined>) {
+  function buildQuery(params: Record<string, TheSportsDBQueryValue>): string {
     const qs = new URLSearchParams();
     for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null) {
         qs.append(key, String(value));
       }
     }
     const query = qs.toString();
     return query ? `?${query}` : "";
+  }
+
+  function eventIdQuery(req: TheSportsDBEventLookupRequest): string {
+    return buildQuery({ id: req.idEvent });
   }
 
   // sig-ok: V1 PHP script names exposed as catalog methods.
@@ -520,6 +534,114 @@ export function createTheSportsDB(
     { schema: TheSportsDBPlayerIdRequestSchema }
   );
 
+  // sig-ok: V1 PHP script names exposed as event lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupevent.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-lookup
+  const lookupEvent = Object.assign(
+    async (
+      req: TheSportsDBEventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventResponse> => {
+      const query = eventIdQuery(req);
+      return makeJsonRequest<TheSportsDBEventResponse>(
+        "GET",
+        `/${apiKey}/lookupevent.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventLookupRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as event lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/eventresults.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-lookup
+  const eventResults = Object.assign(
+    async (
+      req: TheSportsDBEventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventResultsResponse> => {
+      const query = eventIdQuery(req);
+      return makeJsonRequest<TheSportsDBEventResultsResponse>(
+        "GET",
+        `/${apiKey}/eventresults.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventLookupRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as event lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuplineup.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-lookup
+  const lookupLineup = Object.assign(
+    async (
+      req: TheSportsDBEventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLineupResponse> => {
+      const query = eventIdQuery(req);
+      return makeJsonRequest<TheSportsDBLineupResponse>(
+        "GET",
+        `/${apiKey}/lookuplineup.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventLookupRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as event lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptimeline.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-lookup
+  const lookupTimeline = Object.assign(
+    async (
+      req: TheSportsDBEventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTimelineResponse> => {
+      const query = eventIdQuery(req);
+      return makeJsonRequest<TheSportsDBTimelineResponse>(
+        "GET",
+        `/${apiKey}/lookuptimeline.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventLookupRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as event lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupeventstats.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-lookup
+  const lookupEventStats = Object.assign(
+    async (
+      req: TheSportsDBEventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventStatsResponse> => {
+      const query = eventIdQuery(req);
+      return makeJsonRequest<TheSportsDBEventStatsResponse>(
+        "GET",
+        `/${apiKey}/lookupeventstats.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventLookupRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as event lookup methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptv.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-lookup
+  const lookupTv = Object.assign(
+    async (
+      req: TheSportsDBEventLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTvEventResponse> => {
+      const query = eventIdQuery(req);
+      return makeJsonRequest<TheSportsDBTvEventResponse>(
+        "GET",
+        `/${apiKey}/lookuptv.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEventLookupRequestSchema }
+  );
+
   const v1 = {
     allSports,
     allCountries,
@@ -537,6 +659,12 @@ export function createTheSportsDB(
     lookupcontracts,
     playerresults,
     lookupplayerstats,
+    lookupEvent,
+    eventResults,
+    lookupLineup,
+    lookupTimeline,
+    lookupEventStats,
+    lookupTv,
   };
 
   return attachExamples({

@@ -1,8 +1,16 @@
 import { z } from "zod";
 import type {
   TheSportsDBContract,
+  TheSportsDBEvent,
+  TheSportsDBEventResponse,
+  TheSportsDBEventResult,
+  TheSportsDBEventResultsResponse,
+  TheSportsDBEventStat,
+  TheSportsDBEventStatsResponse,
   TheSportsDBFormerTeam,
   TheSportsDBHonour,
+  TheSportsDBLineup,
+  TheSportsDBLineupResponse,
   TheSportsDBLookupContractsResponse,
   TheSportsDBLookupFormerTeamsResponse,
   TheSportsDBLookupHonoursResponse,
@@ -20,6 +28,10 @@ import type {
   TheSportsDBSearchPlayersRequest,
   TheSportsDBSearchTeamsRequest,
   TheSportsDBSearchVenuesRequest,
+  TheSportsDBTimeline,
+  TheSportsDBTimelineResponse,
+  TheSportsDBTvEvent,
+  TheSportsDBTvEventResponse,
 } from "./types";
 
 export const TheSportsDBOptionsSchema = z.object({
@@ -32,8 +44,13 @@ export const TheSportsDBOptionsSchema = z.object({
 export type TheSportsDBOptions = z.infer<typeof TheSportsDBOptionsSchema>;
 
 const idSchema = z.union([z.string().min(1), z.number().int()]);
+const eventIdSchema = z.union([
+  z.string().min(1),
+  z.number().int().nonnegative(),
+]);
 const nonEmptyQueryString = z.string().min(1);
 const nullableString = z.string().nullable().optional();
+const optionalNullableString = nullableString;
 
 export const TheSportsDBLeagueLookupRequestSchema = z.object({
   idLeague: idSchema,
@@ -332,3 +349,182 @@ export const TheSportsDBLookupPlayerStatsResponseSchema: z.ZodType<TheSportsDBLo
       playerstats: z.array(TheSportsDBPlayerStatSchema).nullable(),
     })
     .passthrough();
+
+export const TheSportsDBEventLookupRequestSchema = z.object({
+  idEvent: eventIdSchema,
+});
+
+export type TheSportsDBEventLookupRequest = z.infer<
+  typeof TheSportsDBEventLookupRequestSchema
+>;
+
+export const TheSportsDBEventSchema: z.ZodType<TheSportsDBEvent> = z
+  .object({
+    idEvent: optionalNullableString,
+    strEvent: optionalNullableString,
+    strEventAlternate: optionalNullableString,
+    strFilename: optionalNullableString,
+    strSport: optionalNullableString,
+    idLeague: optionalNullableString,
+    strLeague: optionalNullableString,
+    strSeason: optionalNullableString,
+    strDescriptionEN: optionalNullableString,
+    strHomeTeam: optionalNullableString,
+    strAwayTeam: optionalNullableString,
+    intHomeScore: optionalNullableString,
+    intAwayScore: optionalNullableString,
+    dateEvent: optionalNullableString,
+    dateEventLocal: optionalNullableString,
+    strTime: optionalNullableString,
+    strTimeLocal: optionalNullableString,
+    idHomeTeam: optionalNullableString,
+    idAwayTeam: optionalNullableString,
+    idVenue: optionalNullableString,
+    strVenue: optionalNullableString,
+    strCountry: optionalNullableString,
+    strCity: optionalNullableString,
+    strPoster: optionalNullableString,
+    strSquare: optionalNullableString,
+    strFanart: optionalNullableString,
+    strThumb: optionalNullableString,
+    strBanner: optionalNullableString,
+    strMap: optionalNullableString,
+    strVideo: optionalNullableString,
+    strStatus: optionalNullableString,
+  })
+  .catchall(z.unknown());
+
+export const TheSportsDBEventResponseSchema: z.ZodType<TheSportsDBEventResponse> =
+  z
+    .object({
+      events: z.array(TheSportsDBEventSchema).nullable(),
+    })
+    .catchall(z.unknown());
+
+export const TheSportsDBEventResultSchema: z.ZodType<TheSportsDBEventResult> = z
+  .object({
+    idResult: optionalNullableString,
+    idPlayer: optionalNullableString,
+    strPlayer: optionalNullableString,
+    idTeam: optionalNullableString,
+    idEvent: optionalNullableString,
+    strEvent: optionalNullableString,
+    strResult: optionalNullableString,
+    intPosition: optionalNullableString,
+    intPoints: optionalNullableString,
+    strDetail: optionalNullableString,
+    dateEvent: optionalNullableString,
+    strSeason: optionalNullableString,
+    strCountry: optionalNullableString,
+    strSport: optionalNullableString,
+  })
+  .catchall(z.unknown());
+
+export const TheSportsDBEventResultsResponseSchema: z.ZodType<TheSportsDBEventResultsResponse> =
+  z
+    .object({
+      results: z.array(TheSportsDBEventResultSchema).nullable(),
+    })
+    .catchall(z.unknown());
+
+export const TheSportsDBLineupSchema: z.ZodType<TheSportsDBLineup> = z
+  .object({
+    idLineup: optionalNullableString,
+    idEvent: optionalNullableString,
+    strPosition: optionalNullableString,
+    strHome: optionalNullableString,
+    strSubstitute: optionalNullableString,
+    intSquadNumber: optionalNullableString,
+    idPlayer: optionalNullableString,
+    strPlayer: optionalNullableString,
+    idTeam: optionalNullableString,
+    strTeam: optionalNullableString,
+    strCutout: optionalNullableString,
+    strThumb: optionalNullableString,
+    strRender: optionalNullableString,
+  })
+  .catchall(z.unknown());
+
+export const TheSportsDBLineupResponseSchema: z.ZodType<TheSportsDBLineupResponse> =
+  z
+    .object({
+      lineup: z.array(TheSportsDBLineupSchema).nullable(),
+    })
+    .catchall(z.unknown());
+
+export const TheSportsDBTimelineSchema: z.ZodType<TheSportsDBTimeline> = z
+  .object({
+    idTimeline: optionalNullableString,
+    idEvent: optionalNullableString,
+    strTimeline: optionalNullableString,
+    strTimelineDetail: optionalNullableString,
+    strHome: optionalNullableString,
+    strEvent: optionalNullableString,
+    idPlayer: optionalNullableString,
+    strPlayer: optionalNullableString,
+    idAssist: optionalNullableString,
+    strAssist: optionalNullableString,
+    intTime: optionalNullableString,
+    strPeriod: optionalNullableString,
+    idTeam: optionalNullableString,
+    strTeam: optionalNullableString,
+    strComment: optionalNullableString,
+    dateEvent: optionalNullableString,
+    strSeason: optionalNullableString,
+  })
+  .catchall(z.unknown());
+
+export const TheSportsDBTimelineResponseSchema: z.ZodType<TheSportsDBTimelineResponse> =
+  z
+    .object({
+      timeline: z.array(TheSportsDBTimelineSchema).nullable(),
+    })
+    .catchall(z.unknown());
+
+export const TheSportsDBEventStatSchema: z.ZodType<TheSportsDBEventStat> = z
+  .object({
+    idStatistic: optionalNullableString,
+    idEvent: optionalNullableString,
+    idApiFootball: optionalNullableString,
+    strEvent: optionalNullableString,
+    strStat: optionalNullableString,
+    intHome: optionalNullableString,
+    intAway: optionalNullableString,
+  })
+  .catchall(z.unknown());
+
+export const TheSportsDBEventStatsResponseSchema: z.ZodType<TheSportsDBEventStatsResponse> =
+  z
+    .object({
+      eventstats: z.array(TheSportsDBEventStatSchema).nullable(),
+    })
+    .catchall(z.unknown());
+
+export const TheSportsDBTvEventSchema: z.ZodType<TheSportsDBTvEvent> = z
+  .object({
+    id: optionalNullableString,
+    idEvent: optionalNullableString,
+    strSport: optionalNullableString,
+    strEvent: optionalNullableString,
+    strEventThumb: optionalNullableString,
+    strEventPoster: optionalNullableString,
+    strEventBanner: optionalNullableString,
+    strEventSquare: optionalNullableString,
+    idChannel: optionalNullableString,
+    strCountry: optionalNullableString,
+    strEventCountry: optionalNullableString,
+    strLogo: optionalNullableString,
+    strChannel: optionalNullableString,
+    strSeason: optionalNullableString,
+    strTime: optionalNullableString,
+    dateEvent: optionalNullableString,
+    strTimeStamp: optionalNullableString,
+  })
+  .catchall(z.unknown());
+
+export const TheSportsDBTvEventResponseSchema: z.ZodType<TheSportsDBTvEventResponse> =
+  z
+    .object({
+      tvevent: z.array(TheSportsDBTvEventSchema).nullable(),
+    })
+    .catchall(z.unknown());

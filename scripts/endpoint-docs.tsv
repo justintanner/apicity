@@ -1040,11 +1040,17 @@ telegram	verifyUser	POST	https://api.telegram.org/bot{token}/verifyUser	https://
 thesportsdb	v1.allCountries	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/all_countries.php	https://thedatadb.readme.io/reference/getallcountries
 thesportsdb	v1.allLeagues	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/all_leagues.php	https://www.thesportsdb.com/docs_api_guide#v1-list
 thesportsdb	v1.allSports	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/all_sports.php	https://thedatadb.readme.io/reference/getallsports
+thesportsdb	v1.eventResults	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/eventresults.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-lookup
+thesportsdb	v1.lookupEvent	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupevent.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-lookup
+thesportsdb	v1.lookupEventStats	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupeventstats.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-lookup
 thesportsdb	v1.lookup.equipment	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupequipment.php{query}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookup.league	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupleague.php{query}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookup.table	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptable.php{query}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookup.team	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupteam.php{query}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookup.venue	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupvenue.php{query}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.lookupLineup	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuplineup.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-lookup
+thesportsdb	v1.lookupTimeline	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptimeline.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-lookup
+thesportsdb	v1.lookupTv	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptv.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-lookup
 thesportsdb	v1.searchEvents	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchevents.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-search
 thesportsdb	v1.searchFilename	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchfilename.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-search
 thesportsdb	v1.searchPlayers	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchplayers.php{query}	https://thedatadb.readme.io/reference/getplayerbyname

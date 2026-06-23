@@ -17,12 +17,16 @@ import type {
   OpenF1PositionRequest,
   OpenF1PositionResponse,
   OpenF1Provider,
+  OpenF1SessionRequest,
+  OpenF1SessionResponse,
+  OpenF1SessionsMethod,
 } from "./types";
 import {
   OpenF1ChampionshipDriverRequestSchema,
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
   OpenF1PositionRequestSchema,
+  OpenF1SessionRequestSchema,
 } from "./zod";
 
 const MEETINGS_QUERY_FIELDS = [
@@ -82,6 +86,24 @@ const POSITION_QUERY_FIELDS = [
   "position",
   "session_key",
 ] as const satisfies readonly (keyof OpenF1PositionRequest)[];
+
+const SESSIONS_QUERY_FIELDS = [
+  "circuit_key",
+  "circuit_short_name",
+  "country_code",
+  "country_key",
+  "country_name",
+  "date_end",
+  "date_start",
+  "gmt_offset",
+  "is_cancelled",
+  "location",
+  "meeting_key",
+  "session_key",
+  "session_name",
+  "session_type",
+  "year",
+] as const satisfies readonly (keyof OpenF1SessionRequest)[];
 
 type OpenF1QueryValue =
   | OpenF1FilterScalar
@@ -314,12 +336,32 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1PositionRequestSchema }
   ) as OpenF1PositionMethod;
 
+  // GET https://api.openf1.org/v1/sessions{query}
+  // Docs: https://openf1.org/docs/#sessions
+  const sessions = Object.assign(
+    async (
+      req: OpenF1SessionRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1SessionResponse | string> => {
+      const query = buildQuery(req, SESSIONS_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/sessions${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1SessionResponse>(
+        `/v1/sessions${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1SessionRequestSchema }
+  ) as OpenF1SessionsMethod;
+
   return attachExamples({
     v1: {
       championshipDrivers,
       laps,
       meetings,
       position,
+      sessions,
     },
   });
 }

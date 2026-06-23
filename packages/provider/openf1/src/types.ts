@@ -181,6 +181,72 @@ export type OpenF1MeetingsMethod = OpenF1Method<
   OpenF1MeetingsResponse
 >;
 
+export interface OpenF1Session {
+  circuit_key: number;
+  circuit_short_name: string;
+  country_code: string;
+  country_key: number;
+  country_name: string;
+  date_end: string;
+  date_start: string;
+  gmt_offset: string;
+  is_cancelled: boolean;
+  location: string;
+  meeting_key: number;
+  session_key: number;
+  session_name: string;
+  session_type: string;
+  year: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1SessionResponse = OpenF1Session[];
+
+export type OpenF1SessionFilterField =
+  | "circuit_key"
+  | "circuit_short_name"
+  | "country_code"
+  | "country_key"
+  | "country_name"
+  | "date_end"
+  | "date_start"
+  | "gmt_offset"
+  | "is_cancelled"
+  | "location"
+  | "meeting_key"
+  | "session_key"
+  | "session_name"
+  | "session_type"
+  | "year";
+
+export type OpenF1SessionFilter =
+  OpenF1ComparisonFilter<OpenF1SessionFilterField>;
+
+export interface OpenF1SessionRequest {
+  circuit_key?: OpenF1FilterValue<number>;
+  circuit_short_name?: OpenF1FilterValue<string>;
+  country_code?: OpenF1FilterValue<string>;
+  country_key?: OpenF1FilterValue<number>;
+  country_name?: OpenF1FilterValue<string>;
+  date_end?: OpenF1FilterValue<string>;
+  date_start?: OpenF1FilterValue<string>;
+  gmt_offset?: OpenF1FilterValue<string>;
+  is_cancelled?: OpenF1FilterValue<boolean>;
+  location?: OpenF1FilterValue<string>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  session_name?: OpenF1FilterValue<string>;
+  session_type?: OpenF1FilterValue<string>;
+  year?: OpenF1FilterValue<number>;
+  filters?: readonly OpenF1SessionFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1SessionsMethod = OpenF1Method<
+  OpenF1SessionRequest,
+  OpenF1SessionResponse
+>;
+
 export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse
@@ -264,6 +330,7 @@ export interface OpenF1V1Namespace {
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
   position: OpenF1PositionMethod;
+  sessions: OpenF1SessionsMethod;
 }
 
 export interface OpenF1Provider {

@@ -21,6 +21,10 @@ import type {
   OpenF1PositionFilter,
   OpenF1PositionFilterField,
   OpenF1PositionRequest,
+  OpenF1Session,
+  OpenF1SessionFilter,
+  OpenF1SessionFilterField,
+  OpenF1SessionRequest,
 } from "./types";
 
 const nullableString = z.string().nullable();
@@ -273,3 +277,70 @@ export const OpenF1PositionRequestSchema: z.ZodType<OpenF1PositionRequest> =
   });
 
 export const OpenF1PositionResponseSchema = z.array(OpenF1PositionSchema);
+
+export const OpenF1SessionFilterFieldSchema: z.ZodType<OpenF1SessionFilterField> =
+  z.enum([
+    "circuit_key",
+    "circuit_short_name",
+    "country_code",
+    "country_key",
+    "country_name",
+    "date_end",
+    "date_start",
+    "gmt_offset",
+    "is_cancelled",
+    "location",
+    "meeting_key",
+    "session_key",
+    "session_name",
+    "session_type",
+    "year",
+  ]);
+
+export const OpenF1SessionFilterSchema: z.ZodType<OpenF1SessionFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1SessionFilterFieldSchema,
+  });
+
+export const OpenF1SessionSchema: z.ZodType<OpenF1Session> = z
+  .object({
+    circuit_key: z.number(),
+    circuit_short_name: z.string(),
+    country_code: z.string(),
+    country_key: z.number(),
+    country_name: z.string(),
+    date_end: z.string(),
+    date_start: z.string(),
+    gmt_offset: z.string(),
+    is_cancelled: z.boolean(),
+    location: z.string(),
+    meeting_key: z.number(),
+    session_key: z.number(),
+    session_name: z.string(),
+    session_type: z.string(),
+    year: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1SessionRequestSchema: z.ZodType<OpenF1SessionRequest> =
+  z.object({
+    circuit_key: numberFilterValue.optional(),
+    circuit_short_name: stringFilterValue.optional(),
+    country_code: stringFilterValue.optional(),
+    country_key: numberFilterValue.optional(),
+    country_name: stringFilterValue.optional(),
+    date_end: stringFilterValue.optional(),
+    date_start: stringFilterValue.optional(),
+    gmt_offset: stringFilterValue.optional(),
+    is_cancelled: booleanFilterValue.optional(),
+    location: stringFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    session_name: stringFilterValue.optional(),
+    session_type: stringFilterValue.optional(),
+    year: numberFilterValue.optional(),
+    filters: z.array(OpenF1SessionFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1SessionResponseSchema = z.array(OpenF1SessionSchema);

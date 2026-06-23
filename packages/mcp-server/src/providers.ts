@@ -192,6 +192,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/telegram",
     factoryName: "createTelegram",
   },
+  thesportsdb: {
+    envVar: "THESPORTSDB_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/thesportsdb",
+    factoryName: "createTheSportsDB",
+  },
 };
 
 export type InstantiatedProvider = Record<string, unknown>;

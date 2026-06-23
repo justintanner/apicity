@@ -140,6 +140,11 @@ const PROVIDERS = [
     entryFiles: ["packages/provider/simplefunctions/src/simplefunctions.ts"],
     factoryNames: ["createSimpleFunctions"],
   },
+  {
+    name: "thesportsdb",
+    entryFiles: ["packages/provider/thesportsdb/src/thesportsdb.ts"],
+    factoryNames: ["createTheSportsDB"],
+  },
 ];
 
 const METHOD_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);

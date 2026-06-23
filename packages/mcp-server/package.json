@@ -71,6 +71,7 @@
     "@apicity/s3": "workspace:*",
     "@apicity/simplefunctions": "workspace:*",
     "@apicity/telegram": "workspace:*",
+    "@apicity/thesportsdb": "workspace:*",
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",

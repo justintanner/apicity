@@ -154,6 +154,9 @@ importers:
       '@apicity/telegram':
         specifier: workspace:*
         version: link:../provider/telegram
+      '@apicity/thesportsdb':
+        specifier: workspace:*
+        version: link:../provider/thesportsdb
       '@apicity/x':
         specifier: workspace:*
         version: link:../provider/x
@@ -281,6 +284,12 @@ importers:
         version: 3.25.76
 
   packages/provider/telegram:
+    dependencies:
+      zod:
+        specifier: ^3.24.0
+        version: 3.25.76
+
+  packages/provider/thesportsdb:
     dependencies:
       zod:
         specifier: ^3.24.0

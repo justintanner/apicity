@@ -155,6 +155,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/telegram/src"
       ),
+      "@apicity/thesportsdb/zod": path.resolve(
+        __dirname,
+        "../packages/provider/thesportsdb/src/zod"
+      ),
+      "@apicity/thesportsdb": path.resolve(
+        __dirname,
+        "../packages/provider/thesportsdb/src"
+      ),
       "@apicity/dolthub/zod": path.resolve(
         __dirname,
         "../packages/provider/dolthub/src/zod"

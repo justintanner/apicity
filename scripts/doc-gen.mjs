@@ -2651,6 +2651,11 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  thesportsdb: {
+    env: "THESPORTSDB_API_KEY",
+    optionalAuth: true,
+    showMiddleware: false,
+  },
   s3: {
     showMiddleware: false,
   },
@@ -2687,6 +2692,7 @@ const PROVIDER_DOCS = {
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
   simplefunctions:
     "https://docs.simplefunctions.dev/api-reference/public-market-data",
+  thesportsdb: "https://www.thesportsdb.com/docs_api_guide",
 };
 
 // Resolve the provider's factory function from the create* identifiers in

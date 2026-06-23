@@ -57,6 +57,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   telegram: ["core.telegram.org"],
   dolthub: ["www.dolthub.com", "dolthub.com"],
   simplefunctions: ["docs.simplefunctions.dev"],
+  thesportsdb: ["www.thesportsdb.com", "thedatadb.readme.io"],
 };
 
 const METHOD_LINE_RE =

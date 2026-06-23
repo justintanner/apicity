@@ -182,6 +182,40 @@ export interface OpenF1ChampionshipDriverRequest {
   csv?: boolean;
 }
 
+export interface OpenF1Overtake {
+  date: string;
+  meeting_key: number;
+  overtaken_driver_number: number;
+  overtaking_driver_number: number;
+  position: number;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1OvertakeResponse = OpenF1Overtake[];
+
+export type OpenF1OvertakeFilterField =
+  | "date"
+  | "meeting_key"
+  | "overtaken_driver_number"
+  | "overtaking_driver_number"
+  | "position"
+  | "session_key";
+
+export type OpenF1OvertakeFilter =
+  OpenF1ComparisonFilter<OpenF1OvertakeFilterField>;
+
+export interface OpenF1OvertakeRequest {
+  date?: OpenF1FilterValue<string>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  overtaken_driver_number?: OpenF1FilterValue<number>;
+  overtaking_driver_number?: OpenF1FilterValue<number>;
+  position?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1OvertakeFilter[];
+  csv?: boolean;
+}
+
 export interface OpenF1Position {
   date: string;
   driver_number: number;
@@ -517,6 +551,11 @@ export type OpenF1LapsMethod = OpenF1Method<
   OpenF1LapResponse
 >;
 
+export type OpenF1OvertakesMethod = OpenF1Method<
+  OpenF1OvertakeRequest,
+  OpenF1OvertakeResponse
+>;
+
 export type OpenF1PositionMethod = OpenF1Method<
   OpenF1PositionRequest,
   OpenF1PositionResponse
@@ -717,6 +756,7 @@ export interface OpenF1V1Namespace {
   intervals: OpenF1IntervalsMethod;
   laps: OpenF1LapsMethod;
   meetings: OpenF1MeetingsMethod;
+  overtakes: OpenF1OvertakesMethod;
   position: OpenF1PositionMethod;
   pit: OpenF1PitStopsMethod;
   raceControl: OpenF1RaceControlMethod;

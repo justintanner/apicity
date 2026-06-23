@@ -16,6 +16,9 @@ import type {
   OpenF1MeetingsRequest,
   OpenF1MeetingsResponse,
   OpenF1Options,
+  OpenF1OvertakeRequest,
+  OpenF1OvertakeResponse,
+  OpenF1OvertakesMethod,
   OpenF1PositionMethod,
   OpenF1PositionRequest,
   OpenF1PositionResponse,
@@ -53,6 +56,7 @@ import {
   OpenF1IntervalsRequestSchema,
   OpenF1LapRequestSchema,
   OpenF1MeetingsRequestSchema,
+  OpenF1OvertakeRequestSchema,
   OpenF1PositionRequestSchema,
   OpenF1PitStopRequestSchema,
   OpenF1RaceControlMessageRequestSchema,
@@ -123,6 +127,15 @@ const LAPS_QUERY_FIELDS = [
   "session_key",
   "st_speed",
 ] as const satisfies readonly (keyof OpenF1LapRequest)[];
+
+const OVERTAKES_QUERY_FIELDS = [
+  "date",
+  "meeting_key",
+  "overtaken_driver_number",
+  "overtaking_driver_number",
+  "position",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1OvertakeRequest)[];
 
 const POSITION_QUERY_FIELDS = [
   "date",
@@ -528,6 +541,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1LapRequestSchema }
   ) as OpenF1LapsMethod;
 
+  // GET https://api.openf1.org/v1/overtakes{query}
+  // Docs: https://openf1.org/docs/#overtakes
+  const overtakes = Object.assign(
+    async (
+      req: OpenF1OvertakeRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1OvertakeResponse | string> => {
+      const query = buildQuery(req, OVERTAKES_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/overtakes${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1OvertakeResponse>(
+        `/v1/overtakes${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1OvertakeRequestSchema }
+  ) as OpenF1OvertakesMethod;
+
   // GET https://api.openf1.org/v1/position{query}
   // Docs: https://openf1.org/docs/#position
   const position = Object.assign(
@@ -712,6 +744,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       intervals,
       laps,
       meetings,
+      overtakes,
       position,
       pit,
       raceControl,

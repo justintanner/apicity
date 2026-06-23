@@ -161,6 +161,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 </details>
 
+### overtakes
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.overtakes</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/overtakes{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#overtakes)
+
+```typescript
+const res = await openf1.v1.overtakes({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
 ### pit
 
 <details>

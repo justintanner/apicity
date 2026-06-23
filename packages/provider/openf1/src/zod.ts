@@ -22,6 +22,10 @@ import type {
   OpenF1MeetingsFilterField,
   OpenF1MeetingsRequest,
   OpenF1Options,
+  OpenF1Overtake,
+  OpenF1OvertakeFilter,
+  OpenF1OvertakeFilterField,
+  OpenF1OvertakeRequest,
   OpenF1Position,
   OpenF1PositionFilter,
   OpenF1PositionFilterField,
@@ -350,6 +354,46 @@ export const OpenF1LapRequestSchema: z.ZodType<OpenF1LapRequest> = z.object({
 });
 
 export const OpenF1LapResponseSchema = z.array(OpenF1LapSchema);
+
+export const OpenF1OvertakeFilterFieldSchema: z.ZodType<OpenF1OvertakeFilterField> =
+  z.enum([
+    "date",
+    "meeting_key",
+    "overtaken_driver_number",
+    "overtaking_driver_number",
+    "position",
+    "session_key",
+  ]);
+
+export const OpenF1OvertakeFilterSchema: z.ZodType<OpenF1OvertakeFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1OvertakeFilterFieldSchema,
+  });
+
+export const OpenF1OvertakeSchema: z.ZodType<OpenF1Overtake> = z
+  .object({
+    date: z.string(),
+    meeting_key: z.number(),
+    overtaken_driver_number: z.number(),
+    overtaking_driver_number: z.number(),
+    position: z.number(),
+    session_key: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1OvertakeRequestSchema: z.ZodType<OpenF1OvertakeRequest> =
+  z.object({
+    date: stringFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    overtaken_driver_number: numberFilterValue.optional(),
+    overtaking_driver_number: numberFilterValue.optional(),
+    position: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1OvertakeFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1OvertakeResponseSchema = z.array(OpenF1OvertakeSchema);
 
 export const OpenF1PositionFilterFieldSchema: z.ZodType<OpenF1PositionFilterField> =
   z.enum(["date", "driver_number", "meeting_key", "position", "session_key"]);

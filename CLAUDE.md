@@ -105,7 +105,7 @@ packages/provider/<name>/
 **fireworks** — Chat, completions, embeddings, rerank, messages, workflows, audio, models, deployments, training
 **alibaba** — Chat (Qwen3), streaming, models
 **binance** — Spot REST public/general endpoints
-**openligadb** — Public soccer and sports data
+**openligadb** — Public soccer match data, standings, and scorers
 **elevenlabs** — Sound effect generation, text-to-speech, voices, user/subscription
 **s3** — S3-compatible object storage (signing, buckets, objects)
 **b2** — Backblaze B2 S3-compatible storage; thin wrapper delegating signing/transport/schemas to `@apicity/s3` (docs-only in `endpoint-docs.tsv`, excluded from the endpoint-walk lint)

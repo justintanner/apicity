@@ -224,6 +224,25 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "elevenlabs" && dotPath === "v1.user.subscription") {
     return `const res = await ${call}();`;
   }
+  if (
+    providerName === "openligadb" &&
+    (dotPath === "getbltable" || dotPath === "getgrouptable")
+  ) {
+    return [
+      `const res = await ${call}({`,
+      '  leagueShortcut: "bl1",',
+      "  leagueSeason: 2024,",
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "openligadb" && dotPath === "getgoalgetters") {
+    return [
+      `const res = await ${call}({`,
+      '  leagueShortcut: "bl1",',
+      "  leagueSeason: 2024,",
+      "});",
+    ].join("\n");
+  }
   if (providerName === "simplefunctions" && dotPath === "api.public.query") {
     return [
       `const res = await ${call}({`,
@@ -2619,6 +2638,28 @@ function renderOpenLigaDBExample() {
     "The overloaded upstream `/getmatchdata` paths are exposed as explicit",
     "`by*` methods so team, group, season, and match-id routes cannot collide.",
     "",
+    "## Standings And Scorers Examples",
+    "",
+    "League standings, group tables, and top scorers share the same",
+    "`leagueShortcut` and `leagueSeason` request shape:",
+    "",
+    "```typescript",
+    "const standings = await openligadb.getbltable({",
+    '  leagueShortcut: "bl1",',
+    "  leagueSeason: 2024,",
+    "});",
+    "",
+    "const groupTable = await openligadb.getgrouptable({",
+    '  leagueShortcut: "bl1",',
+    "  leagueSeason: 2024,",
+    "});",
+    "",
+    "const topScorers = await openligadb.getgoalgetters({",
+    '  leagueShortcut: "bl1",',
+    "  leagueSeason: 2024,",
+    "});",
+    "```",
+    "",
   ].join("\n");
 }
 
@@ -2812,11 +2853,11 @@ const DEP_NOTES = {
 };
 
 const PROVIDER_DEP_NOTES = {
+  openligadb: {
+    zod: "request schemas attached to endpoint methods as `.schema`; response schemas exported",
+  },
   simplefunctions: {
     zod: "request schemas attached to provider endpoints as `.schema`",
-  },
-  openligadb: {
-    zod: "request and response schemas for OpenLigaDB public data",
   },
   thesportsdb: {
     zod: "request schemas attached to provider endpoints as `.schema`",

@@ -1,6 +1,10 @@
 import { OpenLigaDBError } from "./types";
 import type {
+  OpenLigaDBBlTableMethod,
+  OpenLigaDBBlTableResponse,
   OpenLigaDBCurrentGroupRequest,
+  OpenLigaDBGoalGettersMethod,
+  OpenLigaDBGoalGettersResponse,
   OpenLigaDBGroup,
   OpenLigaDBLastChangeDateRequest,
   OpenLigaDBLeague,
@@ -282,6 +286,60 @@ export function createOpenLigaDB(opts?: OpenLigaDBOptions): OpenLigaDBProvider {
     { schema: OpenLigaDBMatchesByTeamsRequestSchema }
   );
 
+  // GET https://api.openligadb.de/getbltable/{leagueShortcut}/{leagueSeason}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getbltable: OpenLigaDBBlTableMethod = Object.assign(
+    async (
+      req: OpenLigaDBLeagueSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBBlTableResponse> => {
+      return request<OpenLigaDBBlTableResponse>({
+        method: "GET",
+        path: ["getbltable", req.leagueShortcut, req.leagueSeason],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLeagueSeasonRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getgrouptable/{leagueShortcut}/{leagueSeason}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getgrouptable: OpenLigaDBBlTableMethod = Object.assign(
+    async (
+      req: OpenLigaDBLeagueSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBBlTableResponse> => {
+      return request<OpenLigaDBBlTableResponse>({
+        method: "GET",
+        path: ["getgrouptable", req.leagueShortcut, req.leagueSeason],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLeagueSeasonRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getgoalgetters/{leagueShortcut}/{leagueSeason}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getgoalgetters: OpenLigaDBGoalGettersMethod = Object.assign(
+    async (
+      req: OpenLigaDBLeagueSeasonRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBGoalGettersResponse> => {
+      return request<OpenLigaDBGoalGettersResponse>({
+        method: "GET",
+        path: ["getgoalgetters", req.leagueShortcut, req.leagueSeason],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLeagueSeasonRequestSchema }
+  );
+
+  const get = {
+    getbltable,
+    getgrouptable,
+    getgoalgetters,
+  };
+
   return attachExamples({
     swagger: {
       v1: {
@@ -295,6 +353,10 @@ export function createOpenLigaDB(opts?: OpenLigaDBOptions): OpenLigaDBProvider {
     getlastchangedate,
     getresultinfos,
     getavailableteams,
+    getbltable,
+    getgrouptable,
+    getgoalgetters,
+    get,
     getmatchdata: {
       byId,
       byLeagueSeason,

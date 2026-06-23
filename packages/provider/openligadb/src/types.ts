@@ -219,10 +219,8 @@ export type OpenLigaDBAvailableTeamsResponse = OpenLigaDBTeam[];
 
 export type OpenLigaDBMatchByIdResponse = OpenLigaDBMatch;
 
-export interface OpenLigaDBMatchesByLeagueSeasonRequest {
-  leagueShortcut: string;
-  leagueSeason: number;
-}
+export type OpenLigaDBMatchesByLeagueSeasonRequest =
+  OpenLigaDBLeagueSeasonRequest;
 
 export type OpenLigaDBMatchesByLeagueSeasonResponse = OpenLigaDBMatch[];
 
@@ -244,6 +242,10 @@ export interface OpenLigaDBMatchesByTeamsRequest {
 }
 
 export type OpenLigaDBMatchesByTeamsResponse = OpenLigaDBMatch[];
+
+export type OpenLigaDBBlTableResponse = OpenLigaDBBlTableTeam[];
+
+export type OpenLigaDBGoalGettersResponse = OpenLigaDBGoalGetter[];
 
 export interface OpenLigaDBNoRequestMethod<Response> {
   (signal?: AbortSignal): Promise<Response>;
@@ -315,12 +317,28 @@ export type OpenLigaDBMatchesByTeamsMethod = OpenLigaDBMethod<
   OpenLigaDBMatchesByTeamsResponse
 >;
 
+export type OpenLigaDBBlTableMethod = OpenLigaDBMethod<
+  OpenLigaDBLeagueSeasonRequest,
+  OpenLigaDBBlTableResponse
+>;
+
+export type OpenLigaDBGoalGettersMethod = OpenLigaDBMethod<
+  OpenLigaDBLeagueSeasonRequest,
+  OpenLigaDBGoalGettersResponse
+>;
+
 export interface OpenLigaDBGetMatchdataNamespace {
   byId: OpenLigaDBMatchByIdMethod;
   byLeagueSeason: OpenLigaDBMatchesByLeagueSeasonMethod;
   byLeagueSeasonGroup: OpenLigaDBMatchesByLeagueSeasonGroupMethod;
   byLeagueSeasonTeam: OpenLigaDBMatchesByLeagueSeasonTeamMethod;
   byTeams: OpenLigaDBMatchesByTeamsMethod;
+}
+
+export interface OpenLigaDBGetNamespace {
+  getbltable: OpenLigaDBBlTableMethod;
+  getgrouptable: OpenLigaDBBlTableMethod;
+  getgoalgetters: OpenLigaDBGoalGettersMethod;
 }
 
 export interface OpenLigaDBProvider {
@@ -332,5 +350,9 @@ export interface OpenLigaDBProvider {
   getlastchangedate: OpenLigaDBLastChangeDateMethod;
   getresultinfos: OpenLigaDBResultInfosMethod;
   getavailableteams: OpenLigaDBAvailableTeamsMethod;
+  getbltable: OpenLigaDBBlTableMethod;
+  getgrouptable: OpenLigaDBBlTableMethod;
+  getgoalgetters: OpenLigaDBGoalGettersMethod;
+  get: OpenLigaDBGetNamespace;
   getmatchdata: OpenLigaDBGetMatchdataNamespace;
 }

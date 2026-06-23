@@ -5,13 +5,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 [![docs](https://img.shields.io/badge/docs-api.openligadb.de-blue)](https://api.openligadb.de/swagger/v1/swagger.json)
 
-OpenLigaDB API provider for public soccer match data and metadata.
+OpenLigaDB API provider for public soccer match data, metadata, standings, and scorers.
 
 OpenLigaDB is a public read-only API. `createOpenLigaDB()` does not take credentials, and the provider does not send auth headers.
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request and response schemas for OpenLigaDB public data
+- `zod@^3.24.0` — request schemas attached to endpoint methods as `.schema`; response schemas exported
 
 ## Installation
 
@@ -49,6 +49,28 @@ const season = await openligadb.getmatchdata.byLeagueSeason({
 The overloaded upstream `/getmatchdata` paths are exposed as explicit
 `by*` methods so team, group, season, and match-id routes cannot collide.
 
+## Standings And Scorers Examples
+
+League standings, group tables, and top scorers share the same
+`leagueShortcut` and `leagueSeason` request shape:
+
+```typescript
+const standings = await openligadb.getbltable({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+});
+
+const groupTable = await openligadb.getgrouptable({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+});
+
+const topScorers = await openligadb.getgoalgetters({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+});
+```
+
 ## Catalog Discovery Flow
 
 OpenLigaDB's public catalog endpoints work without credentials. A common
@@ -85,7 +107,7 @@ example `openligadb.getavailablegroups.schema.safeParse(input)`.
 
 ## API Reference
 
-14 endpoints across 9 groups. Each method mirrors an upstream URL path.
+17 endpoints across 12 groups. Each method mirrors an upstream URL path.
 
 ### getavailablegroups
 
@@ -170,6 +192,26 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 </details>
 
+### getbltable
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getbltable</code></b></summary>
+
+<code>GET https://api.openligadb.de/getbltable/{leagueShortcut}/{leagueSeason}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const res = await openligadb.getbltable({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+});
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
 ### getcurrentgroup
 
 <details>
@@ -181,6 +223,46 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 ```typescript
 const group = await openligadb.getcurrentgroup({ leagueShortcut: "bl1" });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getgoalgetters
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getgoalgetters</code></b></summary>
+
+<code>GET https://api.openligadb.de/getgoalgetters/{leagueShortcut}/{leagueSeason}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const res = await openligadb.getgoalgetters({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+});
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getgrouptable
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getgrouptable</code></b></summary>
+
+<code>GET https://api.openligadb.de/getgrouptable/{leagueShortcut}/{leagueSeason}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const res = await openligadb.getgrouptable({
+  leagueShortcut: "bl1",
+  leagueSeason: 2024,
+});
 ```
 
 Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)

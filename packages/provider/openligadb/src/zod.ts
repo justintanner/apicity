@@ -1,8 +1,10 @@
 import { z } from "zod";
 import type {
+  OpenLigaDBBlTableResponse,
   OpenLigaDBBlTableTeam,
   OpenLigaDBCurrentGroupRequest,
   OpenLigaDBGoal,
+  OpenLigaDBGoalGettersResponse,
   OpenLigaDBGoalGetter,
   OpenLigaDBGroup,
   OpenLigaDBLastChangeDateRequest,
@@ -206,3 +208,9 @@ export const OpenLigaDBMatchesByTeamsRequestSchema: z.ZodType<OpenLigaDBMatchesB
     teamId1: intPathParam,
     teamId2: intPathParam,
   });
+
+export const OpenLigaDBBlTableResponseSchema: z.ZodType<OpenLigaDBBlTableResponse> =
+  z.array(OpenLigaDBBlTableTeamSchema);
+
+export const OpenLigaDBGoalGettersResponseSchema: z.ZodType<OpenLigaDBGoalGettersResponse> =
+  z.array(OpenLigaDBGoalGetterSchema);

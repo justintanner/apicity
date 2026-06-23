@@ -92,7 +92,7 @@ Upload, status, and helper endpoints are unlisted and remain free.
 | [@apicity/kie](packages/provider/kie)                             | KIE media generation for video, image, audio, Claude, Suno         |
 | [@apicity/alibaba](packages/provider/alibaba)                     | Alibaba DashScope/Qwen chat, image, and video workflows            |
 | [@apicity/binance](packages/provider/binance)                     | Binance Spot REST public/general endpoints                         |
-| [@apicity/openligadb](packages/provider/openligadb)               | OpenLigaDB public soccer and sports data                           |
+| [@apicity/openligadb](packages/provider/openligadb)               | OpenLigaDB public soccer match data, standings, and scorers        |
 | [@apicity/fireworks](packages/provider/fireworks)                 | Fireworks chat, embeddings, audio, deployments, fine-tuning        |
 | [@apicity/kimicoding](packages/provider/kimicoding)               | Kimi Coding messages, streaming, models, embeddings                |
 | [@apicity/elevenlabs](packages/provider/elevenlabs)               | ElevenLabs text-to-speech, sound effects, audio APIs               |

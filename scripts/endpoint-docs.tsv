@@ -1105,6 +1105,9 @@ openligadb	getcurrentgroup	GET	https://api.openligadb.de/getcurrentgroup/{league
 openligadb	getlastchangedate	GET	https://api.openligadb.de/getlastchangedate/{leagueShortcut}/{leagueSeason}/{groupOrderId}	https://api.openligadb.de/swagger/v1/swagger.json
 openligadb	getresultinfos	GET	https://api.openligadb.de/getresultinfos/{leagueId}	https://api.openligadb.de/swagger/v1/swagger.json
 openligadb	getavailableteams	GET	https://api.openligadb.de/getavailableteams/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getbltable	GET	https://api.openligadb.de/getbltable/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getgoalgetters	GET	https://api.openligadb.de/getgoalgetters/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getgrouptable	GET	https://api.openligadb.de/getgrouptable/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/v1/swagger.json
 openligadb	swagger.v1.swaggerJson	GET	https://api.openligadb.de/swagger/v1/swagger.json	https://api.openligadb.de/swagger/v1/swagger.json
 openligadb	getmatchdata.byId	GET	https://api.openligadb.de/getmatchdata/{matchId}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byLeagueSeason	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}	https://api.openligadb.de/swagger/index.html

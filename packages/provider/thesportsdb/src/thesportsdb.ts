@@ -2,11 +2,28 @@ import { attachExamples } from "./example";
 import { TheSportsDBError } from "./types";
 import type {
   TheSportsDBCountriesResponse,
+  TheSportsDBEquipmentLookupRequest,
+  TheSportsDBEquipmentLookupResponse,
+  TheSportsDBLeagueLookupRequest,
+  TheSportsDBLeagueLookupResponse,
   TheSportsDBLeaguesResponse,
   TheSportsDBOptions,
   TheSportsDBProvider,
   TheSportsDBSportsResponse,
+  TheSportsDBTableLookupRequest,
+  TheSportsDBTableLookupResponse,
+  TheSportsDBTeamLookupRequest,
+  TheSportsDBTeamLookupResponse,
+  TheSportsDBVenueLookupRequest,
+  TheSportsDBVenueLookupResponse,
 } from "./types";
+import {
+  TheSportsDBEquipmentLookupRequestSchema,
+  TheSportsDBLeagueLookupRequestSchema,
+  TheSportsDBTableLookupRequestSchema,
+  TheSportsDBTeamLookupRequestSchema,
+  TheSportsDBVenueLookupRequestSchema,
+} from "./zod";
 
 export function createTheSportsDB(
   opts?: TheSportsDBOptions
@@ -101,6 +118,17 @@ export function createTheSportsDB(
     }
   }
 
+  function buildQuery(params: Record<string, string | number | undefined>) {
+    const qs = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined) {
+        qs.append(key, String(value));
+      }
+    }
+    const query = qs.toString();
+    return query ? `?${query}` : "";
+  }
+
   // sig-ok: V1 PHP script names exposed as catalog methods.
   // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/all_sports.php
   // Docs: https://thedatadb.readme.io/reference/getallsports
@@ -143,10 +171,112 @@ export function createTheSportsDB(
     { schema: undefined }
   );
 
+  // sig-ok: semantic V1 lookup namespace over TheSportsDB PHP script names.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupleague.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const league = Object.assign(
+    async (
+      req: TheSportsDBLeagueLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLeagueLookupResponse> => {
+      const query = buildQuery({ id: req.idLeague });
+      return makeJsonRequest<TheSportsDBLeagueLookupResponse>(
+        "GET",
+        `/${apiKey}/lookupleague.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBLeagueLookupRequestSchema }
+  );
+
+  // sig-ok: semantic V1 lookup namespace over TheSportsDB PHP script names.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptable.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const table = Object.assign(
+    async (
+      req: TheSportsDBTableLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTableLookupResponse> => {
+      const query = buildQuery({
+        l: req.idLeague,
+        s: req.season,
+      });
+      return makeJsonRequest<TheSportsDBTableLookupResponse>(
+        "GET",
+        `/${apiKey}/lookuptable.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBTableLookupRequestSchema }
+  );
+
+  // sig-ok: semantic V1 lookup namespace over TheSportsDB PHP script names.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupteam.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const team = Object.assign(
+    async (
+      req: TheSportsDBTeamLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTeamLookupResponse> => {
+      const query = buildQuery({ id: req.idTeam });
+      return makeJsonRequest<TheSportsDBTeamLookupResponse>(
+        "GET",
+        `/${apiKey}/lookupteam.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBTeamLookupRequestSchema }
+  );
+
+  // sig-ok: semantic V1 lookup namespace over TheSportsDB PHP script names.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupequipment.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const equipment = Object.assign(
+    async (
+      req: TheSportsDBEquipmentLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEquipmentLookupResponse> => {
+      const query = buildQuery({ id: req.idTeam });
+      return makeJsonRequest<TheSportsDBEquipmentLookupResponse>(
+        "GET",
+        `/${apiKey}/lookupequipment.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBEquipmentLookupRequestSchema }
+  );
+
+  // sig-ok: semantic V1 lookup namespace over TheSportsDB PHP script names.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupvenue.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide
+  const venue = Object.assign(
+    async (
+      req: TheSportsDBVenueLookupRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBVenueLookupResponse> => {
+      const query = buildQuery({ id: req.idVenue });
+      return makeJsonRequest<TheSportsDBVenueLookupResponse>(
+        "GET",
+        `/${apiKey}/lookupvenue.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBVenueLookupRequestSchema }
+  );
+
+  const lookup = {
+    league,
+    table,
+    team,
+    equipment,
+    venue,
+  };
+
   const v1 = {
     allSports,
     allCountries,
     allLeagues,
+    lookup,
   };
 
   return attachExamples({

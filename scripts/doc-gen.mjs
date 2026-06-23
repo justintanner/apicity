@@ -2818,7 +2818,27 @@ const PROVIDER_DEP_NOTES = {
   openligadb: {
     zod: "request and response schemas for OpenLigaDB public data",
   },
+  thesportsdb: {
+    zod: "request schemas attached to provider endpoints as `.schema`",
+  },
 };
+
+function renderTheSportsDBLookupGuide() {
+  return [
+    "V1 uses an API key in the URL path. The provider defaults to the public",
+    "free key `123`; pass `apiKey` to use your own key.",
+    "",
+    "```typescript",
+    "const league = await thesportsdb.v1.lookup.league({ idLeague: 4328 });",
+    "const table = await thesportsdb.v1.lookup.table({",
+    "  idLeague: 4328,",
+    '  season: "2020-2021",',
+    "});",
+    "const team = await thesportsdb.v1.lookup.team({ idTeam: 133604 });",
+    "```",
+    "",
+  ].join("\n");
+}
 
 async function generateReadme(providerDir, providerName, endpoints) {
   const { pkg } = await extractProviderMetadata(providerDir);
@@ -2932,6 +2952,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
   if (providerName === "simplefunctions") {
     sections.push(renderSimpleFunctionsPublicMarketGuide());
     sections.push(renderSimpleFunctionsAuthenticatedGuide());
+  }
+
+  if (providerName === "thesportsdb") {
+    sections.push(renderTheSportsDBLookupGuide());
   }
 
   if (providerName === "xai") {

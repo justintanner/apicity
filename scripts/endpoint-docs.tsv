@@ -1040,6 +1040,11 @@ telegram	verifyUser	POST	https://api.telegram.org/bot{token}/verifyUser	https://
 thesportsdb	v1.allCountries	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/all_countries.php	https://thedatadb.readme.io/reference/getallcountries
 thesportsdb	v1.allLeagues	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/all_leagues.php	https://www.thesportsdb.com/docs_api_guide#v1-list
 thesportsdb	v1.allSports	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/all_sports.php	https://thedatadb.readme.io/reference/getallsports
+thesportsdb	v1.lookup.equipment	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupequipment.php{query}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.lookup.league	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupleague.php{query}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.lookup.table	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptable.php{query}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.lookup.team	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupteam.php{query}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.lookup.venue	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupvenue.php{query}	https://www.thesportsdb.com/docs_api_guide
 x	v2.media.upload	GET	https://api.x.com/2/media/upload{query}	https://docs.x.com/x-api/media/get-media-upload-status
 x	v2.media.upload.append	POST	https://api.x.com/2/media/upload/{id}/append	https://docs.x.com/x-api/media/append-media-upload
 x	v2.media.upload.finalize	POST	https://api.x.com/2/media/upload/{id}/finalize	https://docs.x.com/x-api/media/finalize-media-upload

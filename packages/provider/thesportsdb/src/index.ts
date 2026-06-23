@@ -1,7 +1,15 @@
 export { createTheSportsDB } from "./thesportsdb";
 export { TheSportsDBError } from "./types";
 
-export { TheSportsDBOptionsSchema, type TheSportsDBOptions } from "./zod";
+export {
+  TheSportsDBEquipmentLookupRequestSchema,
+  TheSportsDBLeagueLookupRequestSchema,
+  TheSportsDBOptionsSchema,
+  TheSportsDBTableLookupRequestSchema,
+  TheSportsDBTeamLookupRequestSchema,
+  TheSportsDBVenueLookupRequestSchema,
+  type TheSportsDBOptions,
+} from "./zod";
 
 export type {
   TheSportsDBAllCountriesMethod,
@@ -10,11 +18,34 @@ export type {
   TheSportsDBCountriesResponse,
   TheSportsDBCountry,
   TheSportsDBEndpointMethod,
+  TheSportsDBEquipment,
+  TheSportsDBEquipmentLookupMethod,
+  TheSportsDBEquipmentLookupRequest,
+  TheSportsDBEquipmentLookupResponse,
+  TheSportsDBField,
+  TheSportsDBGetNamespace,
+  TheSportsDBId,
   TheSportsDBLeague,
+  TheSportsDBLeagueLookupMethod,
+  TheSportsDBLeagueLookupRequest,
+  TheSportsDBLeagueLookupResponse,
   TheSportsDBLeaguesResponse,
   TheSportsDBProvider,
+  TheSportsDBRecord,
   TheSportsDBSport,
   TheSportsDBSportsResponse,
-  TheSportsDBGetNamespace,
+  TheSportsDBTableLookupMethod,
+  TheSportsDBTableLookupRequest,
+  TheSportsDBTableLookupResponse,
+  TheSportsDBTableRow,
+  TheSportsDBTeam,
+  TheSportsDBTeamLookupMethod,
+  TheSportsDBTeamLookupRequest,
+  TheSportsDBTeamLookupResponse,
+  TheSportsDBV1LookupNamespace,
   TheSportsDBV1Namespace,
+  TheSportsDBVenue,
+  TheSportsDBVenueLookupMethod,
+  TheSportsDBVenueLookupRequest,
+  TheSportsDBVenueLookupResponse,
 } from "./types";

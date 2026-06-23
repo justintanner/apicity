@@ -256,7 +256,8 @@ export async function instantiateProvider(
     !credential &&
     spec.envVar &&
     name !== "youtube" &&
-    name !== "simplefunctions"
+    name !== "simplefunctions" &&
+    name !== "thesportsdb"
   ) {
     return null;
   }

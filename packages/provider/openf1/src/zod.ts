@@ -1,5 +1,9 @@
 import { z } from "zod";
 import type {
+  OpenF1ChampionshipDriver,
+  OpenF1ChampionshipDriverFilter,
+  OpenF1ChampionshipDriverFilterField,
+  OpenF1ChampionshipDriverRequest,
   OpenF1ComparisonFilter,
   OpenF1ComparisonOperator,
   OpenF1FilterScalar,
@@ -115,3 +119,49 @@ export const OpenF1MeetingsRequestSchema: z.ZodType<OpenF1MeetingsRequest> =
     filters: z.array(OpenF1MeetingsFilterSchema).optional(),
     csv: z.boolean().optional(),
   });
+
+export const OpenF1ChampionshipDriverFilterFieldSchema: z.ZodType<OpenF1ChampionshipDriverFilterField> =
+  z.enum([
+    "driver_number",
+    "meeting_key",
+    "points_current",
+    "points_start",
+    "position_current",
+    "position_start",
+    "session_key",
+  ]);
+
+export const OpenF1ChampionshipDriverFilterSchema: z.ZodType<OpenF1ChampionshipDriverFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1ChampionshipDriverFilterFieldSchema,
+  });
+
+export const OpenF1ChampionshipDriverSchema: z.ZodType<OpenF1ChampionshipDriver> =
+  z
+    .object({
+      driver_number: z.number(),
+      meeting_key: z.number(),
+      points_current: z.number(),
+      points_start: z.number(),
+      position_current: z.number(),
+      position_start: z.number(),
+      session_key: z.number(),
+    })
+    .catchall(z.unknown());
+
+export const OpenF1ChampionshipDriverRequestSchema: z.ZodType<OpenF1ChampionshipDriverRequest> =
+  z.object({
+    driver_number: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    points_current: numberFilterValue.optional(),
+    points_start: numberFilterValue.optional(),
+    position_current: numberFilterValue.optional(),
+    position_start: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1ChampionshipDriverFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1ChampionshipDriverResponseSchema = z.array(
+  OpenF1ChampionshipDriverSchema
+);

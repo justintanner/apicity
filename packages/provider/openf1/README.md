@@ -54,7 +54,24 @@ comparison operators such as `>=`, `<`, and `>`.
 
 ## API Reference
 
-1 endpoint across 1 group. Each method mirrors an upstream URL path.
+2 endpoints across 2 groups. Each method mirrors an upstream URL path.
+
+### championshipDrivers
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.championshipDrivers</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/championship_drivers{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#drivers-championship-beta)
+
+```typescript
+const res = await openf1.v1.championshipDrivers({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
 
 ### meetings
 

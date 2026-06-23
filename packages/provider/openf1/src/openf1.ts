@@ -1,15 +1,21 @@
 import { attachExamples } from "./example";
 import { OpenF1Error } from "./types";
 import type {
+  OpenF1ChampionshipDriverRequest,
+  OpenF1ChampionshipDriverResponse,
+  OpenF1ChampionshipDriversMethod,
+  OpenF1ComparisonFilter,
   OpenF1FilterScalar,
-  OpenF1MeetingsFilter,
   OpenF1MeetingsMethod,
   OpenF1MeetingsRequest,
   OpenF1MeetingsResponse,
   OpenF1Options,
   OpenF1Provider,
 } from "./types";
-import { OpenF1MeetingsRequestSchema } from "./zod";
+import {
+  OpenF1ChampionshipDriverRequestSchema,
+  OpenF1MeetingsRequestSchema,
+} from "./zod";
 
 const MEETINGS_QUERY_FIELDS = [
   "circuit_key",
@@ -32,10 +38,25 @@ const MEETINGS_QUERY_FIELDS = [
   "year",
 ] as const satisfies readonly (keyof OpenF1MeetingsRequest)[];
 
+const CHAMPIONSHIP_DRIVER_QUERY_FIELDS = [
+  "driver_number",
+  "meeting_key",
+  "points_current",
+  "points_start",
+  "position_current",
+  "position_start",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1ChampionshipDriverRequest)[];
+
 type OpenF1QueryValue =
   | OpenF1FilterScalar
   | readonly OpenF1FilterScalar[]
   | undefined;
+
+interface OpenF1QueryRequest {
+  filters?: readonly OpenF1ComparisonFilter[];
+  csv?: boolean;
+}
 
 interface OpenF1ErrorBody {
   error?: string;
@@ -91,16 +112,19 @@ function addQueryValue(
 
 function addComparisonFilter(
   qs: URLSearchParams,
-  filter: OpenF1MeetingsFilter
+  filter: OpenF1ComparisonFilter
 ): void {
   const key = filter.op === "=" ? filter.field : `${filter.field}${filter.op}`;
   qs.append(key, String(filter.value));
 }
 
-function buildQuery(req: OpenF1MeetingsRequest): string {
+function buildQuery<Request extends OpenF1QueryRequest>(
+  req: Request,
+  fields: readonly Extract<keyof Request, string>[]
+): string {
   const qs = new URLSearchParams();
 
-  for (const field of MEETINGS_QUERY_FIELDS) {
+  for (const field of fields) {
     addQueryValue(qs, field, req[field] as OpenF1QueryValue);
   }
 
@@ -185,7 +209,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       req: OpenF1MeetingsRequest = {},
       signal?: AbortSignal
     ): Promise<OpenF1MeetingsResponse | string> => {
-      const query = buildQuery(req);
+      const query = buildQuery(req, MEETINGS_QUERY_FIELDS);
       if (req.csv === true) {
         return makeGetRequest<string>(`/v1/meetings${query}`, signal, "text");
       }
@@ -197,8 +221,32 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1MeetingsRequestSchema }
   ) as OpenF1MeetingsMethod;
 
+  // GET https://api.openf1.org/v1/championship_drivers{query}
+  // Docs: https://openf1.org/docs/#drivers-championship-beta
+  const championshipDrivers = Object.assign(
+    async (
+      req: OpenF1ChampionshipDriverRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1ChampionshipDriverResponse | string> => {
+      const query = buildQuery(req, CHAMPIONSHIP_DRIVER_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(
+          `/v1/championship_drivers${query}`,
+          signal,
+          "text"
+        );
+      }
+      return makeGetRequest<OpenF1ChampionshipDriverResponse>(
+        `/v1/championship_drivers${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1ChampionshipDriverRequestSchema }
+  ) as OpenF1ChampionshipDriversMethod;
+
   return attachExamples({
     v1: {
+      championshipDrivers,
       meetings,
     },
   });

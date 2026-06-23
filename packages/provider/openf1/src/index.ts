@@ -2,6 +2,12 @@ export { createOpenF1 } from "./openf1";
 export { OpenF1Error } from "./types";
 
 export type {
+  OpenF1ChampionshipDriver,
+  OpenF1ChampionshipDriverFilter,
+  OpenF1ChampionshipDriverFilterField,
+  OpenF1ChampionshipDriverRequest,
+  OpenF1ChampionshipDriverResponse,
+  OpenF1ChampionshipDriversMethod,
   OpenF1ComparisonFilter,
   OpenF1ComparisonOperator,
   OpenF1FilterScalar,
@@ -20,6 +26,11 @@ export type {
 } from "./types";
 
 export {
+  OpenF1ChampionshipDriverFilterFieldSchema,
+  OpenF1ChampionshipDriverFilterSchema,
+  OpenF1ChampionshipDriverRequestSchema,
+  OpenF1ChampionshipDriverResponseSchema,
+  OpenF1ChampionshipDriverSchema,
   OpenF1ComparisonFilterSchema,
   OpenF1ComparisonOperatorSchema,
   OpenF1FilterScalarSchema,

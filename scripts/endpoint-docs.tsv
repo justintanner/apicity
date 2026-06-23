@@ -1056,6 +1056,17 @@ thesportsdb	v1.searchFilename	GET	https://www.thesportsdb.com/api/v1/json/{apiKe
 thesportsdb	v1.searchPlayers	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchplayers.php{query}	https://thedatadb.readme.io/reference/getplayerbyname
 thesportsdb	v1.searchTeams	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchteams.php{query}	https://thedatadb.readme.io/reference/getteambyname
 thesportsdb	v1.searchVenues	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchvenues.php{query}	https://thedatadb.readme.io/reference/getvenuebyname
+thesportsdb	v2.livescore.all	GET	https://www.thesportsdb.com/api/v2/json/livescore/all	https://www.thesportsdb.com/docs_api_guide#v2-livescores
+thesportsdb	v2.livescore.byLeague	GET	https://www.thesportsdb.com/api/v2/json/livescore/{leagueId}	https://www.thesportsdb.com/docs_api_guide#v2-livescores
+thesportsdb	v2.livescore.bySport	GET	https://www.thesportsdb.com/api/v2/json/livescore/{sport}	https://www.thesportsdb.com/docs_api_guide#v2-livescores
+thesportsdb	v2.schedule.full.team	GET	https://www.thesportsdb.com/api/v2/json/schedule/full/team/{idTeam}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.league	GET	https://www.thesportsdb.com/api/v2/json/schedule/league/{idLeague}/{season}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.next.league	GET	https://www.thesportsdb.com/api/v2/json/schedule/next/league/{idLeague}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.next.team	GET	https://www.thesportsdb.com/api/v2/json/schedule/next/team/{idTeam}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.next.venue	GET	https://www.thesportsdb.com/api/v2/json/schedule/next/venue/{idVenue}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.previous.league	GET	https://www.thesportsdb.com/api/v2/json/schedule/previous/league/{idLeague}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.previous.team	GET	https://www.thesportsdb.com/api/v2/json/schedule/previous/team/{idTeam}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
+thesportsdb	v2.schedule.previous.venue	GET	https://www.thesportsdb.com/api/v2/json/schedule/previous/venue/{idVenue}	https://www.thesportsdb.com/docs_api_guide#v2-schedule
 x	v2.media.upload	GET	https://api.x.com/2/media/upload{query}	https://docs.x.com/x-api/media/get-media-upload-status
 x	v2.media.upload.append	POST	https://api.x.com/2/media/upload/{id}/append	https://docs.x.com/x-api/media/append-media-upload
 x	v2.media.upload.finalize	POST	https://api.x.com/2/media/upload/{id}/finalize	https://docs.x.com/x-api/media/finalize-media-upload

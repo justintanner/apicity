@@ -37,6 +37,7 @@ import type {
 export const TheSportsDBOptionsSchema = z.object({
   apiKey: z.string().optional(),
   baseURL: z.string().optional(),
+  v2BaseURL: z.string().optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
@@ -528,3 +529,52 @@ export const TheSportsDBTvEventResponseSchema: z.ZodType<TheSportsDBTvEventRespo
       tvevent: z.array(TheSportsDBTvEventSchema).nullable(),
     })
     .catchall(z.unknown());
+
+export const TheSportsDBLeagueScheduleRequestSchema = z.object({
+  idLeague: idSchema,
+});
+
+export type TheSportsDBLeagueScheduleRequest = z.infer<
+  typeof TheSportsDBLeagueScheduleRequestSchema
+>;
+
+export const TheSportsDBTeamScheduleRequestSchema = z.object({
+  idTeam: idSchema,
+});
+
+export type TheSportsDBTeamScheduleRequest = z.infer<
+  typeof TheSportsDBTeamScheduleRequestSchema
+>;
+
+export const TheSportsDBVenueScheduleRequestSchema = z.object({
+  idVenue: idSchema,
+});
+
+export type TheSportsDBVenueScheduleRequest = z.infer<
+  typeof TheSportsDBVenueScheduleRequestSchema
+>;
+
+export const TheSportsDBLeagueSeasonScheduleRequestSchema = z.object({
+  idLeague: idSchema,
+  season: nonEmptyQueryString,
+});
+
+export type TheSportsDBLeagueSeasonScheduleRequest = z.infer<
+  typeof TheSportsDBLeagueSeasonScheduleRequestSchema
+>;
+
+export const TheSportsDBLiveScoreSportRequestSchema = z.object({
+  sport: nonEmptyQueryString,
+});
+
+export type TheSportsDBLiveScoreSportRequest = z.infer<
+  typeof TheSportsDBLiveScoreSportRequestSchema
+>;
+
+export const TheSportsDBLiveScoreLeagueRequestSchema = z.object({
+  leagueId: idSchema,
+});
+
+export type TheSportsDBLiveScoreLeagueRequest = z.infer<
+  typeof TheSportsDBLiveScoreLeagueRequestSchema
+>;

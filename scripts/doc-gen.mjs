@@ -2972,6 +2972,8 @@ function renderTheSportsDBLookupGuide() {
   return [
     "V1 uses an API key in the URL path. The provider defaults to the public",
     "free key `123`; pass `apiKey` to use your own key.",
+    "V2 uses the same `apiKey` option as an `X-API-KEY` header and is",
+    "available under `thesportsdb.v2`.",
     "",
     "```typescript",
     "const league = await thesportsdb.v1.lookup.league({ idLeague: 4328 });",
@@ -2980,6 +2982,13 @@ function renderTheSportsDBLookupGuide() {
     '  season: "2020-2021",',
     "});",
     "const team = await thesportsdb.v1.lookup.team({ idTeam: 133604 });",
+    "",
+    "const nextLeagueEvents = await thesportsdb.v2.schedule.next.league({",
+    "  idLeague: 4328,",
+    "});",
+    "const liveSoccer = await thesportsdb.v2.livescore.bySport({",
+    '  sport: "soccer",',
+    "});",
     "```",
     "",
   ].join("\n");

@@ -5,7 +5,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript&logoColor=white)](tsconfig.json)
 [![docs](https://img.shields.io/badge/docs-thesportsdb.com-blue)](https://www.thesportsdb.com/docs_api_guide)
 
-TheSportsDB V1 sports data API provider.
+TheSportsDB sports data API provider.
 
 Runtime dependencies:
 
@@ -85,6 +85,8 @@ value, for example `{ players: null }`.
 
 V1 uses an API key in the URL path. The provider defaults to the public
 free key `123`; pass `apiKey` to use your own key.
+V2 uses the same `apiKey` option as an `X-API-KEY` header and is
+available under `thesportsdb.v2`.
 
 ```typescript
 const league = await thesportsdb.v1.lookup.league({ idLeague: 4328 });
@@ -93,11 +95,18 @@ const table = await thesportsdb.v1.lookup.table({
   season: "2020-2021",
 });
 const team = await thesportsdb.v1.lookup.team({ idTeam: 133604 });
+
+const nextLeagueEvents = await thesportsdb.v2.schedule.next.league({
+  idLeague: 4328,
+});
+const liveSoccer = await thesportsdb.v2.livescore.bySport({
+  sport: "soccer",
+});
 ```
 
 ## API Reference
 
-26 endpoints across 22 groups. Each method mirrors an upstream URL path.
+37 endpoints across 24 groups. Each method mirrors an upstream URL path.
 
 ### allCountries
 
@@ -161,6 +170,53 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.eventResults({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### livescore
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.livescore.all</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/livescore/all</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
+
+```typescript
+const res = await thesportsdb.v2.livescore.all({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.livescore.byLeague</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/livescore/{leagueId}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
+
+```typescript
+const res = await thesportsdb.v2.livescore.byLeague({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.livescore.bySport</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/livescore/{sport}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-livescores)
+
+```typescript
+const res = await thesportsdb.v2.livescore.bySport({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
@@ -442,6 +498,128 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.playerresults({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### schedule
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.full.team</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/full/team/{idTeam}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.full.team({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.league</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/league/{idLeague}/{season}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.league({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.next.league</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/next/league/{idLeague}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.next.league({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.next.team</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/next/team/{idTeam}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.next.team({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.next.venue</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/next/venue/{idVenue}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.next.venue({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.previous.league</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/previous/league/{idLeague}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.previous.league({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.previous.team</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/previous/team/{idTeam}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.previous.team({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v2.schedule.previous.venue</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v2/json/schedule/previous/venue/{idVenue}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v2-schedule)
+
+```typescript
+const res = await thesportsdb.v2.schedule.previous.venue({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

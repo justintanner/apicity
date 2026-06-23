@@ -4,6 +4,7 @@ import type {
   TheSportsDBCountriesResponse,
   TheSportsDBEquipmentLookupRequest,
   TheSportsDBEquipmentLookupResponse,
+  TheSportsDBEventScheduleList,
   TheSportsDBEventsResponse,
   TheSportsDBEventLookupRequest,
   TheSportsDBEventResponse,
@@ -12,8 +13,13 @@ import type {
   TheSportsDBFilenameSearchResponse,
   TheSportsDBLeagueLookupRequest,
   TheSportsDBLeagueLookupResponse,
+  TheSportsDBLeagueScheduleRequest,
+  TheSportsDBLeagueSeasonScheduleRequest,
   TheSportsDBLeaguesResponse,
   TheSportsDBLineupResponse,
+  TheSportsDBLiveScoreLeagueRequest,
+  TheSportsDBLiveScoreList,
+  TheSportsDBLiveScoreSportRequest,
   TheSportsDBLookupContractsResponse,
   TheSportsDBLookupFormerTeamsResponse,
   TheSportsDBLookupHonoursResponse,
@@ -35,18 +41,24 @@ import type {
   TheSportsDBTableLookupResponse,
   TheSportsDBTeamLookupRequest,
   TheSportsDBTeamLookupResponse,
+  TheSportsDBTeamScheduleRequest,
   TheSportsDBTeamsResponse,
   TheSportsDBTimelineResponse,
   TheSportsDBTvEventResponse,
   TheSportsDBVenueLookupRequest,
   TheSportsDBVenueLookupResponse,
+  TheSportsDBVenueScheduleRequest,
   TheSportsDBVenuesResponse,
 } from "./types";
 import {
   TheSportsDBEquipmentLookupRequestSchema,
   TheSportsDBEventLookupRequestSchema,
-  TheSportsDBLeagueLookupRequestSchema,
   TheSportsDBPlayerIdRequestSchema,
+  TheSportsDBLeagueScheduleRequestSchema,
+  TheSportsDBLeagueSeasonScheduleRequestSchema,
+  TheSportsDBLeagueLookupRequestSchema,
+  TheSportsDBLiveScoreLeagueRequestSchema,
+  TheSportsDBLiveScoreSportRequestSchema,
   TheSportsDBSearchEventsRequestSchema,
   TheSportsDBSearchFilenameRequestSchema,
   TheSportsDBSearchPlayersRequestSchema,
@@ -54,7 +66,9 @@ import {
   TheSportsDBSearchVenuesRequestSchema,
   TheSportsDBTableLookupRequestSchema,
   TheSportsDBTeamLookupRequestSchema,
+  TheSportsDBTeamScheduleRequestSchema,
   TheSportsDBVenueLookupRequestSchema,
+  TheSportsDBVenueScheduleRequestSchema,
 } from "./zod";
 
 type TheSportsDBQueryValue = string | number | boolean | null | undefined;
@@ -65,7 +79,11 @@ export function createTheSportsDB(
   const baseURL = (
     opts?.baseURL ?? "https://www.thesportsdb.com/api/v1/json"
   ).replace(/\/+$/, "");
-  const apiKey = encodeURIComponent(opts?.apiKey ?? "123");
+  const apiBaseURL = (
+    opts?.v2BaseURL ?? "https://www.thesportsdb.com/api/v2/json"
+  ).replace(/\/+$/, "");
+  const rawApiKey = opts?.apiKey ?? "123";
+  const apiKey = encodeURIComponent(rawApiKey);
   const doFetch = opts?.fetch ?? fetch;
   const timeout = opts?.timeout ?? 30000;
 
@@ -117,7 +135,9 @@ export function createTheSportsDB(
   async function makeJsonRequest<T>(
     method: "GET",
     path: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    requestBaseURL = baseURL,
+    headers?: Record<string, string>
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -127,8 +147,9 @@ export function createTheSportsDB(
     }
 
     try {
-      const res = await doFetch(`${baseURL}${path}`, {
+      const res = await doFetch(`${requestBaseURL}${path}`, {
         method,
+        headers,
         signal: controller.signal,
       });
 
@@ -165,6 +186,14 @@ export function createTheSportsDB(
 
   function eventIdQuery(req: TheSportsDBEventLookupRequest): string {
     return buildQuery({ id: req.idEvent });
+  }
+
+  function pathSegment(value: string | number): string {
+    return encodeURIComponent(String(value));
+  }
+
+  function v2Headers(): Record<string, string> {
+    return { "X-API-KEY": rawApiKey };
   }
 
   // sig-ok: V1 PHP script names exposed as catalog methods.
@@ -667,10 +696,257 @@ export function createTheSportsDB(
     lookupTv,
   };
 
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/next/league/{idLeague}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const scheduleNextLeague = Object.assign(
+    async (
+      req: TheSportsDBLeagueScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idLeague = pathSegment(req.idLeague);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/next/league/${idLeague}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBLeagueScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/previous/league/{idLeague}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const schedulePreviousLeague = Object.assign(
+    async (
+      req: TheSportsDBLeagueScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idLeague = pathSegment(req.idLeague);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/previous/league/${idLeague}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBLeagueScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/next/team/{idTeam}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const scheduleNextTeam = Object.assign(
+    async (
+      req: TheSportsDBTeamScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idTeam = pathSegment(req.idTeam);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/next/team/${idTeam}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBTeamScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/previous/team/{idTeam}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const schedulePreviousTeam = Object.assign(
+    async (
+      req: TheSportsDBTeamScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idTeam = pathSegment(req.idTeam);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/previous/team/${idTeam}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBTeamScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/next/venue/{idVenue}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const scheduleNextVenue = Object.assign(
+    async (
+      req: TheSportsDBVenueScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idVenue = pathSegment(req.idVenue);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/next/venue/${idVenue}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBVenueScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/previous/venue/{idVenue}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const schedulePreviousVenue = Object.assign(
+    async (
+      req: TheSportsDBVenueScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idVenue = pathSegment(req.idVenue);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/previous/venue/${idVenue}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBVenueScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/full/team/{idTeam}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const scheduleFullTeam = Object.assign(
+    async (
+      req: TheSportsDBTeamScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idTeam = pathSegment(req.idTeam);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/full/team/${idTeam}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBTeamScheduleRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/schedule/league/{idLeague}/{season}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-schedule
+  const scheduleLeague = Object.assign(
+    async (
+      req: TheSportsDBLeagueSeasonScheduleRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventScheduleList> => {
+      const idLeague = pathSegment(req.idLeague);
+      const season = pathSegment(req.season);
+      return makeJsonRequest<TheSportsDBEventScheduleList>(
+        "GET",
+        `/schedule/league/${idLeague}/${season}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBLeagueSeasonScheduleRequestSchema }
+  );
+
+  // sig-ok: livescore path overload is exposed as bySport.
+  // GET https://www.thesportsdb.com/api/v2/json/livescore/{sport}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-livescores
+  const livescoreBySport = Object.assign(
+    async (
+      req: TheSportsDBLiveScoreSportRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLiveScoreList> => {
+      const sport = pathSegment(req.sport);
+      return makeJsonRequest<TheSportsDBLiveScoreList>(
+        "GET",
+        `/livescore/${sport}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBLiveScoreSportRequestSchema }
+  );
+
+  // sig-ok: livescore path overload is exposed as byLeague.
+  // GET https://www.thesportsdb.com/api/v2/json/livescore/{leagueId}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-livescores
+  const livescoreByLeague = Object.assign(
+    async (
+      req: TheSportsDBLiveScoreLeagueRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBLiveScoreList> => {
+      const leagueId = pathSegment(req.leagueId);
+      return makeJsonRequest<TheSportsDBLiveScoreList>(
+        "GET",
+        `/livescore/${leagueId}`,
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: TheSportsDBLiveScoreLeagueRequestSchema }
+  );
+
+  // sig-ok: V2 namespace omits the fixed /api/v2/json base path.
+  // GET https://www.thesportsdb.com/api/v2/json/livescore/all
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v2-livescores
+  const livescoreAll = Object.assign(
+    async (signal?: AbortSignal): Promise<TheSportsDBLiveScoreList> => {
+      return makeJsonRequest<TheSportsDBLiveScoreList>(
+        "GET",
+        "/livescore/all",
+        signal,
+        apiBaseURL,
+        v2Headers()
+      );
+    },
+    { schema: undefined }
+  );
+
+  const schedule = {
+    next: {
+      league: scheduleNextLeague,
+      team: scheduleNextTeam,
+      venue: scheduleNextVenue,
+    },
+    previous: {
+      league: schedulePreviousLeague,
+      team: schedulePreviousTeam,
+      venue: schedulePreviousVenue,
+    },
+    full: {
+      team: scheduleFullTeam,
+    },
+    league: scheduleLeague,
+  };
+
+  const livescore = {
+    bySport: livescoreBySport,
+    byLeague: livescoreByLeague,
+    all: livescoreAll,
+  };
+
+  const v2 = {
+    schedule,
+    livescore,
+  };
+
   return attachExamples({
     v1,
+    v2,
     get: {
       v1,
+      v2,
     },
   });
 }

@@ -106,6 +106,21 @@ describe("apicity-mcp provider registry", () => {
       restoreEnv("B2_REGION", previous.region);
     }
   });
+
+  it("resolves all TheSportsDB endpoint rows without credentials", async () => {
+    const previous = process.env.THESPORTSDB_API_KEY;
+    delete process.env.THESPORTSDB_API_KEY;
+
+    try {
+      const endpoints = await buildRegistry({
+        enabledProviders: ["thesportsdb"],
+      });
+
+      expect(endpoints).toHaveLength(providerEndpointCount("thesportsdb"));
+    } finally {
+      restoreEnv("THESPORTSDB_API_KEY", previous);
+    }
+  });
 });
 
 function restoreEnv(key: string, value: string | undefined): void {

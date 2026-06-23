@@ -625,6 +625,39 @@ function renderTheSportsDBAuthGuide() {
     "});",
     "```",
     "",
+    "For V1 premium calls, the same `apiKey` option is encoded into the",
+    "path segment instead of a header:",
+    "",
+    "```typescript",
+    "const premiumV1 = createTheSportsDB({",
+    "  apiKey: process.env.THESPORTSDB_API_KEY!,",
+    "});",
+    "",
+    "const broadcasts = await premiumV1.v1.eventstv({",
+    '  channel: "Peacock_Premium",',
+    "});",
+    "```",
+    "",
+  ].join("\n");
+}
+
+function renderTheSportsDBOperationalNotes() {
+  return [
+    "## Operational Notes",
+    "",
+    "All implemented TheSportsDB endpoints are read-only `GET` calls. The",
+    "provider does not expose mutating endpoints.",
+    "",
+    "The implemented API surface has no pagination parameters. Upstream",
+    "responses use endpoint-specific wrapper arrays and documented result",
+    "limits; empty and no-result wrappers remain representable as `null` or",
+    "empty arrays.",
+    "",
+    "Non-2xx responses throw `TheSportsDBError` with `status` and parsed",
+    "`body` where possible. Rate-limit responses keep their upstream `429`",
+    "status and body. V2 methods throw a local `401` before fetch when no",
+    "`apiKey` is configured for `X-API-KEY` authentication.",
+    "",
   ].join("\n");
 }
 
@@ -3135,6 +3168,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "thesportsdb") {
     sections.push(renderTheSportsDBAuthGuide());
+    sections.push(renderTheSportsDBOperationalNotes());
   }
 
   if (providerName === "openligadb") {

@@ -27,8 +27,17 @@ interface V2LookupCase {
   expectedUrl: string;
 }
 
+interface EndpointExample {
+  source: string;
+  payload: unknown;
+}
+
 function requestHeaders(init: RequestInit | undefined): Record<string, string> {
   return init?.headers as Record<string, string>;
+}
+
+function endpointExample(fn: unknown): EndpointExample | undefined {
+  return (fn as { example?: EndpointExample }).example;
 }
 
 describe("thesportsdb provider", () => {
@@ -49,6 +58,27 @@ describe("thesportsdb provider", () => {
         season: "2020-2021",
       }).success
     ).toBe(true);
+  });
+
+  it("attaches representative V1 and V2 endpoint examples", () => {
+    const thesportsdb = createTheSportsDB();
+
+    expect(endpointExample(thesportsdb.v1.searchTeams)).toEqual({
+      source: "static:thesportsdb-v1-free-search",
+      payload: { team: "Arsenal" },
+    });
+    expect(endpointExample(thesportsdb.v1.eventstv)).toEqual({
+      source: "static:thesportsdb-v1-premium-tv-filter",
+      payload: { channel: "Peacock_Premium" },
+    });
+    expect(endpointExample(thesportsdb.v2.search.team)).toEqual({
+      source: "static:thesportsdb-v2-premium-search",
+      payload: { teamName: "Manchester United" },
+    });
+    expect(endpointExample(thesportsdb.v2.schedule.next.league)).toEqual({
+      source: "static:thesportsdb-v2-premium-schedule",
+      payload: { idLeague: 4328 },
+    });
   });
 
   it("validates integer and string IDs", () => {

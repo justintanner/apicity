@@ -31,6 +31,10 @@ import type {
   OpenF1SessionFilter,
   OpenF1SessionFilterField,
   OpenF1SessionRequest,
+  OpenF1Weather,
+  OpenF1WeatherFilter,
+  OpenF1WeatherFilterField,
+  OpenF1WeatherRequest,
 } from "./types";
 
 const nullableString = z.string().nullable();
@@ -420,3 +424,55 @@ export const OpenF1SessionRequestSchema: z.ZodType<OpenF1SessionRequest> =
   });
 
 export const OpenF1SessionResponseSchema = z.array(OpenF1SessionSchema);
+
+export const OpenF1WeatherFilterFieldSchema: z.ZodType<OpenF1WeatherFilterField> =
+  z.enum([
+    "air_temperature",
+    "date",
+    "humidity",
+    "meeting_key",
+    "pressure",
+    "rainfall",
+    "session_key",
+    "track_temperature",
+    "wind_direction",
+    "wind_speed",
+  ]);
+
+export const OpenF1WeatherFilterSchema: z.ZodType<OpenF1WeatherFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1WeatherFilterFieldSchema,
+  });
+
+export const OpenF1WeatherSchema: z.ZodType<OpenF1Weather> = z
+  .object({
+    air_temperature: z.number(),
+    date: z.string(),
+    humidity: z.number(),
+    meeting_key: z.number(),
+    pressure: z.number(),
+    rainfall: z.number(),
+    session_key: z.number(),
+    track_temperature: z.number(),
+    wind_direction: z.number(),
+    wind_speed: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1WeatherRequestSchema: z.ZodType<OpenF1WeatherRequest> =
+  z.object({
+    air_temperature: numberFilterValue.optional(),
+    date: stringFilterValue.optional(),
+    humidity: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    pressure: numberFilterValue.optional(),
+    rainfall: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    track_temperature: numberFilterValue.optional(),
+    wind_direction: numberFilterValue.optional(),
+    wind_speed: numberFilterValue.optional(),
+    filters: z.array(OpenF1WeatherFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1WeatherResponseSchema = z.array(OpenF1WeatherSchema);

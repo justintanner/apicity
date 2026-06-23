@@ -23,6 +23,9 @@ import type {
   OpenF1SessionRequest,
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
+  OpenF1WeatherMethod,
+  OpenF1WeatherRequest,
+  OpenF1WeatherResponse,
 } from "./types";
 import {
   OpenF1ChampionshipDriverRequestSchema,
@@ -31,6 +34,7 @@ import {
   OpenF1PositionRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
+  OpenF1WeatherRequestSchema,
 } from "./zod";
 
 const MEETINGS_QUERY_FIELDS = [
@@ -121,6 +125,19 @@ const SESSIONS_QUERY_FIELDS = [
   "session_type",
   "year",
 ] as const satisfies readonly (keyof OpenF1SessionRequest)[];
+
+const WEATHER_QUERY_FIELDS = [
+  "air_temperature",
+  "date",
+  "humidity",
+  "meeting_key",
+  "pressure",
+  "rainfall",
+  "session_key",
+  "track_temperature",
+  "wind_direction",
+  "wind_speed",
+] as const satisfies readonly (keyof OpenF1WeatherRequest)[];
 
 type OpenF1QueryValue =
   | OpenF1FilterScalar
@@ -395,6 +412,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1SessionRequestSchema }
   ) as OpenF1SessionsMethod;
 
+  // GET https://api.openf1.org/v1/weather{query}
+  // Docs: https://openf1.org/docs/#weather
+  const weather = Object.assign(
+    async (
+      req: OpenF1WeatherRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1WeatherResponse | string> => {
+      const query = buildQuery(req, WEATHER_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/weather${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1WeatherResponse>(
+        `/v1/weather${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1WeatherRequestSchema }
+  ) as OpenF1WeatherMethod;
+
   return attachExamples({
     v1: {
       championshipDrivers,
@@ -403,6 +439,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       position,
       sessionResult,
       sessions,
+      weather,
     },
   });
 }

@@ -54,7 +54,7 @@ comparison operators such as `>=`, `<`, and `>`.
 
 ## API Reference
 
-6 endpoints across 6 groups. Each method mirrors an upstream URL path.
+7 endpoints across 7 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -152,6 +152,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 ```typescript
 const res = await openf1.v1.sessions({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### weather
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.weather</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/weather{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#weather)
+
+```typescript
+const res = await openf1.v1.weather({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

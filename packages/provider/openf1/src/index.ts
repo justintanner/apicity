@@ -49,6 +49,12 @@ export type {
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
   OpenF1V1Namespace,
+  OpenF1Weather,
+  OpenF1WeatherFilter,
+  OpenF1WeatherFilterField,
+  OpenF1WeatherMethod,
+  OpenF1WeatherRequest,
+  OpenF1WeatherResponse,
 } from "./types";
 
 export {
@@ -88,4 +94,9 @@ export {
   OpenF1SessionRequestSchema,
   OpenF1SessionResponseSchema,
   OpenF1SessionSchema,
+  OpenF1WeatherFilterFieldSchema,
+  OpenF1WeatherFilterSchema,
+  OpenF1WeatherRequestSchema,
+  OpenF1WeatherResponseSchema,
+  OpenF1WeatherSchema,
 } from "./zod";

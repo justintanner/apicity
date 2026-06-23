@@ -247,6 +247,57 @@ export type OpenF1SessionsMethod = OpenF1Method<
   OpenF1SessionResponse
 >;
 
+export interface OpenF1Weather {
+  air_temperature: number;
+  date: string;
+  humidity: number;
+  meeting_key: number;
+  pressure: number;
+  rainfall: number;
+  session_key: number;
+  track_temperature: number;
+  wind_direction: number;
+  wind_speed: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1WeatherResponse = OpenF1Weather[];
+
+export type OpenF1WeatherFilterField =
+  | "air_temperature"
+  | "date"
+  | "humidity"
+  | "meeting_key"
+  | "pressure"
+  | "rainfall"
+  | "session_key"
+  | "track_temperature"
+  | "wind_direction"
+  | "wind_speed";
+
+export type OpenF1WeatherFilter =
+  OpenF1ComparisonFilter<OpenF1WeatherFilterField>;
+
+export interface OpenF1WeatherRequest {
+  air_temperature?: OpenF1FilterValue<number>;
+  date?: OpenF1FilterValue<string>;
+  humidity?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  pressure?: OpenF1FilterValue<number>;
+  rainfall?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  track_temperature?: OpenF1FilterValue<number>;
+  wind_direction?: OpenF1FilterValue<number>;
+  wind_speed?: OpenF1FilterValue<number>;
+  filters?: readonly OpenF1WeatherFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1WeatherMethod = OpenF1Method<
+  OpenF1WeatherRequest,
+  OpenF1WeatherResponse
+>;
+
 export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse
@@ -391,6 +442,7 @@ export interface OpenF1V1Namespace {
   position: OpenF1PositionMethod;
   sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
+  weather: OpenF1WeatherMethod;
 }
 
 export interface OpenF1Provider {

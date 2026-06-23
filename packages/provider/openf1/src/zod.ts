@@ -1,5 +1,9 @@
 import { z } from "zod";
 import type {
+  OpenF1CarData,
+  OpenF1CarDataFilter,
+  OpenF1CarDataFilterField,
+  OpenF1CarDataRequest,
   OpenF1ChampionshipDriver,
   OpenF1ChampionshipDriverFilter,
   OpenF1ChampionshipDriverFilterField,
@@ -116,6 +120,20 @@ export const OpenF1FilterScalarSchema: z.ZodType<OpenF1FilterScalar> =
 export const OpenF1ComparisonOperatorSchema: z.ZodType<OpenF1ComparisonOperator> =
   z.enum(["=", "<", "<=", ">", ">="]);
 
+export const OpenF1CarDataFilterFieldSchema: z.ZodType<OpenF1CarDataFilterField> =
+  z.enum([
+    "brake",
+    "date",
+    "driver_number",
+    "drs",
+    "meeting_key",
+    "n_gear",
+    "rpm",
+    "session_key",
+    "speed",
+    "throttle",
+  ]);
+
 export const OpenF1MeetingsFilterFieldSchema: z.ZodType<OpenF1MeetingsFilterField> =
   z.enum([
     "circuit_key",
@@ -157,6 +175,11 @@ const openF1ComparisonFilterObject = z.object({
 export const OpenF1ComparisonFilterSchema: z.ZodType<OpenF1ComparisonFilter> =
   openF1ComparisonFilterObject;
 
+export const OpenF1CarDataFilterSchema: z.ZodType<OpenF1CarDataFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1CarDataFilterFieldSchema,
+  });
+
 export const OpenF1MeetingsFilterSchema: z.ZodType<OpenF1MeetingsFilter> =
   openF1ComparisonFilterObject.extend({
     field: OpenF1MeetingsFilterFieldSchema,
@@ -166,6 +189,21 @@ export const OpenF1IntervalsFilterSchema: z.ZodType<OpenF1IntervalsFilter> =
   openF1ComparisonFilterObject.extend({
     field: OpenF1IntervalsFilterFieldSchema,
   });
+
+export const OpenF1CarDataSchema: z.ZodType<OpenF1CarData> = z
+  .object({
+    brake: z.number(),
+    date: z.string(),
+    driver_number: z.number(),
+    drs: z.number(),
+    meeting_key: z.number(),
+    n_gear: z.number(),
+    rpm: z.number(),
+    session_key: z.number(),
+    speed: z.number(),
+    throttle: z.number(),
+  })
+  .catchall(z.unknown());
 
 export const OpenF1MeetingSchema: z.ZodType<OpenF1Meeting> = z
   .object({
@@ -205,6 +243,24 @@ export const OpenF1IntervalSchema: z.ZodType<OpenF1Interval> = z
   .catchall(z.unknown());
 
 export const OpenF1LatestKeySchema: z.ZodType<OpenF1LatestKey> = latestKey;
+
+export const OpenF1CarDataRequestSchema: z.ZodType<OpenF1CarDataRequest> =
+  z.object({
+    brake: numberFilterValue.optional(),
+    date: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    drs: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    n_gear: numberFilterValue.optional(),
+    rpm: numberFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    speed: numberFilterValue.optional(),
+    throttle: numberFilterValue.optional(),
+    filters: z.array(OpenF1CarDataFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1CarDataResponseSchema = z.array(OpenF1CarDataSchema);
 
 export const OpenF1MeetingsRequestSchema: z.ZodType<OpenF1MeetingsRequest> =
   z.object({

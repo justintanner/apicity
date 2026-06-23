@@ -91,7 +91,24 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-16 endpoints across 16 groups. Each method mirrors an upstream URL path.
+17 endpoints across 17 groups. Each method mirrors an upstream URL path.
+
+### carData
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.carData</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/car_data{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#car-data)
+
+```typescript
+const res = await openf1.v1.carData({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
 
 ### championshipDrivers
 

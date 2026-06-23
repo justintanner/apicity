@@ -1,6 +1,9 @@
 import { attachExamples } from "./example";
 import { OpenF1Error } from "./types";
 import type {
+  OpenF1CarDataMethod,
+  OpenF1CarDataRequest,
+  OpenF1CarDataResponse,
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse,
   OpenF1ChampionshipDriversMethod,
@@ -55,6 +58,7 @@ import type {
   OpenF1WeatherResponse,
 } from "./types";
 import {
+  OpenF1CarDataRequestSchema,
   OpenF1ChampionshipDriverRequestSchema,
   OpenF1ChampionshipTeamRequestSchema,
   OpenF1IntervalsRequestSchema,
@@ -72,6 +76,19 @@ import {
   OpenF1TokenRequestSchema,
   OpenF1WeatherRequestSchema,
 } from "./zod";
+
+const CAR_DATA_QUERY_FIELDS = [
+  "brake",
+  "date",
+  "driver_number",
+  "drs",
+  "meeting_key",
+  "n_gear",
+  "rpm",
+  "session_key",
+  "speed",
+  "throttle",
+] as const satisfies readonly (keyof OpenF1CarDataRequest)[];
 
 const MEETINGS_QUERY_FIELDS = [
   "circuit_key",
@@ -478,6 +495,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1TokenRequestSchema }
   ) as OpenF1TokenMethod;
 
+  // GET https://api.openf1.org/v1/car_data{query}
+  // Docs: https://openf1.org/docs/#car-data
+  const carData = Object.assign(
+    async (
+      req: OpenF1CarDataRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1CarDataResponse | string> => {
+      const query = buildQuery(req, CAR_DATA_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/car_data${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1CarDataResponse>(
+        `/v1/car_data${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1CarDataRequestSchema }
+  ) as OpenF1CarDataMethod;
+
   // GET https://api.openf1.org/v1/meetings{query}
   // Docs: https://openf1.org/docs/#meetings
   const meetings = Object.assign(
@@ -777,6 +813,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
   return attachExamples({
     token,
     v1: {
+      carData,
       championshipDrivers,
       championshipTeams,
       intervals,

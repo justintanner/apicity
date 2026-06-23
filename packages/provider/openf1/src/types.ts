@@ -50,6 +50,52 @@ export interface OpenF1ComparisonFilter<Field extends string = string> {
   value: OpenF1FilterScalar;
 }
 
+export interface OpenF1CarData {
+  brake: number;
+  date: string;
+  driver_number: number;
+  drs: number;
+  meeting_key: number;
+  n_gear: number;
+  rpm: number;
+  session_key: number;
+  speed: number;
+  throttle: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1CarDataResponse = OpenF1CarData[];
+
+export type OpenF1CarDataFilterField =
+  | "brake"
+  | "date"
+  | "driver_number"
+  | "drs"
+  | "meeting_key"
+  | "n_gear"
+  | "rpm"
+  | "session_key"
+  | "speed"
+  | "throttle";
+
+export type OpenF1CarDataFilter =
+  OpenF1ComparisonFilter<OpenF1CarDataFilterField>;
+
+export interface OpenF1CarDataRequest {
+  brake?: OpenF1FilterValue<number>;
+  date?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  drs?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  n_gear?: OpenF1FilterValue<number>;
+  rpm?: OpenF1FilterValue<number>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  speed?: OpenF1FilterValue<number>;
+  throttle?: OpenF1FilterValue<number>;
+  filters?: readonly OpenF1CarDataFilter[];
+  csv?: boolean;
+}
+
 export interface OpenF1Meeting {
   circuit_key: number;
   circuit_image: string | null;
@@ -510,6 +556,11 @@ export type OpenF1StintsMethod = OpenF1Method<
   OpenF1StintResponse
 >;
 
+export type OpenF1CarDataMethod = OpenF1Method<
+  OpenF1CarDataRequest,
+  OpenF1CarDataResponse
+>;
+
 export type OpenF1ChampionshipDriversMethod = OpenF1Method<
   OpenF1ChampionshipDriverRequest,
   OpenF1ChampionshipDriverResponse
@@ -794,6 +845,7 @@ export type OpenF1TeamRadioMethod = OpenF1Method<
 >;
 
 export interface OpenF1V1Namespace {
+  carData: OpenF1CarDataMethod;
   championshipDrivers: OpenF1ChampionshipDriversMethod;
   championshipTeams: OpenF1ChampionshipTeamsMethod;
   intervals: OpenF1IntervalsMethod;

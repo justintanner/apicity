@@ -4,22 +4,37 @@ import type {
   TheSportsDBCountriesResponse,
   TheSportsDBEquipmentLookupRequest,
   TheSportsDBEquipmentLookupResponse,
+  TheSportsDBEventsResponse,
+  TheSportsDBFilenameSearchResponse,
   TheSportsDBLeagueLookupRequest,
   TheSportsDBLeagueLookupResponse,
   TheSportsDBLeaguesResponse,
   TheSportsDBOptions,
+  TheSportsDBPlayersResponse,
   TheSportsDBProvider,
+  TheSportsDBSearchEventsRequest,
+  TheSportsDBSearchFilenameRequest,
+  TheSportsDBSearchPlayersRequest,
+  TheSportsDBSearchTeamsRequest,
+  TheSportsDBSearchVenuesRequest,
   TheSportsDBSportsResponse,
   TheSportsDBTableLookupRequest,
   TheSportsDBTableLookupResponse,
   TheSportsDBTeamLookupRequest,
   TheSportsDBTeamLookupResponse,
+  TheSportsDBTeamsResponse,
   TheSportsDBVenueLookupRequest,
   TheSportsDBVenueLookupResponse,
+  TheSportsDBVenuesResponse,
 } from "./types";
 import {
   TheSportsDBEquipmentLookupRequestSchema,
   TheSportsDBLeagueLookupRequestSchema,
+  TheSportsDBSearchEventsRequestSchema,
+  TheSportsDBSearchFilenameRequestSchema,
+  TheSportsDBSearchPlayersRequestSchema,
+  TheSportsDBSearchTeamsRequestSchema,
+  TheSportsDBSearchVenuesRequestSchema,
   TheSportsDBTableLookupRequestSchema,
   TheSportsDBTeamLookupRequestSchema,
   TheSportsDBVenueLookupRequestSchema,
@@ -272,11 +287,114 @@ export function createTheSportsDB(
     venue,
   };
 
+  // sig-ok: V1 PHP script names exposed as search methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchteams.php{query}
+  // Docs: https://thedatadb.readme.io/reference/getteambyname
+  const searchTeams = Object.assign(
+    async (
+      req: TheSportsDBSearchTeamsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBTeamsResponse> => {
+      const query = buildQuery({ t: req.team });
+      return makeJsonRequest<TheSportsDBTeamsResponse>(
+        "GET",
+        `/${apiKey}/searchteams.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchTeamsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as search methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchevents.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-search
+  const searchEvents = Object.assign(
+    async (
+      req: TheSportsDBSearchEventsRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBEventsResponse> => {
+      const query = buildQuery({
+        e: req.event,
+        s: req.season,
+        d: req.date,
+        f: req.filename,
+      });
+      return makeJsonRequest<TheSportsDBEventsResponse>(
+        "GET",
+        `/${apiKey}/searchevents.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchEventsRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as search methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchfilename.php{query}
+  // Docs: https://www.thesportsdb.com/docs_api_guide#v1-search
+  const searchFilename = Object.assign(
+    async (
+      req: TheSportsDBSearchFilenameRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBFilenameSearchResponse> => {
+      const query = buildQuery({
+        e: req.filename,
+        s: req.season,
+      });
+      return makeJsonRequest<TheSportsDBFilenameSearchResponse>(
+        "GET",
+        `/${apiKey}/searchfilename.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchFilenameRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as search methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchplayers.php{query}
+  // Docs: https://thedatadb.readme.io/reference/getplayerbyname
+  const searchPlayers = Object.assign(
+    async (
+      req: TheSportsDBSearchPlayersRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBPlayersResponse> => {
+      const query = buildQuery({ p: req.player });
+      return makeJsonRequest<TheSportsDBPlayersResponse>(
+        "GET",
+        `/${apiKey}/searchplayers.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchPlayersRequestSchema }
+  );
+
+  // sig-ok: V1 PHP script names exposed as search methods.
+  // GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchvenues.php{query}
+  // Docs: https://thedatadb.readme.io/reference/getvenuebyname
+  const searchVenues = Object.assign(
+    async (
+      req: TheSportsDBSearchVenuesRequest,
+      signal?: AbortSignal
+    ): Promise<TheSportsDBVenuesResponse> => {
+      const query = buildQuery({ v: req.venue });
+      return makeJsonRequest<TheSportsDBVenuesResponse>(
+        "GET",
+        `/${apiKey}/searchvenues.php${query}`,
+        signal
+      );
+    },
+    { schema: TheSportsDBSearchVenuesRequestSchema }
+  );
+
   const v1 = {
     allSports,
     allCountries,
     allLeagues,
     lookup,
+    searchTeams,
+    searchEvents,
+    searchFilename,
+    searchPlayers,
+    searchVenues,
   };
 
   return attachExamples({

@@ -27,6 +27,42 @@ import { createTheSportsDB } from "@apicity/thesportsdb";
 const thesportsdb = createTheSportsDB({ apiKey: process.env.THESPORTSDB_API_KEY });
 ```
 
+## Search Examples
+
+TheSportsDB V1 uses the free `123` key by default. Pass `apiKey` only
+when you have a premium key.
+
+```typescript
+import { createTheSportsDB } from "@apicity/thesportsdb";
+
+const thesportsdb = createTheSportsDB();
+
+const teams = await thesportsdb.v1.searchTeams({
+  team: "Arsenal",
+});
+
+const events = await thesportsdb.v1.searchEvents({
+  event: "Arsenal_vs_Chelsea",
+  season: "2016-2017",
+  date: "2015-04-26",
+});
+
+const filename = await thesportsdb.v1.searchFilename({
+  filename: "English_Premier_League_2015-04-26_Arsenal_vs_Chelsea",
+});
+
+const players = await thesportsdb.v1.searchPlayers({
+  player: "Danny Welbeck",
+});
+
+const venues = await thesportsdb.v1.searchVenues({
+  venue: "Wembley",
+});
+```
+
+No-result V1 searches preserve TheSportsDB's nullable wrapper arrays,
+such as `{ teams: null }` or `{ player: null }`.
+
 V1 uses an API key in the URL path. The provider defaults to the public
 free key `123`; pass `apiKey` to use your own key.
 
@@ -41,7 +77,7 @@ const team = await thesportsdb.v1.lookup.team({ idTeam: 133604 });
 
 ## API Reference
 
-8 endpoints across 4 groups. Each method mirrors an upstream URL path.
+13 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### allCountries
 
@@ -165,6 +201,91 @@ Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
 
 ```typescript
 const res = await thesportsdb.v1.lookup.venue({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchEvents
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchEvents</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchevents.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-search)
+
+```typescript
+const res = await thesportsdb.v1.searchEvents({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchFilename
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchFilename</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchfilename.php{query}</code>
+
+[Upstream docs ↗](https://www.thesportsdb.com/docs_api_guide#v1-search)
+
+```typescript
+const res = await thesportsdb.v1.searchFilename({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchPlayers
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchPlayers</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchplayers.php{query}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getplayerbyname)
+
+```typescript
+const res = await thesportsdb.v1.searchPlayers({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchTeams
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchTeams</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchteams.php{query}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getteambyname)
+
+```typescript
+const res = await thesportsdb.v1.searchTeams({ /* ... */ });
+```
+
+Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)
+
+</details>
+
+### searchVenues
+
+<details>
+<summary><code>GET</code> <b><code>thesportsdb.v1.searchVenues</code></b></summary>
+
+<code>GET https://www.thesportsdb.com/api/v1/json/{apiKey}/searchvenues.php{query}</code>
+
+[Upstream docs ↗](https://thedatadb.readme.io/reference/getvenuebyname)
+
+```typescript
+const res = await thesportsdb.v1.searchVenues({ /* ... */ });
 ```
 
 Source: [`packages/provider/thesportsdb/src/thesportsdb.ts`](src/thesportsdb.ts)

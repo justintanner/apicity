@@ -2663,6 +2663,47 @@ function renderOpenLigaDBExample() {
   ].join("\n");
 }
 
+function renderTheSportsDBSearchExample() {
+  return [
+    "## Search Examples",
+    "",
+    "TheSportsDB V1 uses the free `123` key by default. Pass `apiKey` only",
+    "when you have a premium key.",
+    "",
+    "```typescript",
+    'import { createTheSportsDB } from "@apicity/thesportsdb";',
+    "",
+    "const thesportsdb = createTheSportsDB();",
+    "",
+    "const teams = await thesportsdb.v1.searchTeams({",
+    '  team: "Arsenal",',
+    "});",
+    "",
+    "const events = await thesportsdb.v1.searchEvents({",
+    '  event: "Arsenal_vs_Chelsea",',
+    '  season: "2016-2017",',
+    '  date: "2015-04-26",',
+    "});",
+    "",
+    "const filename = await thesportsdb.v1.searchFilename({",
+    '  filename: "English_Premier_League_2015-04-26_Arsenal_vs_Chelsea",',
+    "});",
+    "",
+    "const players = await thesportsdb.v1.searchPlayers({",
+    '  player: "Danny Welbeck",',
+    "});",
+    "",
+    "const venues = await thesportsdb.v1.searchVenues({",
+    '  venue: "Wembley",',
+    "});",
+    "```",
+    "",
+    "No-result V1 searches preserve TheSportsDB's nullable wrapper arrays,",
+    "such as `{ teams: null }` or `{ player: null }`.",
+    "",
+  ].join("\n");
+}
+
 function renderTelegramSetup() {
   return [
     "## Setup",
@@ -2988,6 +3029,10 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "openligadb") {
     sections.push(renderOpenLigaDBExample());
+  }
+
+  if (providerName === "thesportsdb") {
+    sections.push(renderTheSportsDBSearchExample());
   }
 
   if (providerName === "simplefunctions") {

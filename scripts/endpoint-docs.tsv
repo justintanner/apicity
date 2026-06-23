@@ -1045,6 +1045,11 @@ thesportsdb	v1.lookup.league	GET	https://www.thesportsdb.com/api/v1/json/{apiKey
 thesportsdb	v1.lookup.table	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookuptable.php{query}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookup.team	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupteam.php{query}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookup.venue	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupvenue.php{query}	https://www.thesportsdb.com/docs_api_guide
+thesportsdb	v1.searchEvents	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchevents.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-search
+thesportsdb	v1.searchFilename	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchfilename.php{query}	https://www.thesportsdb.com/docs_api_guide#v1-search
+thesportsdb	v1.searchPlayers	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchplayers.php{query}	https://thedatadb.readme.io/reference/getplayerbyname
+thesportsdb	v1.searchTeams	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchteams.php{query}	https://thedatadb.readme.io/reference/getteambyname
+thesportsdb	v1.searchVenues	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/searchvenues.php{query}	https://thedatadb.readme.io/reference/getvenuebyname
 x	v2.media.upload	GET	https://api.x.com/2/media/upload{query}	https://docs.x.com/x-api/media/get-media-upload-status
 x	v2.media.upload.append	POST	https://api.x.com/2/media/upload/{id}/append	https://docs.x.com/x-api/media/append-media-upload
 x	v2.media.upload.finalize	POST	https://api.x.com/2/media/upload/{id}/finalize	https://docs.x.com/x-api/media/finalize-media-upload

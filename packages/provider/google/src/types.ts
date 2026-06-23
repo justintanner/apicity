@@ -18,7 +18,9 @@ export type {
   GoogleTool,
   GoogleToolConfig,
   GoogleGenerateContentRequest,
+  GoogleGenerateContentParsedRequest,
   GoogleCountTokensRequest,
+  GoogleCountTokensParsedRequest,
 } from "./zod";
 
 export class GoogleError extends Error {

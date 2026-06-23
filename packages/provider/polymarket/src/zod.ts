@@ -77,7 +77,10 @@ export const PolymarketClobTokenBatchRequestSchema = z
   .array(z.object({ token_id: z.string().min(1) }))
   .min(1);
 
-export type PolymarketClobTokenBatchRequest = z.infer<
+export type PolymarketClobTokenBatchRequest = z.input<
+  typeof PolymarketClobTokenBatchRequestSchema
+>;
+export type PolymarketClobTokenBatchParsedRequest = z.output<
   typeof PolymarketClobTokenBatchRequestSchema
 >;
 
@@ -92,7 +95,10 @@ export const PolymarketClobPricesBatchRequestSchema = z
   )
   .min(1);
 
-export type PolymarketClobPricesBatchRequest = z.infer<
+export type PolymarketClobPricesBatchRequest = z.input<
+  typeof PolymarketClobPricesBatchRequestSchema
+>;
+export type PolymarketClobPricesBatchParsedRequest = z.output<
   typeof PolymarketClobPricesBatchRequestSchema
 >;
 
@@ -116,7 +122,10 @@ export const PolymarketClobBatchPricesHistoryRequestSchema = z.object({
   fidelity: z.number().optional(),
 });
 
-export type PolymarketClobBatchPricesHistoryRequest = z.infer<
+export type PolymarketClobBatchPricesHistoryRequest = z.input<
+  typeof PolymarketClobBatchPricesHistoryRequestSchema
+>;
+export type PolymarketClobBatchPricesHistoryParsedRequest = z.output<
   typeof PolymarketClobBatchPricesHistoryRequestSchema
 >;
 
@@ -148,7 +157,10 @@ export const PolymarketClobLiveActivityRequestSchema = z
   .array(z.string().min(1))
   .min(1);
 
-export type PolymarketClobLiveActivityRequest = z.infer<
+export type PolymarketClobLiveActivityRequest = z.input<
+  typeof PolymarketClobLiveActivityRequestSchema
+>;
+export type PolymarketClobLiveActivityParsedRequest = z.output<
   typeof PolymarketClobLiveActivityRequestSchema
 >;
 
@@ -198,7 +210,10 @@ export const PolymarketClobPostOrderRequestSchema = z.object({
   postOnly: z.boolean().optional(),
 });
 
-export type PolymarketClobPostOrderRequest = z.infer<
+export type PolymarketClobPostOrderRequest = z.input<
+  typeof PolymarketClobPostOrderRequestSchema
+>;
+export type PolymarketClobPostOrderParsedRequest = z.output<
   typeof PolymarketClobPostOrderRequestSchema
 >;
 
@@ -215,7 +230,10 @@ export const PolymarketClobPlaceOrderRequestSchema = z.object({
   expiration: z.number().int().nonnegative().optional(),
 });
 
-export type PolymarketClobPlaceOrderRequest = z.infer<
+export type PolymarketClobPlaceOrderRequest = z.input<
+  typeof PolymarketClobPlaceOrderRequestSchema
+>;
+export type PolymarketClobPlaceOrderParsedRequest = z.output<
   typeof PolymarketClobPlaceOrderRequestSchema
 >;
 
@@ -224,7 +242,10 @@ export const PolymarketClobPostOrdersRequestSchema = z
   .min(1)
   .max(15);
 
-export type PolymarketClobPostOrdersRequest = z.infer<
+export type PolymarketClobPostOrdersRequest = z.input<
+  typeof PolymarketClobPostOrdersRequestSchema
+>;
+export type PolymarketClobPostOrdersParsedRequest = z.output<
   typeof PolymarketClobPostOrdersRequestSchema
 >;
 
@@ -232,7 +253,10 @@ export const PolymarketClobCancelOrderRequestSchema = z.object({
   orderID: z.string().min(1),
 });
 
-export type PolymarketClobCancelOrderRequest = z.infer<
+export type PolymarketClobCancelOrderRequest = z.input<
+  typeof PolymarketClobCancelOrderRequestSchema
+>;
+export type PolymarketClobCancelOrderParsedRequest = z.output<
   typeof PolymarketClobCancelOrderRequestSchema
 >;
 
@@ -241,7 +265,10 @@ export const PolymarketClobCancelOrdersRequestSchema = z
   .min(1)
   .max(3000);
 
-export type PolymarketClobCancelOrdersRequest = z.infer<
+export type PolymarketClobCancelOrdersRequest = z.input<
+  typeof PolymarketClobCancelOrdersRequestSchema
+>;
+export type PolymarketClobCancelOrdersParsedRequest = z.output<
   typeof PolymarketClobCancelOrdersRequestSchema
 >;
 
@@ -250,7 +277,10 @@ export const PolymarketClobCancelMarketOrdersRequestSchema = z.object({
   asset_id: z.string().min(1),
 });
 
-export type PolymarketClobCancelMarketOrdersRequest = z.infer<
+export type PolymarketClobCancelMarketOrdersRequest = z.input<
+  typeof PolymarketClobCancelMarketOrdersRequestSchema
+>;
+export type PolymarketClobCancelMarketOrdersParsedRequest = z.output<
   typeof PolymarketClobCancelMarketOrdersRequestSchema
 >;
 
@@ -325,7 +355,10 @@ export const PolymarketClobOrdersScoringRequestSchema = z
   .array(z.string().min(1))
   .min(1);
 
-export type PolymarketClobOrdersScoringRequest = z.infer<
+export type PolymarketClobOrdersScoringRequest = z.input<
+  typeof PolymarketClobOrdersScoringRequestSchema
+>;
+export type PolymarketClobOrdersScoringParsedRequest = z.output<
   typeof PolymarketClobOrdersScoringRequestSchema
 >;
 
@@ -333,7 +366,10 @@ export const PolymarketClobHeartbeatRequestSchema = z.object({
   heartbeat_id: z.string(),
 });
 
-export type PolymarketClobHeartbeatRequest = z.infer<
+export type PolymarketClobHeartbeatRequest = z.input<
+  typeof PolymarketClobHeartbeatRequestSchema
+>;
+export type PolymarketClobHeartbeatParsedRequest = z.output<
   typeof PolymarketClobHeartbeatRequestSchema
 >;
 

@@ -15,8 +15,11 @@ export type {
   MessageContent,
   ChatMessage,
   ChatRequest,
+  ChatParsedRequest,
   EmbeddingRequest,
+  EmbeddingParsedRequest,
   CountTokensRequest,
+  CountTokensParsedRequest,
   KimiCodingOptions,
 } from "./zod";
 

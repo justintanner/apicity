@@ -647,31 +647,65 @@ export type XaiVideoReferenceInput = z.infer<
 >;
 export type XaiChunkConfiguration = z.infer<typeof XaiChunkConfigurationSchema>;
 export type XaiFieldDefinition = z.infer<typeof XaiFieldDefinitionSchema>;
-export type XaiChatRequest = z.infer<typeof XaiChatRequestSchema>;
-export type XaiImageGenerateRequest = z.infer<
+export type XaiChatRequest = z.input<typeof XaiChatRequestSchema>;
+export type XaiChatParsedRequest = z.output<typeof XaiChatRequestSchema>;
+export type XaiImageGenerateRequest = z.input<
   typeof XaiImageGenerateRequestSchema
 >;
-export type XaiImageEditRequest = z.infer<typeof XaiImageEditRequestSchema>;
-export type XaiVideoGenerateRequest = z.infer<
+export type XaiImageGenerateParsedRequest = z.output<
+  typeof XaiImageGenerateRequestSchema
+>;
+export type XaiImageEditRequest = z.input<typeof XaiImageEditRequestSchema>;
+export type XaiImageEditParsedRequest = z.output<
+  typeof XaiImageEditRequestSchema
+>;
+export type XaiVideoGenerateRequest = z.input<
   typeof XaiVideoGenerateRequestSchema
 >;
-export type XaiGrokImagineVideo15ImageToVideoRequest = z.infer<
+export type XaiVideoGenerateParsedRequest = z.output<
+  typeof XaiVideoGenerateRequestSchema
+>;
+export type XaiGrokImagineVideo15ImageToVideoRequest = z.input<
   typeof XaiGrokImagineVideo15ImageToVideoRequestSchema
 >;
-export type XaiVideoEditRequest = z.infer<typeof XaiVideoEditRequestSchema>;
-export type XaiVideoExtendRequest = z.infer<typeof XaiVideoExtendRequestSchema>;
-export type XaiBatchCreateRequest = z.infer<typeof XaiBatchCreateRequestSchema>;
+export type XaiGrokImagineVideo15ImageToVideoParsedRequest = z.output<
+  typeof XaiGrokImagineVideo15ImageToVideoRequestSchema
+>;
+export type XaiVideoEditRequest = z.input<typeof XaiVideoEditRequestSchema>;
+export type XaiVideoEditParsedRequest = z.output<
+  typeof XaiVideoEditRequestSchema
+>;
+export type XaiVideoExtendRequest = z.input<typeof XaiVideoExtendRequestSchema>;
+export type XaiVideoExtendParsedRequest = z.output<
+  typeof XaiVideoExtendRequestSchema
+>;
+export type XaiBatchCreateRequest = z.input<typeof XaiBatchCreateRequestSchema>;
+export type XaiBatchCreateParsedRequest = z.output<
+  typeof XaiBatchCreateRequestSchema
+>;
 export type XaiBatchAddRequestsBody = z.infer<
   typeof XaiBatchAddRequestsBodySchema
 >;
-export type XaiCollectionCreateRequest = z.infer<
+export type XaiCollectionCreateRequest = z.input<
   typeof XaiCollectionCreateRequestSchema
 >;
-export type XaiCollectionUpdateRequest = z.infer<
+export type XaiCollectionCreateParsedRequest = z.output<
+  typeof XaiCollectionCreateRequestSchema
+>;
+export type XaiCollectionUpdateRequest = z.input<
   typeof XaiCollectionUpdateRequestSchema
 >;
-export type XaiDocumentAddRequest = z.infer<typeof XaiDocumentAddRequestSchema>;
-export type XaiDocumentSearchRequest = z.infer<
+export type XaiCollectionUpdateParsedRequest = z.output<
+  typeof XaiCollectionUpdateRequestSchema
+>;
+export type XaiDocumentAddRequest = z.input<typeof XaiDocumentAddRequestSchema>;
+export type XaiDocumentAddParsedRequest = z.output<
+  typeof XaiDocumentAddRequestSchema
+>;
+export type XaiDocumentSearchRequest = z.input<
+  typeof XaiDocumentSearchRequestSchema
+>;
+export type XaiDocumentSearchParsedRequest = z.output<
   typeof XaiDocumentSearchRequestSchema
 >;
 export type XaiResponseInputTextContent = z.infer<
@@ -711,18 +745,35 @@ export type XaiResponseReasoning = z.infer<typeof XaiResponseReasoningSchema>;
 export type XaiResponseSearchParameters = z.infer<
   typeof XaiResponseSearchParametersSchema
 >;
-export type XaiResponseRequest = z.infer<typeof XaiResponseRequestSchema>;
-export type XaiTokenizeTextRequest = z.infer<
+export type XaiResponseRequest = z.input<typeof XaiResponseRequestSchema>;
+export type XaiResponseParsedRequest = z.output<
+  typeof XaiResponseRequestSchema
+>;
+export type XaiTokenizeTextRequest = z.input<
   typeof XaiTokenizeTextRequestSchema
 >;
-export type XaiRealtimeClientSecretRequest = z.infer<
+export type XaiTokenizeTextParsedRequest = z.output<
+  typeof XaiTokenizeTextRequestSchema
+>;
+export type XaiRealtimeClientSecretRequest = z.input<
   typeof XaiRealtimeClientSecretRequestSchema
 >;
-export type XaiTtsRequest = z.infer<typeof XaiTtsRequestSchema>;
-export type XaiSttRequest = z.infer<typeof XaiSttRequestSchema>;
-export type XaiCustomVoiceCreateRequest = z.infer<
+export type XaiRealtimeClientSecretParsedRequest = z.output<
+  typeof XaiRealtimeClientSecretRequestSchema
+>;
+export type XaiTtsRequest = z.input<typeof XaiTtsRequestSchema>;
+export type XaiTtsParsedRequest = z.output<typeof XaiTtsRequestSchema>;
+export type XaiSttRequest = z.input<typeof XaiSttRequestSchema>;
+export type XaiSttParsedRequest = z.output<typeof XaiSttRequestSchema>;
+export type XaiCustomVoiceCreateRequest = z.input<
   typeof XaiCustomVoiceCreateRequestSchema
 >;
-export type XaiBillingUsageRequest = z.infer<
+export type XaiCustomVoiceCreateParsedRequest = z.output<
+  typeof XaiCustomVoiceCreateRequestSchema
+>;
+export type XaiBillingUsageRequest = z.input<
+  typeof XaiBillingUsageRequestSchema
+>;
+export type XaiBillingUsageParsedRequest = z.output<
   typeof XaiBillingUsageRequestSchema
 >;

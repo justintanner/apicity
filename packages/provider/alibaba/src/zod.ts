@@ -538,7 +538,10 @@ export type AlibabaContentPart = z.infer<typeof AlibabaContentPartSchema>;
 export type AlibabaMessage = z.infer<typeof AlibabaMessageSchema>;
 export type AlibabaStreamOptions = z.infer<typeof AlibabaStreamOptionsSchema>;
 export type AlibabaResponseFormat = z.infer<typeof AlibabaResponseFormatSchema>;
-export type AlibabaChatRequest = z.infer<typeof AlibabaChatRequestSchema>;
+export type AlibabaChatRequest = z.input<typeof AlibabaChatRequestSchema>;
+export type AlibabaChatParsedRequest = z.output<
+  typeof AlibabaChatRequestSchema
+>;
 export type AlibabaVideoMediaType = z.infer<typeof AlibabaVideoMediaTypeSchema>;
 export type AlibabaVideoMedia = z.infer<typeof AlibabaVideoMediaSchema>;
 export type AlibabaVideoSynthesisModel = z.infer<
@@ -553,7 +556,10 @@ export type AlibabaVideoSynthesisParameters = z.infer<
 export type AlibabaVideoSynthesisRequestObject = z.infer<
   typeof AlibabaVideoSynthesisRequestObjectSchema
 >;
-export type AlibabaVideoSynthesisRequest = z.infer<
+export type AlibabaVideoSynthesisRequest = z.input<
+  typeof AlibabaVideoSynthesisRequestSchema
+>;
+export type AlibabaVideoSynthesisParsedRequest = z.output<
   typeof AlibabaVideoSynthesisRequestSchema
 >;
 export type AlibabaImageTextContent = z.infer<
@@ -575,7 +581,10 @@ export type AlibabaColorPaletteItem = z.infer<
 export type AlibabaImageGenerationParameters = z.infer<
   typeof AlibabaImageGenerationParametersSchema
 >;
-export type AlibabaImageGenerationRequest = z.infer<
+export type AlibabaImageGenerationRequest = z.input<
+  typeof AlibabaImageGenerationRequestSchema
+>;
+export type AlibabaImageGenerationParsedRequest = z.output<
   typeof AlibabaImageGenerationRequestSchema
 >;
 export type AlibabaImageReferenceSlots = z.infer<
@@ -615,10 +624,16 @@ export type AlibabaQwenImageGenerationInput = z.infer<
 export type AlibabaQwenImageEditInput = z.infer<
   typeof AlibabaQwenImageEditInputSchema
 >;
-export type AlibabaQwenImageGenerationRequest = z.infer<
+export type AlibabaQwenImageGenerationRequest = z.input<
   typeof AlibabaQwenImageGenerationRequestSchema
 >;
-export type AlibabaQwenImageEditRequest = z.infer<
+export type AlibabaQwenImageGenerationParsedRequest = z.output<
+  typeof AlibabaQwenImageGenerationRequestSchema
+>;
+export type AlibabaQwenImageEditRequest = z.input<
+  typeof AlibabaQwenImageEditRequestSchema
+>;
+export type AlibabaQwenImageEditParsedRequest = z.output<
   typeof AlibabaQwenImageEditRequestSchema
 >;
 export type AlibabaMultimodalGenerationMessage = z.infer<
@@ -630,7 +645,10 @@ export type AlibabaMultimodalGenerationInput = z.infer<
 export type AlibabaMultimodalGenerationParameters = z.infer<
   typeof AlibabaMultimodalGenerationParametersSchema
 >;
-export type AlibabaMultimodalGenerationRequest = z.infer<
+export type AlibabaMultimodalGenerationRequest = z.input<
+  typeof AlibabaMultimodalGenerationRequestSchema
+>;
+export type AlibabaMultimodalGenerationParsedRequest = z.output<
   typeof AlibabaMultimodalGenerationRequestSchema
 >;
 export type AlibabaOptions = z.infer<typeof AlibabaOptionsSchema>;

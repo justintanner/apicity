@@ -93,14 +93,36 @@ export const FreeOptionsSchema = z.object({
 // Inferred types (source of truth — replaces hand-written interfaces)
 // ---------------------------------------------------------------------------
 
-export type TmpfilesUploadRequest = z.infer<typeof TmpfilesUploadRequestSchema>;
-export type UguuUploadRequest = z.infer<typeof UguuUploadRequestSchema>;
-export type CatboxUploadRequest = z.infer<typeof CatboxUploadRequestSchema>;
-export type LitterboxUploadRequest = z.infer<
+export type TmpfilesUploadRequest = z.input<typeof TmpfilesUploadRequestSchema>;
+export type TmpfilesUploadParsedRequest = z.output<
+  typeof TmpfilesUploadRequestSchema
+>;
+export type UguuUploadRequest = z.input<typeof UguuUploadRequestSchema>;
+export type UguuUploadParsedRequest = z.output<typeof UguuUploadRequestSchema>;
+export type CatboxUploadRequest = z.input<typeof CatboxUploadRequestSchema>;
+export type CatboxUploadParsedRequest = z.output<
+  typeof CatboxUploadRequestSchema
+>;
+export type LitterboxUploadRequest = z.input<
   typeof LitterboxUploadRequestSchema
 >;
-export type GofileUploadRequest = z.infer<typeof GofileUploadRequestSchema>;
-export type FilebinUploadRequest = z.infer<typeof FilebinUploadRequestSchema>;
-export type TempshUploadRequest = z.infer<typeof TempshUploadRequestSchema>;
-export type TflinkUploadRequest = z.infer<typeof TflinkUploadRequestSchema>;
+export type LitterboxUploadParsedRequest = z.output<
+  typeof LitterboxUploadRequestSchema
+>;
+export type GofileUploadRequest = z.input<typeof GofileUploadRequestSchema>;
+export type GofileUploadParsedRequest = z.output<
+  typeof GofileUploadRequestSchema
+>;
+export type FilebinUploadRequest = z.input<typeof FilebinUploadRequestSchema>;
+export type FilebinUploadParsedRequest = z.output<
+  typeof FilebinUploadRequestSchema
+>;
+export type TempshUploadRequest = z.input<typeof TempshUploadRequestSchema>;
+export type TempshUploadParsedRequest = z.output<
+  typeof TempshUploadRequestSchema
+>;
+export type TflinkUploadRequest = z.input<typeof TflinkUploadRequestSchema>;
+export type TflinkUploadParsedRequest = z.output<
+  typeof TflinkUploadRequestSchema
+>;
 export type FreeMediaUploadOptions = z.infer<typeof FreeOptionsSchema>;

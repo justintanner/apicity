@@ -57,7 +57,10 @@ export const ElevenLabsListVoicesRequestSchema = z.object({
   voice_ids: z.array(z.string()).max(100).nullable().optional(),
 });
 
-export type ElevenLabsListVoicesRequest = z.infer<
+export type ElevenLabsListVoicesRequest = z.input<
+  typeof ElevenLabsListVoicesRequestSchema
+>;
+export type ElevenLabsListVoicesParsedRequest = z.output<
   typeof ElevenLabsListVoicesRequestSchema
 >;
 
@@ -69,7 +72,10 @@ export const ElevenLabsGetVoiceRequestSchema = z.object({
   with_settings: z.boolean().optional(),
 });
 
-export type ElevenLabsGetVoiceRequest = z.infer<
+export type ElevenLabsGetVoiceRequest = z.input<
+  typeof ElevenLabsGetVoiceRequestSchema
+>;
+export type ElevenLabsGetVoiceParsedRequest = z.output<
   typeof ElevenLabsGetVoiceRequestSchema
 >;
 
@@ -84,7 +90,10 @@ export const ElevenLabsCreatePvcVoiceRequestSchema = z.object({
   labels: z.record(z.string(), z.string()).nullable().optional(),
 });
 
-export type ElevenLabsCreatePvcVoiceRequest = z.infer<
+export type ElevenLabsCreatePvcVoiceRequest = z.input<
+  typeof ElevenLabsCreatePvcVoiceRequestSchema
+>;
+export type ElevenLabsCreatePvcVoiceParsedRequest = z.output<
   typeof ElevenLabsCreatePvcVoiceRequestSchema
 >;
 
@@ -96,7 +105,10 @@ export const ElevenLabsPvcVoiceCaptchaRequestSchema = z.object({
   recording: z.custom<Blob>((value) => value instanceof Blob),
 });
 
-export type ElevenLabsPvcVoiceCaptchaRequest = z.infer<
+export type ElevenLabsPvcVoiceCaptchaRequest = z.input<
+  typeof ElevenLabsPvcVoiceCaptchaRequestSchema
+>;
+export type ElevenLabsPvcVoiceCaptchaParsedRequest = z.output<
   typeof ElevenLabsPvcVoiceCaptchaRequestSchema
 >;
 
@@ -112,7 +124,10 @@ export const ElevenLabsUpdatePvcVoiceSampleRequestSchema = z.object({
   file_name: z.string().nullable().optional(),
 });
 
-export type ElevenLabsUpdatePvcVoiceSampleRequest = z.infer<
+export type ElevenLabsUpdatePvcVoiceSampleRequest = z.input<
+  typeof ElevenLabsUpdatePvcVoiceSampleRequestSchema
+>;
+export type ElevenLabsUpdatePvcVoiceSampleParsedRequest = z.output<
   typeof ElevenLabsUpdatePvcVoiceSampleRequestSchema
 >;
 
@@ -124,7 +139,10 @@ export const ElevenLabsPvcTrainRequestSchema = z.object({
   model_id: z.string().nullable().optional(),
 });
 
-export type ElevenLabsPvcTrainRequest = z.infer<
+export type ElevenLabsPvcTrainRequest = z.input<
+  typeof ElevenLabsPvcTrainRequestSchema
+>;
+export type ElevenLabsPvcTrainParsedRequest = z.output<
   typeof ElevenLabsPvcTrainRequestSchema
 >;
 
@@ -144,7 +162,10 @@ export const ElevenLabsSoundGenerationRequestSchema = z.object({
   output_format: z.string().optional(),
 });
 
-export type ElevenLabsSoundGenerationRequest = z.infer<
+export type ElevenLabsSoundGenerationRequest = z.input<
+  typeof ElevenLabsSoundGenerationRequestSchema
+>;
+export type ElevenLabsSoundGenerationParsedRequest = z.output<
   typeof ElevenLabsSoundGenerationRequestSchema
 >;
 
@@ -191,7 +212,10 @@ export const ElevenLabsTextToSpeechRequestSchema = z.object({
   enable_logging: z.boolean().optional(),
 });
 
-export type ElevenLabsTextToSpeechRequest = z.infer<
+export type ElevenLabsTextToSpeechRequest = z.input<
+  typeof ElevenLabsTextToSpeechRequestSchema
+>;
+export type ElevenLabsTextToSpeechParsedRequest = z.output<
   typeof ElevenLabsTextToSpeechRequestSchema
 >;
 
@@ -220,7 +244,10 @@ export const ElevenLabsTextToDialogueRequestSchema = z.object({
   output_format: z.string().optional(),
 });
 
-export type ElevenLabsTextToDialogueRequest = z.infer<
+export type ElevenLabsTextToDialogueRequest = z.input<
+  typeof ElevenLabsTextToDialogueRequestSchema
+>;
+export type ElevenLabsTextToDialogueParsedRequest = z.output<
   typeof ElevenLabsTextToDialogueRequestSchema
 >;
 
@@ -270,7 +297,10 @@ export const ElevenLabsSpeechToTextRequestSchema = z.object({
   enable_logging: z.boolean().optional(),
 });
 
-export type ElevenLabsSpeechToTextRequest = z.infer<
+export type ElevenLabsSpeechToTextRequest = z.input<
+  typeof ElevenLabsSpeechToTextRequestSchema
+>;
+export type ElevenLabsSpeechToTextParsedRequest = z.output<
   typeof ElevenLabsSpeechToTextRequestSchema
 >;
 
@@ -335,7 +365,10 @@ export const ElevenLabsWorkspaceAnalyticsRequestsRequestSchema = z
     }
   });
 
-export type ElevenLabsWorkspaceAnalyticsRequestsRequest = z.infer<
+export type ElevenLabsWorkspaceAnalyticsRequestsRequest = z.input<
+  typeof ElevenLabsWorkspaceAnalyticsRequestsRequestSchema
+>;
+export type ElevenLabsWorkspaceAnalyticsRequestsParsedRequest = z.output<
   typeof ElevenLabsWorkspaceAnalyticsRequestsRequestSchema
 >;
 
@@ -359,9 +392,13 @@ export const ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema =
     time_zone: z.string().optional(),
   });
 
-export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest = z.infer<
+export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest = z.input<
   typeof ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema
 >;
+export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeParsedRequest =
+  z.output<
+    typeof ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema
+  >;
 
 // ---------------------------------------------------------------------------
 // POST /v1/voices/pvc/:voice_id/verification
@@ -372,6 +409,9 @@ export const ElevenLabsPvcManualVerificationRequestSchema = z.object({
   extra_text: z.string().nullable().optional(),
 });
 
-export type ElevenLabsPvcManualVerificationRequest = z.infer<
+export type ElevenLabsPvcManualVerificationRequest = z.input<
+  typeof ElevenLabsPvcManualVerificationRequestSchema
+>;
+export type ElevenLabsPvcManualVerificationParsedRequest = z.output<
   typeof ElevenLabsPvcManualVerificationRequestSchema
 >;

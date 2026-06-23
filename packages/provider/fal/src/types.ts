@@ -7,6 +7,7 @@ import type { z } from "zod";
 export type {
   FalOptions,
   FalEstimateRequest,
+  FalEstimateParsedRequest,
   FalQueueSubmitParams,
   FalLogsStreamParams,
   FalFilesUploadUrlParams,

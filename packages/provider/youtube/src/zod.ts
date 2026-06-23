@@ -30,7 +30,10 @@ export const YouTubeChannelsListRequestSchema = z.object({
   pageToken: z.string().optional(),
 });
 
-export type YouTubeChannelsListRequest = z.infer<
+export type YouTubeChannelsListRequest = z.input<
+  typeof YouTubeChannelsListRequestSchema
+>;
+export type YouTubeChannelsListParsedRequest = z.output<
   typeof YouTubeChannelsListRequestSchema
 >;
 
@@ -80,7 +83,10 @@ export const YouTubeVideosInsertRequestSchema = z.object({
   onBehalfOfContentOwnerChannel: z.string().optional(),
 });
 
-export type YouTubeVideosInsertRequest = z.infer<
+export type YouTubeVideosInsertRequest = z.input<
+  typeof YouTubeVideosInsertRequestSchema
+>;
+export type YouTubeVideosInsertParsedRequest = z.output<
   typeof YouTubeVideosInsertRequestSchema
 >;
 
@@ -93,7 +99,10 @@ export const YouTubeGetTranscriptRequestSchema = z.object({
   lang: z.string().optional(),
 });
 
-export type YouTubeGetTranscriptRequest = z.infer<
+export type YouTubeGetTranscriptRequest = z.input<
+  typeof YouTubeGetTranscriptRequestSchema
+>;
+export type YouTubeGetTranscriptParsedRequest = z.output<
   typeof YouTubeGetTranscriptRequestSchema
 >;
 
@@ -105,6 +114,9 @@ export const YouTubeGetVideoMetadataRequestSchema = z.object({
   videoId: z.string().min(1),
 });
 
-export type YouTubeGetVideoMetadataRequest = z.infer<
+export type YouTubeGetVideoMetadataRequest = z.input<
+  typeof YouTubeGetVideoMetadataRequestSchema
+>;
+export type YouTubeGetVideoMetadataParsedRequest = z.output<
   typeof YouTubeGetVideoMetadataRequestSchema
 >;

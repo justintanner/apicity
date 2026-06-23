@@ -11,10 +11,14 @@ export type {
   XOptions,
   XOAuthOptions,
   XMediaUploadInitializeRequest,
+  XMediaUploadInitializeParsedRequest,
   XMediaUploadAppendRequest,
+  XMediaUploadAppendParsedRequest,
   XUsersMeRequest,
   XTweetCreateRequest,
+  XTweetCreateParsedRequest,
   XOAuthTokenRequest,
+  XOAuthTokenParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------

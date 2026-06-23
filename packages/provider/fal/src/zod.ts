@@ -1217,7 +1217,10 @@ export const FalOptionsSchema = z.object({
 // Inferred types (source of truth — replaces hand-written interfaces)
 // ---------------------------------------------------------------------------
 
-export type FalEstimateRequest = z.infer<
+export type FalEstimateRequest = z.input<
+  typeof FalPricingEstimateRequestSchema
+>;
+export type FalEstimateParsedRequest = z.output<
   typeof FalPricingEstimateRequestSchema
 >;
 export type FalQueueSubmitParams = z.infer<typeof FalQueueSubmitRequestSchema>;

@@ -124,9 +124,15 @@ export type GoogleFunctionDeclaration = z.infer<
 >;
 export type GoogleTool = z.infer<typeof GoogleToolSchema>;
 export type GoogleToolConfig = z.infer<typeof GoogleToolConfigSchema>;
-export type GoogleGenerateContentRequest = z.infer<
+export type GoogleGenerateContentRequest = z.input<
   typeof GoogleGenerateContentRequestSchema
 >;
-export type GoogleCountTokensRequest = z.infer<
+export type GoogleGenerateContentParsedRequest = z.output<
+  typeof GoogleGenerateContentRequestSchema
+>;
+export type GoogleCountTokensRequest = z.input<
+  typeof GoogleCountTokensRequestSchema
+>;
+export type GoogleCountTokensParsedRequest = z.output<
   typeof GoogleCountTokensRequestSchema
 >;

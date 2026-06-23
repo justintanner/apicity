@@ -9,13 +9,21 @@ import type { z } from "zod";
 export type {
   FreeMediaUploadOptions,
   TmpfilesUploadRequest,
+  TmpfilesUploadParsedRequest,
   UguuUploadRequest,
+  UguuUploadParsedRequest,
   CatboxUploadRequest,
+  CatboxUploadParsedRequest,
   LitterboxUploadRequest,
+  LitterboxUploadParsedRequest,
   GofileUploadRequest,
+  GofileUploadParsedRequest,
   FilebinUploadRequest,
+  FilebinUploadParsedRequest,
   TempshUploadRequest,
+  TempshUploadParsedRequest,
   TflinkUploadRequest,
+  TflinkUploadParsedRequest,
 } from "./zod";
 
 // -- Response types (hand-written) ------------------------------------------

@@ -851,131 +851,257 @@ export const FireworksOptionsSchema = z.object({
 // Inferred types (source of truth -- replaces hand-written interfaces)
 // ---------------------------------------------------------------------------
 
-export type FireworksChatRequest = z.infer<typeof FireworksChatRequestSchema>;
-export type FireworksCompletionRequest = z.infer<
+export type FireworksChatRequest = z.input<typeof FireworksChatRequestSchema>;
+export type FireworksChatParsedRequest = z.output<
+  typeof FireworksChatRequestSchema
+>;
+export type FireworksCompletionRequest = z.input<
   typeof FireworksCompletionRequestSchema
 >;
-export type FireworksEmbeddingRequest = z.infer<
+export type FireworksCompletionParsedRequest = z.output<
+  typeof FireworksCompletionRequestSchema
+>;
+export type FireworksEmbeddingRequest = z.input<
   typeof FireworksEmbeddingRequestSchema
 >;
-export type FireworksRerankRequest = z.infer<
+export type FireworksEmbeddingParsedRequest = z.output<
+  typeof FireworksEmbeddingRequestSchema
+>;
+export type FireworksRerankRequest = z.input<
   typeof FireworksRerankRequestSchema
 >;
-export type AnthropicMessagesRequest = z.infer<
+export type FireworksRerankParsedRequest = z.output<
+  typeof FireworksRerankRequestSchema
+>;
+export type AnthropicMessagesRequest = z.input<
   typeof AnthropicMessagesRequestSchema
 >;
-export type FireworksTranscriptionRequest = z.infer<
+export type AnthropicMessagesParsedRequest = z.output<
+  typeof AnthropicMessagesRequestSchema
+>;
+export type FireworksTranscriptionRequest = z.input<
   typeof FireworksTranscriptionRequestSchema
 >;
-export type FireworksTranslationRequest = z.infer<
+export type FireworksTranscriptionParsedRequest = z.output<
+  typeof FireworksTranscriptionRequestSchema
+>;
+export type FireworksTranslationRequest = z.input<
+  typeof FireworksTranslationRequestSchema
+>;
+export type FireworksTranslationParsedRequest = z.output<
   typeof FireworksTranslationRequestSchema
 >;
 export type FireworksStreamingTranscriptionOptions = z.infer<
   typeof FireworksStreamingTranscriptionOptionsSchema
 >;
-export type FireworksAudioBatchTranscriptionRequest = z.infer<
+export type FireworksAudioBatchTranscriptionRequest = z.input<
   typeof FireworksAudioBatchTranscriptionRequestSchema
 >;
-export type FireworksAudioBatchTranslationRequest = z.infer<
+export type FireworksAudioBatchTranscriptionParsedRequest = z.output<
+  typeof FireworksAudioBatchTranscriptionRequestSchema
+>;
+export type FireworksAudioBatchTranslationRequest = z.input<
   typeof FireworksAudioBatchTranslationRequestSchema
 >;
-export type FireworksTextToImageRequest = z.infer<
+export type FireworksAudioBatchTranslationParsedRequest = z.output<
+  typeof FireworksAudioBatchTranslationRequestSchema
+>;
+export type FireworksTextToImageRequest = z.input<
   typeof FireworksTextToImageRequestSchema
 >;
-export type FireworksKontextRequest = z.infer<
+export type FireworksTextToImageParsedRequest = z.output<
+  typeof FireworksTextToImageRequestSchema
+>;
+export type FireworksKontextRequest = z.input<
   typeof FireworksKontextRequestSchema
 >;
-export type FireworksGetResultRequest = z.infer<
+export type FireworksKontextParsedRequest = z.output<
+  typeof FireworksKontextRequestSchema
+>;
+export type FireworksGetResultRequest = z.input<
   typeof FireworksGetResultRequestSchema
 >;
-export type FireworksCreateModelRequest = z.infer<
+export type FireworksGetResultParsedRequest = z.output<
+  typeof FireworksGetResultRequestSchema
+>;
+export type FireworksCreateModelRequest = z.input<
   typeof FireworksCreateModelRequestSchema
 >;
-export type FireworksUpdateModelRequest = z.infer<
+export type FireworksCreateModelParsedRequest = z.output<
+  typeof FireworksCreateModelRequestSchema
+>;
+export type FireworksUpdateModelRequest = z.input<
   typeof FireworksUpdateModelRequestSchema
 >;
-export type FireworksPrepareModelRequest = z.infer<
+export type FireworksUpdateModelParsedRequest = z.output<
+  typeof FireworksUpdateModelRequestSchema
+>;
+export type FireworksPrepareModelRequest = z.input<
   typeof FireworksPrepareModelRequestSchema
 >;
-export type FireworksGetUploadEndpointRequest = z.infer<
+export type FireworksPrepareModelParsedRequest = z.output<
+  typeof FireworksPrepareModelRequestSchema
+>;
+export type FireworksGetUploadEndpointRequest = z.input<
   typeof FireworksGetUploadEndpointRequestSchema
 >;
-export type FireworksValidateUploadRequest = z.infer<
+export type FireworksGetUploadEndpointParsedRequest = z.output<
+  typeof FireworksGetUploadEndpointRequestSchema
+>;
+export type FireworksValidateUploadRequest = z.input<
   typeof FireworksValidateUploadRequestSchema
 >;
-export type FireworksBatchJobCreateRequest = z.infer<
+export type FireworksValidateUploadParsedRequest = z.output<
+  typeof FireworksValidateUploadRequestSchema
+>;
+export type FireworksBatchJobCreateRequest = z.input<
   typeof FireworksBatchJobCreateRequestSchema
 >;
-export type FireworksSFTCreateRequest = z.infer<
+export type FireworksBatchJobCreateParsedRequest = z.output<
+  typeof FireworksBatchJobCreateRequestSchema
+>;
+export type FireworksSFTCreateRequest = z.input<
   typeof FireworksSFTCreateRequestSchema
 >;
-export type FireworksDpoJobCreateRequest = z.infer<
+export type FireworksSFTCreateParsedRequest = z.output<
+  typeof FireworksSFTCreateRequestSchema
+>;
+export type FireworksDpoJobCreateRequest = z.input<
   typeof FireworksDpoJobCreateRequestSchema
 >;
-export type FireworksRFTCreateRequest = z.infer<
+export type FireworksDpoJobCreateParsedRequest = z.output<
+  typeof FireworksDpoJobCreateRequestSchema
+>;
+export type FireworksRFTCreateRequest = z.input<
   typeof FireworksRFTCreateRequestSchema
 >;
-export type FireworksRlorTrainerJobCreateRequest = z.infer<
+export type FireworksRFTCreateParsedRequest = z.output<
+  typeof FireworksRFTCreateRequestSchema
+>;
+export type FireworksRlorTrainerJobCreateRequest = z.input<
   typeof FireworksRlorTrainerJobCreateRequestSchema
 >;
-export type FireworksRlorTrainerJobExecuteStepRequest = z.infer<
+export type FireworksRlorTrainerJobCreateParsedRequest = z.output<
+  typeof FireworksRlorTrainerJobCreateRequestSchema
+>;
+export type FireworksRlorTrainerJobExecuteStepRequest = z.input<
   typeof FireworksRlorTrainerJobExecuteStepRequestSchema
 >;
-export type FireworksCreateDeploymentRequest = z.infer<
+export type FireworksRlorTrainerJobExecuteStepParsedRequest = z.output<
+  typeof FireworksRlorTrainerJobExecuteStepRequestSchema
+>;
+export type FireworksCreateDeploymentRequest = z.input<
   typeof FireworksCreateDeploymentRequestSchema
 >;
-export type FireworksUpdateDeploymentRequest = z.infer<
+export type FireworksCreateDeploymentParsedRequest = z.output<
+  typeof FireworksCreateDeploymentRequestSchema
+>;
+export type FireworksUpdateDeploymentRequest = z.input<
   typeof FireworksUpdateDeploymentRequestSchema
 >;
-export type FireworksScaleDeploymentRequest = z.infer<
+export type FireworksUpdateDeploymentParsedRequest = z.output<
+  typeof FireworksUpdateDeploymentRequestSchema
+>;
+export type FireworksScaleDeploymentRequest = z.input<
   typeof FireworksScaleDeploymentRequestSchema
 >;
-export type FireworksCreateDeployedModelRequest = z.infer<
+export type FireworksScaleDeploymentParsedRequest = z.output<
+  typeof FireworksScaleDeploymentRequestSchema
+>;
+export type FireworksCreateDeployedModelRequest = z.input<
   typeof FireworksCreateDeployedModelRequestSchema
 >;
-export type FireworksUpdateDeployedModelRequest = z.infer<
+export type FireworksCreateDeployedModelParsedRequest = z.output<
+  typeof FireworksCreateDeployedModelRequestSchema
+>;
+export type FireworksUpdateDeployedModelRequest = z.input<
   typeof FireworksUpdateDeployedModelRequestSchema
 >;
-export type FireworksCreateDatasetRequest = z.infer<
+export type FireworksUpdateDeployedModelParsedRequest = z.output<
+  typeof FireworksUpdateDeployedModelRequestSchema
+>;
+export type FireworksCreateDatasetRequest = z.input<
   typeof FireworksCreateDatasetRequestSchema
 >;
-export type FireworksUpdateDatasetRequest = z.infer<
+export type FireworksCreateDatasetParsedRequest = z.output<
+  typeof FireworksCreateDatasetRequestSchema
+>;
+export type FireworksUpdateDatasetRequest = z.input<
   typeof FireworksUpdateDatasetRequestSchema
 >;
-export type FireworksDatasetGetUploadEndpointRequest = z.infer<
+export type FireworksUpdateDatasetParsedRequest = z.output<
+  typeof FireworksUpdateDatasetRequestSchema
+>;
+export type FireworksDatasetGetUploadEndpointRequest = z.input<
   typeof FireworksDatasetGetUploadEndpointRequestSchema
 >;
-export type FireworksDatasetValidateUploadRequest = z.infer<
+export type FireworksDatasetGetUploadEndpointParsedRequest = z.output<
+  typeof FireworksDatasetGetUploadEndpointRequestSchema
+>;
+export type FireworksDatasetValidateUploadRequest = z.input<
   typeof FireworksDatasetValidateUploadRequestSchema
 >;
-export type FireworksCreateUserRequest = z.infer<
+export type FireworksDatasetValidateUploadParsedRequest = z.output<
+  typeof FireworksDatasetValidateUploadRequestSchema
+>;
+export type FireworksCreateUserRequest = z.input<
   typeof FireworksCreateUserRequestSchema
 >;
-export type FireworksUpdateUserRequest = z.infer<
+export type FireworksCreateUserParsedRequest = z.output<
+  typeof FireworksCreateUserRequestSchema
+>;
+export type FireworksUpdateUserRequest = z.input<
   typeof FireworksUpdateUserRequestSchema
 >;
-export type FireworksCreateApiKeyRequest = z.infer<
+export type FireworksUpdateUserParsedRequest = z.output<
+  typeof FireworksUpdateUserRequestSchema
+>;
+export type FireworksCreateApiKeyRequest = z.input<
   typeof FireworksCreateApiKeyRequestSchema
 >;
-export type FireworksDeleteApiKeyRequest = z.infer<
+export type FireworksCreateApiKeyParsedRequest = z.output<
+  typeof FireworksCreateApiKeyRequestSchema
+>;
+export type FireworksDeleteApiKeyRequest = z.input<
   typeof FireworksDeleteApiKeyRequestSchema
 >;
-export type FireworksCreateSecretRequest = z.infer<
+export type FireworksDeleteApiKeyParsedRequest = z.output<
+  typeof FireworksDeleteApiKeyRequestSchema
+>;
+export type FireworksCreateSecretRequest = z.input<
   typeof FireworksCreateSecretRequestSchema
 >;
-export type FireworksUpdateSecretRequest = z.infer<
+export type FireworksCreateSecretParsedRequest = z.output<
+  typeof FireworksCreateSecretRequestSchema
+>;
+export type FireworksUpdateSecretRequest = z.input<
   typeof FireworksUpdateSecretRequestSchema
 >;
-export type FireworksCreateEvaluatorRequest = z.infer<
+export type FireworksUpdateSecretParsedRequest = z.output<
+  typeof FireworksUpdateSecretRequestSchema
+>;
+export type FireworksCreateEvaluatorRequest = z.input<
   typeof FireworksCreateEvaluatorRequestSchema
 >;
-export type FireworksUpdateEvaluatorRequest = z.infer<
+export type FireworksCreateEvaluatorParsedRequest = z.output<
+  typeof FireworksCreateEvaluatorRequestSchema
+>;
+export type FireworksUpdateEvaluatorRequest = z.input<
   typeof FireworksUpdateEvaluatorRequestSchema
 >;
-export type FireworksGetUploadEndpointEvaluatorRequest = z.infer<
+export type FireworksUpdateEvaluatorParsedRequest = z.output<
+  typeof FireworksUpdateEvaluatorRequestSchema
+>;
+export type FireworksGetUploadEndpointEvaluatorRequest = z.input<
   typeof FireworksGetUploadEndpointEvaluatorRequestSchema
 >;
-export type FireworksCreateEvaluationJobRequest = z.infer<
+export type FireworksGetUploadEndpointEvaluatorParsedRequest = z.output<
+  typeof FireworksGetUploadEndpointEvaluatorRequestSchema
+>;
+export type FireworksCreateEvaluationJobRequest = z.input<
+  typeof FireworksCreateEvaluationJobRequestSchema
+>;
+export type FireworksCreateEvaluationJobParsedRequest = z.output<
   typeof FireworksCreateEvaluationJobRequestSchema
 >;
 export type FireworksOptions = z.infer<typeof FireworksOptionsSchema>;

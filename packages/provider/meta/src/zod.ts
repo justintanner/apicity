@@ -58,7 +58,10 @@ export const MetaMediaCreateRequestSchema = z.object({
   collaborators: z.array(z.string().min(1)).max(3).optional(),
 });
 
-export type MetaMediaCreateRequest = z.infer<
+export type MetaMediaCreateRequest = z.input<
+  typeof MetaMediaCreateRequestSchema
+>;
+export type MetaMediaCreateParsedRequest = z.output<
   typeof MetaMediaCreateRequestSchema
 >;
 
@@ -73,6 +76,9 @@ export const MetaMediaPublishRequestSchema = z.object({
   creation_id: MetaIdStringSchema,
 });
 
-export type MetaMediaPublishRequest = z.infer<
+export type MetaMediaPublishRequest = z.input<
+  typeof MetaMediaPublishRequestSchema
+>;
+export type MetaMediaPublishParsedRequest = z.output<
   typeof MetaMediaPublishRequestSchema
 >;

@@ -1156,8 +1156,12 @@ export const VeoExtendRequestSchema = z.object({
   watermark: z.string().optional(),
 });
 
-export type VeoGenerateRequest = z.infer<typeof VeoGenerateRequestSchema>;
-export type VeoExtendRequest = z.infer<typeof VeoExtendRequestSchema>;
+export type VeoGenerateRequest = z.input<typeof VeoGenerateRequestSchema>;
+export type VeoGenerateParsedRequest = z.output<
+  typeof VeoGenerateRequestSchema
+>;
+export type VeoExtendRequest = z.input<typeof VeoExtendRequestSchema>;
+export type VeoExtendParsedRequest = z.output<typeof VeoExtendRequestSchema>;
 export type VeoModel = "veo3" | "veo3_fast";
 export type VeoGenerationType =
   | "TEXT_2_VIDEO"
@@ -1184,7 +1188,10 @@ export const SunoGenerateRequestSchema = z.object({
   personaId: z.string().optional(),
 });
 
-export type SunoGenerateRequest = z.infer<typeof SunoGenerateRequestSchema>;
+export type SunoGenerateRequest = z.input<typeof SunoGenerateRequestSchema>;
+export type SunoGenerateParsedRequest = z.output<
+  typeof SunoGenerateRequestSchema
+>;
 export type SunoModel =
   | "V3_5"
   | "V4"
@@ -1225,7 +1232,8 @@ export const KieChatRequestSchema = z.object({
 
 export type KieChatContentPart = z.infer<typeof KieChatContentPartSchema>;
 export type KieChatMessage = z.infer<typeof KieChatMessageSchema>;
-export type KieChatRequest = z.infer<typeof KieChatRequestSchema>;
+export type KieChatRequest = z.input<typeof KieChatRequestSchema>;
+export type KieChatParsedRequest = z.output<typeof KieChatRequestSchema>;
 
 // ---------------------------------------------------------------------------
 // Sub-provider schemas: Claude (via Kie)
@@ -1269,7 +1277,8 @@ export type KieClaudeToolInputSchema = z.infer<
 export type KieClaudeTool = z.infer<typeof KieClaudeToolSchema>;
 export type KieClaudeContentPart = z.infer<typeof KieClaudeContentPartSchema>;
 export type KieClaudeMessage = z.infer<typeof KieClaudeMessageSchema>;
-export type KieClaudeRequest = z.infer<typeof KieClaudeRequestSchema>;
+export type KieClaudeRequest = z.input<typeof KieClaudeRequestSchema>;
+export type KieClaudeParsedRequest = z.output<typeof KieClaudeRequestSchema>;
 
 // ---------------------------------------------------------------------------
 // Media generation request (discriminated union on model)
@@ -1399,48 +1408,98 @@ export type Wan27ImageColorPalette = z.infer<
   typeof Wan27ImageColorPaletteSchema
 >;
 
-export type KlingVideoRequest = z.infer<typeof KlingVideoRequestSchema>;
-export type KlingMotionControlRequest = z.infer<
+export type KlingVideoRequest = z.input<typeof KlingVideoRequestSchema>;
+export type KlingVideoParsedRequest = z.output<typeof KlingVideoRequestSchema>;
+export type KlingMotionControlRequest = z.input<
   typeof KlingMotionControlRequestSchema
 >;
-export type KlingV3TurboImageToVideoRequest = z.infer<
+export type KlingMotionControlParsedRequest = z.output<
+  typeof KlingMotionControlRequestSchema
+>;
+export type KlingV3TurboImageToVideoRequest = z.input<
   typeof KlingV3TurboImageToVideoRequestSchema
 >;
-export type KlingV3TurboTextToVideoRequest = z.infer<
+export type KlingV3TurboImageToVideoParsedRequest = z.output<
+  typeof KlingV3TurboImageToVideoRequestSchema
+>;
+export type KlingV3TurboTextToVideoRequest = z.input<
   typeof KlingV3TurboTextToVideoRequestSchema
 >;
-export type GrokTextToImageRequest = z.infer<
+export type KlingV3TurboTextToVideoParsedRequest = z.output<
+  typeof KlingV3TurboTextToVideoRequestSchema
+>;
+export type GrokTextToImageRequest = z.input<
   typeof GrokTextToImageRequestSchema
 >;
-export type Qwen2TextToImageRequest = z.infer<
+export type GrokTextToImageParsedRequest = z.output<
+  typeof GrokTextToImageRequestSchema
+>;
+export type Qwen2TextToImageRequest = z.input<
   typeof Qwen2TextToImageRequestSchema
 >;
-export type Qwen2ImageEditRequest = z.infer<typeof Qwen2ImageEditRequestSchema>;
-export type GrokImageToImageRequest = z.infer<
+export type Qwen2TextToImageParsedRequest = z.output<
+  typeof Qwen2TextToImageRequestSchema
+>;
+export type Qwen2ImageEditRequest = z.input<typeof Qwen2ImageEditRequestSchema>;
+export type Qwen2ImageEditParsedRequest = z.output<
+  typeof Qwen2ImageEditRequestSchema
+>;
+export type GrokImageToImageRequest = z.input<
   typeof GrokImageToImageRequestSchema
 >;
-export type GrokTextToVideoRequest = z.infer<
+export type GrokImageToImageParsedRequest = z.output<
+  typeof GrokImageToImageRequestSchema
+>;
+export type GrokTextToVideoRequest = z.input<
   typeof GrokTextToVideoRequestSchema
 >;
-export type GrokImageToVideoRequest = z.infer<
+export type GrokTextToVideoParsedRequest = z.output<
+  typeof GrokTextToVideoRequestSchema
+>;
+export type GrokImageToVideoRequest = z.input<
   typeof GrokImageToVideoRequestSchema
 >;
-export type GrokVideo15PreviewRequest = z.infer<
+export type GrokImageToVideoParsedRequest = z.output<
+  typeof GrokImageToVideoRequestSchema
+>;
+export type GrokVideo15PreviewRequest = z.input<
   typeof GrokVideo15PreviewRequestSchema
 >;
-export type GrokVideoExtendRequest = z.infer<
+export type GrokVideo15PreviewParsedRequest = z.output<
+  typeof GrokVideo15PreviewRequestSchema
+>;
+export type GrokVideoExtendRequest = z.input<
   typeof GrokVideoExtendRequestSchema
 >;
-export type GrokVideoUpscaleRequest = z.infer<
+export type GrokVideoExtendParsedRequest = z.output<
+  typeof GrokVideoExtendRequestSchema
+>;
+export type GrokVideoUpscaleRequest = z.input<
   typeof GrokVideoUpscaleRequestSchema
 >;
-export type NanoBananaProRequest = z.infer<typeof NanoBananaProRequestSchema>;
+export type GrokVideoUpscaleParsedRequest = z.output<
+  typeof GrokVideoUpscaleRequestSchema
+>;
+export type NanoBananaProRequest = z.input<typeof NanoBananaProRequestSchema>;
+export type NanoBananaProParsedRequest = z.output<
+  typeof NanoBananaProRequestSchema
+>;
 export type Seedance2FastInput = z.infer<typeof Seedance2FastInputSchema>;
-export type Seedance2FastRequest = z.infer<typeof Seedance2FastRequestSchema>;
+export type Seedance2FastRequest = z.input<typeof Seedance2FastRequestSchema>;
+export type Seedance2FastParsedRequest = z.output<
+  typeof Seedance2FastRequestSchema
+>;
 export type Seedance2Input = z.infer<typeof Seedance2InputSchema>;
-export type Seedance2Request = z.infer<typeof Seedance2RequestSchema>;
-export type NanoBanana2Request = z.infer<typeof NanoBanana2RequestSchema>;
-export type GptImageToImageRequest = z.infer<
+export type Seedance2Request = z.input<typeof Seedance2RequestSchema>;
+export type Seedance2ParsedRequest = z.output<typeof Seedance2RequestSchema>;
+export type NanoBanana2Request = z.input<typeof NanoBanana2RequestSchema>;
+export type NanoBanana2ParsedRequest = z.output<
+  typeof NanoBanana2RequestSchema
+>;
+export type GptImageToImageRequest = z.input<
+  typeof GptImageToImageRequestSchema
+>;
+export type GptImageToImageParsedRequest = z.output<
   typeof GptImageToImageRequestSchema
 >;
 export type GptImage2ImageToImageAspectRatio = z.infer<
@@ -1449,7 +1508,10 @@ export type GptImage2ImageToImageAspectRatio = z.infer<
 export type GptImage2ImageToImageResolution = z.infer<
   typeof GptImage2ImageToImageResolutionSchema
 >;
-export type GptImage2ImageToImageRequest = z.infer<
+export type GptImage2ImageToImageRequest = z.input<
+  typeof GptImage2ImageToImageRequestSchema
+>;
+export type GptImage2ImageToImageParsedRequest = z.output<
   typeof GptImage2ImageToImageRequestSchema
 >;
 export type GptImage2TextToImageAspectRatio = z.infer<
@@ -1458,74 +1520,153 @@ export type GptImage2TextToImageAspectRatio = z.infer<
 export type GptImage2TextToImageResolution = z.infer<
   typeof GptImage2TextToImageResolutionSchema
 >;
-export type GptImage2TextToImageRequest = z.infer<
+export type GptImage2TextToImageRequest = z.input<
   typeof GptImage2TextToImageRequestSchema
 >;
-export type SeedreamImageToImageRequest = z.infer<
+export type GptImage2TextToImageParsedRequest = z.output<
+  typeof GptImage2TextToImageRequestSchema
+>;
+export type SeedreamImageToImageRequest = z.input<
   typeof SeedreamImageToImageRequestSchema
 >;
-export type SeedreamTextToImageRequest = z.infer<
+export type SeedreamImageToImageParsedRequest = z.output<
+  typeof SeedreamImageToImageRequestSchema
+>;
+export type SeedreamTextToImageRequest = z.input<
   typeof SeedreamTextToImageRequestSchema
 >;
-export type SoraWatermarkRequest = z.infer<typeof SoraWatermarkRequestSchema>;
-export type Wan27ImageToVideoRequest = z.infer<
+export type SeedreamTextToImageParsedRequest = z.output<
+  typeof SeedreamTextToImageRequestSchema
+>;
+export type SoraWatermarkRequest = z.input<typeof SoraWatermarkRequestSchema>;
+export type SoraWatermarkParsedRequest = z.output<
+  typeof SoraWatermarkRequestSchema
+>;
+export type Wan27ImageToVideoRequest = z.input<
   typeof Wan27ImageToVideoRequestSchema
 >;
-export type Wan27TextToVideoRequest = z.infer<
+export type Wan27ImageToVideoParsedRequest = z.output<
+  typeof Wan27ImageToVideoRequestSchema
+>;
+export type Wan27TextToVideoRequest = z.input<
   typeof Wan27TextToVideoRequestSchema
 >;
-export type Wan27RefToVideoRequest = z.infer<
+export type Wan27TextToVideoParsedRequest = z.output<
+  typeof Wan27TextToVideoRequestSchema
+>;
+export type Wan27RefToVideoRequest = z.input<
   typeof Wan27RefToVideoRequestSchema
 >;
-export type Wan27VideoEditRequest = z.infer<typeof Wan27VideoEditRequestSchema>;
-export type Wan27ImageRequest = z.infer<typeof Wan27ImageRequestSchema>;
-export type Wan27ImageProRequest = z.infer<typeof Wan27ImageProRequestSchema>;
-export type HappyHorseTextToVideoRequest = z.infer<
+export type Wan27RefToVideoParsedRequest = z.output<
+  typeof Wan27RefToVideoRequestSchema
+>;
+export type Wan27VideoEditRequest = z.input<typeof Wan27VideoEditRequestSchema>;
+export type Wan27VideoEditParsedRequest = z.output<
+  typeof Wan27VideoEditRequestSchema
+>;
+export type Wan27ImageRequest = z.input<typeof Wan27ImageRequestSchema>;
+export type Wan27ImageParsedRequest = z.output<typeof Wan27ImageRequestSchema>;
+export type Wan27ImageProRequest = z.input<typeof Wan27ImageProRequestSchema>;
+export type Wan27ImageProParsedRequest = z.output<
+  typeof Wan27ImageProRequestSchema
+>;
+export type HappyHorseTextToVideoRequest = z.input<
   typeof HappyHorseTextToVideoRequestSchema
 >;
-export type HappyHorseImageToVideoRequest = z.infer<
+export type HappyHorseTextToVideoParsedRequest = z.output<
+  typeof HappyHorseTextToVideoRequestSchema
+>;
+export type HappyHorseImageToVideoRequest = z.input<
   typeof HappyHorseImageToVideoRequestSchema
 >;
-export type HappyHorseReferenceToVideoRequest = z.infer<
+export type HappyHorseImageToVideoParsedRequest = z.output<
+  typeof HappyHorseImageToVideoRequestSchema
+>;
+export type HappyHorseReferenceToVideoRequest = z.input<
   typeof HappyHorseReferenceToVideoRequestSchema
 >;
-export type HappyHorseVideoEditRequest = z.infer<
+export type HappyHorseReferenceToVideoParsedRequest = z.output<
+  typeof HappyHorseReferenceToVideoRequestSchema
+>;
+export type HappyHorseVideoEditRequest = z.input<
   typeof HappyHorseVideoEditRequestSchema
 >;
-export type Omnihuman15Request = z.infer<typeof Omnihuman15RequestSchema>;
-export type VolcengineVideoToVideoLipSyncRequest = z.infer<
+export type HappyHorseVideoEditParsedRequest = z.output<
+  typeof HappyHorseVideoEditRequestSchema
+>;
+export type Omnihuman15Request = z.input<typeof Omnihuman15RequestSchema>;
+export type Omnihuman15ParsedRequest = z.output<
+  typeof Omnihuman15RequestSchema
+>;
+export type VolcengineVideoToVideoLipSyncRequest = z.input<
   typeof VolcengineVideoToVideoLipSyncRequestSchema
 >;
-export type ElevenLabsAudioIsolationRequest = z.infer<
+export type VolcengineVideoToVideoLipSyncParsedRequest = z.output<
+  typeof VolcengineVideoToVideoLipSyncRequestSchema
+>;
+export type ElevenLabsAudioIsolationRequest = z.input<
   typeof ElevenLabsAudioIsolationRequestSchema
 >;
-export type ElevenLabsTextToDialogueV3Request = z.infer<
+export type ElevenLabsAudioIsolationParsedRequest = z.output<
+  typeof ElevenLabsAudioIsolationRequestSchema
+>;
+export type ElevenLabsTextToDialogueV3Request = z.input<
   typeof ElevenLabsTextToDialogueV3RequestSchema
 >;
-export type ElevenLabsTextToSpeechMultilingualV2Request = z.infer<
+export type ElevenLabsTextToDialogueV3ParsedRequest = z.output<
+  typeof ElevenLabsTextToDialogueV3RequestSchema
+>;
+export type ElevenLabsTextToSpeechMultilingualV2Request = z.input<
   typeof ElevenLabsTextToSpeechMultilingualV2RequestSchema
 >;
-export type ElevenLabsTextToSpeechTurbo25Request = z.infer<
+export type ElevenLabsTextToSpeechMultilingualV2ParsedRequest = z.output<
+  typeof ElevenLabsTextToSpeechMultilingualV2RequestSchema
+>;
+export type ElevenLabsTextToSpeechTurbo25Request = z.input<
   typeof ElevenLabsTextToSpeechTurbo25RequestSchema
 >;
-export type ElevenLabsSoundEffectV2Request = z.infer<
+export type ElevenLabsTextToSpeechTurbo25ParsedRequest = z.output<
+  typeof ElevenLabsTextToSpeechTurbo25RequestSchema
+>;
+export type ElevenLabsSoundEffectV2Request = z.input<
+  typeof ElevenLabsSoundEffectV2RequestSchema
+>;
+export type ElevenLabsSoundEffectV2ParsedRequest = z.output<
   typeof ElevenLabsSoundEffectV2RequestSchema
 >;
 export type Wan27TaskResultJson = z.infer<typeof Wan27TaskResultJsonSchema>;
 export type Wan27VideoResult = z.infer<typeof Wan27VideoResultSchema>;
 export type Wan27ImageResult = z.infer<typeof Wan27ImageResultSchema>;
 
-export type UploadMediaRequest = z.infer<typeof UploadMediaRequestSchema>;
-export type FileUrlUploadRequest = z.infer<typeof FileUrlUploadRequestSchema>;
-export type FileBase64UploadRequest = z.infer<
+export type UploadMediaRequest = z.input<typeof UploadMediaRequestSchema>;
+export type UploadMediaParsedRequest = z.output<
+  typeof UploadMediaRequestSchema
+>;
+export type FileUrlUploadRequest = z.input<typeof FileUrlUploadRequestSchema>;
+export type FileUrlUploadParsedRequest = z.output<
+  typeof FileUrlUploadRequestSchema
+>;
+export type FileBase64UploadRequest = z.input<
   typeof FileBase64UploadRequestSchema
 >;
-export type DownloadUrlRequest = z.infer<typeof DownloadUrlRequestSchema>;
-export type GeminiOmniAudioCreateRequest = z.infer<
+export type FileBase64UploadParsedRequest = z.output<
+  typeof FileBase64UploadRequestSchema
+>;
+export type DownloadUrlRequest = z.input<typeof DownloadUrlRequestSchema>;
+export type DownloadUrlParsedRequest = z.output<
+  typeof DownloadUrlRequestSchema
+>;
+export type GeminiOmniAudioCreateRequest = z.input<
+  typeof GeminiOmniAudioCreateRequestSchema
+>;
+export type GeminiOmniAudioCreateParsedRequest = z.output<
   typeof GeminiOmniAudioCreateRequestSchema
 >;
 export type KieOptions = z.infer<typeof KieOptionsSchema>;
 
-export type MediaGenerationRequest = z.infer<
+export type MediaGenerationRequest = z.input<
+  typeof MediaGenerationRequestSchema
+>;
+export type MediaGenerationParsedRequest = z.output<
   typeof MediaGenerationRequestSchema
 >;

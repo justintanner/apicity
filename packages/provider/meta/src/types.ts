@@ -4,7 +4,9 @@ import type { MetaMediaCreateRequest, MetaMediaPublishRequest } from "./zod";
 export type {
   MetaOptions,
   MetaMediaCreateRequest,
+  MetaMediaCreateParsedRequest,
   MetaMediaPublishRequest,
+  MetaMediaPublishParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------

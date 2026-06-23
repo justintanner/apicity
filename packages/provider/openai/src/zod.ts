@@ -627,27 +627,52 @@ export type OpenAiContentPart = z.infer<typeof OpenAiContentPartSchema>;
 export type OpenAiMessage = z.infer<typeof OpenAiMessageSchema>;
 export type OpenAiToolFunction = z.infer<typeof OpenAiToolFunctionSchema>;
 export type OpenAiTool = z.infer<typeof OpenAiToolSchema>;
-export type OpenAiChatRequest = z.infer<typeof OpenAiChatRequestSchema>;
-export type OpenAiStoredCompletionUpdateRequest = z.infer<
+export type OpenAiChatRequest = z.input<typeof OpenAiChatRequestSchema>;
+export type OpenAiChatParsedRequest = z.output<typeof OpenAiChatRequestSchema>;
+export type OpenAiStoredCompletionUpdateRequest = z.input<
   typeof OpenAiStoredCompletionUpdateRequestSchema
 >;
-export type OpenAiEmbeddingRequest = z.infer<
+export type OpenAiStoredCompletionUpdateParsedRequest = z.output<
+  typeof OpenAiStoredCompletionUpdateRequestSchema
+>;
+export type OpenAiEmbeddingRequest = z.input<
   typeof OpenAiEmbeddingRequestSchema
 >;
-export type OpenAiImageEditRequest = z.infer<
+export type OpenAiEmbeddingParsedRequest = z.output<
+  typeof OpenAiEmbeddingRequestSchema
+>;
+export type OpenAiImageEditRequest = z.input<
   typeof OpenAiImageEditRequestSchema
 >;
-export type OpenAiImageGenerationRequest = z.infer<
+export type OpenAiImageEditParsedRequest = z.output<
+  typeof OpenAiImageEditRequestSchema
+>;
+export type OpenAiImageGenerationRequest = z.input<
   typeof OpenAiImageGenerationRequestSchema
 >;
-export type OpenAiImageVariationRequest = z.infer<
+export type OpenAiImageGenerationParsedRequest = z.output<
+  typeof OpenAiImageGenerationRequestSchema
+>;
+export type OpenAiImageVariationRequest = z.input<
   typeof OpenAiImageVariationRequestSchema
 >;
-export type OpenAiSpeechRequest = z.infer<typeof OpenAiSpeechRequestSchema>;
-export type OpenAiTranscribeRequest = z.infer<
+export type OpenAiImageVariationParsedRequest = z.output<
+  typeof OpenAiImageVariationRequestSchema
+>;
+export type OpenAiSpeechRequest = z.input<typeof OpenAiSpeechRequestSchema>;
+export type OpenAiSpeechParsedRequest = z.output<
+  typeof OpenAiSpeechRequestSchema
+>;
+export type OpenAiTranscribeRequest = z.input<
   typeof OpenAiTranscribeRequestSchema
 >;
-export type OpenAiTranslateRequest = z.infer<
+export type OpenAiTranscribeParsedRequest = z.output<
+  typeof OpenAiTranscribeRequestSchema
+>;
+export type OpenAiTranslateRequest = z.input<
+  typeof OpenAiTranslateRequestSchema
+>;
+export type OpenAiTranslateParsedRequest = z.output<
   typeof OpenAiTranslateRequestSchema
 >;
 export type OpenAiModerationTextInput = z.infer<
@@ -659,13 +684,22 @@ export type OpenAiModerationImageUrlInput = z.infer<
 export type OpenAiModerationMultiModalInput = z.infer<
   typeof OpenAiModerationMultiModalInputSchema
 >;
-export type OpenAiModerationRequest = z.infer<
+export type OpenAiModerationRequest = z.input<
   typeof OpenAiModerationRequestSchema
 >;
-export type OpenAiFileUploadRequest = z.infer<
+export type OpenAiModerationParsedRequest = z.output<
+  typeof OpenAiModerationRequestSchema
+>;
+export type OpenAiFileUploadRequest = z.input<
   typeof OpenAiFileUploadRequestSchema
 >;
-export type OpenAiBatchCreateRequest = z.infer<
+export type OpenAiFileUploadParsedRequest = z.output<
+  typeof OpenAiFileUploadRequestSchema
+>;
+export type OpenAiBatchCreateRequest = z.input<
+  typeof OpenAiBatchCreateRequestSchema
+>;
+export type OpenAiBatchCreateParsedRequest = z.output<
   typeof OpenAiBatchCreateRequestSchema
 >;
 export type OpenAiResponseInputTextContent = z.infer<
@@ -711,11 +745,20 @@ export type OpenAiResponseTextFormat = z.infer<
 export type OpenAiResponseReasoning = z.infer<
   typeof OpenAiResponseReasoningSchema
 >;
-export type OpenAiResponseRequest = z.infer<typeof OpenAiResponseRequestSchema>;
-export type OpenAiResponseCompactRequest = z.infer<
+export type OpenAiResponseRequest = z.input<typeof OpenAiResponseRequestSchema>;
+export type OpenAiResponseParsedRequest = z.output<
+  typeof OpenAiResponseRequestSchema
+>;
+export type OpenAiResponseCompactRequest = z.input<
   typeof OpenAiResponseCompactRequestSchema
 >;
-export type OpenAiResponseInputTokensRequest = z.infer<
+export type OpenAiResponseCompactParsedRequest = z.output<
+  typeof OpenAiResponseCompactRequestSchema
+>;
+export type OpenAiResponseInputTokensRequest = z.input<
+  typeof OpenAiResponseInputTokensRequestSchema
+>;
+export type OpenAiResponseInputTokensParsedRequest = z.output<
   typeof OpenAiResponseInputTokensRequestSchema
 >;
 export type OpenAiFineTuningHyperparameters = z.infer<
@@ -748,10 +791,16 @@ export type OpenAiFineTuningWandbConfig = z.infer<
 export type OpenAiFineTuningIntegration = z.infer<
   typeof OpenAiFineTuningIntegrationSchema
 >;
-export type OpenAiFineTuningJobCreateRequest = z.infer<
+export type OpenAiFineTuningJobCreateRequest = z.input<
   typeof OpenAiFineTuningJobCreateRequestSchema
 >;
-export type OpenAiCheckpointPermissionCreateRequest = z.infer<
+export type OpenAiFineTuningJobCreateParsedRequest = z.output<
+  typeof OpenAiFineTuningJobCreateRequestSchema
+>;
+export type OpenAiCheckpointPermissionCreateRequest = z.input<
+  typeof OpenAiCheckpointPermissionCreateRequestSchema
+>;
+export type OpenAiCheckpointPermissionCreateParsedRequest = z.output<
   typeof OpenAiCheckpointPermissionCreateRequestSchema
 >;
 export type OpenAiOrganizationUsageQuery = z.infer<

@@ -336,24 +336,45 @@ export type AnthropicThinkingConfig = z.infer<
   typeof AnthropicThinkingConfigSchema
 >;
 export type AnthropicMetadata = z.infer<typeof AnthropicMetadataSchema>;
-export type AnthropicMessageRequest = z.infer<
+export type AnthropicMessageRequest = z.input<
   typeof AnthropicMessageRequestSchema
 >;
-export type AnthropicCountTokensRequest = z.infer<
+export type AnthropicMessageParsedRequest = z.output<
+  typeof AnthropicMessageRequestSchema
+>;
+export type AnthropicCountTokensRequest = z.input<
   typeof AnthropicCountTokensRequestSchema
 >;
-export type AnthropicBatchRequest = z.infer<typeof AnthropicBatchRequestSchema>;
-export type AnthropicBatchCreateRequest = z.infer<
+export type AnthropicCountTokensParsedRequest = z.output<
+  typeof AnthropicCountTokensRequestSchema
+>;
+export type AnthropicBatchRequest = z.input<typeof AnthropicBatchRequestSchema>;
+export type AnthropicBatchParsedRequest = z.output<
+  typeof AnthropicBatchRequestSchema
+>;
+export type AnthropicBatchCreateRequest = z.input<
   typeof AnthropicBatchCreateRequestSchema
 >;
-export type AnthropicFileUploadRequest = z.infer<
+export type AnthropicBatchCreateParsedRequest = z.output<
+  typeof AnthropicBatchCreateRequestSchema
+>;
+export type AnthropicFileUploadRequest = z.input<
+  typeof AnthropicFileUploadRequestSchema
+>;
+export type AnthropicFileUploadParsedRequest = z.output<
   typeof AnthropicFileUploadRequestSchema
 >;
 export type AnthropicSkillFile = z.infer<typeof AnthropicSkillFileSchema>;
-export type AnthropicSkillsCreateRequest = z.infer<
+export type AnthropicSkillsCreateRequest = z.input<
   typeof AnthropicSkillsCreateRequestSchema
 >;
-export type AnthropicSkillVersionsCreateRequest = z.infer<
+export type AnthropicSkillsCreateParsedRequest = z.output<
+  typeof AnthropicSkillsCreateRequestSchema
+>;
+export type AnthropicSkillVersionsCreateRequest = z.input<
+  typeof AnthropicSkillVersionsCreateRequestSchema
+>;
+export type AnthropicSkillVersionsCreateParsedRequest = z.output<
   typeof AnthropicSkillVersionsCreateRequestSchema
 >;
 export type AnthropicOptions = z.infer<typeof AnthropicOptionsSchema>;

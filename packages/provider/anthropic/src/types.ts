@@ -32,13 +32,20 @@ export type {
   AnthropicThinkingConfig,
   AnthropicMetadata,
   AnthropicMessageRequest,
+  AnthropicMessageParsedRequest,
   AnthropicCountTokensRequest,
+  AnthropicCountTokensParsedRequest,
   AnthropicBatchRequest,
+  AnthropicBatchParsedRequest,
   AnthropicBatchCreateRequest,
+  AnthropicBatchCreateParsedRequest,
   AnthropicFileUploadRequest,
+  AnthropicFileUploadParsedRequest,
   AnthropicSkillFile,
   AnthropicSkillsCreateRequest,
+  AnthropicSkillsCreateParsedRequest,
   AnthropicSkillVersionsCreateRequest,
+  AnthropicSkillVersionsCreateParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------

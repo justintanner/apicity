@@ -28,14 +28,17 @@ export { sseToIterable } from "./sse";
 
 export type {
   ChatRequest,
+  ChatParsedRequest,
   ChatMessage,
   AnthropicMessage,
   AnthropicStreamEvent,
   AnthropicContentBlock,
   EmbeddingRequest,
+  EmbeddingParsedRequest,
   EmbeddingResponse,
   EmbeddingData,
   CountTokensRequest,
+  CountTokensParsedRequest,
   CountTokensResponse,
   Provider,
   KimiCodingOptions,

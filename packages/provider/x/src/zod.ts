@@ -60,7 +60,10 @@ export const XOAuthTokenRequestSchema = z.discriminatedUnion("grant_type", [
   }),
 ]);
 
-export type XOAuthTokenRequest = z.infer<typeof XOAuthTokenRequestSchema>;
+export type XOAuthTokenRequest = z.input<typeof XOAuthTokenRequestSchema>;
+export type XOAuthTokenParsedRequest = z.output<
+  typeof XOAuthTokenRequestSchema
+>;
 
 // ---------------------------------------------------------------------------
 // POST /2/media/upload/initialize
@@ -106,7 +109,10 @@ export const XMediaUploadInitializeRequestSchema = z.object({
   additional_owners: z.array(XIdStringSchema).optional(),
 });
 
-export type XMediaUploadInitializeRequest = z.infer<
+export type XMediaUploadInitializeRequest = z.input<
+  typeof XMediaUploadInitializeRequestSchema
+>;
+export type XMediaUploadInitializeParsedRequest = z.output<
   typeof XMediaUploadInitializeRequestSchema
 >;
 
@@ -123,7 +129,10 @@ export const XMediaUploadAppendRequestSchema = z.object({
   segment_index: z.number().int().min(0).max(999),
 });
 
-export type XMediaUploadAppendRequest = z.infer<
+export type XMediaUploadAppendRequest = z.input<
+  typeof XMediaUploadAppendRequestSchema
+>;
+export type XMediaUploadAppendParsedRequest = z.output<
   typeof XMediaUploadAppendRequestSchema
 >;
 
@@ -297,4 +306,7 @@ export const XTweetCreateRequestSchema = z.object({
   share_with_followers: z.boolean().optional(),
 });
 
-export type XTweetCreateRequest = z.infer<typeof XTweetCreateRequestSchema>;
+export type XTweetCreateRequest = z.input<typeof XTweetCreateRequestSchema>;
+export type XTweetCreateParsedRequest = z.output<
+  typeof XTweetCreateRequestSchema
+>;

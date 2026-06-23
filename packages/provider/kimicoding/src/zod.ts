@@ -126,7 +126,12 @@ export type ContentBlock = z.infer<typeof ContentBlockSchema>;
 export type MessageContent = string | ContentBlock[];
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 export type Role = ChatMessage["role"];
-export type ChatRequest = z.infer<typeof ChatRequestSchema>;
-export type EmbeddingRequest = z.infer<typeof EmbeddingRequestSchema>;
-export type CountTokensRequest = z.infer<typeof CountTokensRequestSchema>;
+export type ChatRequest = z.input<typeof ChatRequestSchema>;
+export type ChatParsedRequest = z.output<typeof ChatRequestSchema>;
+export type EmbeddingRequest = z.input<typeof EmbeddingRequestSchema>;
+export type EmbeddingParsedRequest = z.output<typeof EmbeddingRequestSchema>;
+export type CountTokensRequest = z.input<typeof CountTokensRequestSchema>;
+export type CountTokensParsedRequest = z.output<
+  typeof CountTokensRequestSchema
+>;
 export type KimiCodingOptions = z.infer<typeof KimiCodingOptionsSchema>;

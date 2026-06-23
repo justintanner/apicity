@@ -1190,6 +1190,7 @@ openf1	v1.laps	GET	https://api.openf1.org/v1/laps{query}	https://openf1.org/docs
 openf1	v1.position	GET	https://api.openf1.org/v1/position{query}	https://openf1.org/docs/#position
 openf1	v1.sessionResult	GET	https://api.openf1.org/v1/session_result{query}	https://openf1.org/docs/#session-result
 openf1	v1.sessions	GET	https://api.openf1.org/v1/sessions{query}	https://openf1.org/docs/#sessions
+openf1	v1.teamRadio	GET	https://api.openf1.org/v1/team_radio{query}	https://openf1.org/docs/#team-radio
 openf1	v1.weather	GET	https://api.openf1.org/v1/weather{query}	https://openf1.org/docs/#weather
 openf1	token	POST	https://api.openf1.org/token	https://openf1.org/auth.html
 youtube	channels.list	GET	https://www.googleapis.com/youtube/v3/channels{query}	https://developers.google.com/youtube/v3/docs/channels/list

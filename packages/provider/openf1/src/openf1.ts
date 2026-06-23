@@ -23,6 +23,9 @@ import type {
   OpenF1SessionRequest,
   OpenF1SessionResponse,
   OpenF1SessionsMethod,
+  OpenF1TeamRadioMethod,
+  OpenF1TeamRadioRequest,
+  OpenF1TeamRadioResponse,
   OpenF1TokenMethod,
   OpenF1TokenRequest,
   OpenF1TokenResponse,
@@ -37,6 +40,7 @@ import {
   OpenF1PositionRequestSchema,
   OpenF1SessionResultRequestSchema,
   OpenF1SessionRequestSchema,
+  OpenF1TeamRadioRequestSchema,
   OpenF1TokenRequestSchema,
   OpenF1WeatherRequestSchema,
 } from "./zod";
@@ -129,6 +133,14 @@ const SESSIONS_QUERY_FIELDS = [
   "session_type",
   "year",
 ] as const satisfies readonly (keyof OpenF1SessionRequest)[];
+
+const TEAM_RADIO_QUERY_FIELDS = [
+  "date",
+  "driver_number",
+  "meeting_key",
+  "recording_url",
+  "session_key",
+] as const satisfies readonly (keyof OpenF1TeamRadioRequest)[];
 
 const WEATHER_QUERY_FIELDS = [
   "air_temperature",
@@ -485,6 +497,25 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
     { schema: OpenF1SessionRequestSchema }
   ) as OpenF1SessionsMethod;
 
+  // GET https://api.openf1.org/v1/team_radio{query}
+  // Docs: https://openf1.org/docs/#team-radio
+  const teamRadio = Object.assign(
+    async (
+      req: OpenF1TeamRadioRequest = {},
+      signal?: AbortSignal
+    ): Promise<OpenF1TeamRadioResponse | string> => {
+      const query = buildQuery(req, TEAM_RADIO_QUERY_FIELDS);
+      if (req.csv === true) {
+        return makeGetRequest<string>(`/v1/team_radio${query}`, signal, "text");
+      }
+      return makeGetRequest<OpenF1TeamRadioResponse>(
+        `/v1/team_radio${query}`,
+        signal
+      );
+    },
+    { schema: OpenF1TeamRadioRequestSchema }
+  ) as OpenF1TeamRadioMethod;
+
   // GET https://api.openf1.org/v1/weather{query}
   // Docs: https://openf1.org/docs/#weather
   const weather = Object.assign(
@@ -513,6 +544,7 @@ export function createOpenF1(opts?: OpenF1Options): OpenF1Provider {
       position,
       sessionResult,
       sessions,
+      teamRadio,
       weather,
     },
   });

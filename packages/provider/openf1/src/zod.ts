@@ -31,6 +31,10 @@ import type {
   OpenF1SessionFilter,
   OpenF1SessionFilterField,
   OpenF1SessionRequest,
+  OpenF1TeamRadio,
+  OpenF1TeamRadioFilter,
+  OpenF1TeamRadioFilterField,
+  OpenF1TeamRadioRequest,
   OpenF1TokenProvider,
   OpenF1TokenRequest,
   OpenF1TokenResponse,
@@ -444,6 +448,43 @@ export const OpenF1SessionRequestSchema: z.ZodType<OpenF1SessionRequest> =
   });
 
 export const OpenF1SessionResponseSchema = z.array(OpenF1SessionSchema);
+
+export const OpenF1TeamRadioFilterFieldSchema: z.ZodType<OpenF1TeamRadioFilterField> =
+  z.enum([
+    "date",
+    "driver_number",
+    "meeting_key",
+    "recording_url",
+    "session_key",
+  ]);
+
+export const OpenF1TeamRadioFilterSchema: z.ZodType<OpenF1TeamRadioFilter> =
+  openF1ComparisonFilterObject.extend({
+    field: OpenF1TeamRadioFilterFieldSchema,
+  });
+
+export const OpenF1TeamRadioSchema: z.ZodType<OpenF1TeamRadio> = z
+  .object({
+    date: z.string(),
+    driver_number: z.number(),
+    meeting_key: z.number(),
+    recording_url: z.string(),
+    session_key: z.number(),
+  })
+  .catchall(z.unknown());
+
+export const OpenF1TeamRadioRequestSchema: z.ZodType<OpenF1TeamRadioRequest> =
+  z.object({
+    date: stringFilterValue.optional(),
+    driver_number: numberFilterValue.optional(),
+    meeting_key: latestKeyFilterValue.optional(),
+    recording_url: stringFilterValue.optional(),
+    session_key: latestKeyFilterValue.optional(),
+    filters: z.array(OpenF1TeamRadioFilterSchema).optional(),
+    csv: z.boolean().optional(),
+  });
+
+export const OpenF1TeamRadioResponseSchema = z.array(OpenF1TeamRadioSchema);
 
 export const OpenF1WeatherFilterFieldSchema: z.ZodType<OpenF1WeatherFilterField> =
   z.enum([

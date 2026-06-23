@@ -91,7 +91,7 @@ const openf1 = createOpenF1({
 
 ## API Reference
 
-8 endpoints across 8 groups. Each method mirrors an upstream URL path.
+9 endpoints across 9 groups. Each method mirrors an upstream URL path.
 
 ### championshipDrivers
 
@@ -189,6 +189,23 @@ Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
 
 ```typescript
 const res = await openf1.v1.sessions({ /* ... */ });
+```
+
+Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)
+
+</details>
+
+### teamRadio
+
+<details>
+<summary><code>GET</code> <b><code>openf1.v1.teamRadio</code></b></summary>
+
+<code>GET https://api.openf1.org/v1/team_radio{query}</code>
+
+[Upstream docs ↗](https://openf1.org/docs/#team-radio)
+
+```typescript
+const res = await openf1.v1.teamRadio({ /* ... */ });
 ```
 
 Source: [`packages/provider/openf1/src/openf1.ts`](src/openf1.ts)

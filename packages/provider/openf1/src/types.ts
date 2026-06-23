@@ -456,6 +456,42 @@ export type OpenF1SessionResultMethod = OpenF1Method<
   OpenF1SessionResultResponse
 >;
 
+export interface OpenF1TeamRadio {
+  date: string;
+  driver_number: number;
+  meeting_key: number;
+  recording_url: string;
+  session_key: number;
+  [key: string]: unknown;
+}
+
+export type OpenF1TeamRadioResponse = OpenF1TeamRadio[];
+
+export type OpenF1TeamRadioFilterField =
+  | "date"
+  | "driver_number"
+  | "meeting_key"
+  | "recording_url"
+  | "session_key";
+
+export type OpenF1TeamRadioFilter =
+  OpenF1ComparisonFilter<OpenF1TeamRadioFilterField>;
+
+export interface OpenF1TeamRadioRequest {
+  date?: OpenF1FilterValue<string>;
+  driver_number?: OpenF1FilterValue<number>;
+  meeting_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  recording_url?: OpenF1FilterValue<string>;
+  session_key?: OpenF1FilterValue<OpenF1LatestKey>;
+  filters?: readonly OpenF1TeamRadioFilter[];
+  csv?: boolean;
+}
+
+export type OpenF1TeamRadioMethod = OpenF1Method<
+  OpenF1TeamRadioRequest,
+  OpenF1TeamRadioResponse
+>;
+
 export interface OpenF1V1Namespace {
   championshipDrivers: OpenF1ChampionshipDriversMethod;
   laps: OpenF1LapsMethod;
@@ -463,6 +499,7 @@ export interface OpenF1V1Namespace {
   position: OpenF1PositionMethod;
   sessionResult: OpenF1SessionResultMethod;
   sessions: OpenF1SessionsMethod;
+  teamRadio: OpenF1TeamRadioMethod;
   weather: OpenF1WeatherMethod;
 }
 

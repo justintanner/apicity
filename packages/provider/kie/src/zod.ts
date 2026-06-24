@@ -208,6 +208,126 @@ export const KieGemini35FlashStreamGenerateContentRequestSchema = z
   })
   .passthrough();
 
+export const KieGemini31ProMessageRoleSchema = z.enum([
+  "developer",
+  "system",
+  "user",
+  "assistant",
+  "tool",
+]);
+
+export const KieGemini31ProContentItemTypeSchema = z.enum([
+  "text",
+  "image_url",
+]);
+
+export const KieGemini31ProReasoningEffortSchema = z.enum(["low", "high"]);
+
+export const KieGemini31ProToolTypeSchema = z.enum(["function"]);
+
+export const KieGemini31ProToolFunctionNameSchema = z.enum(["googleSearch"]);
+
+export const KieGemini31ProTextContentItemSchema = z
+  .object({
+    type: z.literal("text"),
+    text: z.string(),
+  })
+  .strict();
+
+export const KieGemini31ProMediaContentItemSchema = z
+  .object({
+    type: z.literal("image_url"),
+    image_url: z.object({ url: z.string().url() }).strict(),
+  })
+  .strict();
+
+export const KieGemini31ProContentItemSchema = z.discriminatedUnion("type", [
+  KieGemini31ProTextContentItemSchema,
+  KieGemini31ProMediaContentItemSchema,
+]);
+
+export const KieGemini31ProMessageSchema = z
+  .object({
+    role: KieGemini31ProMessageRoleSchema,
+    content: z.array(KieGemini31ProContentItemSchema).min(1),
+  })
+  .passthrough();
+
+export const KieGemini31ProToolFunctionParametersSchema = z
+  .object({
+    type: z.literal("object"),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+export const KieGemini31ProToolFunctionSchema = z
+  .object({
+    name: KieGemini31ProToolFunctionNameSchema,
+    description: z.string().optional(),
+    parameters: KieGemini31ProToolFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini31ProToolSchema = z
+  .object({
+    type: KieGemini31ProToolTypeSchema,
+    function: KieGemini31ProToolFunctionSchema,
+  })
+  .strict();
+
+export const KieGemini31ProChatCompletionsRequestSchema = z
+  .object({
+    model: z.literal("gemini-3.1-pro").optional(),
+    messages: z.array(KieGemini31ProMessageSchema).min(1),
+    stream: z.boolean().default(true),
+    tools: z.array(KieGemini31ProToolSchema).min(0).optional(),
+    include_thoughts: z.boolean().default(true),
+    reasoning_effort: KieGemini31ProReasoningEffortSchema.default("high"),
+  })
+  .passthrough();
+
+export type KieGemini31ProMessageRole = z.infer<
+  typeof KieGemini31ProMessageRoleSchema
+>;
+export type KieGemini31ProContentItemType = z.infer<
+  typeof KieGemini31ProContentItemTypeSchema
+>;
+export type KieGemini31ProReasoningEffort = z.infer<
+  typeof KieGemini31ProReasoningEffortSchema
+>;
+export type KieGemini31ProToolType = z.infer<
+  typeof KieGemini31ProToolTypeSchema
+>;
+export type KieGemini31ProToolFunctionName = z.infer<
+  typeof KieGemini31ProToolFunctionNameSchema
+>;
+export type KieGemini31ProTextContentItem = z.infer<
+  typeof KieGemini31ProTextContentItemSchema
+>;
+export type KieGemini31ProMediaContentItem = z.infer<
+  typeof KieGemini31ProMediaContentItemSchema
+>;
+export type KieGemini31ProContentItem = z.infer<
+  typeof KieGemini31ProContentItemSchema
+>;
+export type KieGemini31ProMessage = z.infer<typeof KieGemini31ProMessageSchema>;
+export type KieGemini31ProToolFunctionParameters = z.infer<
+  typeof KieGemini31ProToolFunctionParametersSchema
+>;
+export type KieGemini31ProToolFunction = z.infer<
+  typeof KieGemini31ProToolFunctionSchema
+>;
+export type KieGemini31ProTool = z.infer<typeof KieGemini31ProToolSchema>;
+export type KieGemini31ProChatCompletionsRequest = z.input<
+  typeof KieGemini31ProChatCompletionsRequestSchema
+>;
+export type KieGemini31ProChatCompletionsRequestInput =
+  KieGemini31ProChatCompletionsRequest;
+export type KieGemini31ProChatCompletionsParsedRequest = z.output<
+  typeof KieGemini31ProChatCompletionsRequestSchema
+>;
+
 export const KlingDurationSchema = z.enum([
   "3",
   "4",

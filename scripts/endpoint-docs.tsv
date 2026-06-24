@@ -694,6 +694,7 @@ kie	api.v1.vocalRemoval.generate	POST	https://api.kie.ai/api/v1/vocal-removal/ge
 kie	api.v1.wav.generate	POST	https://api.kie.ai/api/v1/wav/generate
 kie	claude.v1.messages	POST	https://api.kie.ai/claude/v1/messages	https://docs.kie.ai/market/claude/claude-sonnet-4-6
 kie	codex.v1.responses	POST	https://api.kie.ai/codex/v1/responses	https://docs.kie.ai/market/chat/gpt-5-5
+kie	gemini31Pro.v1.chat.completions	POST	https://api.kie.ai/gemini-3.1-pro/v1/chat/completions	https://docs.kie.ai/market/gemini/gemini-3-1-pro
 kie	gemini.v1.models.gemini35Flash.streamGenerateContent	POST	https://api.kie.ai/gemini/v1/models/gemini-3-5-flash:streamGenerateContent	https://docs.kie.ai/market/gemini/gemini-3-5-flash
 kimicoding	coding.v1.countTokens	POST	https://api.kimi.com/coding/v1/tokens/count	https://platform.moonshot.ai/docs
 kimicoding	coding.v1.embeddings	POST	https://api.kimi.com/coding/v1/embeddings	https://platform.moonshot.ai/docs

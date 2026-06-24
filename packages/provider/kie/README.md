@@ -385,7 +385,7 @@ console.log(result.resultUrls[0]);
 
 ## API Reference
 
-29 endpoints across 18 groups. Each method mirrors an upstream URL path.
+30 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -520,6 +520,23 @@ const res = await kie.gemini.post.v1.models.gemini35Flash.streamGenerateContent(
 ```
 
 Source: [`packages/provider/kie/src/gemini.ts`](src/gemini.ts)
+
+</details>
+
+### gemini31Pro
+
+<details>
+<summary><code>POST</code> <b><code>kie.gemini31Pro.post.v1.chat.completions</code></b></summary>
+
+<code>POST https://api.kie.ai/gemini-3.1-pro/v1/chat/completions</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini/gemini-3-1-pro)
+
+```typescript
+const res = await kie.gemini31Pro.post.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/gemini-31-pro.ts`](src/gemini-31-pro.ts)
 
 </details>
 

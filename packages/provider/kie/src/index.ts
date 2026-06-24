@@ -15,6 +15,19 @@ export {
   KieGeminiGenerationConfigSchema,
   KieGeminiGoogleSearchSchema,
   KieGeminiGoogleSearchToolSchema,
+  KieGemini31ProChatCompletionsRequestSchema,
+  KieGemini31ProContentItemSchema,
+  KieGemini31ProContentItemTypeSchema,
+  KieGemini31ProMediaContentItemSchema,
+  KieGemini31ProMessageRoleSchema,
+  KieGemini31ProMessageSchema,
+  KieGemini31ProReasoningEffortSchema,
+  KieGemini31ProTextContentItemSchema,
+  KieGemini31ProToolFunctionNameSchema,
+  KieGemini31ProToolFunctionParametersSchema,
+  KieGemini31ProToolFunctionSchema,
+  KieGemini31ProToolSchema,
+  KieGemini31ProToolTypeSchema,
   KieGeminiInlineDataSchema,
   KieGeminiPartSchema,
   KieGeminiRoleSchema,
@@ -78,6 +91,7 @@ export { createChatProvider } from "./chat";
 export { createClaudeProvider } from "./claude";
 export { createGeminiProvider } from "./gemini";
 export { createResponsesProvider } from "./responses";
+export { createGemini31ProProvider } from "./gemini-31-pro";
 
 // Export SSE utility
 export { sseToIterable } from "./sse";
@@ -429,6 +443,21 @@ export type {
   SunoGenerateRequestInput,
   KieChatRequestInput,
   KieClaudeRequestInput,
+  KieGemini31ProChatCompletionsRequest,
+  KieGemini31ProChatCompletionsRequestInput,
+  KieGemini31ProChatCompletionsParsedRequest,
+  KieGemini31ProContentItem,
+  KieGemini31ProContentItemType,
+  KieGemini31ProMediaContentItem,
+  KieGemini31ProMessage,
+  KieGemini31ProMessageRole,
+  KieGemini31ProReasoningEffort,
+  KieGemini31ProTextContentItem,
+  KieGemini31ProTool,
+  KieGemini31ProToolFunction,
+  KieGemini31ProToolFunctionName,
+  KieGemini31ProToolFunctionParameters,
+  KieGemini31ProToolType,
 } from "./zod";
 
 export type {
@@ -442,3 +471,15 @@ export type {
   KieGemini35FlashStreamGenerateContentResult,
   KieGeminiProvider,
 } from "./gemini";
+
+export type {
+  KieGemini31ProChatChoice,
+  KieGemini31ProChatCompletionChunk,
+  KieGemini31ProChatCompletionResponse,
+  KieGemini31ProChatCompletionsResult,
+  KieGemini31ProChatDelta,
+  KieGemini31ProChatMessage,
+  KieGemini31ProChatUsage,
+  KieGemini31ProCompletionTokensDetails,
+  KieGemini31ProProvider,
+} from "./gemini-31-pro";

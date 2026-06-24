@@ -454,6 +454,7 @@ export interface KieProvider {
   chat: import("./chat").KieChatProvider;
   claude: import("./claude").KieClaudeProvider["claude"];
   gemini: import("./gemini").KieGeminiProvider["gemini"];
+  gemini31Pro: import("./gemini-31-pro").KieGemini31ProProvider["gemini31Pro"];
 }
 
 // Error class

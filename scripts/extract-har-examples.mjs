@@ -37,6 +37,88 @@ const MODE = args.has("--check")
 const STRING_TRUNCATE_LIMIT = 256;
 
 const STATIC_EXAMPLES_BY_PROVIDER = {
+  openligadb: {
+    "GET getavailablegroups": {
+      source: "static:openligadb-public-catalog",
+      payload: { leagueShortcut: "bl1", leagueSeason: 2024 },
+    },
+    "GET getavailableleagues": {
+      source: "static:openligadb-public-catalog",
+      payload: {},
+    },
+    "GET getavailableleagues.bySeason": {
+      source: "static:openligadb-public-catalog",
+      payload: { season: 2024 },
+    },
+    "GET getavailablesports": {
+      source: "static:openligadb-public-catalog",
+      payload: {},
+    },
+    "GET getavailableteams": {
+      source: "static:openligadb-public-catalog",
+      payload: { leagueShortcut: "bl1", leagueSeason: 2024 },
+    },
+    "GET getbltable": {
+      source: "static:openligadb-standings",
+      payload: { leagueShortcut: "bl1", leagueSeason: 2024 },
+    },
+    "GET getcurrentgroup": {
+      source: "static:openligadb-public-catalog",
+      payload: { leagueShortcut: "bl1" },
+    },
+    "GET getgoalgetters": {
+      source: "static:openligadb-scorers",
+      payload: { leagueShortcut: "bl1", leagueSeason: 2024 },
+    },
+    "GET getgrouptable": {
+      source: "static:openligadb-standings",
+      payload: { leagueShortcut: "bl1", leagueSeason: 2024 },
+    },
+    "GET getlastchangedate": {
+      source: "static:openligadb-public-catalog",
+      payload: {
+        leagueShortcut: "bl1",
+        leagueSeason: 2024,
+        groupOrderId: 1,
+      },
+    },
+    "GET getmatchdata.byId": {
+      source: "static:openligadb-matchdata",
+      payload: { matchId: 68720 },
+    },
+    "GET getmatchdata.byLeagueSeason": {
+      source: "static:openligadb-matchdata",
+      payload: { leagueShortcut: "bl1", leagueSeason: 2024 },
+    },
+    "GET getmatchdata.byLeagueSeasonGroup": {
+      source: "static:openligadb-matchdata",
+      payload: {
+        leagueShortcut: "bl1",
+        leagueSeason: 2024,
+        groupOrderId: 1,
+      },
+    },
+    "GET getmatchdata.byLeagueSeasonTeam": {
+      source: "static:openligadb-matchdata",
+      payload: {
+        leagueShortcut: "bl1",
+        leagueSeason: 2024,
+        teamFilterstring: "Bayern",
+      },
+    },
+    "GET getmatchdata.byTeams": {
+      source: "static:openligadb-matchdata",
+      payload: { teamId1: 16, teamId2: 40 },
+    },
+    "GET getresultinfos": {
+      source: "static:openligadb-public-catalog",
+      payload: { leagueId: 4500 },
+    },
+    "GET swagger.v1.swaggerJson": {
+      source: "static:openligadb-openapi-document",
+      payload: {},
+    },
+  },
   thesportsdb: {
     "GET v1.allSports": {
       source: "static:thesportsdb-v1-free-catalog",

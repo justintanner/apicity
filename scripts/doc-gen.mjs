@@ -2942,6 +2942,24 @@ function renderOpenLigaDBDiscoveryGuide() {
   ].join("\n");
 }
 
+function renderOpenLigaDBOperationalNotes() {
+  return [
+    "## Errors And Scope",
+    "",
+    "- OpenLigaDB's documented public surface is read-only. This package",
+    "  exposes `GET` helpers only and never sends auth headers.",
+    "- The public upstream docs do not document pagination parameters,",
+    "  rate-limit headers, or credential requirements for these routes,",
+    "  so this provider does not add client-side helpers for them.",
+    "- Non-2xx responses throw `OpenLigaDBError` with `status` and `body`.",
+    "  JSON error bodies stay as parsed objects, while `text/plain` bodies",
+    "  are preserved as strings so missing-match messages are not lost.",
+    "- Empty success bodies resolve to `null`; endpoint helpers with schemas",
+    "  expose request validation through `.schema.safeParse(input)`.",
+    "",
+  ].join("\n");
+}
+
 // Providers whose options object uses a non-default auth field/env-var or
 // who don't re-export the shared middleware helpers. Anything not listed here
 // gets the default `apiKey` / `<PROVIDER>_API_KEY` / middleware-section.
@@ -3286,6 +3304,7 @@ async function generateReadme(providerDir, providerName, endpoints) {
 
   if (providerName === "openligadb") {
     sections.push(renderOpenLigaDBDiscoveryGuide());
+    sections.push(renderOpenLigaDBOperationalNotes());
   }
 
   if (providerName === "polymarket") {

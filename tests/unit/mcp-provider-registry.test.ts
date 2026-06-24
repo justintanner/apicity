@@ -121,6 +121,12 @@ describe("apicity-mcp provider registry", () => {
       restoreEnv("THESPORTSDB_API_KEY", previous);
     }
   });
+
+  it("resolves all OpenLigaDB endpoint rows without credentials", async () => {
+    const endpoints = await buildRegistry({ enabledProviders: ["openligadb"] });
+
+    expect(endpoints).toHaveLength(providerEndpointCount("openligadb"));
+  });
 });
 
 function restoreEnv(key: string, value: string | undefined): void {

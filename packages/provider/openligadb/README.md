@@ -105,6 +105,19 @@ if (league) {
 All path-parameter methods expose request schemas via `.schema`, for
 example `openligadb.getavailablegroups.schema.safeParse(input)`.
 
+## Errors And Scope
+
+- OpenLigaDB's documented public surface is read-only. This package
+  exposes `GET` helpers only and never sends auth headers.
+- The public upstream docs do not document pagination parameters,
+  rate-limit headers, or credential requirements for these routes,
+  so this provider does not add client-side helpers for them.
+- Non-2xx responses throw `OpenLigaDBError` with `status` and `body`.
+  JSON error bodies stay as parsed objects, while `text/plain` bodies
+  are preserved as strings so missing-match messages are not lost.
+- Empty success bodies resolve to `null`; endpoint helpers with schemas
+  expose request validation through `.schema.safeParse(input)`.
+
 ## API Reference
 
 17 endpoints across 12 groups. Each method mirrors an upstream URL path.

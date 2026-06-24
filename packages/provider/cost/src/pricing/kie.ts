@@ -102,6 +102,20 @@ const tieredResolutionVideo = (
   source: src(slug),
 });
 
+const happyHorse11Video = (slug: string): ModelPricing => ({
+  kind: "perUnit",
+  unit: "seconds",
+  units: seconds,
+  select: [
+    {
+      name: "resolution",
+      pick: (p) => asString(asObject(p.input)?.resolution) ?? "1080p",
+    },
+  ],
+  rates: { "720p": 0.165, "1080p": 0.22 },
+  source: { ...src(slug), asOf: "2026-06-24" },
+});
+
 export const kie: Record<string, ModelPricing> = {
   // veo3 / veo3_fast — flat per-second rate. Veo schema has no duration
   // field, so callers must pass duration as a top-level hint.
@@ -276,6 +290,20 @@ export const kie: Record<string, ModelPricing> = {
   "happyhorse/video-edit": tieredResolutionVideo(
     { "720p": 0.155, "1080p": 0.265 },
     "happyhorse/image-to-video"
+  ),
+
+  // happyhorse-1-1: 2 tiers by resolution. KIE lists 33 credits/s ($0.165)
+  // at 720p and 44 credits/s ($0.22) at 1080p. High-tier +10% bonus
+  // credit top-ups lower the effective credit price by about 10%, but this
+  // table stores list USD rates only.
+  "happyhorse-1-1/text-to-video": happyHorse11Video(
+    "happyhorse-1-1/text-to-video"
+  ),
+  "happyhorse-1-1/image-to-video": happyHorse11Video(
+    "happyhorse-1-1/image-to-video"
+  ),
+  "happyhorse-1-1/reference-to-video": happyHorse11Video(
+    "happyhorse-1-1/reference-to-video"
   ),
 
   // bytedance/seedance-2: 6 rates, resolution × videoInput (i2v when

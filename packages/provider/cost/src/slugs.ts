@@ -45,6 +45,9 @@ export const MODEL_SLUGS = {
     "happyhorse/image-to-video": "hh",
     "happyhorse/reference-to-video": "hh",
     "happyhorse/video-edit": "hh",
+    "happyhorse-1-1/text-to-video": "hh1p1",
+    "happyhorse-1-1/image-to-video": "hh1p1",
+    "happyhorse-1-1/reference-to-video": "hh1p1",
 
     // Video — Veo
     veo3: "veo3",
@@ -226,6 +229,9 @@ export const MODEL_DISPLAY = {
     "happyhorse/image-to-video": "HappyHorse",
     "happyhorse/reference-to-video": "HappyHorse",
     "happyhorse/video-edit": "HappyHorse Edit",
+    "happyhorse-1-1/text-to-video": "HappyHorse 1.1",
+    "happyhorse-1-1/image-to-video": "HappyHorse 1.1",
+    "happyhorse-1-1/reference-to-video": "HappyHorse 1.1",
 
     veo3: "Veo 3",
     veo3_fast: "Veo 3 Fast",

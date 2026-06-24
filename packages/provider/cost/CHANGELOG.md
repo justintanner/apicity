@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- KIE HappyHorse 1.1 bundled per-second pricing for text-to-video,
+  image-to-video, and reference-to-video modes.
+
 ## [0.1.0] - 2026-05-16
 
 ### Added

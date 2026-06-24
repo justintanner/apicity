@@ -472,6 +472,59 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.usd).toBeCloseTo(0.155 * 5, 6);
   });
 
+  it("kie happyhorse-1-1 video modes resolve 720p pricing", () => {
+    const c = createCost();
+    for (const model of [
+      "happyhorse-1-1/text-to-video",
+      "happyhorse-1-1/image-to-video",
+      "happyhorse-1-1/reference-to-video",
+    ]) {
+      const r = c.estimate({
+        provider: "kie",
+        payload: {
+          model,
+          input: {
+            prompt: "a horse running through an open field",
+            resolution: "720p",
+            duration: 6,
+          },
+        },
+      });
+
+      expect(r.source).toBe("per-unit-table");
+      expect(r.breakdown.unit).toBe("seconds");
+      expect(r.breakdown.units).toBe(6);
+      expect(r.breakdown.perUnitUsd).toBe(0.165);
+      expect(r.usd).toBeCloseTo(0.165 * 6, 6);
+      expect(r.rateAsOf).toBe("2026-06-24");
+    }
+  });
+
+  it("kie happyhorse-1-1 video modes resolve 1080p pricing", () => {
+    const c = createCost();
+    for (const model of [
+      "happyhorse-1-1/text-to-video",
+      "happyhorse-1-1/image-to-video",
+      "happyhorse-1-1/reference-to-video",
+    ]) {
+      const r = c.estimate({
+        provider: "kie",
+        payload: {
+          model,
+          input: {
+            prompt: "a horse running through an open field",
+            resolution: "1080p",
+            duration: 5,
+          },
+        },
+      });
+
+      expect(r.breakdown.perUnitUsd).toBe(0.22);
+      expect(r.usd).toBeCloseTo(0.22 * 5, 6);
+      expect(r.rateAsOf).toBe("2026-06-24");
+    }
+  });
+
   it("kie suno/generate via endpoint hint → $0.06/generation regardless of model version", () => {
     const c = createCost();
     const r = c.estimate({

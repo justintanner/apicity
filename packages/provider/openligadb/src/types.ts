@@ -203,6 +203,27 @@ export interface OpenLigaDBMatchByIdRequest {
   matchId: number;
 }
 
+export interface OpenLigaDBLeagueTeamRequest {
+  leagueId: number;
+  teamId: number;
+}
+
+export interface OpenLigaDBLeagueShortcutRequest {
+  leagueShortcut: string;
+}
+
+export interface OpenLigaDBTeamWindowRequest {
+  teamFilterstring: string;
+  weekCountPast: number;
+  weekCountFuture: number;
+}
+
+export interface OpenLigaDBTeamIdWindowRequest {
+  teamId: number;
+  weekCountPast: number;
+  weekCountFuture: number;
+}
+
 export type OpenLigaDBAvailableSportsResponse = OpenLigaDBSport[];
 
 export type OpenLigaDBAvailableLeaguesResponse = OpenLigaDBLeague[];
@@ -218,6 +239,26 @@ export type OpenLigaDBResultInfosResponse = OpenLigaDBResultInfo;
 export type OpenLigaDBAvailableTeamsResponse = OpenLigaDBTeam[];
 
 export type OpenLigaDBMatchByIdResponse = OpenLigaDBMatch;
+
+export type OpenLigaDBNextMatchByLeagueTeamRequest =
+  OpenLigaDBLeagueTeamRequest;
+
+export type OpenLigaDBNextMatchByLeagueTeamResponse = OpenLigaDBMatch;
+
+export type OpenLigaDBNextMatchByLeagueShortcutRequest =
+  OpenLigaDBLeagueShortcutRequest;
+
+export type OpenLigaDBNextMatchByLeagueShortcutResponse = OpenLigaDBMatch;
+
+export type OpenLigaDBLastMatchByLeagueShortcutRequest =
+  OpenLigaDBLeagueShortcutRequest;
+
+export type OpenLigaDBLastMatchByLeagueShortcutResponse = OpenLigaDBMatch;
+
+export type OpenLigaDBLastMatchByLeagueTeamRequest =
+  OpenLigaDBLeagueTeamRequest;
+
+export type OpenLigaDBLastMatchByLeagueTeamResponse = OpenLigaDBMatch;
 
 export type OpenLigaDBMatchesByLeagueSeasonRequest =
   OpenLigaDBLeagueSeasonRequest;
@@ -242,6 +283,14 @@ export interface OpenLigaDBMatchesByTeamsRequest {
 }
 
 export type OpenLigaDBMatchesByTeamsResponse = OpenLigaDBMatch[];
+
+export type OpenLigaDBMatchesByTeamRequest = OpenLigaDBTeamWindowRequest;
+
+export type OpenLigaDBMatchesByTeamResponse = OpenLigaDBMatch[];
+
+export type OpenLigaDBMatchesByTeamIdRequest = OpenLigaDBTeamIdWindowRequest;
+
+export type OpenLigaDBMatchesByTeamIdResponse = OpenLigaDBMatch[];
 
 export type OpenLigaDBBlTableResponse = OpenLigaDBBlTableTeam[];
 
@@ -317,6 +366,36 @@ export type OpenLigaDBMatchesByTeamsMethod = OpenLigaDBMethod<
   OpenLigaDBMatchesByTeamsResponse
 >;
 
+export type OpenLigaDBNextMatchByLeagueTeamMethod = OpenLigaDBMethod<
+  OpenLigaDBNextMatchByLeagueTeamRequest,
+  OpenLigaDBNextMatchByLeagueTeamResponse
+>;
+
+export type OpenLigaDBNextMatchByLeagueShortcutMethod = OpenLigaDBMethod<
+  OpenLigaDBNextMatchByLeagueShortcutRequest,
+  OpenLigaDBNextMatchByLeagueShortcutResponse
+>;
+
+export type OpenLigaDBLastMatchByLeagueShortcutMethod = OpenLigaDBMethod<
+  OpenLigaDBLastMatchByLeagueShortcutRequest,
+  OpenLigaDBLastMatchByLeagueShortcutResponse
+>;
+
+export type OpenLigaDBLastMatchByLeagueTeamMethod = OpenLigaDBMethod<
+  OpenLigaDBLastMatchByLeagueTeamRequest,
+  OpenLigaDBLastMatchByLeagueTeamResponse
+>;
+
+export type OpenLigaDBMatchesByTeamMethod = OpenLigaDBMethod<
+  OpenLigaDBMatchesByTeamRequest,
+  OpenLigaDBMatchesByTeamResponse
+>;
+
+export type OpenLigaDBMatchesByTeamIdMethod = OpenLigaDBMethod<
+  OpenLigaDBMatchesByTeamIdRequest,
+  OpenLigaDBMatchesByTeamIdResponse
+>;
+
 export type OpenLigaDBBlTableMethod = OpenLigaDBMethod<
   OpenLigaDBLeagueSeasonRequest,
   OpenLigaDBBlTableResponse
@@ -353,6 +432,12 @@ export interface OpenLigaDBProvider {
   getbltable: OpenLigaDBBlTableMethod;
   getgrouptable: OpenLigaDBBlTableMethod;
   getgoalgetters: OpenLigaDBGoalGettersMethod;
+  getnextmatchbyleagueteam: OpenLigaDBNextMatchByLeagueTeamMethod;
+  getnextmatchbyleagueshortcut: OpenLigaDBNextMatchByLeagueShortcutMethod;
+  getlastmatchbyleagueshortcut: OpenLigaDBLastMatchByLeagueShortcutMethod;
+  getlastmatchbyleagueteam: OpenLigaDBLastMatchByLeagueTeamMethod;
+  getmatchesbyteam: OpenLigaDBMatchesByTeamMethod;
+  getmatchesbyteamid: OpenLigaDBMatchesByTeamIdMethod;
   get: OpenLigaDBGetNamespace;
   getmatchdata: OpenLigaDBGetMatchdataNamespace;
 }

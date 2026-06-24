@@ -1184,6 +1184,12 @@ openligadb	getmatchdata.byLeagueSeason	GET	https://api.openligadb.de/getmatchdat
 openligadb	getmatchdata.byLeagueSeasonGroup	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{groupOrderId}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byLeagueSeasonTeam	GET	https://api.openligadb.de/getmatchdata/{leagueShortcut}/{leagueSeason}/{teamFilterstring}	https://api.openligadb.de/swagger/index.html
 openligadb	getmatchdata.byTeams	GET	https://api.openligadb.de/getmatchdata/{teamId1}/{teamId2}	https://api.openligadb.de/swagger/index.html
+openligadb	getnextmatchbyleagueteam	GET	https://api.openligadb.de/getnextmatchbyleagueteam/{leagueId}/{teamId}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getnextmatchbyleagueshortcut	GET	https://api.openligadb.de/getnextmatchbyleagueshortcut/{leagueShortcut}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getlastmatchbyleagueshortcut	GET	https://api.openligadb.de/getlastmatchbyleagueshortcut/{leagueShortcut}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getlastmatchbyleagueteam	GET	https://api.openligadb.de/getlastmatchbyleagueteam/{leagueId}/{teamId}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getmatchesbyteam	GET	https://api.openligadb.de/getmatchesbyteam/{teamFilterstring}/{weekCountPast}/{weekCountFuture}	https://api.openligadb.de/swagger/v1/swagger.json
+openligadb	getmatchesbyteamid	GET	https://api.openligadb.de/getmatchesbyteamid/{teamId}/{weekCountPast}/{weekCountFuture}	https://api.openligadb.de/swagger/v1/swagger.json
 openf1	v1.carData	GET	https://api.openf1.org/v1/car_data{query}	https://openf1.org/docs/#car-data
 openf1	v1.intervals	GET	https://api.openf1.org/v1/intervals{query}	https://openf1.org/docs/#intervals
 openf1	v1.drivers	GET	https://api.openf1.org/v1/drivers{query}	https://openf1.org/docs/#drivers

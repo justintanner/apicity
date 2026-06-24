@@ -7,14 +7,20 @@ import type {
   OpenLigaDBGoalGettersResponse,
   OpenLigaDBGroup,
   OpenLigaDBLastChangeDateRequest,
+  OpenLigaDBLastMatchByLeagueShortcutRequest,
+  OpenLigaDBLastMatchByLeagueTeamRequest,
   OpenLigaDBLeague,
   OpenLigaDBLeagueSeasonRequest,
   OpenLigaDBMatch,
   OpenLigaDBMatchByIdRequest,
+  OpenLigaDBMatchesByTeamIdRequest,
+  OpenLigaDBMatchesByTeamRequest,
   OpenLigaDBMatchesByLeagueSeasonGroupRequest,
   OpenLigaDBMatchesByLeagueSeasonRequest,
   OpenLigaDBMatchesByLeagueSeasonTeamRequest,
   OpenLigaDBMatchesByTeamsRequest,
+  OpenLigaDBNextMatchByLeagueShortcutRequest,
+  OpenLigaDBNextMatchByLeagueTeamRequest,
   OpenLigaDBOptions,
   OpenLigaDBPathSegment,
   OpenLigaDBProvider,
@@ -31,12 +37,18 @@ import type {
 import {
   OpenLigaDBCurrentGroupRequestSchema,
   OpenLigaDBLastChangeDateRequestSchema,
+  OpenLigaDBLastMatchByLeagueShortcutRequestSchema,
+  OpenLigaDBLastMatchByLeagueTeamRequestSchema,
   OpenLigaDBLeagueSeasonRequestSchema,
   OpenLigaDBMatchByIdRequestSchema,
+  OpenLigaDBMatchesByTeamIdRequestSchema,
+  OpenLigaDBMatchesByTeamRequestSchema,
   OpenLigaDBMatchesByLeagueSeasonGroupRequestSchema,
   OpenLigaDBMatchesByLeagueSeasonRequestSchema,
   OpenLigaDBMatchesByLeagueSeasonTeamRequestSchema,
   OpenLigaDBMatchesByTeamsRequestSchema,
+  OpenLigaDBNextMatchByLeagueShortcutRequestSchema,
+  OpenLigaDBNextMatchByLeagueTeamRequestSchema,
   OpenLigaDBResultInfosRequestSchema,
   OpenLigaDBSeasonRequestSchema,
 } from "./zod";
@@ -189,6 +201,112 @@ export function createOpenLigaDB(opts?: OpenLigaDBOptions): OpenLigaDBProvider {
       });
     },
     { schema: OpenLigaDBLeagueSeasonRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getnextmatchbyleagueteam/{leagueId}/{teamId}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getnextmatchbyleagueteam = Object.assign(
+    async (
+      req: OpenLigaDBNextMatchByLeagueTeamRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBMatch> => {
+      return request<OpenLigaDBMatch>({
+        method: "GET",
+        path: ["getnextmatchbyleagueteam", req.leagueId, req.teamId],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBNextMatchByLeagueTeamRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getnextmatchbyleagueshortcut/{leagueShortcut}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getnextmatchbyleagueshortcut = Object.assign(
+    async (
+      req: OpenLigaDBNextMatchByLeagueShortcutRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBMatch> => {
+      return request<OpenLigaDBMatch>({
+        method: "GET",
+        path: ["getnextmatchbyleagueshortcut", req.leagueShortcut],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBNextMatchByLeagueShortcutRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getlastmatchbyleagueshortcut/{leagueShortcut}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getlastmatchbyleagueshortcut = Object.assign(
+    async (
+      req: OpenLigaDBLastMatchByLeagueShortcutRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBMatch> => {
+      return request<OpenLigaDBMatch>({
+        method: "GET",
+        path: ["getlastmatchbyleagueshortcut", req.leagueShortcut],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLastMatchByLeagueShortcutRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getlastmatchbyleagueteam/{leagueId}/{teamId}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getlastmatchbyleagueteam = Object.assign(
+    async (
+      req: OpenLigaDBLastMatchByLeagueTeamRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBMatch> => {
+      return request<OpenLigaDBMatch>({
+        method: "GET",
+        path: ["getlastmatchbyleagueteam", req.leagueId, req.teamId],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBLastMatchByLeagueTeamRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getmatchesbyteam/{teamFilterstring}/{weekCountPast}/{weekCountFuture}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getmatchesbyteam = Object.assign(
+    async (
+      req: OpenLigaDBMatchesByTeamRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBMatch[]> => {
+      return request<OpenLigaDBMatch[]>({
+        method: "GET",
+        path: [
+          "getmatchesbyteam",
+          req.teamFilterstring,
+          req.weekCountPast,
+          req.weekCountFuture,
+        ],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBMatchesByTeamRequestSchema }
+  );
+
+  // GET https://api.openligadb.de/getmatchesbyteamid/{teamId}/{weekCountPast}/{weekCountFuture}
+  // Docs: https://api.openligadb.de/swagger/v1/swagger.json
+  const getmatchesbyteamid = Object.assign(
+    async (
+      req: OpenLigaDBMatchesByTeamIdRequest,
+      signal?: AbortSignal
+    ): Promise<OpenLigaDBMatch[]> => {
+      return request<OpenLigaDBMatch[]>({
+        method: "GET",
+        path: [
+          "getmatchesbyteamid",
+          req.teamId,
+          req.weekCountPast,
+          req.weekCountFuture,
+        ],
+        signal,
+      });
+    },
+    { schema: OpenLigaDBMatchesByTeamIdRequestSchema }
   );
 
   // sig-ok: OpenLigaDB getmatchdata overload split into typed callables
@@ -356,6 +474,12 @@ export function createOpenLigaDB(opts?: OpenLigaDBOptions): OpenLigaDBProvider {
     getbltable,
     getgrouptable,
     getgoalgetters,
+    getnextmatchbyleagueteam,
+    getnextmatchbyleagueshortcut,
+    getlastmatchbyleagueshortcut,
+    getlastmatchbyleagueteam,
+    getmatchesbyteam,
+    getmatchesbyteamid,
     get,
     getmatchdata: {
       byId,

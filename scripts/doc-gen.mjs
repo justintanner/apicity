@@ -181,6 +181,43 @@ function formatUsageSnippet(providerName, dotPath) {
   if (providerName === "openligadb" && dotPath === "getavailableteams") {
     return `const teams = await ${call}({ leagueShortcut: "bl1", leagueSeason: 2024 });`;
   }
+  if (
+    providerName === "openligadb" &&
+    (dotPath === "getnextmatchbyleagueteam" ||
+      dotPath === "getlastmatchbyleagueteam")
+  ) {
+    return [
+      `const match = await ${call}({`,
+      "  leagueId: 4500,",
+      "  teamId: 40,",
+      "});",
+    ].join("\n");
+  }
+  if (
+    providerName === "openligadb" &&
+    (dotPath === "getnextmatchbyleagueshortcut" ||
+      dotPath === "getlastmatchbyleagueshortcut")
+  ) {
+    return `const match = await ${call}({ leagueShortcut: "bl1" });`;
+  }
+  if (providerName === "openligadb" && dotPath === "getmatchesbyteam") {
+    return [
+      `const matches = await ${call}({`,
+      '  teamFilterstring: "Bayern",',
+      "  weekCountPast: 4,",
+      "  weekCountFuture: 2,",
+      "});",
+    ].join("\n");
+  }
+  if (providerName === "openligadb" && dotPath === "getmatchesbyteamid") {
+    return [
+      `const matches = await ${call}({`,
+      "  teamId: 40,",
+      "  weekCountPast: 4,",
+      "  weekCountFuture: 2,",
+      "});",
+    ].join("\n");
+  }
   if (providerName === "elevenlabs" && dotPath === "v1.textToSpeech") {
     return `const res = await ${call}("voice_id", { /* ... */ });`;
   }
@@ -2762,6 +2799,23 @@ function renderOpenLigaDBExample() {
     "",
     "The overloaded upstream `/getmatchdata` paths are exposed as explicit",
     "`by*` methods so team, group, season, and match-id routes cannot collide.",
+    "",
+    "## Next Match And Team Window Examples",
+    "",
+    "The next/last shortcuts return one match. Team windows return recent and",
+    "upcoming matches around today, controlled by past/future week counts:",
+    "",
+    "```typescript",
+    "const nextMatch = await openligadb.getnextmatchbyleagueshortcut({",
+    '  leagueShortcut: "bl1",',
+    "});",
+    "",
+    "const recentAndUpcoming = await openligadb.getmatchesbyteam({",
+    '  teamFilterstring: "Bayern",',
+    "  weekCountPast: 4,",
+    "  weekCountFuture: 2,",
+    "});",
+    "```",
     "",
     "## Standings And Scorers Examples",
     "",

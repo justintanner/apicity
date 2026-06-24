@@ -49,6 +49,23 @@ const season = await openligadb.getmatchdata.byLeagueSeason({
 The overloaded upstream `/getmatchdata` paths are exposed as explicit
 `by*` methods so team, group, season, and match-id routes cannot collide.
 
+## Next Match And Team Window Examples
+
+The next/last shortcuts return one match. Team windows return recent and
+upcoming matches around today, controlled by past/future week counts:
+
+```typescript
+const nextMatch = await openligadb.getnextmatchbyleagueshortcut({
+  leagueShortcut: "bl1",
+});
+
+const recentAndUpcoming = await openligadb.getmatchesbyteam({
+  teamFilterstring: "Bayern",
+  weekCountPast: 4,
+  weekCountFuture: 2,
+});
+```
+
 ## Standings And Scorers Examples
 
 League standings, group tables, and top scorers share the same
@@ -120,7 +137,7 @@ example `openligadb.getavailablegroups.schema.safeParse(input)`.
 
 ## API Reference
 
-17 endpoints across 12 groups. Each method mirrors an upstream URL path.
+23 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### getavailablegroups
 
@@ -303,6 +320,43 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 </details>
 
+### getlastmatchbyleagueshortcut
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getlastmatchbyleagueshortcut</code></b></summary>
+
+<code>GET https://api.openligadb.de/getlastmatchbyleagueshortcut/{leagueShortcut}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const match = await openligadb.getlastmatchbyleagueshortcut({ leagueShortcut: "bl1" });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getlastmatchbyleagueteam
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getlastmatchbyleagueteam</code></b></summary>
+
+<code>GET https://api.openligadb.de/getlastmatchbyleagueteam/{leagueId}/{teamId}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const match = await openligadb.getlastmatchbyleagueteam({
+  leagueId: 4500,
+  teamId: 40,
+});
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
 ### getmatchdata
 
 <details>
@@ -385,6 +439,85 @@ Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
 
 ```typescript
 const res = await openligadb.getmatchdata.byTeams({ teamId1: 16, teamId2: 40 });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getmatchesbyteam
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getmatchesbyteam</code></b></summary>
+
+<code>GET https://api.openligadb.de/getmatchesbyteam/{teamFilterstring}/{weekCountPast}/{weekCountFuture}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const matches = await openligadb.getmatchesbyteam({
+  teamFilterstring: "Bayern",
+  weekCountPast: 4,
+  weekCountFuture: 2,
+});
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getmatchesbyteamid
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getmatchesbyteamid</code></b></summary>
+
+<code>GET https://api.openligadb.de/getmatchesbyteamid/{teamId}/{weekCountPast}/{weekCountFuture}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const matches = await openligadb.getmatchesbyteamid({
+  teamId: 40,
+  weekCountPast: 4,
+  weekCountFuture: 2,
+});
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getnextmatchbyleagueshortcut
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getnextmatchbyleagueshortcut</code></b></summary>
+
+<code>GET https://api.openligadb.de/getnextmatchbyleagueshortcut/{leagueShortcut}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const match = await openligadb.getnextmatchbyleagueshortcut({ leagueShortcut: "bl1" });
+```
+
+Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)
+
+</details>
+
+### getnextmatchbyleagueteam
+
+<details>
+<summary><code>GET</code> <b><code>openligadb.getnextmatchbyleagueteam</code></b></summary>
+
+<code>GET https://api.openligadb.de/getnextmatchbyleagueteam/{leagueId}/{teamId}</code>
+
+[Upstream docs ↗](https://api.openligadb.de/swagger/v1/swagger.json)
+
+```typescript
+const match = await openligadb.getnextmatchbyleagueteam({
+  leagueId: 4500,
+  teamId: 40,
+});
 ```
 
 Source: [`packages/provider/openligadb/src/openligadb.ts`](src/openligadb.ts)

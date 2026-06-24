@@ -9,15 +9,23 @@ import type {
   OpenLigaDBGroup,
   OpenLigaDBLastChangeDateRequest,
   OpenLigaDBLeague,
+  OpenLigaDBLeagueShortcutRequest,
   OpenLigaDBLeagueSeasonRequest,
+  OpenLigaDBLeagueTeamRequest,
+  OpenLigaDBLastMatchByLeagueShortcutRequest,
+  OpenLigaDBLastMatchByLeagueTeamRequest,
   OpenLigaDBLocation,
   OpenLigaDBMatch,
   OpenLigaDBMatchByIdRequest,
+  OpenLigaDBMatchesByTeamIdRequest,
+  OpenLigaDBMatchesByTeamRequest,
   OpenLigaDBMatchResult,
   OpenLigaDBMatchesByLeagueSeasonGroupRequest,
   OpenLigaDBMatchesByLeagueSeasonRequest,
   OpenLigaDBMatchesByLeagueSeasonTeamRequest,
   OpenLigaDBMatchesByTeamsRequest,
+  OpenLigaDBNextMatchByLeagueShortcutRequest,
+  OpenLigaDBNextMatchByLeagueTeamRequest,
   OpenLigaDBOptions,
   OpenLigaDBResultInfo,
   OpenLigaDBResultInfosRequest,
@@ -190,6 +198,33 @@ export const OpenLigaDBMatchByIdRequestSchema: z.ZodType<OpenLigaDBMatchByIdRequ
     matchId: intPathParam,
   });
 
+const openLigaDBLeagueTeamRequestObject = z.object({
+  leagueId: intPathParam,
+  teamId: intPathParam,
+});
+
+export const OpenLigaDBLeagueTeamRequestSchema: z.ZodType<OpenLigaDBLeagueTeamRequest> =
+  openLigaDBLeagueTeamRequestObject;
+
+export const OpenLigaDBNextMatchByLeagueTeamRequestSchema: z.ZodType<OpenLigaDBNextMatchByLeagueTeamRequest> =
+  openLigaDBLeagueTeamRequestObject;
+
+const openLigaDBLeagueShortcutRequestObject = z.object({
+  leagueShortcut: nonEmptyPathString,
+});
+
+export const OpenLigaDBLeagueShortcutRequestSchema: z.ZodType<OpenLigaDBLeagueShortcutRequest> =
+  openLigaDBLeagueShortcutRequestObject;
+
+export const OpenLigaDBNextMatchByLeagueShortcutRequestSchema: z.ZodType<OpenLigaDBNextMatchByLeagueShortcutRequest> =
+  openLigaDBLeagueShortcutRequestObject;
+
+export const OpenLigaDBLastMatchByLeagueShortcutRequestSchema: z.ZodType<OpenLigaDBLastMatchByLeagueShortcutRequest> =
+  openLigaDBLeagueShortcutRequestObject;
+
+export const OpenLigaDBLastMatchByLeagueTeamRequestSchema: z.ZodType<OpenLigaDBLastMatchByLeagueTeamRequest> =
+  openLigaDBLeagueTeamRequestObject;
+
 export const OpenLigaDBMatchesByLeagueSeasonRequestSchema: z.ZodType<OpenLigaDBMatchesByLeagueSeasonRequest> =
   openLigaDBLeagueSeasonRequestObject;
 
@@ -207,6 +242,21 @@ export const OpenLigaDBMatchesByTeamsRequestSchema: z.ZodType<OpenLigaDBMatchesB
   z.object({
     teamId1: intPathParam,
     teamId2: intPathParam,
+  });
+
+const openLigaDBWeekWindowRequestObject = z.object({
+  weekCountPast: intPathParam,
+  weekCountFuture: intPathParam,
+});
+
+export const OpenLigaDBMatchesByTeamRequestSchema: z.ZodType<OpenLigaDBMatchesByTeamRequest> =
+  openLigaDBWeekWindowRequestObject.extend({
+    teamFilterstring: nonEmptyPathString,
+  });
+
+export const OpenLigaDBMatchesByTeamIdRequestSchema: z.ZodType<OpenLigaDBMatchesByTeamIdRequest> =
+  openLigaDBWeekWindowRequestObject.extend({
+    teamId: intPathParam,
   });
 
 export const OpenLigaDBBlTableResponseSchema: z.ZodType<OpenLigaDBBlTableResponse> =

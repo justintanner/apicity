@@ -28,6 +28,7 @@ export const KieMediaModelSchema = z.enum([
   "qwen2/image-edit",
   "bytedance/seedance-2-fast",
   "bytedance/seedance-2",
+  "bytedance/seedance-2-mini",
   "wan/2-7-image-to-video",
   "wan/2-7-text-to-video",
   "wan/2-7-r2v",
@@ -248,6 +249,24 @@ export const Omnihuman15OutputResolutionSchema = z.enum(["720", "1080"]);
 export const VolcengineVideoToVideoLipSyncModeSchema = z.enum([
   "lite",
   "basic",
+]);
+
+export const Seedance2MiniResolutionSchema = z.enum(["480p", "720p"]);
+
+export const Seedance2MiniAspectRatioSchema = z.enum([
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+  "21:9",
+  "adaptive",
+]);
+
+export const Seedance2MiniTaskStateSchema = z.enum([
+  "waiting",
+  "success",
+  "fail",
 ]);
 
 // ---------------------------------------------------------------------------
@@ -593,6 +612,25 @@ export const Seedance2RequestSchema = Seedance2RequestObjectSchema.refine(
     path: ["input", "reference_image_urls"],
   }
 );
+
+export const Seedance2MiniInputSchema = z.object({
+  prompt: z.string().max(20000).optional(),
+  reference_image_urls: z.array(z.string().url()).default([]),
+  reference_video_urls: z.array(z.string().url()).max(3).default([]),
+  reference_audio_urls: z.array(z.string().url()).max(3).default([]),
+  generate_audio: z.boolean().default(true),
+  resolution: Seedance2MiniResolutionSchema.default("720p"),
+  aspect_ratio: Seedance2MiniAspectRatioSchema.default("16:9"),
+  duration: z.number().int().min(4).max(15).default(15),
+  web_search: z.boolean().default(false),
+  nsfw_checker: z.boolean().default(true),
+});
+
+export const Seedance2MiniRequestSchema = z.object({
+  model: z.literal("bytedance/seedance-2-mini"),
+  callBackUrl: z.string().url().optional(),
+  input: Seedance2MiniInputSchema,
+});
 
 export const NanoBanana2RequestSchema = z.object({
   model: z.literal("nano-banana-2"),
@@ -1151,6 +1189,48 @@ export const Wan27TaskResultJsonSchema = z.object({
 export const Wan27VideoResultSchema = Wan27TaskResultJsonSchema;
 export const Wan27ImageResultSchema = Wan27TaskResultJsonSchema;
 
+export const Seedance2MiniTaskResultJsonSchema = z
+  .object({
+    resultUrls: z.array(z.string().url()).optional(),
+    resultObject: z.record(z.string(), z.unknown()).optional(),
+  })
+  .refine((v) => v.resultUrls !== undefined || v.resultObject !== undefined, {
+    message: "resultJson must include resultUrls or resultObject",
+  });
+
+export const Seedance2MiniRecordInfoDataSchema = z.object({
+  taskId: z.string().min(1),
+  model: z.literal("bytedance/seedance-2-mini"),
+  state: Seedance2MiniTaskStateSchema,
+  param: z.string().min(1),
+  resultJson: z.string().optional(),
+  failCode: z.string().nullable(),
+  failMsg: z.string().nullable(),
+  costTime: z.number().int().nullable(),
+  completeTime: z.number().int().nullable(),
+  createTime: z.number().int(),
+});
+
+export const Seedance2MiniRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: Seedance2MiniRecordInfoDataSchema.optional(),
+});
+
+export const RecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+export const TaskResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: z
+    .object({
+      taskId: z.string().min(1),
+    })
+    .optional(),
+});
+
 // ---------------------------------------------------------------------------
 // Upload schemas
 // ---------------------------------------------------------------------------
@@ -1402,6 +1482,7 @@ export const MediaGenerationRequestSchema = z.union([
   Qwen2ImageEditRequestSchema,
   Seedance2FastRequestSchema,
   Seedance2RequestSchema,
+  Seedance2MiniRequestSchema,
   Wan27ImageToVideoRequestSchema,
   Wan27TextToVideoRequestSchema,
   Wan27RefToVideoRequestSchema,
@@ -1498,6 +1579,15 @@ export type Omnihuman15OutputResolution = z.infer<
 export type VolcengineVideoToVideoLipSyncMode = z.infer<
   typeof VolcengineVideoToVideoLipSyncModeSchema
 >;
+export type Seedance2MiniResolution = z.infer<
+  typeof Seedance2MiniResolutionSchema
+>;
+export type Seedance2MiniAspectRatio = z.infer<
+  typeof Seedance2MiniAspectRatioSchema
+>;
+export type Seedance2MiniTaskState = z.infer<
+  typeof Seedance2MiniTaskStateSchema
+>;
 
 export type KlingElement = z.infer<typeof KlingElementSchema>;
 export type MultiShotPrompt = z.infer<typeof MultiShotPromptSchema>;
@@ -1589,6 +1679,11 @@ export type Seedance2FastParsedRequest = z.output<
 export type Seedance2Input = z.infer<typeof Seedance2InputSchema>;
 export type Seedance2Request = z.input<typeof Seedance2RequestSchema>;
 export type Seedance2ParsedRequest = z.output<typeof Seedance2RequestSchema>;
+export type Seedance2MiniInput = z.infer<typeof Seedance2MiniInputSchema>;
+export type Seedance2MiniRequest = z.input<typeof Seedance2MiniRequestSchema>;
+export type Seedance2MiniParsedRequest = z.output<
+  typeof Seedance2MiniRequestSchema
+>;
 export type NanoBanana2Request = z.input<typeof NanoBanana2RequestSchema>;
 export type NanoBanana2ParsedRequest = z.output<
   typeof NanoBanana2RequestSchema
@@ -1755,6 +1850,17 @@ export type ElevenLabsSoundEffectV2ParsedRequest = z.output<
 export type Wan27TaskResultJson = z.infer<typeof Wan27TaskResultJsonSchema>;
 export type Wan27VideoResult = z.infer<typeof Wan27VideoResultSchema>;
 export type Wan27ImageResult = z.infer<typeof Wan27ImageResultSchema>;
+export type Seedance2MiniTaskResultJson = z.infer<
+  typeof Seedance2MiniTaskResultJsonSchema
+>;
+export type Seedance2MiniRecordInfoData = z.infer<
+  typeof Seedance2MiniRecordInfoDataSchema
+>;
+export type Seedance2MiniRecordInfoResponse = z.infer<
+  typeof Seedance2MiniRecordInfoResponseSchema
+>;
+export type RecordInfoRequest = z.input<typeof RecordInfoRequestSchema>;
+export type TaskResponseParsed = z.output<typeof TaskResponseSchema>;
 
 export type UploadMediaRequest = z.input<typeof UploadMediaRequestSchema>;
 export type UploadMediaParsedRequest = z.output<

@@ -23,6 +23,9 @@ import {
   FileBase64UploadRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
   GrokImageToVideoRequestSchema,
+  RecordInfoRequestSchema,
+  Seedance2MiniRecordInfoResponseSchema,
+  Seedance2MiniRequestSchema,
 } from "./zod";
 import { modelInputSchemas } from "./model-schemas";
 import { createVeoProvider } from "./veo";
@@ -76,6 +79,28 @@ function validateGrokImageToVideoRequest(req: MediaGenerationRequest): void {
   });
 }
 
+function validateSeedance2MiniRequest(req: MediaGenerationRequest): void {
+  if (req.model !== "bytedance/seedance-2-mini") {
+    return;
+  }
+
+  const parsed = Seedance2MiniRequestSchema.safeParse(req);
+  if (parsed.success) {
+    return;
+  }
+
+  const message = parsed.error.issues
+    .map((issue) => {
+      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
+      return `${path}${issue.message}`;
+    })
+    .join("; ");
+
+  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
+    issues: parsed.error.issues,
+  });
+}
+
 function inferMimeType(filename: string): string | undefined {
   const ext = filename.split(".").pop()?.toLowerCase();
   return ext ? MIME_TYPES[ext] : undefined;
@@ -98,6 +123,7 @@ export function createKie(opts: KieOptions): KieProvider {
     req: MediaGenerationRequest
   ): Promise<TaskResponse> {
     validateGrokImageToVideoRequest(req);
+    validateSeedance2MiniRequest(req);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -499,7 +525,13 @@ export function createKie(opts: KieOptions): KieProvider {
         get: {
           api: {
             v1: {
-              jobs: { recordInfo },
+              jobs: {
+                recordInfo: Object.assign(recordInfo, {
+                  schema: RecordInfoRequestSchema,
+                  seedance2MiniResponseSchema:
+                    Seedance2MiniRecordInfoResponseSchema,
+                }),
+              },
               chat: { credit },
             },
           },

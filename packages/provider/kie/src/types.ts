@@ -73,6 +73,12 @@ export type {
   Seedance2FastParsedRequest,
   Seedance2Request,
   Seedance2ParsedRequest,
+  Seedance2MiniInput,
+  Seedance2MiniRequest,
+  Seedance2MiniParsedRequest,
+  Seedance2MiniTaskResultJson,
+  Seedance2MiniRecordInfoData,
+  Seedance2MiniRecordInfoResponse,
   Wan27ImageToVideoRequest,
   Wan27ImageToVideoParsedRequest,
   Wan27TextToVideoRequest,
@@ -93,6 +99,8 @@ export type {
   SoraWatermarkParsedRequest,
   MediaGenerationRequest,
   MediaGenerationParsedRequest,
+  RecordInfoRequest,
+  TaskResponseParsed,
   UploadMediaRequest,
   UploadMediaParsedRequest,
   FileUrlUploadRequest,
@@ -132,6 +140,9 @@ export type {
   Wan27ImageResolution,
   Wan27ImageAspectRatio,
   Wan27VideoEditDuration,
+  Seedance2MiniResolution,
+  Seedance2MiniAspectRatio,
+  Seedance2MiniTaskState,
   HappyHorseResolution,
   HappyHorseAspectRatio,
   HappyHorse11AspectRatio,
@@ -274,6 +285,8 @@ import type {
   FileUrlUploadRequest,
   FileBase64UploadRequest,
   GeminiOmniAudioCreateRequest,
+  RecordInfoRequest,
+  Seedance2MiniRecordInfoResponse,
 } from "./zod";
 
 export type { PayGateApproval as KieApproval } from "./paygate";
@@ -309,6 +322,12 @@ interface KieGeminiOmniAudioCreateMethod {
   schema: ApicitySchema<GeminiOmniAudioCreateRequest>;
 }
 
+interface KieRecordInfoMethod {
+  (taskId: string): Promise<KieTaskInfo>;
+  schema: ApicitySchema<RecordInfoRequest>;
+  seedance2MiniResponseSchema: ApicitySchema<Seedance2MiniRecordInfoResponse>;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
@@ -328,7 +347,7 @@ interface KiePostApiNamespace {
 // GET namespace
 interface KieGetApiNamespace {
   v1: {
-    jobs: { recordInfo(taskId: string): Promise<KieTaskInfo> };
+    jobs: { recordInfo: KieRecordInfoMethod };
     chat: { credit(): Promise<KieCreditsResponse> };
   };
 }

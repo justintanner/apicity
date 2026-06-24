@@ -607,6 +607,74 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "bytedance/seedance-2-mini": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 20000,
+        description: "Text prompt or description for the generated video",
+      },
+      reference_image_urls: {
+        type: "array",
+        default: [],
+        description:
+          "Reference image URLs (JPEG, PNG, WEBP, JPG, or GIF; max 30 MB each)",
+        items: { type: "string" },
+      },
+      reference_video_urls: {
+        type: "array",
+        maxItems: 3,
+        default: [],
+        description:
+          "Reference video URLs (MP4, MOV, or MKV; up to 3 videos, 15 seconds total)",
+        items: { type: "string" },
+      },
+      reference_audio_urls: {
+        type: "array",
+        maxItems: 3,
+        default: [],
+        description:
+          "Reference audio URLs (MP3 or WAV; up to 3 clips, 15 seconds total)",
+        items: { type: "string" },
+      },
+      generate_audio: {
+        type: "boolean",
+        default: true,
+        description: "Generate accompanying audio (default true)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["480p", "720p"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "4:3", "1:1", "3:4", "9:16", "21:9", "adaptive"],
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: {
+        type: "integer",
+        minimum: 4,
+        maximum: 15,
+        default: 15,
+        description: "Duration in seconds, 4-15 (default 15)",
+      },
+      web_search: {
+        type: "boolean",
+        default: false,
+        description: "Use online search (default false)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        default: true,
+        description: "Content safety filter (default true)",
+      },
+    },
+  },
+
   "nano-banana-2": {
     type: "image",
     fields: {

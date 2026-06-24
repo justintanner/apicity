@@ -1028,6 +1028,35 @@ describe("kie modelInputSchemas", () => {
     expect(textToVideo.fields.resolution.enum).toEqual(["720p", "1080p"]);
   });
 
+  it("seedance 2 mini exposes documented createTask metadata", () => {
+    const schema = modelInputSchemas["bytedance/seedance-2-mini"];
+
+    expect(schema.type).toBe("video");
+    expect(schema.fields.prompt.maxLength).toBe(20000);
+    expect(schema.fields.reference_image_urls.default).toEqual([]);
+    expect(schema.fields.reference_video_urls.maxItems).toBe(3);
+    expect(schema.fields.reference_audio_urls.maxItems).toBe(3);
+    expect(schema.fields.generate_audio.default).toBe(true);
+    expect(schema.fields.resolution.enum).toEqual(["480p", "720p"]);
+    expect(schema.fields.resolution.default).toBe("720p");
+    expect(schema.fields.aspect_ratio.enum).toEqual([
+      "16:9",
+      "4:3",
+      "1:1",
+      "3:4",
+      "9:16",
+      "21:9",
+      "adaptive",
+    ]);
+    expect(schema.fields.aspect_ratio.default).toBe("16:9");
+    expect(schema.fields.duration.type).toBe("integer");
+    expect(schema.fields.duration.minimum).toBe(4);
+    expect(schema.fields.duration.maximum).toBe(15);
+    expect(schema.fields.duration.default).toBe(15);
+    expect(schema.fields.web_search.default).toBe(false);
+    expect(schema.fields.nsfw_checker.default).toBe(true);
+  });
+
   it("grok imagine video schemas expose separate t2v and i2v metadata", () => {
     const textToVideo = modelInputSchemas["grok-imagine/text-to-video"];
     expect(textToVideo.type).toBe("video");

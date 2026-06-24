@@ -406,4 +406,73 @@ describe("KIE provider switching", () => {
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body as string)).toEqual(imagePayload);
   });
+
+  it("keeps Gemini Omni Video requests on createTask and exposes metadata", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({ code: 200, data: { taskId: "gemini-video-1" } }),
+            { status: 200 }
+          )
+        )
+      );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+
+    const payload = {
+      model: "gemini-omni-video" as const,
+      callBackUrl: "https://example.com/api/kie-callback",
+      input: {
+        prompt:
+          "Create a futuristic night city short film with a slow push-in shot.",
+        image_urls: [
+          "https://example.com/assets/scene-1.png",
+          "https://example.com/assets/scene-2.png",
+        ],
+        audio_ids: ["audio_01hx8p0demo"],
+        video_list: [
+          {
+            url: "https://example.com/assets/source-video.mp4",
+            start: 0,
+            ends: 8,
+          },
+        ],
+        character_ids: ["character_01"],
+        duration: "4" as const,
+        aspect_ratio: "16:9" as const,
+        seed: 42,
+        resolution: "1080p" as const,
+      },
+    };
+
+    const schema = provider.modelInputSchemas["gemini-omni-video"];
+    expect(schema.type).toBe("video");
+    expect(schema.fields.prompt.required).toBe(true);
+    expect(schema.fields.duration.enum).toEqual(["4", "6", "8", "10"]);
+    expect(schema.fields.aspect_ratio.enum).toEqual(["16:9", "9:16"]);
+    expect(schema.fields.resolution.enum).toEqual(["720p", "1080p", "4k"]);
+    expect(schema.fields.image_urls.maxItems).toBe(7);
+    expect(schema.fields.video_list.maxItems).toBe(1);
+    expect(schema.fields.character_ids.maxItems).toBe(3);
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse(payload).success
+    ).toBe(true);
+
+    await provider.post.api.v1.jobs.createTask(
+      payload,
+      mintKieCreateTaskOtp(payload)
+    );
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual(payload);
+  });
 });

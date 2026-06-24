@@ -44,6 +44,7 @@ export const KieMediaModelSchema = z.enum([
   "happyhorse-1-1/reference-to-video",
   "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
+  "gemini-omni-video",
   "elevenlabs/audio-isolation",
   "elevenlabs/text-to-dialogue-v3",
   "elevenlabs/text-to-speech-multilingual-v2",
@@ -250,6 +251,12 @@ export const VolcengineVideoToVideoLipSyncModeSchema = z.enum([
   "lite",
   "basic",
 ]);
+
+export const GeminiOmniVideoDurationSchema = z.enum(["4", "6", "8", "10"]);
+
+export const GeminiOmniVideoAspectRatioSchema = z.enum(["16:9", "9:16"]);
+
+export const GeminiOmniVideoResolutionSchema = z.enum(["720p", "1080p", "4k"]);
 
 export const Seedance2MiniResolutionSchema = z.enum(["480p", "720p"]);
 
@@ -929,6 +936,62 @@ export const VolcengineVideoToVideoLipSyncRequestSchema = z.object({
   }),
 });
 
+const GeminiOmniVideoListItemSchema = z
+  .object({
+    url: z.string().url(),
+    start: z.number().min(0),
+    ends: z.number().min(0),
+  })
+  .superRefine((value, ctx) => {
+    if (value.ends <= value.start) {
+      ctx.addIssue({
+        code: "custom",
+        message: "ends must be greater than start",
+        path: ["ends"],
+      });
+    }
+
+    if (value.ends - value.start >= 10) {
+      ctx.addIssue({
+        code: "custom",
+        message: "video clip duration must be less than 10 seconds",
+        path: ["ends"],
+      });
+    }
+  });
+
+export const GeminiOmniVideoRequestSchema = z
+  .object({
+    model: z.literal("gemini-omni-video"),
+    callBackUrl: z.string().url().optional(),
+    input: z.object({
+      prompt: z.string().min(1).max(20000),
+      image_urls: z.array(z.string().url()).max(7).optional(),
+      audio_ids: z.array(z.string().min(1)).max(3).optional(),
+      video_list: z.array(GeminiOmniVideoListItemSchema).max(1).optional(),
+      character_ids: z.array(z.string().min(1)).max(3).optional(),
+      duration: GeminiOmniVideoDurationSchema,
+      aspect_ratio: GeminiOmniVideoAspectRatioSchema.optional(),
+      seed: z.number().int().min(0).max(2147483647).optional(),
+      resolution: GeminiOmniVideoResolutionSchema.default("720p"),
+    }),
+  })
+  .superRefine((value, ctx) => {
+    const imageUnits = value.input.image_urls?.length ?? 0;
+    const videoUnits = (value.input.video_list?.length ?? 0) * 2;
+    const characterUnits = value.input.character_ids?.length ?? 0;
+    const quotaUnits = imageUnits + videoUnits + characterUnits;
+
+    if (quotaUnits > 7) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "gemini-omni-video quota exceeded: image_urls + video_list * 2 + character_ids must be <= 7",
+        path: ["input", "image_urls"],
+      });
+    }
+  });
+
 const ElevenLabsTextToSpeechInputSchema = z.object({
   text: z.string().min(1),
   voice: z.string().min(1),
@@ -1498,6 +1561,7 @@ export const MediaGenerationRequestSchema = z.union([
   HappyHorse11ReferenceToVideoRequestSchema,
   Omnihuman15RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
+  GeminiOmniVideoRequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsTextToDialogueV3RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -1578,6 +1642,15 @@ export type Omnihuman15OutputResolution = z.infer<
 >;
 export type VolcengineVideoToVideoLipSyncMode = z.infer<
   typeof VolcengineVideoToVideoLipSyncModeSchema
+>;
+export type GeminiOmniVideoDuration = z.infer<
+  typeof GeminiOmniVideoDurationSchema
+>;
+export type GeminiOmniVideoAspectRatio = z.infer<
+  typeof GeminiOmniVideoAspectRatioSchema
+>;
+export type GeminiOmniVideoResolution = z.infer<
+  typeof GeminiOmniVideoResolutionSchema
 >;
 export type Seedance2MiniResolution = z.infer<
   typeof Seedance2MiniResolutionSchema
@@ -1816,6 +1889,12 @@ export type VolcengineVideoToVideoLipSyncRequest = z.input<
 >;
 export type VolcengineVideoToVideoLipSyncParsedRequest = z.output<
   typeof VolcengineVideoToVideoLipSyncRequestSchema
+>;
+export type GeminiOmniVideoRequest = z.input<
+  typeof GeminiOmniVideoRequestSchema
+>;
+export type GeminiOmniVideoParsedRequest = z.output<
+  typeof GeminiOmniVideoRequestSchema
 >;
 export type ElevenLabsAudioIsolationRequest = z.input<
   typeof ElevenLabsAudioIsolationRequestSchema

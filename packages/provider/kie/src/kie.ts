@@ -21,6 +21,7 @@ import {
   UploadMediaRequestSchema,
   FileUrlUploadRequestSchema,
   FileBase64UploadRequestSchema,
+  GeminiOmniVideoRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
@@ -101,6 +102,28 @@ function validateSeedance2MiniRequest(req: MediaGenerationRequest): void {
   });
 }
 
+function validateGeminiOmniVideoRequest(req: MediaGenerationRequest): void {
+  if (req.model !== "gemini-omni-video") {
+    return;
+  }
+
+  const parsed = GeminiOmniVideoRequestSchema.safeParse(req);
+  if (parsed.success) {
+    return;
+  }
+
+  const message = parsed.error.issues
+    .map((issue) => {
+      const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
+      return `${path}${issue.message}`;
+    })
+    .join("; ");
+
+  throw new KieError(`Invalid Kie createTask request: ${message}`, 400, {
+    issues: parsed.error.issues,
+  });
+}
+
 function inferMimeType(filename: string): string | undefined {
   const ext = filename.split(".").pop()?.toLowerCase();
   return ext ? MIME_TYPES[ext] : undefined;
@@ -124,6 +147,7 @@ export function createKie(opts: KieOptions): KieProvider {
   ): Promise<TaskResponse> {
     validateGrokImageToVideoRequest(req);
     validateSeedance2MiniRequest(req);
+    validateGeminiOmniVideoRequest(req);
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);

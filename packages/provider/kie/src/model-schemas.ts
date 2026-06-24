@@ -1890,4 +1890,91 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
     },
   },
+
+  "gemini-omni-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 20000,
+        description: "Multimodal video generation prompt (max 20000 chars)",
+      },
+      image_urls: {
+        type: "array",
+        maxItems: 7,
+        description:
+          "Reference image URLs (max 7, each image up to 20MB; each counts as 1 quota unit)",
+        items: { type: "string" },
+      },
+      audio_ids: {
+        type: "array",
+        maxItems: 3,
+        description:
+          "Audio IDs created by gemini-omni-audio (max 3; does not count toward visual quota)",
+        items: { type: "string" },
+      },
+      video_list: {
+        type: "array",
+        maxItems: 1,
+        description:
+          "Reference video clip list (max 1; source video under 100MB and 30s; each clip counts as 2 quota units)",
+        items: {
+          type: "object",
+          properties: {
+            url: {
+              type: "string",
+              required: true,
+              description: "Reference video URL",
+            },
+            start: {
+              type: "number",
+              required: true,
+              minimum: 0,
+              description: "Clip start time in seconds",
+            },
+            ends: {
+              type: "number",
+              required: true,
+              minimum: 0,
+              description:
+                "Clip end time in seconds; must be greater than start and less than 10 seconds after start",
+            },
+          },
+        },
+      },
+      character_ids: {
+        type: "array",
+        maxItems: 3,
+        description:
+          "Character IDs created by gemini-omni-character (max 3; each counts as 1 quota unit)",
+        items: { type: "string" },
+      },
+      duration: {
+        type: "string",
+        required: true,
+        enum: ["4", "6", "8", "10"],
+        description:
+          "Output duration in seconds; ignored by Kie when video input is provided",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["16:9", "9:16"],
+        description: "Output aspect ratio",
+      },
+      seed: {
+        type: "integer",
+        minimum: 0,
+        maximum: 2147483647,
+        description: "Random seed",
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p", "4k"],
+        default: "720p",
+        description: "Output resolution (default 720p)",
+      },
+    },
+  },
 };

@@ -31,6 +31,7 @@ import {
   ElevenLabsTextToDialogueV3RequestSchema,
   ElevenLabsSoundEffectV2RequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
+  GeminiOmniVideoRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
 } from "../../../packages/provider/kie/src/zod";
 
@@ -1014,6 +1015,102 @@ describe("kie Zod schema validation", () => {
       });
 
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("gemini omni video", () => {
+    it("should validate multimodal video createTask requests", () => {
+      const request = {
+        model: "gemini-omni-video",
+        callBackUrl: "https://example.com/api/callback",
+        input: {
+          prompt:
+            "Create a futuristic night city short film with a slow push-in shot.",
+          image_urls: [
+            "https://example.com/assets/scene-1.png",
+            "https://example.com/assets/scene-2.png",
+          ],
+          audio_ids: ["audio_01hx8p0demo"],
+          video_list: [
+            {
+              url: "https://example.com/assets/source-video.mp4",
+              start: 0,
+              ends: 9.5,
+            },
+          ],
+          character_ids: ["character_01", "character_02"],
+          duration: "4",
+          aspect_ratio: "16:9",
+          seed: 1234,
+          resolution: "1080p",
+        },
+      };
+
+      expect(GeminiOmniVideoRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+      expect(CreateTaskRequestSchema.safeParse(request).success).toBe(true);
+    });
+
+    it("should enforce visual quota across images, videos, and characters", () => {
+      const result = GeminiOmniVideoRequestSchema.safeParse({
+        model: "gemini-omni-video",
+        input: {
+          prompt: "Animate a group of character references.",
+          image_urls: [
+            "https://example.com/1.png",
+            "https://example.com/2.png",
+            "https://example.com/3.png",
+          ],
+          video_list: [
+            {
+              url: "https://example.com/source.mp4",
+              start: 0,
+              ends: 4,
+            },
+          ],
+          character_ids: ["char_1", "char_2", "char_3"],
+          duration: "6",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((issue) =>
+          issue.message.includes("quota exceeded")
+        )
+      ).toBe(true);
+    });
+
+    it("should reject invalid clip windows and unsupported durations", () => {
+      const invalidClip = GeminiOmniVideoRequestSchema.safeParse({
+        model: "gemini-omni-video",
+        input: {
+          prompt: "Animate the source clip.",
+          video_list: [
+            {
+              url: "https://example.com/source.mp4",
+              start: 2,
+              ends: 12,
+            },
+          ],
+          duration: "4",
+        },
+      });
+      const invalidDuration = GeminiOmniVideoRequestSchema.safeParse({
+        model: "gemini-omni-video",
+        input: {
+          prompt: "Animate a reference image.",
+          image_urls: ["https://example.com/reference.png"],
+          duration: "5",
+        },
+      });
+
+      expect(invalidClip.success).toBe(false);
+      expect(invalidDuration.success).toBe(false);
     });
   });
 

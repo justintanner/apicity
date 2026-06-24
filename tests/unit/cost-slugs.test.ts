@@ -26,6 +26,7 @@ describe("MODEL_SLUGS", () => {
     expect(MODEL_SLUGS.kie).toMatchObject({
       "bytedance/seedance-2": "sd2",
       "bytedance/seedance-2-fast": "sd2f",
+      "bytedance/seedance-2-mini": "sd2m",
       "kling-3.0/video": "kling3",
       "kling-3.0/video/std": "kling3s",
       "kling-3.0/video/pro": "kling3p",
@@ -203,6 +204,7 @@ describe("MODEL_DISPLAY", () => {
   it("has kie display names", () => {
     expect(MODEL_DISPLAY.kie).toMatchObject({
       "bytedance/seedance-2": "Seedance 2",
+      "bytedance/seedance-2-mini": "Seedance 2 Mini",
       "kling-3.0/video": "Kling 3.0",
       "kling-3.0/video/pro": "Kling 3.0 Pro",
       "kling/v3-turbo-image-to-video": "Kling 3.0 Turbo",

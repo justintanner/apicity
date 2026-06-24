@@ -22,6 +22,11 @@ const inputResolution = (p: Record<string, unknown>): string | undefined =>
 const inputMode = (p: Record<string, unknown>): string | undefined =>
   asString(asObject(p.input)?.mode);
 
+const hasReferenceVideoInput = (p: Record<string, unknown>): boolean => {
+  const referenceVideoUrls = asObject(p.input)?.reference_video_urls;
+  return Array.isArray(referenceVideoUrls) && referenceVideoUrls.length > 0;
+};
+
 // Image models price per image; units = input.n when present (only
 // wan/2-7-image* uses batch generation today), otherwise 1.
 const imageCount = (p: Record<string, unknown>): number =>
@@ -316,6 +321,31 @@ export const kie: Record<string, ModelPricing> = {
       "720p|t2v": 0.165,
     },
     source: src("bytedance/seedance-2-fast"),
+  },
+
+  // bytedance/seedance-2-mini: 4 rates, resolution x reference video input.
+  // Rates verified 2026-06-24 from the assigned pricing update:
+  // 480p video input = 6 credits/s ($0.030), 480p no video input =
+  // 9.5 credits/s ($0.0475), 720p video input = 12.5 credits/s ($0.0625),
+  // 720p no video input = 20.5 credits/s ($0.1025).
+  "bytedance/seedance-2-mini": {
+    kind: "perUnit",
+    unit: "seconds",
+    units: seconds,
+    select: [
+      { name: "resolution", pick: inputResolution },
+      {
+        name: "videoInput",
+        pick: (p) => (hasReferenceVideoInput(p) ? "video" : "no-video"),
+      },
+    ],
+    rates: {
+      "480p|video": 0.03,
+      "480p|no-video": 0.0475,
+      "720p|video": 0.0625,
+      "720p|no-video": 0.1025,
+    },
+    source: { ...src("bytedance/seedance-2-mini"), asOf: "2026-06-24" },
   },
 
   // Image models — per-image USD. Resolution-tiered families

@@ -40,6 +40,66 @@ describe("cost.estimate — pure-table (no network)", () => {
     expect(r.breakdown.units).toBe(8);
   });
 
+  it("kie seedance-2-mini resolves resolution and video-input rates", () => {
+    const c = createCost();
+    const cases = [
+      {
+        label: "480p with video input",
+        resolution: "480p",
+        extraInput: {
+          reference_video_urls: ["https://example.com/ref.mp4"],
+        },
+        expectedPerSecond: 0.03,
+      },
+      {
+        label: "480p without video input",
+        resolution: "480p",
+        extraInput: {
+          reference_image_urls: ["https://example.com/ref.jpg"],
+        },
+        expectedPerSecond: 0.0475,
+      },
+      {
+        label: "720p with video input",
+        resolution: "720p",
+        extraInput: {
+          reference_video_urls: ["https://example.com/ref.mp4"],
+        },
+        expectedPerSecond: 0.0625,
+      },
+      {
+        label: "720p without video input",
+        resolution: "720p",
+        extraInput: {},
+        expectedPerSecond: 0.1025,
+      },
+    ] as const;
+
+    for (const item of cases) {
+      const r = c.estimate({
+        provider: "kie",
+        payload: {
+          model: "bytedance/seedance-2-mini",
+          input: {
+            prompt: item.label,
+            resolution: item.resolution,
+            duration: 4,
+            generate_audio: false,
+            web_search: false,
+            nsfw_checker: false,
+            ...item.extraInput,
+          },
+        },
+      });
+      expect(r.source).toBe("per-unit-table");
+      expect(r.breakdown.unit).toBe("seconds");
+      expect(r.breakdown.units).toBe(4);
+      expect(r.breakdown.perUnitUsd).toBe(item.expectedPerSecond);
+      expect(r.usd).toBeCloseTo(item.expectedPerSecond * 4, 6);
+      expect(r.warnings).toEqual([]);
+    }
+  });
+
   it("kie seedance-2 i2v 720p resolves to seedance-2-720p-i2v rate", () => {
     const c = createCost();
     const r = c.estimate({

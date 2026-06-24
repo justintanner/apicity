@@ -94,34 +94,42 @@ export const FreeOptionsSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export type TmpfilesUploadRequest = z.input<typeof TmpfilesUploadRequestSchema>;
+export type TmpfilesUploadRequestInput = TmpfilesUploadRequest;
 export type TmpfilesUploadParsedRequest = z.output<
   typeof TmpfilesUploadRequestSchema
 >;
 export type UguuUploadRequest = z.input<typeof UguuUploadRequestSchema>;
+export type UguuUploadRequestInput = UguuUploadRequest;
 export type UguuUploadParsedRequest = z.output<typeof UguuUploadRequestSchema>;
 export type CatboxUploadRequest = z.input<typeof CatboxUploadRequestSchema>;
+export type CatboxUploadRequestInput = CatboxUploadRequest;
 export type CatboxUploadParsedRequest = z.output<
   typeof CatboxUploadRequestSchema
 >;
 export type LitterboxUploadRequest = z.input<
   typeof LitterboxUploadRequestSchema
 >;
+export type LitterboxUploadRequestInput = LitterboxUploadRequest;
 export type LitterboxUploadParsedRequest = z.output<
   typeof LitterboxUploadRequestSchema
 >;
 export type GofileUploadRequest = z.input<typeof GofileUploadRequestSchema>;
+export type GofileUploadRequestInput = GofileUploadRequest;
 export type GofileUploadParsedRequest = z.output<
   typeof GofileUploadRequestSchema
 >;
 export type FilebinUploadRequest = z.input<typeof FilebinUploadRequestSchema>;
+export type FilebinUploadRequestInput = FilebinUploadRequest;
 export type FilebinUploadParsedRequest = z.output<
   typeof FilebinUploadRequestSchema
 >;
 export type TempshUploadRequest = z.input<typeof TempshUploadRequestSchema>;
+export type TempshUploadRequestInput = TempshUploadRequest;
 export type TempshUploadParsedRequest = z.output<
   typeof TempshUploadRequestSchema
 >;
 export type TflinkUploadRequest = z.input<typeof TflinkUploadRequestSchema>;
+export type TflinkUploadRequestInput = TflinkUploadRequest;
 export type TflinkUploadParsedRequest = z.output<
   typeof TflinkUploadRequestSchema
 >;

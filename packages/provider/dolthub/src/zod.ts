@@ -25,6 +25,7 @@ export const DoltHubSqlReadRequestSchema = z.object({
 });
 
 export type DoltHubSqlReadRequest = z.input<typeof DoltHubSqlReadRequestSchema>;
+export type DoltHubSqlReadRequestInput = DoltHubSqlReadRequest;
 export type DoltHubSqlReadParsedRequest = z.output<
   typeof DoltHubSqlReadRequestSchema
 >;
@@ -44,6 +45,7 @@ export const DoltHubSqlWriteRequestSchema = z.object({
 export type DoltHubSqlWriteRequest = z.input<
   typeof DoltHubSqlWriteRequestSchema
 >;
+export type DoltHubSqlWriteRequestInput = DoltHubSqlWriteRequest;
 export type DoltHubSqlWriteParsedRequest = z.output<
   typeof DoltHubSqlWriteRequestSchema
 >;
@@ -61,6 +63,7 @@ export const DoltHubWritePollRequestSchema = z.object({
 export type DoltHubWritePollRequest = z.input<
   typeof DoltHubWritePollRequestSchema
 >;
+export type DoltHubWritePollRequestInput = DoltHubWritePollRequest;
 export type DoltHubWritePollParsedRequest = z.output<
   typeof DoltHubWritePollRequestSchema
 >;
@@ -79,6 +82,7 @@ export const DoltHubDatabaseCreateRequestSchema = z.object({
 export type DoltHubDatabaseCreateRequest = z.input<
   typeof DoltHubDatabaseCreateRequestSchema
 >;
+export type DoltHubDatabaseCreateRequestInput = DoltHubDatabaseCreateRequest;
 export type DoltHubDatabaseCreateParsedRequest = z.output<
   typeof DoltHubDatabaseCreateRequestSchema
 >;
@@ -95,6 +99,7 @@ export const DoltHubBranchesListRequestSchema = z.object({
 export type DoltHubBranchesListRequest = z.input<
   typeof DoltHubBranchesListRequestSchema
 >;
+export type DoltHubBranchesListRequestInput = DoltHubBranchesListRequest;
 export type DoltHubBranchesListParsedRequest = z.output<
   typeof DoltHubBranchesListRequestSchema
 >;
@@ -110,6 +115,7 @@ export const DoltHubBranchCreateRequestSchema = z.object({
 export type DoltHubBranchCreateRequest = z.input<
   typeof DoltHubBranchCreateRequestSchema
 >;
+export type DoltHubBranchCreateRequestInput = DoltHubBranchCreateRequest;
 export type DoltHubBranchCreateParsedRequest = z.output<
   typeof DoltHubBranchCreateRequestSchema
 >;
@@ -132,6 +138,7 @@ export const DoltHubPullsListRequestSchema = z.object({
 export type DoltHubPullsListRequest = z.input<
   typeof DoltHubPullsListRequestSchema
 >;
+export type DoltHubPullsListRequestInput = DoltHubPullsListRequest;
 export type DoltHubPullsListParsedRequest = z.output<
   typeof DoltHubPullsListRequestSchema
 >;
@@ -152,6 +159,7 @@ export const DoltHubPullCreateRequestSchema = z.object({
 export type DoltHubPullCreateRequest = z.input<
   typeof DoltHubPullCreateRequestSchema
 >;
+export type DoltHubPullCreateRequestInput = DoltHubPullCreateRequest;
 export type DoltHubPullCreateParsedRequest = z.output<
   typeof DoltHubPullCreateRequestSchema
 >;
@@ -163,6 +171,7 @@ export const DoltHubPullGetRequestSchema = z.object({
 });
 
 export type DoltHubPullGetRequest = z.input<typeof DoltHubPullGetRequestSchema>;
+export type DoltHubPullGetRequestInput = DoltHubPullGetRequest;
 export type DoltHubPullGetParsedRequest = z.output<
   typeof DoltHubPullGetRequestSchema
 >;
@@ -176,6 +185,7 @@ export const DoltHubPullMergeRequestSchema = z.object({
 export type DoltHubPullMergeRequest = z.input<
   typeof DoltHubPullMergeRequestSchema
 >;
+export type DoltHubPullMergeRequestInput = DoltHubPullMergeRequest;
 export type DoltHubPullMergeParsedRequest = z.output<
   typeof DoltHubPullMergeRequestSchema
 >;

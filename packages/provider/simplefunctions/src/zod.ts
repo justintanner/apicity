@@ -566,6 +566,7 @@ export type SimpleFunctionsNextActions = z.infer<
 export type SimpleFunctionsNoRequest = z.input<
   typeof SimpleFunctionsNoRequestSchema
 >;
+export type SimpleFunctionsNoRequestInput = SimpleFunctionsNoRequest;
 export type SimpleFunctionsNoParsedRequest = z.output<
   typeof SimpleFunctionsNoRequestSchema
 >;
@@ -599,138 +600,171 @@ export type SimpleFunctionsCalibrationPeriod = z.infer<
 export type SimpleFunctionsEmptyRequest = z.input<
   typeof SimpleFunctionsEmptyRequestSchema
 >;
+export type SimpleFunctionsEmptyRequestInput = SimpleFunctionsEmptyRequest;
 export type SimpleFunctionsEmptyParsedRequest = z.output<
   typeof SimpleFunctionsEmptyRequestSchema
 >;
 export type SimpleFunctionsRecordRequest = z.input<
   typeof SimpleFunctionsRecordRequestSchema
 >;
+export type SimpleFunctionsRecordRequestInput = SimpleFunctionsRecordRequest;
 export type SimpleFunctionsRecordParsedRequest = z.output<
   typeof SimpleFunctionsRecordRequestSchema
 >;
 export type SimpleFunctionsOptionalQueryRequest = z.input<
   typeof SimpleFunctionsOptionalQueryRequestSchema
 >;
+export type SimpleFunctionsOptionalQueryRequestInput =
+  SimpleFunctionsOptionalQueryRequest;
 export type SimpleFunctionsOptionalQueryParsedRequest = z.output<
   typeof SimpleFunctionsOptionalQueryRequestSchema
 >;
 export type SimpleFunctionsIdRequest = z.input<
   typeof SimpleFunctionsIdRequestSchema
 >;
+export type SimpleFunctionsIdRequestInput = SimpleFunctionsIdRequest;
 export type SimpleFunctionsIdParsedRequest = z.output<
   typeof SimpleFunctionsIdRequestSchema
 >;
 export type SimpleFunctionsTickerPathRequest = z.input<
   typeof SimpleFunctionsTickerPathRequestSchema
 >;
+export type SimpleFunctionsTickerPathRequestInput =
+  SimpleFunctionsTickerPathRequest;
 export type SimpleFunctionsTickerPathParsedRequest = z.output<
   typeof SimpleFunctionsTickerPathRequestSchema
 >;
 export type SimpleFunctionsTokenRequest = z.input<
   typeof SimpleFunctionsTokenRequestSchema
 >;
+export type SimpleFunctionsTokenRequestInput = SimpleFunctionsTokenRequest;
 export type SimpleFunctionsTokenParsedRequest = z.output<
   typeof SimpleFunctionsTokenRequestSchema
 >;
 export type SimpleFunctionsTransportRequest = z.input<
   typeof SimpleFunctionsTransportRequestSchema
 >;
+export type SimpleFunctionsTransportRequestInput =
+  SimpleFunctionsTransportRequest;
 export type SimpleFunctionsTransportParsedRequest = z.output<
   typeof SimpleFunctionsTransportRequestSchema
 >;
 export type SimpleFunctionsPositionRequest = z.input<
   typeof SimpleFunctionsPositionRequestSchema
 >;
+export type SimpleFunctionsPositionRequestInput =
+  SimpleFunctionsPositionRequest;
 export type SimpleFunctionsPositionParsedRequest = z.output<
   typeof SimpleFunctionsPositionRequestSchema
 >;
 export type SimpleFunctionsStrategyRequest = z.input<
   typeof SimpleFunctionsStrategyRequestSchema
 >;
+export type SimpleFunctionsStrategyRequestInput =
+  SimpleFunctionsStrategyRequest;
 export type SimpleFunctionsStrategyParsedRequest = z.output<
   typeof SimpleFunctionsStrategyRequestSchema
 >;
 export type SimpleFunctionsBodyRequest = z.input<
   typeof SimpleFunctionsBodyRequestSchema
 >;
+export type SimpleFunctionsBodyRequestInput = SimpleFunctionsBodyRequest;
 export type SimpleFunctionsBodyParsedRequest = z.output<
   typeof SimpleFunctionsBodyRequestSchema
 >;
 export type SimpleFunctionsOptionalBodyRequest = z.input<
   typeof SimpleFunctionsOptionalBodyRequestSchema
 >;
+export type SimpleFunctionsOptionalBodyRequestInput =
+  SimpleFunctionsOptionalBodyRequest;
 export type SimpleFunctionsOptionalBodyParsedRequest = z.output<
   typeof SimpleFunctionsOptionalBodyRequestSchema
 >;
 export type SimpleFunctionsQueryRequest = z.input<
   typeof SimpleFunctionsQueryRequestSchema
 >;
+export type SimpleFunctionsQueryRequestInput = SimpleFunctionsQueryRequest;
 export type SimpleFunctionsQueryParsedRequest = z.output<
   typeof SimpleFunctionsQueryRequestSchema
 >;
 export type SimpleFunctionsWorldRequest = z.input<
   typeof SimpleFunctionsWorldRequestSchema
 >;
+export type SimpleFunctionsWorldRequestInput = SimpleFunctionsWorldRequest;
 export type SimpleFunctionsWorldParsedRequest = z.output<
   typeof SimpleFunctionsWorldRequestSchema
 >;
 export type SimpleFunctionsWorldPathRequest = z.input<
   typeof SimpleFunctionsWorldPathRequestSchema
 >;
+export type SimpleFunctionsWorldPathRequestInput =
+  SimpleFunctionsWorldPathRequest;
 export type SimpleFunctionsWorldPathParsedRequest = z.output<
   typeof SimpleFunctionsWorldPathRequestSchema
 >;
 export type SimpleFunctionsWorldDeltaRequest = z.input<
   typeof SimpleFunctionsWorldDeltaRequestSchema
 >;
+export type SimpleFunctionsWorldDeltaRequestInput =
+  SimpleFunctionsWorldDeltaRequest;
 export type SimpleFunctionsWorldDeltaParsedRequest = z.output<
   typeof SimpleFunctionsWorldDeltaRequestSchema
 >;
 export type SimpleFunctionsInspectRequest = z.input<
   typeof SimpleFunctionsInspectRequestSchema
 >;
+export type SimpleFunctionsInspectRequestInput = SimpleFunctionsInspectRequest;
 export type SimpleFunctionsInspectParsedRequest = z.output<
   typeof SimpleFunctionsInspectRequestSchema
 >;
 export type SimpleFunctionsAgentFeedRequest = z.input<
   typeof SimpleFunctionsAgentFeedRequestSchema
 >;
+export type SimpleFunctionsAgentFeedRequestInput =
+  SimpleFunctionsAgentFeedRequest;
 export type SimpleFunctionsAgentFeedParsedRequest = z.output<
   typeof SimpleFunctionsAgentFeedRequestSchema
 >;
 export type SimpleFunctionsMarketsRequest = z.input<
   typeof SimpleFunctionsMarketsRequestSchema
 >;
+export type SimpleFunctionsMarketsRequestInput = SimpleFunctionsMarketsRequest;
 export type SimpleFunctionsMarketsParsedRequest = z.output<
   typeof SimpleFunctionsMarketsRequestSchema
 >;
 export type SimpleFunctionsFeaturedMarketsRequest = z.input<
   typeof SimpleFunctionsFeaturedMarketsRequestSchema
 >;
+export type SimpleFunctionsFeaturedMarketsRequestInput =
+  SimpleFunctionsFeaturedMarketsRequest;
 export type SimpleFunctionsFeaturedMarketsParsedRequest = z.output<
   typeof SimpleFunctionsFeaturedMarketsRequestSchema
 >;
 export type SimpleFunctionsSearchRequest = z.input<
   typeof SimpleFunctionsSearchRequestSchema
 >;
+export type SimpleFunctionsSearchRequestInput = SimpleFunctionsSearchRequest;
 export type SimpleFunctionsSearchParsedRequest = z.output<
   typeof SimpleFunctionsSearchRequestSchema
 >;
 export type SimpleFunctionsMoversRequest = z.input<
   typeof SimpleFunctionsMoversRequestSchema
 >;
+export type SimpleFunctionsMoversRequestInput = SimpleFunctionsMoversRequest;
 export type SimpleFunctionsMoversParsedRequest = z.output<
   typeof SimpleFunctionsMoversRequestSchema
 >;
 export type SimpleFunctionsCandlesRequest = z.input<
   typeof SimpleFunctionsCandlesRequestSchema
 >;
+export type SimpleFunctionsCandlesRequestInput = SimpleFunctionsCandlesRequest;
 export type SimpleFunctionsCandlesParsedRequest = z.output<
   typeof SimpleFunctionsCandlesRequestSchema
 >;
 export type SimpleFunctionsTradesRequest = z.input<
   typeof SimpleFunctionsTradesRequestSchema
 >;
+export type SimpleFunctionsTradesRequestInput = SimpleFunctionsTradesRequest;
 export type SimpleFunctionsTradesParsedRequest = z.output<
   typeof SimpleFunctionsTradesRequestSchema
 >;
@@ -738,186 +772,236 @@ export type SimpleFunctionsTicker = z.infer<typeof SimpleFunctionsTickerSchema>;
 export type SimpleFunctionsPublicListRequest = z.input<
   typeof SimpleFunctionsPublicListRequestSchema
 >;
+export type SimpleFunctionsPublicListRequestInput =
+  SimpleFunctionsPublicListRequest;
 export type SimpleFunctionsPublicListParsedRequest = z.output<
   typeof SimpleFunctionsPublicListRequestSchema
 >;
 export type SimpleFunctionsMarketDetailRequest = z.input<
   typeof SimpleFunctionsMarketDetailRequestSchema
 >;
+export type SimpleFunctionsMarketDetailRequestInput =
+  SimpleFunctionsMarketDetailRequest;
 export type SimpleFunctionsMarketDetailParsedRequest = z.output<
   typeof SimpleFunctionsMarketDetailRequestSchema
 >;
 export type SimpleFunctionsTickerRequest = z.input<
   typeof SimpleFunctionsTickerRequestSchema
 >;
+export type SimpleFunctionsTickerRequestInput = SimpleFunctionsTickerRequest;
 export type SimpleFunctionsTickerParsedRequest = z.output<
   typeof SimpleFunctionsTickerRequestSchema
 >;
 export type SimpleFunctionsMarketCandlesRequest = z.input<
   typeof SimpleFunctionsMarketCandlesRequestSchema
 >;
+export type SimpleFunctionsMarketCandlesRequestInput =
+  SimpleFunctionsMarketCandlesRequest;
 export type SimpleFunctionsMarketCandlesParsedRequest = z.output<
   typeof SimpleFunctionsMarketCandlesRequestSchema
 >;
 export type SimpleFunctionsScanRequest = z.input<
   typeof SimpleFunctionsScanRequestSchema
 >;
+export type SimpleFunctionsScanRequestInput = SimpleFunctionsScanRequest;
 export type SimpleFunctionsScanParsedRequest = z.output<
   typeof SimpleFunctionsScanRequestSchema
 >;
 export type SimpleFunctionsScreenRequest = z.input<
   typeof SimpleFunctionsScreenRequestSchema
 >;
+export type SimpleFunctionsScreenRequestInput = SimpleFunctionsScreenRequest;
 export type SimpleFunctionsScreenParsedRequest = z.output<
   typeof SimpleFunctionsScreenRequestSchema
 >;
 export type SimpleFunctionsScreenByTickersRequest = z.input<
   typeof SimpleFunctionsScreenByTickersRequestSchema
 >;
+export type SimpleFunctionsScreenByTickersRequestInput =
+  SimpleFunctionsScreenByTickersRequest;
 export type SimpleFunctionsScreenByTickersParsedRequest = z.output<
   typeof SimpleFunctionsScreenByTickersRequestSchema
 >;
 export type SimpleFunctionsPublicSearchRequest = z.input<
   typeof SimpleFunctionsPublicSearchRequestSchema
 >;
+export type SimpleFunctionsPublicSearchRequestInput =
+  SimpleFunctionsPublicSearchRequest;
 export type SimpleFunctionsPublicSearchParsedRequest = z.output<
   typeof SimpleFunctionsPublicSearchRequestSchema
 >;
 export type SimpleFunctionsMicrostructureHistoryRequest = z.input<
   typeof SimpleFunctionsMicrostructureHistoryRequestSchema
 >;
+export type SimpleFunctionsMicrostructureHistoryRequestInput =
+  SimpleFunctionsMicrostructureHistoryRequest;
 export type SimpleFunctionsMicrostructureHistoryParsedRequest = z.output<
   typeof SimpleFunctionsMicrostructureHistoryRequestSchema
 >;
 export type SimpleFunctionsCrossVenueRequest = z.input<
   typeof SimpleFunctionsCrossVenueRequestSchema
 >;
+export type SimpleFunctionsCrossVenueRequestInput =
+  SimpleFunctionsCrossVenueRequest;
 export type SimpleFunctionsCrossVenueParsedRequest = z.output<
   typeof SimpleFunctionsCrossVenueRequestSchema
 >;
 export type SimpleFunctionsIndexHistoryRequest = z.input<
   typeof SimpleFunctionsIndexHistoryRequestSchema
 >;
+export type SimpleFunctionsIndexHistoryRequestInput =
+  SimpleFunctionsIndexHistoryRequest;
 export type SimpleFunctionsIndexHistoryParsedRequest = z.output<
   typeof SimpleFunctionsIndexHistoryRequestSchema
 >;
 export type SimpleFunctionsRegimeScanRequest = z.input<
   typeof SimpleFunctionsRegimeScanRequestSchema
 >;
+export type SimpleFunctionsRegimeScanRequestInput =
+  SimpleFunctionsRegimeScanRequest;
 export type SimpleFunctionsRegimeScanParsedRequest = z.output<
   typeof SimpleFunctionsRegimeScanRequestSchema
 >;
 export type SimpleFunctionsOddsRequest = z.input<
   typeof SimpleFunctionsOddsRequestSchema
 >;
+export type SimpleFunctionsOddsRequestInput = SimpleFunctionsOddsRequest;
 export type SimpleFunctionsOddsParsedRequest = z.output<
   typeof SimpleFunctionsOddsRequestSchema
 >;
 export type SimpleFunctionsCalendarRequest = z.input<
   typeof SimpleFunctionsCalendarRequestSchema
 >;
+export type SimpleFunctionsCalendarRequestInput =
+  SimpleFunctionsCalendarRequest;
 export type SimpleFunctionsCalendarParsedRequest = z.output<
   typeof SimpleFunctionsCalendarRequestSchema
 >;
 export type SimpleFunctionsYieldCurveRequest = z.input<
   typeof SimpleFunctionsYieldCurveRequestSchema
 >;
+export type SimpleFunctionsYieldCurveRequestInput =
+  SimpleFunctionsYieldCurveRequest;
 export type SimpleFunctionsYieldCurveParsedRequest = z.output<
   typeof SimpleFunctionsYieldCurveRequestSchema
 >;
 export type SimpleFunctionsContagionRequest = z.input<
   typeof SimpleFunctionsContagionRequestSchema
 >;
+export type SimpleFunctionsContagionRequestInput =
+  SimpleFunctionsContagionRequest;
 export type SimpleFunctionsContagionParsedRequest = z.output<
   typeof SimpleFunctionsContagionRequestSchema
 >;
 export type SimpleFunctionsGovQueryRequest = z.input<
   typeof SimpleFunctionsGovQueryRequestSchema
 >;
+export type SimpleFunctionsGovQueryRequestInput =
+  SimpleFunctionsGovQueryRequest;
 export type SimpleFunctionsGovQueryParsedRequest = z.output<
   typeof SimpleFunctionsGovQueryRequestSchema
 >;
 export type SimpleFunctionsLegislationRequest = z.input<
   typeof SimpleFunctionsLegislationRequestSchema
 >;
+export type SimpleFunctionsLegislationRequestInput =
+  SimpleFunctionsLegislationRequest;
 export type SimpleFunctionsLegislationParsedRequest = z.output<
   typeof SimpleFunctionsLegislationRequestSchema
 >;
 export type SimpleFunctionsBillRequest = z.input<
   typeof SimpleFunctionsBillRequestSchema
 >;
+export type SimpleFunctionsBillRequestInput = SimpleFunctionsBillRequest;
 export type SimpleFunctionsBillParsedRequest = z.output<
   typeof SimpleFunctionsBillRequestSchema
 >;
 export type SimpleFunctionsCongressMembersRequest = z.input<
   typeof SimpleFunctionsCongressMembersRequestSchema
 >;
+export type SimpleFunctionsCongressMembersRequestInput =
+  SimpleFunctionsCongressMembersRequest;
 export type SimpleFunctionsCongressMembersParsedRequest = z.output<
   typeof SimpleFunctionsCongressMembersRequestSchema
 >;
 export type SimpleFunctionsCongressMemberRequest = z.input<
   typeof SimpleFunctionsCongressMemberRequestSchema
 >;
+export type SimpleFunctionsCongressMemberRequestInput =
+  SimpleFunctionsCongressMemberRequest;
 export type SimpleFunctionsCongressMemberParsedRequest = z.output<
   typeof SimpleFunctionsCongressMemberRequestSchema
 >;
 export type SimpleFunctionsEconQueryRequest = z.input<
   typeof SimpleFunctionsEconQueryRequestSchema
 >;
+export type SimpleFunctionsEconQueryRequestInput =
+  SimpleFunctionsEconQueryRequest;
 export type SimpleFunctionsEconQueryParsedRequest = z.output<
   typeof SimpleFunctionsEconQueryRequestSchema
 >;
 export type SimpleFunctionsFredRequest = z.input<
   typeof SimpleFunctionsFredRequestSchema
 >;
+export type SimpleFunctionsFredRequestInput = SimpleFunctionsFredRequest;
 export type SimpleFunctionsFredParsedRequest = z.output<
   typeof SimpleFunctionsFredRequestSchema
 >;
 export type SimpleFunctionsChangesRequest = z.input<
   typeof SimpleFunctionsChangesRequestSchema
 >;
+export type SimpleFunctionsChangesRequestInput = SimpleFunctionsChangesRequest;
 export type SimpleFunctionsChangesParsedRequest = z.output<
   typeof SimpleFunctionsChangesRequestSchema
 >;
 export type SimpleFunctionsContextRequest = z.input<
   typeof SimpleFunctionsContextRequestSchema
 >;
+export type SimpleFunctionsContextRequestInput = SimpleFunctionsContextRequest;
 export type SimpleFunctionsContextParsedRequest = z.output<
   typeof SimpleFunctionsContextRequestSchema
 >;
 export type SimpleFunctionsBriefingRequest = z.input<
   typeof SimpleFunctionsBriefingRequestSchema
 >;
+export type SimpleFunctionsBriefingRequestInput =
+  SimpleFunctionsBriefingRequest;
 export type SimpleFunctionsBriefingParsedRequest = z.output<
   typeof SimpleFunctionsBriefingRequestSchema
 >;
 export type SimpleFunctionsSlugRequest = z.input<
   typeof SimpleFunctionsSlugRequestSchema
 >;
+export type SimpleFunctionsSlugRequestInput = SimpleFunctionsSlugRequest;
 export type SimpleFunctionsSlugParsedRequest = z.output<
   typeof SimpleFunctionsSlugRequestSchema
 >;
 export type SimpleFunctionsIdeaRequest = z.input<
   typeof SimpleFunctionsIdeaRequestSchema
 >;
+export type SimpleFunctionsIdeaRequestInput = SimpleFunctionsIdeaRequest;
 export type SimpleFunctionsIdeaParsedRequest = z.output<
   typeof SimpleFunctionsIdeaRequestSchema
 >;
 export type SimpleFunctionsDiscussRequest = z.input<
   typeof SimpleFunctionsDiscussRequestSchema
 >;
+export type SimpleFunctionsDiscussRequestInput = SimpleFunctionsDiscussRequest;
 export type SimpleFunctionsDiscussParsedRequest = z.output<
   typeof SimpleFunctionsDiscussRequestSchema
 >;
 export type SimpleFunctionsCalibrationRequest = z.input<
   typeof SimpleFunctionsCalibrationRequestSchema
 >;
+export type SimpleFunctionsCalibrationRequestInput =
+  SimpleFunctionsCalibrationRequest;
 export type SimpleFunctionsCalibrationParsedRequest = z.output<
   typeof SimpleFunctionsCalibrationRequestSchema
 >;
 export type SimpleFunctionsEdgesRequest = z.input<
   typeof SimpleFunctionsEdgesRequestSchema
 >;
+export type SimpleFunctionsEdgesRequestInput = SimpleFunctionsEdgesRequest;
 export type SimpleFunctionsEdgesParsedRequest = z.output<
   typeof SimpleFunctionsEdgesRequestSchema
 >;

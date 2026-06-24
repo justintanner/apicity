@@ -32,12 +32,16 @@ export type {
 export type {
   YouTubeOptions,
   YouTubeChannelsListRequest,
+  YouTubeChannelsListRequestInput,
   YouTubeChannelsListParsedRequest,
   YouTubeVideosInsertRequest,
+  YouTubeVideosInsertRequestInput,
   YouTubeVideosInsertParsedRequest,
   YouTubeGetTranscriptRequest,
+  YouTubeGetTranscriptRequestInput,
   YouTubeGetTranscriptParsedRequest,
   YouTubeGetVideoMetadataRequest,
+  YouTubeGetVideoMetadataRequestInput,
   YouTubeGetVideoMetadataParsedRequest,
 } from "./zod";
 

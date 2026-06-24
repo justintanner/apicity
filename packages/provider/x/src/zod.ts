@@ -61,6 +61,7 @@ export const XOAuthTokenRequestSchema = z.discriminatedUnion("grant_type", [
 ]);
 
 export type XOAuthTokenRequest = z.input<typeof XOAuthTokenRequestSchema>;
+export type XOAuthTokenRequestInput = XOAuthTokenRequest;
 export type XOAuthTokenParsedRequest = z.output<
   typeof XOAuthTokenRequestSchema
 >;
@@ -112,6 +113,7 @@ export const XMediaUploadInitializeRequestSchema = z.object({
 export type XMediaUploadInitializeRequest = z.input<
   typeof XMediaUploadInitializeRequestSchema
 >;
+export type XMediaUploadInitializeRequestInput = XMediaUploadInitializeRequest;
 export type XMediaUploadInitializeParsedRequest = z.output<
   typeof XMediaUploadInitializeRequestSchema
 >;
@@ -132,6 +134,7 @@ export const XMediaUploadAppendRequestSchema = z.object({
 export type XMediaUploadAppendRequest = z.input<
   typeof XMediaUploadAppendRequestSchema
 >;
+export type XMediaUploadAppendRequestInput = XMediaUploadAppendRequest;
 export type XMediaUploadAppendParsedRequest = z.output<
   typeof XMediaUploadAppendRequestSchema
 >;
@@ -218,7 +221,9 @@ export const XUsersMeRequestSchema = z.object({
   "tweet.fields": z.array(XTweetFieldSchema).min(1).optional(),
 });
 
-export type XUsersMeRequest = z.infer<typeof XUsersMeRequestSchema>;
+export type XUsersMeRequest = z.input<typeof XUsersMeRequestSchema>;
+export type XUsersMeRequestInput = XUsersMeRequest;
+export type XUsersMeParsedRequest = z.output<typeof XUsersMeRequestSchema>;
 
 // ---------------------------------------------------------------------------
 // POST /2/tweets
@@ -307,6 +312,7 @@ export const XTweetCreateRequestSchema = z.object({
 });
 
 export type XTweetCreateRequest = z.input<typeof XTweetCreateRequestSchema>;
+export type XTweetCreateRequestInput = XTweetCreateRequest;
 export type XTweetCreateParsedRequest = z.output<
   typeof XTweetCreateRequestSchema
 >;

@@ -539,6 +539,7 @@ export type AlibabaMessage = z.infer<typeof AlibabaMessageSchema>;
 export type AlibabaStreamOptions = z.infer<typeof AlibabaStreamOptionsSchema>;
 export type AlibabaResponseFormat = z.infer<typeof AlibabaResponseFormatSchema>;
 export type AlibabaChatRequest = z.input<typeof AlibabaChatRequestSchema>;
+export type AlibabaChatRequestInput = AlibabaChatRequest;
 export type AlibabaChatParsedRequest = z.output<
   typeof AlibabaChatRequestSchema
 >;
@@ -559,6 +560,7 @@ export type AlibabaVideoSynthesisRequestObject = z.infer<
 export type AlibabaVideoSynthesisRequest = z.input<
   typeof AlibabaVideoSynthesisRequestSchema
 >;
+export type AlibabaVideoSynthesisRequestInput = AlibabaVideoSynthesisRequest;
 export type AlibabaVideoSynthesisParsedRequest = z.output<
   typeof AlibabaVideoSynthesisRequestSchema
 >;
@@ -584,6 +586,7 @@ export type AlibabaImageGenerationParameters = z.infer<
 export type AlibabaImageGenerationRequest = z.input<
   typeof AlibabaImageGenerationRequestSchema
 >;
+export type AlibabaImageGenerationRequestInput = AlibabaImageGenerationRequest;
 export type AlibabaImageGenerationParsedRequest = z.output<
   typeof AlibabaImageGenerationRequestSchema
 >;
@@ -627,12 +630,15 @@ export type AlibabaQwenImageEditInput = z.infer<
 export type AlibabaQwenImageGenerationRequest = z.input<
   typeof AlibabaQwenImageGenerationRequestSchema
 >;
+export type AlibabaQwenImageGenerationRequestInput =
+  AlibabaQwenImageGenerationRequest;
 export type AlibabaQwenImageGenerationParsedRequest = z.output<
   typeof AlibabaQwenImageGenerationRequestSchema
 >;
 export type AlibabaQwenImageEditRequest = z.input<
   typeof AlibabaQwenImageEditRequestSchema
 >;
+export type AlibabaQwenImageEditRequestInput = AlibabaQwenImageEditRequest;
 export type AlibabaQwenImageEditParsedRequest = z.output<
   typeof AlibabaQwenImageEditRequestSchema
 >;
@@ -648,6 +654,8 @@ export type AlibabaMultimodalGenerationParameters = z.infer<
 export type AlibabaMultimodalGenerationRequest = z.input<
   typeof AlibabaMultimodalGenerationRequestSchema
 >;
+export type AlibabaMultimodalGenerationRequestInput =
+  AlibabaMultimodalGenerationRequest;
 export type AlibabaMultimodalGenerationParsedRequest = z.output<
   typeof AlibabaMultimodalGenerationRequestSchema
 >;

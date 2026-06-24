@@ -127,10 +127,13 @@ export type MessageContent = string | ContentBlock[];
 export type ChatMessage = z.infer<typeof ChatMessageSchema>;
 export type Role = ChatMessage["role"];
 export type ChatRequest = z.input<typeof ChatRequestSchema>;
+export type ChatRequestInput = ChatRequest;
 export type ChatParsedRequest = z.output<typeof ChatRequestSchema>;
 export type EmbeddingRequest = z.input<typeof EmbeddingRequestSchema>;
+export type EmbeddingRequestInput = EmbeddingRequest;
 export type EmbeddingParsedRequest = z.output<typeof EmbeddingRequestSchema>;
 export type CountTokensRequest = z.input<typeof CountTokensRequestSchema>;
+export type CountTokensRequestInput = CountTokensRequest;
 export type CountTokensParsedRequest = z.output<
   typeof CountTokensRequestSchema
 >;

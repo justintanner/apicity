@@ -60,6 +60,7 @@ export const ElevenLabsListVoicesRequestSchema = z.object({
 export type ElevenLabsListVoicesRequest = z.input<
   typeof ElevenLabsListVoicesRequestSchema
 >;
+export type ElevenLabsListVoicesRequestInput = ElevenLabsListVoicesRequest;
 export type ElevenLabsListVoicesParsedRequest = z.output<
   typeof ElevenLabsListVoicesRequestSchema
 >;
@@ -75,6 +76,7 @@ export const ElevenLabsGetVoiceRequestSchema = z.object({
 export type ElevenLabsGetVoiceRequest = z.input<
   typeof ElevenLabsGetVoiceRequestSchema
 >;
+export type ElevenLabsGetVoiceRequestInput = ElevenLabsGetVoiceRequest;
 export type ElevenLabsGetVoiceParsedRequest = z.output<
   typeof ElevenLabsGetVoiceRequestSchema
 >;
@@ -93,6 +95,8 @@ export const ElevenLabsCreatePvcVoiceRequestSchema = z.object({
 export type ElevenLabsCreatePvcVoiceRequest = z.input<
   typeof ElevenLabsCreatePvcVoiceRequestSchema
 >;
+export type ElevenLabsCreatePvcVoiceRequestInput =
+  ElevenLabsCreatePvcVoiceRequest;
 export type ElevenLabsCreatePvcVoiceParsedRequest = z.output<
   typeof ElevenLabsCreatePvcVoiceRequestSchema
 >;
@@ -108,6 +112,8 @@ export const ElevenLabsPvcVoiceCaptchaRequestSchema = z.object({
 export type ElevenLabsPvcVoiceCaptchaRequest = z.input<
   typeof ElevenLabsPvcVoiceCaptchaRequestSchema
 >;
+export type ElevenLabsPvcVoiceCaptchaRequestInput =
+  ElevenLabsPvcVoiceCaptchaRequest;
 export type ElevenLabsPvcVoiceCaptchaParsedRequest = z.output<
   typeof ElevenLabsPvcVoiceCaptchaRequestSchema
 >;
@@ -127,6 +133,8 @@ export const ElevenLabsUpdatePvcVoiceSampleRequestSchema = z.object({
 export type ElevenLabsUpdatePvcVoiceSampleRequest = z.input<
   typeof ElevenLabsUpdatePvcVoiceSampleRequestSchema
 >;
+export type ElevenLabsUpdatePvcVoiceSampleRequestInput =
+  ElevenLabsUpdatePvcVoiceSampleRequest;
 export type ElevenLabsUpdatePvcVoiceSampleParsedRequest = z.output<
   typeof ElevenLabsUpdatePvcVoiceSampleRequestSchema
 >;
@@ -142,6 +150,7 @@ export const ElevenLabsPvcTrainRequestSchema = z.object({
 export type ElevenLabsPvcTrainRequest = z.input<
   typeof ElevenLabsPvcTrainRequestSchema
 >;
+export type ElevenLabsPvcTrainRequestInput = ElevenLabsPvcTrainRequest;
 export type ElevenLabsPvcTrainParsedRequest = z.output<
   typeof ElevenLabsPvcTrainRequestSchema
 >;
@@ -165,6 +174,8 @@ export const ElevenLabsSoundGenerationRequestSchema = z.object({
 export type ElevenLabsSoundGenerationRequest = z.input<
   typeof ElevenLabsSoundGenerationRequestSchema
 >;
+export type ElevenLabsSoundGenerationRequestInput =
+  ElevenLabsSoundGenerationRequest;
 export type ElevenLabsSoundGenerationParsedRequest = z.output<
   typeof ElevenLabsSoundGenerationRequestSchema
 >;
@@ -215,6 +226,7 @@ export const ElevenLabsTextToSpeechRequestSchema = z.object({
 export type ElevenLabsTextToSpeechRequest = z.input<
   typeof ElevenLabsTextToSpeechRequestSchema
 >;
+export type ElevenLabsTextToSpeechRequestInput = ElevenLabsTextToSpeechRequest;
 export type ElevenLabsTextToSpeechParsedRequest = z.output<
   typeof ElevenLabsTextToSpeechRequestSchema
 >;
@@ -247,6 +259,8 @@ export const ElevenLabsTextToDialogueRequestSchema = z.object({
 export type ElevenLabsTextToDialogueRequest = z.input<
   typeof ElevenLabsTextToDialogueRequestSchema
 >;
+export type ElevenLabsTextToDialogueRequestInput =
+  ElevenLabsTextToDialogueRequest;
 export type ElevenLabsTextToDialogueParsedRequest = z.output<
   typeof ElevenLabsTextToDialogueRequestSchema
 >;
@@ -300,6 +314,7 @@ export const ElevenLabsSpeechToTextRequestSchema = z.object({
 export type ElevenLabsSpeechToTextRequest = z.input<
   typeof ElevenLabsSpeechToTextRequestSchema
 >;
+export type ElevenLabsSpeechToTextRequestInput = ElevenLabsSpeechToTextRequest;
 export type ElevenLabsSpeechToTextParsedRequest = z.output<
   typeof ElevenLabsSpeechToTextRequestSchema
 >;
@@ -368,6 +383,8 @@ export const ElevenLabsWorkspaceAnalyticsRequestsRequestSchema = z
 export type ElevenLabsWorkspaceAnalyticsRequestsRequest = z.input<
   typeof ElevenLabsWorkspaceAnalyticsRequestsRequestSchema
 >;
+export type ElevenLabsWorkspaceAnalyticsRequestsRequestInput =
+  ElevenLabsWorkspaceAnalyticsRequestsRequest;
 export type ElevenLabsWorkspaceAnalyticsRequestsParsedRequest = z.output<
   typeof ElevenLabsWorkspaceAnalyticsRequestsRequestSchema
 >;
@@ -395,6 +412,8 @@ export const ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema =
 export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest = z.input<
   typeof ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema
 >;
+export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestInput =
+  ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest;
 export type ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeParsedRequest =
   z.output<
     typeof ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema
@@ -412,6 +431,8 @@ export const ElevenLabsPvcManualVerificationRequestSchema = z.object({
 export type ElevenLabsPvcManualVerificationRequest = z.input<
   typeof ElevenLabsPvcManualVerificationRequestSchema
 >;
+export type ElevenLabsPvcManualVerificationRequestInput =
+  ElevenLabsPvcManualVerificationRequest;
 export type ElevenLabsPvcManualVerificationParsedRequest = z.output<
   typeof ElevenLabsPvcManualVerificationRequestSchema
 >;

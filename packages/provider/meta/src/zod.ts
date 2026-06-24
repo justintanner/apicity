@@ -61,6 +61,7 @@ export const MetaMediaCreateRequestSchema = z.object({
 export type MetaMediaCreateRequest = z.input<
   typeof MetaMediaCreateRequestSchema
 >;
+export type MetaMediaCreateRequestInput = MetaMediaCreateRequest;
 export type MetaMediaCreateParsedRequest = z.output<
   typeof MetaMediaCreateRequestSchema
 >;
@@ -79,6 +80,7 @@ export const MetaMediaPublishRequestSchema = z.object({
 export type MetaMediaPublishRequest = z.input<
   typeof MetaMediaPublishRequestSchema
 >;
+export type MetaMediaPublishRequestInput = MetaMediaPublishRequest;
 export type MetaMediaPublishParsedRequest = z.output<
   typeof MetaMediaPublishRequestSchema
 >;

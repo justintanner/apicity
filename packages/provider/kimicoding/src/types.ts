@@ -15,10 +15,13 @@ export type {
   MessageContent,
   ChatMessage,
   ChatRequest,
+  ChatRequestInput,
   ChatParsedRequest,
   EmbeddingRequest,
+  EmbeddingRequestInput,
   EmbeddingParsedRequest,
   CountTokensRequest,
+  CountTokensRequestInput,
   CountTokensParsedRequest,
   KimiCodingOptions,
 } from "./zod";

@@ -36,6 +36,7 @@ export type {
   FalPrice,
   FalPricingResponse,
   FalEstimateRequest,
+  FalEstimateRequestInput,
   FalEstimateParsedRequest,
   FalEstimateResponse,
   FalUsageParams,

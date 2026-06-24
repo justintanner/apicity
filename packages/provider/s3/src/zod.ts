@@ -69,6 +69,7 @@ export type S3Options = z.infer<typeof S3OptionsSchema>;
 export const S3ListBucketsRequestSchema = z.object({}).optional();
 
 export type S3ListBucketsRequest = z.input<typeof S3ListBucketsRequestSchema>;
+export type S3ListBucketsRequestInput = S3ListBucketsRequest;
 export type S3ListBucketsParsedRequest = z.output<
   typeof S3ListBucketsRequestSchema
 >;
@@ -83,6 +84,7 @@ export const S3ListDirectoryBucketsRequestSchema = z
 export type S3ListDirectoryBucketsRequest = z.input<
   typeof S3ListDirectoryBucketsRequestSchema
 >;
+export type S3ListDirectoryBucketsRequestInput = S3ListDirectoryBucketsRequest;
 export type S3ListDirectoryBucketsParsedRequest = z.output<
   typeof S3ListDirectoryBucketsRequestSchema
 >;
@@ -100,6 +102,7 @@ export const S3CreateBucketRequestSchema = z.object({
 });
 
 export type S3CreateBucketRequest = z.input<typeof S3CreateBucketRequestSchema>;
+export type S3CreateBucketRequestInput = S3CreateBucketRequest;
 export type S3CreateBucketParsedRequest = z.output<
   typeof S3CreateBucketRequestSchema
 >;
@@ -116,6 +119,7 @@ export const S3CreateSessionRequestSchema = z.object({
 export type S3CreateSessionRequest = z.input<
   typeof S3CreateSessionRequestSchema
 >;
+export type S3CreateSessionRequestInput = S3CreateSessionRequest;
 export type S3CreateSessionParsedRequest = z.output<
   typeof S3CreateSessionRequestSchema
 >;
@@ -126,6 +130,7 @@ export const S3BucketRequestSchema = z.object({
 });
 
 export type S3BucketRequest = z.input<typeof S3BucketRequestSchema>;
+export type S3BucketRequestInput = S3BucketRequest;
 export type S3BucketParsedRequest = z.output<typeof S3BucketRequestSchema>;
 
 export const S3ListObjectsV2RequestSchema = z.object({
@@ -142,6 +147,7 @@ export const S3ListObjectsV2RequestSchema = z.object({
 export type S3ListObjectsV2Request = z.input<
   typeof S3ListObjectsV2RequestSchema
 >;
+export type S3ListObjectsV2RequestInput = S3ListObjectsV2Request;
 export type S3ListObjectsV2ParsedRequest = z.output<
   typeof S3ListObjectsV2RequestSchema
 >;
@@ -158,6 +164,7 @@ export const S3ListObjectsRequestSchema = z.object({
 });
 
 export type S3ListObjectsRequest = z.input<typeof S3ListObjectsRequestSchema>;
+export type S3ListObjectsRequestInput = S3ListObjectsRequest;
 export type S3ListObjectsParsedRequest = z.output<
   typeof S3ListObjectsRequestSchema
 >;
@@ -176,6 +183,7 @@ export const S3ListObjectVersionsRequestSchema = z.object({
 export type S3ListObjectVersionsRequest = z.input<
   typeof S3ListObjectVersionsRequestSchema
 >;
+export type S3ListObjectVersionsRequestInput = S3ListObjectVersionsRequest;
 export type S3ListObjectVersionsParsedRequest = z.output<
   typeof S3ListObjectVersionsRequestSchema
 >;
@@ -198,6 +206,7 @@ export const S3PutObjectRequestSchema = z.object({
 });
 
 export type S3PutObjectRequest = z.input<typeof S3PutObjectRequestSchema>;
+export type S3PutObjectRequestInput = S3PutObjectRequest;
 export type S3PutObjectParsedRequest = z.output<
   typeof S3PutObjectRequestSchema
 >;
@@ -219,6 +228,7 @@ export const S3CopyObjectRequestSchema = z.object({
 });
 
 export type S3CopyObjectRequest = z.input<typeof S3CopyObjectRequestSchema>;
+export type S3CopyObjectRequestInput = S3CopyObjectRequest;
 export type S3CopyObjectParsedRequest = z.output<
   typeof S3CopyObjectRequestSchema
 >;
@@ -246,6 +256,7 @@ export const S3PresignObjectRequestSchema = z.object({
 export type S3PresignObjectRequest = z.input<
   typeof S3PresignObjectRequestSchema
 >;
+export type S3PresignObjectRequestInput = S3PresignObjectRequest;
 export type S3PresignObjectParsedRequest = z.output<
   typeof S3PresignObjectRequestSchema
 >;
@@ -258,6 +269,7 @@ export const S3GetObjectRequestSchema = z.object({
 });
 
 export type S3GetObjectRequest = z.input<typeof S3GetObjectRequestSchema>;
+export type S3GetObjectRequestInput = S3GetObjectRequest;
 export type S3GetObjectParsedRequest = z.output<
   typeof S3GetObjectRequestSchema
 >;
@@ -265,6 +277,7 @@ export type S3GetObjectParsedRequest = z.output<
 export const S3HeadObjectRequestSchema = S3GetObjectRequestSchema;
 
 export type S3HeadObjectRequest = z.input<typeof S3HeadObjectRequestSchema>;
+export type S3HeadObjectRequestInput = S3HeadObjectRequest;
 export type S3HeadObjectParsedRequest = z.output<
   typeof S3HeadObjectRequestSchema
 >;
@@ -279,6 +292,7 @@ export const S3ObjectTaggingRequestSchema = z.object({
 export type S3ObjectTaggingRequest = z.input<
   typeof S3ObjectTaggingRequestSchema
 >;
+export type S3ObjectTaggingRequestInput = S3ObjectTaggingRequest;
 export type S3ObjectTaggingParsedRequest = z.output<
   typeof S3ObjectTaggingRequestSchema
 >;
@@ -291,6 +305,7 @@ export const S3PutObjectTaggingRequestSchema =
 export type S3PutObjectTaggingRequest = z.input<
   typeof S3PutObjectTaggingRequestSchema
 >;
+export type S3PutObjectTaggingRequestInput = S3PutObjectTaggingRequest;
 export type S3PutObjectTaggingParsedRequest = z.output<
   typeof S3PutObjectTaggingRequestSchema
 >;
@@ -309,6 +324,7 @@ export const S3ObjectGovernanceRequestSchema = z.object(
 export type S3ObjectGovernanceRequest = z.input<
   typeof S3ObjectGovernanceRequestSchema
 >;
+export type S3ObjectGovernanceRequestInput = S3ObjectGovernanceRequest;
 export type S3ObjectGovernanceParsedRequest = z.output<
   typeof S3ObjectGovernanceRequestSchema
 >;
@@ -336,6 +352,7 @@ export const S3PutObjectAclRequestSchema =
   });
 
 export type S3PutObjectAclRequest = z.input<typeof S3PutObjectAclRequestSchema>;
+export type S3PutObjectAclRequestInput = S3PutObjectAclRequest;
 export type S3PutObjectAclParsedRequest = z.output<
   typeof S3PutObjectAclRequestSchema
 >;
@@ -363,6 +380,7 @@ export const S3GetObjectAttributesRequestSchema =
 export type S3GetObjectAttributesRequest = z.input<
   typeof S3GetObjectAttributesRequestSchema
 >;
+export type S3GetObjectAttributesRequestInput = S3GetObjectAttributesRequest;
 export type S3GetObjectAttributesParsedRequest = z.output<
   typeof S3GetObjectAttributesRequestSchema
 >;
@@ -377,6 +395,7 @@ export const S3RestoreObjectRequestSchema =
 export type S3RestoreObjectRequest = z.input<
   typeof S3RestoreObjectRequestSchema
 >;
+export type S3RestoreObjectRequestInput = S3RestoreObjectRequest;
 export type S3RestoreObjectParsedRequest = z.output<
   typeof S3RestoreObjectRequestSchema
 >;
@@ -391,6 +410,7 @@ export const S3PutObjectLegalHoldRequestSchema =
 export type S3PutObjectLegalHoldRequest = z.input<
   typeof S3PutObjectLegalHoldRequestSchema
 >;
+export type S3PutObjectLegalHoldRequestInput = S3PutObjectLegalHoldRequest;
 export type S3PutObjectLegalHoldParsedRequest = z.output<
   typeof S3PutObjectLegalHoldRequestSchema
 >;
@@ -407,6 +427,7 @@ export const S3PutObjectRetentionRequestSchema =
 export type S3PutObjectRetentionRequest = z.input<
   typeof S3PutObjectRetentionRequestSchema
 >;
+export type S3PutObjectRetentionRequestInput = S3PutObjectRetentionRequest;
 export type S3PutObjectRetentionParsedRequest = z.output<
   typeof S3PutObjectRetentionRequestSchema
 >;
@@ -424,6 +445,8 @@ export const S3PutObjectLockConfigurationRequestSchema = z.object({
 export type S3PutObjectLockConfigurationRequest = z.input<
   typeof S3PutObjectLockConfigurationRequestSchema
 >;
+export type S3PutObjectLockConfigurationRequestInput =
+  S3PutObjectLockConfigurationRequest;
 export type S3PutObjectLockConfigurationParsedRequest = z.output<
   typeof S3PutObjectLockConfigurationRequestSchema
 >;
@@ -439,6 +462,7 @@ export const S3SelectObjectContentRequestSchema =
 export type S3SelectObjectContentRequest = z.input<
   typeof S3SelectObjectContentRequestSchema
 >;
+export type S3SelectObjectContentRequestInput = S3SelectObjectContentRequest;
 export type S3SelectObjectContentParsedRequest = z.output<
   typeof S3SelectObjectContentRequestSchema
 >;
@@ -460,6 +484,7 @@ export const S3RenameObjectRequestSchema = z.object({
 });
 
 export type S3RenameObjectRequest = z.input<typeof S3RenameObjectRequestSchema>;
+export type S3RenameObjectRequestInput = S3RenameObjectRequest;
 export type S3RenameObjectParsedRequest = z.output<
   typeof S3RenameObjectRequestSchema
 >;
@@ -474,6 +499,8 @@ export const S3UpdateObjectEncryptionRequestSchema =
 export type S3UpdateObjectEncryptionRequest = z.input<
   typeof S3UpdateObjectEncryptionRequestSchema
 >;
+export type S3UpdateObjectEncryptionRequestInput =
+  S3UpdateObjectEncryptionRequest;
 export type S3UpdateObjectEncryptionParsedRequest = z.output<
   typeof S3UpdateObjectEncryptionRequestSchema
 >;
@@ -492,6 +519,8 @@ export const S3WriteGetObjectResponseRequestSchema = z.object({
 export type S3WriteGetObjectResponseRequest = z.input<
   typeof S3WriteGetObjectResponseRequestSchema
 >;
+export type S3WriteGetObjectResponseRequestInput =
+  S3WriteGetObjectResponseRequest;
 export type S3WriteGetObjectResponseParsedRequest = z.output<
   typeof S3WriteGetObjectResponseRequestSchema
 >;
@@ -503,6 +532,7 @@ export const S3DeleteObjectRequestSchema = z.object({
 });
 
 export type S3DeleteObjectRequest = z.input<typeof S3DeleteObjectRequestSchema>;
+export type S3DeleteObjectRequestInput = S3DeleteObjectRequest;
 export type S3DeleteObjectParsedRequest = z.output<
   typeof S3DeleteObjectRequestSchema
 >;
@@ -529,6 +559,7 @@ export const S3DeleteObjectsRequestSchema = z.object({
 export type S3DeleteObjectsRequest = z.input<
   typeof S3DeleteObjectsRequestSchema
 >;
+export type S3DeleteObjectsRequestInput = S3DeleteObjectsRequest;
 export type S3DeleteObjectsParsedRequest = z.output<
   typeof S3DeleteObjectsRequestSchema
 >;
@@ -538,6 +569,7 @@ export const S3GetBucketVersioningRequestSchema = S3BucketRequestSchema;
 export type S3GetBucketVersioningRequest = z.input<
   typeof S3GetBucketVersioningRequestSchema
 >;
+export type S3GetBucketVersioningRequestInput = S3GetBucketVersioningRequest;
 export type S3GetBucketVersioningParsedRequest = z.output<
   typeof S3GetBucketVersioningRequestSchema
 >;
@@ -555,6 +587,7 @@ export const S3PutBucketVersioningRequestSchema = z.object({
 export type S3PutBucketVersioningRequest = z.input<
   typeof S3PutBucketVersioningRequestSchema
 >;
+export type S3PutBucketVersioningRequestInput = S3PutBucketVersioningRequest;
 export type S3PutBucketVersioningParsedRequest = z.output<
   typeof S3PutBucketVersioningRequestSchema
 >;
@@ -562,6 +595,7 @@ export type S3PutBucketVersioningParsedRequest = z.output<
 export const S3BucketConfigRequestSchema = S3BucketRequestSchema;
 
 export type S3BucketConfigRequest = z.input<typeof S3BucketConfigRequestSchema>;
+export type S3BucketConfigRequestInput = S3BucketConfigRequest;
 export type S3BucketConfigParsedRequest = z.output<
   typeof S3BucketConfigRequestSchema
 >;
@@ -574,6 +608,7 @@ export const S3ListBucketConfigsRequestSchema =
 export type S3ListBucketConfigsRequest = z.input<
   typeof S3ListBucketConfigsRequestSchema
 >;
+export type S3ListBucketConfigsRequestInput = S3ListBucketConfigsRequest;
 export type S3ListBucketConfigsParsedRequest = z.output<
   typeof S3ListBucketConfigsRequestSchema
 >;
@@ -586,6 +621,7 @@ export const S3BucketConfigWithIdRequestSchema =
 export type S3BucketConfigWithIdRequest = z.input<
   typeof S3BucketConfigWithIdRequestSchema
 >;
+export type S3BucketConfigWithIdRequestInput = S3BucketConfigWithIdRequest;
 export type S3BucketConfigWithIdParsedRequest = z.output<
   typeof S3BucketConfigWithIdRequestSchema
 >;
@@ -598,6 +634,8 @@ export const S3BucketConfigWithPayerRequestSchema =
 export type S3BucketConfigWithPayerRequest = z.input<
   typeof S3BucketConfigWithPayerRequestSchema
 >;
+export type S3BucketConfigWithPayerRequestInput =
+  S3BucketConfigWithPayerRequest;
 export type S3BucketConfigWithPayerParsedRequest = z.output<
   typeof S3BucketConfigWithPayerRequestSchema
 >;
@@ -612,6 +650,7 @@ export const S3PutBucketXmlConfigRequestSchema =
 export type S3PutBucketXmlConfigRequest = z.input<
   typeof S3PutBucketXmlConfigRequestSchema
 >;
+export type S3PutBucketXmlConfigRequestInput = S3PutBucketXmlConfigRequest;
 export type S3PutBucketXmlConfigParsedRequest = z.output<
   typeof S3PutBucketXmlConfigRequestSchema
 >;
@@ -626,6 +665,8 @@ export const S3PutBucketXmlConfigWithIdRequestSchema =
 export type S3PutBucketXmlConfigWithIdRequest = z.input<
   typeof S3PutBucketXmlConfigWithIdRequestSchema
 >;
+export type S3PutBucketXmlConfigWithIdRequestInput =
+  S3PutBucketXmlConfigWithIdRequest;
 export type S3PutBucketXmlConfigWithIdParsedRequest = z.output<
   typeof S3PutBucketXmlConfigWithIdRequestSchema
 >;
@@ -641,6 +682,7 @@ export const S3PutBucketPolicyRequestSchema =
 export type S3PutBucketPolicyRequest = z.input<
   typeof S3PutBucketPolicyRequestSchema
 >;
+export type S3PutBucketPolicyRequestInput = S3PutBucketPolicyRequest;
 export type S3PutBucketPolicyParsedRequest = z.output<
   typeof S3PutBucketPolicyRequestSchema
 >;
@@ -653,6 +695,7 @@ export const S3PutBucketTaggingRequestSchema =
 export type S3PutBucketTaggingRequest = z.input<
   typeof S3PutBucketTaggingRequestSchema
 >;
+export type S3PutBucketTaggingRequestInput = S3PutBucketTaggingRequest;
 export type S3PutBucketTaggingParsedRequest = z.output<
   typeof S3PutBucketTaggingRequestSchema
 >;
@@ -667,6 +710,8 @@ export const S3PutBucketRequestPaymentRequestSchema =
 export type S3PutBucketRequestPaymentRequest = z.input<
   typeof S3PutBucketRequestPaymentRequestSchema
 >;
+export type S3PutBucketRequestPaymentRequestInput =
+  S3PutBucketRequestPaymentRequest;
 export type S3PutBucketRequestPaymentParsedRequest = z.output<
   typeof S3PutBucketRequestPaymentRequestSchema
 >;
@@ -686,6 +731,7 @@ export const S3PutBucketAclRequestSchema = S3BucketConfigRequestSchema.extend({
 });
 
 export type S3PutBucketAclRequest = z.input<typeof S3PutBucketAclRequestSchema>;
+export type S3PutBucketAclRequestInput = S3PutBucketAclRequest;
 export type S3PutBucketAclParsedRequest = z.output<
   typeof S3PutBucketAclRequestSchema
 >;
@@ -700,6 +746,8 @@ export const S3PutBucketMetadataConfigurationRequestSchema =
 export type S3PutBucketMetadataConfigurationRequest = z.input<
   typeof S3PutBucketMetadataConfigurationRequestSchema
 >;
+export type S3PutBucketMetadataConfigurationRequestInput =
+  S3PutBucketMetadataConfigurationRequest;
 export type S3PutBucketMetadataConfigurationParsedRequest = z.output<
   typeof S3PutBucketMetadataConfigurationRequestSchema
 >;
@@ -730,6 +778,8 @@ export const S3CreateMultipartUploadRequestSchema = z.object({
 export type S3CreateMultipartUploadRequest = z.input<
   typeof S3CreateMultipartUploadRequestSchema
 >;
+export type S3CreateMultipartUploadRequestInput =
+  S3CreateMultipartUploadRequest;
 export type S3CreateMultipartUploadParsedRequest = z.output<
   typeof S3CreateMultipartUploadRequestSchema
 >;
@@ -746,6 +796,7 @@ export const S3UploadPartRequestSchema = z.object({
 });
 
 export type S3UploadPartRequest = z.input<typeof S3UploadPartRequestSchema>;
+export type S3UploadPartRequestInput = S3UploadPartRequest;
 export type S3UploadPartParsedRequest = z.output<
   typeof S3UploadPartRequestSchema
 >;
@@ -770,6 +821,7 @@ export const S3UploadPartCopyRequestSchema = z.object({
 export type S3UploadPartCopyRequest = z.input<
   typeof S3UploadPartCopyRequestSchema
 >;
+export type S3UploadPartCopyRequestInput = S3UploadPartCopyRequest;
 export type S3UploadPartCopyParsedRequest = z.output<
   typeof S3UploadPartCopyRequestSchema
 >;
@@ -800,6 +852,8 @@ export const S3CompleteMultipartUploadRequestSchema = z.object({
 export type S3CompleteMultipartUploadRequest = z.input<
   typeof S3CompleteMultipartUploadRequestSchema
 >;
+export type S3CompleteMultipartUploadRequestInput =
+  S3CompleteMultipartUploadRequest;
 export type S3CompleteMultipartUploadParsedRequest = z.output<
   typeof S3CompleteMultipartUploadRequestSchema
 >;
@@ -814,6 +868,7 @@ export const S3AbortMultipartUploadRequestSchema = z.object({
 export type S3AbortMultipartUploadRequest = z.input<
   typeof S3AbortMultipartUploadRequestSchema
 >;
+export type S3AbortMultipartUploadRequestInput = S3AbortMultipartUploadRequest;
 export type S3AbortMultipartUploadParsedRequest = z.output<
   typeof S3AbortMultipartUploadRequestSchema
 >;
@@ -828,6 +883,7 @@ export const S3ListPartsRequestSchema = z.object({
 });
 
 export type S3ListPartsRequest = z.input<typeof S3ListPartsRequestSchema>;
+export type S3ListPartsRequestInput = S3ListPartsRequest;
 export type S3ListPartsParsedRequest = z.output<
   typeof S3ListPartsRequestSchema
 >;
@@ -846,6 +902,7 @@ export const S3ListMultipartUploadsRequestSchema = z.object({
 export type S3ListMultipartUploadsRequest = z.input<
   typeof S3ListMultipartUploadsRequestSchema
 >;
+export type S3ListMultipartUploadsRequestInput = S3ListMultipartUploadsRequest;
 export type S3ListMultipartUploadsParsedRequest = z.output<
   typeof S3ListMultipartUploadsRequestSchema
 >;

@@ -37,6 +37,7 @@ export type {
   AlibabaStreamOptions,
   AlibabaResponseFormat,
   AlibabaChatRequest,
+  AlibabaChatRequestInput,
   AlibabaChatParsedRequest,
   // Video request
   AlibabaVideoMediaType,
@@ -46,6 +47,7 @@ export type {
   AlibabaVideoSynthesisParameters,
   AlibabaVideoSynthesisRequestObject,
   AlibabaVideoSynthesisRequest,
+  AlibabaVideoSynthesisRequestInput,
   AlibabaVideoSynthesisParsedRequest,
   // Image-gen request
   AlibabaImageTextContent,
@@ -56,6 +58,7 @@ export type {
   AlibabaColorPaletteItem,
   AlibabaImageGenerationParameters,
   AlibabaImageGenerationRequest,
+  AlibabaImageGenerationRequestInput,
   AlibabaImageGenerationParsedRequest,
   AlibabaImageReferenceSlots,
   AlibabaQwenImageGenerationModel,
@@ -71,14 +74,17 @@ export type {
   AlibabaQwenImageGenerationInput,
   AlibabaQwenImageEditInput,
   AlibabaQwenImageGenerationRequest,
+  AlibabaQwenImageGenerationRequestInput,
   AlibabaQwenImageGenerationParsedRequest,
   AlibabaQwenImageEditRequest,
+  AlibabaQwenImageEditRequestInput,
   AlibabaQwenImageEditParsedRequest,
   // Multimodal request
   AlibabaMultimodalGenerationMessage,
   AlibabaMultimodalGenerationInput,
   AlibabaMultimodalGenerationParameters,
   AlibabaMultimodalGenerationRequest,
+  AlibabaMultimodalGenerationRequestInput,
   AlibabaMultimodalGenerationParsedRequest,
   // Response unions
   AlibabaRole,

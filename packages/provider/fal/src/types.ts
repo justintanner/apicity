@@ -25,6 +25,7 @@ export interface ApicitySchema<T = unknown> {
 export type {
   FalOptions,
   FalEstimateRequest,
+  FalEstimateRequestInput,
   FalEstimateParsedRequest,
   FalQueueSubmitParams,
   FalLogsStreamParams,

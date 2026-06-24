@@ -127,12 +127,14 @@ export type GoogleToolConfig = z.infer<typeof GoogleToolConfigSchema>;
 export type GoogleGenerateContentRequest = z.input<
   typeof GoogleGenerateContentRequestSchema
 >;
+export type GoogleGenerateContentRequestInput = GoogleGenerateContentRequest;
 export type GoogleGenerateContentParsedRequest = z.output<
   typeof GoogleGenerateContentRequestSchema
 >;
 export type GoogleCountTokensRequest = z.input<
   typeof GoogleCountTokensRequestSchema
 >;
+export type GoogleCountTokensRequestInput = GoogleCountTokensRequest;
 export type GoogleCountTokensParsedRequest = z.output<
   typeof GoogleCountTokensRequestSchema
 >;

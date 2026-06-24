@@ -33,8 +33,10 @@ export type {
   GoogleTool,
   GoogleToolConfig,
   GoogleGenerateContentRequest,
+  GoogleGenerateContentRequestInput,
   GoogleGenerateContentParsedRequest,
   GoogleCountTokensRequest,
+  GoogleCountTokensRequestInput,
   GoogleCountTokensParsedRequest,
 } from "./zod";
 

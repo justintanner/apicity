@@ -238,3 +238,9 @@ export interface YouTubeProvider {
 }
 
 export type { YouTubeOptions } from "./zod";
+export type {
+  YouTubeChannelsListRequestInput,
+  YouTubeVideosInsertRequestInput,
+  YouTubeGetTranscriptRequestInput,
+  YouTubeGetVideoMetadataRequestInput,
+} from "./zod";

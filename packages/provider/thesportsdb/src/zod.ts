@@ -72,6 +72,8 @@ export const TheSportsDBLeagueLookupRequestSchema = z.object({
 export type TheSportsDBLeagueLookupRequest = z.input<
   typeof TheSportsDBLeagueLookupRequestSchema
 >;
+export type TheSportsDBLeagueLookupRequestInput =
+  TheSportsDBLeagueLookupRequest;
 export type TheSportsDBLeagueLookupParsedRequest = z.output<
   typeof TheSportsDBLeagueLookupRequestSchema
 >;
@@ -84,6 +86,7 @@ export const TheSportsDBTableLookupRequestSchema = z.object({
 export type TheSportsDBTableLookupRequest = z.input<
   typeof TheSportsDBTableLookupRequestSchema
 >;
+export type TheSportsDBTableLookupRequestInput = TheSportsDBTableLookupRequest;
 export type TheSportsDBTableLookupParsedRequest = z.output<
   typeof TheSportsDBTableLookupRequestSchema
 >;
@@ -95,6 +98,7 @@ export const TheSportsDBTeamLookupRequestSchema = z.object({
 export type TheSportsDBTeamLookupRequest = z.input<
   typeof TheSportsDBTeamLookupRequestSchema
 >;
+export type TheSportsDBTeamLookupRequestInput = TheSportsDBTeamLookupRequest;
 export type TheSportsDBTeamLookupParsedRequest = z.output<
   typeof TheSportsDBTeamLookupRequestSchema
 >;
@@ -106,6 +110,8 @@ export const TheSportsDBEquipmentLookupRequestSchema = z.object({
 export type TheSportsDBEquipmentLookupRequest = z.input<
   typeof TheSportsDBEquipmentLookupRequestSchema
 >;
+export type TheSportsDBEquipmentLookupRequestInput =
+  TheSportsDBEquipmentLookupRequest;
 export type TheSportsDBEquipmentLookupParsedRequest = z.output<
   typeof TheSportsDBEquipmentLookupRequestSchema
 >;
@@ -117,6 +123,7 @@ export const TheSportsDBVenueLookupRequestSchema = z.object({
 export type TheSportsDBVenueLookupRequest = z.input<
   typeof TheSportsDBVenueLookupRequestSchema
 >;
+export type TheSportsDBVenueLookupRequestInput = TheSportsDBVenueLookupRequest;
 export type TheSportsDBVenueLookupParsedRequest = z.output<
   typeof TheSportsDBVenueLookupRequestSchema
 >;
@@ -127,6 +134,8 @@ export const TheSportsDBSearchLeagueRequestSchema = z.object({
 export type TheSportsDBSearchLeagueRequest = z.input<
   typeof TheSportsDBSearchLeagueRequestSchema
 >;
+export type TheSportsDBSearchLeagueRequestInput =
+  TheSportsDBSearchLeagueRequest;
 export type TheSportsDBSearchLeagueParsedRequest = z.output<
   typeof TheSportsDBSearchLeagueRequestSchema
 >;
@@ -137,6 +146,7 @@ export const TheSportsDBSearchTeamRequestSchema = z.object({
 export type TheSportsDBSearchTeamRequest = z.input<
   typeof TheSportsDBSearchTeamRequestSchema
 >;
+export type TheSportsDBSearchTeamRequestInput = TheSportsDBSearchTeamRequest;
 export type TheSportsDBSearchTeamParsedRequest = z.output<
   typeof TheSportsDBSearchTeamRequestSchema
 >;
@@ -147,6 +157,8 @@ export const TheSportsDBSearchPlayerRequestSchema = z.object({
 export type TheSportsDBSearchPlayerRequest = z.input<
   typeof TheSportsDBSearchPlayerRequestSchema
 >;
+export type TheSportsDBSearchPlayerRequestInput =
+  TheSportsDBSearchPlayerRequest;
 export type TheSportsDBSearchPlayerParsedRequest = z.output<
   typeof TheSportsDBSearchPlayerRequestSchema
 >;
@@ -157,6 +169,7 @@ export const TheSportsDBSearchEventRequestSchema = z.object({
 export type TheSportsDBSearchEventRequest = z.input<
   typeof TheSportsDBSearchEventRequestSchema
 >;
+export type TheSportsDBSearchEventRequestInput = TheSportsDBSearchEventRequest;
 export type TheSportsDBSearchEventParsedRequest = z.output<
   typeof TheSportsDBSearchEventRequestSchema
 >;
@@ -167,6 +180,7 @@ export const TheSportsDBSearchVenueRequestSchema = z.object({
 export type TheSportsDBSearchVenueRequest = z.input<
   typeof TheSportsDBSearchVenueRequestSchema
 >;
+export type TheSportsDBSearchVenueRequestInput = TheSportsDBSearchVenueRequest;
 export type TheSportsDBSearchVenueParsedRequest = z.output<
   typeof TheSportsDBSearchVenueRequestSchema
 >;
@@ -177,6 +191,7 @@ export const TheSportsDBLeagueIdRequestSchema = z.object({
 export type TheSportsDBLeagueIdRequest = z.input<
   typeof TheSportsDBLeagueIdRequestSchema
 >;
+export type TheSportsDBLeagueIdRequestInput = TheSportsDBLeagueIdRequest;
 export type TheSportsDBLeagueIdParsedRequest = z.output<
   typeof TheSportsDBLeagueIdRequestSchema
 >;
@@ -187,6 +202,7 @@ export const TheSportsDBTeamIdRequestSchema = z.object({
 export type TheSportsDBTeamIdRequest = z.input<
   typeof TheSportsDBTeamIdRequestSchema
 >;
+export type TheSportsDBTeamIdRequestInput = TheSportsDBTeamIdRequest;
 export type TheSportsDBTeamIdParsedRequest = z.output<
   typeof TheSportsDBTeamIdRequestSchema
 >;
@@ -197,6 +213,7 @@ export const TheSportsDBFilterTvDayRequestSchema = z.object({
 export type TheSportsDBFilterTvDayRequest = z.input<
   typeof TheSportsDBFilterTvDayRequestSchema
 >;
+export type TheSportsDBFilterTvDayRequestInput = TheSportsDBFilterTvDayRequest;
 export type TheSportsDBFilterTvDayParsedRequest = z.output<
   typeof TheSportsDBFilterTvDayRequestSchema
 >;
@@ -207,6 +224,8 @@ export const TheSportsDBFilterTvCountryRequestSchema = z.object({
 export type TheSportsDBFilterTvCountryRequest = z.input<
   typeof TheSportsDBFilterTvCountryRequestSchema
 >;
+export type TheSportsDBFilterTvCountryRequestInput =
+  TheSportsDBFilterTvCountryRequest;
 export type TheSportsDBFilterTvCountryParsedRequest = z.output<
   typeof TheSportsDBFilterTvCountryRequestSchema
 >;
@@ -217,6 +236,8 @@ export const TheSportsDBFilterTvSportRequestSchema = z.object({
 export type TheSportsDBFilterTvSportRequest = z.input<
   typeof TheSportsDBFilterTvSportRequestSchema
 >;
+export type TheSportsDBFilterTvSportRequestInput =
+  TheSportsDBFilterTvSportRequest;
 export type TheSportsDBFilterTvSportParsedRequest = z.output<
   typeof TheSportsDBFilterTvSportRequestSchema
 >;
@@ -227,6 +248,8 @@ export const TheSportsDBFilterTvChannelRequestSchema = z.object({
 export type TheSportsDBFilterTvChannelRequest = z.input<
   typeof TheSportsDBFilterTvChannelRequestSchema
 >;
+export type TheSportsDBFilterTvChannelRequestInput =
+  TheSportsDBFilterTvChannelRequest;
 export type TheSportsDBFilterTvChannelParsedRequest = z.output<
   typeof TheSportsDBFilterTvChannelRequestSchema
 >;
@@ -237,6 +260,8 @@ export const TheSportsDBFilterTvChannelIdRequestSchema = z.object({
 export type TheSportsDBFilterTvChannelIdRequest = z.input<
   typeof TheSportsDBFilterTvChannelIdRequestSchema
 >;
+export type TheSportsDBFilterTvChannelIdRequestInput =
+  TheSportsDBFilterTvChannelIdRequest;
 export type TheSportsDBFilterTvChannelIdParsedRequest = z.output<
   typeof TheSportsDBFilterTvChannelIdRequestSchema
 >;
@@ -278,6 +303,8 @@ export const TheSportsDBSearchAllLeaguesRequestSchema = z.object({
 export type TheSportsDBSearchAllLeaguesRequest = z.input<
   typeof TheSportsDBSearchAllLeaguesRequestSchema
 >;
+export type TheSportsDBSearchAllLeaguesRequestInput =
+  TheSportsDBSearchAllLeaguesRequest;
 export type TheSportsDBSearchAllLeaguesParsedRequest = z.output<
   typeof TheSportsDBSearchAllLeaguesRequestSchema
 >;
@@ -292,6 +319,8 @@ export const TheSportsDBSearchAllSeasonsRequestSchema = z.object({
 export type TheSportsDBSearchAllSeasonsRequest = z.input<
   typeof TheSportsDBSearchAllSeasonsRequestSchema
 >;
+export type TheSportsDBSearchAllSeasonsRequestInput =
+  TheSportsDBSearchAllSeasonsRequest;
 export type TheSportsDBSearchAllSeasonsParsedRequest = z.output<
   typeof TheSportsDBSearchAllSeasonsRequestSchema
 >;
@@ -309,6 +338,8 @@ export const TheSportsDBSearchAllTeamsRequestSchema = z
 export type TheSportsDBSearchAllTeamsRequest = z.input<
   typeof TheSportsDBSearchAllTeamsRequestSchema
 >;
+export type TheSportsDBSearchAllTeamsRequestInput =
+  TheSportsDBSearchAllTeamsRequest;
 export type TheSportsDBSearchAllTeamsParsedRequest = z.output<
   typeof TheSportsDBSearchAllTeamsRequestSchema
 >;
@@ -320,6 +351,8 @@ export const TheSportsDBLookupAllPlayersRequestSchema = z.object({
 export type TheSportsDBLookupAllPlayersRequest = z.input<
   typeof TheSportsDBLookupAllPlayersRequestSchema
 >;
+export type TheSportsDBLookupAllPlayersRequestInput =
+  TheSportsDBLookupAllPlayersRequest;
 export type TheSportsDBLookupAllPlayersParsedRequest = z.output<
   typeof TheSportsDBLookupAllPlayersRequestSchema
 >;
@@ -331,6 +364,7 @@ export const TheSportsDBTeamEventsRequestSchema = z.object({
 export type TheSportsDBTeamEventsRequest = z.input<
   typeof TheSportsDBTeamEventsRequestSchema
 >;
+export type TheSportsDBTeamEventsRequestInput = TheSportsDBTeamEventsRequest;
 export type TheSportsDBTeamEventsParsedRequest = z.output<
   typeof TheSportsDBTeamEventsRequestSchema
 >;
@@ -342,6 +376,8 @@ export const TheSportsDBLeagueEventsRequestSchema = z.object({
 export type TheSportsDBLeagueEventsRequest = z.input<
   typeof TheSportsDBLeagueEventsRequestSchema
 >;
+export type TheSportsDBLeagueEventsRequestInput =
+  TheSportsDBLeagueEventsRequest;
 export type TheSportsDBLeagueEventsParsedRequest = z.output<
   typeof TheSportsDBLeagueEventsRequestSchema
 >;
@@ -355,6 +391,7 @@ export const TheSportsDBEventsDayRequestSchema = z.object({
 export type TheSportsDBEventsDayRequest = z.input<
   typeof TheSportsDBEventsDayRequestSchema
 >;
+export type TheSportsDBEventsDayRequestInput = TheSportsDBEventsDayRequest;
 export type TheSportsDBEventsDayParsedRequest = z.output<
   typeof TheSportsDBEventsDayRequestSchema
 >;
@@ -367,6 +404,8 @@ export const TheSportsDBEventsSeasonRequestSchema = z.object({
 export type TheSportsDBEventsSeasonRequest = z.input<
   typeof TheSportsDBEventsSeasonRequestSchema
 >;
+export type TheSportsDBEventsSeasonRequestInput =
+  TheSportsDBEventsSeasonRequest;
 export type TheSportsDBEventsSeasonParsedRequest = z.output<
   typeof TheSportsDBEventsSeasonRequestSchema
 >;
@@ -395,6 +434,7 @@ export const TheSportsDBEventsTVRequestSchema = z
 export type TheSportsDBEventsTVRequest = z.input<
   typeof TheSportsDBEventsTVRequestSchema
 >;
+export type TheSportsDBEventsTVRequestInput = TheSportsDBEventsTVRequest;
 export type TheSportsDBEventsTVParsedRequest = z.output<
   typeof TheSportsDBEventsTVRequestSchema
 >;
@@ -408,6 +448,8 @@ export const TheSportsDBEventsHighlightsRequestSchema = z.object({
 export type TheSportsDBEventsHighlightsRequest = z.input<
   typeof TheSportsDBEventsHighlightsRequestSchema
 >;
+export type TheSportsDBEventsHighlightsRequestInput =
+  TheSportsDBEventsHighlightsRequest;
 export type TheSportsDBEventsHighlightsParsedRequest = z.output<
   typeof TheSportsDBEventsHighlightsRequestSchema
 >;
@@ -647,6 +689,7 @@ export const TheSportsDBEventLookupRequestSchema = z.object({
 export type TheSportsDBEventLookupRequest = z.input<
   typeof TheSportsDBEventLookupRequestSchema
 >;
+export type TheSportsDBEventLookupRequestInput = TheSportsDBEventLookupRequest;
 export type TheSportsDBEventLookupParsedRequest = z.output<
   typeof TheSportsDBEventLookupRequestSchema
 >;
@@ -829,6 +872,8 @@ export const TheSportsDBLeagueScheduleRequestSchema = z.object({
 export type TheSportsDBLeagueScheduleRequest = z.input<
   typeof TheSportsDBLeagueScheduleRequestSchema
 >;
+export type TheSportsDBLeagueScheduleRequestInput =
+  TheSportsDBLeagueScheduleRequest;
 export type TheSportsDBLeagueScheduleParsedRequest = z.output<
   typeof TheSportsDBLeagueScheduleRequestSchema
 >;
@@ -840,6 +885,8 @@ export const TheSportsDBTeamScheduleRequestSchema = z.object({
 export type TheSportsDBTeamScheduleRequest = z.input<
   typeof TheSportsDBTeamScheduleRequestSchema
 >;
+export type TheSportsDBTeamScheduleRequestInput =
+  TheSportsDBTeamScheduleRequest;
 export type TheSportsDBTeamScheduleParsedRequest = z.output<
   typeof TheSportsDBTeamScheduleRequestSchema
 >;
@@ -851,6 +898,8 @@ export const TheSportsDBVenueScheduleRequestSchema = z.object({
 export type TheSportsDBVenueScheduleRequest = z.input<
   typeof TheSportsDBVenueScheduleRequestSchema
 >;
+export type TheSportsDBVenueScheduleRequestInput =
+  TheSportsDBVenueScheduleRequest;
 export type TheSportsDBVenueScheduleParsedRequest = z.output<
   typeof TheSportsDBVenueScheduleRequestSchema
 >;
@@ -863,6 +912,8 @@ export const TheSportsDBLeagueSeasonScheduleRequestSchema = z.object({
 export type TheSportsDBLeagueSeasonScheduleRequest = z.input<
   typeof TheSportsDBLeagueSeasonScheduleRequestSchema
 >;
+export type TheSportsDBLeagueSeasonScheduleRequestInput =
+  TheSportsDBLeagueSeasonScheduleRequest;
 export type TheSportsDBLeagueSeasonScheduleParsedRequest = z.output<
   typeof TheSportsDBLeagueSeasonScheduleRequestSchema
 >;
@@ -874,6 +925,8 @@ export const TheSportsDBLiveScoreSportRequestSchema = z.object({
 export type TheSportsDBLiveScoreSportRequest = z.input<
   typeof TheSportsDBLiveScoreSportRequestSchema
 >;
+export type TheSportsDBLiveScoreSportRequestInput =
+  TheSportsDBLiveScoreSportRequest;
 export type TheSportsDBLiveScoreSportParsedRequest = z.output<
   typeof TheSportsDBLiveScoreSportRequestSchema
 >;
@@ -885,6 +938,8 @@ export const TheSportsDBLiveScoreLeagueRequestSchema = z.object({
 export type TheSportsDBLiveScoreLeagueRequest = z.input<
   typeof TheSportsDBLiveScoreLeagueRequestSchema
 >;
+export type TheSportsDBLiveScoreLeagueRequestInput =
+  TheSportsDBLiveScoreLeagueRequest;
 export type TheSportsDBLiveScoreLeagueParsedRequest = z.output<
   typeof TheSportsDBLiveScoreLeagueRequestSchema
 >;
@@ -896,6 +951,8 @@ export const TheSportsDBV2LeagueLookupRequestSchema = z.object({
 export type TheSportsDBV2LeagueLookupRequest = z.input<
   typeof TheSportsDBV2LeagueLookupRequestSchema
 >;
+export type TheSportsDBV2LeagueLookupRequestInput =
+  TheSportsDBV2LeagueLookupRequest;
 export type TheSportsDBV2LeagueLookupParsedRequest = z.output<
   typeof TheSportsDBV2LeagueLookupRequestSchema
 >;
@@ -907,6 +964,8 @@ export const TheSportsDBV2TeamLookupRequestSchema = z.object({
 export type TheSportsDBV2TeamLookupRequest = z.input<
   typeof TheSportsDBV2TeamLookupRequestSchema
 >;
+export type TheSportsDBV2TeamLookupRequestInput =
+  TheSportsDBV2TeamLookupRequest;
 export type TheSportsDBV2TeamLookupParsedRequest = z.output<
   typeof TheSportsDBV2TeamLookupRequestSchema
 >;
@@ -918,6 +977,8 @@ export const TheSportsDBV2PlayerLookupRequestSchema = z.object({
 export type TheSportsDBV2PlayerLookupRequest = z.input<
   typeof TheSportsDBV2PlayerLookupRequestSchema
 >;
+export type TheSportsDBV2PlayerLookupRequestInput =
+  TheSportsDBV2PlayerLookupRequest;
 export type TheSportsDBV2PlayerLookupParsedRequest = z.output<
   typeof TheSportsDBV2PlayerLookupRequestSchema
 >;
@@ -929,6 +990,8 @@ export const TheSportsDBV2EventLookupRequestSchema = z.object({
 export type TheSportsDBV2EventLookupRequest = z.input<
   typeof TheSportsDBV2EventLookupRequestSchema
 >;
+export type TheSportsDBV2EventLookupRequestInput =
+  TheSportsDBV2EventLookupRequest;
 export type TheSportsDBV2EventLookupParsedRequest = z.output<
   typeof TheSportsDBV2EventLookupRequestSchema
 >;
@@ -940,6 +1003,8 @@ export const TheSportsDBV2VenueLookupRequestSchema = z.object({
 export type TheSportsDBV2VenueLookupRequest = z.input<
   typeof TheSportsDBV2VenueLookupRequestSchema
 >;
+export type TheSportsDBV2VenueLookupRequestInput =
+  TheSportsDBV2VenueLookupRequest;
 export type TheSportsDBV2VenueLookupParsedRequest = z.output<
   typeof TheSportsDBV2VenueLookupRequestSchema
 >;

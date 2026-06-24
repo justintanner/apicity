@@ -648,38 +648,47 @@ export type XaiVideoReferenceInput = z.infer<
 export type XaiChunkConfiguration = z.infer<typeof XaiChunkConfigurationSchema>;
 export type XaiFieldDefinition = z.infer<typeof XaiFieldDefinitionSchema>;
 export type XaiChatRequest = z.input<typeof XaiChatRequestSchema>;
+export type XaiChatRequestInput = XaiChatRequest;
 export type XaiChatParsedRequest = z.output<typeof XaiChatRequestSchema>;
 export type XaiImageGenerateRequest = z.input<
   typeof XaiImageGenerateRequestSchema
 >;
+export type XaiImageGenerateRequestInput = XaiImageGenerateRequest;
 export type XaiImageGenerateParsedRequest = z.output<
   typeof XaiImageGenerateRequestSchema
 >;
 export type XaiImageEditRequest = z.input<typeof XaiImageEditRequestSchema>;
+export type XaiImageEditRequestInput = XaiImageEditRequest;
 export type XaiImageEditParsedRequest = z.output<
   typeof XaiImageEditRequestSchema
 >;
 export type XaiVideoGenerateRequest = z.input<
   typeof XaiVideoGenerateRequestSchema
 >;
+export type XaiVideoGenerateRequestInput = XaiVideoGenerateRequest;
 export type XaiVideoGenerateParsedRequest = z.output<
   typeof XaiVideoGenerateRequestSchema
 >;
 export type XaiGrokImagineVideo15ImageToVideoRequest = z.input<
   typeof XaiGrokImagineVideo15ImageToVideoRequestSchema
 >;
+export type XaiGrokImagineVideo15ImageToVideoRequestInput =
+  XaiGrokImagineVideo15ImageToVideoRequest;
 export type XaiGrokImagineVideo15ImageToVideoParsedRequest = z.output<
   typeof XaiGrokImagineVideo15ImageToVideoRequestSchema
 >;
 export type XaiVideoEditRequest = z.input<typeof XaiVideoEditRequestSchema>;
+export type XaiVideoEditRequestInput = XaiVideoEditRequest;
 export type XaiVideoEditParsedRequest = z.output<
   typeof XaiVideoEditRequestSchema
 >;
 export type XaiVideoExtendRequest = z.input<typeof XaiVideoExtendRequestSchema>;
+export type XaiVideoExtendRequestInput = XaiVideoExtendRequest;
 export type XaiVideoExtendParsedRequest = z.output<
   typeof XaiVideoExtendRequestSchema
 >;
 export type XaiBatchCreateRequest = z.input<typeof XaiBatchCreateRequestSchema>;
+export type XaiBatchCreateRequestInput = XaiBatchCreateRequest;
 export type XaiBatchCreateParsedRequest = z.output<
   typeof XaiBatchCreateRequestSchema
 >;
@@ -689,22 +698,26 @@ export type XaiBatchAddRequestsBody = z.infer<
 export type XaiCollectionCreateRequest = z.input<
   typeof XaiCollectionCreateRequestSchema
 >;
+export type XaiCollectionCreateRequestInput = XaiCollectionCreateRequest;
 export type XaiCollectionCreateParsedRequest = z.output<
   typeof XaiCollectionCreateRequestSchema
 >;
 export type XaiCollectionUpdateRequest = z.input<
   typeof XaiCollectionUpdateRequestSchema
 >;
+export type XaiCollectionUpdateRequestInput = XaiCollectionUpdateRequest;
 export type XaiCollectionUpdateParsedRequest = z.output<
   typeof XaiCollectionUpdateRequestSchema
 >;
 export type XaiDocumentAddRequest = z.input<typeof XaiDocumentAddRequestSchema>;
+export type XaiDocumentAddRequestInput = XaiDocumentAddRequest;
 export type XaiDocumentAddParsedRequest = z.output<
   typeof XaiDocumentAddRequestSchema
 >;
 export type XaiDocumentSearchRequest = z.input<
   typeof XaiDocumentSearchRequestSchema
 >;
+export type XaiDocumentSearchRequestInput = XaiDocumentSearchRequest;
 export type XaiDocumentSearchParsedRequest = z.output<
   typeof XaiDocumentSearchRequestSchema
 >;
@@ -746,34 +759,42 @@ export type XaiResponseSearchParameters = z.infer<
   typeof XaiResponseSearchParametersSchema
 >;
 export type XaiResponseRequest = z.input<typeof XaiResponseRequestSchema>;
+export type XaiResponseRequestInput = XaiResponseRequest;
 export type XaiResponseParsedRequest = z.output<
   typeof XaiResponseRequestSchema
 >;
 export type XaiTokenizeTextRequest = z.input<
   typeof XaiTokenizeTextRequestSchema
 >;
+export type XaiTokenizeTextRequestInput = XaiTokenizeTextRequest;
 export type XaiTokenizeTextParsedRequest = z.output<
   typeof XaiTokenizeTextRequestSchema
 >;
 export type XaiRealtimeClientSecretRequest = z.input<
   typeof XaiRealtimeClientSecretRequestSchema
 >;
+export type XaiRealtimeClientSecretRequestInput =
+  XaiRealtimeClientSecretRequest;
 export type XaiRealtimeClientSecretParsedRequest = z.output<
   typeof XaiRealtimeClientSecretRequestSchema
 >;
 export type XaiTtsRequest = z.input<typeof XaiTtsRequestSchema>;
+export type XaiTtsRequestInput = XaiTtsRequest;
 export type XaiTtsParsedRequest = z.output<typeof XaiTtsRequestSchema>;
 export type XaiSttRequest = z.input<typeof XaiSttRequestSchema>;
+export type XaiSttRequestInput = XaiSttRequest;
 export type XaiSttParsedRequest = z.output<typeof XaiSttRequestSchema>;
 export type XaiCustomVoiceCreateRequest = z.input<
   typeof XaiCustomVoiceCreateRequestSchema
 >;
+export type XaiCustomVoiceCreateRequestInput = XaiCustomVoiceCreateRequest;
 export type XaiCustomVoiceCreateParsedRequest = z.output<
   typeof XaiCustomVoiceCreateRequestSchema
 >;
 export type XaiBillingUsageRequest = z.input<
   typeof XaiBillingUsageRequestSchema
 >;
+export type XaiBillingUsageRequestInput = XaiBillingUsageRequest;
 export type XaiBillingUsageParsedRequest = z.output<
   typeof XaiBillingUsageRequestSchema
 >;

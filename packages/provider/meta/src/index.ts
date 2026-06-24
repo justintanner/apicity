@@ -5,6 +5,7 @@ export { MetaError } from "./types";
 export type {
   MetaOptions,
   MetaMediaCreateRequest,
+  MetaMediaCreateRequestInput,
   MetaMediaCreateParsedRequest,
   MetaMediaCreateResponse,
   MetaMediaCreateMethod,
@@ -13,6 +14,7 @@ export type {
   MetaContainerStatusResponse,
   MetaContainerStatusMethod,
   MetaMediaPublishRequest,
+  MetaMediaPublishRequestInput,
   MetaMediaPublishParsedRequest,
   MetaMediaPublishResponse,
   MetaMediaPublishMethod,

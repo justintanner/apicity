@@ -339,28 +339,33 @@ export type AnthropicMetadata = z.infer<typeof AnthropicMetadataSchema>;
 export type AnthropicMessageRequest = z.input<
   typeof AnthropicMessageRequestSchema
 >;
+export type AnthropicMessageRequestInput = AnthropicMessageRequest;
 export type AnthropicMessageParsedRequest = z.output<
   typeof AnthropicMessageRequestSchema
 >;
 export type AnthropicCountTokensRequest = z.input<
   typeof AnthropicCountTokensRequestSchema
 >;
+export type AnthropicCountTokensRequestInput = AnthropicCountTokensRequest;
 export type AnthropicCountTokensParsedRequest = z.output<
   typeof AnthropicCountTokensRequestSchema
 >;
 export type AnthropicBatchRequest = z.input<typeof AnthropicBatchRequestSchema>;
+export type AnthropicBatchRequestInput = AnthropicBatchRequest;
 export type AnthropicBatchParsedRequest = z.output<
   typeof AnthropicBatchRequestSchema
 >;
 export type AnthropicBatchCreateRequest = z.input<
   typeof AnthropicBatchCreateRequestSchema
 >;
+export type AnthropicBatchCreateRequestInput = AnthropicBatchCreateRequest;
 export type AnthropicBatchCreateParsedRequest = z.output<
   typeof AnthropicBatchCreateRequestSchema
 >;
 export type AnthropicFileUploadRequest = z.input<
   typeof AnthropicFileUploadRequestSchema
 >;
+export type AnthropicFileUploadRequestInput = AnthropicFileUploadRequest;
 export type AnthropicFileUploadParsedRequest = z.output<
   typeof AnthropicFileUploadRequestSchema
 >;
@@ -368,12 +373,15 @@ export type AnthropicSkillFile = z.infer<typeof AnthropicSkillFileSchema>;
 export type AnthropicSkillsCreateRequest = z.input<
   typeof AnthropicSkillsCreateRequestSchema
 >;
+export type AnthropicSkillsCreateRequestInput = AnthropicSkillsCreateRequest;
 export type AnthropicSkillsCreateParsedRequest = z.output<
   typeof AnthropicSkillsCreateRequestSchema
 >;
 export type AnthropicSkillVersionsCreateRequest = z.input<
   typeof AnthropicSkillVersionsCreateRequestSchema
 >;
+export type AnthropicSkillVersionsCreateRequestInput =
+  AnthropicSkillVersionsCreateRequest;
 export type AnthropicSkillVersionsCreateParsedRequest = z.output<
   typeof AnthropicSkillVersionsCreateRequestSchema
 >;

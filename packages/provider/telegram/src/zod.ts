@@ -106,12 +106,14 @@ export type TelegramInputChecklist = z.infer<
 >;
 export type TelegramInputMedia = z.infer<typeof TelegramInputMediaSchema>;
 export type TelegramEmptyRequest = z.input<typeof TelegramEmptyRequestSchema>;
+export type TelegramEmptyRequestInput = TelegramEmptyRequest;
 export type TelegramEmptyParsedRequest = z.output<
   typeof TelegramEmptyRequestSchema
 >;
 export type TelegramGenericRequest = z.input<
   typeof TelegramGenericRequestSchema
 >;
+export type TelegramGenericRequestInput = TelegramGenericRequest;
 export type TelegramGenericParsedRequest = z.output<
   typeof TelegramGenericRequestSchema
 >;
@@ -121,6 +123,8 @@ export const TelegramAddStickerToSetRequestSchema =
 export type TelegramAddStickerToSetRequest = z.input<
   typeof TelegramAddStickerToSetRequestSchema
 >;
+export type TelegramAddStickerToSetRequestInput =
+  TelegramAddStickerToSetRequest;
 export type TelegramAddStickerToSetParsedRequest = z.output<
   typeof TelegramAddStickerToSetRequestSchema
 >;
@@ -130,6 +134,8 @@ export const TelegramAnswerCallbackQueryRequestSchema =
 export type TelegramAnswerCallbackQueryRequest = z.input<
   typeof TelegramAnswerCallbackQueryRequestSchema
 >;
+export type TelegramAnswerCallbackQueryRequestInput =
+  TelegramAnswerCallbackQueryRequest;
 export type TelegramAnswerCallbackQueryParsedRequest = z.output<
   typeof TelegramAnswerCallbackQueryRequestSchema
 >;
@@ -143,6 +149,8 @@ export const TelegramAnswerChatJoinRequestQueryRequestSchema = z
 export type TelegramAnswerChatJoinRequestQueryRequest = z.input<
   typeof TelegramAnswerChatJoinRequestQueryRequestSchema
 >;
+export type TelegramAnswerChatJoinRequestQueryRequestInput =
+  TelegramAnswerChatJoinRequestQueryRequest;
 export type TelegramAnswerChatJoinRequestQueryParsedRequest = z.output<
   typeof TelegramAnswerChatJoinRequestQueryRequestSchema
 >;
@@ -152,6 +160,8 @@ export const TelegramAnswerGuestQueryRequestSchema =
 export type TelegramAnswerGuestQueryRequest = z.input<
   typeof TelegramAnswerGuestQueryRequestSchema
 >;
+export type TelegramAnswerGuestQueryRequestInput =
+  TelegramAnswerGuestQueryRequest;
 export type TelegramAnswerGuestQueryParsedRequest = z.output<
   typeof TelegramAnswerGuestQueryRequestSchema
 >;
@@ -165,6 +175,8 @@ export const TelegramAnswerInlineQueryRequestSchema = z
 export type TelegramAnswerInlineQueryRequest = z.input<
   typeof TelegramAnswerInlineQueryRequestSchema
 >;
+export type TelegramAnswerInlineQueryRequestInput =
+  TelegramAnswerInlineQueryRequest;
 export type TelegramAnswerInlineQueryParsedRequest = z.output<
   typeof TelegramAnswerInlineQueryRequestSchema
 >;
@@ -174,6 +186,8 @@ export const TelegramAnswerPreCheckoutQueryRequestSchema =
 export type TelegramAnswerPreCheckoutQueryRequest = z.input<
   typeof TelegramAnswerPreCheckoutQueryRequestSchema
 >;
+export type TelegramAnswerPreCheckoutQueryRequestInput =
+  TelegramAnswerPreCheckoutQueryRequest;
 export type TelegramAnswerPreCheckoutQueryParsedRequest = z.output<
   typeof TelegramAnswerPreCheckoutQueryRequestSchema
 >;
@@ -183,6 +197,8 @@ export const TelegramAnswerShippingQueryRequestSchema =
 export type TelegramAnswerShippingQueryRequest = z.input<
   typeof TelegramAnswerShippingQueryRequestSchema
 >;
+export type TelegramAnswerShippingQueryRequestInput =
+  TelegramAnswerShippingQueryRequest;
 export type TelegramAnswerShippingQueryParsedRequest = z.output<
   typeof TelegramAnswerShippingQueryRequestSchema
 >;
@@ -192,6 +208,8 @@ export const TelegramAnswerWebAppQueryRequestSchema =
 export type TelegramAnswerWebAppQueryRequest = z.input<
   typeof TelegramAnswerWebAppQueryRequestSchema
 >;
+export type TelegramAnswerWebAppQueryRequestInput =
+  TelegramAnswerWebAppQueryRequest;
 export type TelegramAnswerWebAppQueryParsedRequest = z.output<
   typeof TelegramAnswerWebAppQueryRequestSchema
 >;
@@ -201,6 +219,8 @@ export const TelegramApproveChatJoinRequestRequestSchema =
 export type TelegramApproveChatJoinRequestRequest = z.input<
   typeof TelegramApproveChatJoinRequestRequestSchema
 >;
+export type TelegramApproveChatJoinRequestRequestInput =
+  TelegramApproveChatJoinRequestRequest;
 export type TelegramApproveChatJoinRequestParsedRequest = z.output<
   typeof TelegramApproveChatJoinRequestRequestSchema
 >;
@@ -209,6 +229,7 @@ export const TelegramBanChatMemberRequestSchema = TelegramGenericRequestSchema;
 export type TelegramBanChatMemberRequest = z.input<
   typeof TelegramBanChatMemberRequestSchema
 >;
+export type TelegramBanChatMemberRequestInput = TelegramBanChatMemberRequest;
 export type TelegramBanChatMemberParsedRequest = z.output<
   typeof TelegramBanChatMemberRequestSchema
 >;
@@ -218,12 +239,15 @@ export const TelegramBanChatSenderChatRequestSchema =
 export type TelegramBanChatSenderChatRequest = z.input<
   typeof TelegramBanChatSenderChatRequestSchema
 >;
+export type TelegramBanChatSenderChatRequestInput =
+  TelegramBanChatSenderChatRequest;
 export type TelegramBanChatSenderChatParsedRequest = z.output<
   typeof TelegramBanChatSenderChatRequestSchema
 >;
 
 export const TelegramCloseRequestSchema = TelegramEmptyRequestSchema;
 export type TelegramCloseRequest = z.input<typeof TelegramCloseRequestSchema>;
+export type TelegramCloseRequestInput = TelegramCloseRequest;
 export type TelegramCloseParsedRequest = z.output<
   typeof TelegramCloseRequestSchema
 >;
@@ -233,6 +257,8 @@ export const TelegramCloseForumTopicRequestSchema =
 export type TelegramCloseForumTopicRequest = z.input<
   typeof TelegramCloseForumTopicRequestSchema
 >;
+export type TelegramCloseForumTopicRequestInput =
+  TelegramCloseForumTopicRequest;
 export type TelegramCloseForumTopicParsedRequest = z.output<
   typeof TelegramCloseForumTopicRequestSchema
 >;
@@ -242,6 +268,8 @@ export const TelegramCloseGeneralForumTopicRequestSchema =
 export type TelegramCloseGeneralForumTopicRequest = z.input<
   typeof TelegramCloseGeneralForumTopicRequestSchema
 >;
+export type TelegramCloseGeneralForumTopicRequestInput =
+  TelegramCloseGeneralForumTopicRequest;
 export type TelegramCloseGeneralForumTopicParsedRequest = z.output<
   typeof TelegramCloseGeneralForumTopicRequestSchema
 >;
@@ -251,6 +279,8 @@ export const TelegramConvertGiftToStarsRequestSchema =
 export type TelegramConvertGiftToStarsRequest = z.input<
   typeof TelegramConvertGiftToStarsRequestSchema
 >;
+export type TelegramConvertGiftToStarsRequestInput =
+  TelegramConvertGiftToStarsRequest;
 export type TelegramConvertGiftToStarsParsedRequest = z.output<
   typeof TelegramConvertGiftToStarsRequestSchema
 >;
@@ -265,6 +295,7 @@ export const TelegramCopyMessageRequestSchema = z
 export type TelegramCopyMessageRequest = z.input<
   typeof TelegramCopyMessageRequestSchema
 >;
+export type TelegramCopyMessageRequestInput = TelegramCopyMessageRequest;
 export type TelegramCopyMessageParsedRequest = z.output<
   typeof TelegramCopyMessageRequestSchema
 >;
@@ -273,6 +304,7 @@ export const TelegramCopyMessagesRequestSchema = TelegramGenericRequestSchema;
 export type TelegramCopyMessagesRequest = z.input<
   typeof TelegramCopyMessagesRequestSchema
 >;
+export type TelegramCopyMessagesRequestInput = TelegramCopyMessagesRequest;
 export type TelegramCopyMessagesParsedRequest = z.output<
   typeof TelegramCopyMessagesRequestSchema
 >;
@@ -282,6 +314,8 @@ export const TelegramCreateChatInviteLinkRequestSchema =
 export type TelegramCreateChatInviteLinkRequest = z.input<
   typeof TelegramCreateChatInviteLinkRequestSchema
 >;
+export type TelegramCreateChatInviteLinkRequestInput =
+  TelegramCreateChatInviteLinkRequest;
 export type TelegramCreateChatInviteLinkParsedRequest = z.output<
   typeof TelegramCreateChatInviteLinkRequestSchema
 >;
@@ -291,6 +325,8 @@ export const TelegramCreateChatSubscriptionInviteLinkRequestSchema =
 export type TelegramCreateChatSubscriptionInviteLinkRequest = z.input<
   typeof TelegramCreateChatSubscriptionInviteLinkRequestSchema
 >;
+export type TelegramCreateChatSubscriptionInviteLinkRequestInput =
+  TelegramCreateChatSubscriptionInviteLinkRequest;
 export type TelegramCreateChatSubscriptionInviteLinkParsedRequest = z.output<
   typeof TelegramCreateChatSubscriptionInviteLinkRequestSchema
 >;
@@ -300,6 +336,8 @@ export const TelegramCreateForumTopicRequestSchema =
 export type TelegramCreateForumTopicRequest = z.input<
   typeof TelegramCreateForumTopicRequestSchema
 >;
+export type TelegramCreateForumTopicRequestInput =
+  TelegramCreateForumTopicRequest;
 export type TelegramCreateForumTopicParsedRequest = z.output<
   typeof TelegramCreateForumTopicRequestSchema
 >;
@@ -309,6 +347,8 @@ export const TelegramCreateInvoiceLinkRequestSchema =
 export type TelegramCreateInvoiceLinkRequest = z.input<
   typeof TelegramCreateInvoiceLinkRequestSchema
 >;
+export type TelegramCreateInvoiceLinkRequestInput =
+  TelegramCreateInvoiceLinkRequest;
 export type TelegramCreateInvoiceLinkParsedRequest = z.output<
   typeof TelegramCreateInvoiceLinkRequestSchema
 >;
@@ -324,6 +364,8 @@ export const TelegramCreateNewStickerSetRequestSchema = z
 export type TelegramCreateNewStickerSetRequest = z.input<
   typeof TelegramCreateNewStickerSetRequestSchema
 >;
+export type TelegramCreateNewStickerSetRequestInput =
+  TelegramCreateNewStickerSetRequest;
 export type TelegramCreateNewStickerSetParsedRequest = z.output<
   typeof TelegramCreateNewStickerSetRequestSchema
 >;
@@ -333,6 +375,8 @@ export const TelegramDeclineChatJoinRequestRequestSchema =
 export type TelegramDeclineChatJoinRequestRequest = z.input<
   typeof TelegramDeclineChatJoinRequestRequestSchema
 >;
+export type TelegramDeclineChatJoinRequestRequestInput =
+  TelegramDeclineChatJoinRequestRequest;
 export type TelegramDeclineChatJoinRequestParsedRequest = z.output<
   typeof TelegramDeclineChatJoinRequestRequestSchema
 >;
@@ -346,6 +390,8 @@ export const TelegramDeleteAllMessageReactionsRequestSchema = z
 export type TelegramDeleteAllMessageReactionsRequest = z.input<
   typeof TelegramDeleteAllMessageReactionsRequestSchema
 >;
+export type TelegramDeleteAllMessageReactionsRequestInput =
+  TelegramDeleteAllMessageReactionsRequest;
 export type TelegramDeleteAllMessageReactionsParsedRequest = z.output<
   typeof TelegramDeleteAllMessageReactionsRequestSchema
 >;
@@ -355,6 +401,8 @@ export const TelegramDeleteBusinessMessagesRequestSchema =
 export type TelegramDeleteBusinessMessagesRequest = z.input<
   typeof TelegramDeleteBusinessMessagesRequestSchema
 >;
+export type TelegramDeleteBusinessMessagesRequestInput =
+  TelegramDeleteBusinessMessagesRequest;
 export type TelegramDeleteBusinessMessagesParsedRequest = z.output<
   typeof TelegramDeleteBusinessMessagesRequestSchema
 >;
@@ -364,6 +412,8 @@ export const TelegramDeleteChatPhotoRequestSchema =
 export type TelegramDeleteChatPhotoRequest = z.input<
   typeof TelegramDeleteChatPhotoRequestSchema
 >;
+export type TelegramDeleteChatPhotoRequestInput =
+  TelegramDeleteChatPhotoRequest;
 export type TelegramDeleteChatPhotoParsedRequest = z.output<
   typeof TelegramDeleteChatPhotoRequestSchema
 >;
@@ -373,6 +423,8 @@ export const TelegramDeleteChatStickerSetRequestSchema =
 export type TelegramDeleteChatStickerSetRequest = z.input<
   typeof TelegramDeleteChatStickerSetRequestSchema
 >;
+export type TelegramDeleteChatStickerSetRequestInput =
+  TelegramDeleteChatStickerSetRequest;
 export type TelegramDeleteChatStickerSetParsedRequest = z.output<
   typeof TelegramDeleteChatStickerSetRequestSchema
 >;
@@ -382,6 +434,8 @@ export const TelegramDeleteForumTopicRequestSchema =
 export type TelegramDeleteForumTopicRequest = z.input<
   typeof TelegramDeleteForumTopicRequestSchema
 >;
+export type TelegramDeleteForumTopicRequestInput =
+  TelegramDeleteForumTopicRequest;
 export type TelegramDeleteForumTopicParsedRequest = z.output<
   typeof TelegramDeleteForumTopicRequestSchema
 >;
@@ -390,6 +444,7 @@ export const TelegramDeleteMessageRequestSchema = TelegramGenericRequestSchema;
 export type TelegramDeleteMessageRequest = z.input<
   typeof TelegramDeleteMessageRequestSchema
 >;
+export type TelegramDeleteMessageRequestInput = TelegramDeleteMessageRequest;
 export type TelegramDeleteMessageParsedRequest = z.output<
   typeof TelegramDeleteMessageRequestSchema
 >;
@@ -404,6 +459,8 @@ export const TelegramDeleteMessageReactionRequestSchema = z
 export type TelegramDeleteMessageReactionRequest = z.input<
   typeof TelegramDeleteMessageReactionRequestSchema
 >;
+export type TelegramDeleteMessageReactionRequestInput =
+  TelegramDeleteMessageReactionRequest;
 export type TelegramDeleteMessageReactionParsedRequest = z.output<
   typeof TelegramDeleteMessageReactionRequestSchema
 >;
@@ -412,6 +469,7 @@ export const TelegramDeleteMessagesRequestSchema = TelegramGenericRequestSchema;
 export type TelegramDeleteMessagesRequest = z.input<
   typeof TelegramDeleteMessagesRequestSchema
 >;
+export type TelegramDeleteMessagesRequestInput = TelegramDeleteMessagesRequest;
 export type TelegramDeleteMessagesParsedRequest = z.output<
   typeof TelegramDeleteMessagesRequestSchema
 >;
@@ -421,6 +479,8 @@ export const TelegramDeleteMyCommandsRequestSchema =
 export type TelegramDeleteMyCommandsRequest = z.input<
   typeof TelegramDeleteMyCommandsRequestSchema
 >;
+export type TelegramDeleteMyCommandsRequestInput =
+  TelegramDeleteMyCommandsRequest;
 export type TelegramDeleteMyCommandsParsedRequest = z.output<
   typeof TelegramDeleteMyCommandsRequestSchema
 >;
@@ -430,6 +490,8 @@ export const TelegramDeleteStickerFromSetRequestSchema =
 export type TelegramDeleteStickerFromSetRequest = z.input<
   typeof TelegramDeleteStickerFromSetRequestSchema
 >;
+export type TelegramDeleteStickerFromSetRequestInput =
+  TelegramDeleteStickerFromSetRequest;
 export type TelegramDeleteStickerFromSetParsedRequest = z.output<
   typeof TelegramDeleteStickerFromSetRequestSchema
 >;
@@ -439,6 +501,8 @@ export const TelegramDeleteStickerSetRequestSchema =
 export type TelegramDeleteStickerSetRequest = z.input<
   typeof TelegramDeleteStickerSetRequestSchema
 >;
+export type TelegramDeleteStickerSetRequestInput =
+  TelegramDeleteStickerSetRequest;
 export type TelegramDeleteStickerSetParsedRequest = z.output<
   typeof TelegramDeleteStickerSetRequestSchema
 >;
@@ -447,6 +511,7 @@ export const TelegramDeleteStoryRequestSchema = TelegramGenericRequestSchema;
 export type TelegramDeleteStoryRequest = z.input<
   typeof TelegramDeleteStoryRequestSchema
 >;
+export type TelegramDeleteStoryRequestInput = TelegramDeleteStoryRequest;
 export type TelegramDeleteStoryParsedRequest = z.output<
   typeof TelegramDeleteStoryRequestSchema
 >;
@@ -455,6 +520,7 @@ export const TelegramDeleteWebhookRequestSchema = TelegramGenericRequestSchema;
 export type TelegramDeleteWebhookRequest = z.input<
   typeof TelegramDeleteWebhookRequestSchema
 >;
+export type TelegramDeleteWebhookRequestInput = TelegramDeleteWebhookRequest;
 export type TelegramDeleteWebhookParsedRequest = z.output<
   typeof TelegramDeleteWebhookRequestSchema
 >;
@@ -464,6 +530,8 @@ export const TelegramEditChatInviteLinkRequestSchema =
 export type TelegramEditChatInviteLinkRequest = z.input<
   typeof TelegramEditChatInviteLinkRequestSchema
 >;
+export type TelegramEditChatInviteLinkRequestInput =
+  TelegramEditChatInviteLinkRequest;
 export type TelegramEditChatInviteLinkParsedRequest = z.output<
   typeof TelegramEditChatInviteLinkRequestSchema
 >;
@@ -473,6 +541,8 @@ export const TelegramEditChatSubscriptionInviteLinkRequestSchema =
 export type TelegramEditChatSubscriptionInviteLinkRequest = z.input<
   typeof TelegramEditChatSubscriptionInviteLinkRequestSchema
 >;
+export type TelegramEditChatSubscriptionInviteLinkRequestInput =
+  TelegramEditChatSubscriptionInviteLinkRequest;
 export type TelegramEditChatSubscriptionInviteLinkParsedRequest = z.output<
   typeof TelegramEditChatSubscriptionInviteLinkRequestSchema
 >;
@@ -481,6 +551,7 @@ export const TelegramEditForumTopicRequestSchema = TelegramGenericRequestSchema;
 export type TelegramEditForumTopicRequest = z.input<
   typeof TelegramEditForumTopicRequestSchema
 >;
+export type TelegramEditForumTopicRequestInput = TelegramEditForumTopicRequest;
 export type TelegramEditForumTopicParsedRequest = z.output<
   typeof TelegramEditForumTopicRequestSchema
 >;
@@ -490,6 +561,8 @@ export const TelegramEditGeneralForumTopicRequestSchema =
 export type TelegramEditGeneralForumTopicRequest = z.input<
   typeof TelegramEditGeneralForumTopicRequestSchema
 >;
+export type TelegramEditGeneralForumTopicRequestInput =
+  TelegramEditGeneralForumTopicRequest;
 export type TelegramEditGeneralForumTopicParsedRequest = z.output<
   typeof TelegramEditGeneralForumTopicRequestSchema
 >;
@@ -499,6 +572,8 @@ export const TelegramEditMessageCaptionRequestSchema =
 export type TelegramEditMessageCaptionRequest = z.input<
   typeof TelegramEditMessageCaptionRequestSchema
 >;
+export type TelegramEditMessageCaptionRequestInput =
+  TelegramEditMessageCaptionRequest;
 export type TelegramEditMessageCaptionParsedRequest = z.output<
   typeof TelegramEditMessageCaptionRequestSchema
 >;
@@ -515,6 +590,8 @@ export const TelegramEditMessageChecklistRequestSchema = z
 export type TelegramEditMessageChecklistRequest = z.input<
   typeof TelegramEditMessageChecklistRequestSchema
 >;
+export type TelegramEditMessageChecklistRequestInput =
+  TelegramEditMessageChecklistRequest;
 export type TelegramEditMessageChecklistParsedRequest = z.output<
   typeof TelegramEditMessageChecklistRequestSchema
 >;
@@ -524,6 +601,8 @@ export const TelegramEditMessageLiveLocationRequestSchema =
 export type TelegramEditMessageLiveLocationRequest = z.input<
   typeof TelegramEditMessageLiveLocationRequestSchema
 >;
+export type TelegramEditMessageLiveLocationRequestInput =
+  TelegramEditMessageLiveLocationRequest;
 export type TelegramEditMessageLiveLocationParsedRequest = z.output<
   typeof TelegramEditMessageLiveLocationRequestSchema
 >;
@@ -533,6 +612,8 @@ export const TelegramEditMessageMediaRequestSchema =
 export type TelegramEditMessageMediaRequest = z.input<
   typeof TelegramEditMessageMediaRequestSchema
 >;
+export type TelegramEditMessageMediaRequestInput =
+  TelegramEditMessageMediaRequest;
 export type TelegramEditMessageMediaParsedRequest = z.output<
   typeof TelegramEditMessageMediaRequestSchema
 >;
@@ -542,6 +623,8 @@ export const TelegramEditMessageReplyMarkupRequestSchema =
 export type TelegramEditMessageReplyMarkupRequest = z.input<
   typeof TelegramEditMessageReplyMarkupRequestSchema
 >;
+export type TelegramEditMessageReplyMarkupRequestInput =
+  TelegramEditMessageReplyMarkupRequest;
 export type TelegramEditMessageReplyMarkupParsedRequest = z.output<
   typeof TelegramEditMessageReplyMarkupRequestSchema
 >;
@@ -555,6 +638,8 @@ export const TelegramEditMessageTextRequestSchema = z
 export type TelegramEditMessageTextRequest = z.input<
   typeof TelegramEditMessageTextRequestSchema
 >;
+export type TelegramEditMessageTextRequestInput =
+  TelegramEditMessageTextRequest;
 export type TelegramEditMessageTextParsedRequest = z.output<
   typeof TelegramEditMessageTextRequestSchema
 >;
@@ -563,6 +648,7 @@ export const TelegramEditStoryRequestSchema = TelegramGenericRequestSchema;
 export type TelegramEditStoryRequest = z.input<
   typeof TelegramEditStoryRequestSchema
 >;
+export type TelegramEditStoryRequestInput = TelegramEditStoryRequest;
 export type TelegramEditStoryParsedRequest = z.output<
   typeof TelegramEditStoryRequestSchema
 >;
@@ -572,6 +658,8 @@ export const TelegramEditUserStarSubscriptionRequestSchema =
 export type TelegramEditUserStarSubscriptionRequest = z.input<
   typeof TelegramEditUserStarSubscriptionRequestSchema
 >;
+export type TelegramEditUserStarSubscriptionRequestInput =
+  TelegramEditUserStarSubscriptionRequest;
 export type TelegramEditUserStarSubscriptionParsedRequest = z.output<
   typeof TelegramEditUserStarSubscriptionRequestSchema
 >;
@@ -581,6 +669,8 @@ export const TelegramExportChatInviteLinkRequestSchema =
 export type TelegramExportChatInviteLinkRequest = z.input<
   typeof TelegramExportChatInviteLinkRequestSchema
 >;
+export type TelegramExportChatInviteLinkRequestInput =
+  TelegramExportChatInviteLinkRequest;
 export type TelegramExportChatInviteLinkParsedRequest = z.output<
   typeof TelegramExportChatInviteLinkRequestSchema
 >;
@@ -589,6 +679,7 @@ export const TelegramForwardMessageRequestSchema = TelegramGenericRequestSchema;
 export type TelegramForwardMessageRequest = z.input<
   typeof TelegramForwardMessageRequestSchema
 >;
+export type TelegramForwardMessageRequestInput = TelegramForwardMessageRequest;
 export type TelegramForwardMessageParsedRequest = z.output<
   typeof TelegramForwardMessageRequestSchema
 >;
@@ -603,6 +694,8 @@ export const TelegramForwardMessagesRequestSchema = z
 export type TelegramForwardMessagesRequest = z.input<
   typeof TelegramForwardMessagesRequestSchema
 >;
+export type TelegramForwardMessagesRequestInput =
+  TelegramForwardMessagesRequest;
 export type TelegramForwardMessagesParsedRequest = z.output<
   typeof TelegramForwardMessagesRequestSchema
 >;
@@ -612,6 +705,8 @@ export const TelegramGetAvailableGiftsRequestSchema =
 export type TelegramGetAvailableGiftsRequest = z.input<
   typeof TelegramGetAvailableGiftsRequestSchema
 >;
+export type TelegramGetAvailableGiftsRequestInput =
+  TelegramGetAvailableGiftsRequest;
 export type TelegramGetAvailableGiftsParsedRequest = z.output<
   typeof TelegramGetAvailableGiftsRequestSchema
 >;
@@ -621,6 +716,8 @@ export const TelegramGetBusinessAccountGiftsRequestSchema =
 export type TelegramGetBusinessAccountGiftsRequest = z.input<
   typeof TelegramGetBusinessAccountGiftsRequestSchema
 >;
+export type TelegramGetBusinessAccountGiftsRequestInput =
+  TelegramGetBusinessAccountGiftsRequest;
 export type TelegramGetBusinessAccountGiftsParsedRequest = z.output<
   typeof TelegramGetBusinessAccountGiftsRequestSchema
 >;
@@ -630,6 +727,8 @@ export const TelegramGetBusinessAccountStarBalanceRequestSchema =
 export type TelegramGetBusinessAccountStarBalanceRequest = z.input<
   typeof TelegramGetBusinessAccountStarBalanceRequestSchema
 >;
+export type TelegramGetBusinessAccountStarBalanceRequestInput =
+  TelegramGetBusinessAccountStarBalanceRequest;
 export type TelegramGetBusinessAccountStarBalanceParsedRequest = z.output<
   typeof TelegramGetBusinessAccountStarBalanceRequestSchema
 >;
@@ -642,6 +741,8 @@ export const TelegramGetBusinessConnectionRequestSchema = z
 export type TelegramGetBusinessConnectionRequest = z.input<
   typeof TelegramGetBusinessConnectionRequestSchema
 >;
+export type TelegramGetBusinessConnectionRequestInput =
+  TelegramGetBusinessConnectionRequest;
 export type TelegramGetBusinessConnectionParsedRequest = z.output<
   typeof TelegramGetBusinessConnectionRequestSchema
 >;
@@ -650,6 +751,7 @@ export const TelegramGetChatRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetChatRequest = z.input<
   typeof TelegramGetChatRequestSchema
 >;
+export type TelegramGetChatRequestInput = TelegramGetChatRequest;
 export type TelegramGetChatParsedRequest = z.output<
   typeof TelegramGetChatRequestSchema
 >;
@@ -659,6 +761,8 @@ export const TelegramGetChatAdministratorsRequestSchema =
 export type TelegramGetChatAdministratorsRequest = z.input<
   typeof TelegramGetChatAdministratorsRequestSchema
 >;
+export type TelegramGetChatAdministratorsRequestInput =
+  TelegramGetChatAdministratorsRequest;
 export type TelegramGetChatAdministratorsParsedRequest = z.output<
   typeof TelegramGetChatAdministratorsRequestSchema
 >;
@@ -667,6 +771,7 @@ export const TelegramGetChatGiftsRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetChatGiftsRequest = z.input<
   typeof TelegramGetChatGiftsRequestSchema
 >;
+export type TelegramGetChatGiftsRequestInput = TelegramGetChatGiftsRequest;
 export type TelegramGetChatGiftsParsedRequest = z.output<
   typeof TelegramGetChatGiftsRequestSchema
 >;
@@ -675,6 +780,7 @@ export const TelegramGetChatMemberRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetChatMemberRequest = z.input<
   typeof TelegramGetChatMemberRequestSchema
 >;
+export type TelegramGetChatMemberRequestInput = TelegramGetChatMemberRequest;
 export type TelegramGetChatMemberParsedRequest = z.output<
   typeof TelegramGetChatMemberRequestSchema
 >;
@@ -684,6 +790,8 @@ export const TelegramGetChatMemberCountRequestSchema =
 export type TelegramGetChatMemberCountRequest = z.input<
   typeof TelegramGetChatMemberCountRequestSchema
 >;
+export type TelegramGetChatMemberCountRequestInput =
+  TelegramGetChatMemberCountRequest;
 export type TelegramGetChatMemberCountParsedRequest = z.output<
   typeof TelegramGetChatMemberCountRequestSchema
 >;
@@ -693,6 +801,8 @@ export const TelegramGetChatMenuButtonRequestSchema =
 export type TelegramGetChatMenuButtonRequest = z.input<
   typeof TelegramGetChatMenuButtonRequestSchema
 >;
+export type TelegramGetChatMenuButtonRequestInput =
+  TelegramGetChatMenuButtonRequest;
 export type TelegramGetChatMenuButtonParsedRequest = z.output<
   typeof TelegramGetChatMenuButtonRequestSchema
 >;
@@ -702,6 +812,8 @@ export const TelegramGetCustomEmojiStickersRequestSchema =
 export type TelegramGetCustomEmojiStickersRequest = z.input<
   typeof TelegramGetCustomEmojiStickersRequestSchema
 >;
+export type TelegramGetCustomEmojiStickersRequestInput =
+  TelegramGetCustomEmojiStickersRequest;
 export type TelegramGetCustomEmojiStickersParsedRequest = z.output<
   typeof TelegramGetCustomEmojiStickersRequestSchema
 >;
@@ -714,6 +826,7 @@ export const TelegramGetFileRequestSchema = z
 export type TelegramGetFileRequest = z.input<
   typeof TelegramGetFileRequestSchema
 >;
+export type TelegramGetFileRequestInput = TelegramGetFileRequest;
 export type TelegramGetFileParsedRequest = z.output<
   typeof TelegramGetFileRequestSchema
 >;
@@ -723,6 +836,8 @@ export const TelegramGetForumTopicIconStickersRequestSchema =
 export type TelegramGetForumTopicIconStickersRequest = z.input<
   typeof TelegramGetForumTopicIconStickersRequestSchema
 >;
+export type TelegramGetForumTopicIconStickersRequestInput =
+  TelegramGetForumTopicIconStickersRequest;
 export type TelegramGetForumTopicIconStickersParsedRequest = z.output<
   typeof TelegramGetForumTopicIconStickersRequestSchema
 >;
@@ -732,6 +847,8 @@ export const TelegramGetGameHighScoresRequestSchema =
 export type TelegramGetGameHighScoresRequest = z.input<
   typeof TelegramGetGameHighScoresRequestSchema
 >;
+export type TelegramGetGameHighScoresRequestInput =
+  TelegramGetGameHighScoresRequest;
 export type TelegramGetGameHighScoresParsedRequest = z.output<
   typeof TelegramGetGameHighScoresRequestSchema
 >;
@@ -741,6 +858,8 @@ export const TelegramGetManagedBotAccessSettingsRequestSchema =
 export type TelegramGetManagedBotAccessSettingsRequest = z.input<
   typeof TelegramGetManagedBotAccessSettingsRequestSchema
 >;
+export type TelegramGetManagedBotAccessSettingsRequestInput =
+  TelegramGetManagedBotAccessSettingsRequest;
 export type TelegramGetManagedBotAccessSettingsParsedRequest = z.output<
   typeof TelegramGetManagedBotAccessSettingsRequestSchema
 >;
@@ -750,12 +869,15 @@ export const TelegramGetManagedBotTokenRequestSchema =
 export type TelegramGetManagedBotTokenRequest = z.input<
   typeof TelegramGetManagedBotTokenRequestSchema
 >;
+export type TelegramGetManagedBotTokenRequestInput =
+  TelegramGetManagedBotTokenRequest;
 export type TelegramGetManagedBotTokenParsedRequest = z.output<
   typeof TelegramGetManagedBotTokenRequestSchema
 >;
 
 export const TelegramGetMeRequestSchema = TelegramEmptyRequestSchema;
 export type TelegramGetMeRequest = z.input<typeof TelegramGetMeRequestSchema>;
+export type TelegramGetMeRequestInput = TelegramGetMeRequest;
 export type TelegramGetMeParsedRequest = z.output<
   typeof TelegramGetMeRequestSchema
 >;
@@ -764,6 +886,7 @@ export const TelegramGetMyCommandsRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetMyCommandsRequest = z.input<
   typeof TelegramGetMyCommandsRequestSchema
 >;
+export type TelegramGetMyCommandsRequestInput = TelegramGetMyCommandsRequest;
 export type TelegramGetMyCommandsParsedRequest = z.output<
   typeof TelegramGetMyCommandsRequestSchema
 >;
@@ -773,6 +896,8 @@ export const TelegramGetMyDefaultAdministratorRightsRequestSchema =
 export type TelegramGetMyDefaultAdministratorRightsRequest = z.input<
   typeof TelegramGetMyDefaultAdministratorRightsRequestSchema
 >;
+export type TelegramGetMyDefaultAdministratorRightsRequestInput =
+  TelegramGetMyDefaultAdministratorRightsRequest;
 export type TelegramGetMyDefaultAdministratorRightsParsedRequest = z.output<
   typeof TelegramGetMyDefaultAdministratorRightsRequestSchema
 >;
@@ -782,6 +907,8 @@ export const TelegramGetMyDescriptionRequestSchema =
 export type TelegramGetMyDescriptionRequest = z.input<
   typeof TelegramGetMyDescriptionRequestSchema
 >;
+export type TelegramGetMyDescriptionRequestInput =
+  TelegramGetMyDescriptionRequest;
 export type TelegramGetMyDescriptionParsedRequest = z.output<
   typeof TelegramGetMyDescriptionRequestSchema
 >;
@@ -790,6 +917,7 @@ export const TelegramGetMyNameRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetMyNameRequest = z.input<
   typeof TelegramGetMyNameRequestSchema
 >;
+export type TelegramGetMyNameRequestInput = TelegramGetMyNameRequest;
 export type TelegramGetMyNameParsedRequest = z.output<
   typeof TelegramGetMyNameRequestSchema
 >;
@@ -799,6 +927,8 @@ export const TelegramGetMyShortDescriptionRequestSchema =
 export type TelegramGetMyShortDescriptionRequest = z.input<
   typeof TelegramGetMyShortDescriptionRequestSchema
 >;
+export type TelegramGetMyShortDescriptionRequestInput =
+  TelegramGetMyShortDescriptionRequest;
 export type TelegramGetMyShortDescriptionParsedRequest = z.output<
   typeof TelegramGetMyShortDescriptionRequestSchema
 >;
@@ -807,6 +937,8 @@ export const TelegramGetMyStarBalanceRequestSchema = TelegramEmptyRequestSchema;
 export type TelegramGetMyStarBalanceRequest = z.input<
   typeof TelegramGetMyStarBalanceRequestSchema
 >;
+export type TelegramGetMyStarBalanceRequestInput =
+  TelegramGetMyStarBalanceRequest;
 export type TelegramGetMyStarBalanceParsedRequest = z.output<
   typeof TelegramGetMyStarBalanceRequestSchema
 >;
@@ -816,6 +948,8 @@ export const TelegramGetStarTransactionsRequestSchema =
 export type TelegramGetStarTransactionsRequest = z.input<
   typeof TelegramGetStarTransactionsRequestSchema
 >;
+export type TelegramGetStarTransactionsRequestInput =
+  TelegramGetStarTransactionsRequest;
 export type TelegramGetStarTransactionsParsedRequest = z.output<
   typeof TelegramGetStarTransactionsRequestSchema
 >;
@@ -824,6 +958,7 @@ export const TelegramGetStickerSetRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetStickerSetRequest = z.input<
   typeof TelegramGetStickerSetRequestSchema
 >;
+export type TelegramGetStickerSetRequestInput = TelegramGetStickerSetRequest;
 export type TelegramGetStickerSetParsedRequest = z.output<
   typeof TelegramGetStickerSetRequestSchema
 >;
@@ -839,6 +974,7 @@ export const TelegramGetUpdatesRequestSchema = z
 export type TelegramGetUpdatesRequest = z.input<
   typeof TelegramGetUpdatesRequestSchema
 >;
+export type TelegramGetUpdatesRequestInput = TelegramGetUpdatesRequest;
 export type TelegramGetUpdatesParsedRequest = z.output<
   typeof TelegramGetUpdatesRequestSchema
 >;
@@ -848,6 +984,8 @@ export const TelegramGetUserChatBoostsRequestSchema =
 export type TelegramGetUserChatBoostsRequest = z.input<
   typeof TelegramGetUserChatBoostsRequestSchema
 >;
+export type TelegramGetUserChatBoostsRequestInput =
+  TelegramGetUserChatBoostsRequest;
 export type TelegramGetUserChatBoostsParsedRequest = z.output<
   typeof TelegramGetUserChatBoostsRequestSchema
 >;
@@ -856,6 +994,7 @@ export const TelegramGetUserGiftsRequestSchema = TelegramGenericRequestSchema;
 export type TelegramGetUserGiftsRequest = z.input<
   typeof TelegramGetUserGiftsRequestSchema
 >;
+export type TelegramGetUserGiftsRequestInput = TelegramGetUserGiftsRequest;
 export type TelegramGetUserGiftsParsedRequest = z.output<
   typeof TelegramGetUserGiftsRequestSchema
 >;
@@ -865,6 +1004,8 @@ export const TelegramGetUserPersonalChatMessagesRequestSchema =
 export type TelegramGetUserPersonalChatMessagesRequest = z.input<
   typeof TelegramGetUserPersonalChatMessagesRequestSchema
 >;
+export type TelegramGetUserPersonalChatMessagesRequestInput =
+  TelegramGetUserPersonalChatMessagesRequest;
 export type TelegramGetUserPersonalChatMessagesParsedRequest = z.output<
   typeof TelegramGetUserPersonalChatMessagesRequestSchema
 >;
@@ -873,6 +1014,7 @@ export const TelegramGetWebhookInfoRequestSchema = TelegramEmptyRequestSchema;
 export type TelegramGetWebhookInfoRequest = z.input<
   typeof TelegramGetWebhookInfoRequestSchema
 >;
+export type TelegramGetWebhookInfoRequestInput = TelegramGetWebhookInfoRequest;
 export type TelegramGetWebhookInfoParsedRequest = z.output<
   typeof TelegramGetWebhookInfoRequestSchema
 >;
@@ -887,6 +1029,8 @@ export const TelegramGiftPremiumSubscriptionRequestSchema = z
 export type TelegramGiftPremiumSubscriptionRequest = z.input<
   typeof TelegramGiftPremiumSubscriptionRequestSchema
 >;
+export type TelegramGiftPremiumSubscriptionRequestInput =
+  TelegramGiftPremiumSubscriptionRequest;
 export type TelegramGiftPremiumSubscriptionParsedRequest = z.output<
   typeof TelegramGiftPremiumSubscriptionRequestSchema
 >;
@@ -896,6 +1040,8 @@ export const TelegramHideGeneralForumTopicRequestSchema =
 export type TelegramHideGeneralForumTopicRequest = z.input<
   typeof TelegramHideGeneralForumTopicRequestSchema
 >;
+export type TelegramHideGeneralForumTopicRequestInput =
+  TelegramHideGeneralForumTopicRequest;
 export type TelegramHideGeneralForumTopicParsedRequest = z.output<
   typeof TelegramHideGeneralForumTopicRequestSchema
 >;
@@ -904,12 +1050,14 @@ export const TelegramLeaveChatRequestSchema = TelegramGenericRequestSchema;
 export type TelegramLeaveChatRequest = z.input<
   typeof TelegramLeaveChatRequestSchema
 >;
+export type TelegramLeaveChatRequestInput = TelegramLeaveChatRequest;
 export type TelegramLeaveChatParsedRequest = z.output<
   typeof TelegramLeaveChatRequestSchema
 >;
 
 export const TelegramLogOutRequestSchema = TelegramEmptyRequestSchema;
 export type TelegramLogOutRequest = z.input<typeof TelegramLogOutRequestSchema>;
+export type TelegramLogOutRequestInput = TelegramLogOutRequest;
 export type TelegramLogOutParsedRequest = z.output<
   typeof TelegramLogOutRequestSchema
 >;
@@ -918,6 +1066,7 @@ export const TelegramPinChatMessageRequestSchema = TelegramGenericRequestSchema;
 export type TelegramPinChatMessageRequest = z.input<
   typeof TelegramPinChatMessageRequestSchema
 >;
+export type TelegramPinChatMessageRequestInput = TelegramPinChatMessageRequest;
 export type TelegramPinChatMessageParsedRequest = z.output<
   typeof TelegramPinChatMessageRequestSchema
 >;
@@ -931,6 +1080,7 @@ export const TelegramPostStoryRequestSchema = z
 export type TelegramPostStoryRequest = z.input<
   typeof TelegramPostStoryRequestSchema
 >;
+export type TelegramPostStoryRequestInput = TelegramPostStoryRequest;
 export type TelegramPostStoryParsedRequest = z.output<
   typeof TelegramPostStoryRequestSchema
 >;
@@ -940,6 +1090,8 @@ export const TelegramPromoteChatMemberRequestSchema =
 export type TelegramPromoteChatMemberRequest = z.input<
   typeof TelegramPromoteChatMemberRequestSchema
 >;
+export type TelegramPromoteChatMemberRequestInput =
+  TelegramPromoteChatMemberRequest;
 export type TelegramPromoteChatMemberParsedRequest = z.output<
   typeof TelegramPromoteChatMemberRequestSchema
 >;
@@ -949,6 +1101,8 @@ export const TelegramReadBusinessMessageRequestSchema =
 export type TelegramReadBusinessMessageRequest = z.input<
   typeof TelegramReadBusinessMessageRequestSchema
 >;
+export type TelegramReadBusinessMessageRequestInput =
+  TelegramReadBusinessMessageRequest;
 export type TelegramReadBusinessMessageParsedRequest = z.output<
   typeof TelegramReadBusinessMessageRequestSchema
 >;
@@ -958,6 +1112,8 @@ export const TelegramRefundStarPaymentRequestSchema =
 export type TelegramRefundStarPaymentRequest = z.input<
   typeof TelegramRefundStarPaymentRequestSchema
 >;
+export type TelegramRefundStarPaymentRequestInput =
+  TelegramRefundStarPaymentRequest;
 export type TelegramRefundStarPaymentParsedRequest = z.output<
   typeof TelegramRefundStarPaymentRequestSchema
 >;
@@ -967,6 +1123,8 @@ export const TelegramRemoveBusinessAccountProfilePhotoRequestSchema =
 export type TelegramRemoveBusinessAccountProfilePhotoRequest = z.input<
   typeof TelegramRemoveBusinessAccountProfilePhotoRequestSchema
 >;
+export type TelegramRemoveBusinessAccountProfilePhotoRequestInput =
+  TelegramRemoveBusinessAccountProfilePhotoRequest;
 export type TelegramRemoveBusinessAccountProfilePhotoParsedRequest = z.output<
   typeof TelegramRemoveBusinessAccountProfilePhotoRequestSchema
 >;
@@ -976,6 +1134,8 @@ export const TelegramRemoveChatVerificationRequestSchema =
 export type TelegramRemoveChatVerificationRequest = z.input<
   typeof TelegramRemoveChatVerificationRequestSchema
 >;
+export type TelegramRemoveChatVerificationRequestInput =
+  TelegramRemoveChatVerificationRequest;
 export type TelegramRemoveChatVerificationParsedRequest = z.output<
   typeof TelegramRemoveChatVerificationRequestSchema
 >;
@@ -985,6 +1145,8 @@ export const TelegramRemoveUserVerificationRequestSchema =
 export type TelegramRemoveUserVerificationRequest = z.input<
   typeof TelegramRemoveUserVerificationRequestSchema
 >;
+export type TelegramRemoveUserVerificationRequestInput =
+  TelegramRemoveUserVerificationRequest;
 export type TelegramRemoveUserVerificationParsedRequest = z.output<
   typeof TelegramRemoveUserVerificationRequestSchema
 >;
@@ -994,6 +1156,8 @@ export const TelegramReopenForumTopicRequestSchema =
 export type TelegramReopenForumTopicRequest = z.input<
   typeof TelegramReopenForumTopicRequestSchema
 >;
+export type TelegramReopenForumTopicRequestInput =
+  TelegramReopenForumTopicRequest;
 export type TelegramReopenForumTopicParsedRequest = z.output<
   typeof TelegramReopenForumTopicRequestSchema
 >;
@@ -1003,6 +1167,8 @@ export const TelegramReopenGeneralForumTopicRequestSchema =
 export type TelegramReopenGeneralForumTopicRequest = z.input<
   typeof TelegramReopenGeneralForumTopicRequestSchema
 >;
+export type TelegramReopenGeneralForumTopicRequestInput =
+  TelegramReopenGeneralForumTopicRequest;
 export type TelegramReopenGeneralForumTopicParsedRequest = z.output<
   typeof TelegramReopenGeneralForumTopicRequestSchema
 >;
@@ -1012,6 +1178,8 @@ export const TelegramReplaceManagedBotTokenRequestSchema =
 export type TelegramReplaceManagedBotTokenRequest = z.input<
   typeof TelegramReplaceManagedBotTokenRequestSchema
 >;
+export type TelegramReplaceManagedBotTokenRequestInput =
+  TelegramReplaceManagedBotTokenRequest;
 export type TelegramReplaceManagedBotTokenParsedRequest = z.output<
   typeof TelegramReplaceManagedBotTokenRequestSchema
 >;
@@ -1021,6 +1189,8 @@ export const TelegramReplaceStickerInSetRequestSchema =
 export type TelegramReplaceStickerInSetRequest = z.input<
   typeof TelegramReplaceStickerInSetRequestSchema
 >;
+export type TelegramReplaceStickerInSetRequestInput =
+  TelegramReplaceStickerInSetRequest;
 export type TelegramReplaceStickerInSetParsedRequest = z.output<
   typeof TelegramReplaceStickerInSetRequestSchema
 >;
@@ -1029,6 +1199,7 @@ export const TelegramRepostStoryRequestSchema = TelegramGenericRequestSchema;
 export type TelegramRepostStoryRequest = z.input<
   typeof TelegramRepostStoryRequestSchema
 >;
+export type TelegramRepostStoryRequestInput = TelegramRepostStoryRequest;
 export type TelegramRepostStoryParsedRequest = z.output<
   typeof TelegramRepostStoryRequestSchema
 >;
@@ -1038,6 +1209,8 @@ export const TelegramRestrictChatMemberRequestSchema =
 export type TelegramRestrictChatMemberRequest = z.input<
   typeof TelegramRestrictChatMemberRequestSchema
 >;
+export type TelegramRestrictChatMemberRequestInput =
+  TelegramRestrictChatMemberRequest;
 export type TelegramRestrictChatMemberParsedRequest = z.output<
   typeof TelegramRestrictChatMemberRequestSchema
 >;
@@ -1047,6 +1220,8 @@ export const TelegramRevokeChatInviteLinkRequestSchema =
 export type TelegramRevokeChatInviteLinkRequest = z.input<
   typeof TelegramRevokeChatInviteLinkRequestSchema
 >;
+export type TelegramRevokeChatInviteLinkRequestInput =
+  TelegramRevokeChatInviteLinkRequest;
 export type TelegramRevokeChatInviteLinkParsedRequest = z.output<
   typeof TelegramRevokeChatInviteLinkRequestSchema
 >;
@@ -1056,6 +1231,8 @@ export const TelegramSavePreparedInlineMessageRequestSchema =
 export type TelegramSavePreparedInlineMessageRequest = z.input<
   typeof TelegramSavePreparedInlineMessageRequestSchema
 >;
+export type TelegramSavePreparedInlineMessageRequestInput =
+  TelegramSavePreparedInlineMessageRequest;
 export type TelegramSavePreparedInlineMessageParsedRequest = z.output<
   typeof TelegramSavePreparedInlineMessageRequestSchema
 >;
@@ -1065,6 +1242,8 @@ export const TelegramSavePreparedKeyboardButtonRequestSchema =
 export type TelegramSavePreparedKeyboardButtonRequest = z.input<
   typeof TelegramSavePreparedKeyboardButtonRequestSchema
 >;
+export type TelegramSavePreparedKeyboardButtonRequestInput =
+  TelegramSavePreparedKeyboardButtonRequest;
 export type TelegramSavePreparedKeyboardButtonParsedRequest = z.output<
   typeof TelegramSavePreparedKeyboardButtonRequestSchema
 >;
@@ -1073,6 +1252,7 @@ export const TelegramSendAnimationRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendAnimationRequest = z.input<
   typeof TelegramSendAnimationRequestSchema
 >;
+export type TelegramSendAnimationRequestInput = TelegramSendAnimationRequest;
 export type TelegramSendAnimationParsedRequest = z.output<
   typeof TelegramSendAnimationRequestSchema
 >;
@@ -1085,6 +1265,7 @@ export const TelegramSendAudioRequestSchema =
 export type TelegramSendAudioRequest = z.input<
   typeof TelegramSendAudioRequestSchema
 >;
+export type TelegramSendAudioRequestInput = TelegramSendAudioRequest;
 export type TelegramSendAudioParsedRequest = z.output<
   typeof TelegramSendAudioRequestSchema
 >;
@@ -1093,6 +1274,7 @@ export const TelegramSendChatActionRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendChatActionRequest = z.input<
   typeof TelegramSendChatActionRequestSchema
 >;
+export type TelegramSendChatActionRequestInput = TelegramSendChatActionRequest;
 export type TelegramSendChatActionParsedRequest = z.output<
   typeof TelegramSendChatActionRequestSchema
 >;
@@ -1106,6 +1288,8 @@ export const TelegramSendChatJoinRequestWebAppRequestSchema = z
 export type TelegramSendChatJoinRequestWebAppRequest = z.input<
   typeof TelegramSendChatJoinRequestWebAppRequestSchema
 >;
+export type TelegramSendChatJoinRequestWebAppRequestInput =
+  TelegramSendChatJoinRequestWebAppRequest;
 export type TelegramSendChatJoinRequestWebAppParsedRequest = z.output<
   typeof TelegramSendChatJoinRequestWebAppRequestSchema
 >;
@@ -1114,6 +1298,7 @@ export const TelegramSendChecklistRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendChecklistRequest = z.input<
   typeof TelegramSendChecklistRequestSchema
 >;
+export type TelegramSendChecklistRequestInput = TelegramSendChecklistRequest;
 export type TelegramSendChecklistParsedRequest = z.output<
   typeof TelegramSendChecklistRequestSchema
 >;
@@ -1122,6 +1307,7 @@ export const TelegramSendContactRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendContactRequest = z.input<
   typeof TelegramSendContactRequestSchema
 >;
+export type TelegramSendContactRequestInput = TelegramSendContactRequest;
 export type TelegramSendContactParsedRequest = z.output<
   typeof TelegramSendContactRequestSchema
 >;
@@ -1130,6 +1316,7 @@ export const TelegramSendDiceRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendDiceRequest = z.input<
   typeof TelegramSendDiceRequestSchema
 >;
+export type TelegramSendDiceRequestInput = TelegramSendDiceRequest;
 export type TelegramSendDiceParsedRequest = z.output<
   typeof TelegramSendDiceRequestSchema
 >;
@@ -1142,6 +1329,7 @@ export const TelegramSendDocumentRequestSchema =
 export type TelegramSendDocumentRequest = z.input<
   typeof TelegramSendDocumentRequestSchema
 >;
+export type TelegramSendDocumentRequestInput = TelegramSendDocumentRequest;
 export type TelegramSendDocumentParsedRequest = z.output<
   typeof TelegramSendDocumentRequestSchema
 >;
@@ -1153,6 +1341,7 @@ export const TelegramSendGameRequestSchema =
 export type TelegramSendGameRequest = z.input<
   typeof TelegramSendGameRequestSchema
 >;
+export type TelegramSendGameRequestInput = TelegramSendGameRequest;
 export type TelegramSendGameParsedRequest = z.output<
   typeof TelegramSendGameRequestSchema
 >;
@@ -1161,6 +1350,7 @@ export const TelegramSendGiftRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendGiftRequest = z.input<
   typeof TelegramSendGiftRequestSchema
 >;
+export type TelegramSendGiftRequestInput = TelegramSendGiftRequest;
 export type TelegramSendGiftParsedRequest = z.output<
   typeof TelegramSendGiftRequestSchema
 >;
@@ -1176,6 +1366,7 @@ export const TelegramSendInvoiceRequestSchema =
 export type TelegramSendInvoiceRequest = z.input<
   typeof TelegramSendInvoiceRequestSchema
 >;
+export type TelegramSendInvoiceRequestInput = TelegramSendInvoiceRequest;
 export type TelegramSendInvoiceParsedRequest = z.output<
   typeof TelegramSendInvoiceRequestSchema
 >;
@@ -1184,6 +1375,7 @@ export const TelegramSendLivePhotoRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendLivePhotoRequest = z.input<
   typeof TelegramSendLivePhotoRequestSchema
 >;
+export type TelegramSendLivePhotoRequestInput = TelegramSendLivePhotoRequest;
 export type TelegramSendLivePhotoParsedRequest = z.output<
   typeof TelegramSendLivePhotoRequestSchema
 >;
@@ -1192,6 +1384,7 @@ export const TelegramSendLocationRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendLocationRequest = z.input<
   typeof TelegramSendLocationRequestSchema
 >;
+export type TelegramSendLocationRequestInput = TelegramSendLocationRequest;
 export type TelegramSendLocationParsedRequest = z.output<
   typeof TelegramSendLocationRequestSchema
 >;
@@ -1203,6 +1396,7 @@ export const TelegramSendMediaGroupRequestSchema =
 export type TelegramSendMediaGroupRequest = z.input<
   typeof TelegramSendMediaGroupRequestSchema
 >;
+export type TelegramSendMediaGroupRequestInput = TelegramSendMediaGroupRequest;
 export type TelegramSendMediaGroupParsedRequest = z.output<
   typeof TelegramSendMediaGroupRequestSchema
 >;
@@ -1217,6 +1411,7 @@ export const TelegramSendMessageRequestSchema =
 export type TelegramSendMessageRequest = z.input<
   typeof TelegramSendMessageRequestSchema
 >;
+export type TelegramSendMessageRequestInput = TelegramSendMessageRequest;
 export type TelegramSendMessageParsedRequest = z.output<
   typeof TelegramSendMessageRequestSchema
 >;
@@ -1226,6 +1421,8 @@ export const TelegramSendMessageDraftRequestSchema =
 export type TelegramSendMessageDraftRequest = z.input<
   typeof TelegramSendMessageDraftRequestSchema
 >;
+export type TelegramSendMessageDraftRequestInput =
+  TelegramSendMessageDraftRequest;
 export type TelegramSendMessageDraftParsedRequest = z.output<
   typeof TelegramSendMessageDraftRequestSchema
 >;
@@ -1239,6 +1436,7 @@ export const TelegramSendPaidMediaRequestSchema =
 export type TelegramSendPaidMediaRequest = z.input<
   typeof TelegramSendPaidMediaRequestSchema
 >;
+export type TelegramSendPaidMediaRequestInput = TelegramSendPaidMediaRequest;
 export type TelegramSendPaidMediaParsedRequest = z.output<
   typeof TelegramSendPaidMediaRequestSchema
 >;
@@ -1250,6 +1448,7 @@ export const TelegramSendPhotoRequestSchema =
 export type TelegramSendPhotoRequest = z.input<
   typeof TelegramSendPhotoRequestSchema
 >;
+export type TelegramSendPhotoRequestInput = TelegramSendPhotoRequest;
 export type TelegramSendPhotoParsedRequest = z.output<
   typeof TelegramSendPhotoRequestSchema
 >;
@@ -1263,6 +1462,7 @@ export const TelegramSendPollRequestSchema =
 export type TelegramSendPollRequest = z.input<
   typeof TelegramSendPollRequestSchema
 >;
+export type TelegramSendPollRequestInput = TelegramSendPollRequest;
 export type TelegramSendPollParsedRequest = z.output<
   typeof TelegramSendPollRequestSchema
 >;
@@ -1272,6 +1472,8 @@ export const TelegramSendRichMessageRequestSchema =
 export type TelegramSendRichMessageRequest = z.input<
   typeof TelegramSendRichMessageRequestSchema
 >;
+export type TelegramSendRichMessageRequestInput =
+  TelegramSendRichMessageRequest;
 export type TelegramSendRichMessageParsedRequest = z.output<
   typeof TelegramSendRichMessageRequestSchema
 >;
@@ -1281,6 +1483,8 @@ export const TelegramSendRichMessageDraftRequestSchema =
 export type TelegramSendRichMessageDraftRequest = z.input<
   typeof TelegramSendRichMessageDraftRequestSchema
 >;
+export type TelegramSendRichMessageDraftRequestInput =
+  TelegramSendRichMessageDraftRequest;
 export type TelegramSendRichMessageDraftParsedRequest = z.output<
   typeof TelegramSendRichMessageDraftRequestSchema
 >;
@@ -1289,6 +1493,7 @@ export const TelegramSendStickerRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendStickerRequest = z.input<
   typeof TelegramSendStickerRequestSchema
 >;
+export type TelegramSendStickerRequestInput = TelegramSendStickerRequest;
 export type TelegramSendStickerParsedRequest = z.output<
   typeof TelegramSendStickerRequestSchema
 >;
@@ -1297,6 +1502,7 @@ export const TelegramSendVenueRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendVenueRequest = z.input<
   typeof TelegramSendVenueRequestSchema
 >;
+export type TelegramSendVenueRequestInput = TelegramSendVenueRequest;
 export type TelegramSendVenueParsedRequest = z.output<
   typeof TelegramSendVenueRequestSchema
 >;
@@ -1310,6 +1516,7 @@ export const TelegramSendVideoRequestSchema =
 export type TelegramSendVideoRequest = z.input<
   typeof TelegramSendVideoRequestSchema
 >;
+export type TelegramSendVideoRequestInput = TelegramSendVideoRequest;
 export type TelegramSendVideoParsedRequest = z.output<
   typeof TelegramSendVideoRequestSchema
 >;
@@ -1318,6 +1525,7 @@ export const TelegramSendVideoNoteRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSendVideoNoteRequest = z.input<
   typeof TelegramSendVideoNoteRequestSchema
 >;
+export type TelegramSendVideoNoteRequestInput = TelegramSendVideoNoteRequest;
 export type TelegramSendVideoNoteParsedRequest = z.output<
   typeof TelegramSendVideoNoteRequestSchema
 >;
@@ -1329,6 +1537,7 @@ export const TelegramSendVoiceRequestSchema =
 export type TelegramSendVoiceRequest = z.input<
   typeof TelegramSendVoiceRequestSchema
 >;
+export type TelegramSendVoiceRequestInput = TelegramSendVoiceRequest;
 export type TelegramSendVoiceParsedRequest = z.output<
   typeof TelegramSendVoiceRequestSchema
 >;
@@ -1338,6 +1547,8 @@ export const TelegramSetBusinessAccountBioRequestSchema =
 export type TelegramSetBusinessAccountBioRequest = z.input<
   typeof TelegramSetBusinessAccountBioRequestSchema
 >;
+export type TelegramSetBusinessAccountBioRequestInput =
+  TelegramSetBusinessAccountBioRequest;
 export type TelegramSetBusinessAccountBioParsedRequest = z.output<
   typeof TelegramSetBusinessAccountBioRequestSchema
 >;
@@ -1347,6 +1558,8 @@ export const TelegramSetBusinessAccountGiftSettingsRequestSchema =
 export type TelegramSetBusinessAccountGiftSettingsRequest = z.input<
   typeof TelegramSetBusinessAccountGiftSettingsRequestSchema
 >;
+export type TelegramSetBusinessAccountGiftSettingsRequestInput =
+  TelegramSetBusinessAccountGiftSettingsRequest;
 export type TelegramSetBusinessAccountGiftSettingsParsedRequest = z.output<
   typeof TelegramSetBusinessAccountGiftSettingsRequestSchema
 >;
@@ -1356,6 +1569,8 @@ export const TelegramSetBusinessAccountNameRequestSchema =
 export type TelegramSetBusinessAccountNameRequest = z.input<
   typeof TelegramSetBusinessAccountNameRequestSchema
 >;
+export type TelegramSetBusinessAccountNameRequestInput =
+  TelegramSetBusinessAccountNameRequest;
 export type TelegramSetBusinessAccountNameParsedRequest = z.output<
   typeof TelegramSetBusinessAccountNameRequestSchema
 >;
@@ -1365,6 +1580,8 @@ export const TelegramSetBusinessAccountProfilePhotoRequestSchema =
 export type TelegramSetBusinessAccountProfilePhotoRequest = z.input<
   typeof TelegramSetBusinessAccountProfilePhotoRequestSchema
 >;
+export type TelegramSetBusinessAccountProfilePhotoRequestInput =
+  TelegramSetBusinessAccountProfilePhotoRequest;
 export type TelegramSetBusinessAccountProfilePhotoParsedRequest = z.output<
   typeof TelegramSetBusinessAccountProfilePhotoRequestSchema
 >;
@@ -1374,6 +1591,8 @@ export const TelegramSetBusinessAccountUsernameRequestSchema =
 export type TelegramSetBusinessAccountUsernameRequest = z.input<
   typeof TelegramSetBusinessAccountUsernameRequestSchema
 >;
+export type TelegramSetBusinessAccountUsernameRequestInput =
+  TelegramSetBusinessAccountUsernameRequest;
 export type TelegramSetBusinessAccountUsernameParsedRequest = z.output<
   typeof TelegramSetBusinessAccountUsernameRequestSchema
 >;
@@ -1383,6 +1602,8 @@ export const TelegramSetChatAdministratorCustomTitleRequestSchema =
 export type TelegramSetChatAdministratorCustomTitleRequest = z.input<
   typeof TelegramSetChatAdministratorCustomTitleRequestSchema
 >;
+export type TelegramSetChatAdministratorCustomTitleRequestInput =
+  TelegramSetChatAdministratorCustomTitleRequest;
 export type TelegramSetChatAdministratorCustomTitleParsedRequest = z.output<
   typeof TelegramSetChatAdministratorCustomTitleRequestSchema
 >;
@@ -1392,6 +1613,8 @@ export const TelegramSetChatDescriptionRequestSchema =
 export type TelegramSetChatDescriptionRequest = z.input<
   typeof TelegramSetChatDescriptionRequestSchema
 >;
+export type TelegramSetChatDescriptionRequestInput =
+  TelegramSetChatDescriptionRequest;
 export type TelegramSetChatDescriptionParsedRequest = z.output<
   typeof TelegramSetChatDescriptionRequestSchema
 >;
@@ -1401,6 +1624,8 @@ export const TelegramSetChatMemberTagRequestSchema =
 export type TelegramSetChatMemberTagRequest = z.input<
   typeof TelegramSetChatMemberTagRequestSchema
 >;
+export type TelegramSetChatMemberTagRequestInput =
+  TelegramSetChatMemberTagRequest;
 export type TelegramSetChatMemberTagParsedRequest = z.output<
   typeof TelegramSetChatMemberTagRequestSchema
 >;
@@ -1410,6 +1635,8 @@ export const TelegramSetChatMenuButtonRequestSchema =
 export type TelegramSetChatMenuButtonRequest = z.input<
   typeof TelegramSetChatMenuButtonRequestSchema
 >;
+export type TelegramSetChatMenuButtonRequestInput =
+  TelegramSetChatMenuButtonRequest;
 export type TelegramSetChatMenuButtonParsedRequest = z.output<
   typeof TelegramSetChatMenuButtonRequestSchema
 >;
@@ -1419,6 +1646,8 @@ export const TelegramSetChatPermissionsRequestSchema =
 export type TelegramSetChatPermissionsRequest = z.input<
   typeof TelegramSetChatPermissionsRequestSchema
 >;
+export type TelegramSetChatPermissionsRequestInput =
+  TelegramSetChatPermissionsRequest;
 export type TelegramSetChatPermissionsParsedRequest = z.output<
   typeof TelegramSetChatPermissionsRequestSchema
 >;
@@ -1427,6 +1656,7 @@ export const TelegramSetChatPhotoRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSetChatPhotoRequest = z.input<
   typeof TelegramSetChatPhotoRequestSchema
 >;
+export type TelegramSetChatPhotoRequestInput = TelegramSetChatPhotoRequest;
 export type TelegramSetChatPhotoParsedRequest = z.output<
   typeof TelegramSetChatPhotoRequestSchema
 >;
@@ -1436,6 +1666,8 @@ export const TelegramSetChatStickerSetRequestSchema =
 export type TelegramSetChatStickerSetRequest = z.input<
   typeof TelegramSetChatStickerSetRequestSchema
 >;
+export type TelegramSetChatStickerSetRequestInput =
+  TelegramSetChatStickerSetRequest;
 export type TelegramSetChatStickerSetParsedRequest = z.output<
   typeof TelegramSetChatStickerSetRequestSchema
 >;
@@ -1444,6 +1676,7 @@ export const TelegramSetChatTitleRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSetChatTitleRequest = z.input<
   typeof TelegramSetChatTitleRequestSchema
 >;
+export type TelegramSetChatTitleRequestInput = TelegramSetChatTitleRequest;
 export type TelegramSetChatTitleParsedRequest = z.output<
   typeof TelegramSetChatTitleRequestSchema
 >;
@@ -1453,6 +1686,8 @@ export const TelegramSetCustomEmojiStickerSetThumbnailRequestSchema =
 export type TelegramSetCustomEmojiStickerSetThumbnailRequest = z.input<
   typeof TelegramSetCustomEmojiStickerSetThumbnailRequestSchema
 >;
+export type TelegramSetCustomEmojiStickerSetThumbnailRequestInput =
+  TelegramSetCustomEmojiStickerSetThumbnailRequest;
 export type TelegramSetCustomEmojiStickerSetThumbnailParsedRequest = z.output<
   typeof TelegramSetCustomEmojiStickerSetThumbnailRequestSchema
 >;
@@ -1461,6 +1696,7 @@ export const TelegramSetGameScoreRequestSchema = TelegramGenericRequestSchema;
 export type TelegramSetGameScoreRequest = z.input<
   typeof TelegramSetGameScoreRequestSchema
 >;
+export type TelegramSetGameScoreRequestInput = TelegramSetGameScoreRequest;
 export type TelegramSetGameScoreParsedRequest = z.output<
   typeof TelegramSetGameScoreRequestSchema
 >;
@@ -1476,6 +1712,8 @@ export const TelegramSetManagedBotAccessSettingsRequestSchema = z
 export type TelegramSetManagedBotAccessSettingsRequest = z.input<
   typeof TelegramSetManagedBotAccessSettingsRequestSchema
 >;
+export type TelegramSetManagedBotAccessSettingsRequestInput =
+  TelegramSetManagedBotAccessSettingsRequest;
 export type TelegramSetManagedBotAccessSettingsParsedRequest = z.output<
   typeof TelegramSetManagedBotAccessSettingsRequestSchema
 >;
@@ -1490,6 +1728,8 @@ export const TelegramSetMessageReactionRequestSchema = z
 export type TelegramSetMessageReactionRequest = z.input<
   typeof TelegramSetMessageReactionRequestSchema
 >;
+export type TelegramSetMessageReactionRequestInput =
+  TelegramSetMessageReactionRequest;
 export type TelegramSetMessageReactionParsedRequest = z.output<
   typeof TelegramSetMessageReactionRequestSchema
 >;
@@ -1504,6 +1744,7 @@ export const TelegramSetMyCommandsRequestSchema = z
 export type TelegramSetMyCommandsRequest = z.input<
   typeof TelegramSetMyCommandsRequestSchema
 >;
+export type TelegramSetMyCommandsRequestInput = TelegramSetMyCommandsRequest;
 export type TelegramSetMyCommandsParsedRequest = z.output<
   typeof TelegramSetMyCommandsRequestSchema
 >;
@@ -1513,6 +1754,8 @@ export const TelegramSetMyDefaultAdministratorRightsRequestSchema =
 export type TelegramSetMyDefaultAdministratorRightsRequest = z.input<
   typeof TelegramSetMyDefaultAdministratorRightsRequestSchema
 >;
+export type TelegramSetMyDefaultAdministratorRightsRequestInput =
+  TelegramSetMyDefaultAdministratorRightsRequest;
 export type TelegramSetMyDefaultAdministratorRightsParsedRequest = z.output<
   typeof TelegramSetMyDefaultAdministratorRightsRequestSchema
 >;
@@ -1526,6 +1769,8 @@ export const TelegramSetMyDescriptionRequestSchema = z
 export type TelegramSetMyDescriptionRequest = z.input<
   typeof TelegramSetMyDescriptionRequestSchema
 >;
+export type TelegramSetMyDescriptionRequestInput =
+  TelegramSetMyDescriptionRequest;
 export type TelegramSetMyDescriptionParsedRequest = z.output<
   typeof TelegramSetMyDescriptionRequestSchema
 >;
@@ -1539,6 +1784,7 @@ export const TelegramSetMyNameRequestSchema = z
 export type TelegramSetMyNameRequest = z.input<
   typeof TelegramSetMyNameRequestSchema
 >;
+export type TelegramSetMyNameRequestInput = TelegramSetMyNameRequest;
 export type TelegramSetMyNameParsedRequest = z.output<
   typeof TelegramSetMyNameRequestSchema
 >;
@@ -1552,6 +1798,8 @@ export const TelegramSetMyShortDescriptionRequestSchema = z
 export type TelegramSetMyShortDescriptionRequest = z.input<
   typeof TelegramSetMyShortDescriptionRequestSchema
 >;
+export type TelegramSetMyShortDescriptionRequestInput =
+  TelegramSetMyShortDescriptionRequest;
 export type TelegramSetMyShortDescriptionParsedRequest = z.output<
   typeof TelegramSetMyShortDescriptionRequestSchema
 >;
@@ -1565,6 +1813,8 @@ export const TelegramSetPassportDataErrorsRequestSchema = z
 export type TelegramSetPassportDataErrorsRequest = z.input<
   typeof TelegramSetPassportDataErrorsRequestSchema
 >;
+export type TelegramSetPassportDataErrorsRequestInput =
+  TelegramSetPassportDataErrorsRequest;
 export type TelegramSetPassportDataErrorsParsedRequest = z.output<
   typeof TelegramSetPassportDataErrorsRequestSchema
 >;
@@ -1574,6 +1824,8 @@ export const TelegramSetStickerEmojiListRequestSchema =
 export type TelegramSetStickerEmojiListRequest = z.input<
   typeof TelegramSetStickerEmojiListRequestSchema
 >;
+export type TelegramSetStickerEmojiListRequestInput =
+  TelegramSetStickerEmojiListRequest;
 export type TelegramSetStickerEmojiListParsedRequest = z.output<
   typeof TelegramSetStickerEmojiListRequestSchema
 >;
@@ -1583,6 +1835,8 @@ export const TelegramSetStickerKeywordsRequestSchema =
 export type TelegramSetStickerKeywordsRequest = z.input<
   typeof TelegramSetStickerKeywordsRequestSchema
 >;
+export type TelegramSetStickerKeywordsRequestInput =
+  TelegramSetStickerKeywordsRequest;
 export type TelegramSetStickerKeywordsParsedRequest = z.output<
   typeof TelegramSetStickerKeywordsRequestSchema
 >;
@@ -1592,6 +1846,8 @@ export const TelegramSetStickerMaskPositionRequestSchema =
 export type TelegramSetStickerMaskPositionRequest = z.input<
   typeof TelegramSetStickerMaskPositionRequestSchema
 >;
+export type TelegramSetStickerMaskPositionRequestInput =
+  TelegramSetStickerMaskPositionRequest;
 export type TelegramSetStickerMaskPositionParsedRequest = z.output<
   typeof TelegramSetStickerMaskPositionRequestSchema
 >;
@@ -1601,6 +1857,8 @@ export const TelegramSetStickerPositionInSetRequestSchema =
 export type TelegramSetStickerPositionInSetRequest = z.input<
   typeof TelegramSetStickerPositionInSetRequestSchema
 >;
+export type TelegramSetStickerPositionInSetRequestInput =
+  TelegramSetStickerPositionInSetRequest;
 export type TelegramSetStickerPositionInSetParsedRequest = z.output<
   typeof TelegramSetStickerPositionInSetRequestSchema
 >;
@@ -1610,6 +1868,8 @@ export const TelegramSetStickerSetThumbnailRequestSchema =
 export type TelegramSetStickerSetThumbnailRequest = z.input<
   typeof TelegramSetStickerSetThumbnailRequestSchema
 >;
+export type TelegramSetStickerSetThumbnailRequestInput =
+  TelegramSetStickerSetThumbnailRequest;
 export type TelegramSetStickerSetThumbnailParsedRequest = z.output<
   typeof TelegramSetStickerSetThumbnailRequestSchema
 >;
@@ -1619,6 +1879,8 @@ export const TelegramSetStickerSetTitleRequestSchema =
 export type TelegramSetStickerSetTitleRequest = z.input<
   typeof TelegramSetStickerSetTitleRequestSchema
 >;
+export type TelegramSetStickerSetTitleRequestInput =
+  TelegramSetStickerSetTitleRequest;
 export type TelegramSetStickerSetTitleParsedRequest = z.output<
   typeof TelegramSetStickerSetTitleRequestSchema
 >;
@@ -1632,6 +1894,8 @@ export const TelegramSetUserEmojiStatusRequestSchema = z
 export type TelegramSetUserEmojiStatusRequest = z.input<
   typeof TelegramSetUserEmojiStatusRequestSchema
 >;
+export type TelegramSetUserEmojiStatusRequestInput =
+  TelegramSetUserEmojiStatusRequest;
 export type TelegramSetUserEmojiStatusParsedRequest = z.output<
   typeof TelegramSetUserEmojiStatusRequestSchema
 >;
@@ -1650,6 +1914,7 @@ export const TelegramSetWebhookRequestSchema = z
 export type TelegramSetWebhookRequest = z.input<
   typeof TelegramSetWebhookRequestSchema
 >;
+export type TelegramSetWebhookRequestInput = TelegramSetWebhookRequest;
 export type TelegramSetWebhookParsedRequest = z.output<
   typeof TelegramSetWebhookRequestSchema
 >;
@@ -1659,6 +1924,8 @@ export const TelegramStopMessageLiveLocationRequestSchema =
 export type TelegramStopMessageLiveLocationRequest = z.input<
   typeof TelegramStopMessageLiveLocationRequestSchema
 >;
+export type TelegramStopMessageLiveLocationRequestInput =
+  TelegramStopMessageLiveLocationRequest;
 export type TelegramStopMessageLiveLocationParsedRequest = z.output<
   typeof TelegramStopMessageLiveLocationRequestSchema
 >;
@@ -1667,6 +1934,7 @@ export const TelegramStopPollRequestSchema = TelegramGenericRequestSchema;
 export type TelegramStopPollRequest = z.input<
   typeof TelegramStopPollRequestSchema
 >;
+export type TelegramStopPollRequestInput = TelegramStopPollRequest;
 export type TelegramStopPollParsedRequest = z.output<
   typeof TelegramStopPollRequestSchema
 >;
@@ -1676,6 +1944,8 @@ export const TelegramTransferBusinessAccountStarsRequestSchema =
 export type TelegramTransferBusinessAccountStarsRequest = z.input<
   typeof TelegramTransferBusinessAccountStarsRequestSchema
 >;
+export type TelegramTransferBusinessAccountStarsRequestInput =
+  TelegramTransferBusinessAccountStarsRequest;
 export type TelegramTransferBusinessAccountStarsParsedRequest = z.output<
   typeof TelegramTransferBusinessAccountStarsRequestSchema
 >;
@@ -1684,6 +1954,7 @@ export const TelegramTransferGiftRequestSchema = TelegramGenericRequestSchema;
 export type TelegramTransferGiftRequest = z.input<
   typeof TelegramTransferGiftRequestSchema
 >;
+export type TelegramTransferGiftRequestInput = TelegramTransferGiftRequest;
 export type TelegramTransferGiftParsedRequest = z.output<
   typeof TelegramTransferGiftRequestSchema
 >;
@@ -1693,6 +1964,8 @@ export const TelegramUnbanChatMemberRequestSchema =
 export type TelegramUnbanChatMemberRequest = z.input<
   typeof TelegramUnbanChatMemberRequestSchema
 >;
+export type TelegramUnbanChatMemberRequestInput =
+  TelegramUnbanChatMemberRequest;
 export type TelegramUnbanChatMemberParsedRequest = z.output<
   typeof TelegramUnbanChatMemberRequestSchema
 >;
@@ -1702,6 +1975,8 @@ export const TelegramUnbanChatSenderChatRequestSchema =
 export type TelegramUnbanChatSenderChatRequest = z.input<
   typeof TelegramUnbanChatSenderChatRequestSchema
 >;
+export type TelegramUnbanChatSenderChatRequestInput =
+  TelegramUnbanChatSenderChatRequest;
 export type TelegramUnbanChatSenderChatParsedRequest = z.output<
   typeof TelegramUnbanChatSenderChatRequestSchema
 >;
@@ -1711,6 +1986,8 @@ export const TelegramUnhideGeneralForumTopicRequestSchema =
 export type TelegramUnhideGeneralForumTopicRequest = z.input<
   typeof TelegramUnhideGeneralForumTopicRequestSchema
 >;
+export type TelegramUnhideGeneralForumTopicRequestInput =
+  TelegramUnhideGeneralForumTopicRequest;
 export type TelegramUnhideGeneralForumTopicParsedRequest = z.output<
   typeof TelegramUnhideGeneralForumTopicRequestSchema
 >;
@@ -1720,6 +1997,8 @@ export const TelegramUnpinAllChatMessagesRequestSchema =
 export type TelegramUnpinAllChatMessagesRequest = z.input<
   typeof TelegramUnpinAllChatMessagesRequestSchema
 >;
+export type TelegramUnpinAllChatMessagesRequestInput =
+  TelegramUnpinAllChatMessagesRequest;
 export type TelegramUnpinAllChatMessagesParsedRequest = z.output<
   typeof TelegramUnpinAllChatMessagesRequestSchema
 >;
@@ -1729,6 +2008,8 @@ export const TelegramUnpinAllForumTopicMessagesRequestSchema =
 export type TelegramUnpinAllForumTopicMessagesRequest = z.input<
   typeof TelegramUnpinAllForumTopicMessagesRequestSchema
 >;
+export type TelegramUnpinAllForumTopicMessagesRequestInput =
+  TelegramUnpinAllForumTopicMessagesRequest;
 export type TelegramUnpinAllForumTopicMessagesParsedRequest = z.output<
   typeof TelegramUnpinAllForumTopicMessagesRequestSchema
 >;
@@ -1738,6 +2019,8 @@ export const TelegramUnpinAllGeneralForumTopicMessagesRequestSchema =
 export type TelegramUnpinAllGeneralForumTopicMessagesRequest = z.input<
   typeof TelegramUnpinAllGeneralForumTopicMessagesRequestSchema
 >;
+export type TelegramUnpinAllGeneralForumTopicMessagesRequestInput =
+  TelegramUnpinAllGeneralForumTopicMessagesRequest;
 export type TelegramUnpinAllGeneralForumTopicMessagesParsedRequest = z.output<
   typeof TelegramUnpinAllGeneralForumTopicMessagesRequestSchema
 >;
@@ -1747,6 +2030,8 @@ export const TelegramUnpinChatMessageRequestSchema =
 export type TelegramUnpinChatMessageRequest = z.input<
   typeof TelegramUnpinChatMessageRequestSchema
 >;
+export type TelegramUnpinChatMessageRequestInput =
+  TelegramUnpinChatMessageRequest;
 export type TelegramUnpinChatMessageParsedRequest = z.output<
   typeof TelegramUnpinChatMessageRequestSchema
 >;
@@ -1755,6 +2040,7 @@ export const TelegramUpgradeGiftRequestSchema = TelegramGenericRequestSchema;
 export type TelegramUpgradeGiftRequest = z.input<
   typeof TelegramUpgradeGiftRequestSchema
 >;
+export type TelegramUpgradeGiftRequestInput = TelegramUpgradeGiftRequest;
 export type TelegramUpgradeGiftParsedRequest = z.output<
   typeof TelegramUpgradeGiftRequestSchema
 >;
@@ -1764,6 +2050,8 @@ export const TelegramUploadStickerFileRequestSchema =
 export type TelegramUploadStickerFileRequest = z.input<
   typeof TelegramUploadStickerFileRequestSchema
 >;
+export type TelegramUploadStickerFileRequestInput =
+  TelegramUploadStickerFileRequest;
 export type TelegramUploadStickerFileParsedRequest = z.output<
   typeof TelegramUploadStickerFileRequestSchema
 >;
@@ -1772,6 +2060,7 @@ export const TelegramVerifyChatRequestSchema = TelegramGenericRequestSchema;
 export type TelegramVerifyChatRequest = z.input<
   typeof TelegramVerifyChatRequestSchema
 >;
+export type TelegramVerifyChatRequestInput = TelegramVerifyChatRequest;
 export type TelegramVerifyChatParsedRequest = z.output<
   typeof TelegramVerifyChatRequestSchema
 >;
@@ -1780,6 +2069,7 @@ export const TelegramVerifyUserRequestSchema = TelegramGenericRequestSchema;
 export type TelegramVerifyUserRequest = z.input<
   typeof TelegramVerifyUserRequestSchema
 >;
+export type TelegramVerifyUserRequestInput = TelegramVerifyUserRequest;
 export type TelegramVerifyUserParsedRequest = z.output<
   typeof TelegramVerifyUserRequestSchema
 >;
@@ -1789,6 +2079,8 @@ export const TelegramApproveSuggestedPostRequestSchema =
 export type TelegramApproveSuggestedPostRequest = z.input<
   typeof TelegramApproveSuggestedPostRequestSchema
 >;
+export type TelegramApproveSuggestedPostRequestInput =
+  TelegramApproveSuggestedPostRequest;
 export type TelegramApproveSuggestedPostParsedRequest = z.output<
   typeof TelegramApproveSuggestedPostRequestSchema
 >;
@@ -1798,6 +2090,8 @@ export const TelegramDeclineSuggestedPostRequestSchema =
 export type TelegramDeclineSuggestedPostRequest = z.input<
   typeof TelegramDeclineSuggestedPostRequestSchema
 >;
+export type TelegramDeclineSuggestedPostRequestInput =
+  TelegramDeclineSuggestedPostRequest;
 export type TelegramDeclineSuggestedPostParsedRequest = z.output<
   typeof TelegramDeclineSuggestedPostRequestSchema
 >;
@@ -1807,6 +2101,8 @@ export const TelegramGetUserProfileAudiosRequestSchema =
 export type TelegramGetUserProfileAudiosRequest = z.input<
   typeof TelegramGetUserProfileAudiosRequestSchema
 >;
+export type TelegramGetUserProfileAudiosRequestInput =
+  TelegramGetUserProfileAudiosRequest;
 export type TelegramGetUserProfileAudiosParsedRequest = z.output<
   typeof TelegramGetUserProfileAudiosRequestSchema
 >;
@@ -1816,6 +2112,8 @@ export const TelegramGetUserProfilePhotosRequestSchema =
 export type TelegramGetUserProfilePhotosRequest = z.input<
   typeof TelegramGetUserProfilePhotosRequestSchema
 >;
+export type TelegramGetUserProfilePhotosRequestInput =
+  TelegramGetUserProfilePhotosRequest;
 export type TelegramGetUserProfilePhotosParsedRequest = z.output<
   typeof TelegramGetUserProfilePhotosRequestSchema
 >;
@@ -1825,6 +2123,8 @@ export const TelegramRemoveMyProfilePhotoRequestSchema =
 export type TelegramRemoveMyProfilePhotoRequest = z.input<
   typeof TelegramRemoveMyProfilePhotoRequestSchema
 >;
+export type TelegramRemoveMyProfilePhotoRequestInput =
+  TelegramRemoveMyProfilePhotoRequest;
 export type TelegramRemoveMyProfilePhotoParsedRequest = z.output<
   typeof TelegramRemoveMyProfilePhotoRequestSchema
 >;
@@ -1834,6 +2134,8 @@ export const TelegramSetMyProfilePhotoRequestSchema =
 export type TelegramSetMyProfilePhotoRequest = z.input<
   typeof TelegramSetMyProfilePhotoRequestSchema
 >;
+export type TelegramSetMyProfilePhotoRequestInput =
+  TelegramSetMyProfilePhotoRequest;
 export type TelegramSetMyProfilePhotoParsedRequest = z.output<
   typeof TelegramSetMyProfilePhotoRequestSchema
 >;

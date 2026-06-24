@@ -1220,6 +1220,7 @@ export const FalOptionsSchema = z.object({
 export type FalEstimateRequest = z.input<
   typeof FalPricingEstimateRequestSchema
 >;
+export type FalEstimateRequestInput = FalEstimateRequest;
 export type FalEstimateParsedRequest = z.output<
   typeof FalPricingEstimateRequestSchema
 >;

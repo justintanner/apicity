@@ -80,6 +80,8 @@ export const PolymarketClobTokenBatchRequestSchema = z
 export type PolymarketClobTokenBatchRequest = z.input<
   typeof PolymarketClobTokenBatchRequestSchema
 >;
+export type PolymarketClobTokenBatchRequestInput =
+  PolymarketClobTokenBatchRequest;
 export type PolymarketClobTokenBatchParsedRequest = z.output<
   typeof PolymarketClobTokenBatchRequestSchema
 >;
@@ -98,6 +100,8 @@ export const PolymarketClobPricesBatchRequestSchema = z
 export type PolymarketClobPricesBatchRequest = z.input<
   typeof PolymarketClobPricesBatchRequestSchema
 >;
+export type PolymarketClobPricesBatchRequestInput =
+  PolymarketClobPricesBatchRequest;
 export type PolymarketClobPricesBatchParsedRequest = z.output<
   typeof PolymarketClobPricesBatchRequestSchema
 >;
@@ -125,6 +129,8 @@ export const PolymarketClobBatchPricesHistoryRequestSchema = z.object({
 export type PolymarketClobBatchPricesHistoryRequest = z.input<
   typeof PolymarketClobBatchPricesHistoryRequestSchema
 >;
+export type PolymarketClobBatchPricesHistoryRequestInput =
+  PolymarketClobBatchPricesHistoryRequest;
 export type PolymarketClobBatchPricesHistoryParsedRequest = z.output<
   typeof PolymarketClobBatchPricesHistoryRequestSchema
 >;
@@ -160,6 +166,8 @@ export const PolymarketClobLiveActivityRequestSchema = z
 export type PolymarketClobLiveActivityRequest = z.input<
   typeof PolymarketClobLiveActivityRequestSchema
 >;
+export type PolymarketClobLiveActivityRequestInput =
+  PolymarketClobLiveActivityRequest;
 export type PolymarketClobLiveActivityParsedRequest = z.output<
   typeof PolymarketClobLiveActivityRequestSchema
 >;
@@ -213,6 +221,8 @@ export const PolymarketClobPostOrderRequestSchema = z.object({
 export type PolymarketClobPostOrderRequest = z.input<
   typeof PolymarketClobPostOrderRequestSchema
 >;
+export type PolymarketClobPostOrderRequestInput =
+  PolymarketClobPostOrderRequest;
 export type PolymarketClobPostOrderParsedRequest = z.output<
   typeof PolymarketClobPostOrderRequestSchema
 >;
@@ -233,6 +243,8 @@ export const PolymarketClobPlaceOrderRequestSchema = z.object({
 export type PolymarketClobPlaceOrderRequest = z.input<
   typeof PolymarketClobPlaceOrderRequestSchema
 >;
+export type PolymarketClobPlaceOrderRequestInput =
+  PolymarketClobPlaceOrderRequest;
 export type PolymarketClobPlaceOrderParsedRequest = z.output<
   typeof PolymarketClobPlaceOrderRequestSchema
 >;
@@ -245,6 +257,8 @@ export const PolymarketClobPostOrdersRequestSchema = z
 export type PolymarketClobPostOrdersRequest = z.input<
   typeof PolymarketClobPostOrdersRequestSchema
 >;
+export type PolymarketClobPostOrdersRequestInput =
+  PolymarketClobPostOrdersRequest;
 export type PolymarketClobPostOrdersParsedRequest = z.output<
   typeof PolymarketClobPostOrdersRequestSchema
 >;
@@ -256,6 +270,8 @@ export const PolymarketClobCancelOrderRequestSchema = z.object({
 export type PolymarketClobCancelOrderRequest = z.input<
   typeof PolymarketClobCancelOrderRequestSchema
 >;
+export type PolymarketClobCancelOrderRequestInput =
+  PolymarketClobCancelOrderRequest;
 export type PolymarketClobCancelOrderParsedRequest = z.output<
   typeof PolymarketClobCancelOrderRequestSchema
 >;
@@ -268,6 +284,8 @@ export const PolymarketClobCancelOrdersRequestSchema = z
 export type PolymarketClobCancelOrdersRequest = z.input<
   typeof PolymarketClobCancelOrdersRequestSchema
 >;
+export type PolymarketClobCancelOrdersRequestInput =
+  PolymarketClobCancelOrdersRequest;
 export type PolymarketClobCancelOrdersParsedRequest = z.output<
   typeof PolymarketClobCancelOrdersRequestSchema
 >;
@@ -280,6 +298,8 @@ export const PolymarketClobCancelMarketOrdersRequestSchema = z.object({
 export type PolymarketClobCancelMarketOrdersRequest = z.input<
   typeof PolymarketClobCancelMarketOrdersRequestSchema
 >;
+export type PolymarketClobCancelMarketOrdersRequestInput =
+  PolymarketClobCancelMarketOrdersRequest;
 export type PolymarketClobCancelMarketOrdersParsedRequest = z.output<
   typeof PolymarketClobCancelMarketOrdersRequestSchema
 >;
@@ -358,6 +378,8 @@ export const PolymarketClobOrdersScoringRequestSchema = z
 export type PolymarketClobOrdersScoringRequest = z.input<
   typeof PolymarketClobOrdersScoringRequestSchema
 >;
+export type PolymarketClobOrdersScoringRequestInput =
+  PolymarketClobOrdersScoringRequest;
 export type PolymarketClobOrdersScoringParsedRequest = z.output<
   typeof PolymarketClobOrdersScoringRequestSchema
 >;
@@ -369,6 +391,8 @@ export const PolymarketClobHeartbeatRequestSchema = z.object({
 export type PolymarketClobHeartbeatRequest = z.input<
   typeof PolymarketClobHeartbeatRequestSchema
 >;
+export type PolymarketClobHeartbeatRequestInput =
+  PolymarketClobHeartbeatRequest;
 export type PolymarketClobHeartbeatParsedRequest = z.output<
   typeof PolymarketClobHeartbeatRequestSchema
 >;

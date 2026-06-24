@@ -1,13 +1,23 @@
 export type {
+  DoltHubSqlReadRequestInput,
   DoltHubSqlReadParsedRequest,
+  DoltHubSqlWriteRequestInput,
   DoltHubSqlWriteParsedRequest,
+  DoltHubWritePollRequestInput,
   DoltHubWritePollParsedRequest,
+  DoltHubDatabaseCreateRequestInput,
   DoltHubDatabaseCreateParsedRequest,
+  DoltHubBranchesListRequestInput,
   DoltHubBranchesListParsedRequest,
+  DoltHubBranchCreateRequestInput,
   DoltHubBranchCreateParsedRequest,
+  DoltHubPullsListRequestInput,
   DoltHubPullsListParsedRequest,
+  DoltHubPullCreateRequestInput,
   DoltHubPullCreateParsedRequest,
+  DoltHubPullGetRequestInput,
   DoltHubPullGetParsedRequest,
+  DoltHubPullMergeRequestInput,
   DoltHubPullMergeParsedRequest,
 } from "./zod";
 

@@ -4,8 +4,10 @@ import type { MetaMediaCreateRequest, MetaMediaPublishRequest } from "./zod";
 export type {
   MetaOptions,
   MetaMediaCreateRequest,
+  MetaMediaCreateRequestInput,
   MetaMediaCreateParsedRequest,
   MetaMediaPublishRequest,
+  MetaMediaPublishRequestInput,
   MetaMediaPublishParsedRequest,
 } from "./zod";
 

@@ -33,6 +33,7 @@ export const YouTubeChannelsListRequestSchema = z.object({
 export type YouTubeChannelsListRequest = z.input<
   typeof YouTubeChannelsListRequestSchema
 >;
+export type YouTubeChannelsListRequestInput = YouTubeChannelsListRequest;
 export type YouTubeChannelsListParsedRequest = z.output<
   typeof YouTubeChannelsListRequestSchema
 >;
@@ -86,6 +87,7 @@ export const YouTubeVideosInsertRequestSchema = z.object({
 export type YouTubeVideosInsertRequest = z.input<
   typeof YouTubeVideosInsertRequestSchema
 >;
+export type YouTubeVideosInsertRequestInput = YouTubeVideosInsertRequest;
 export type YouTubeVideosInsertParsedRequest = z.output<
   typeof YouTubeVideosInsertRequestSchema
 >;
@@ -102,6 +104,7 @@ export const YouTubeGetTranscriptRequestSchema = z.object({
 export type YouTubeGetTranscriptRequest = z.input<
   typeof YouTubeGetTranscriptRequestSchema
 >;
+export type YouTubeGetTranscriptRequestInput = YouTubeGetTranscriptRequest;
 export type YouTubeGetTranscriptParsedRequest = z.output<
   typeof YouTubeGetTranscriptRequestSchema
 >;
@@ -117,6 +120,8 @@ export const YouTubeGetVideoMetadataRequestSchema = z.object({
 export type YouTubeGetVideoMetadataRequest = z.input<
   typeof YouTubeGetVideoMetadataRequestSchema
 >;
+export type YouTubeGetVideoMetadataRequestInput =
+  YouTubeGetVideoMetadataRequest;
 export type YouTubeGetVideoMetadataParsedRequest = z.output<
   typeof YouTubeGetVideoMetadataRequestSchema
 >;

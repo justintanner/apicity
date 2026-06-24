@@ -34,6 +34,7 @@ import { createVeoProvider } from "./veo";
 import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
+import { createGeminiProvider } from "./gemini";
 import { attachExamples } from "./example";
 import { createReplayStore } from "./paygate";
 import { withPaidGate } from "./with-paid-gate";
@@ -536,6 +537,7 @@ export function createKie(opts: KieOptions): KieProvider {
         suno: createSunoProvider(baseURL, opts.apiKey, doFetch, timeout),
         chat: createChatProvider(baseURL, opts.apiKey, doFetch, timeout),
         ...createClaudeProvider(baseURL, opts.apiKey, doFetch, timeout),
+        ...createGeminiProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: {
           api: {

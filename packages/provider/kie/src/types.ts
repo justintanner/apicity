@@ -239,6 +239,22 @@ export type {
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateRequestInput,
   GeminiOmniAudioCreateParsedRequest,
+  KieGeminiRole,
+  KieGeminiThinkingLevel,
+  KieGeminiInlineData,
+  KieGeminiFileData,
+  KieGeminiPart,
+  KieGeminiContent,
+  KieGeminiFunctionParameters,
+  KieGeminiFunctionDeclaration,
+  KieGeminiGoogleSearch,
+  KieGeminiGoogleSearchTool,
+  KieGeminiFunctionDeclarationsTool,
+  KieGeminiTool,
+  KieGeminiThinkingConfig,
+  KieGeminiGenerationConfig,
+  KieGemini35FlashStreamGenerateContentRequest,
+  KieGemini35FlashStreamGenerateContentParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -420,6 +436,7 @@ export interface KieProvider {
   suno: import("./suno").SunoProvider;
   chat: import("./chat").KieChatProvider;
   claude: import("./claude").KieClaudeProvider["claude"];
+  gemini: import("./gemini").KieGeminiProvider["gemini"];
 }
 
 // Error class

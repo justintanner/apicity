@@ -95,6 +95,119 @@ export const GeminiOmniAudioVoiceIds = [
 
 export const GeminiOmniAudioVoiceIdSchema = z.enum(GeminiOmniAudioVoiceIds);
 
+export const KieGeminiRoleSchema = z.enum(["user", "model"]);
+
+export const KieGeminiThinkingLevelSchema = z.enum(["low", "high"]);
+
+export const KieGeminiInlineDataSchema = z.object({
+  mime_type: z.string().min(1),
+  data: z.string().min(1),
+});
+
+export const KieGeminiFileDataSchema = z.object({
+  mime_type: z.string().min(1),
+  file_uri: z.string().min(1),
+});
+
+export const KieGeminiPartSchema = z
+  .object({
+    text: z.string().optional(),
+    inline_data: KieGeminiInlineDataSchema.optional(),
+    file_data: KieGeminiFileDataSchema.optional(),
+  })
+  .strict()
+  .refine(
+    (part) =>
+      part.text !== undefined ||
+      part.inline_data !== undefined ||
+      part.file_data !== undefined,
+    {
+      message: "parts entries must include text, inline_data, or file_data",
+    }
+  );
+
+export const KieGeminiContentSchema = z.object({
+  role: KieGeminiRoleSchema,
+  parts: z.array(KieGeminiPartSchema).min(1),
+});
+
+export const KieGeminiFunctionParametersSchema = z
+  .object({
+    type: z.string().optional(),
+    properties: z.record(z.string(), z.unknown()).optional(),
+    required: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+export const KieGeminiFunctionDeclarationSchema = z
+  .object({
+    name: z.string().min(1),
+    description: z.string().optional(),
+    parameters: KieGeminiFunctionParametersSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGeminiGoogleSearchSchema = z.object({}).strict();
+
+export const KieGeminiGoogleSearchToolSchema = z
+  .object({
+    googleSearch: KieGeminiGoogleSearchSchema,
+  })
+  .strict();
+
+export const KieGeminiFunctionDeclarationsToolSchema = z
+  .object({
+    functionDeclarations: z.array(KieGeminiFunctionDeclarationSchema).min(1),
+  })
+  .strict();
+
+export const KieGeminiToolSchema = z
+  .object({
+    googleSearch: KieGeminiGoogleSearchSchema.optional(),
+    functionDeclarations: z
+      .array(KieGeminiFunctionDeclarationSchema)
+      .min(1)
+      .optional(),
+  })
+  .strict()
+  .refine(
+    (tool) =>
+      tool.googleSearch !== undefined ||
+      tool.functionDeclarations !== undefined,
+    {
+      message:
+        "tools entries must include googleSearch or functionDeclarations",
+    }
+  );
+
+export const KieGeminiThinkingConfigSchema = z
+  .object({
+    includeThoughts: z.boolean().optional(),
+    thinkingLevel: KieGeminiThinkingLevelSchema.optional(),
+  })
+  .strict();
+
+export const KieGeminiGenerationConfigSchema = z
+  .object({
+    temperature: z.number().optional(),
+    topP: z.number().optional(),
+    topK: z.number().optional(),
+    candidateCount: z.number().int().positive().optional(),
+    maxOutputTokens: z.number().int().positive().optional(),
+    stopSequences: z.array(z.string()).optional(),
+    thinkingConfig: KieGeminiThinkingConfigSchema.optional(),
+  })
+  .passthrough();
+
+export const KieGemini35FlashStreamGenerateContentRequestSchema = z
+  .object({
+    stream: z.boolean().default(true),
+    contents: z.array(KieGeminiContentSchema).min(1),
+    tools: z.array(KieGeminiToolSchema).optional(),
+    generationConfig: KieGeminiGenerationConfigSchema.optional(),
+  })
+  .passthrough();
+
 export const KlingDurationSchema = z.enum([
   "3",
   "4",
@@ -2070,6 +2183,40 @@ export type GeminiOmniAudioCreateRequest = z.input<
 export type GeminiOmniAudioCreateRequestInput = GeminiOmniAudioCreateRequest;
 export type GeminiOmniAudioCreateParsedRequest = z.output<
   typeof GeminiOmniAudioCreateRequestSchema
+>;
+export type KieGeminiRole = z.infer<typeof KieGeminiRoleSchema>;
+export type KieGeminiThinkingLevel = z.infer<
+  typeof KieGeminiThinkingLevelSchema
+>;
+export type KieGeminiInlineData = z.infer<typeof KieGeminiInlineDataSchema>;
+export type KieGeminiFileData = z.infer<typeof KieGeminiFileDataSchema>;
+export type KieGeminiPart = z.infer<typeof KieGeminiPartSchema>;
+export type KieGeminiContent = z.infer<typeof KieGeminiContentSchema>;
+export type KieGeminiFunctionParameters = z.infer<
+  typeof KieGeminiFunctionParametersSchema
+>;
+export type KieGeminiFunctionDeclaration = z.infer<
+  typeof KieGeminiFunctionDeclarationSchema
+>;
+export type KieGeminiGoogleSearch = z.infer<typeof KieGeminiGoogleSearchSchema>;
+export type KieGeminiGoogleSearchTool = z.infer<
+  typeof KieGeminiGoogleSearchToolSchema
+>;
+export type KieGeminiFunctionDeclarationsTool = z.infer<
+  typeof KieGeminiFunctionDeclarationsToolSchema
+>;
+export type KieGeminiTool = z.infer<typeof KieGeminiToolSchema>;
+export type KieGeminiThinkingConfig = z.infer<
+  typeof KieGeminiThinkingConfigSchema
+>;
+export type KieGeminiGenerationConfig = z.infer<
+  typeof KieGeminiGenerationConfigSchema
+>;
+export type KieGemini35FlashStreamGenerateContentRequest = z.input<
+  typeof KieGemini35FlashStreamGenerateContentRequestSchema
+>;
+export type KieGemini35FlashStreamGenerateContentParsedRequest = z.output<
+  typeof KieGemini35FlashStreamGenerateContentRequestSchema
 >;
 export type KieOptions = z.infer<typeof KieOptionsSchema>;
 

@@ -6,6 +6,21 @@ export {
   GeminiOmniAudioCreateRequestSchema,
   GeminiOmniAudioVoiceIdSchema,
   GeminiOmniAudioVoiceIds,
+  KieGemini35FlashStreamGenerateContentRequestSchema,
+  KieGeminiContentSchema,
+  KieGeminiFileDataSchema,
+  KieGeminiFunctionDeclarationSchema,
+  KieGeminiFunctionDeclarationsToolSchema,
+  KieGeminiFunctionParametersSchema,
+  KieGeminiGenerationConfigSchema,
+  KieGeminiGoogleSearchSchema,
+  KieGeminiGoogleSearchToolSchema,
+  KieGeminiInlineDataSchema,
+  KieGeminiPartSchema,
+  KieGeminiRoleSchema,
+  KieGeminiThinkingConfigSchema,
+  KieGeminiThinkingLevelSchema,
+  KieGeminiToolSchema,
   RecordInfoRequestSchema,
   Seedance2MiniAspectRatioSchema,
   Seedance2MiniInputSchema,
@@ -47,6 +62,7 @@ export { createVeoProvider } from "./veo";
 export { createSunoProvider } from "./suno";
 export { createChatProvider } from "./chat";
 export { createClaudeProvider } from "./claude";
+export { createGeminiProvider } from "./gemini";
 
 // Export SSE utility
 export { sseToIterable } from "./sse";
@@ -277,6 +293,22 @@ export type {
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateRequestInput,
   GeminiOmniAudioCreateParsedRequest,
+  KieGeminiRole,
+  KieGeminiThinkingLevel,
+  KieGeminiInlineData,
+  KieGeminiFileData,
+  KieGeminiPart,
+  KieGeminiContent,
+  KieGeminiFunctionParameters,
+  KieGeminiFunctionDeclaration,
+  KieGeminiGoogleSearch,
+  KieGeminiGoogleSearchTool,
+  KieGeminiFunctionDeclarationsTool,
+  KieGeminiTool,
+  KieGeminiThinkingConfig,
+  KieGeminiGenerationConfig,
+  KieGemini35FlashStreamGenerateContentRequest,
+  KieGemini35FlashStreamGenerateContentParsedRequest,
   GeminiOmniAudioCreateData,
   GeminiOmniAudioCreateResponse,
 } from "./types";
@@ -352,3 +384,15 @@ export type {
   KieChatRequestInput,
   KieClaudeRequestInput,
 } from "./zod";
+
+export type {
+  KieGeminiFunctionCall,
+  KieGeminiResponsePart,
+  KieGeminiResponseContent,
+  KieGeminiCandidate,
+  KieGeminiUsageMetadata,
+  KieGemini35FlashGenerateContentResponse,
+  KieGemini35FlashStreamGenerateContentChunk,
+  KieGemini35FlashStreamGenerateContentResult,
+  KieGeminiProvider,
+} from "./gemini";

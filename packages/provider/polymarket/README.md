@@ -10,7 +10,7 @@ Polymarket API provider — Gamma, Data, and CLOB market-data/trading endpoints.
 Runtime dependencies:
 
 - `viem@^2.52.2` — EIP-712 order signing for the CLOB trading endpoints
-- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

@@ -67,6 +67,7 @@ export const YouTubeRecordingDetailsInputSchema = z.object({
 });
 
 export const YouTubeLocalizationsInputSchema = z.record(
+  z.string(),
   z.object({
     title: z.string(),
     description: z.string().optional(),

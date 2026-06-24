@@ -4,8 +4,10 @@ import { describe, expect, it } from "vitest";
 import mcpPackage from "../../packages/mcp-server/package.json";
 import {
   buildRegistry,
+  type Endpoint,
   extractPathParams,
 } from "../../packages/mcp-server/src/registry";
+import { type JsonSchema } from "../../packages/mcp-server/src/schema";
 import { PROVIDERS } from "../../packages/mcp-server/src/providers";
 
 function endpointProviders(): string[] {
@@ -39,6 +41,43 @@ describe("apicity-mcp provider registry", () => {
     const endpoints = await buildRegistry({ enabledProviders: ["polymarket"] });
 
     expect(endpoints).toHaveLength(providerEndpointCount("polymarket"));
+  });
+
+  it("exposes constrained JSON schemas in registry endpoints", async () => {
+    const previous = process.env.KIE_API_KEY;
+    process.env.KIE_API_KEY = "dummy-kie-key";
+
+    try {
+      const endpoints = await buildRegistry({ enabledProviders: ["kie"] });
+      const endpoint = findEndpoint(
+        endpoints,
+        "kie",
+        "POST",
+        "api.v1.jobs.createTask"
+      );
+      const variants = endpoint.jsonSchema.anyOf as JsonSchema[];
+      const grokText = variants.find((variant) =>
+        schemaValues(propertiesOf(variant).model).includes(
+          "grok-imagine/text-to-video"
+        )
+      );
+
+      expect(grokText).toBeDefined();
+      const input = propertiesOf(propertiesOf(grokText as JsonSchema).input);
+
+      expect(input.prompt).toMatchObject({
+        type: "string",
+        minLength: 1,
+        maxLength: 5000,
+      });
+      expect(input.duration).toMatchObject({
+        type: "integer",
+        minimum: 6,
+        maximum: 30,
+      });
+    } finally {
+      restoreEnv("KIE_API_KEY", previous);
+    }
   });
 
   // Regression: `{query}` is a query-string placeholder, not a path segment.
@@ -132,6 +171,35 @@ describe("apicity-mcp provider registry", () => {
 function restoreEnv(key: string, value: string | undefined): void {
   if (value === undefined) delete process.env[key];
   else process.env[key] = value;
+}
+
+function findEndpoint(
+  endpoints: Endpoint[],
+  provider: string,
+  method: string,
+  dotPath: string
+): Endpoint {
+  const endpoint = endpoints.find(
+    (candidate) =>
+      candidate.provider === provider &&
+      candidate.method === method &&
+      candidate.dotPath === dotPath
+  );
+  expect(endpoint).toBeDefined();
+  return endpoint as Endpoint;
+}
+
+function propertiesOf(schema: unknown): Record<string, JsonSchema> {
+  expect(schema).toMatchObject({ type: "object" });
+  const properties = (schema as JsonSchema).properties;
+  expect(properties).toBeDefined();
+  return properties as Record<string, JsonSchema>;
+}
+
+function schemaValues(schema: JsonSchema): unknown[] {
+  if ("const" in schema) return [schema.const];
+  expect(Array.isArray(schema.enum)).toBe(true);
+  return schema.enum as unknown[];
 }
 
 function providerEndpointCount(provider: string): number {

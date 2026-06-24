@@ -7,7 +7,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { isPaidEndpoint } from "@apicity/cost";
 import { buildRegistry, type Endpoint } from "./registry.js";
-import { zodToJsonSchema, type JsonSchema } from "./schema.js";
+import { type JsonSchema } from "./schema.js";
 import {
   downloadUrlsInResult,
   guessExtension,
@@ -108,7 +108,7 @@ const OTP_SCHEMA: JsonSchema = {
 
 function buildInputSchema(ep: Endpoint): JsonSchema {
   const paid = isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
-  const body = zodToJsonSchema(ep.schema);
+  const body = ep.jsonSchema;
   // If the endpoint takes path params (e.g., {taskId}), wrap them at the top
   // level alongside the body fields and mark them required.
   if (ep.pathParams.length === 0) {

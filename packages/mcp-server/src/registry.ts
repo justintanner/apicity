@@ -6,6 +6,7 @@ import {
   instantiateProvider,
   type InstantiatedProvider,
 } from "./providers.js";
+import { zodToJsonSchema, type JsonSchema } from "./schema.js";
 
 export interface EndpointTsvRow {
   provider: string;
@@ -30,6 +31,7 @@ export interface Endpoint extends EndpointTsvRow {
   toolName: string;
   fn: EndpointFn;
   schema: unknown;
+  jsonSchema: JsonSchema;
   example?: EndpointExample;
   pathParams: string[];
 }
@@ -115,6 +117,7 @@ export async function buildRegistry(
       toolName: makeToolName(row.provider, row.method, row.dotPath),
       fn: resolved,
       schema: (resolved as EndpointFn).schema,
+      jsonSchema: zodToJsonSchema((resolved as EndpointFn).schema),
       example: (resolved as EndpointFn).example,
       pathParams,
     });

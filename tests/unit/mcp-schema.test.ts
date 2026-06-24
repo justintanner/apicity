@@ -80,7 +80,7 @@ describe("MCP Zod schema introspection helpers", () => {
     });
   });
 
-  it("extracts Zod 3 enum values and refined object shapes from Alibaba", () => {
+  it("extracts Zod 4 enum values and refined object shapes from Alibaba", () => {
     expect(getZodEnumValues(AlibabaVideoMediaTypeSchema.optional())).toEqual([
       "first_frame",
       "last_frame",

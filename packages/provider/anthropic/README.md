@@ -8,7 +8,7 @@ Anthropic / Claude provider for messages, batches, models, files, and admin APIs
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

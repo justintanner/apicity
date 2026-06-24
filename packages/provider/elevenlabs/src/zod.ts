@@ -283,12 +283,12 @@ export const ElevenLabsSpeechToTextRequestSchema = z.object({
   timestamps_granularity: z.enum(["none", "word", "character"]).optional(),
   diarize: z.boolean().optional(),
   diarization_threshold: z.number().min(0).max(2).nullable().optional(),
-  additional_formats: z.array(z.record(z.unknown())).optional(),
+  additional_formats: z.array(z.record(z.string(), z.unknown())).optional(),
   file_format: z.enum(["pcm_s16le_16", "other"]).optional(),
   webhook: z.boolean().optional(),
   webhook_id: z.string().nullable().optional(),
   webhook_metadata: z
-    .union([z.string(), z.record(z.unknown())])
+    .union([z.string(), z.record(z.string(), z.unknown())])
     .nullable()
     .optional(),
   temperature: z.number().min(0).max(2).nullable().optional(),

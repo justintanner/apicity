@@ -11,7 +11,7 @@ SimpleFunctions exposes two REST surfaces here: analytical Query API calls use `
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to provider endpoints as `.schema`
+- `zod@^4.4.3` — request schemas attached to provider endpoints as `.schema`
 
 ## Installation
 

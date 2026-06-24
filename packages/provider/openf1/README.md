@@ -9,7 +9,7 @@ OpenF1 API provider for Formula 1 historical and authenticated live REST data.
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to OpenF1 endpoint methods as `.schema`
+- `zod@^4.4.3` — request schemas attached to OpenF1 endpoint methods as `.schema`
 
 ## Installation
 

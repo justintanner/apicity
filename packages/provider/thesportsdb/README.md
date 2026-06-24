@@ -9,7 +9,7 @@ TheSportsDB V1 and V2 sports data API provider.
 
 Runtime dependencies:
 
-- `zod@^3.24.0` — request schemas attached to endpoint methods as `.schema`; response schemas exported
+- `zod@^4.4.3` — request schemas attached to endpoint methods as `.schema`; response schemas exported
 
 ## Installation
 

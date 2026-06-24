@@ -21,7 +21,7 @@ interface ChildProcessError {
 }
 
 describe("Zod runtime compatibility", () => {
-  it("validates built provider schemas across Zod 3 and Zod 4", () => {
+  it("validates built provider schemas through the unified Zod 4 runtime", () => {
     const openai = createOpenAi({ apiKey: "sk-test" });
     expect(
       openai.post.v1.chat.completions.schema.safeParse({
@@ -83,7 +83,7 @@ describe("Zod runtime compatibility", () => {
     }
   }, 90000);
 
-  it("discovers and converts MCP schemas from mixed Zod providers", async () => {
+  it("discovers and converts MCP schemas from unified Zod providers", async () => {
     const endpoints = await withEnv(
       {
         OPENAI_API_KEY: "sk-test",

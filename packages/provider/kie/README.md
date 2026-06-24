@@ -8,7 +8,7 @@ Kie provider for video and image generation (Kling 3.0, Grok Imagine, Omnihuman 
 
 Runtime dependencies:
 
-- `zod@^4.0.0` — request schemas attached to every POST endpoint as `.schema`
+- `zod@^4.4.3` — request schemas attached to every POST endpoint as `.schema`
 
 ## Installation
 

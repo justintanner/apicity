@@ -354,4 +354,56 @@ describe("KIE provider switching", () => {
     expect(textInit.method).toBe("POST");
     expect(JSON.parse(textInit.body as string)).toEqual(textPayload);
   });
+
+  it("keeps Seedance 2 Mini image-reference requests on createTask", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({ code: 200, data: { taskId: "seedance-mini-1" } }),
+            { status: 200 }
+          )
+        )
+      );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+
+    const imagePayload = {
+      model: "bytedance/seedance-2-mini" as const,
+      input: {
+        prompt: "Animate the reference cat with a subtle head turn.",
+        reference_image_urls: ["https://example.com/cat.jpg"],
+        duration: 4,
+        resolution: "480p" as const,
+        aspect_ratio: "16:9" as const,
+        generate_audio: false,
+        web_search: false,
+        nsfw_checker: false,
+      },
+    };
+
+    expect(provider.modelInputSchemas["bytedance/seedance-2-mini"].type).toBe(
+      "video"
+    );
+    expect(
+      provider.post.api.v1.jobs.createTask.schema.safeParse(imagePayload)
+        .success
+    ).toBe(true);
+
+    await provider.post.api.v1.jobs.createTask(
+      imagePayload,
+      mintKieCreateTaskOtp(imagePayload)
+    );
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual(imagePayload);
+  });
 });

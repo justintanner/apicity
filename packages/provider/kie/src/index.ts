@@ -34,6 +34,20 @@ export {
   GeminiOmniVideoDurationSchema,
   GeminiOmniVideoRequestSchema,
   GeminiOmniVideoResolutionSchema,
+  KieResponsesFunctionToolSchema,
+  KieResponsesInputContentSchema,
+  KieResponsesInputFileSchema,
+  KieResponsesInputImageSchema,
+  KieResponsesInputMessageSchema,
+  KieResponsesInputTextSchema,
+  KieResponsesMessageRoleSchema,
+  KieResponsesModelSchema,
+  KieResponsesReasoningEffortSchema,
+  KieResponsesReasoningSchema,
+  KieResponsesRequestSchema,
+  KieResponsesToolSchema,
+  KieResponsesToolsSchema,
+  KieResponsesWebSearchToolSchema,
   TaskResponseSchema,
   Wan27VideoEditDurationSchema,
   Wan27VideoEditDurationValues,
@@ -63,6 +77,7 @@ export { createSunoProvider } from "./suno";
 export { createChatProvider } from "./chat";
 export { createClaudeProvider } from "./claude";
 export { createGeminiProvider } from "./gemini";
+export { createResponsesProvider } from "./responses";
 
 // Export SSE utility
 export { sseToIterable } from "./sse";
@@ -311,6 +326,20 @@ export type {
   KieGemini35FlashStreamGenerateContentParsedRequest,
   GeminiOmniAudioCreateData,
   GeminiOmniAudioCreateResponse,
+  KieResponsesModel,
+  KieResponsesReasoningEffort,
+  KieResponsesMessageRole,
+  KieResponsesInputText,
+  KieResponsesInputImage,
+  KieResponsesInputFile,
+  KieResponsesInputContent,
+  KieResponsesInputMessage,
+  KieResponsesReasoning,
+  KieResponsesWebSearchTool,
+  KieResponsesFunctionTool,
+  KieResponsesTool,
+  KieResponsesRequest,
+  KieResponsesParsedRequest,
 } from "./types";
 
 export {
@@ -363,6 +392,23 @@ export type {
   KieChatResponse,
   KieChatProvider,
 } from "./chat";
+
+export type {
+  KieResponsesInputContentType,
+  KieResponsesToolType,
+  KieResponsesToolChoice,
+  KieResponsesUsage,
+  KieResponsesOutputTextContent,
+  KieResponsesOutputMessage,
+  KieResponsesFunctionCallOutput,
+  KieResponsesReasoningOutput,
+  KieResponsesOutput,
+  KieResponsesResponse,
+  KieResponsesStreamEvent,
+  KieResponsesMethod,
+  KieResponsesV1Namespace,
+  KieResponsesProvider,
+} from "./responses";
 
 export type {
   KieClaudeToolInputSchema,

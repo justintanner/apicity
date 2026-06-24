@@ -255,6 +255,20 @@ export type {
   KieGeminiGenerationConfig,
   KieGemini35FlashStreamGenerateContentRequest,
   KieGemini35FlashStreamGenerateContentParsedRequest,
+  KieResponsesModel,
+  KieResponsesReasoningEffort,
+  KieResponsesMessageRole,
+  KieResponsesInputText,
+  KieResponsesInputImage,
+  KieResponsesInputFile,
+  KieResponsesInputContent,
+  KieResponsesInputMessage,
+  KieResponsesReasoning,
+  KieResponsesWebSearchTool,
+  KieResponsesFunctionTool,
+  KieResponsesTool,
+  KieResponsesRequest,
+  KieResponsesParsedRequest,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -429,7 +443,10 @@ interface KieGetApiNamespace {
 
 // Provider interface (sub-provider types imported in index.ts)
 export interface KieProvider {
-  post: { api: KiePostApiNamespace };
+  post: {
+    api: KiePostApiNamespace;
+    codex: import("./responses").KieResponsesProvider["codex"];
+  };
   get: { api: KieGetApiNamespace };
   modelInputSchemas: Record<KieMediaModel, ModelInputSchema>;
   veo: import("./veo").VeoProvider;

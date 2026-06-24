@@ -385,7 +385,7 @@ console.log(result.resultUrls[0]);
 
 ## API Reference
 
-28 endpoints across 17 groups. Each method mirrors an upstream URL path.
+29 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -418,6 +418,23 @@ const res = await kie.claude.post.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/claude.ts`](src/claude.ts)
+
+</details>
+
+### codex
+
+<details>
+<summary><code>POST</code> <b><code>kie.codex.v1.responses</code></b></summary>
+
+<code>POST https://api.kie.ai/codex/v1/responses</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/chat/gpt-5-5)
+
+```typescript
+const res = await kie.codex.v1.responses({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/responses.ts`](src/responses.ts)
 
 </details>
 

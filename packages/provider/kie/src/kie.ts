@@ -35,6 +35,7 @@ import { createSunoProvider } from "./suno";
 import { createChatProvider } from "./chat";
 import { createClaudeProvider } from "./claude";
 import { createGeminiProvider } from "./gemini";
+import { createResponsesProvider } from "./responses";
 import { attachExamples } from "./example";
 import { createReplayStore } from "./paygate";
 import { withPaidGate } from "./with-paid-gate";
@@ -540,6 +541,7 @@ export function createKie(opts: KieOptions): KieProvider {
         ...createGeminiProvider(baseURL, opts.apiKey, doFetch, timeout),
         modelInputSchemas,
         post: {
+          ...createResponsesProvider(baseURL, opts.apiKey, doFetch, timeout),
           api: {
             v1: {
               jobs: {

@@ -1622,6 +1622,130 @@ export type KieChatRequestInput = KieChatRequest;
 export type KieChatParsedRequest = z.output<typeof KieChatRequestSchema>;
 
 // ---------------------------------------------------------------------------
+// Sub-provider schemas: Responses (GPT-5.5 via Kie)
+// ---------------------------------------------------------------------------
+
+export const KieResponsesModelSchema = z.enum(["gpt-5-5"]);
+
+export const KieResponsesReasoningEffortSchema = z.enum([
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+]);
+
+export const KieResponsesMessageRoleSchema = z.enum([
+  "user",
+  "assistant",
+  "system",
+  "developer",
+  "tool",
+]);
+
+export const KieResponsesInputTextSchema = z.object({
+  type: z.literal("input_text"),
+  text: z.string().min(1),
+});
+
+export const KieResponsesInputImageSchema = z.object({
+  type: z.literal("input_image"),
+  image_url: z.string().url(),
+});
+
+export const KieResponsesInputFileSchema = z.object({
+  type: z.literal("input_file"),
+  file_url: z.string().url(),
+});
+
+export const KieResponsesInputContentSchema = z.discriminatedUnion("type", [
+  KieResponsesInputTextSchema,
+  KieResponsesInputImageSchema,
+  KieResponsesInputFileSchema,
+]);
+
+export const KieResponsesInputMessageSchema = z.object({
+  role: KieResponsesMessageRoleSchema,
+  content: z.array(KieResponsesInputContentSchema).min(1),
+});
+
+export const KieResponsesReasoningSchema = z.object({
+  effort: KieResponsesReasoningEffortSchema.default("low").optional(),
+});
+
+export const KieResponsesWebSearchToolSchema = z.object({
+  type: z.literal("web_search"),
+});
+
+export const KieResponsesFunctionToolSchema = z.object({
+  type: z.literal("function"),
+  name: z.string().min(1),
+  description: z.string().min(1),
+  parameters: z.record(z.string(), z.unknown()),
+});
+
+export const KieResponsesToolSchema = z.discriminatedUnion("type", [
+  KieResponsesWebSearchToolSchema,
+  KieResponsesFunctionToolSchema,
+]);
+
+export const KieResponsesToolsSchema = z
+  .array(KieResponsesToolSchema)
+  .superRefine((tools, ctx) => {
+    const hasWebSearch = tools.some((tool) => tool.type === "web_search");
+    const hasFunction = tools.some((tool) => tool.type === "function");
+    if (hasWebSearch && hasFunction) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "web_search and function tools are mutually exclusive for Kie responses",
+      });
+    }
+  });
+
+export const KieResponsesRequestSchema = z.object({
+  model: KieResponsesModelSchema,
+  stream: z.boolean().default(false).optional(),
+  input: z.union([
+    z.string().min(1),
+    z.array(KieResponsesInputMessageSchema).min(1),
+  ]),
+  reasoning: KieResponsesReasoningSchema.optional(),
+  tools: KieResponsesToolsSchema.optional(),
+  tool_choice: z.string().optional(),
+});
+
+export type KieResponsesModel = z.infer<typeof KieResponsesModelSchema>;
+export type KieResponsesReasoningEffort = z.infer<
+  typeof KieResponsesReasoningEffortSchema
+>;
+export type KieResponsesMessageRole = z.infer<
+  typeof KieResponsesMessageRoleSchema
+>;
+export type KieResponsesInputText = z.infer<typeof KieResponsesInputTextSchema>;
+export type KieResponsesInputImage = z.infer<
+  typeof KieResponsesInputImageSchema
+>;
+export type KieResponsesInputFile = z.infer<typeof KieResponsesInputFileSchema>;
+export type KieResponsesInputContent = z.infer<
+  typeof KieResponsesInputContentSchema
+>;
+export type KieResponsesInputMessage = z.infer<
+  typeof KieResponsesInputMessageSchema
+>;
+export type KieResponsesReasoning = z.infer<typeof KieResponsesReasoningSchema>;
+export type KieResponsesWebSearchTool = z.infer<
+  typeof KieResponsesWebSearchToolSchema
+>;
+export type KieResponsesFunctionTool = z.infer<
+  typeof KieResponsesFunctionToolSchema
+>;
+export type KieResponsesTool = z.infer<typeof KieResponsesToolSchema>;
+export type KieResponsesRequest = z.input<typeof KieResponsesRequestSchema>;
+export type KieResponsesParsedRequest = z.output<
+  typeof KieResponsesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Sub-provider schemas: Claude (via Kie)
 // ---------------------------------------------------------------------------
 

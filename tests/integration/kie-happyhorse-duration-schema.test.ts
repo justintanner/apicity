@@ -16,6 +16,16 @@ const validInputs = {
     prompt: "character1 looks toward the camera.",
     reference_image: ["https://example.com/reference.png"],
   },
+  "happyhorse-1-1/text-to-video": {
+    prompt: "A small paper train rolls through a handmade city.",
+  },
+  "happyhorse-1-1/image-to-video": {
+    image_urls: ["https://example.com/frame.png"],
+  },
+  "happyhorse-1-1/reference-to-video": {
+    prompt: "character1 looks toward the camera.",
+    reference_image: ["https://example.com/reference.png"],
+  },
 } as const;
 
 describe("kie happyhorse duration schema", () => {

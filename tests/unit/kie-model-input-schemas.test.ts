@@ -48,4 +48,30 @@ describe("KIE modelInputSchemas metadata", () => {
     expect(fields.duration.maximum).toBe(15);
     expect(fields.duration.default).toBe(5);
   });
+
+  it("exposes HappyHorse 1.1 metadata and widened aspect ratios", () => {
+    const textFields =
+      provider.modelInputSchemas["happyhorse-1-1/text-to-video"].fields;
+    const imageFields =
+      provider.modelInputSchemas["happyhorse-1-1/image-to-video"].fields;
+    const referenceFields =
+      provider.modelInputSchemas["happyhorse-1-1/reference-to-video"].fields;
+
+    expect(textFields.prompt.required).toBe(true);
+    expect(textFields.prompt.maxLength).toBe(5000);
+    expect(textFields.resolution.default).toBe("1080p");
+    expect(textFields.aspect_ratio.enum).toContain("21:9");
+    expect(textFields.duration.minimum).toBe(3);
+    expect(textFields.duration.maximum).toBe(15);
+
+    expect(imageFields.prompt.default).toBe("");
+    expect(imageFields.image_urls.required).toBe(true);
+    expect(imageFields.image_urls.maxItems).toBe(1);
+    expect(imageFields.duration.default).toBe(5);
+
+    expect(referenceFields.reference_image.required).toBe(true);
+    expect(referenceFields.reference_image.maxItems).toBe(9);
+    expect(referenceFields.aspect_ratio.enum).toContain("9:21");
+    expect(referenceFields.duration.default).toBe(5);
+  });
 });

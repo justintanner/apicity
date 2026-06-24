@@ -21,6 +21,10 @@ import {
   MediaGenerationRequestSchema,
   HappyHorseImageToVideoRequestSchema,
   HappyHorseTextToVideoRequestSchema,
+  HappyHorse11CreateTaskResponseSchema,
+  HappyHorse11ImageToVideoRequestSchema,
+  HappyHorse11ReferenceToVideoRequestSchema,
+  HappyHorse11TextToVideoRequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   ElevenLabsTextToSpeechTurbo25RequestSchema,
   ElevenLabsTextToSpeechMultilingualV2RequestSchema,
@@ -643,6 +647,184 @@ describe("kie Zod schema validation", () => {
       expect(
         result.error?.issues.some((i) => i.path.includes("image_urls"))
       ).toBe(true);
+    });
+  });
+
+  describe("happyhorse 1.1 text-to-video", () => {
+    it("should accept the documented text-to-video request and apply defaults", () => {
+      const result = HappyHorse11TextToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/text-to-video",
+        input: {
+          prompt: "A dog running on the earth",
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.resolution).toBe("1080p");
+      expect(result.data.input.aspect_ratio).toBe("16:9");
+      expect(result.data.input.duration).toBe(5);
+      expect(MediaGenerationRequestSchema.safeParse(result.data).success).toBe(
+        true
+      );
+    });
+
+    it("should reject unsupported aspect ratios and duration bounds", () => {
+      const result = HappyHorse11TextToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/text-to-video",
+        input: {
+          prompt: "A short video prompt.",
+          aspect_ratio: "2:3",
+          duration: 16,
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("aspect_ratio"))
+      ).toBe(true);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
+    });
+  });
+
+  describe("happyhorse 1.1 image-to-video", () => {
+    it("should require exactly one image URL and parse defaults", () => {
+      const result = HappyHorse11ImageToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/image-to-video",
+        input: {
+          image_urls: ["https://example.com/first-frame.png"],
+          duration: 3,
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.prompt).toBe("");
+      expect(result.data.input.resolution).toBe("1080p");
+      expect(MediaGenerationRequestSchema.safeParse(result.data).success).toBe(
+        true
+      );
+    });
+
+    it("should reject missing, non-URL, and too many image URLs", () => {
+      const missing = HappyHorse11ImageToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/image-to-video",
+        input: {},
+      });
+      const badUrl = HappyHorse11ImageToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/image-to-video",
+        input: {
+          image_urls: ["not-a-url"],
+        },
+      });
+      const tooMany = HappyHorse11ImageToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/image-to-video",
+        input: {
+          image_urls: [
+            "https://example.com/first.png",
+            "https://example.com/second.png",
+          ],
+        },
+      });
+
+      for (const result of [missing, badUrl, tooMany]) {
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some((i) => i.path.includes("image_urls"))
+        ).toBe(true);
+      }
+    });
+
+    it("should reject invalid resolution and non-integer duration", () => {
+      const result = HappyHorse11ImageToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/image-to-video",
+        input: {
+          image_urls: ["https://example.com/first-frame.png"],
+          resolution: "4k",
+          duration: 3.5,
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("resolution"))
+      ).toBe(true);
+      expect(
+        result.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
+    });
+  });
+
+  describe("happyhorse 1.1 reference-to-video", () => {
+    it("should accept the documented reference-to-video request", () => {
+      const result = HappyHorse11ReferenceToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/reference-to-video",
+        input: {
+          reference_image: ["https://example.com/reference.png"],
+          prompt: "A cat running on the grass",
+          resolution: "1080p",
+          aspect_ratio: "21:9",
+          duration: 15,
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(MediaGenerationRequestSchema.safeParse(result.data).success).toBe(
+        true
+      );
+    });
+
+    it("should enforce reference image count and URL validation", () => {
+      const tooMany = HappyHorse11ReferenceToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/reference-to-video",
+        input: {
+          reference_image: Array.from(
+            { length: 10 },
+            (_, i) => `https://example.com/reference-${i + 1}.png`
+          ),
+          prompt: "A cat running on the grass",
+        },
+      });
+      const badUrl = HappyHorse11ReferenceToVideoRequestSchema.safeParse({
+        model: "happyhorse-1-1/reference-to-video",
+        input: {
+          reference_image: ["not-a-url"],
+          prompt: "A cat running on the grass",
+        },
+      });
+
+      for (const result of [tooMany, badUrl]) {
+        expect(result.success).toBe(false);
+        expect(
+          result.error?.issues.some((i) => i.path.includes("reference_image"))
+        ).toBe(true);
+      }
+    });
+  });
+
+  describe("happyhorse 1.1 response", () => {
+    it("should parse the documented taskId response", () => {
+      const result = HappyHorse11CreateTaskResponseSchema.safeParse({
+        code: 200,
+        msg: "success",
+        data: {
+          taskId: "task_253_abc123",
+        },
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should require taskId data for successful responses", () => {
+      const result = HappyHorse11CreateTaskResponseSchema.safeParse({
+        code: 200,
+        msg: "success",
+      });
+
+      expect(result.success).toBe(false);
     });
   });
 

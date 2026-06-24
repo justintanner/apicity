@@ -38,6 +38,9 @@ export const KieMediaModelSchema = z.enum([
   "happyhorse/image-to-video",
   "happyhorse/reference-to-video",
   "happyhorse/video-edit",
+  "happyhorse-1-1/text-to-video",
+  "happyhorse-1-1/image-to-video",
+  "happyhorse-1-1/reference-to-video",
   "omnihuman-1-5",
   "volcengine/video-to-video-lip-sync",
   "elevenlabs/audio-isolation",
@@ -216,6 +219,18 @@ export const HappyHorseAspectRatioSchema = z.enum([
   "1:1",
   "4:3",
   "3:4",
+]);
+
+export const HappyHorse11AspectRatioSchema = z.enum([
+  "16:9",
+  "9:16",
+  "3:4",
+  "4:3",
+  "4:5",
+  "5:4",
+  "1:1",
+  "9:21",
+  "21:9",
 ]);
 
 export const HappyHorseAudioSettingSchema = z.enum(["auto", "origin"]);
@@ -771,6 +786,82 @@ export const HappyHorseVideoEditRequestSchema = z.object({
   }),
 });
 
+export const HappyHorse11TextToVideoRequestSchema = z.object({
+  model: z.literal("happyhorse-1-1/text-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    resolution: HappyHorseResolutionSchema.default("1080p"),
+    aspect_ratio: HappyHorse11AspectRatioSchema.default("16:9"),
+    duration: HappyHorseDurationSchema.default(5),
+  }),
+});
+
+export const HappyHorse11ImageToVideoRequestSchema = z.object({
+  model: z.literal("happyhorse-1-1/image-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().max(5000).default(""),
+    image_urls: z.array(z.string().url()).min(1).max(1),
+    resolution: HappyHorseResolutionSchema.default("1080p"),
+    duration: HappyHorseDurationSchema.default(5),
+  }),
+});
+
+export const HappyHorse11ReferenceToVideoRequestSchema = z.object({
+  model: z.literal("happyhorse-1-1/reference-to-video"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
+    prompt: z.string().min(1).max(5000),
+    reference_image: z.array(z.string().url()).min(1).max(9),
+    resolution: HappyHorseResolutionSchema.default("1080p"),
+    aspect_ratio: HappyHorse11AspectRatioSchema.default("16:9"),
+    duration: HappyHorseDurationSchema.default(5),
+  }),
+});
+
+export const HappyHorse11ResponseCodeSchema = z.union([
+  z.literal(200),
+  z.literal(401),
+  z.literal(402),
+  z.literal(404),
+  z.literal(422),
+  z.literal(429),
+  z.literal(433),
+  z.literal(455),
+  z.literal(500),
+  z.literal(501),
+  z.literal(505),
+]);
+
+export const HappyHorse11ErrorResponseCodeSchema = z.union([
+  z.literal(401),
+  z.literal(402),
+  z.literal(404),
+  z.literal(422),
+  z.literal(429),
+  z.literal(433),
+  z.literal(455),
+  z.literal(500),
+  z.literal(501),
+  z.literal(505),
+]);
+
+export const HappyHorse11CreateTaskResponseSchema = z.union([
+  z.object({
+    code: z.literal(200),
+    msg: z.string(),
+    data: z.object({
+      taskId: z.string(),
+    }),
+  }),
+  z.object({
+    code: HappyHorse11ErrorResponseCodeSchema,
+    msg: z.string(),
+    data: z.unknown().optional(),
+  }),
+]);
+
 export const Omnihuman15RequestSchema = z.object({
   model: z.literal("omnihuman-1-5"),
   callBackUrl: z.string().url().optional(),
@@ -1321,6 +1412,9 @@ export const MediaGenerationRequestSchema = z.union([
   HappyHorseImageToVideoRequestSchema,
   HappyHorseReferenceToVideoRequestSchema,
   HappyHorseVideoEditRequestSchema,
+  HappyHorse11TextToVideoRequestSchema,
+  HappyHorse11ImageToVideoRequestSchema,
+  HappyHorse11ReferenceToVideoRequestSchema,
   Omnihuman15RequestSchema,
   VolcengineVideoToVideoLipSyncRequestSchema,
   ElevenLabsAudioIsolationRequestSchema,
@@ -1391,6 +1485,9 @@ export type Wan27ImageResolution = z.infer<typeof Wan27ImageResolutionSchema>;
 export type Wan27ImageAspectRatio = z.infer<typeof Wan27ImageAspectRatioSchema>;
 export type HappyHorseResolution = z.infer<typeof HappyHorseResolutionSchema>;
 export type HappyHorseAspectRatio = z.infer<typeof HappyHorseAspectRatioSchema>;
+export type HappyHorse11AspectRatio = z.infer<
+  typeof HappyHorse11AspectRatioSchema
+>;
 export type HappyHorseAudioSetting = z.infer<
   typeof HappyHorseAudioSettingSchema
 >;
@@ -1593,6 +1690,27 @@ export type HappyHorseVideoEditRequest = z.input<
 >;
 export type HappyHorseVideoEditParsedRequest = z.output<
   typeof HappyHorseVideoEditRequestSchema
+>;
+export type HappyHorse11TextToVideoRequest = z.input<
+  typeof HappyHorse11TextToVideoRequestSchema
+>;
+export type HappyHorse11TextToVideoParsedRequest = z.output<
+  typeof HappyHorse11TextToVideoRequestSchema
+>;
+export type HappyHorse11ImageToVideoRequest = z.input<
+  typeof HappyHorse11ImageToVideoRequestSchema
+>;
+export type HappyHorse11ImageToVideoParsedRequest = z.output<
+  typeof HappyHorse11ImageToVideoRequestSchema
+>;
+export type HappyHorse11ReferenceToVideoRequest = z.input<
+  typeof HappyHorse11ReferenceToVideoRequestSchema
+>;
+export type HappyHorse11ReferenceToVideoParsedRequest = z.output<
+  typeof HappyHorse11ReferenceToVideoRequestSchema
+>;
+export type HappyHorse11CreateTaskResponse = z.infer<
+  typeof HappyHorse11CreateTaskResponseSchema
 >;
 export type Omnihuman15Request = z.input<typeof Omnihuman15RequestSchema>;
 export type Omnihuman15ParsedRequest = z.output<

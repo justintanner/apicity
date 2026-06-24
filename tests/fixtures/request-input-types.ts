@@ -1,6 +1,8 @@
 import type {
   GrokImageToVideoParsedRequest,
   GrokImageToVideoRequest,
+  HappyHorse11ImageToVideoParsedRequest,
+  HappyHorse11ImageToVideoRequest,
   KieProvider,
 } from "@apicity/kie";
 import type {
@@ -29,6 +31,24 @@ const kieGrokImageToVideoParsed: GrokImageToVideoParsedRequest = {
   },
 };
 
+const kieHappyHorse11ImageToVideoInput: HappyHorse11ImageToVideoRequest = {
+  model: "happyhorse-1-1/image-to-video",
+  input: {
+    image_urls: ["https://example.com/frame.png"],
+  },
+};
+
+const kieHappyHorse11ImageToVideoParsed: HappyHorse11ImageToVideoParsedRequest =
+  {
+    model: "happyhorse-1-1/image-to-video",
+    input: {
+      prompt: "",
+      image_urls: ["https://example.com/frame.png"],
+      resolution: "1080p",
+      duration: 5,
+    },
+  };
+
 const openAiImageGenerationInput: OpenAiImageGenerationRequest = {
   prompt: "A small red square",
 };
@@ -41,5 +61,10 @@ declare const kie: KieProvider;
 declare const openai: OpenAiProvider;
 
 void kie.post.api.v1.jobs.createTask(kieGrokImageToVideoInput);
+void kie.post.api.v1.jobs.createTask(kieHappyHorse11ImageToVideoInput);
 void openai.post.v1.images.generations(openAiImageGenerationInput);
-void [kieGrokImageToVideoParsed, openAiImageGenerationParsed];
+void [
+  kieGrokImageToVideoParsed,
+  kieHappyHorse11ImageToVideoParsed,
+  openAiImageGenerationParsed,
+];

@@ -13,6 +13,18 @@ const happyHorseDurationField = {
   description: `Duration in seconds, ${HAPPYHORSE_DURATION_MIN_SECONDS}-${HAPPYHORSE_DURATION_MAX_SECONDS} (default 5)`,
 } as const;
 
+const happyHorse11AspectRatios = [
+  "16:9",
+  "9:16",
+  "3:4",
+  "4:3",
+  "4:5",
+  "5:4",
+  "1:1",
+  "9:21",
+  "21:9",
+] as const;
+
 export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
   "kling-3.0/video": {
     type: "video",
@@ -1619,6 +1631,103 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         maximum: 2147483647,
         description: "Random seed (0-2147483647)",
       },
+    },
+  },
+
+  // Sources:
+  // - https://docs.kie.ai/market/happyhorse-1-1/image-to-video
+  // - https://docs.kie.ai/market/happyhorse-1-1/text-to-video
+  // - https://docs.kie.ai/market/happyhorse-1-1/reference-to-video
+  // - https://kie.ai/happyhorse-1-1
+  "happyhorse-1-1/text-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Output resolution (default 1080p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: happyHorse11AspectRatios,
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: happyHorseDurationField,
+    },
+  },
+
+  "happyhorse-1-1/image-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        maxLength: 5000,
+        default: "",
+        description:
+          "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      image_urls: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 1,
+        description:
+          "First-frame image URL list (exactly 1 JPEG/JPG/PNG/WEBP image, max 20 MB)",
+        items: { type: "string" },
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Output resolution (default 1080p)",
+      },
+      duration: happyHorseDurationField,
+    },
+  },
+
+  "happyhorse-1-1/reference-to-video": {
+    type: "video",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        minLength: 1,
+        maxLength: 5000,
+        description:
+          "Video generation prompt (max 5000 non-Chinese / 2500 Chinese chars)",
+      },
+      reference_image: {
+        type: "array",
+        required: true,
+        minItems: 1,
+        maxItems: 9,
+        description:
+          "Reference image URLs (1-9 JPEG/JPG/PNG/WEBP images, max 20 MB each)",
+        items: { type: "string" },
+      },
+      resolution: {
+        type: "string",
+        enum: ["720p", "1080p"],
+        default: "1080p",
+        description: "Output resolution (default 1080p)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: happyHorse11AspectRatios,
+        default: "16:9",
+        description: "Output aspect ratio (default 16:9)",
+      },
+      duration: happyHorseDurationField,
     },
   },
 

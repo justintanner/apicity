@@ -104,6 +104,7 @@ export type {
   KieOptions,
   KieApproval,
   KieProvider,
+  TaskResponse,
   KieApiEnvelope,
   KieTaskState,
   KieTaskInfoData,
@@ -154,6 +155,7 @@ export type {
   Wan27VideoEditDuration,
   HappyHorseResolution,
   HappyHorseAspectRatio,
+  HappyHorse11AspectRatio,
   HappyHorseAudioSetting,
   HappyHorseDuration,
   Omnihuman15OutputResolution,
@@ -166,6 +168,13 @@ export type {
   HappyHorseReferenceToVideoParsedRequest,
   HappyHorseVideoEditRequest,
   HappyHorseVideoEditParsedRequest,
+  HappyHorse11TextToVideoRequest,
+  HappyHorse11TextToVideoParsedRequest,
+  HappyHorse11ImageToVideoRequest,
+  HappyHorse11ImageToVideoParsedRequest,
+  HappyHorse11ReferenceToVideoRequest,
+  HappyHorse11ReferenceToVideoParsedRequest,
+  HappyHorse11CreateTaskResponse,
   Omnihuman15Request,
   Omnihuman15ParsedRequest,
   VolcengineVideoToVideoLipSyncRequest,
@@ -186,7 +195,14 @@ export type {
   GeminiOmniAudioCreateResponse,
 } from "./types";
 
-export { HappyHorseDurationSchema } from "./zod";
+export {
+  HappyHorseDurationSchema,
+  HappyHorse11AspectRatioSchema,
+  HappyHorse11TextToVideoRequestSchema,
+  HappyHorse11ImageToVideoRequestSchema,
+  HappyHorse11ReferenceToVideoRequestSchema,
+  HappyHorse11CreateTaskResponseSchema,
+} from "./zod";
 
 // Export sub-provider types
 export type {

@@ -6,6 +6,9 @@ import { kieRequest } from "../../packages/provider/kie/src/request";
 import { KieError } from "../../packages/provider/kie/src/types";
 import type {
   GrokImageToVideoRequest,
+  HappyHorse11ImageToVideoRequest,
+  HappyHorse11ReferenceToVideoRequest,
+  HappyHorse11TextToVideoRequest,
   VolcengineVideoToVideoLipSyncRequest,
 } from "../../packages/provider/kie/src/types";
 
@@ -463,6 +466,128 @@ describe("KIE request utilities", () => {
         "Content-Type": "application/json",
       });
       expect(JSON.parse(init.body as string)).toEqual(request);
+    });
+
+    it("should serialize HappyHorse 1.1 createTask requests", async () => {
+      const secret = "test-paygate-secret";
+      const mockFetch = vi.fn().mockImplementation(() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({
+              code: 200,
+              msg: "success",
+              data: {
+                taskId: "task_happyhorse_11_1234567890",
+              },
+            }),
+            { status: 200 }
+          )
+        )
+      );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const requests: Array<
+        | HappyHorse11TextToVideoRequest
+        | HappyHorse11ImageToVideoRequest
+        | HappyHorse11ReferenceToVideoRequest
+      > = [
+        {
+          model: "happyhorse-1-1/text-to-video",
+          input: {
+            prompt: "A dog running on the earth",
+            resolution: "1080p",
+            aspect_ratio: "16:9",
+            duration: 5,
+          },
+          callBackUrl: "https://example.com/kie-callback",
+        },
+        {
+          model: "happyhorse-1-1/image-to-video",
+          input: {
+            image_urls: ["https://example.com/first-frame.png"],
+            prompt: "A cat running on the grass",
+            resolution: "1080p",
+            duration: 5,
+          },
+        },
+        {
+          model: "happyhorse-1-1/reference-to-video",
+          input: {
+            reference_image: ["https://example.com/reference.png"],
+            prompt: "A cat running on the grass",
+            resolution: "1080p",
+            aspect_ratio: "16:9",
+            duration: 5,
+          },
+        },
+      ];
+
+      for (const request of requests) {
+        const result = await provider.post.api.v1.jobs.createTask(request, {
+          otp: mintOtp(secret, {
+            dotPath: "api.v1.jobs.createTask",
+            request,
+          }),
+        });
+
+        expect(result.data?.taskId).toBe("task_happyhorse_11_1234567890");
+      }
+
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+      for (const [index, [, init]] of mockFetch.mock.calls.entries()) {
+        expect(init.method).toBe("POST");
+        expect(init.headers).toEqual({
+          Authorization: "Bearer test-key",
+          "Content-Type": "application/json",
+        });
+        expect(JSON.parse(init.body as string)).toEqual(requests[index]);
+      }
+    });
+
+    it("should map HappyHorse 1.1 createTask API errors", async () => {
+      const secret = "test-paygate-secret";
+      const errorBody = {
+        code: 422,
+        msg: "Invalid HappyHorse 1.1 request",
+      };
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify(errorBody), { status: 422 })
+        );
+
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret },
+      });
+      const request: HappyHorse11ImageToVideoRequest = {
+        model: "happyhorse-1-1/image-to-video",
+        input: {
+          image_urls: ["https://example.com/first-frame.png"],
+          prompt: "A cat running on the grass",
+          resolution: "1080p",
+          duration: 5,
+        },
+      };
+
+      await expect(
+        provider.post.api.v1.jobs.createTask(request, {
+          otp: mintOtp(secret, {
+            dotPath: "api.v1.jobs.createTask",
+            request,
+          }),
+        })
+      ).rejects.toMatchObject({
+        status: 422,
+        body: errorBody,
+      });
     });
 
     it("should serialize seven Grok Imagine image-to-video URLs", async () => {

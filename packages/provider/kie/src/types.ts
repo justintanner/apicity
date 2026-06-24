@@ -184,6 +184,7 @@ export type {
   ElevenLabsTextToSpeechTurbo25ParsedRequest,
   ElevenLabsSoundEffectV2Request,
   ElevenLabsSoundEffectV2ParsedRequest,
+  GeminiOmniAudioVoiceId,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateParsedRequest,
 } from "./zod";
@@ -245,6 +246,7 @@ export type KieCreditsResponse = KieApiEnvelope<number>;
 
 export interface GeminiOmniAudioCreateData {
   audioId: string;
+  kieAudioId: string;
   name: string;
 }
 

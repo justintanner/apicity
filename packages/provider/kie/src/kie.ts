@@ -5,6 +5,7 @@ import {
   KieProvider,
   KieError,
   KieCreditsResponse,
+  KieApiEnvelope,
   DownloadUrlRequest,
   DownloadUrlResponse,
   UploadMediaRequest,
@@ -461,16 +462,38 @@ export function createKie(opts: KieOptions): KieProvider {
   async function omniAudioCreate(
     req: GeminiOmniAudioCreateRequest
   ): Promise<GeminiOmniAudioCreateResponse> {
-    return kieRequest<GeminiOmniAudioCreateResponse>(
-      `${baseURL}/api/v1/omni/audio/create`,
-      {
-        method: "POST",
-        body: req,
-        apiKey: opts.apiKey,
-        doFetch,
-        timeout,
-      }
-    );
+    const response = await kieRequest<
+      KieApiEnvelope<{
+        audioId?: string;
+        kieAudioId?: string;
+        name: string;
+      }>
+    >(`${baseURL}/api/v1/omni/audio/create`, {
+      method: "POST",
+      body: req,
+      apiKey: opts.apiKey,
+      doFetch,
+      timeout,
+    });
+
+    if (!response.data) {
+      return response as GeminiOmniAudioCreateResponse;
+    }
+
+    const id = response.data.audioId ?? response.data.kieAudioId;
+
+    if (!id) {
+      return response as GeminiOmniAudioCreateResponse;
+    }
+
+    return {
+      ...response,
+      data: {
+        ...response.data,
+        audioId: response.data.audioId ?? id,
+        kieAudioId: response.data.kieAudioId ?? id,
+      },
+    };
   }
 
   // GET https://api.kie.ai/api/v1/chat/credit

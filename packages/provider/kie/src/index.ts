@@ -3,6 +3,9 @@ export { createKie, submitMediaJob, uploadFile } from "./kie";
 
 // Export reusable schema metadata
 export {
+  GeminiOmniAudioCreateRequestSchema,
+  GeminiOmniAudioVoiceIdSchema,
+  GeminiOmniAudioVoiceIds,
   RecordInfoRequestSchema,
   Seedance2MiniAspectRatioSchema,
   Seedance2MiniInputSchema,
@@ -219,6 +222,7 @@ export type {
   ElevenLabsTextToSpeechTurbo25ParsedRequest,
   ElevenLabsSoundEffectV2Request,
   ElevenLabsSoundEffectV2ParsedRequest,
+  GeminiOmniAudioVoiceId,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateParsedRequest,
   GeminiOmniAudioCreateData,

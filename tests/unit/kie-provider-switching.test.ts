@@ -114,7 +114,7 @@ describe("KIE provider switching", () => {
     });
 
     const payload = {
-      audio_id: "narrator",
+      audio_id: "achernar",
       name: "Narrator",
       voice_description: "A calm narration voice.",
       example_dialogue: "Hello from Kie.",
@@ -127,6 +127,7 @@ describe("KIE provider switching", () => {
     const result = await provider.post.api.v1.omni.audio.create(payload);
 
     expect(result.data?.audioId).toBe("audio-1");
+    expect(result.data?.kieAudioId).toBe("audio-1");
     const [url, init] = mockFetch.mock.calls[0];
     expect(url).toBe("https://api.kie.ai/api/v1/omni/audio/create");
     expect(init.method).toBe("POST");

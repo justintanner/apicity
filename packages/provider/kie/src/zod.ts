@@ -60,6 +60,41 @@ export const MediaTypeSchema = z.enum([
   "transcription",
 ]);
 
+export const GeminiOmniAudioVoiceIds = [
+  "achernar",
+  "achird",
+  "algenib",
+  "algieba",
+  "alnilam",
+  "aoede",
+  "autonoe",
+  "callirrhoe",
+  "charon",
+  "despina",
+  "enceladus",
+  "erinome",
+  "fenrir",
+  "gacrux",
+  "iapetus",
+  "kore",
+  "laomedeia",
+  "leda",
+  "orus",
+  "puck",
+  "pulcherrima",
+  "rasalgethi",
+  "sadachbia",
+  "sadaltager",
+  "schedar",
+  "sulafat",
+  "umbriel",
+  "vindemiatrix",
+  "zephyr",
+  "zubenelgenubi",
+] as const;
+
+export const GeminiOmniAudioVoiceIdSchema = z.enum(GeminiOmniAudioVoiceIds);
+
 export const KlingDurationSchema = z.enum([
   "3",
   "4",
@@ -1330,10 +1365,10 @@ export const DownloadUrlRequestSchema = z.object({
 });
 
 export const GeminiOmniAudioCreateRequestSchema = z.object({
-  audio_id: z.string().min(1),
-  name: z.string().min(1),
-  voice_description: z.string().min(1),
-  example_dialogue: z.string().min(1),
+  audio_id: GeminiOmniAudioVoiceIdSchema,
+  name: z.string().min(1).max(210),
+  voice_description: z.string().min(1).max(20000).optional(),
+  example_dialogue: z.string().min(1).max(120).optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -1958,6 +1993,9 @@ export type FileBase64UploadParsedRequest = z.output<
 export type DownloadUrlRequest = z.input<typeof DownloadUrlRequestSchema>;
 export type DownloadUrlParsedRequest = z.output<
   typeof DownloadUrlRequestSchema
+>;
+export type GeminiOmniAudioVoiceId = z.infer<
+  typeof GeminiOmniAudioVoiceIdSchema
 >;
 export type GeminiOmniAudioCreateRequest = z.input<
   typeof GeminiOmniAudioCreateRequestSchema

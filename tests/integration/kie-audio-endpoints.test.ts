@@ -1,6 +1,10 @@
 import { describe, it, expect, afterEach } from "vitest";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
-import { createKie } from "@apicity/kie";
+import {
+  createKie,
+  GeminiOmniAudioCreateRequestSchema,
+  GeminiOmniAudioVoiceIds,
+} from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
 describe("kie audio endpoints integration", () => {
@@ -65,6 +69,64 @@ describe("kie audio endpoints integration", () => {
     expect(result.code).toBe(200);
     expect(result.msg).toBe("success");
     expect(result.data?.audioId).toBeTruthy();
+    expect(result.data?.kieAudioId).toBe(result.data?.audioId);
     expect(result.data?.name).toBeTruthy();
+  });
+
+  it("validates Gemini Omni Audio voice metadata", () => {
+    const provider = createKie({
+      apiKey: "kie-test-key",
+    });
+    const schema = provider.post.api.v1.omni.audio.create.schema;
+
+    expect(GeminiOmniAudioVoiceIds).toHaveLength(30);
+    expect(GeminiOmniAudioVoiceIds).toContain("achernar");
+    expect(GeminiOmniAudioVoiceIds).toContain("zubenelgenubi");
+
+    expect(
+      schema.safeParse({
+        audio_id: "achird",
+        name: "n".repeat(210),
+      }).success
+    ).toBe(true);
+
+    expect(
+      GeminiOmniAudioCreateRequestSchema.safeParse({
+        audio_id: "zubenelgenubi",
+        name: "Zubenelgenubi Narrator",
+        voice_description: "A casual mid-low male voice.",
+        example_dialogue: "Hello from Gemini Omni Audio.",
+      }).success
+    ).toBe(true);
+
+    expect(
+      schema.safeParse({
+        audio_id: "unknown-voice",
+        name: "Narrator",
+      }).success
+    ).toBe(false);
+
+    expect(
+      schema.safeParse({
+        audio_id: "achernar",
+        name: "n".repeat(211),
+      }).success
+    ).toBe(false);
+
+    expect(
+      schema.safeParse({
+        audio_id: "achernar",
+        name: "Narrator",
+        voice_description: "v".repeat(20001),
+      }).success
+    ).toBe(false);
+
+    expect(
+      schema.safeParse({
+        audio_id: "achernar",
+        name: "Narrator",
+        example_dialogue: "d".repeat(121),
+      }).success
+    ).toBe(false);
   });
 });

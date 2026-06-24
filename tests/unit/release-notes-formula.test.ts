@@ -34,10 +34,7 @@ interface DirectoryEntry {
 }
 
 function readReleaseNotesScript(): string {
-  const formula = fs.readFileSync(
-    ".beads/formulas/mol-apicity-release.formula.toml",
-    "utf8"
-  );
+  const formula = readReleaseFormula();
   const match = formula.match(/node <<'NODE' > "\$notes"\n([\s\S]*?)\nNODE\n/);
 
   if (!match) {
@@ -45,6 +42,21 @@ function readReleaseNotesScript(): string {
   }
 
   return match[1];
+}
+
+function readReleaseFormula(): string {
+  return fs.readFileSync(
+    ".beads/formulas/mol-apicity-release.formula.toml",
+    "utf8"
+  );
+}
+
+function readStepIds(): string[] {
+  return readReleaseFormula()
+    .split(/\n\[\[steps\]\]\n/)
+    .slice(1)
+    .map((block) => block.match(/^id = "([^"]+)"/m)?.[1])
+    .filter((id): id is string => id !== undefined);
 }
 
 function issue(overrides: Partial<Issue>): Issue {
@@ -57,6 +69,22 @@ function issue(overrides: Partial<Issue>): Issue {
     ...overrides,
   };
 }
+
+describe("mol-apicity-release workflow", () => {
+  it("keeps the release graph consolidated into the expected steps", () => {
+    expect(readStepIds()).toEqual([
+      "load-context",
+      "verify-main-gates",
+      "sync-stable-and-preflight",
+      "prepare-release-commit",
+      "publish-dry-run",
+      "publish",
+      "tag-push-and-github-release",
+      "sync-main-and-smoke-install",
+      "close",
+    ]);
+  });
+});
 
 describe("mol-apicity-release GitHub release notes", () => {
   it("uses a large bd buffer and filters non-shipped closures", () => {

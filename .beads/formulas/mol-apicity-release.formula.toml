@@ -179,39 +179,27 @@ If the GitHub run is missing, pending, cancelled, or failed, STOP. Do not sync
 CI reports success for the same `origin/main` commit."""
 
 [[steps]]
-id = "sync-stable"
-title = "Fast-forward stable from main"
+id = "sync-stable-and-preflight"
+title = "Fast-forward stable and run the CI mirror"
 needs = ["verify-main-gates"]
 metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Bring `stable` up to the head of `main` so the release reflects the agent
-working branch's tip.
+working branch's tip, then mirror exactly what CI runs on the release branch
+(`pnpm run ci:local` = build + lint + test:run). A red preflight here means CI
+on `stable` will be red — abort the release.
 
 ```bash
 git checkout stable
 git pull --ff-only origin stable
 git merge --ff-only origin/main
+pnpm install --frozen-lockfile
+pnpm run ci:local
 ```
 
 **If `merge --ff-only` fails:** `stable` has diverged from `main`. STOP. This
 is a human decision — either rebase `stable` onto `main` or cherry-pick the
 missing commits. Mail Witness with the divergence summary; do not improvise.
-
-**Exit criteria:** Local `stable` is at `origin/main` HEAD."""
-
-[[steps]]
-id = "preflight-gates"
-title = "Run the CI mirror locally"
-needs = ["sync-stable"]
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
-Mirror exactly what CI runs (`pnpm run ci:local` = build + lint + test:run).
-A red preflight here means CI on `stable` will be red — abort the release.
-
-```bash
-pnpm install --frozen-lockfile
-pnpm run ci:local
-```
 
 If `ci:local` fails:
   - Investigate the root cause; do NOT release with red tests or a build break.
@@ -219,15 +207,17 @@ If `ci:local` fails:
   - If the failure was introduced by main->stable merge, revert the merge
     and STOP.
 
-**Exit criteria:** `pnpm run ci:local` exits 0."""
+**Exit criteria:** Local `stable` is at `origin/main` HEAD and
+`pnpm run ci:local` exits 0."""
 
 [[steps]]
-id = "verify-publish-config"
-title = "Verify every package is publish-ready"
-needs = ["preflight-gates"]
+id = "prepare-release-commit"
+title = "Verify publish config and bump every package to {{version}}"
+needs = ["sync-stable-and-preflight"]
 metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
-Confirm every publishable package has the metadata it needs to ship cleanly.
+Confirm every publishable package has the metadata it needs to ship cleanly,
+then create the lockstep version bump release commit.
 
 Use `command grep` (not the alias — many shells alias `grep` to `ugrep` which has different flags) and explicit paths via `find` (not `ls -d`, which is aliased to `eza`/`lsd` in many environments and prints columns, not paths).
 
@@ -273,14 +263,6 @@ If any of these fail, the prep work was not completed. STOP. File a bug
 referencing the parent epic and abort the release — pour again once prep is
 green.
 
-**Exit criteria:** Every public `@apicity/*` package passes all three checks."""
-
-[[steps]]
-id = "bump-versions"
-title = "Bump every @apicity/* package to {{version}}"
-needs = ["verify-publish-config"]
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
 Bump in lockstep — every public `@apicity/*` package ships under one version. Don't use
 `pnpm -r exec npm version` here — it implicitly runs `npm install`, which
 trips on the optional zod peer dep. Direct JSON write is simpler and
@@ -333,12 +315,13 @@ git add packages/mcp-server/package.json packages/provider/*/package.json
 git commit -m "chore(release): @apicity/* → {{version}}"
 ```
 
-**Exit criteria:** Every public `@apicity/*` package manifest is at `{{version}}`, change committed."""
+**Exit criteria:** Every public `@apicity/*` package passes publish-ready
+checks, every manifest is at `{{version}}`, and the release bump is committed."""
 
 [[steps]]
 id = "publish-dry-run"
 title = "Inspect tarballs with --dry-run"
-needs = ["bump-versions"]
+needs = ["prepare-release-commit"]
 metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Preview every tarball before sending real bytes. This catches:
@@ -372,26 +355,6 @@ dry-run when {{dry_run}} = true.
 **Exit criteria:** Dry-run exits 0, every tarball inspected, ready to publish for real."""
 
 [[steps]]
-id = "dry-run-stop"
-title = "Stop after dry-run"
-needs = ["publish-dry-run"]
-condition = "{{dry_run}} == true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
-The release was launched with `dry_run=true`, so the workflow intentionally
-ends after the publish dry-run. Do not publish to npm, tag, push, update
-GitHub releases, sync `main`, smoke install, or close the release tracking
-bead.
-
-Confirm the dry-run log path in a note and drain this session:
-
-```bash
-gc runtime drain-ack
-```
-
-**Exit criteria:** Dry-run end state recorded, session drained."""
-
-[[steps]]
 id = "publish"
 title = "Publish to npm"
 needs = ["publish-dry-run"]
@@ -423,8 +386,7 @@ NPM_CONFIG_USERCONFIG="$tmp_npmrc" pnpm -r --filter "@apicity/*" publish --tag l
 ```
 
 `--no-git-checks` is required because we're publishing from a release commit
-that may not yet have an upstream tag (the `tag-and-push` step handles that
-next).
+that may not yet have an upstream tag (the next step handles that).
 
 **3. Verify on the registry:**
 ```bash
@@ -441,33 +403,23 @@ the whole filter.
 **Exit criteria:** Every public `@apicity/*` package is visible at `{{version}}` under `latest`."""
 
 [[steps]]
-id = "tag-and-push"
-title = "Tag the release and push stable"
+id = "tag-push-and-github-release"
+title = "Tag, push, and update the GitHub release"
 needs = ["publish"]
 condition = "{{dry_run}} != true"
 metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
-Annotate the release commit and propagate to the remote.
+description = '''
+Annotate the release commit, propagate it to the remote, and create or update
+the public GitHub release page for the pushed `v{{version}}` tag.
 
+**1. Tag and push the release commit:**
 ```bash
 git tag -a v{{version}} -m "Release Apicity v{{version}}"
 git push origin stable
 git push origin v{{version}}
 ```
 
-**Exit criteria:** `origin/stable` is up to date and `v{{version}}` tag is pushed."""
-
-[[steps]]
-id = "update-github-release"
-title = "Update the GitHub release page"
-needs = ["tag-and-push"]
-condition = "{{dry_run}} != true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = '''
-Create or update the GitHub release page for the pushed `v{{version}}` tag.
-This is the public release page humans see in GitHub.
-
-**1. Verify GitHub CLI auth:**
+**2. Verify GitHub CLI auth:**
 ```bash
 gh auth status
 ```
@@ -475,7 +427,7 @@ gh auth status
 If `gh auth status` fails, STOP. Fix GitHub CLI authentication before
 continuing; do not skip the release page.
 
-**2. Build release notes from closed beads, with git as fallback:**
+**3. Build release notes from closed beads, with git as fallback:**
 ```bash
 notes="/tmp/apicity-github-release-v{{version}}.md"
 node <<'NODE' > "$notes"
@@ -768,7 +720,7 @@ Review the generated file before uploading it. `Summary` should contain a flat
 list of closed bead work. It should not include release metadata, `Released
 Work`, `What's Changed`, `Release Maintenance`, or type grouping headings.
 
-**3. Create or update the release page:**
+**4. Create or update the release page:**
 ```bash
 if gh release view "v{{version}}" >/dev/null 2>&1; then
   gh release edit "v{{version}}" --title "v{{version}}" --notes-file "$notes" --latest
@@ -778,18 +730,20 @@ fi
 gh release view "v{{version}}"
 ```
 
-**Exit criteria:** GitHub release page for `v{{version}}` exists, has current
-bead-based notes, and is marked as the latest release.'''
+**Exit criteria:** `origin/stable` is up to date, `v{{version}}` is pushed,
+and the GitHub release page exists with current bead-based notes marked as the
+latest release.'''
 
 [[steps]]
-id = "sync-main-release"
-title = "Fast-forward main to the release commit"
-needs = ["update-github-release"]
+id = "sync-main-and-smoke-install"
+title = "Fast-forward main and smoke install"
+needs = ["tag-push-and-github-release"]
 condition = "{{dry_run}} != true"
 metadata = { "gc.run_target" = "{{run_target}}" }
 description = """
 Propagate the release version bump back to `main` so `main` and `stable` do
-not drift after publishing.
+not drift after publishing, then verify a fresh consumer install resolves the
+published artifact and the entrypoint loads.
 
 ```bash
 git checkout main
@@ -802,19 +756,6 @@ git checkout stable
 **If `merge --ff-only` fails:** `main` has moved since the release started.
 STOP and mail Witness with the divergence summary. Do not create a merge
 commit or cherry-pick without an explicit decision.
-
-**Exit criteria:** `origin/main` and `origin/stable` point at the release
-commit, and the working branch is back on `stable`."""
-
-[[steps]]
-id = "smoke-install"
-title = "Install the published package in a clean dir"
-needs = ["sync-main-release"]
-condition = "{{dry_run}} != true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
-End-to-end sanity: a fresh consumer install resolves the just-published
-artifact and the entrypoint loads.
 
 ```bash
 SMOKE=$(mktemp -d)
@@ -830,12 +771,14 @@ If the install fails or the dynamic import throws, the published tarball is
 broken. STOP and mail Witness — `npm deprecate` may be needed for this
 version before the next release.
 
-**Exit criteria:** Smoke install + import succeed."""
+**Exit criteria:** `origin/main` and `origin/stable` point at the release
+commit, the working branch is back on `stable`, and the smoke install + import
+succeed."""
 
 [[steps]]
 id = "close"
 title = "Close the release bead"
-needs = ["smoke-install"]
+needs = ["sync-main-and-smoke-install"]
 condition = "{{dry_run}} != true"
 metadata = { "gc.run_target" = "{{run_target}}" }
 description = """

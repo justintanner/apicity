@@ -27,7 +27,7 @@ Use only standard three-part semver versions:
 ```
 
 Bump in lockstep across all public `@apicity/*` packages. Don't drift one
-package's version without bumping the rest — the formula's `bump-versions`
+package's version without bumping the rest — the `prepare-release-commit`
 step enforces this. Do not use suffix identifiers or alternate npm tags.
 
 ## How to release
@@ -64,25 +64,28 @@ Do not manually sling child steps. If the dispatcher needs manual attention,
 inspect or run the control path directly with `gc convoy control <control-bead>`
 or `gc convoy control --serve --follow apicity/core.control-dispatcher`.
 
-The formula creates 14 workflow steps:
+The formula creates 9 workflow steps:
 
 1. `load-context` — verify clean working tree, read the release bead
 2. `verify-main-gates` — on `main`, run `pnpm run test:run`,
    `pnpm run ci:local`, and verify GitHub CI is green for `origin/main`
-3. `sync-stable` — `git checkout stable && git merge --ff-only origin/main`
-4. `preflight-gates` — `pnpm run ci:local` (build + lint + tests)
-5. `verify-publish-config` — every package has `publishConfig.access=public` + `LICENSE`
-6. `bump-versions` — write `version` to all package manifests, commit
-7. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs
-8. `dry-run-stop` — terminal branch when `dry_run=true`
-9. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the `apicity` 1Password vault
-10. `tag-and-push` — `git tag v<version>`, push `stable` + tag
-11. `update-github-release` — create or update the GitHub release page for
+3. `sync-stable-and-preflight` — fast-forward `stable` from `origin/main`,
+   then run `pnpm run ci:local` (build + lint + tests)
+4. `prepare-release-commit` — verify every package has
+   `publishConfig.access=public` + `LICENSE`, write `version` to all package
+   manifests, and commit
+5. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs; when
+   `dry_run=true`, stop here without publishing
+6. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the
+   `apicity` 1Password vault
+7. `tag-push-and-github-release` — `git tag v<version>`, push `stable` + tag,
+   and create or update the GitHub release page for
     `v<version>` with a flat Summary list of closed bead work since the
     previous release, excluding release workflow noise
-12. `sync-main-release` — fast-forward `main` to the release commit and push it
-13. `smoke-install` — `npm install @apicity/openai@latest` in `/tmp` and dynamic-import
-14. `close` — close the release bead, `bd remember` the version
+8. `sync-main-and-smoke-install` — fast-forward `main` to the release commit,
+   push it, then `npm install @apicity/openai@latest` in `/tmp` and
+   dynamic-import
+9. `close` — close the release bead, `bd remember` the version
 
 ## What the formula does NOT do automatically
 
@@ -90,9 +93,9 @@ The formula creates 14 workflow steps:
   `op://apicity/NPM_TOKEN/password` and verifies it with `npm whoami`. If
   1Password access is unavailable or the token lacks publish rights, fix that
   before continuing.
-- **Create or repair GitHub credentials.** The `update-github-release` step
-  uses `gh auth status` and `gh release`. Authenticate the GitHub CLI before
-  continuing if that check fails.
+- **Create or repair GitHub credentials.** The `tag-push-and-github-release`
+  step uses `gh auth status` and `gh release`. Authenticate the GitHub CLI
+  before continuing if that check fails.
 - **Decide divergence resolution.** If `stable` has diverged from `main` before
   release, or if `main` has moved before the post-release fast-forward, the
   formula stops and you decide whether to rebase, cherry-pick, or abort.

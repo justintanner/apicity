@@ -440,15 +440,12 @@ export const NanoBananaOutputFormatSchema = z.enum(["png", "jpg"]);
 export const GptImageQualitySchema = z.enum(["medium", "high"]);
 
 export const Qwen2ImageSizeSchema = z.enum([
-  "square",
-  "square_hd",
-  "portrait_4_3",
-  "portrait_16_9",
-  "landscape_4_3",
-  "landscape_16_9",
+  "1:1",
+  "3:4",
+  "4:3",
+  "9:16",
+  "16:9",
 ]);
-
-export const Qwen2AccelerationSchema = z.enum(["none", "regular", "high"]);
 
 export const Wan27ResolutionSchema = z.enum(["720p", "1080p"]);
 
@@ -646,17 +643,13 @@ export const GrokTextToImageRequestSchema = z.object({
 
 export const Qwen2TextToImageRequestSchema = z.object({
   model: z.literal("qwen2/text-to-image"),
-  callBackUrl: z.string().optional(),
+  callBackUrl: z.string().url().optional(),
   input: z.object({
-    prompt: z.string().min(1),
-    image_size: Qwen2ImageSizeSchema.optional(),
-    num_inference_steps: z.number().optional(),
-    seed: z.number().optional(),
-    guidance_scale: z.number().optional(),
-    enable_safety_checker: z.boolean().optional(),
-    output_format: z.enum(["png", "jpeg"]).optional(),
-    negative_prompt: z.string().optional(),
-    acceleration: Qwen2AccelerationSchema.optional(),
+    prompt: z.string().min(1).max(800),
+    image_size: Qwen2ImageSizeSchema.default("16:9"),
+    seed: z.number().int().optional(),
+    output_format: z.enum(["jpeg", "png"]).default("png"),
+    nsfw_checker: z.boolean().default(false),
   }),
 });
 
@@ -2035,7 +2028,6 @@ export type NanoBananaOutputFormat = z.infer<
 >;
 export type GptImageQuality = z.infer<typeof GptImageQualitySchema>;
 export type Qwen2ImageSize = z.infer<typeof Qwen2ImageSizeSchema>;
-export type Qwen2Acceleration = z.infer<typeof Qwen2AccelerationSchema>;
 export type Wan27Resolution = z.infer<typeof Wan27ResolutionSchema>;
 export type Wan27AspectRatio = z.infer<typeof Wan27AspectRatioSchema>;
 export type Wan27AudioSetting = z.infer<typeof Wan27AudioSettingSchema>;

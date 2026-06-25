@@ -415,6 +415,33 @@ pass the returned URL. KIE accepts JPEG, PNG, and WEBP images up to
 `3:4`, `4:3`, `9:16`, `16:9`, and `21:9`. `output_format` defaults to
 `png` and accepts `jpeg` or `png`; `nsfw_checker` defaults to `false`.
 
+## Qwen2 text-to-image createTask flow
+
+Qwen2 text-to-image uses the same shared KIE jobs endpoint. Submit
+`model: "qwen2/text-to-image"` to `kie.post.api.v1.jobs.createTask`,
+then poll `kie.get.api.v1.jobs.recordInfo(taskId)` or pass
+`callBackUrl`.
+
+```typescript
+const task = await kie.post.api.v1.jobs.createTask({
+  model: "qwen2/text-to-image",
+  callBackUrl: "https://your-domain.com/api/callback",
+  input: {
+    prompt: "A serene mountain landscape at sunrise",
+    image_size: "16:9",
+    seed: 0,
+    output_format: "png",
+    nsfw_checker: false,
+  },
+});
+```
+
+`prompt` is required and capped at 800 characters. `image_size`
+defaults to `16:9` and accepts `1:1`, `3:4`, `4:3`, `9:16`, and
+`16:9`. `output_format` defaults to `png` and accepts `jpeg` or
+`png`; `seed` must be an integer when provided; `nsfw_checker`
+defaults to `false`.
+
 ## API Reference
 
 30 endpoints across 19 groups. Each method mirrors an upstream URL path.

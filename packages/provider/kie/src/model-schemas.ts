@@ -920,46 +920,26 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
-        description: "Image generation prompt",
+        maxLength: 800,
+        description: "Image generation prompt (max 800 chars)",
       },
       image_size: {
         type: "string",
-        enum: [
-          "square",
-          "square_hd",
-          "portrait_4_3",
-          "portrait_16_9",
-          "landscape_4_3",
-          "landscape_16_9",
-        ],
-        description: "Output image size (default square_hd)",
+        enum: ["1:1", "3:4", "4:3", "9:16", "16:9"],
+        default: "16:9",
+        description: "Output image aspect ratio (default 16:9)",
       },
-      num_inference_steps: {
-        type: "number",
-        description: "Inference steps (2-250, default 30)",
-      },
-      seed: { type: "number", description: "Random seed" },
-      guidance_scale: {
-        type: "number",
-        description: "Guidance scale (0-20, default 2.5)",
-      },
-      enable_safety_checker: {
-        type: "boolean",
-        description: "Content safety filter",
-      },
+      seed: { type: "integer", description: "Random seed" },
       output_format: {
         type: "string",
-        enum: ["png", "jpeg"],
+        enum: ["jpeg", "png"],
+        default: "png",
         description: "Image format (default png)",
       },
-      negative_prompt: {
-        type: "string",
-        description: "Negative prompt (max 500 chars)",
-      },
-      acceleration: {
-        type: "string",
-        enum: ["none", "regular", "high"],
-        description: "Speed vs quality tradeoff (default none)",
+      nsfw_checker: {
+        type: "boolean",
+        default: false,
+        description: "Content safety filter (default false)",
       },
     },
   },

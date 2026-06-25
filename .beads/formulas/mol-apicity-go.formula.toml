@@ -1,30 +1,30 @@
-# Description-driven Apicity ad-hoc work intake.
+# Apicity work intake -- one description box in, routed executable beads out.
 description = """
-Apicity ad-hoc work formula -- turn a plain work description into routed,
-executable beads.
+Apicity work intake. Give it a plain-language work description; the intake agent
+reads it and creates the smallest routed bead structure that lets workers start
+without rereading the request.
 
-Use this as the single entrypoint for unstructured Apicity work requests. The
-caller supplies `work_description`; the assigned intake agent reads it and
-chooses the smallest bead structure that preserves worker clarity:
+This is the single launcher entrypoint for ad-hoc Apicity work. The agent decides
+the shape -- it is NOT asked for one:
 
-1. `standalone` -- one concrete implementation bead, no epic required.
-2. `multi` -- multiple independent or sequenced implementation beads.
-3. `epic` -- an epic/container bead plus child beads and dependency edges.
+1. `standalone` -- one concrete implementation bead, no epic.
+2. `multi`      -- several independent or sequenced implementation beads.
+3. `epic`       -- an epic/container bead plus child beads and dependency edges.
 
-The formula creates the bead structure itself and routes actionable work through
-the normal Apicity polecat/refinery flow by setting
-`metadata.gc.routed_to=apicity/gastown.polecat`. It does not require the caller
-to pre-create a convoy or pre-break the request into endpoint operations.
+It creates the beads itself and routes actionable work through the normal Apicity
+polecat/refinery flow (`metadata.gc.routed_to=apicity/gastown.polecat`). No
+pre-created convoy, no pre-broken endpoint list -- just a description.
 
-For one small task, create exactly one routed implementation bead. For larger
-work, create concrete child beads with acceptance criteria, dependency edges,
-and enough context to start without rereading the original request.
+Routing target, priority, and base labels are baked in so the launcher form is a
+single box. For one small task, expect exactly one routed implementation bead;
+for larger work, concrete child beads with acceptance criteria, dependency edges,
+and enough context to start cold.
 """
-formula = "mol-apicity-work"
+formula = "mol-apicity-go"
 version = 1
 # graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
-# on the root step). Without it, `gc sling --formula mol-apicity-work` to the
-# scale-from-zero pool (apicity/gastown.polecat) is rejected — a plain v1 root is a
+# on the root step). Without it, `gc sling --formula mol-apicity-go` to the
+# scale-from-zero pool (apicity/gastown.polecat) is rejected -- a plain v1 root is a
 # molecule container, not Ready work, so the pool never wakes for the wisp.
 contract = "graph.v2"
 
@@ -33,28 +33,8 @@ formula_compiler = ">=2.0.0"
 
 [vars]
 [vars.work_description]
-description = "Plain-language work request. This must be sufficient for the intake agent to classify and create executable beads."
+description = "Plain-language work request. Must be enough for the intake agent to classify and create executable beads."
 required = true
-
-[vars.title]
-description = "Optional short title for the incoming request and generated graph."
-default = ""
-
-[vars.priority]
-description = "Default priority for generated work beads."
-default = "2"
-
-[vars.labels]
-description = "Extra comma-separated labels for generated work beads."
-default = "apicity,ad-hoc"
-
-[vars.route_target]
-description = "Pool route stored in metadata.gc.routed_to for actionable work."
-default = "apicity/gastown.polecat"
-
-[vars.dry_run]
-description = "Preview creates when true; create beads and dependency edges when false."
-default = "true"
 
 [[steps]]
 id = "load-work-description"
@@ -66,26 +46,14 @@ Prime the workspace and read the caller's plain-language request.
 bd prime
 ```
 
-Request title:
-
-```text
-{{title}}
-```
-
 Request description:
 
 ```text
 {{work_description}}
 ```
 
-Config:
-
-```text
-priority={{priority}}
-labels={{labels}}
-route_target={{route_target}}
-dry_run={{dry_run}}
-```
+Routing is fixed: actionable beads are routed to `apicity/gastown.polecat` with
+priority `2` and base labels `apicity,ad-hoc`. You only decide the bead shape.
 
 Understand the request well enough to decide:
 
@@ -97,7 +65,7 @@ If the description is truly insufficient after reading available local docs,
 escalate instead of guessing. Do not ask the caller to pre-create a convoy or
 pre-break the work.
 
-**Exit criteria:** The work request and intended routing target are understood.
+**Exit criteria:** The request is understood and a bead shape chosen.
 """
 
 [[steps]]
@@ -105,9 +73,8 @@ id = "classify-work"
 title = "Classify and write bead plan"
 needs = ["load-work-description"]
 description = """
-Classify the request and write a concrete plan to
-`/tmp/apicity-work-plan.json`. Use the smallest structure that gives workers
-clear executable beads.
+Classify the request and write a concrete plan to `/tmp/apicity-go-plan.json`.
+Use the smallest structure that gives workers clear executable beads.
 
 Plan shape:
 
@@ -115,7 +82,6 @@ Plan shape:
 {
   "mode": "standalone",
   "source_title": "Short incoming request title",
-  "source_description": "Original or summarized work description",
   "epic": {
     "title": "Epic title when mode=epic",
     "description": "Why this is an epic",
@@ -133,9 +99,7 @@ Plan shape:
         "Focused checks pass before handoff"
       ],
       "labels": ["provider:openai"],
-      "metadata": {
-        "apicity.work.kind": "implementation"
-      },
+      "metadata": { "apicity.work.kind": "implementation" },
       "depends_on": []
     }
   ]
@@ -156,72 +120,28 @@ Rules:
 - Do not put vague research placeholders in executable beads. If discovery is
   needed, make it a concrete inventory bead with acceptance criteria.
 
-**Exit criteria:** `/tmp/apicity-work-plan.json` exists and contains a concrete
+**Exit criteria:** `/tmp/apicity-go-plan.json` exists and contains a concrete
 standalone, multi-bead, or epic plan.
-"""
-
-[[steps]]
-id = "preview-bead-graph"
-title = "Preview routed bead graph"
-needs = ["classify-work"]
-description = """
-Preview the planned creates before mutating bd. This validates the plan shape
-and shows the bead titles, route metadata, and dependency edges.
-
-```bash
-export APICITY_WORK_FORCE_DRY_RUN=true
-# Run the `create-routed-work` node block below with this environment setting.
-```
-
-**Exit criteria:** The preview is concrete, uses the right classification, and
-shows `metadata.gc.routed_to={{route_target}}` on actionable beads.
 """
 
 [[steps]]
 id = "create-routed-work"
 title = "Create routed work beads"
-needs = ["preview-bead-graph"]
+needs = ["classify-work"]
 description = """
-Create the planned graph. Keep `dry_run=true` until the preview is correct;
-set `dry_run=false` to create beads and dependency edges.
+Validate the plan and create the routed bead graph for real. The script prints
+the plan summary before it mutates `bd`, so the creation log doubles as a preview.
 
 ```bash
-cat > /tmp/apicity-work-title.txt <<'TEXT'
-{{title}}
-TEXT
-cat > /tmp/apicity-work-description.txt <<'TEXT'
-{{work_description}}
-TEXT
-cat > /tmp/apicity-work-priority.txt <<'TEXT'
-{{priority}}
-TEXT
-cat > /tmp/apicity-work-labels.txt <<'TEXT'
-{{labels}}
-TEXT
-cat > /tmp/apicity-work-route-target.txt <<'TEXT'
-{{route_target}}
-TEXT
-cat > /tmp/apicity-work-dry-run.txt <<'TEXT'
-{{dry_run}}
-TEXT
-
 node <<'NODE'
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 
-const readText = (path) => readFileSync(path, "utf8").trim();
-const requestTitle = readText("/tmp/apicity-work-title.txt");
-const requestDescription = readText("/tmp/apicity-work-description.txt");
-const defaultPriority = readText("/tmp/apicity-work-priority.txt") || "2";
-const baseLabels = readText("/tmp/apicity-work-labels.txt")
-  .split(",")
-  .map((label) => label.trim())
-  .filter(Boolean);
-const routeTarget = readText("/tmp/apicity-work-route-target.txt");
-const dryRun =
-  process.env.APICITY_WORK_FORCE_DRY_RUN === "true" ||
-  readText("/tmp/apicity-work-dry-run.txt") !== "false";
-const plan = JSON.parse(readFileSync("/tmp/apicity-work-plan.json", "utf8"));
+const ROUTE_TARGET = "apicity/gastown.polecat";
+const DEFAULT_PRIORITY = "2";
+const BASE_LABELS = ["apicity", "ad-hoc"];
+
+const plan = JSON.parse(readFileSync("/tmp/apicity-go-plan.json", "utf8"));
 
 function arrayOfStrings(value, field) {
   if (value === undefined) return [];
@@ -295,8 +215,8 @@ function parseId(output) {
 function labelSet(extra = []) {
   return [
     ...new Set([
-      ...baseLabels,
-      "formula:mol-apicity-work",
+      ...BASE_LABELS,
+      "formula:mol-apicity-go",
       `apicity-work:${plan.mode}`,
       ...extra,
     ]),
@@ -305,45 +225,41 @@ function labelSet(extra = []) {
 
 function metadata(bead) {
   return JSON.stringify({
-    "gc.routed_to": routeTarget,
-    "apicity.work.formula": "mol-apicity-work",
+    "gc.routed_to": ROUTE_TARGET,
+    "apicity.work.formula": "mol-apicity-go",
     "apicity.work.mode": plan.mode,
     "apicity.work.key": bead.key,
-    "apicity.work.source_title": plan.source_title || requestTitle,
+    "apicity.work.source_title": plan.source_title || "",
     ...bead.metadata,
   });
 }
 
-function createIssue(args, dryRunKey) {
-  const output = run(dryRun ? [...args, "--dry-run", "--json"] : [...args, "--json"]);
-  return dryRun ? `<dry-run:${dryRunKey}>` : parseId(output);
+function createIssue(args) {
+  return parseId(run([...args, "--json"]));
 }
 
 validatePlan();
 console.log(`mode: ${plan.mode}`);
-console.log(`route_target: ${routeTarget}`);
-console.log(`request: ${plan.source_title || requestTitle || "untitled"}`);
-console.log(requestDescription ? "description: provided" : "description: missing");
+console.log(`route_target: ${ROUTE_TARGET}`);
+console.log(`request: ${plan.source_title || "untitled"}`);
+console.log(`beads: ${plan.beads.length}`);
 
 let epicId = "";
 if (plan.mode === "epic") {
-  epicId = createIssue(
-    [
-      "create",
-      plan.epic.title,
-      "--type",
-      "epic",
-      "--priority",
-      String(plan.epic.priority || defaultPriority),
-      "--labels",
-      labelSet(["epic"]),
-      "--description",
-      plan.epic.description,
-      "--acceptance",
-      textBlock(plan.epic.acceptance, "epic.acceptance"),
-    ],
-    "epic"
-  );
+  epicId = createIssue([
+    "create",
+    plan.epic.title,
+    "--type",
+    "epic",
+    "--priority",
+    String(plan.epic.priority || DEFAULT_PRIORITY),
+    "--labels",
+    labelSet(["epic"]),
+    "--description",
+    plan.epic.description,
+    "--acceptance",
+    textBlock(plan.epic.acceptance, "epic.acceptance"),
+  ]);
 }
 
 const created = new Map();
@@ -354,7 +270,7 @@ for (const bead of plan.beads) {
     "--type",
     bead.issue_type || "task",
     "--priority",
-    String(bead.priority || defaultPriority),
+    String(bead.priority || DEFAULT_PRIORITY),
     "--labels",
     labelSet(arrayOfStrings(bead.labels, `${bead.key}.labels`)),
     "--metadata",
@@ -365,28 +281,22 @@ for (const bead of plan.beads) {
     textBlock(bead.acceptance, `${bead.key}.acceptance`),
   ];
   if (epicId) args.push("--deps", `discovered-from:${epicId}`);
-  created.set(bead.key, createIssue(args, bead.key));
+  created.set(bead.key, createIssue(args));
 }
 
 for (const bead of plan.beads) {
   for (const dependency of arrayOfStrings(bead.depends_on, `${bead.key}.depends_on`)) {
-    const blocker = created.get(dependency);
-    const blocked = created.get(bead.key);
-    if (dryRun) {
-      console.log(`DRY RUN: dependency ${blocker} blocks ${blocked}`);
-    } else {
-      run(["dep", blocker, "--blocks", blocked]);
-    }
+    run(["dep", created.get(dependency), "--blocks", created.get(bead.key)]);
   }
 }
 
-if (!dryRun) run(["dep", "cycles"]);
+run(["dep", "cycles"]);
 NODE
 ```
 
-**Exit criteria:** With `dry_run=false`, actionable beads exist, remain
-unassigned, carry `metadata.gc.routed_to={{route_target}}`, and dependency
-edges match the plan.
+**Exit criteria:** Actionable beads exist, remain unassigned, carry
+`metadata.gc.routed_to=apicity/gastown.polecat`, and dependency edges match the
+plan.
 """
 
 [[steps]]
@@ -394,25 +304,24 @@ id = "verify-routing"
 title = "Verify routing and readiness"
 needs = ["create-routed-work"]
 description = """
-Verify that generated actionable beads are available through the normal
-Apicity worker/refinery flow.
+Verify the generated actionable beads are available through the normal Apicity
+worker/refinery flow.
 
 ```bash
-bd ready --json | jq '[.[] | select((.metadata["gc.routed_to"] // "") == "{{route_target}}")] | map({id,title,status,assignee,route:.metadata["gc.routed_to"]})'
+bd ready --json | jq '[.[] | select((.metadata["gc.routed_to"] // "") == "apicity/gastown.polecat")] | map({id,title,status,assignee,route:.metadata["gc.routed_to"]})'
 bd dep cycles
 ```
 
 Spot-check every created bead:
 
 ```bash
-bd show <created-id>
 bd show <created-id> --json | jq '.[0] | {id,title,status,assignee,metadata,acceptance_criteria}'
 ```
 
 Expected state for actionable beads:
 
 - `assignee` is empty.
-- `metadata.gc.routed_to` is `{{route_target}}`.
+- `metadata.gc.routed_to` is `apicity/gastown.polecat`.
 - descriptions include enough context to start independently.
 - acceptance criteria include verification commands.
 - dependency edges block sequenced work correctly.
@@ -426,9 +335,7 @@ id = "handoff"
 title = "Record summary and sync bead data"
 needs = ["verify-routing"]
 description = """
-Record what happened and push bead data. For `dry_run=true`, record that the
-preview was reviewed and rerun with `dry_run=false` only after the plan is
-accepted.
+Record what happened and push bead data.
 
 ```bash
 bd dolt push

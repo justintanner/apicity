@@ -24,7 +24,7 @@ token must have publish access for the `@apicity` scope.
 |--------------|--------|---------|------------------------------------------------|
 | version      | caller | —       | Three-part semver to publish, e.g. 0.4.1       |
 | dry_run      | caller | false   | If "true", stop after publish-dry-run          |
-| release_bead | caller | —       | Tracking bead this release closes              |
+| release_bead | caller | auto    | Tracking bead this release closes; auto-created if blank |
 """
 formula = "mol-apicity-release"
 version = 1
@@ -53,8 +53,8 @@ description = 'If "true", stop after publish-dry-run; do not run real publish or
 default = "false"
 
 [vars.release_bead]
-description = "The tracking bead this release is closing. Closed in the final step."
-required = true
+description = "Tracking bead this release closes. Optional: leave blank and the formula reuses (or creates) a deterministic 'Release Apicity vX.Y.Z' bead, then closes it in the final step."
+default = ""
 
 [vars.run_target]
 description = "Gas City run target for release step execution."
@@ -72,9 +72,25 @@ Initialize the session and verify the repo is in a publishable state.
 bd prime
 ```
 
-**2. Read the release bead and plan:**
+**2. Resolve (or create) the release tracking bead, then read it:**
 ```bash
-bd show {{release_bead}}
+release_bead="{{release_bead}}"
+if [ -z "$release_bead" ]; then
+  # No tracking bead supplied. Reuse an open one for this version if it exists,
+  # otherwise create it. The title is deterministic ("Release Apicity vX.Y.Z")
+  # so later steps re-resolve the same bead by title -- no ID threading across
+  # sessions, and a re-pour reuses the bead instead of duplicating it.
+  release_bead=$(bd list --status open --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
+  if [ -z "$release_bead" ]; then
+    release_bead=$(bd create "Release Apicity v{{version}}" --type task --priority 1 \
+      --description "Tracking bead for the @apicity/* v{{version}} npm release (auto-created by mol-apicity-release)." \
+      --json | jq -r '.[0].id // .id')
+    echo "Auto-created release tracking bead $release_bead"
+  else
+    echo "Reusing open release tracking bead $release_bead"
+  fi
+fi
+bd show "$release_bead"
 cat /Users/jwt/apicity/RELEASE.md   # release process doc (if present)
 ```
 
@@ -429,13 +445,17 @@ continuing; do not skip the release page.
 
 **3. Build release notes from closed beads, with git as fallback:**
 ```bash
+release_bead="{{release_bead}}"
+if [ -z "$release_bead" ]; then
+  release_bead=$(bd list --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
+fi
 notes="/tmp/apicity-github-release-v{{version}}.md"
-node <<'NODE' > "$notes"
+RELEASE_BEAD="$release_bead" node <<'NODE' > "$notes"
 const fs = require("fs");
 const { execFileSync } = require("child_process");
 
 const version = "{{version}}";
-const releaseBead = "{{release_bead}}";
+const releaseBead = process.env.RELEASE_BEAD || "{{release_bead}}";
 const currentTag = `v${version}`;
 const commandMaxBuffer = 64 * 1024 * 1024;
 
@@ -785,9 +805,13 @@ description = """
 Record the release in beads memory and close the tracking bead.
 
 ```bash
-bd close {{release_bead}} --reason "Published Apicity v{{version}} on npm latest; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
+release_bead="{{release_bead}}"
+if [ -z "$release_bead" ]; then
+  release_bead=$(bd list --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
+fi
+bd close "$release_bead" --reason "Published Apicity v{{version}} on npm latest; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
 bd remember --key apicity-last-release \
-  "version={{version}} tag=v{{version}} npm_tag=latest release_bead={{release_bead}} released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  "version={{version}} tag=v{{version}} npm_tag=latest release_bead=$release_bead released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ```
 
 **Drain:**

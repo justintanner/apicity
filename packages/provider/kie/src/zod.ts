@@ -664,12 +664,12 @@ export const Qwen2ImageEditRequestSchema = z.object({
   model: z.literal("qwen2/image-edit"),
   callBackUrl: z.string().optional(),
   input: z.object({
-    prompt: z.string().min(1),
-    image_url: z.array(z.string().min(1)).min(1).max(3),
+    prompt: z.string().min(1).max(800),
+    image_url: z.string().url(),
     image_size: z
       .enum(["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"])
       .default("16:9"),
-    output_format: z.enum(["png", "jpeg"]).default("png"),
+    output_format: z.enum(["jpeg", "png"]).default("png"),
     seed: z.number().optional(),
     nsfw_checker: z.boolean().default(false),
   }),

@@ -1112,6 +1112,9 @@
                 info.assets.push(body.reference_images[k].url);
             }
           }
+          if (body.input && typeof body.input.image_url === "string") {
+            info.assets.push(body.input.image_url);
+          }
           if (
             body.input &&
             body.input.image_urls &&
@@ -1160,6 +1163,7 @@
           if (body.input && typeof body.input === "object") {
             var inputSkip = {
               prompt: 1,
+              image_url: 1,
               image_urls: 1,
               video_urls: 1,
               input_urls: 1,

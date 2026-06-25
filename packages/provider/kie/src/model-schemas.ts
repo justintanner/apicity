@@ -970,23 +970,24 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       prompt: {
         type: "string",
         required: true,
+        maxLength: 800,
         description: "Image editing prompt (max 800 chars)",
       },
       image_url: {
-        type: "array",
+        type: "string",
         required: true,
-        description:
-          "URLs of the images to edit (jpeg/png/webp, max 10MB each)",
-        items: { type: "string" },
+        description: "Source image URL to edit (JPEG, PNG, or WEBP; max 10MB)",
       },
       image_size: {
         type: "string",
         enum: ["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"],
+        default: "16:9",
         description: "Output image aspect ratio (default 16:9)",
       },
       output_format: {
         type: "string",
-        enum: ["png", "jpeg"],
+        enum: ["jpeg", "png"],
+        default: "png",
         description: "Image format (default png)",
       },
       seed: {
@@ -995,7 +996,8 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
       },
       nsfw_checker: {
         type: "boolean",
-        description: "Content safety filter (default true)",
+        default: false,
+        description: "Content safety filter (default false)",
       },
     },
   },

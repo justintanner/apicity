@@ -848,6 +848,14 @@ function collectMediaUrls(value: unknown, urls: Set<string>): void {
     ) {
       urls.add(value);
     }
+    const trimmed = value.trim();
+    if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+      try {
+        collectMediaUrls(JSON.parse(trimmed), urls);
+      } catch {
+        // Plain strings can look JSON-ish without being valid JSON.
+      }
+    }
     return;
   }
 
@@ -869,16 +877,19 @@ function extractMediaUrls(entries: HarEntry[]): string[] {
   const urls = new Set<string>();
 
   for (const entry of entries) {
-    const raw = entry.response.content?.text;
-    if (!raw) continue;
+    const raws = [getRequestBodyText(entry), entry.response.content?.text];
 
-    try {
-      collectMediaUrls(JSON.parse(raw), urls);
-    } catch {
-      for (const match of raw.matchAll(/https?:\/\/[^\s"<>\\]+/g)) {
-        const url = match[0];
-        if (MEDIA_URL_EXT.test(url) && !shouldSkipMediaUrl(url)) {
-          urls.add(url);
+    for (const raw of raws) {
+      if (!raw) continue;
+
+      try {
+        collectMediaUrls(JSON.parse(raw), urls);
+      } catch {
+        for (const match of raw.matchAll(/https?:\/\/[^\s"<>\\]+/g)) {
+          const url = match[0];
+          if (MEDIA_URL_EXT.test(url) && !shouldSkipMediaUrl(url)) {
+            urls.add(url);
+          }
         }
       }
     }

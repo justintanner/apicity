@@ -201,6 +201,30 @@ bd cook mol-add-endpoint \
   --var bead=<tracking-bead>
 ```
 
+### Breaking Down Incoming Work
+
+For broad incoming provider/API requests, use
+`mol-apicity-breakdown-work` before dispatching implementation. It turns an
+incoming tracking bead plus docs/spec context into unassigned child beads routed
+to the polecat pool with dependency edges:
+
+```bash
+bd formula show mol-apicity-breakdown-work
+bd cook mol-apicity-breakdown-work \
+  --var tracking_bead=<incoming-bead> \
+  --var provider=openai \
+  --var spec_source=https://platform.openai.com/docs/api-reference/responses \
+  --var target_surface='openai.v1.responses' \
+  --var operations_json='[{"kind":"endpoint","name":"Create response","method":"POST","path":"/v1/responses","docs_url":"https://platform.openai.com/docs/api-reference/responses/create","surface":"openai.v1.responses.create()","requires_har":true}]' \
+  --var dry_run=true
+```
+
+Run with `dry_run=true` first. Re-run with `dry_run=false` only after the
+preview shows concrete child beads. The formula records
+`metadata.gc.routed_to=apicity/gastown.polecat` instead of assigning children
+directly, so normal pool pickup is preserved. Endpoint children should still
+use `mol-add-endpoint` when they are implemented.
+
 Two invariants worth knowing outside the formula:
 
 - **URL comment (lint-enforced)** — a 2-line comment immediately above each

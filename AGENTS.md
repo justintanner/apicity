@@ -82,6 +82,28 @@ bd cook mol-add-endpoint \
 
 Or dispatch it: `gc sling <rig> mol-add-endpoint --formula --var ...`.
 
+## Breaking Down Incoming Work
+
+For broad provider/API requests, use the `mol-apicity-breakdown-work` formula
+first. It turns an incoming tracking bead plus docs/spec context into
+unassigned child beads routed to `apicity/gastown.polecat` through
+`metadata.gc.routed_to`, preserving normal pool pickup behavior:
+
+```bash
+bd formula show mol-apicity-breakdown-work
+bd cook mol-apicity-breakdown-work \
+  --var tracking_bead=<incoming-bead> \
+  --var provider=openai \
+  --var spec_source=https://platform.openai.com/docs/api-reference/responses \
+  --var target_surface='openai.v1.responses' \
+  --var operations_json='[{"kind":"endpoint","name":"Create response","method":"POST","path":"/v1/responses","docs_url":"https://platform.openai.com/docs/api-reference/responses/create","surface":"openai.v1.responses.create()","requires_har":true}]' \
+  --var dry_run=true
+```
+
+Run with `dry_run=true` first, then `dry_run=false` once the preview shows
+concrete child beads and dependency edges. Endpoint implementation children
+should still use `mol-add-endpoint`.
+
 Two invariants worth knowing outside the formula:
 
 - **URL comment (lint-enforced)** — a 2-line comment immediately above each endpoint property in the factory (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`), plus a matching `(provider, dotPath, method, fullUrl, docsUrl)` row in `scripts/endpoint-docs.tsv`. Checked by `pnpm run lint:endpoints`; the docs hostname must be on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the default path.

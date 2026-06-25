@@ -201,26 +201,23 @@ bd cook mol-add-endpoint \
   --var bead=<tracking-bead>
 ```
 
-### Breaking Down Incoming Work
+### Ad-Hoc Work Intake
 
-For broad incoming provider/API requests, use
-`mol-apicity-breakdown-work` before dispatching implementation. It turns an
-incoming tracking bead plus docs/spec context into unassigned child beads routed
-to the polecat pool with dependency edges:
+For unstructured Apicity requests, use `mol-apicity-work`. It accepts a plain
+work description, classifies the request as standalone, multi-bead, or epic
+work, and creates the routed bead graph itself. Callers do not need to
+pre-create a convoy or pre-break the request into endpoint operations.
 
 ```bash
-bd formula show mol-apicity-breakdown-work
-bd cook mol-apicity-breakdown-work \
-  --var tracking_bead=<incoming-bead> \
-  --var provider=openai \
-  --var spec_source=https://platform.openai.com/docs/api-reference/responses \
-  --var target_surface='openai.v1.responses' \
-  --var operations_json='[{"kind":"endpoint","name":"Create response","method":"POST","path":"/v1/responses","docs_url":"https://platform.openai.com/docs/api-reference/responses/create","surface":"openai.v1.responses.create()","requires_har":true}]' \
+bd formula show mol-apicity-work
+bd cook mol-apicity-work \
+  --var title='Add OpenAI Responses support' \
+  --var work_description='Add the OpenAI Responses API surface from the docs. Break the request into one endpoint bead per upstream operation, include HAR-backed tests where upstream calls are touched, and preserve one endpoint per PR.' \
   --var dry_run=true
 ```
 
 Run with `dry_run=true` first. Re-run with `dry_run=false` only after the
-preview shows concrete child beads. The formula records
+preview shows concrete child beads and dependency edges. The formula records
 `metadata.gc.routed_to=apicity/gastown.polecat` instead of assigning children
 directly, so normal pool pickup is preserved. Endpoint children should still
 use `mol-add-endpoint` when they are implemented.

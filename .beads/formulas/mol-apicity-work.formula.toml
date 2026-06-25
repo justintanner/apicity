@@ -1,0 +1,433 @@
+# Description-driven Apicity ad-hoc work intake.
+description = """
+Apicity ad-hoc work formula -- turn a plain work description into routed,
+executable beads.
+
+Use this as the single entrypoint for unstructured Apicity work requests. The
+caller supplies `work_description`; the assigned intake agent reads it and
+chooses the smallest bead structure that preserves worker clarity:
+
+1. `standalone` -- one concrete implementation bead, no epic required.
+2. `multi` -- multiple independent or sequenced implementation beads.
+3. `epic` -- an epic/container bead plus child beads and dependency edges.
+
+The formula creates the bead structure itself and routes actionable work through
+the normal Apicity polecat/refinery flow by setting
+`metadata.gc.routed_to=apicity/gastown.polecat`. It does not require the caller
+to pre-create a convoy or pre-break the request into endpoint operations.
+
+For one small task, create exactly one routed implementation bead. For larger
+work, create concrete child beads with acceptance criteria, dependency edges,
+and enough context to start without rereading the original request.
+"""
+formula = "mol-apicity-work"
+version = 1
+
+[vars]
+[vars.work_description]
+description = "Plain-language work request. This must be sufficient for the intake agent to classify and create executable beads."
+required = true
+
+[vars.title]
+description = "Optional short title for the incoming request and generated graph."
+default = ""
+
+[vars.priority]
+description = "Default priority for generated work beads."
+default = "2"
+
+[vars.labels]
+description = "Extra comma-separated labels for generated work beads."
+default = "apicity,ad-hoc"
+
+[vars.route_target]
+description = "Pool route stored in metadata.gc.routed_to for actionable work."
+default = "apicity/gastown.polecat"
+
+[vars.dry_run]
+description = "Preview creates when true; create beads and dependency edges when false."
+default = "true"
+
+[[steps]]
+id = "load-work-description"
+title = "Load work description"
+description = """
+Prime the workspace and read the caller's plain-language request.
+
+```bash
+bd prime
+```
+
+Request title:
+
+```text
+{{title}}
+```
+
+Request description:
+
+```text
+{{work_description}}
+```
+
+Config:
+
+```text
+priority={{priority}}
+labels={{labels}}
+route_target={{route_target}}
+dry_run={{dry_run}}
+```
+
+Understand the request well enough to decide:
+
+- Does it fit in one standalone implementation bead?
+- Does it require multiple independent or sequenced implementation beads?
+- Does it need an epic/container bead with children and dependencies?
+
+If the description is truly insufficient after reading available local docs,
+escalate instead of guessing. Do not ask the caller to pre-create a convoy or
+pre-break the work.
+
+**Exit criteria:** The work request and intended routing target are understood.
+"""
+
+[[steps]]
+id = "classify-work"
+title = "Classify and write bead plan"
+needs = ["load-work-description"]
+description = """
+Classify the request and write a concrete plan to
+`/tmp/apicity-work-plan.json`. Use the smallest structure that gives workers
+clear executable beads.
+
+Plan shape:
+
+```json
+{
+  "mode": "standalone",
+  "source_title": "Short incoming request title",
+  "source_description": "Original or summarized work description",
+  "epic": {
+    "title": "Epic title when mode=epic",
+    "description": "Why this is an epic",
+    "acceptance": ["The child graph is complete"]
+  },
+  "beads": [
+    {
+      "key": "implement-core",
+      "title": "Implement concrete work",
+      "issue_type": "task",
+      "priority": "2",
+      "description": "Self-contained implementation context",
+      "acceptance": [
+        "The requested behavior is implemented",
+        "Focused checks pass before handoff"
+      ],
+      "labels": ["provider:openai"],
+      "metadata": {
+        "apicity.work.kind": "implementation"
+      },
+      "depends_on": []
+    }
+  ]
+}
+```
+
+Rules:
+
+- `mode=standalone` must contain exactly one actionable bead and no epic.
+- `mode=multi` must contain two or more actionable beads.
+- `mode=epic` must include an `epic` object and at least one actionable child.
+- Every actionable bead must have a clear title, full description, acceptance
+  criteria, and local verification guidance.
+- Use `depends_on` to sequence beads by `key`; dependency edges are created as
+  `<dependency> blocks <dependent>`.
+- Endpoint implementation beads should still tell workers to use
+  `mol-add-endpoint` when the work maps to one upstream endpoint.
+- Do not put vague research placeholders in executable beads. If discovery is
+  needed, make it a concrete inventory bead with acceptance criteria.
+
+**Exit criteria:** `/tmp/apicity-work-plan.json` exists and contains a concrete
+standalone, multi-bead, or epic plan.
+"""
+
+[[steps]]
+id = "preview-bead-graph"
+title = "Preview routed bead graph"
+needs = ["classify-work"]
+description = """
+Preview the planned creates before mutating bd. This validates the plan shape
+and shows the bead titles, route metadata, and dependency edges.
+
+```bash
+export APICITY_WORK_FORCE_DRY_RUN=true
+# Run the `create-routed-work` node block below with this environment setting.
+```
+
+**Exit criteria:** The preview is concrete, uses the right classification, and
+shows `metadata.gc.routed_to={{route_target}}` on actionable beads.
+"""
+
+[[steps]]
+id = "create-routed-work"
+title = "Create routed work beads"
+needs = ["preview-bead-graph"]
+description = """
+Create the planned graph. Keep `dry_run=true` until the preview is correct;
+set `dry_run=false` to create beads and dependency edges.
+
+```bash
+cat > /tmp/apicity-work-title.txt <<'TEXT'
+{{title}}
+TEXT
+cat > /tmp/apicity-work-description.txt <<'TEXT'
+{{work_description}}
+TEXT
+cat > /tmp/apicity-work-priority.txt <<'TEXT'
+{{priority}}
+TEXT
+cat > /tmp/apicity-work-labels.txt <<'TEXT'
+{{labels}}
+TEXT
+cat > /tmp/apicity-work-route-target.txt <<'TEXT'
+{{route_target}}
+TEXT
+cat > /tmp/apicity-work-dry-run.txt <<'TEXT'
+{{dry_run}}
+TEXT
+
+node <<'NODE'
+import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+
+const readText = (path) => readFileSync(path, "utf8").trim();
+const requestTitle = readText("/tmp/apicity-work-title.txt");
+const requestDescription = readText("/tmp/apicity-work-description.txt");
+const defaultPriority = readText("/tmp/apicity-work-priority.txt") || "2";
+const baseLabels = readText("/tmp/apicity-work-labels.txt")
+  .split(",")
+  .map((label) => label.trim())
+  .filter(Boolean);
+const routeTarget = readText("/tmp/apicity-work-route-target.txt");
+const dryRun =
+  process.env.APICITY_WORK_FORCE_DRY_RUN === "true" ||
+  readText("/tmp/apicity-work-dry-run.txt") !== "false";
+const plan = JSON.parse(readFileSync("/tmp/apicity-work-plan.json", "utf8"));
+
+function arrayOfStrings(value, field) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value) || value.some((item) => typeof item !== "string")) {
+    throw new Error(`${field} must be an array of strings`);
+  }
+  return value;
+}
+
+function textBlock(value, field) {
+  if (Array.isArray(value)) return value.map((item) => `- ${item}`).join("\\n");
+  if (typeof value === "string" && value.trim()) return value;
+  throw new Error(`${field} must be a non-empty string or string array`);
+}
+
+function validatePlan() {
+  if (!["standalone", "multi", "epic"].includes(plan.mode)) {
+    throw new Error("plan.mode must be standalone, multi, or epic");
+  }
+  if (!Array.isArray(plan.beads) || plan.beads.length === 0) {
+    throw new Error("plan.beads must contain at least one actionable bead");
+  }
+  if (plan.mode === "standalone" && plan.beads.length !== 1) {
+    throw new Error("standalone mode must create exactly one bead");
+  }
+  if (plan.mode === "multi" && plan.beads.length < 2) {
+    throw new Error("multi mode must create at least two beads");
+  }
+  if (plan.mode === "epic" && (!plan.epic || typeof plan.epic !== "object")) {
+    throw new Error("epic mode requires an epic object");
+  }
+
+  const keys = new Set();
+  for (const bead of plan.beads) {
+    if (!bead.key || keys.has(bead.key)) {
+      throw new Error("each bead requires a unique key");
+    }
+    keys.add(bead.key);
+    for (const field of ["title", "description", "acceptance"]) {
+      if (!bead[field]) throw new Error(`${bead.key} requires ${field}`);
+    }
+    arrayOfStrings(bead.depends_on, `${bead.key}.depends_on`);
+  }
+  for (const bead of plan.beads) {
+    for (const dependency of arrayOfStrings(bead.depends_on, `${bead.key}.depends_on`)) {
+      if (!keys.has(dependency)) {
+        throw new Error(`${bead.key} depends on unknown key ${dependency}`);
+      }
+    }
+  }
+}
+
+function run(args) {
+  const result = spawnSync("bd", args, {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  if (result.status !== 0) {
+    throw new Error(`bd ${args.join(" ")} failed with ${result.status}`);
+  }
+  return result.stdout.trim();
+}
+
+function parseId(output) {
+  const parsed = JSON.parse(output);
+  return Array.isArray(parsed) ? parsed[0]?.id : parsed.id;
+}
+
+function labelSet(extra = []) {
+  return [
+    ...new Set([
+      ...baseLabels,
+      "formula:mol-apicity-work",
+      `apicity-work:${plan.mode}`,
+      ...extra,
+    ]),
+  ].join(",");
+}
+
+function metadata(bead) {
+  return JSON.stringify({
+    "gc.routed_to": routeTarget,
+    "apicity.work.formula": "mol-apicity-work",
+    "apicity.work.mode": plan.mode,
+    "apicity.work.key": bead.key,
+    "apicity.work.source_title": plan.source_title || requestTitle,
+    ...bead.metadata,
+  });
+}
+
+function createIssue(args, dryRunKey) {
+  const output = run(dryRun ? [...args, "--dry-run", "--json"] : [...args, "--json"]);
+  return dryRun ? `<dry-run:${dryRunKey}>` : parseId(output);
+}
+
+validatePlan();
+console.log(`mode: ${plan.mode}`);
+console.log(`route_target: ${routeTarget}`);
+console.log(`request: ${plan.source_title || requestTitle || "untitled"}`);
+console.log(requestDescription ? "description: provided" : "description: missing");
+
+let epicId = "";
+if (plan.mode === "epic") {
+  epicId = createIssue(
+    [
+      "create",
+      plan.epic.title,
+      "--type",
+      "epic",
+      "--priority",
+      String(plan.epic.priority || defaultPriority),
+      "--labels",
+      labelSet(["epic"]),
+      "--description",
+      plan.epic.description,
+      "--acceptance",
+      textBlock(plan.epic.acceptance, "epic.acceptance"),
+    ],
+    "epic"
+  );
+}
+
+const created = new Map();
+for (const bead of plan.beads) {
+  const args = [
+    "create",
+    bead.title,
+    "--type",
+    bead.issue_type || "task",
+    "--priority",
+    String(bead.priority || defaultPriority),
+    "--labels",
+    labelSet(arrayOfStrings(bead.labels, `${bead.key}.labels`)),
+    "--metadata",
+    metadata(bead),
+    "--description",
+    bead.description,
+    "--acceptance",
+    textBlock(bead.acceptance, `${bead.key}.acceptance`),
+  ];
+  if (epicId) args.push("--deps", `discovered-from:${epicId}`);
+  created.set(bead.key, createIssue(args, bead.key));
+}
+
+for (const bead of plan.beads) {
+  for (const dependency of arrayOfStrings(bead.depends_on, `${bead.key}.depends_on`)) {
+    const blocker = created.get(dependency);
+    const blocked = created.get(bead.key);
+    if (dryRun) {
+      console.log(`DRY RUN: dependency ${blocker} blocks ${blocked}`);
+    } else {
+      run(["dep", blocker, "--blocks", blocked]);
+    }
+  }
+}
+
+if (!dryRun) run(["dep", "cycles"]);
+NODE
+```
+
+**Exit criteria:** With `dry_run=false`, actionable beads exist, remain
+unassigned, carry `metadata.gc.routed_to={{route_target}}`, and dependency
+edges match the plan.
+"""
+
+[[steps]]
+id = "verify-routing"
+title = "Verify routing and readiness"
+needs = ["create-routed-work"]
+description = """
+Verify that generated actionable beads are available through the normal
+Apicity worker/refinery flow.
+
+```bash
+bd ready --json | jq '[.[] | select((.metadata["gc.routed_to"] // "") == "{{route_target}}")] | map({id,title,status,assignee,route:.metadata["gc.routed_to"]})'
+bd dep cycles
+```
+
+Spot-check every created bead:
+
+```bash
+bd show <created-id>
+bd show <created-id> --json | jq '.[0] | {id,title,status,assignee,metadata,acceptance_criteria}'
+```
+
+Expected state for actionable beads:
+
+- `assignee` is empty.
+- `metadata.gc.routed_to` is `{{route_target}}`.
+- descriptions include enough context to start independently.
+- acceptance criteria include verification commands.
+- dependency edges block sequenced work correctly.
+
+**Exit criteria:** The graph is ready for pool pickup and contains no vague
+placeholder work.
+"""
+
+[[steps]]
+id = "handoff"
+title = "Record summary and sync bead data"
+needs = ["verify-routing"]
+description = """
+Record what happened and push bead data. For `dry_run=true`, record that the
+preview was reviewed and rerun with `dry_run=false` only after the plan is
+accepted.
+
+```bash
+bd dolt push
+```
+
+Do not close generated implementation beads here. They flow through the normal
+Apicity polecat/refinery lifecycle.
+
+**Exit criteria:** The generated bead graph is durable and ready for workers.
+"""

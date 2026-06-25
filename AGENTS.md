@@ -82,27 +82,27 @@ bd cook mol-add-endpoint \
 
 Or dispatch it: `gc sling <rig> mol-add-endpoint --formula --var ...`.
 
-## Breaking Down Incoming Work
+## Ad-Hoc Work Intake
 
-For broad provider/API requests, use the `mol-apicity-breakdown-work` formula
-first. It turns an incoming tracking bead plus docs/spec context into
-unassigned child beads routed to `apicity/gastown.polecat` through
-`metadata.gc.routed_to`, preserving normal pool pickup behavior:
+For unstructured Apicity requests, use the `mol-apicity-work` formula first.
+It accepts a plain work description, classifies the request as standalone,
+multi-bead, or epic work, and creates the routed bead graph itself. Callers do
+not need to pre-create a convoy or pre-break the request into endpoint
+operations:
 
 ```bash
-bd formula show mol-apicity-breakdown-work
-bd cook mol-apicity-breakdown-work \
-  --var tracking_bead=<incoming-bead> \
-  --var provider=openai \
-  --var spec_source=https://platform.openai.com/docs/api-reference/responses \
-  --var target_surface='openai.v1.responses' \
-  --var operations_json='[{"kind":"endpoint","name":"Create response","method":"POST","path":"/v1/responses","docs_url":"https://platform.openai.com/docs/api-reference/responses/create","surface":"openai.v1.responses.create()","requires_har":true}]' \
+bd formula show mol-apicity-work
+bd cook mol-apicity-work \
+  --var title='Add OpenAI Responses support' \
+  --var work_description='Add the OpenAI Responses API surface from the docs. Break the request into one endpoint bead per upstream operation, include HAR-backed tests where upstream calls are touched, and preserve one endpoint per PR.' \
   --var dry_run=true
 ```
 
 Run with `dry_run=true` first, then `dry_run=false` once the preview shows
-concrete child beads and dependency edges. Endpoint implementation children
-should still use `mol-add-endpoint`.
+concrete child beads and dependency edges. The formula routes actionable beads
+to `apicity/gastown.polecat` through `metadata.gc.routed_to`, preserving normal
+pool pickup behavior. Endpoint implementation children should still use
+`mol-add-endpoint`.
 
 Two invariants worth knowing outside the formula:
 

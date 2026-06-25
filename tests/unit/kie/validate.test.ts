@@ -514,7 +514,7 @@ describe("kie Zod schema validation", () => {
         model: "kling/v3-turbo-text-to-video",
         input: {
           prompt: "A cinematic drone shot over glass towers at sunrise.",
-          duration: 5,
+          duration: "5",
           aspect_ratio: "16:9",
           resolution: "720p",
         },
@@ -524,6 +524,24 @@ describe("kie Zod schema validation", () => {
         KlingV3TurboTextToVideoRequestSchema.safeParse(request).success
       ).toBe(true);
       expect(MediaGenerationRequestSchema.safeParse(request).success).toBe(
+        true
+      );
+    });
+
+    it("should apply text-to-video defaults from KIE docs", () => {
+      const result = KlingV3TurboTextToVideoRequestSchema.safeParse({
+        model: "kling/v3-turbo-text-to-video",
+        input: {
+          prompt: "A cinematic drone shot over glass towers at sunrise.",
+        },
+      });
+
+      expect(result.success).toBe(true);
+      if (!result.success) return;
+      expect(result.data.input.duration).toBe("5");
+      expect(result.data.input.aspect_ratio).toBe("16:9");
+      expect(result.data.input.resolution).toBe("720p");
+      expect(MediaGenerationRequestSchema.safeParse(result.data).success).toBe(
         true
       );
     });
@@ -553,12 +571,32 @@ describe("kie Zod schema validation", () => {
       ).toBe(true);
     });
 
+    it("should enforce text-to-video prompt and duration bounds", () => {
+      const result = KlingV3TurboTextToVideoRequestSchema.safeParse({
+        model: "kling/v3-turbo-text-to-video",
+        input: {
+          prompt: "x".repeat(2501),
+          duration: "16",
+          aspect_ratio: "16:9",
+          resolution: "720p",
+        },
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("prompt"))).toBe(
+        true
+      );
+      expect(
+        result.error?.issues.some((i) => i.path.includes("duration"))
+      ).toBe(true);
+    });
+
     it("should reject text-to-video requests with unsupported aspect ratios", () => {
       const result = KlingV3TurboTextToVideoRequestSchema.safeParse({
         model: "kling/v3-turbo-text-to-video",
         input: {
           prompt: "A cinematic drone shot over glass towers at sunrise.",
-          duration: 5,
+          duration: "5",
           aspect_ratio: "4:3",
           resolution: "720p",
         },

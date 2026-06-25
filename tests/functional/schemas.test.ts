@@ -1019,13 +1019,32 @@ describe("kie modelInputSchemas", () => {
     const textToVideo = modelInputSchemas["kling/v3-turbo-text-to-video"];
     expect(textToVideo.type).toBe("video");
     expect(textToVideo.fields.prompt.required).toBe(true);
-    expect(textToVideo.fields.duration.type).toBe("number");
+    expect(textToVideo.fields.prompt.maxLength).toBe(2500);
+    expect(textToVideo.fields.duration.type).toBe("string");
+    expect(textToVideo.fields.duration.enum).toEqual([
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+    ]);
+    expect(textToVideo.fields.duration.default).toBe("5");
     expect(textToVideo.fields.aspect_ratio.enum).toEqual([
       "1:1",
       "9:16",
       "16:9",
     ]);
+    expect(textToVideo.fields.aspect_ratio.default).toBe("16:9");
     expect(textToVideo.fields.resolution.enum).toEqual(["720p", "1080p"]);
+    expect(textToVideo.fields.resolution.default).toBe("720p");
   });
 
   it("seedance 2 mini exposes documented createTask metadata", () => {

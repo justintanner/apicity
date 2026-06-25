@@ -357,6 +357,22 @@ export const KlingV3TurboDurationSchema = z.union([
   z.string().regex(/^[1-9]\d*$/),
 ]);
 
+export const KlingV3TurboTextToVideoDurationSchema = z.enum([
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+  "13",
+  "14",
+  "15",
+]);
+
 export const GrokTextToVideoModeSchema = z.enum(["fun", "normal", "spicy"]);
 
 export const GrokImageToVideoModeSchema = z.enum(["fun", "normal", "spicy"]);
@@ -598,12 +614,12 @@ export const KlingV3TurboImageToVideoRequestSchema = z.object({
 
 export const KlingV3TurboTextToVideoRequestSchema = z.object({
   model: z.literal("kling/v3-turbo-text-to-video"),
-  callBackUrl: z.string().optional(),
+  callBackUrl: z.string().url().optional(),
   input: z.object({
-    prompt: z.string().min(1),
-    duration: KlingV3TurboDurationSchema,
-    aspect_ratio: KlingV3TurboAspectRatioSchema,
-    resolution: KlingV3TurboResolutionSchema,
+    prompt: z.string().min(1).max(2500),
+    duration: KlingV3TurboTextToVideoDurationSchema.default("5"),
+    aspect_ratio: KlingV3TurboAspectRatioSchema.default("16:9"),
+    resolution: KlingV3TurboResolutionSchema.default("720p"),
   }),
 });
 
@@ -1987,6 +2003,9 @@ export type KlingDuration = z.infer<typeof KlingDurationSchema>;
 export type KlingAspectRatio = z.infer<typeof KlingAspectRatioSchema>;
 export type KlingMode = z.infer<typeof KlingModeSchema>;
 export type KlingV3TurboDuration = z.infer<typeof KlingV3TurboDurationSchema>;
+export type KlingV3TurboTextToVideoDuration = z.infer<
+  typeof KlingV3TurboTextToVideoDurationSchema
+>;
 export type KlingV3TurboResolution = z.infer<
   typeof KlingV3TurboResolutionSchema
 >;

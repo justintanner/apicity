@@ -316,7 +316,7 @@ describe("KIE provider switching", () => {
       model: "kling/v3-turbo-text-to-video" as const,
       input: {
         prompt: "A cinematic drone shot over glass towers at sunrise.",
-        duration: 5,
+        duration: "5" as const,
         aspect_ratio: "16:9" as const,
         resolution: "720p" as const,
       },

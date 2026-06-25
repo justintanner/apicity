@@ -38,11 +38,11 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST api.v1.generate": {
-    "source": "kie/suno-generate-vocal",
+    "source": "kie/suno/generate-submit",
     "payload": {
-      "prompt": "A cheerful indie pop song about summer adventures",
-      "model": "V5",
-      "instrumental": false,
+      "prompt": "A short upbeat lo-fi loop, gentle piano, no vocals, summer afternoon",
+      "model": "V4_5",
+      "instrumental": true,
       "customMode": false,
       "callBackUrl": "https://example.com/cb"
     }

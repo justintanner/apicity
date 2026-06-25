@@ -29,7 +29,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
   fal: ["docs.fal.ai", "fal.ai"],
   kie: ["docs.kie.ai", "kie.ai"],
   kimicoding: ["platform.moonshot.ai", "platform.moonshot.cn"],
-  google: ["docs.cloud.google.com", "cloud.google.com"],
+  google: ["docs.cloud.google.com", "cloud.google.com", "useapi.net"],
   alibaba: [
     "help.aliyun.com",
     "bailian.console.aliyun.com",

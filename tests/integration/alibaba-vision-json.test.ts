@@ -25,39 +25,6 @@ describe("alibaba vision JSON integration", () => {
       ctx = undefined;
     }
   });
-
-  it("should validate multimodal chat content with image_url parts", () => {
-    const provider = createAlibaba({ apiKey: "test-key" });
-    const schema = provider.post.compatibleMode.v1.chat.completions.schema;
-
-    const parsed = schema.safeParse({
-      model: "qwen3.5-plus",
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "image_url",
-              image_url: {
-                url: "https://example.com/cat.jpg",
-                detail: "low",
-              },
-            },
-            {
-              type: "text",
-              text: "Analyze this image and return JSON with prompt, shot, and pose fields.",
-            },
-          ],
-        },
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0,
-      max_tokens: 300,
-    });
-
-    expect(parsed.success).toBe(true);
-  });
-
   it("should analyze an image as videocity-style structured JSON", async () => {
     ctx = setupPolly("alibaba/vision-analysis-json");
 

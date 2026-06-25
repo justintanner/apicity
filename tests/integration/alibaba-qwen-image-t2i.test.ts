@@ -49,37 +49,4 @@ describe("alibaba qwen 2.0 text-to-image integration", () => {
     expect(content[0].image).toMatch(/^https?:\/\//);
     expect(response.usage?.image_count).toBe(1);
   }, 300_000);
-
-  it("should accept text-only content (no image parts) in schema", () => {
-    const provider = createAlibaba({ apiKey: "test-key" });
-    const schema =
-      provider.post.api.v1.services.aigc.multimodalGeneration.generation.schema;
-
-    const textOnly = schema.safeParse({
-      model: "qwen-image-2.0-pro",
-      input: {
-        messages: [
-          {
-            role: "user",
-            content: [{ text: "A lighthouse on a rocky coast at sunset." }],
-          },
-        ],
-      },
-      parameters: { size: "2048*2048", n: 2 },
-    });
-    expect(textOnly.success).toBe(true);
-
-    const editModelWithoutImage = schema.safeParse({
-      model: "qwen-image-edit",
-      input: {
-        messages: [
-          {
-            role: "user",
-            content: [{ text: "Make it sunset." }],
-          },
-        ],
-      },
-    });
-    expect(editModelWithoutImage.success).toBe(false);
-  });
 });

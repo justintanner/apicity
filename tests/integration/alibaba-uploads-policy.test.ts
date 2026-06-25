@@ -74,9 +74,4 @@ describe("alibaba native uploads (OSS policy) integration", () => {
     const ossUrl = `oss://${key}`;
     expect(ossUrl.startsWith("oss://")).toBe(true);
   }, 120000);
-
-  it("should throw on missing action param at the type level", () => {
-    const provider = createAlibaba({ apiKey: "test-key" });
-    expect(typeof provider.get.api.v1.uploads).toBe("function");
-  });
 });

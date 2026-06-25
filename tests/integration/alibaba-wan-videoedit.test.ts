@@ -85,44 +85,4 @@ describe("alibaba wan videoedit integration", () => {
       "FAILED",
     ]).toContain(status.output.task_status);
   }, 300_000);
-
-  it("should validate wan2.7-videoedit payload via .schema.safeParse", () => {
-    const provider = createAlibaba({ apiKey: "test-key" });
-
-    const valid =
-      provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
-        {
-          model: "wan2.7-videoedit",
-          input: {
-            prompt: "Convert the entire scene to a claymation style",
-            media: [
-              {
-                type: "video",
-                url: "https://help-static-aliyun-doc.aliyuncs.com/file-manage-files/zh-CN/20260402/ldnfdf/wan2.7-videoedit-style-change.mp4",
-              },
-            ],
-          },
-          parameters: {
-            resolution: "720P",
-            prompt_extend: true,
-            watermark: true,
-          },
-        }
-      );
-    expect(valid.success).toBe(true);
-
-    const missingMedia =
-      provider.post.api.v1.services.aigc.videoGeneration.videoSynthesis.schema.safeParse(
-        {
-          model: "wan2.7-videoedit",
-          input: {
-            prompt: "Convert the entire scene to a claymation style",
-          },
-          parameters: {
-            resolution: "720P",
-          },
-        }
-      );
-    expect(missingMedia.success).toBe(false);
-  });
 });

@@ -270,6 +270,18 @@ describe("Alibaba Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
+    it("should accept wan2.7-i2v request with negative prompt", () => {
+      const result = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: {
+          prompt: "A cat playing",
+          negative_prompt: "low resolution, blurry",
+          media: [{ type: "first_frame", url: "https://example.com/img.jpg" }],
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+
     it("should accept valid wan2.7-i2v request with last_frame", () => {
       const result = AlibabaVideoSynthesisRequestSchema.safeParse({
         model: "wan2.7-i2v",
@@ -350,6 +362,31 @@ describe("Alibaba Zod schema validation", () => {
       );
     });
 
+    it("should reject wan2.7-i2v without media input", () => {
+      const missingInput = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+      });
+      expect(missingInput.success).toBe(false);
+
+      const missingMedia = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: { prompt: "hi" },
+      });
+      expect(missingMedia.success).toBe(false);
+      expect(
+        missingMedia.error?.issues.some((i) => i.path.includes("media"))
+      ).toBe(true);
+
+      const emptyMedia = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: {
+          prompt: "hi",
+          media: [],
+        },
+      });
+      expect(emptyMedia.success).toBe(false);
+    });
+
     it("should reject duplicate non-reference media types", () => {
       const result = AlibabaVideoSynthesisRequestSchema.safeParse({
         model: "wan2.7-i2v",
@@ -364,6 +401,17 @@ describe("Alibaba Zod schema validation", () => {
       expect(result.error?.issues.some((i) => i.path.includes("media"))).toBe(
         true
       );
+    });
+
+    it("should reject legacy img_url video input", () => {
+      const result = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: {
+          prompt: "hi",
+          img_url: "https://example.com/cat.jpg",
+        },
+      });
+      expect(result.success).toBe(false);
     });
 
     it("should accept valid wan2.7-videoedit request", () => {
@@ -392,6 +440,22 @@ describe("Alibaba Zod schema validation", () => {
           media: [
             { type: "reference_image", url: "https://example.com/ref.jpg" },
           ],
+        },
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("media"))).toBe(
+        true
+      );
+    });
+
+    it("should reject wan2.7-videoedit without media input", () => {
+      const result = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-videoedit",
+        input: {
+          prompt: "Convert the entire scene to a claymation style",
+        },
+        parameters: {
+          resolution: "720P",
         },
       });
       expect(result.success).toBe(false);
@@ -494,6 +558,37 @@ describe("Alibaba Zod schema validation", () => {
       ).toBe(true);
     });
 
+    it("should reject invalid wan2.7-i2v parameter bounds", () => {
+      const resolution480 = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: {
+          prompt: "hi",
+          media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
+        },
+        parameters: { resolution: "480P" },
+      });
+      expect(resolution480.success).toBe(false);
+
+      const durationOutOfRange = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: {
+          prompt: "hi",
+          media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
+        },
+        parameters: { duration: 20 },
+      });
+      expect(durationOutOfRange.success).toBe(false);
+
+      const promptTooLong = AlibabaVideoSynthesisRequestSchema.safeParse({
+        model: "wan2.7-i2v",
+        input: {
+          prompt: "a".repeat(5001),
+          media: [{ type: "first_frame", url: "https://example.com/a.jpg" }],
+        },
+      });
+      expect(promptTooLong.success).toBe(false);
+    });
+
     it("should reject invalid model", () => {
       const result = AlibabaVideoSynthesisRequestSchema.safeParse({
         model: "invalid-model",
@@ -552,6 +647,41 @@ describe("Alibaba Zod schema validation", () => {
         },
       });
       expect(result.success).toBe(true);
+    });
+
+    it("should accept prompt extension and validate negative prompt bounds", () => {
+      const valid = AlibabaImageGenerationRequestSchema.safeParse({
+        model: "wan2.7-image-pro",
+        input: {
+          messages: [{ role: "user", content: [{ text: "A cat" }] }],
+        },
+        parameters: {
+          negative_prompt: "blurry, low quality, watermark",
+          prompt_extend: true,
+        },
+      });
+      expect(valid.success).toBe(true);
+
+      const tooLong = AlibabaImageGenerationRequestSchema.safeParse({
+        model: "wan2.7-image-pro",
+        input: {
+          messages: [{ role: "user", content: [{ text: "A cat" }] }],
+        },
+        parameters: {
+          negative_prompt: "x".repeat(501),
+        },
+      });
+      expect(tooLong.success).toBe(false);
+    });
+
+    it("should reject image generation missing input", () => {
+      const result = AlibabaImageGenerationRequestSchema.safeParse({
+        model: "wan2.7-image-pro",
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("input"))).toBe(
+        true
+      );
     });
 
     it("should reject image generation with invalid model", () => {

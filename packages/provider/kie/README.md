@@ -26,6 +26,10 @@ import { createKie } from "@apicity/kie";
 const kie = createKie({ apiKey: process.env.KIE_API_KEY! });
 ```
 
+Resolve `KIE_API_KEY` only in server-side code or trusted job runners.
+Do not expose KIE API keys to browsers, mobile clients, public logs, or
+frontend bundles.
+
 ## Omnihuman 1.5 model slug
 
 KIE's Omnihuman 1.5 model uses the shared

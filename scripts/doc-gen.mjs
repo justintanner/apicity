@@ -3380,6 +3380,17 @@ async function generateReadme(providerDir, providerName, endpoints) {
   sections.push("```");
   sections.push("");
 
+  if (providerName === "kie") {
+    sections.push(
+      "Resolve `KIE_API_KEY` only in server-side code or trusted job runners."
+    );
+    sections.push(
+      "Do not expose KIE API keys to browsers, mobile clients, public logs, or"
+    );
+    sections.push("frontend bundles.");
+    sections.push("");
+  }
+
   if (providerName === "x") {
     sections.push(renderXSetup());
     sections.push(renderXExample());

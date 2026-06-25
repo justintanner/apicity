@@ -136,6 +136,19 @@ interface Section {
   body: string;
 }
 
+interface GenerationReview {
+  entry: HarEntry;
+  requestEntry: HarEntry;
+  responseEntry: HarEntry;
+  statusSummary: string;
+}
+
+interface GenerationStatus {
+  label: string;
+  terminal: "success" | "failure" | "pending";
+  detail: string | null;
+}
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")
@@ -159,6 +172,45 @@ function stripHost(url: string): string {
   if (url.startsWith("/")) return url;
   const match = url.match(/^https?:\/\/[^/]+(\/.*)?$/i);
   return match ? (match[1] ?? "/") : url;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parseJsonValue(raw: string | null | undefined): unknown | null {
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function responseJson(entry: HarEntry): unknown | null {
+  return parseJsonValue(entry.response.content?.text);
+}
+
+function nestedValue(value: unknown, path: string[]): unknown {
+  let current: unknown = value;
+  for (const key of path) {
+    if (!isRecord(current)) return undefined;
+    current = current[key];
+  }
+  return current;
+}
+
+function nestedString(value: unknown, path: string[]): string | null {
+  const found = nestedValue(value, path);
+  return typeof found === "string" && found ? found : null;
+}
+
+function firstNestedString(value: unknown, paths: string[][]): string | null {
+  for (const path of paths) {
+    const found = nestedString(value, path);
+    if (found) return found;
+  }
+  return null;
 }
 
 function pathSegments(url: string): string[] {
@@ -898,6 +950,209 @@ function extractMediaUrls(entries: HarEntry[]): string[] {
   return [...urls];
 }
 
+const GENERATION_REQUEST_PATTERN =
+  /image|video|i2v|t2v|text-to-image|image-to-image|image-to-video|text-to-video|video-generation|image-generation|grok-imagine|kling|wan|seedance|veo|sora|qwen/i;
+
+const SUCCESS_GENERATION_STATES = new Set([
+  "complete",
+  "completed",
+  "done",
+  "success",
+  "succeed",
+  "succeeded",
+]);
+
+const FAILED_GENERATION_STATES = new Set([
+  "cancelled",
+  "canceled",
+  "error",
+  "expired",
+  "failed",
+  "failure",
+  "rejected",
+  "timeout",
+  "timed_out",
+]);
+
+function isMediaGenerationRequest(entry: HarEntry): boolean {
+  const haystack = `${entry.request.url}\n${getRequestBodyText(entry) ?? ""}`;
+  return GENERATION_REQUEST_PATTERN.test(haystack);
+}
+
+function addTaskId(ids: Set<string>, value: unknown): void {
+  if (typeof value !== "string" && typeof value !== "number") return;
+  const id = String(value).trim();
+  if (id) ids.add(id);
+}
+
+function taskIdsFromJson(value: unknown): Set<string> {
+  const ids = new Set<string>();
+  for (const path of [
+    ["output", "task_id"],
+    ["output", "taskId"],
+    ["data", "taskId"],
+    ["data", "task_id"],
+    ["data", "recordId"],
+    ["request_id"],
+    ["id"],
+  ]) {
+    addTaskId(ids, nestedValue(value, path));
+  }
+  return ids;
+}
+
+function taskIdsFromRequest(entry: HarEntry): Set<string> {
+  const ids = new Set<string>();
+  try {
+    const url = new URL(entry.request.url);
+    for (const key of ["taskId", "task_id", "requestId", "request_id", "id"]) {
+      addTaskId(ids, url.searchParams.get(key));
+    }
+    for (const segment of url.pathname.split("/").filter(Boolean)) {
+      if (/^[a-z0-9][a-z0-9_-]{7,}$/i.test(segment)) {
+        addTaskId(ids, segment);
+      }
+    }
+  } catch {
+    // Relative or malformed URLs are not expected for these API calls.
+  }
+  return ids;
+}
+
+function responseTaskIds(entry: HarEntry): Set<string> {
+  return taskIdsFromJson(responseJson(entry));
+}
+
+function intersects(a: Set<string>, b: Set<string>): boolean {
+  for (const value of a) {
+    if (b.has(value)) return true;
+  }
+  return false;
+}
+
+function normalizeGenerationState(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
+}
+
+function generationStatus(entry: HarEntry): GenerationStatus | null {
+  const json = responseJson(entry);
+  const label = firstNestedString(json, [
+    ["data", "state"],
+    ["data", "status"],
+    ["data", "task_status"],
+    ["output", "task_status"],
+    ["output", "status"],
+    ["state"],
+    ["status"],
+    ["task_status"],
+  ]);
+  if (!label) return null;
+
+  const normalized = normalizeGenerationState(label);
+  const detail = firstNestedString(json, [
+    ["data", "failMsg"],
+    ["data", "error"],
+    ["data", "message"],
+    ["output", "message"],
+    ["error", "message"],
+    ["message"],
+  ]);
+
+  if (SUCCESS_GENERATION_STATES.has(normalized)) {
+    return { label, terminal: "success", detail };
+  }
+  if (FAILED_GENERATION_STATES.has(normalized)) {
+    return { label, terminal: "failure", detail };
+  }
+  return { label, terminal: "pending", detail };
+}
+
+function generationStatusSummary(
+  status: GenerationStatus,
+  pollCount: number
+): string {
+  const suffix = status.detail ? `: ${status.detail}` : "";
+  if (status.terminal === "success") {
+    return `Generation completed with status ${status.label} after ${pollCount} poll response(s).`;
+  }
+  if (status.terminal === "failure") {
+    return `Generation failed with status ${status.label}${suffix}.`;
+  }
+  return (
+    `Generation did not reach terminal success; latest recorded status is ` +
+    `${status.label}${suffix}.`
+  );
+}
+
+function findGenerationReviewForEntry(
+  recording: ChangedRecording,
+  requestEntry: HarEntry
+): GenerationReview | null {
+  if (!isMediaGenerationRequest(requestEntry)) return null;
+
+  const taskIds = responseTaskIds(requestEntry);
+  if (taskIds.size === 0) return null;
+
+  const requestIndex = recording.entries.indexOf(requestEntry);
+  if (requestIndex < 0) return null;
+
+  const polls = recording.entries.slice(requestIndex + 1).filter((entry) => {
+    const ids = new Set([
+      ...taskIdsFromRequest(entry),
+      ...responseTaskIds(entry),
+    ]);
+    return intersects(taskIds, ids) && generationStatus(entry) !== null;
+  });
+  if (polls.length === 0) return null;
+
+  const statusByEntry = new Map<HarEntry, GenerationStatus>();
+  for (const poll of polls) {
+    const status = generationStatus(poll);
+    if (status) statusByEntry.set(poll, status);
+  }
+
+  const successful = [...polls]
+    .reverse()
+    .find((entry) => statusByEntry.get(entry)?.terminal === "success");
+  const failed = [...polls]
+    .reverse()
+    .find((entry) => statusByEntry.get(entry)?.terminal === "failure");
+  const responseEntry = successful ?? failed ?? polls[polls.length - 1];
+  const status = statusByEntry.get(responseEntry);
+  if (!status) return null;
+
+  return {
+    entry: {
+      request: requestEntry.request,
+      response: responseEntry.response,
+    },
+    requestEntry,
+    responseEntry,
+    statusSummary: generationStatusSummary(status, polls.length),
+  };
+}
+
+function findGenerationReview(
+  recording: ChangedRecording,
+  preferredEntry?: HarEntry
+): GenerationReview | null {
+  if (preferredEntry) {
+    const review = findGenerationReviewForEntry(recording, preferredEntry);
+    if (review) return review;
+  }
+
+  for (const entry of recording.entries) {
+    if (isCreditEntry(entry)) continue;
+    const review = findGenerationReviewForEntry(recording, entry);
+    if (review) return review;
+  }
+
+  return null;
+}
+
 function kindFromMime(mime: string): TelegramMediaItem["kind"] | null {
   const lower = mime.toLowerCase();
   // sendPhoto rejects animated gifs; send them as documents instead.
@@ -998,18 +1253,30 @@ function entryDataUris(entry: HarEntry): Array<{ mime: string; data: string }> {
 
 export function collectMedia(
   recording: ChangedRecording,
-  apicityPath: string
+  apicityPath: string,
+  generationReview = findGenerationReview(recording)
 ): TelegramMediaItem[] {
   const caption = mediaCaption(recording, apicityPath);
   const items: TelegramMediaItem[] = [];
+  const seenSources = new Set<string>();
   const slug = recording.recordingName.split("/").pop() ?? "recording";
   let base64Count = 0;
+
+  const pushItem = (item: TelegramMediaItem): void => {
+    const sourceKey =
+      item.source.type === "url"
+        ? `url:${item.source.url}`
+        : `base64:${item.mime}:${item.source.data}`;
+    if (seenSources.has(sourceKey)) return;
+    seenSources.add(sourceKey);
+    items.push(item);
+  };
 
   const pushBase64 = (mime: string, data: string): void => {
     const kind = kindFromMime(mime);
     if (!kind) return;
     base64Count += 1;
-    items.push({
+    pushItem({
       kind,
       mime,
       filename: `${slug}-${base64Count}.${EXT_BY_MIME[mime.toLowerCase()] ?? "bin"}`,
@@ -1018,7 +1285,17 @@ export function collectMedia(
     });
   };
 
-  for (const entry of recording.entries) {
+  const base64Entries = generationReview
+    ? [generationReview.responseEntry, generationReview.requestEntry]
+    : recording.entries;
+  const requestDataUris = generationReview
+    ? entryDataUris(generationReview.requestEntry)
+    : [];
+  const requestDataKeys = new Set(
+    requestDataUris.map((dataUri) => `${dataUri.mime}:${dataUri.data}`)
+  );
+
+  for (const entry of base64Entries) {
     // Binary response bodies (Polly stores them base64-encoded in the HAR).
     const content = entry.response.content;
     if (content?.encoding === "base64" && content.text) {
@@ -1026,12 +1303,22 @@ export function collectMedia(
     }
     // data: URIs embedded in request/response JSON (e.g. image-edit inputs).
     for (const dataUri of entryDataUris(entry)) {
+      if (
+        generationReview &&
+        entry === generationReview.responseEntry &&
+        requestDataKeys.has(`${dataUri.mime}:${dataUri.data}`)
+      ) {
+        continue;
+      }
       pushBase64(dataUri.mime, dataUri.data);
     }
   }
 
-  for (const url of extractMediaUrls(recording.entries)) {
-    items.push({
+  const urls = generationReview
+    ? generationMediaUrls(generationReview)
+    : extractMediaUrls(recording.entries);
+  for (const url of urls) {
+    pushItem({
       kind: kindFromUrl(url),
       mime: MIME_BY_EXT[urlExtension(url)] ?? "application/octet-stream",
       filename: urlFilename(url),
@@ -1041,6 +1328,15 @@ export function collectMedia(
   }
 
   return items.slice(0, MAX_MEDIA_ITEMS);
+}
+
+function generationMediaUrls(review: GenerationReview): string[] {
+  const requestUrls = extractMediaUrls([review.requestEntry]);
+  const requestUrlSet = new Set(requestUrls);
+  const responseUrls = extractMediaUrls([review.responseEntry]).filter(
+    (url) => !requestUrlSet.has(url)
+  );
+  return [...responseUrls, ...requestUrls];
 }
 
 function recordingHeading(recording: ChangedRecording): string {
@@ -1083,7 +1379,10 @@ function headerCount(
   }).length;
 }
 
-export function buildSections(entry: HarEntry): Section[] {
+export function buildSections(
+  entry: HarEntry,
+  generationReview: GenerationReview | null = null
+): Section[] {
   const sections: Section[] = [];
 
   const requestHeaders = headerLines(
@@ -1106,6 +1405,13 @@ export function buildSections(entry: HarEntry): Section[] {
     sections.push({
       title: `Request body (${formatByteSize(Buffer.byteLength(requestBody))})`,
       body: requestBody,
+    });
+  }
+
+  if (generationReview) {
+    sections.push({
+      title: "Generation status",
+      body: generationReview.statusSummary,
     });
   }
 
@@ -1273,17 +1579,26 @@ export function formatTelegramEndpointMessage(
   endpointDocs: EndpointDocRow[] = parseEndpointDocs()
 ): TelegramHarnessMessage {
   const sanitizedRecording = sanitizeRecordingForPreview(recording);
-  const entry = findEndpointEntry(sanitizedRecording, endpointDocs);
+  const endpointEntry = findEndpointEntry(sanitizedRecording, endpointDocs);
+  const generationReview = findGenerationReview(
+    sanitizedRecording,
+    endpointEntry
+  );
+  const entry = generationReview?.entry ?? endpointEntry;
   const doc =
-    findHintedEndpointDoc(sanitizedRecording, entry, endpointDocs) ??
-    findMatchingEndpointDoc(entry, endpointDocs, sanitizedRecording.provider);
-  const endpoint = `${entry.request.method} ${stripQuery(entry.request.url)}`;
+    findHintedEndpointDoc(sanitizedRecording, endpointEntry, endpointDocs) ??
+    findMatchingEndpointDoc(
+      endpointEntry,
+      endpointDocs,
+      sanitizedRecording.provider
+    );
+  const endpoint = `${endpointEntry.request.method} ${stripQuery(endpointEntry.request.url)}`;
   const status = `${entry.response.status} ${entry.response.statusText}`.trim();
-  const apicityPath = apicityPathFor(sanitizedRecording, entry, doc);
+  const apicityPath = apicityPathFor(sanitizedRecording, endpointEntry, doc);
 
   const header = renderHeader(
     sanitizedRecording,
-    entry,
+    endpointEntry,
     doc,
     endpoint,
     apicityPath,
@@ -1292,7 +1607,7 @@ export function formatTelegramEndpointMessage(
   const chunks = chunkMessage(
     header,
     recordingHeading(sanitizedRecording),
-    buildSections(entry)
+    buildSections(entry, generationReview)
   );
 
   return {
@@ -1304,7 +1619,7 @@ export function formatTelegramEndpointMessage(
     status,
     chunks,
     text: chunks[0],
-    media: collectMedia(sanitizedRecording, apicityPath),
+    media: collectMedia(sanitizedRecording, apicityPath, generationReview),
     parse_mode: "HTML",
   };
 }

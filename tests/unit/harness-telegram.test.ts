@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ChangedRecording } from "../har-data";
+import type { ChangedRecording, HarEntry } from "../har-data";
 import {
   buildTelegramHarnessMessages,
   chunkMessage,
@@ -227,6 +227,21 @@ const endpointDocs: EndpointDocRow[] = [
     method: "POST",
     fullUrl: "https://clob.polymarket.com/auth/api-key",
     docsUrl: "https://docs.polymarket.com/api-reference/authentication",
+  },
+  {
+    provider: "kie",
+    dotPath: "api.v1.jobs.createTask",
+    method: "POST",
+    fullUrl: "https://api.kie.ai/api/v1/jobs/createTask",
+    docsUrl: "https://docs.kie.ai/market/quickstart",
+  },
+  {
+    provider: "alibaba",
+    dotPath: "api.v1.services.aigc.videoGeneration.videoSynthesis",
+    method: "POST",
+    fullUrl:
+      "https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis",
+    docsUrl: "https://help.aliyun.com/zh/model-studio",
   },
 ];
 
@@ -836,6 +851,231 @@ function xaiDocumentsSearchRecording(): ChangedRecording {
   };
 }
 
+function jsonHarEntry(
+  method: string,
+  url: string,
+  requestBody: unknown,
+  responseBody: unknown
+): HarEntry {
+  return {
+    request: {
+      method,
+      url,
+      headers: [{ name: "content-type", value: "application/json" }],
+      postData:
+        requestBody === null
+          ? undefined
+          : {
+              mimeType: "application/json",
+              text: JSON.stringify(requestBody),
+            },
+    },
+    response: {
+      status: 200,
+      statusText: "OK",
+      headers: [{ name: "content-type", value: "application/json" }],
+      content: {
+        mimeType: "application/json",
+        text: JSON.stringify(responseBody),
+      },
+    },
+  };
+}
+
+function kieImagePollRecording(): ChangedRecording {
+  const taskId = "task-image";
+  const inputUrl = "https://example.com/input.png";
+  const param = JSON.stringify({
+    input: JSON.stringify({
+      image_urls: [inputUrl],
+      prompt: "Turn the reference into a watercolor poster.",
+    }),
+    model: "grok-imagine/image-to-image",
+  });
+
+  return {
+    provider: "kie",
+    recordingName: "kie/grok-imagine-image-to-image",
+    changeType: "new",
+    filePath:
+      "tests/recordings/kie_2079838932/" +
+      "grok-imagine-image-to-image_123/recording.har",
+    entries: [
+      jsonHarEntry(
+        "POST",
+        "https://api.kie.ai/api/v1/jobs/createTask",
+        {
+          model: "grok-imagine/image-to-image",
+          input: {
+            prompt: "Turn the reference into a watercolor poster.",
+            image_urls: [inputUrl],
+          },
+        },
+        { code: 200, msg: "success", data: { taskId, recordId: taskId } }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            model: "grok-imagine/image-to-image",
+            state: "waiting",
+            param,
+            resultJson: "",
+          },
+        }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            model: "grok-imagine/image-to-image",
+            state: "success",
+            param,
+            resultJson: JSON.stringify({
+              resultUrls: [
+                "https://tempfile.aiquickdraw.com/generated/final-1.jpg",
+                "https://tempfile.aiquickdraw.com/generated/final-2.jpg",
+              ],
+            }),
+          },
+        }
+      ),
+    ],
+  };
+}
+
+function kieVideoPollRecording(): ChangedRecording {
+  const taskId = "task-video";
+  const inputUrl = "https://example.com/first-frame.jpg";
+  const param = JSON.stringify({
+    input: JSON.stringify({
+      first_frame_url: inputUrl,
+      prompt: "Animate a slow camera push.",
+    }),
+    model: "kling/v3-turbo-image-to-video",
+  });
+
+  return {
+    provider: "kie",
+    recordingName: "kie/kling-v3-turbo-image-to-video",
+    changeType: "new",
+    filePath:
+      "tests/recordings/kie_2079838932/" +
+      "kling-v3-turbo-image-to-video_123/recording.har",
+    entries: [
+      jsonHarEntry(
+        "POST",
+        "https://api.kie.ai/api/v1/jobs/createTask",
+        {
+          model: "kling/v3-turbo-image-to-video",
+          input: {
+            first_frame_url: inputUrl,
+            prompt: "Animate a slow camera push.",
+          },
+        },
+        { code: 200, msg: "success", data: { taskId, recordId: taskId } }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            model: "kling/v3-turbo-image-to-video",
+            state: "waiting",
+            param,
+            resultJson: "",
+          },
+        }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            model: "kling/v3-turbo-image-to-video",
+            state: "success",
+            param,
+            resultJson: JSON.stringify({
+              resultUrls: ["https://tempfile.aiquickdraw.com/video/final.mp4"],
+            }),
+          },
+        }
+      ),
+    ],
+  };
+}
+
+function alibabaFailedGenerationRecording(): ChangedRecording {
+  const taskId = "task-failed";
+  const inputUrl = "https://example.com/source.png";
+
+  return {
+    provider: "alibaba",
+    recordingName: "alibaba/wan-i2v",
+    changeType: "new",
+    filePath:
+      "tests/recordings/alibaba_1329897167/" + "wan-i2v_123/recording.har",
+    entries: [
+      jsonHarEntry(
+        "POST",
+        "https://dashscope.aliyuncs.com/api/v1/services/aigc/video-generation/video-synthesis",
+        {
+          model: "wan2.7-i2v",
+          input: {
+            prompt: "Animate the product image.",
+            media: [{ type: "first_frame", url: inputUrl }],
+          },
+        },
+        {
+          request_id: "request-1",
+          output: { task_id: taskId, task_status: "PENDING" },
+        }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://dashscope.aliyuncs.com/api/v1/tasks/${taskId}`,
+        null,
+        {
+          request_id: "request-2",
+          output: {
+            task_id: taskId,
+            task_status: "FAILED",
+            message: "Safety filter rejected the prompt",
+          },
+        }
+      ),
+    ],
+  };
+}
+
+function mediaUrls(message: {
+  media: Array<{
+    source: { type: "url"; url: string } | { type: "base64"; data: string };
+  }>;
+}): string[] {
+  return message.media.flatMap((item) =>
+    item.source.type === "url" ? [item.source.url] : []
+  );
+}
+
 describe("harness Telegram messages", () => {
   it("renders endpoint recordings as Telegram HTML instead of raw Markdown", () => {
     const [message] = buildTelegramHarnessMessages(
@@ -1193,6 +1433,82 @@ describe("harness Telegram messages", () => {
       data: Buffer.from("fake-mp3-bytes").toString("base64"),
     });
     expect(items[0].caption.length).toBeLessThanOrEqual(1024);
+  });
+
+  it("uses the final KIE image generation poll response for review media", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [kieImagePollRecording()],
+      endpointDocs
+    );
+
+    expect(message.endpoint).toBe(
+      "POST https://api.kie.ai/api/v1/jobs/createTask"
+    );
+    expect(message.text).toContain("Generation status");
+    expect(message.text).toContain(
+      "Generation completed with status success after 2 poll response(s)."
+    );
+    expect(message.text).toContain(
+      "https://tempfile.aiquickdraw.com/generated/final-1.jpg"
+    );
+    expect(message.text).not.toContain('"state": "waiting"');
+    expect(mediaUrls(message)).toEqual([
+      "https://tempfile.aiquickdraw.com/generated/final-1.jpg",
+      "https://tempfile.aiquickdraw.com/generated/final-2.jpg",
+      "https://example.com/input.png",
+    ]);
+  });
+
+  it("uses the final KIE video generation poll response for review media", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [kieVideoPollRecording()],
+      endpointDocs
+    );
+
+    expect(message.text).toContain(
+      "Generation completed with status success after 2 poll response(s)."
+    );
+    expect(message.media[0]).toMatchObject({
+      kind: "video",
+      mime: "video/mp4",
+      source: {
+        type: "url",
+        url: "https://tempfile.aiquickdraw.com/video/final.mp4",
+      },
+    });
+    expect(mediaUrls(message)).toEqual([
+      "https://tempfile.aiquickdraw.com/video/final.mp4",
+      "https://example.com/first-frame.jpg",
+    ]);
+  });
+
+  it("deduplicates repeated input media from async poll payloads", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [kieImagePollRecording()],
+      endpointDocs
+    );
+
+    expect(
+      mediaUrls(message).filter(
+        (url) => url === "https://example.com/input.png"
+      )
+    ).toHaveLength(1);
+  });
+
+  it("summarizes a terminal generation failure without poll media noise", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [alibabaFailedGenerationRecording()],
+      endpointDocs
+    );
+
+    expect(message.apicityPath).toBe(
+      "alibaba.api.v1.services.aigc.videoGeneration.videoSynthesis"
+    );
+    expect(message.text).toContain(
+      "Generation failed with status FAILED: Safety filter rejected the prompt."
+    );
+    expect(message.text).not.toContain('"task_status": "PENDING"');
+    expect(mediaUrls(message)).toEqual(["https://example.com/source.png"]);
   });
 
   it("omits expired signed Alibaba OSS output URLs from media uploads", () => {

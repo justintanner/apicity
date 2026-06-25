@@ -24,6 +24,13 @@ Strict conventions enforced by lint:
 """
 formula = "mol-add-endpoint"
 version = 1
+# graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
+# on the root step), so `gc sling --formula` to the scale-from-zero pool wakes a
+# worker. A plain v1 root is a molecule container and the pool would never wake.
+contract = "graph.v2"
+
+[requires]
+formula_compiler = ">=2.0.0"
 
 [vars]
 [vars.provider]
@@ -219,4 +226,10 @@ git checkout main && git pull --rebase && git status --branch --short
 File follow-up beads (with --deps discovered-from:{{bead}}) for anything
 noticed but not done.
 
-**Exit criteria:** Bead closed, bead data pushed, main up to date."""
+Then signal the controller to reclaim this session (graph.v2 completion):
+
+```bash
+gc runtime drain-ack
+```
+
+**Exit criteria:** Bead closed, bead data pushed, main up to date, session drained."""

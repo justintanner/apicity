@@ -22,6 +22,14 @@ and enough context to start without rereading the original request.
 """
 formula = "mol-apicity-work"
 version = 1
+# graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
+# on the root step). Without it, `gc sling --formula mol-apicity-work` to the
+# scale-from-zero pool (apicity/gastown.polecat) is rejected — a plain v1 root is a
+# molecule container, not Ready work, so the pool never wakes for the wisp.
+contract = "graph.v2"
+
+[requires]
+formula_compiler = ">=2.0.0"
 
 [vars]
 [vars.work_description]
@@ -429,5 +437,12 @@ bd dolt push
 Do not close generated implementation beads here. They flow through the normal
 Apicity polecat/refinery lifecycle.
 
-**Exit criteria:** The generated bead graph is durable and ready for workers.
+Then signal the controller to reclaim this session (graph.v2 completion):
+
+```bash
+gc runtime drain-ack
+```
+
+**Exit criteria:** The generated bead graph is durable and ready for workers,
+and the session is drained.
 """

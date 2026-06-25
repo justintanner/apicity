@@ -17,6 +17,13 @@ branch isolation but DO need to publish their commits.
 """
 formula = "mol-publish-work"
 version = 1
+# graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
+# on the root step), so `gc sling --formula` to a scale-from-zero pool wakes a
+# worker instead of being rejected as a molecule container.
+contract = "graph.v2"
+
+[requires]
+formula_compiler = ">=2.0.0"
 
 [vars]
 [vars.issue]

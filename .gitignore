@@ -183,3 +183,6 @@ test-branch-protection.txt
 # Gas City
 !.beads/identity.toml
 harness-telegram-messages.json
+
+# bv (beads viewer) local config and caches
+.bv/

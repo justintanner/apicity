@@ -476,7 +476,7 @@ describe("kie Zod schema validation", () => {
         input: {
           prompt: "A slow push-in on a studio product photo.",
           image_urls: ["https://example.com/product.png"],
-          duration: 5,
+          duration: "5",
           resolution: "1080p",
         },
       };
@@ -498,7 +498,7 @@ describe("kie Zod schema validation", () => {
             "https://example.com/first.png",
             "https://example.com/second.png",
           ],
-          duration: 5,
+          duration: "5",
           resolution: "720p",
         },
       });

@@ -352,10 +352,7 @@ export const KlingV3TurboResolutionSchema = z.enum(["720p", "1080p"]);
 
 export const KlingV3TurboAspectRatioSchema = z.enum(["1:1", "9:16", "16:9"]);
 
-export const KlingV3TurboDurationSchema = z.union([
-  z.number().int().positive(),
-  z.string().regex(/^[1-9]\d*$/),
-]);
+export const KlingV3TurboDurationSchema = z.string().regex(/^[1-9]\d*$/);
 
 export const KlingV3TurboTextToVideoDurationSchema = z.enum([
   "3",

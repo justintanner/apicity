@@ -153,7 +153,7 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
         items: { type: "string" },
       },
       duration: {
-        type: "number",
+        type: "string",
         required: true,
         description: "Duration in seconds",
       },

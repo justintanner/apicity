@@ -369,6 +369,32 @@ describe("schema + validatePayload integration", () => {
     expect(result.success).toBe(true);
   });
 
+  it("kie kling v3 turbo image-to-video: requires image URL input", () => {
+    const result = CreateTaskRequestSchema.safeParse({
+      model: "kling/v3-turbo-image-to-video",
+      input: {
+        image_urls: ["https://example.com/source.png"],
+        prompt: "Camera pulls back while sunlight moves across the room.",
+        duration: "5",
+        resolution: "720p",
+      },
+    });
+
+    expect(result.success).toBe(true);
+
+    const missingImage = CreateTaskRequestSchema.safeParse({
+      model: "kling/v3-turbo-image-to-video",
+      input: {
+        prompt: "Camera pulls back while sunlight moves across the room.",
+        duration: "5",
+        resolution: "720p",
+      },
+    });
+
+    expect(missingImage.success).toBe(false);
+    expect(JSON.stringify(missingImage.error?.issues)).toContain("image_urls");
+  });
+
   it("kie omnihuman 1.5: accepts valid request and applies defaults", () => {
     const result = Omnihuman15RequestSchema.safeParse({
       model: "omnihuman-1-5",
@@ -1013,7 +1039,7 @@ describe("kie modelInputSchemas", () => {
     expect(imageToVideo.type).toBe("video");
     expect(imageToVideo.fields.prompt.required).toBe(true);
     expect(imageToVideo.fields.image_urls.required).toBe(true);
-    expect(imageToVideo.fields.duration.type).toBe("number");
+    expect(imageToVideo.fields.duration.type).toBe("string");
     expect(imageToVideo.fields.resolution.enum).toEqual(["720p", "1080p"]);
 
     const textToVideo = modelInputSchemas["kling/v3-turbo-text-to-video"];

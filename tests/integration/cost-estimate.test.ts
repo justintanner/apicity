@@ -167,7 +167,7 @@ describe("cost.estimate — pure-table (no network)", () => {
         input: {
           prompt: "x",
           image_urls: ["https://example.com/product.png"],
-          duration: 5,
+          duration: "5",
           resolution: "1080p",
         },
       },

@@ -15,6 +15,8 @@ import {
   KieTaskInfo,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateResponse,
+  GeminiOmniCharacterCreateRequest,
+  GeminiOmniCharacterCreateResponse,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -24,6 +26,8 @@ import {
   FileBase64UploadRequestSchema,
   GeminiOmniVideoRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
+  GeminiOmniCharacterCreateRequestSchema,
+  GeminiOmniCharacterCreateResponseSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Seedance2MiniRecordInfoResponseSchema,
@@ -499,6 +503,23 @@ export function createKie(opts: KieOptions): KieProvider {
     };
   }
 
+  // POST https://api.kie.ai/api/v1/omni/character/create
+  // Docs: https://docs.kie.ai/market/gemini-omni-character
+  async function omniCharacterCreate(
+    req: GeminiOmniCharacterCreateRequest
+  ): Promise<GeminiOmniCharacterCreateResponse> {
+    return kieRequest<GeminiOmniCharacterCreateResponse>(
+      `${baseURL}/api/v1/omni/character/create`,
+      {
+        method: "POST",
+        body: req,
+        apiKey: opts.apiKey,
+        doFetch,
+        timeout,
+      }
+    );
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -560,6 +581,12 @@ export function createKie(opts: KieOptions): KieProvider {
                 audio: {
                   create: Object.assign(omniAudioCreate, {
                     schema: GeminiOmniAudioCreateRequestSchema,
+                  }),
+                },
+                character: {
+                  create: Object.assign(omniCharacterCreate, {
+                    schema: GeminiOmniCharacterCreateRequestSchema,
+                    responseSchema: GeminiOmniCharacterCreateResponseSchema,
                   }),
                 },
               },

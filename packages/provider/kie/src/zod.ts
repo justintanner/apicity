@@ -1610,6 +1610,25 @@ export const GeminiOmniAudioCreateRequestSchema = z.object({
   example_dialogue: z.string().min(1).max(120).optional(),
 });
 
+export const GeminiOmniCharacterCreateRequestSchema = z.object({
+  descriptions: z.string().min(1),
+  image_urls: z.array(z.string().url()).min(1).max(1),
+  audio_ids: z.array(z.string().min(1)).optional(),
+  character_name: z.string().min(1).optional(),
+});
+
+export const GeminiOmniCharacterCreateDataSchema = z.object({
+  characterId: z.string().min(1),
+  characterName: z.string().min(1),
+  imageUrl: z.string().url(),
+});
+
+export const GeminiOmniCharacterCreateResponseSchema = z.object({
+  code: z.number().optional(),
+  msg: z.string(),
+  data: GeminiOmniCharacterCreateDataSchema.optional(),
+});
+
 // ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
@@ -2435,6 +2454,20 @@ export type GeminiOmniAudioCreateRequest = z.input<
 export type GeminiOmniAudioCreateRequestInput = GeminiOmniAudioCreateRequest;
 export type GeminiOmniAudioCreateParsedRequest = z.output<
   typeof GeminiOmniAudioCreateRequestSchema
+>;
+export type GeminiOmniCharacterCreateRequest = z.input<
+  typeof GeminiOmniCharacterCreateRequestSchema
+>;
+export type GeminiOmniCharacterCreateRequestInput =
+  GeminiOmniCharacterCreateRequest;
+export type GeminiOmniCharacterCreateParsedRequest = z.output<
+  typeof GeminiOmniCharacterCreateRequestSchema
+>;
+export type GeminiOmniCharacterCreateData = z.output<
+  typeof GeminiOmniCharacterCreateDataSchema
+>;
+export type GeminiOmniCharacterCreateResponse = z.output<
+  typeof GeminiOmniCharacterCreateResponseSchema
 >;
 export type KieGeminiRole = z.infer<typeof KieGeminiRoleSchema>;
 export type KieGeminiThinkingLevel = z.infer<

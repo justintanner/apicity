@@ -63,6 +63,38 @@ less than 60 seconds. Use `output_resolution: "720"` or `"1080"`;
 defaults are `"1080"` for resolution, `false` for `pe_fast_mode`, and
 `-1` for a random seed.
 
+## Gemini Omni Character endpoint
+
+Gemini Omni Character has its own direct endpoint:
+`kie.post.api.v1.omni.character.create`. Use it to create a reusable
+character reference for `gemini-omni-video`; the returned
+`data.characterId` can be passed in that model's `character_ids` array.
+If you already created voice traits through Gemini Omni Audio, pass those
+`audio_ids` to guide the character's tone or persona.
+
+```typescript
+const character = await kie.post.api.v1.omni.character.create({
+  descriptions: "A confident presenter in a blue blazer.",
+  image_urls: ["https://example.com/presenter.png"],
+  audio_ids: ["audio_01hx8p0demo"],
+  character_name: "Presenter",
+});
+
+const video = await kie.post.api.v1.jobs.createTask({
+  model: "gemini-omni-video",
+  input: {
+    prompt: "Presenter explains the product in a bright studio.",
+    character_ids: [character.data!.characterId],
+    duration: "4",
+  },
+});
+```
+
+The request field is `descriptions` (plural). `image_urls` is required
+and accepts exactly one public reference image, up to KIE's 20 MB
+upstream limit. See https://docs.kie.ai/market/gemini-omni-character
+for the full upstream contract.
+
 ## Grok Imagine 1.5 model slugs
 
 KIE's current Grok Imagine Quick Start markets Grok Imagine 1.5 through
@@ -444,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-30 endpoints across 19 groups. Each method mirrors an upstream URL path.
+31 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -831,6 +863,21 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 ```typescript
 const res = await kie.post.api.v1.omni.audio.create({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.omni.character.create</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/omni/character/create</code>
+
+[Upstream docs ↗](https://docs.kie.ai/market/gemini-omni-character)
+
+```typescript
+const res = await kie.post.api.v1.omni.character.create({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

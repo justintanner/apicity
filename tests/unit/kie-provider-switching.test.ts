@@ -134,6 +134,53 @@ describe("KIE provider switching", () => {
     expect(JSON.parse(init.body as string)).toEqual(payload);
   });
 
+  it("routes Gemini Omni Character requests through the omni character namespace", async () => {
+    const mockFetch = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          msg: "success",
+          data: {
+            characterId: "character_01hx8p0demo",
+            characterName: "Host",
+            imageUrl: "https://example.com/characters/host.png",
+          },
+        }),
+        { status: 200 }
+      )
+    );
+
+    const provider = createKie({
+      apiKey: "test-key",
+      baseURL: "https://api.kie.ai",
+      fetch: mockFetch,
+    });
+
+    const payload = {
+      descriptions: "A cinematic host with a navy blazer and warm smile.",
+      image_urls: ["https://example.com/characters/host.png"],
+      audio_ids: ["audio_01hx8p0demo"],
+      character_name: "Host",
+    };
+
+    expect(
+      provider.post.api.v1.omni.character.create.schema.safeParse(payload)
+        .success
+    ).toBe(true);
+
+    const result = await provider.post.api.v1.omni.character.create(payload);
+
+    expect(
+      provider.post.api.v1.omni.character.create.responseSchema.safeParse(
+        result
+      ).success
+    ).toBe(true);
+    expect(result.data?.characterId).toBe("character_01hx8p0demo");
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.kie.ai/api/v1/omni/character/create");
+    expect(init.method).toBe("POST");
+    expect(JSON.parse(init.body as string)).toEqual(payload);
+  });
+
   it("routes Kie ElevenLabs TTS models through createTask", async () => {
     const mockFetch = vi.fn().mockResolvedValue(
       new Response(JSON.stringify({ code: 200, data: { taskId: "audio-1" } }), {

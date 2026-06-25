@@ -240,6 +240,11 @@ export type {
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateRequestInput,
   GeminiOmniAudioCreateParsedRequest,
+  GeminiOmniCharacterCreateRequest,
+  GeminiOmniCharacterCreateRequestInput,
+  GeminiOmniCharacterCreateParsedRequest,
+  GeminiOmniCharacterCreateData,
+  GeminiOmniCharacterCreateResponse,
   KieGeminiRole,
   KieGeminiThinkingLevel,
   KieGeminiInlineData,
@@ -375,6 +380,8 @@ import type {
   FileUrlUploadRequest,
   FileBase64UploadRequest,
   GeminiOmniAudioCreateRequest,
+  GeminiOmniCharacterCreateRequest,
+  GeminiOmniCharacterCreateResponse,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
 } from "./zod";
@@ -412,6 +419,14 @@ interface KieGeminiOmniAudioCreateMethod {
   schema: ApicitySchema<GeminiOmniAudioCreateRequest>;
 }
 
+interface KieGeminiOmniCharacterCreateMethod {
+  (
+    req: GeminiOmniCharacterCreateRequest
+  ): Promise<GeminiOmniCharacterCreateResponse>;
+  schema: ApicitySchema<GeminiOmniCharacterCreateRequest>;
+  responseSchema: ApicitySchema<GeminiOmniCharacterCreateResponse>;
+}
+
 interface KieRecordInfoMethod {
   (taskId: string): Promise<KieTaskInfo>;
   schema: ApicitySchema<RecordInfoRequest>;
@@ -426,6 +441,9 @@ interface KiePostApiNamespace {
     omni: {
       audio: {
         create: KieGeminiOmniAudioCreateMethod;
+      };
+      character: {
+        create: KieGeminiOmniCharacterCreateMethod;
       };
     };
   };

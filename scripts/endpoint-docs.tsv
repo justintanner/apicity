@@ -687,6 +687,7 @@ kie	api.v1.lyrics	POST	https://api.kie.ai/api/v1/lyrics
 kie	api.v1.midi.generate	POST	https://api.kie.ai/api/v1/midi/generate
 kie	api.v1.mp4.generate	POST	https://api.kie.ai/api/v1/mp4/generate
 kie	api.v1.omni.audio.create	POST	https://api.kie.ai/api/v1/omni/audio/create	https://docs.kie.ai/market/gemini-omni-audio
+kie	api.v1.omni.character.create	POST	https://api.kie.ai/api/v1/omni/character/create	https://docs.kie.ai/market/gemini-omni-character
 kie	api.v1.style.generate	POST	https://api.kie.ai/api/v1/style/generate
 kie	api.v1.veo.extend	POST	https://api.kie.ai/api/v1/veo/extend	https://docs.kie.ai/veo3-api/extend-video
 kie	api.v1.veo.generate	POST	https://api.kie.ai/api/v1/veo/generate	https://docs.kie.ai/veo3-api/generate-veo-3-video

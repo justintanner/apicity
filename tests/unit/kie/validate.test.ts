@@ -33,6 +33,8 @@ import {
   ElevenLabsAudioIsolationRequestSchema,
   GeminiOmniVideoRequestSchema,
   GeminiOmniAudioCreateRequestSchema,
+  GeminiOmniCharacterCreateRequestSchema,
+  GeminiOmniCharacterCreateResponseSchema,
 } from "../../../packages/provider/kie/src/zod";
 
 describe("kie Zod schema validation", () => {
@@ -1053,6 +1055,70 @@ describe("kie Zod schema validation", () => {
       });
 
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("gemini omni character", () => {
+    it("should validate character create requests", () => {
+      const result = GeminiOmniCharacterCreateRequestSchema.safeParse({
+        descriptions: "A cinematic host with a navy blazer and warm smile.",
+        image_urls: ["https://example.com/characters/host.png"],
+        audio_ids: ["audio_01hx8p0demo"],
+        character_name: "Host",
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should require plural descriptions and one reference image", () => {
+      const singularDescription =
+        GeminiOmniCharacterCreateRequestSchema.safeParse({
+          description: "A cinematic host with a navy blazer.",
+          image_urls: ["https://example.com/characters/host.png"],
+        });
+      const twoImages = GeminiOmniCharacterCreateRequestSchema.safeParse({
+        descriptions: "A cinematic host with a navy blazer.",
+        image_urls: [
+          "https://example.com/characters/host-1.png",
+          "https://example.com/characters/host-2.png",
+        ],
+      });
+
+      expect(singularDescription.success).toBe(false);
+      expect(
+        singularDescription.error?.issues.some((issue) =>
+          issue.path.includes("descriptions")
+        )
+      ).toBe(true);
+      expect(twoImages.success).toBe(false);
+      expect(
+        twoImages.error?.issues.some((issue) =>
+          issue.path.includes("image_urls")
+        )
+      ).toBe(true);
+    });
+
+    it("should validate character create responses with optional code", () => {
+      const withoutCode = GeminiOmniCharacterCreateResponseSchema.safeParse({
+        msg: "success",
+        data: {
+          characterId: "character_01hx8p0demo",
+          characterName: "Host",
+          imageUrl: "https://example.com/characters/host.png",
+        },
+      });
+      const withCode = GeminiOmniCharacterCreateResponseSchema.safeParse({
+        code: 200,
+        msg: "success",
+        data: {
+          characterId: "character_01hx8p0demo",
+          characterName: "Host",
+          imageUrl: "https://example.com/characters/host.png",
+        },
+      });
+
+      expect(withoutCode.success).toBe(true);
+      expect(withCode.success).toBe(true);
     });
   });
 

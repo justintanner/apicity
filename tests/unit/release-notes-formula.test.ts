@@ -182,6 +182,11 @@ describe("mol-apicity-release GitHub release notes", () => {
           output.push(values.join(" "));
         },
       },
+      process: {
+        env: {
+          RELEASE_BEAD: "",
+        },
+      },
     });
 
     const notes = output.join("\n");

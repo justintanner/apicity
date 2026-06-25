@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-const formulaPath = ".beads/formulas/mol-apicity-work.formula.toml";
+const formulaPath = ".beads/formulas/mol-apicity-add.formula.toml";
 
 function readFormula(): string {
   return fs.readFileSync(formulaPath, "utf8");
@@ -46,15 +46,17 @@ function varBlock(name: string): string {
   return match[1];
 }
 
-describe("mol-apicity-work formula catalog", () => {
+describe("mol-apicity-add formula catalog", () => {
   it("exposes one Apicity ad-hoc work launcher", () => {
     const launcherNames = launcherFormulaNames();
     const catalogNames = catalogFormulaNames();
 
-    expect(launcherNames).toContain("mol-apicity-work.formula.toml");
+    expect(launcherNames).toContain("mol-apicity-add.formula.toml");
+    expect(launcherNames).not.toContain("mol-apicity-work.formula.toml");
     expect(launcherNames).not.toContain(
       "mol-apicity-breakdown-work.formula.toml"
     );
+    expect(catalogNames).not.toContain("mol-apicity-work.formula.toml");
     expect(catalogNames).not.toContain(
       "mol-apicity-breakdown-work.formula.toml"
     );
@@ -64,18 +66,17 @@ describe("mol-apicity-work formula catalog", () => {
 
   it("uses a description-driven launch surface", () => {
     const formula = readFormula();
-    const launcher = path.join("formulas", "mol-apicity-work.formula.toml");
+    const launcher = path.join("formulas", "mol-apicity-add.formula.toml");
 
-    expect(formula).toContain('formula = "mol-apicity-work"');
+    expect(formula).toContain('formula = "mol-apicity-add"');
+    expect(formula).toContain('contract = "graph.v2"');
     expect(fs.lstatSync(launcher).isSymbolicLink()).toBe(true);
     expect(fs.readlinkSync(launcher)).toBe(
-      "../.beads/formulas/mol-apicity-work.formula.toml"
+      "../.beads/formulas/mol-apicity-add.formula.toml"
     );
     expect(varBlock("work_description")).toContain("required = true");
-    expect(varBlock("title")).toContain('default = ""');
-    expect(varBlock("route_target")).toContain(
-      'default = "apicity/gastown.polecat"'
-    );
+    expect(formula).not.toMatch(/\[vars\.title\]/);
+    expect(formula).not.toMatch(/\[vars\.route_target\]/);
     expect(formula).not.toMatch(/\[vars\.tracking_bead\]/);
     expect(formula).not.toMatch(/\[vars\.operations_json\]/);
   });
@@ -86,7 +87,6 @@ describe("mol-apicity-work formula catalog", () => {
     expect(readStepIds()).toEqual([
       "load-work-description",
       "classify-work",
-      "preview-bead-graph",
       "create-routed-work",
       "verify-routing",
       "handoff",
@@ -94,8 +94,11 @@ describe("mol-apicity-work formula catalog", () => {
     expect(formula).toContain("standalone");
     expect(formula).toContain("multi");
     expect(formula).toContain("epic");
-    expect(formula).toContain('"gc.routed_to": routeTarget');
+    expect(formula).toContain('const ROUTE_TARGET = "apicity/gastown.polecat"');
+    expect(formula).toContain('"gc.routed_to": ROUTE_TARGET');
     expect(formula).toContain("depends_on");
-    expect(formula).toContain('run(["dep", blocker, "--blocks", blocked])');
+    expect(formula).toContain(
+      'run(["dep", created.get(dependency), "--blocks", created.get(bead.key)])'
+    );
   });
 });

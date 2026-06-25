@@ -22,7 +22,7 @@ Strict conventions enforced by lint:
 | bead          | caller | —       | Tracking bead this endpoint closes              |
 | test_slug     | caller | derived | Test file slug; defaults from endpoint_path     |
 """
-formula = "mol-add-endpoint"
+formula = "mol-apicity-add-endpoint"
 version = 1
 # graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
 # on the root step), so `gc sling --formula` to the scale-from-zero pool wakes a

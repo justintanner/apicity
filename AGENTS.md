@@ -69,40 +69,36 @@ pnpm run harness                 # Local HAR viewer at localhost:3475
 
 ## Adding a New Endpoint
 
-The workflow is encoded in the `mol-add-endpoint` beads formula
-(`.beads/formulas/mol-add-endpoint.formula.toml`):
+The workflow is encoded in the `mol-apicity-add-endpoint` beads formula
+(`.beads/formulas/mol-apicity-add-endpoint.formula.toml`):
 
 ```bash
-bd formula show mol-add-endpoint
-bd cook mol-add-endpoint \
+bd formula show mol-apicity-add-endpoint
+bd cook mol-apicity-add-endpoint \
   --var provider=openai --var method=POST --var endpoint_path=/v1/embeddings \
   --var docs_url=https://platform.openai.com/docs/api-reference/embeddings \
   --var bead=<tracking-bead>
 ```
 
-Or dispatch it: `gc sling <rig> mol-add-endpoint --formula --var ...`.
+Or dispatch it: `gc sling <rig> mol-apicity-add-endpoint --formula --var ...`.
 
 ## Ad-Hoc Work Intake
 
-For unstructured Apicity requests, use the `mol-apicity-work` formula first.
-It accepts a plain work description, classifies the request as standalone,
-multi-bead, or epic work, and creates the routed bead graph itself. Callers do
-not need to pre-create a convoy or pre-break the request into endpoint
-operations:
+For unstructured Apicity requests, use the `mol-apicity-add` formula. It accepts
+a plain work description, classifies the request as standalone, multi-bead, or
+epic work, and creates the routed bead graph itself. Callers do not need to
+pre-create a convoy or pre-break the request into endpoint operations:
 
 ```bash
-bd formula show mol-apicity-work
-bd cook mol-apicity-work \
-  --var title='Add OpenAI Responses support' \
-  --var work_description='Add the OpenAI Responses API surface from the docs. Break the request into one endpoint bead per upstream operation, include HAR-backed tests where upstream calls are touched, and preserve one endpoint per PR.' \
-  --var dry_run=true
+bd formula show mol-apicity-add
+bd cook mol-apicity-add \
+  --var work_description='Add the OpenAI Responses API surface from the docs. Break the request into one endpoint bead per upstream operation, include HAR-backed tests where upstream calls are touched, and preserve one endpoint per PR.'
 ```
 
-Run with `dry_run=true` first, then `dry_run=false` once the preview shows
-concrete child beads and dependency edges. The formula routes actionable beads
-to `apicity/gastown.polecat` through `metadata.gc.routed_to`, preserving normal
-pool pickup behavior. Endpoint implementation children should still use
-`mol-add-endpoint`.
+The formula creates the beads for real and routes actionable beads to
+`apicity/gastown.polecat` through `metadata.gc.routed_to`, preserving normal pool
+pickup behavior. Endpoint implementation children should still use
+`mol-apicity-add-endpoint`.
 
 Two invariants worth knowing outside the formula:
 

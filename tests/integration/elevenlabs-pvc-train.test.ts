@@ -28,23 +28,4 @@ describe("elevenlabs v1.voices.pvc.train", () => {
       provider.v1.voices.pvc.train
     );
   });
-
-  it("validates optional PVC train payloads", () => {
-    const provider = createElevenLabs({ apiKey: "elevenlabs-test-key" });
-
-    expect(provider.v1.voices.pvc.train.schema.safeParse({}).success).toBe(
-      true
-    );
-    expect(
-      provider.v1.voices.pvc.train.schema.safeParse({
-        model_id: "eleven_turbo_v2",
-      }).success
-    ).toBe(true);
-    expect(
-      provider.v1.voices.pvc.train.schema.safeParse({ model_id: null }).success
-    ).toBe(true);
-    expect(
-      provider.v1.voices.pvc.train.schema.safeParse({ model_id: 123 }).success
-    ).toBe(false);
-  });
 });

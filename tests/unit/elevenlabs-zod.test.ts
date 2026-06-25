@@ -5,6 +5,7 @@ import {
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
+  ElevenLabsPvcTrainRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
 } from "../../packages/provider/elevenlabs/src/zod";
 
@@ -100,6 +101,23 @@ describe("ElevenLabs Zod schema validation", () => {
         prompt_influence: null,
       });
       expect(result.success).toBe(true);
+    });
+  });
+
+  describe("PVC train schema", () => {
+    it("should validate optional PVC train payloads", () => {
+      expect(ElevenLabsPvcTrainRequestSchema.safeParse({}).success).toBe(true);
+      expect(
+        ElevenLabsPvcTrainRequestSchema.safeParse({
+          model_id: "eleven_turbo_v2",
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsPvcTrainRequestSchema.safeParse({ model_id: null }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsPvcTrainRequestSchema.safeParse({ model_id: 123 }).success
+      ).toBe(false);
     });
   });
 

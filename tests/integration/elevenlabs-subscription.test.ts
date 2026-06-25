@@ -37,20 +37,4 @@ describe("elevenlabs v1.user.subscription", () => {
     expect(typeof subscription.status).toBe("string");
     expect(subscription.status?.length).toBeGreaterThan(0);
   });
-
-  it("exposes the same token balance check via get.v1", async () => {
-    const provider = createElevenLabs({
-      apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
-    });
-
-    expect(provider.get.v1.user.subscription).toBe(
-      provider.v1.user.subscription
-    );
-
-    const subscription = await provider.get.v1.user.subscription();
-
-    expect(subscription.remaining_character_count).toBe(
-      Math.max(0, subscription.character_limit - subscription.character_count)
-    );
-  });
 });

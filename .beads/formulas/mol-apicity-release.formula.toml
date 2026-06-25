@@ -455,7 +455,8 @@ const fs = require("fs");
 const { execFileSync } = require("child_process");
 
 const version = "{{version}}";
-const releaseBead = process.env.RELEASE_BEAD || "{{release_bead}}";
+const env = typeof process === "undefined" ? {} : process.env;
+const releaseBead = env.RELEASE_BEAD || "{{release_bead}}";
 const currentTag = `v${version}`;
 const commandMaxBuffer = 64 * 1024 * 1024;
 

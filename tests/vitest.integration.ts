@@ -29,6 +29,11 @@ export default defineConfig({
         "../packages/provider/kie/src/zod"
       ),
       "@apicity/kie": path.resolve(__dirname, "../packages/provider/kie/src"),
+      "@apicity/zai/zod": path.resolve(
+        __dirname,
+        "../packages/provider/zai/src/zod"
+      ),
+      "@apicity/zai": path.resolve(__dirname, "../packages/provider/zai/src"),
       "@apicity/xai/zod": path.resolve(
         __dirname,
         "../packages/provider/xai/src/zod"

@@ -322,6 +322,12 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
+  packages/provider/zai:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
 packages:
 
   '@adraffy/ens-normalize@1.11.1':

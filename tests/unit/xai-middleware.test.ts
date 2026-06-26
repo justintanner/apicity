@@ -17,8 +17,10 @@ afterEach(() => {
 
 async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
   const result = action();
+  result.catch(() => {});
   await vi.runAllTimersAsync();
-  return result;
+  await Promise.resolve();
+  return await result;
 }
 
 describe("withRetry", () => {
@@ -93,7 +95,7 @@ describe("withRetry", () => {
     const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
     expect(fn).toHaveBeenCalledTimes(1);
   });
@@ -105,7 +107,7 @@ describe("withRetry", () => {
     const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
     expect(fn).toHaveBeenCalledTimes(1);
   });
@@ -169,7 +171,9 @@ describe("withRetry", () => {
     });
     const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
     await runWithFakeTimers(() => wrapped("request"));
-    const delays = setTimeoutSpy.mock.calls.map(([, timeout]) => timeout as number);
+    const delays = setTimeoutSpy.mock.calls.map(
+      ([, timeout]) => timeout as number
+    );
     expect(delays).toEqual([100, 200, 400]);
     setTimeoutSpy.mockRestore();
     expect(fn).toHaveBeenCalledTimes(4);
@@ -186,7 +190,7 @@ describe("withRetry", () => {
     });
     const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
     expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 50);
     setTimeoutSpy.mockRestore();
@@ -226,7 +230,7 @@ describe("withRetry", () => {
       const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
       const wrapped = withRetry(fn, { retries: 1, baseMs: 100, jitter: true });
       await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-        error,
+        error
       );
       const delay = setTimeoutSpy.mock.calls.at(-1)?.[1];
       if (typeof delay === "number") {
@@ -254,9 +258,9 @@ describe("withRetry", () => {
           baseMs: 50,
           jitter: false,
         });
-        await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-          error,
-        );
+        await expect(
+          runWithFakeTimers(() => wrapped("request"))
+        ).rejects.toEqual(error);
       }
 
       expect(setTimeoutSpy).toHaveBeenCalledTimes(3);
@@ -285,7 +289,7 @@ describe("withRetry", () => {
     controller.abort();
 
     await expect(
-      runWithFakeTimers(() => wrapped("request", controller.signal)),
+      runWithFakeTimers(() => wrapped("request", controller.signal))
     ).rejects.toEqual(error);
     expect(fn).toHaveBeenCalledTimes(1);
   });
@@ -307,7 +311,7 @@ describe("withRetry", () => {
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
 
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
     expect(fn).toHaveBeenCalledTimes(3); // Initial + 2 retries
   });
@@ -318,7 +322,7 @@ describe("withRetry", () => {
 
     const wrapped = withRetry(fn);
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
 
     // Default: retries=2, so 3 total calls
@@ -331,7 +335,7 @@ describe("withRetry", () => {
 
     const wrapped = withRetry(fn, { retries: 1 }); // Only override retries
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
 
     expect(fn).toHaveBeenCalledTimes(2);
@@ -423,7 +427,7 @@ describe("withFallback", () => {
     const wrapped = withFallback([fn]);
 
     await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
-      error,
+      error
     );
   });
 

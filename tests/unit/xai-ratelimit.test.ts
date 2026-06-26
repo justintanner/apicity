@@ -202,7 +202,10 @@ describe("RPM limiting", () => {
     expect(fn).toHaveBeenCalledTimes(2);
 
     // Third should queue and timeout since window won't slide in 100ms
-    await expect(wrapped("req3")).rejects.toThrow("Rate limit queue timeout");
+    const p3 = wrapped("req3");
+    const assertion = expect(p3).rejects.toThrow("Rate limit queue timeout");
+    await delay(101);
+    await assertion;
   });
 });
 
@@ -305,9 +308,13 @@ describe("maxQueueMs", () => {
 
     await delay(5);
 
-    await expect(wrapped("req2")).rejects.toThrow(
+    const p2 = wrapped("req2");
+    const assertion = expect(p2).rejects.toThrow(
       "Rate limit queue timeout after 50ms"
     );
+
+    await delay(50);
+    await assertion;
 
     limiter.dispose();
   });
@@ -322,9 +329,13 @@ describe("maxQueueMs", () => {
 
     await delay(5);
 
-    await expect(wrapped("req2")).rejects.toThrow(
+    const p2 = wrapped("req2");
+    const assertion = expect(p2).rejects.toThrow(
       "Rate limit queue timeout after 50ms"
     );
+
+    await delay(50);
+    await assertion;
 
     limiter.dispose();
   });

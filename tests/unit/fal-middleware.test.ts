@@ -16,8 +16,10 @@ afterEach(() => {
 
 async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
   const result = action();
+  result.catch(() => {});
   await vi.runAllTimersAsync();
-  return result;
+  await Promise.resolve();
+  return await result;
 }
 
 describe("withRetry", () => {
@@ -60,7 +62,7 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
     await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
-      "bad request",
+      "bad request"
     );
     expect(calls).toBe(1);
   });
@@ -73,7 +75,7 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
     await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
-      "unauthorized",
+      "unauthorized"
     );
     expect(calls).toBe(1);
   });
@@ -86,7 +88,7 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
     await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
-      "forbidden",
+      "forbidden"
     );
     expect(calls).toBe(1);
   });
@@ -99,7 +101,7 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
     await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
-      "not found",
+      "not found"
     );
     expect(calls).toBe(1);
   });
@@ -148,7 +150,7 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
     await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
-      "always fail",
+      "always fail"
     );
   });
 
@@ -159,7 +161,7 @@ describe("withRetry", () => {
     const retried = withRetry(fn);
     const controller = new AbortController();
     expect(
-      await runWithFakeTimers(() => retried("hello", controller.signal)),
+      await runWithFakeTimers(() => retried("hello", controller.signal))
     ).toBe("hello-has-signal");
   });
 
@@ -175,7 +177,7 @@ describe("withRetry", () => {
     controller.abort();
 
     await expect(
-      runWithFakeTimers(() => retried(null, controller.signal)),
+      runWithFakeTimers(() => retried(null, controller.signal))
     ).rejects.toThrow("fail");
     expect(calls).toBe(1);
   });

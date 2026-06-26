@@ -7,8 +7,22 @@ import {
   XAI_RATE_LIMITS,
 } from "../../packages/provider/xai/src/middleware";
 
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
+  const result = action();
+  await vi.runAllTimersAsync();
+  return result;
+}
+
 function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return vi.advanceTimersByTimeAsync(ms);
 }
 
 describe("createRateLimiter", () => {
@@ -375,7 +389,7 @@ describe("composition with withRetry", () => {
       jitter: false,
     });
 
-    const result = await wrapped("req");
+    const result = await runWithFakeTimers(() => wrapped("req"));
 
     expect(result).toBe("success");
     // withRetry retries, each retry goes through withRateLimit

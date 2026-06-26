@@ -1,16 +1,30 @@
 // Tests for Fal middleware functions — pure HOFs, no API calls
 // Tests withRetry and withFallback from the Fal provider middleware
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   withRetry,
   withFallback,
 } from "../../packages/provider/fal/src/middleware";
 
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
+  const result = action();
+  await vi.runAllTimersAsync();
+  return result;
+}
+
 describe("withRetry", () => {
   it("should return result on first success", async () => {
     const fn = async (x: number) => x * 2;
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(5)).toBe(10);
+    expect(await runWithFakeTimers(() => retried(5))).toBe(10);
   });
 
   it("should retry on transient error (500) and succeed", async () => {
@@ -21,7 +35,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(3);
   });
 
@@ -34,7 +48,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -45,7 +59,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("bad request"), { status: 400 });
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("bad request");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "bad request",
+    );
     expect(calls).toBe(1);
   });
 
@@ -56,7 +72,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("unauthorized"), { status: 401 });
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("unauthorized");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "unauthorized",
+    );
     expect(calls).toBe(1);
   });
 
@@ -67,7 +85,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("forbidden"), { status: 403 });
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("forbidden");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "forbidden",
+    );
     expect(calls).toBe(1);
   });
 
@@ -78,7 +98,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("not found"), { status: 404 });
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("not found");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "not found",
+    );
     expect(calls).toBe(1);
   });
 
@@ -90,7 +112,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -103,7 +125,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -116,7 +138,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -125,7 +147,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("always fail"), { status: 500 });
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("always fail");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "always fail",
+    );
   });
 
   it("should pass request and signal through to wrapped function", async () => {
@@ -134,7 +158,9 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn);
     const controller = new AbortController();
-    expect(await retried("hello", controller.signal)).toBe("hello-has-signal");
+    expect(
+      await runWithFakeTimers(() => retried("hello", controller.signal)),
+    ).toBe("hello-has-signal");
   });
 
   it("should stop retrying when aborted", async () => {
@@ -148,7 +174,9 @@ describe("withRetry", () => {
     const controller = new AbortController();
     controller.abort();
 
-    await expect(retried(null, controller.signal)).rejects.toThrow("fail");
+    await expect(
+      runWithFakeTimers(() => retried(null, controller.signal)),
+    ).rejects.toThrow("fail");
     expect(calls).toBe(1);
   });
 
@@ -161,7 +189,7 @@ describe("withRetry", () => {
     };
     // Default: retries=2, baseMs=300, factor=2, jitter=true
     const retried = withRetry(fn);
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -179,7 +207,7 @@ describe("withRetry", () => {
       factor: 2,
       jitter: false,
     });
-    await retried(null);
+    await runWithFakeTimers(() => retried(null));
 
     // We can't directly observe the delays, but we can verify the function succeeds after retries
     expect(calls).toBe(3);
@@ -199,7 +227,7 @@ describe("withRetry", () => {
       baseMs: 1,
       jitter: true, // default
     });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -217,7 +245,7 @@ describe("withRetry", () => {
       factor: 3,
       jitter: false,
     });
-    await retried(null);
+    await runWithFakeTimers(() => retried(null));
 
     expect(calls).toBe(3);
   });
@@ -231,7 +259,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -243,7 +271,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -255,7 +283,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -267,7 +295,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -280,7 +308,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 });

@@ -7,12 +7,26 @@ import {
   FallbackOptions,
 } from "../../packages/provider/xai/src/middleware";
 
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
+  const result = action();
+  await vi.runAllTimersAsync();
+  return result;
+}
+
 describe("withRetry", () => {
   it("should return result on successful execution", async () => {
     const fn = vi.fn().mockResolvedValue("success");
     const wrapped = withRetry(fn);
 
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(1);
@@ -28,7 +42,7 @@ describe("withRetry", () => {
       .mockResolvedValue("success");
 
     const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(3);
@@ -42,7 +56,7 @@ describe("withRetry", () => {
       .mockResolvedValue("success");
 
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(2);
@@ -56,7 +70,7 @@ describe("withRetry", () => {
       .mockResolvedValue("success");
 
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(2);
@@ -78,7 +92,9 @@ describe("withRetry", () => {
 
     const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-    await expect(wrapped("request")).rejects.toEqual(error);
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
@@ -88,7 +104,9 @@ describe("withRetry", () => {
 
     const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-    await expect(wrapped("request")).rejects.toEqual(error);
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
@@ -100,7 +118,7 @@ describe("withRetry", () => {
       .mockResolvedValue("success");
 
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(2);
@@ -114,7 +132,7 @@ describe("withRetry", () => {
       .mockResolvedValue("success");
 
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(2);
@@ -128,7 +146,7 @@ describe("withRetry", () => {
       .mockResolvedValue("success");
 
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-    const result = await wrapped("request");
+    const result = await runWithFakeTimers(() => wrapped("request"));
 
     expect(result).toBe("success");
     expect(fn).toHaveBeenCalledTimes(2);
@@ -143,19 +161,17 @@ describe("withRetry", () => {
       .mockRejectedValueOnce(error)
       .mockResolvedValue("success");
 
-    const startTime = Date.now();
     const wrapped = withRetry(fn, {
       retries: 4,
       baseMs: 100,
       factor: 2,
       jitter: false,
     });
-    await wrapped("request");
-    const elapsed = Date.now() - startTime;
-
-    // Expected delays: 100ms (attempt 1), 200ms (attempt 2), 400ms (attempt 3)
-    // Total: ~700ms minimum
-    expect(elapsed).toBeGreaterThanOrEqual(650);
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+    await runWithFakeTimers(() => wrapped("request"));
+    const delays = setTimeoutSpy.mock.calls.map(([, timeout]) => timeout as number);
+    expect(delays).toEqual([100, 200, 400]);
+    setTimeoutSpy.mockRestore();
     expect(fn).toHaveBeenCalledTimes(4);
   });
 
@@ -163,16 +179,17 @@ describe("withRetry", () => {
     const error = { status: 429 };
     const fn = vi.fn().mockRejectedValue(error);
 
-    const startTime = Date.now();
     const wrapped = withRetry(fn, {
       retries: 1,
       baseMs: 50,
       jitter: false,
     });
-    await expect(wrapped("request")).rejects.toEqual(error);
-    const elapsed = Date.now() - startTime;
-
-    expect(elapsed).toBeGreaterThanOrEqual(45);
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 50);
+    setTimeoutSpy.mockRestore();
     expect(fn).toHaveBeenCalledTimes(2); // Initial + 1 retry
   });
 
@@ -184,19 +201,17 @@ describe("withRetry", () => {
       .mockRejectedValueOnce(error)
       .mockResolvedValue("success");
 
-    const startTime = Date.now();
     const wrapped = withRetry(fn, {
       retries: 3,
       baseMs: 50,
       factor: 3,
       jitter: false,
     });
-    await wrapped("request");
-    const elapsed = Date.now() - startTime;
-
-    // Expected delays: 50ms * 3^0 = 50ms, 50ms * 3^1 = 150ms
-    // Total: ~200ms minimum
-    expect(elapsed).toBeGreaterThanOrEqual(180);
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+    await runWithFakeTimers(() => wrapped("request"));
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 50);
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 150);
+    setTimeoutSpy.mockRestore();
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
@@ -208,11 +223,16 @@ describe("withRetry", () => {
 
     // Run multiple times to check jitter variance
     for (let i = 0; i < 5; i++) {
-      const startTime = Date.now();
+      const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
       const wrapped = withRetry(fn, { retries: 1, baseMs: 100, jitter: true });
-      await expect(wrapped("request")).rejects.toEqual(error);
-      const elapsed = Date.now() - startTime;
-      delays.push(elapsed);
+      await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+        error,
+      );
+      const delay = setTimeoutSpy.mock.calls.at(-1)?.[1];
+      if (typeof delay === "number") {
+        delays.push(delay);
+      }
+      setTimeoutSpy.mockRestore();
     }
 
     // With jitter, delays should vary (0.8 to 1.2 of base)
@@ -234,7 +254,9 @@ describe("withRetry", () => {
           baseMs: 50,
           jitter: false,
         });
-        await expect(wrapped("request")).rejects.toEqual(error);
+        await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+          error,
+        );
       }
 
       expect(setTimeoutSpy).toHaveBeenCalledTimes(3);
@@ -262,7 +284,9 @@ describe("withRetry", () => {
     // Abort immediately before calling
     controller.abort();
 
-    await expect(wrapped("request", controller.signal)).rejects.toEqual(error);
+    await expect(
+      runWithFakeTimers(() => wrapped("request", controller.signal)),
+    ).rejects.toEqual(error);
     expect(fn).toHaveBeenCalledTimes(1);
   });
 
@@ -271,7 +295,7 @@ describe("withRetry", () => {
     const controller = new AbortController();
 
     const wrapped = withRetry(fn);
-    await wrapped("request", controller.signal);
+    await runWithFakeTimers(() => wrapped("request", controller.signal));
 
     expect(fn).toHaveBeenCalledWith("request", controller.signal);
   });
@@ -282,7 +306,9 @@ describe("withRetry", () => {
 
     const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
 
-    await expect(wrapped("request")).rejects.toEqual(error);
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
     expect(fn).toHaveBeenCalledTimes(3); // Initial + 2 retries
   });
 
@@ -291,7 +317,9 @@ describe("withRetry", () => {
     const fn = vi.fn().mockRejectedValue(error);
 
     const wrapped = withRetry(fn);
-    await expect(wrapped("request")).rejects.toEqual(error);
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
 
     // Default: retries=2, so 3 total calls
     expect(fn).toHaveBeenCalledTimes(3);
@@ -302,7 +330,9 @@ describe("withRetry", () => {
     const fn = vi.fn().mockRejectedValue(error);
 
     const wrapped = withRetry(fn, { retries: 1 }); // Only override retries
-    await expect(wrapped("request")).rejects.toEqual(error);
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
 
     expect(fn).toHaveBeenCalledTimes(2);
   });
@@ -392,7 +422,9 @@ describe("withFallback", () => {
 
     const wrapped = withFallback([fn]);
 
-    await expect(wrapped("request")).rejects.toEqual(error);
+    await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+      error,
+    );
   });
 
   it("should throw error for empty function array", () => {

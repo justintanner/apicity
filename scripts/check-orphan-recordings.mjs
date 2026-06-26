@@ -19,7 +19,104 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const recordingsDir = path.join(root, "tests", "recordings");
-const testsDir = path.join(root, "tests", "integration");
+const testsDir = path.join(root, "tests");
+
+function parseArgs(argv) {
+  const options = {
+    providers: new Set(),
+    deleteOrphans: false,
+    help: false,
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--help" || arg === "-h") {
+      options.help = true;
+      continue;
+    }
+    if (arg === "--delete") {
+      options.deleteOrphans = true;
+      continue;
+    }
+    if (arg === "--provider" || arg === "--providers") {
+      if (i + 1 >= argv.length) {
+        throw new Error(`${arg} requires a comma-separated provider list`);
+      }
+      i++;
+      for (const provider of argv[i].split(",")) {
+        const normalized = provider.trim();
+        if (normalized) options.providers.add(normalized);
+      }
+      continue;
+    }
+    if (arg.startsWith("--provider=") || arg.startsWith("--providers=")) {
+      const value = arg.includes("=")
+        ? arg.slice(arg.indexOf("=") + 1)
+        : "";
+      for (const provider of value.split(",")) {
+        const normalized = provider.trim();
+        if (normalized) options.providers.add(normalized);
+      }
+      continue;
+    }
+    throw new Error(`Unknown argument: ${arg}`);
+  }
+
+  return options;
+}
+
+function parseArgSets() {
+  try {
+    return parseArgs(process.argv.slice(2));
+  } catch (error) {
+    console.error(error.message);
+    return null;
+  }
+}
+
+function usage() {
+  console.log(`Usage: node scripts/check-orphan-recordings.mjs [options]
+
+  --provider <list>    Comma-separated provider filter, e.g. "fal,xai"
+  --providers <list>   Alias for --provider
+  --provider= <list>   Alias for --provider
+  --providers= <list>  Alias for --provider
+  --delete             Delete orphan recordings after reporting (dangerous)
+  --help, -h           Show this help`);
+}
+
+function hasProviderPrefix(name, providers) {
+  if (providers.size === 0) return true;
+  const provider = name.split("/")[0];
+  return providers.has(provider);
+}
+
+function filterByProvider(values, providers) {
+  if (providers.size === 0) {
+    return new Set(values);
+  }
+  return new Set(
+    [...values].filter((name) => hasProviderPrefix(name, providers))
+  );
+}
+
+function diskRecordingEntries() {
+  const harFiles = walkFiles(
+    recordingsDir,
+    (file) => path.basename(file) === "recording.har"
+  );
+  const byName = new Map();
+  for (const file of harFiles) {
+    const name = dirToRecordingName(path.dirname(file));
+    const existing = byName.get(name);
+    if (existing) {
+      existing.add(path.dirname(file));
+    } else {
+      byName.set(name, new Set([path.dirname(file)]));
+    }
+  }
+  return byName;
+}
 
 function walkFiles(dir, predicate) {
   const out = [];
@@ -42,13 +139,8 @@ function dirToRecordingName(harDir) {
 }
 
 function diskRecordingNames() {
-  const harFiles = walkFiles(
-    recordingsDir,
-    (file) => path.basename(file) === "recording.har"
-  );
-  return new Set(
-    harFiles.map((file) => dirToRecordingName(path.dirname(file)))
-  );
+  const byName = diskRecordingEntries();
+  return new Set(byName.keys());
 }
 
 // --- test side: setupPolly()/recordingExists() name arguments ---------------
@@ -95,7 +187,9 @@ function referencesInFile(file) {
 }
 
 function referencedNames() {
-  const files = walkFiles(testsDir, (file) => file.endsWith(".ts"));
+  const files = walkFiles(testsDir, (file) =>
+    file.endsWith(".test.ts")
+  );
   const resolved = new Set();
   const unresolved = [];
   for (const file of files) {
@@ -136,41 +230,75 @@ function exampleSourceNames() {
 // --- compare ----------------------------------------------------------------
 
 function run() {
-  const disk = diskRecordingNames();
+  const options = parseArgSets();
+  if (!options) return 1;
+  if (options.help) {
+    usage();
+    return 0;
+  }
+
+  const diskEntries = diskRecordingEntries();
+  const diskAllNames = new Set(diskEntries.keys());
+  const disk = filterByProvider(diskAllNames, options.providers);
   const { resolved: testRefs, unresolved } = referencedNames();
   const exampleRefs = exampleSourceNames();
-  const referenced = new Set([...testRefs, ...exampleRefs]);
+  const filteredTestRefs = filterByProvider(testRefs, options.providers);
+  const filteredExampleRefs = filterByProvider(exampleRefs, options.providers);
+  const referenced = new Set([...filteredTestRefs, ...filteredExampleRefs]);
 
   // Orphans: on disk, used by neither a test nor an example source.
   const orphans = [...disk].filter((name) => !referenced.has(name)).sort();
   // Missing: a test references a name with no recording on disk. (Example
   // sources are not checked here -- the build self-heals stale example.json.)
-  const missing = [...testRefs].filter((name) => !disk.has(name)).sort();
+  const missing = [...filteredTestRefs].filter((name) => !disk.has(name)).sort();
 
   for (const entry of unresolved) {
     console.warn(`warn: non-static setupPolly name, skipped -- ${entry}`);
   }
 
   if (orphans.length === 0 && missing.length === 0) {
+    const providerLabel =
+      options.providers.size > 0
+        ? ` [providers: ${[...options.providers].join(", ")}]`
+        : "";
     console.log(
       `check-orphan-recordings: OK (${disk.size} recordings, ` +
-        `${testRefs.size} test refs, ${exampleRefs.size} example sources)`
+        `${filteredTestRefs.size} test refs, ` +
+        `${filteredExampleRefs.size} example sources)` +
+        `${providerLabel}`
     );
     return 0;
   }
 
   if (orphans.length) {
+    const prefix = options.providers.size > 0 ? "[filtered] " : "";
     console.error(
-      `\n${orphans.length} ORPHAN recording(s) -- on disk, referenced by no test:`
+      `\n${orphans.length} ${prefix}ORPHAN recording(s) -- on disk,` +
+        " referenced by no test:"
     );
     for (const name of orphans) console.error(`  ${name}`);
   }
   if (missing.length) {
+    const prefix = options.providers.size > 0 ? "[filtered] " : "";
     console.error(
-      `\n${missing.length} MISSING recording(s) -- referenced by a test, no recording.har on disk:`
+      `\n${missing.length} ${prefix}MISSING recording(s) -- referenced by` +
+        " a test, no recording.har on disk:"
     );
     for (const name of missing) console.error(`  ${name}`);
   }
+
+  if (options.deleteOrphans && orphans.length > 0) {
+    for (const name of orphans) {
+      const dirs = diskEntries.get(name);
+      if (!dirs) continue;
+      for (const dir of dirs) {
+        fs.rmSync(dir, { recursive: true, force: true });
+        console.log(`deleted: ${path.relative(root, dir)}`);
+      }
+    }
+    console.log(`deleted ${orphans.length} orphan recording directory(ies).`);
+  }
+
   console.error("");
   return 1;
 }

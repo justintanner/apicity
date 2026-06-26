@@ -119,6 +119,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/alibaba",
     factoryName: "createAlibaba",
   },
+  zai: {
+    envVar: "ZAI_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/zai",
+    factoryName: "createZai",
+  },
   binance: {
     envVar: "",
     optionKey: "apiKey",

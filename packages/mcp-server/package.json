@@ -75,6 +75,7 @@
     "@apicity/x": "workspace:*",
     "@apicity/xai": "workspace:*",
     "@apicity/youtube": "workspace:*",
+    "@apicity/zai": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0"
   },
   "homepage": "https://github.com/justintanner/apicity#readme",

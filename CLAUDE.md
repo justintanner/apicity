@@ -37,21 +37,23 @@ over raw `vitest` / `op run` invocations.
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
 pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
-pnpm run lint                    # Lint (runs build first via prelint)
+pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)
+pnpm run lint                    # Lint: prettier --check + ESLint + endpoint checks (NO build)
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
+pnpm run format:check            # Check formatting without writing (part of lint)
 
 # Test (replay-only; no network, no keys)
 pnpm run test:run                # Run all tests once (Polly.js replay)
 pnpm run test:run <file>         # Replay a single test file
-pnpm run test:provider <name>    # Replay ONLY one provider's tests, e.g. `pnpm test:provider openai`
+pnpm run test:provider <name>    # Typecheck + replay ONE provider's tests, e.g. `pnpm test:provider openai`
 pnpm run test                    # Run tests in watch mode
 
 # Dev workflow (discrete per-phase aliases)
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
-pnpm run dev:preflight           # format + lint + test:run (run before `git push`)
-pnpm run dev:preflight:provider <name> # format + lint + ONE provider's tests (fast loop; full suite is CI's job)
+pnpm run dev:preflight           # format + typecheck + lint + test:run (run before `git push`)
+pnpm run dev:preflight:provider <name> # format + lint + ONE provider's typecheck&tests (fast loop; full suite is CI's job)
 pnpm run ci:local                # build + lint + test:run (exact CI mirror)
 
 # Harness viewer + screenshots

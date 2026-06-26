@@ -1,7 +1,7 @@
 import js from "@eslint/js";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import prettier from "eslint-plugin-prettier";
+import eslintConfigPrettier from "eslint-config-prettier";
 
 export default [
   {
@@ -40,10 +40,9 @@ export default [
       ],
     },
   },
-  {
-    plugins: { prettier },
-    rules: {
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
-    },
-  },
+  // Formatting is enforced separately via `pnpm run format:check`
+  // (prettier --check). Running Prettier as an ESLint rule was the dominant
+  // lint cost, so we drop the plugin and only disable ESLint's stylistic rules
+  // that would conflict with Prettier. Keep this entry LAST.
+  eslintConfigPrettier,
 ];

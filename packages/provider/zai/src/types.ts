@@ -53,7 +53,7 @@ export interface ZaiProvider {
           completions: (
             params: ZaiChatRequest,
             options?: { signal?: AbortSignal }
-          ) => Promise<ZaiChatResponse | AsyncIterable<any>>;
+          ) => Promise<ZaiChatResponse | AsyncIterable<unknown>>;
         };
       };
     };

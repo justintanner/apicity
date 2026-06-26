@@ -26,7 +26,9 @@ export function createZai(options: ZaiOptions = {}): ZaiProvider {
         try {
           const errBody = await response.json();
           errStr = JSON.stringify(errBody);
-        } catch {}
+        } catch {
+          // ignore error
+        }
         throw new Error(`HTTP ${response.status}: ${errStr}`);
       }
       return response;

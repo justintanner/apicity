@@ -14,10 +14,14 @@
  * Tests alias `@apicity/*` to package source (tests/vitest.integration.ts), so
  * no build is required first. POLLY_MODE defaults to replay — this never
  * records and needs no API keys.
+ *
+ * As the provider gate, this first type-checks the provider's package
+ * (`tsc --noEmit`) — vitest/esbuild strips types without checking them. For a
+ * pure replay with no typecheck, use `pnpm run test:run <file>`.
  */
 
 import { spawnSync } from "node:child_process";
-import { readdirSync } from "node:fs";
+import { readdirSync, existsSync } from "node:fs";
 import path from "node:path";
 
 const INTEGRATION_DIR = "tests/integration";
@@ -67,6 +71,28 @@ if (matches.length === 0) {
       "\n"
   );
   process.exit(1);
+}
+
+// Typecheck this provider's package before replaying its tests. Vitest runs
+// against source through esbuild, which strips types WITHOUT checking them — so
+// without this, type errors only surface at `dev:preflight` / CI. As the
+// provider gate, `test:provider` should catch them locally. (Need a pure,
+// no-typecheck replay? Use `pnpm run test:run <file>`.)
+const pkgTsconfig = path.join(
+  "packages",
+  "provider",
+  provider,
+  "tsconfig.json"
+);
+if (existsSync(pkgTsconfig)) {
+  console.error(dim(`typecheck ${provider} — tsc --noEmit`));
+  const tc = spawnSync("npx", ["tsc", "--noEmit", "-p", pkgTsconfig], {
+    stdio: "inherit",
+  });
+  if (tc.status !== 0) {
+    console.error(red(`\nTypecheck failed for "${provider}".`));
+    process.exit(tc.status ?? 1);
+  }
 }
 
 console.error(dim(`test:provider ${provider} — ${matches.length} file(s)`));

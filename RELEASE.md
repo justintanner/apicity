@@ -80,8 +80,8 @@ The formula creates 9 workflow steps:
    `apicity` 1Password vault
 7. `tag-push-and-github-release` — `git tag v<version>`, push `stable` + tag,
    and create or update the GitHub release page for
-    `v<version>` with a flat Summary list of closed bead work since the
-    previous release, excluding release workflow noise
+   `v<version>` with a flat Summary list of closed bead work since the
+   previous release, excluding release workflow noise
 8. `sync-main-and-smoke-install` — fast-forward `main` to the release commit,
    push it, then `npm install @apicity/openai@latest` in `/tmp` and
    dynamic-import

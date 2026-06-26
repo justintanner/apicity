@@ -14,8 +14,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      # The explicit build step below provides dist/; skip the prelint /
-      # pretest:run hook rebuilds that would compile everything two more times.
+      # Defense-in-depth: lint and tests run against source, never dist, so they
+      # must not trigger a build. The prelint / pretest:run hooks that used to
+      # rebuild everything were removed; this keeps it that way if a pre/post
+      # hook is ever reintroduced.
       npm_config_enable_pre_post_scripts: "false"
     steps:
       - name: Checkout repository
@@ -62,6 +64,12 @@ jobs:
 
       - name: Lint
         run: pnpm run lint
+
+      # Advisory only — signature-drift warnings never block (the script always
+      # exits 0). Kept out of `pnpm run lint` so the local lint loop stays fast.
+      - name: Endpoint signature drift (advisory)
+        run: pnpm run lint:signatures
+        continue-on-error: true
 
       - name: Integration tests (replay)
         run: pnpm run test:run

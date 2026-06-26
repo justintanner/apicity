@@ -50,9 +50,7 @@ function parseArgs(argv) {
       continue;
     }
     if (arg.startsWith("--provider=") || arg.startsWith("--providers=")) {
-      const value = arg.includes("=")
-        ? arg.slice(arg.indexOf("=") + 1)
-        : "";
+      const value = arg.includes("=") ? arg.slice(arg.indexOf("=") + 1) : "";
       for (const provider of value.split(",")) {
         const normalized = provider.trim();
         if (normalized) options.providers.add(normalized);
@@ -138,11 +136,6 @@ function dirToRecordingName(harDir) {
     .join("/");
 }
 
-function diskRecordingNames() {
-  const byName = diskRecordingEntries();
-  return new Set(byName.keys());
-}
-
 // --- test side: setupPolly()/recordingExists() name arguments ---------------
 
 const SETUP_RE = /setupPolly\w*\(\s*([^),]+?)\s*[),]/g;
@@ -187,9 +180,7 @@ function referencesInFile(file) {
 }
 
 function referencedNames() {
-  const files = walkFiles(testsDir, (file) =>
-    file.endsWith(".test.ts")
-  );
+  const files = walkFiles(testsDir, (file) => file.endsWith(".test.ts"));
   const resolved = new Set();
   const unresolved = [];
   for (const file of files) {
@@ -250,7 +241,9 @@ function run() {
   const orphans = [...disk].filter((name) => !referenced.has(name)).sort();
   // Missing: a test references a name with no recording on disk. (Example
   // sources are not checked here -- the build self-heals stale example.json.)
-  const missing = [...filteredTestRefs].filter((name) => !disk.has(name)).sort();
+  const missing = [...filteredTestRefs]
+    .filter((name) => !disk.has(name))
+    .sort();
 
   for (const entry of unresolved) {
     console.warn(`warn: non-static setupPolly name, skipped -- ${entry}`);

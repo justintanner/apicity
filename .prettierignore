@@ -7,3 +7,8 @@ packages/provider/*/src/example.ts
 # maintained by the generator; cost/README.md is hand-written.
 packages/provider/*/README.md
 !packages/provider/cost/README.md
+# Beads/Dolt tool-managed data — config.yaml, metadata.json, issues.jsonl,
+# PRIME.md, formulas, identity are written/rewritten by the beads CLI, not
+# Prettier. Checking them makes `format:check` (and CI) fail whenever the
+# tooling rewrites them unformatted.
+.beads/

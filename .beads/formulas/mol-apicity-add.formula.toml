@@ -22,12 +22,11 @@ and enough context to start cold.
 """
 formula = "mol-apicity-add"
 version = 1
-# graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
-# on the root step). Without it, `gc sling --formula mol-apicity-add` to the
-# scale-from-zero pool (apicity/gastown.polecat) is rejected -- a plain v1 root is a
-# molecule container, not Ready work, so the pool never wakes for the wisp.
-contract = "graph.v2"
-
+# Requiring formula_compiler >=2.0.0 compiles this as a v2 graph, giving the recipe a
+# Ready-visible workflow root (gc.kind=workflow on the root step). Without it, `gc sling
+# --formula mol-apicity-add` to the scale-from-zero pool (apicity/gastown.polecat) is
+# rejected -- a plain v1 root is a molecule container, not Ready work, so the pool never
+# wakes for the wisp. (Replaces the deprecated `contract = "graph.v2"`.)
 [requires]
 formula_compiler = ">=2.0.0"
 

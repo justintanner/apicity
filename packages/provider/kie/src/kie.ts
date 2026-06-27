@@ -13,6 +13,7 @@ import {
   FileUrlUploadRequest,
   FileBase64UploadRequest,
   KieTaskInfo,
+  Gpt4oImageRecordInfo,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateResponse,
   GeminiOmniCharacterCreateRequest,
@@ -32,6 +33,7 @@ import {
   FluxKontextGenerateRequestSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
+  Gpt4oImageRecordInfoResponseSchema,
   Seedance2MiniRecordInfoResponseSchema,
   Seedance2MiniRequestSchema,
 } from "./zod";
@@ -247,6 +249,56 @@ export function createKie(opts: KieOptions): KieProvider {
       clearTimeout(timeoutId);
       if (error instanceof KieError) throw error;
       throw new KieError(`Failed to get task: ${error}`, 500);
+    }
+  }
+
+  // GET https://api.kie.ai/api/v1/gpt4o-image/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/4o-image-api/get-4-o-image-details
+  async function gpt4oImageRecordInfo(
+    taskId: string
+  ): Promise<Gpt4oImageRecordInfo> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(
+        `${baseURL}/api/v1/gpt4o-image/record-info?taskId=${encodeURIComponent(taskId)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${opts.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Kie API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
+          ) {
+            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KieError(message, res.status, body);
+      }
+
+      return (await res.json()) as Gpt4oImageRecordInfo;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof KieError) throw error;
+      throw new KieError(`Failed to get 4o image task: ${error}`, 500);
     }
   }
 
@@ -633,6 +685,12 @@ export function createKie(opts: KieOptions): KieProvider {
                   schema: RecordInfoRequestSchema,
                   seedance2MiniResponseSchema:
                     Seedance2MiniRecordInfoResponseSchema,
+                }),
+              },
+              gpt4oImage: {
+                recordInfo: Object.assign(gpt4oImageRecordInfo, {
+                  schema: RecordInfoRequestSchema,
+                  responseSchema: Gpt4oImageRecordInfoResponseSchema,
                 }),
               },
               chat: { credit },

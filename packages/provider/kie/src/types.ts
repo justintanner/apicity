@@ -272,6 +272,11 @@ export type {
   RunwayQuality,
   RunwayAspectRatio,
   RunwayDuration,
+  FluxKontextRecordInfoRequest,
+  FluxKontextRecordInfoRequestInput,
+  FluxKontextSuccessFlag,
+  FluxKontextRecordInfoData,
+  FluxKontextRecordInfoResponse,
   KieGeminiRole,
   KieGeminiThinkingLevel,
   KieGeminiInlineData,
@@ -473,6 +478,8 @@ import type {
   MjGenerateRequest,
   RunwayGenerateRequest,
   RunwayExtendRequest,
+  FluxKontextRecordInfoRequest,
+  FluxKontextRecordInfoResponse,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
 } from "./zod";
@@ -567,6 +574,12 @@ interface KieRunwayRecordDetailMethod {
   responseSchema: ApicitySchema<RunwayRecordDetail>;
 }
 
+interface KieFluxKontextRecordInfoMethod {
+  (taskId: string): Promise<FluxKontextRecordInfoResponse>;
+  schema: ApicitySchema<FluxKontextRecordInfoRequest>;
+  responseSchema: ApicitySchema<FluxKontextRecordInfoResponse>;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
@@ -607,6 +620,11 @@ interface KieGetApiNamespace {
     jobs: { recordInfo: KieRecordInfoMethod };
     gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
     runway: { recordDetail: KieRunwayRecordDetailMethod };
+    flux: {
+      kontext: {
+        recordInfo: KieFluxKontextRecordInfoMethod;
+      };
+    };
     chat: { credit(): Promise<KieCreditsResponse> };
   };
 }

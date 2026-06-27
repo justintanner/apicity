@@ -700,6 +700,7 @@ kie	api.fileUrlUpload	POST	https://kieai.redpandaai.co/api/file-url-upload	https
 kie	api.v1.chat.credit	GET	https://api.kie.ai/api/v1/chat/credit	https://docs.kie.ai/common-api/get-account-credits
 kie	api.v1.common.downloadUrl	POST	https://api.kie.ai/api/v1/common/download-url	https://docs.kie.ai/common-api/download-url
 kie	api.v1.flux.kontext.generate	POST	https://api.kie.ai/api/v1/flux/kontext/generate	https://docs.kie.ai/flux-kontext-api/generate-or-edit-image
+kie	api.v1.flux.kontext.recordInfo	GET	https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}	https://docs.kie.ai/flux-kontext-api/get-image-details
 kie	api.v1.generate	POST	https://api.kie.ai/api/v1/generate	https://docs.kie.ai/suno-api/generate-music
 kie	api.v1.generate.addInstrumental	POST	https://api.kie.ai/api/v1/generate/add-instrumental	https://docs.kie.ai/suno-api/add-instrumental
 kie	api.v1.generate.addVocals	POST	https://api.kie.ai/api/v1/generate/add-vocals	https://docs.kie.ai/suno-api/add-vocals

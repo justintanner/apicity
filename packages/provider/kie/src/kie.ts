@@ -25,6 +25,7 @@ import {
   RunwayExtendRequest,
   RunwayRecordDetail,
 } from "./types";
+import type { FluxKontextRecordInfoResponse } from "./zod";
 import {
   CreateTaskRequestSchema,
   DownloadUrlRequestSchema,
@@ -41,6 +42,8 @@ import {
   RunwayGenerateRequestSchema,
   RunwayExtendRequestSchema,
   RunwayRecordDetailResponseSchema,
+  FluxKontextRecordInfoRequestSchema,
+  FluxKontextRecordInfoResponseSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
@@ -700,6 +703,56 @@ export function createKie(opts: KieOptions): KieProvider {
     }
   }
 
+  // GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/flux-kontext-api/get-image-details
+  async function fluxKontextRecordInfo(
+    taskId: string
+  ): Promise<FluxKontextRecordInfoResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(
+        `${baseURL}/api/v1/flux/kontext/record-info?taskId=${encodeURIComponent(taskId)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${opts.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Kie API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
+          ) {
+            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KieError(message, res.status, body);
+      }
+
+      return (await res.json()) as FluxKontextRecordInfoResponse;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof KieError) throw error;
+      throw new KieError(`Failed to get Flux Kontext task: ${error}`, 500);
+    }
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -828,6 +881,14 @@ export function createKie(opts: KieOptions): KieProvider {
                   schema: RecordInfoRequestSchema,
                   responseSchema: RunwayRecordDetailResponseSchema,
                 }),
+              },
+              flux: {
+                kontext: {
+                  recordInfo: Object.assign(fluxKontextRecordInfo, {
+                    schema: FluxKontextRecordInfoRequestSchema,
+                    responseSchema: FluxKontextRecordInfoResponseSchema,
+                  }),
+                },
               },
               chat: { credit },
             },

@@ -272,6 +272,9 @@ export const AnthropicSkillVersionsCreateRequestSchema = z.object({
 
 export const AnthropicOptionsSchema = z.object({
   apiKey: z.string().min(1),
+  // OAuth access token (sk-ant-oat...) for subscription-scoped endpoints such
+  // as /api/oauth/usage. Falls back to `apiKey` when omitted.
+  oauthToken: z.string().optional(),
   baseURL: z.string().url().optional(),
   timeout: z.number().int().positive().optional(),
   defaultVersion: z.string().optional(),

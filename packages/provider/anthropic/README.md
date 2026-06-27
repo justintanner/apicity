@@ -169,7 +169,7 @@ console.log(
 
 ## API Reference
 
-26 endpoints across 4 groups. Each method mirrors an upstream URL path.
+27 endpoints across 5 groups. Each method mirrors an upstream URL path.
 
 ### files
 
@@ -456,6 +456,23 @@ Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
 
 ```typescript
 const res = await anthropic.v1.models.retrieve({ /* ... */ });
+```
+
+Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)
+
+</details>
+
+### oauth
+
+<details>
+<summary><code>GET</code> <b><code>anthropic.api.oauth.usage</code></b></summary>
+
+<code>GET https://api.anthropic.com/api/oauth/usage</code>
+
+[Upstream docs ↗](https://docs.anthropic.com/en/api)
+
+```typescript
+const res = await anthropic.api.oauth.usage({ /* ... */ });
 ```
 
 Source: [`packages/provider/anthropic/src/anthropic.ts`](src/anthropic.ts)

@@ -651,6 +651,92 @@ export interface AnthropicV1Namespace {
   skills: AnthropicSkillsNamespace;
 }
 
+// ---------- OAuth usage (subscription rate-limit utilization) ----------
+
+// A single rolling-window utilization record. `utilization` is the percentage
+// (0–100) of the window's limit consumed; dollar fields are populated only for
+// spend-metered windows and are null for plan-metered ones.
+export interface AnthropicUsageWindow {
+  utilization: number;
+  resets_at: string | null;
+  limit_dollars: number | null;
+  used_dollars: number | null;
+  remaining_dollars: number | null;
+}
+
+export interface AnthropicUsageLimitScope {
+  model?: { id: string | null; display_name: string | null } | null;
+  surface?: string | null;
+}
+
+// Normalized per-limit entry mirroring what the usage UI renders as a bar.
+export interface AnthropicUsageLimit {
+  kind: string;
+  group: string;
+  percent: number;
+  severity: string;
+  resets_at: string | null;
+  scope: AnthropicUsageLimitScope | null;
+  is_active: boolean;
+}
+
+export interface AnthropicUsageSpendUsed {
+  amount_minor: number;
+  currency: string;
+  exponent: number;
+}
+
+export interface AnthropicUsageSpend {
+  used: AnthropicUsageSpendUsed;
+  limit: number | null;
+  percent: number;
+  severity: string;
+  enabled: boolean;
+  disabled_reason: string | null;
+  cap: number | null;
+  balance: number | null;
+  auto_reload: unknown;
+  disclaimer: string | null;
+  can_purchase_credits: boolean;
+  can_toggle: boolean;
+}
+
+export interface AnthropicUsageExtra {
+  is_enabled: boolean;
+  monthly_limit: number | null;
+  used_credits: number | null;
+  utilization: number | null;
+  currency: string | null;
+  decimal_places: number | null;
+  disabled_reason: string | null;
+  daily: unknown;
+  weekly: unknown;
+}
+
+// Response of GET /api/oauth/usage. `five_hour.utilization` and
+// `seven_day.utilization` are the rolling 5-hour and weekly usage percentages.
+export interface AnthropicOauthUsageResponse {
+  five_hour: AnthropicUsageWindow;
+  seven_day: AnthropicUsageWindow;
+  seven_day_oauth_apps: AnthropicUsageWindow | null;
+  seven_day_opus: AnthropicUsageWindow | null;
+  seven_day_sonnet: AnthropicUsageWindow | null;
+  seven_day_cowork: AnthropicUsageWindow | null;
+  seven_day_omelette: AnthropicUsageWindow | null;
+  extra_usage: AnthropicUsageExtra;
+  limits: AnthropicUsageLimit[];
+  spend: AnthropicUsageSpend;
+  member_dashboard_available: boolean;
+}
+
+export interface AnthropicOauthNamespace {
+  usage: (signal?: AbortSignal) => Promise<AnthropicOauthUsageResponse>;
+}
+
+export interface AnthropicApiNamespace {
+  oauth: AnthropicOauthNamespace;
+}
+
 export interface AnthropicProvider {
   post: {
     v1: AnthropicPostV1Namespace;
@@ -659,6 +745,7 @@ export interface AnthropicProvider {
   get: { v1: AnthropicGetV1Namespace };
   delete: { v1: AnthropicDeleteV1Namespace };
   v1: AnthropicV1Namespace;
+  api: AnthropicApiNamespace;
 }
 
 // ---------- Error class ----------

@@ -24,6 +24,7 @@ import {
   AnthropicSkillVersionDeleteResponse,
   AnthropicListParams,
   AnthropicStreamEvent,
+  AnthropicOauthUsageResponse,
   AnthropicProvider,
   AnthropicError,
 } from "./types";
@@ -56,6 +57,8 @@ function attachAbortHandler(
 
 export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
   const baseURL = (opts.baseURL ?? "https://api.anthropic.com") + "/v1";
+  // Root host (no /v1 suffix) for non-versioned surfaces like /api/oauth/usage.
+  const apiBase = opts.baseURL ?? "https://api.anthropic.com";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
   const version = opts.defaultVersion ?? "2023-06-01";
@@ -711,6 +714,35 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     );
   }
 
+  // GET https://api.anthropic.com/api/oauth/usage
+  // Docs: https://docs.anthropic.com/en/api
+  async function getOauthUsage(
+    signal?: AbortSignal
+  ): Promise<AnthropicOauthUsageResponse> {
+    // Subscription usage lives off the un-versioned root and authenticates with
+    // an OAuth bearer token (the same call Claude's usage/limits UI makes),
+    // not the x-api-key header the rest of the factory uses.
+    const { controller, timeoutId } = makeController(signal);
+    try {
+      const res = await doFetch(`${apiBase}/api/oauth/usage`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${opts.oauthToken ?? opts.apiKey}`,
+          "anthropic-version": version,
+          "anthropic-beta": "oauth-2025-04-20",
+        },
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+      if (!res.ok) return await handleError(res);
+      return (await res.json()) as AnthropicOauthUsageResponse;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof AnthropicError) throw error;
+      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
+    }
+  }
+
   // --- Build namespaces ---
 
   const postV1 = {
@@ -848,10 +880,18 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
 
   // --- Build provider ---
 
+  // Un-versioned subscription surface (mirrors the /api/oauth/* URL path).
+  const api = {
+    oauth: {
+      usage: getOauthUsage,
+    },
+  };
+
   return attachExamples({
     post: { v1: postV1, stream: { v1: postStreamV1 } },
     get: { v1: getV1 },
     delete: { v1: deleteV1 },
     v1: legacyV1,
+    api,
   });
 }

@@ -439,6 +439,7 @@ b2	objects.getLegalHold	GET	https://s3.us-west-004.backblazeb2.com/{bucket}/{key
 b2	objects.putLegalHold	PUT	https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?legal-hold{query}	https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api
 b2	objects.getRetention	GET	https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?retention{query}	https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api
 b2	objects.putRetention	PUT	https://s3.us-west-004.backblazeb2.com/{bucket}/{key}?retention{query}	https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api
+anthropic	api.oauth.usage	GET	https://api.anthropic.com/api/oauth/usage	https://docs.anthropic.com/en/api
 anthropic	v1.files	POST	https://api.anthropic.com/v1/files	https://docs.anthropic.com/en/api
 anthropic	v1.files.content	GET	https://api.anthropic.com/v1/files/{fileId}/content	https://docs.anthropic.com/en/api
 anthropic	v1.files.del	DELETE	https://api.anthropic.com/v1/files/{fileId}	https://docs.anthropic.com/en/api

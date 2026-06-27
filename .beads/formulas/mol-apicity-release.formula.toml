@@ -28,9 +28,10 @@ token must have publish access for the `@apicity` scope.
 """
 formula = "mol-apicity-release"
 version = 1
-contract = "graph.v2"
 target_required = false
 
+# Requiring formula_compiler >=2.0.0 compiles this as a v2 graph (Ready-visible workflow
+# root). Replaces the deprecated `contract = "graph.v2"`.
 [requires]
 formula_compiler = ">=2.0.0"
 

@@ -24,11 +24,10 @@ Strict conventions enforced by lint:
 """
 formula = "mol-apicity-add-endpoint"
 version = 1
-# graph.v2 gives the compiled recipe a Ready-visible workflow root (gc.kind=workflow
-# on the root step), so `gc sling --formula` to the scale-from-zero pool wakes a
-# worker. A plain v1 root is a molecule container and the pool would never wake.
-contract = "graph.v2"
-
+# Requiring formula_compiler >=2.0.0 compiles this as a v2 graph, giving the recipe a
+# Ready-visible workflow root (gc.kind=workflow on the root step), so `gc sling --formula`
+# to the scale-from-zero pool wakes a worker. A plain v1 root is a molecule container and
+# the pool would never wake. (Replaces the deprecated `contract = "graph.v2"`.)
 [requires]
 formula_compiler = ">=2.0.0"
 

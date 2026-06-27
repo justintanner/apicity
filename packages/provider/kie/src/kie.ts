@@ -17,6 +17,7 @@ import {
   GeminiOmniAudioCreateResponse,
   GeminiOmniCharacterCreateRequest,
   GeminiOmniCharacterCreateResponse,
+  FluxKontextGenerateRequest,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -28,6 +29,7 @@ import {
   GeminiOmniAudioCreateRequestSchema,
   GeminiOmniCharacterCreateRequestSchema,
   GeminiOmniCharacterCreateResponseSchema,
+  FluxKontextGenerateRequestSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Seedance2MiniRecordInfoResponseSchema,
@@ -520,6 +522,20 @@ export function createKie(opts: KieOptions): KieProvider {
     );
   }
 
+  // POST https://api.kie.ai/api/v1/flux/kontext/generate
+  // Docs: https://docs.kie.ai/flux-kontext-api/generate-or-edit-image
+  async function fluxKontextGenerate(
+    req: FluxKontextGenerateRequest
+  ): Promise<TaskResponse> {
+    return kieRequest<TaskResponse>(`${baseURL}/api/v1/flux/kontext/generate`, {
+      method: "POST",
+      body: req,
+      apiKey: opts.apiKey,
+      doFetch,
+      timeout,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -587,6 +603,13 @@ export function createKie(opts: KieOptions): KieProvider {
                   create: Object.assign(omniCharacterCreate, {
                     schema: GeminiOmniCharacterCreateRequestSchema,
                     responseSchema: GeminiOmniCharacterCreateResponseSchema,
+                  }),
+                },
+              },
+              flux: {
+                kontext: {
+                  generate: Object.assign(fluxKontextGenerate, {
+                    schema: FluxKontextGenerateRequestSchema,
                   }),
                 },
               },

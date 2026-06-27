@@ -73,6 +73,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
       costNotes: "Billed per video extension based on model and duration",
     },
   },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.flux.kontext.generate",
+    },
+    info: {
+      reason:
+        "Flux Kontext image generation/edit task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per image generation based on model (pro/max)",
+    },
+  },
 ];
 
 /**

@@ -990,6 +990,19 @@ export function mintKieVeoOtp(
   };
 }
 
+export function mintKieFluxKontextOtp(request: Record<string, unknown>): {
+  otp: string;
+} {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.flux.kontext.generate",
+      request,
+    }),
+  };
+}
+
 export function mintXaiOtp(
   dotPath: string,
   request: Record<string, unknown>

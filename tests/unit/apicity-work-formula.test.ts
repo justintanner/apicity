@@ -69,7 +69,9 @@ describe("mol-apicity-add formula catalog", () => {
     const launcher = path.join("formulas", "mol-apicity-add.formula.toml");
 
     expect(formula).toContain('formula = "mol-apicity-add"');
-    expect(formula).toContain('contract = "graph.v2"');
+    // v2-graph workflow root is now declared via [requires] formula_compiler (>=2.0.0),
+    // replacing the deprecated `contract = "graph.v2"` (gc doctor formula-requirements).
+    expect(formula).toContain('formula_compiler = ">=2.0.0"');
     expect(fs.lstatSync(launcher).isSymbolicLink()).toBe(true);
     expect(fs.readlinkSync(launcher)).toBe(
       "../.beads/formulas/mol-apicity-add.formula.toml"

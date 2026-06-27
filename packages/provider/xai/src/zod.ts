@@ -517,6 +517,23 @@ export const XaiResponseRequestSchema = z.object({
   user: z.string().optional(),
 });
 
+// Responses API — compaction. Compacts a full input window into a shorter
+// canonical window. The request mirrors the `/v1/responses` `input` shape but
+// accepts only `model` + `input` (no instructions, tools, sampling, etc.).
+export const XaiResponseCompactRequestSchema = z.object({
+  model: z.string(),
+  input: z.union([
+    z.string(),
+    z.array(
+      z.union([
+        XaiResponseInputMessageSchema,
+        XaiResponseFunctionCallOutputSchema,
+        XaiResponseItemReferenceSchema,
+      ])
+    ),
+  ]),
+});
+
 // ---------------------------------------------------------------------------
 // Tokenize text
 // ---------------------------------------------------------------------------
@@ -762,6 +779,13 @@ export type XaiResponseRequest = z.input<typeof XaiResponseRequestSchema>;
 export type XaiResponseRequestInput = XaiResponseRequest;
 export type XaiResponseParsedRequest = z.output<
   typeof XaiResponseRequestSchema
+>;
+export type XaiResponseCompactRequest = z.input<
+  typeof XaiResponseCompactRequestSchema
+>;
+export type XaiResponseCompactRequestInput = XaiResponseCompactRequest;
+export type XaiResponseCompactParsedRequest = z.output<
+  typeof XaiResponseCompactRequestSchema
 >;
 export type XaiTokenizeTextRequest = z.input<
   typeof XaiTokenizeTextRequestSchema

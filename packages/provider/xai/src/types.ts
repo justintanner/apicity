@@ -88,6 +88,9 @@ export type {
   XaiResponseRequest,
   XaiResponseRequestInput,
   XaiResponseParsedRequest,
+  XaiResponseCompactRequest,
+  XaiResponseCompactRequestInput,
+  XaiResponseCompactParsedRequest,
   XaiTokenizeTextRequest,
   XaiTokenizeTextRequestInput,
   XaiTokenizeTextParsedRequest,
@@ -589,6 +592,28 @@ export interface XaiResponseDeleteResponse {
   id: string;
   object: "response";
   deleted: boolean;
+}
+
+// POST /v1/responses/compact token usage. Mirrors XaiResponseUsage and adds
+// the xAI-specific dropped_message_count extension.
+export interface XaiResponseCompactUsage {
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  input_tokens_details: { cached_tokens: number };
+  output_tokens_details: { reasoning_tokens: number };
+  dropped_message_count: number;
+}
+
+// POST /v1/responses/compact response. `output` holds a single compaction
+// item — spread it verbatim into the `input` of the next /v1/responses call.
+export interface XaiResponseCompactResponse {
+  id: string;
+  object: "response.compaction";
+  created_at: number;
+  model: string;
+  output: Record<string, unknown>[];
+  usage: XaiResponseCompactUsage | null;
 }
 
 // Single token in tokenize-text response

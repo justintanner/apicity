@@ -110,6 +110,34 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "input": "Hello!"
     }
   },
+  "POST v1.responses.compact": {
+    "source": "xai/responses-compact",
+    "payload": {
+      "model": "grok-4-fast",
+      "input": [
+        {
+          "role": "system",
+          "content": "You are a concise science tutor."
+        },
+        {
+          "role": "user",
+          "content": "What is the Higgs boson?"
+        },
+        {
+          "role": "assistant",
+          "content": "The Higgs boson is an elementary particle that gives mass to other particles via the Higgs field."
+        },
+        {
+          "role": "user",
+          "content": "How does the Higgs mechanism work?"
+        },
+        {
+          "role": "assistant",
+          "content": "Through spontaneous symmetry breaking: the Higgs field has a nonzero vacuum value and particles acquire mass by coupling to it."
+        }
+      ]
+    }
+  },
   "POST v1.tokenizeText": {
     "source": "xai/tokenize-text",
     "payload": {

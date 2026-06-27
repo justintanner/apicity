@@ -1191,6 +1191,7 @@ xai	v1.realtime.clientSecrets	POST	https://api.x.ai/v1/realtime/client_secrets	h
 xai	v1.responses	DELETE	https://api.x.ai/v1/responses/{id}	https://docs.x.ai/docs/api-reference
 xai	v1.responses	GET	https://api.x.ai/v1/responses/{id}	https://docs.x.ai/docs/api-reference
 xai	v1.responses	POST	https://api.x.ai/v1/responses	https://docs.x.ai/docs/api-reference
+xai	v1.responses.compact	POST	https://api.x.ai/v1/responses/compact	https://docs.x.ai/docs/api-reference
 xai	v1.stt	POST	https://api.x.ai/v1/stt	https://docs.x.ai/docs/api-reference
 xai	v1.tokenizeText	POST	https://api.x.ai/v1/tokenize-text	https://docs.x.ai/docs/api-reference
 xai	v1.tts	POST	https://api.x.ai/v1/tts	https://docs.x.ai/docs/api-reference

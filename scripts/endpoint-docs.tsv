@@ -710,6 +710,7 @@ kie	api.v1.generate.replaceSection	POST	https://api.kie.ai/api/v1/generate/repla
 kie	api.v1.generate.sounds	POST	https://api.kie.ai/api/v1/generate/sounds	https://docs.kie.ai/suno-api/generate-sounds
 kie	api.v1.generate.uploadCover	POST	https://api.kie.ai/api/v1/generate/upload-cover
 kie	api.v1.generate.uploadExtend	POST	https://api.kie.ai/api/v1/generate/upload-extend
+kie	api.v1.gpt4oImage.recordInfo	GET	https://api.kie.ai/api/v1/gpt4o-image/record-info?taskId={taskId}	https://docs.kie.ai/4o-image-api/get-4-o-image-details
 kie	api.v1.jobs.createTask	POST	https://api.kie.ai/api/v1/jobs/createTask	https://docs.kie.ai/market/quickstart
 kie	api.v1.jobs.recordInfo	GET	https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}	https://docs.kie.ai/market/common/get-task-detail
 kie	api.v1.lyrics	POST	https://api.kie.ai/api/v1/lyrics

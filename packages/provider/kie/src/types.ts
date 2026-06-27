@@ -337,6 +337,33 @@ export interface KieTaskInfoData {
 export type KieTaskInfo = KieApiEnvelope<KieTaskInfoData>;
 export type KieCreditsResponse = KieApiEnvelope<number>;
 
+export type Gpt4oImageStatus =
+  | "GENERATING"
+  | "SUCCESS"
+  | "CREATE_TASK_FAILED"
+  | "GENERATE_FAILED";
+
+export interface Gpt4oImageRecordInfoData {
+  taskId?: string;
+  paramJson?: string;
+  completeTime?: number | null;
+  response?: {
+    resultUrls?: string[];
+  } | null;
+  successFlag?: number;
+  status?: Gpt4oImageStatus;
+  errorCode?: number | null;
+  errorMessage?: string | null;
+  createTime?: number | null;
+  progress?: string | null;
+}
+
+export interface Gpt4oImageRecordInfo {
+  code: number;
+  msg: string;
+  data?: Gpt4oImageRecordInfoData | null;
+}
+
 export interface GeminiOmniAudioCreateData {
   audioId: string;
   kieAudioId: string;
@@ -447,6 +474,12 @@ interface KieRecordInfoMethod {
   seedance2MiniResponseSchema: ApicitySchema<Seedance2MiniRecordInfoResponse>;
 }
 
+interface KieGpt4oImageRecordInfoMethod {
+  (taskId: string): Promise<Gpt4oImageRecordInfo>;
+  schema: ApicitySchema<RecordInfoRequest>;
+  responseSchema: ApicitySchema<Gpt4oImageRecordInfo>;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
@@ -475,6 +508,7 @@ interface KiePostApiNamespace {
 interface KieGetApiNamespace {
   v1: {
     jobs: { recordInfo: KieRecordInfoMethod };
+    gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
     chat: { credit(): Promise<KieCreditsResponse> };
   };
 }

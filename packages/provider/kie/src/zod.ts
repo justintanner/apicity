@@ -1558,6 +1558,32 @@ export const RecordInfoRequestSchema = z.object({
   taskId: z.string().min(1),
 });
 
+export const Gpt4oImageRecordInfoDataSchema = z.object({
+  taskId: z.string().optional(),
+  paramJson: z.string().optional(),
+  completeTime: z.number().int().nullable().optional(),
+  response: z
+    .object({
+      resultUrls: z.array(z.string()).optional(),
+    })
+    .nullable()
+    .optional(),
+  successFlag: z.number().int().optional(),
+  status: z
+    .enum(["GENERATING", "SUCCESS", "CREATE_TASK_FAILED", "GENERATE_FAILED"])
+    .optional(),
+  errorCode: z.number().int().nullable().optional(),
+  errorMessage: z.string().nullable().optional(),
+  createTime: z.number().int().nullable().optional(),
+  progress: z.string().nullable().optional(),
+});
+
+export const Gpt4oImageRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: Gpt4oImageRecordInfoDataSchema.nullable().optional(),
+});
+
 export const TaskResponseSchema = z.object({
   code: z.number().int(),
   msg: z.string(),
@@ -2466,6 +2492,9 @@ export type Seedance2MiniRecordInfoResponse = z.infer<
 >;
 export type RecordInfoRequest = z.input<typeof RecordInfoRequestSchema>;
 export type RecordInfoRequestInput = RecordInfoRequest;
+export type Gpt4oImageRecordInfoResponseSchemaType = z.infer<
+  typeof Gpt4oImageRecordInfoResponseSchema
+>;
 export type TaskResponseParsed = z.output<typeof TaskResponseSchema>;
 
 export type UploadMediaRequest = z.input<typeof UploadMediaRequestSchema>;

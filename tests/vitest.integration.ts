@@ -29,11 +29,14 @@ export default defineConfig({
         "../packages/provider/kie/src/zod"
       ),
       "@apicity/kie": path.resolve(__dirname, "../packages/provider/kie/src"),
-      "@apicity/zai/zod": path.resolve(
+      "@apicity/zaicoding/zod": path.resolve(
         __dirname,
-        "../packages/provider/zai/src/zod"
+        "../packages/provider/zaicoding/src/zod"
       ),
-      "@apicity/zai": path.resolve(__dirname, "../packages/provider/zai/src"),
+      "@apicity/zaicoding": path.resolve(
+        __dirname,
+        "../packages/provider/zaicoding/src"
+      ),
       "@apicity/xai/zod": path.resolve(
         __dirname,
         "../packages/provider/xai/src/zod"

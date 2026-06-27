@@ -1,12 +1,12 @@
 {
-  "name": "@apicity/zai",
+  "name": "@apicity/zaicoding",
   "version": "0.6.2",
-  "description": "X.AI / Grok provider for chat and search.",
+  "description": "Z.ai GLM Coding Plan provider for Apicity — standalone, OpenAI-compatible chat completions plus coding-plan usage/quota monitoring.",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/justintanner/apicity.git",
-    "directory": "provider/zai"
+    "directory": "provider/zaicoding"
   },
   "publishConfig": {
     "access": "public"
@@ -36,9 +36,12 @@
   "keywords": [
     "ai",
     "zai",
-    "grok",
+    "zaicoding",
+    "glm",
+    "zhipu",
+    "coding",
     "chat",
-    "search",
+    "usage",
     "apicity"
   ],
   "author": "Justin Tanner",

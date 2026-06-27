@@ -46,6 +46,11 @@ const PROVIDERS = [
     factoryNames: ["createKimiCoding"],
   },
   {
+    name: "zaicoding",
+    entryFiles: ["packages/provider/zaicoding/src/zaicoding.ts"],
+    factoryNames: ["createZaiCoding"],
+  },
+  {
     name: "google",
     entryFiles: ["packages/provider/google/src/google.ts"],
     factoryNames: ["createGoogle"],

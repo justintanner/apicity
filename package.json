@@ -18,6 +18,7 @@
     "build:google": "pnpm --filter @apicity/google run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
+    "build:zaicoding": "pnpm --filter @apicity/zaicoding run build",
     "build:kie": "pnpm --filter @apicity/kie run build",
     "build:xai": "pnpm --filter @apicity/xai run build",
     "build:fal": "pnpm --filter @apicity/fal run build",

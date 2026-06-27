@@ -318,7 +318,7 @@ export function withRateLimit<TReq, TRes>(
   };
 }
 
-export const ZAI_RATE_LIMITS = {
+export const ZAICODING_RATE_LIMITS = {
   free: { rpm: 5, concurrent: 2 },
   tier1: { rpm: 60, concurrent: 10 },
   tier2: { rpm: 200, concurrent: 25 },

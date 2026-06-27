@@ -1,0 +1,14 @@
+{
+  "POST api.coding.paas.v4.chat.completions": {
+    "source": "zaicoding/chat-completions",
+    "payload": {
+      "model": "glm-4-flash",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Say hello."
+        }
+      ]
+    }
+  }
+}

@@ -1251,4 +1251,7 @@ thesportsdb	v1.lookupmilestones	GET	https://www.thesportsdb.com/api/v1/json/{api
 thesportsdb	v1.lookupcontracts	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupcontracts.php?id={idPlayer}	https://thedatadb.readme.io/reference/getcontractsbyplayerid
 thesportsdb	v1.playerresults	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/playerresults.php?id={idPlayer}	https://www.thesportsdb.com/docs_api_guide
 thesportsdb	v1.lookupplayerstats	GET	https://www.thesportsdb.com/api/v1/json/{apiKey}/lookupplayerstats.php?id={idPlayer}	https://www.thesportsdb.com/docs_api_guide
-zai	api.paas.v4.chat.completions	POST	https://api.z.ai/api/paas/v4/chat/completions	https://docs.z.ai/api-reference/llm/chat-completion
+zaicoding	api.coding.paas.v4.chat.completions	POST	https://api.z.ai/api/coding/paas/v4/chat/completions	https://docs.z.ai/api-reference/llm/chat-completion
+zaicoding	api.monitor.usage.quota.limit	GET	https://api.z.ai/api/monitor/usage/quota/limit	https://docs.z.ai/api-reference/introduction
+zaicoding	api.monitor.usage.modelUsage	GET	https://api.z.ai/api/monitor/usage/model-usage	https://docs.z.ai/api-reference/introduction
+zaicoding	api.monitor.usage.toolUsage	GET	https://api.z.ai/api/monitor/usage/tool-usage	https://docs.z.ai/api-reference/introduction

@@ -22,7 +22,7 @@ import path from "node:path";
 // Keeps reviewers from accidentally pasting e.g. an openai docs URL onto an
 // xai endpoint. Populated as specific docs URLs are filled in.
 const DOCS_HOSTNAME_ALLOWLIST = {
-  zai: ["docs.z.ai"],
+  zaicoding: ["docs.z.ai"],
   openai: ["platform.openai.com"],
   xai: ["docs.x.ai"],
   anthropic: ["docs.anthropic.com", "docs.claude.com"],

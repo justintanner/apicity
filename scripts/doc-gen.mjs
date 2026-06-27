@@ -3209,6 +3209,10 @@ const PROVIDER_AUTH = {
   google: {
     showMiddleware: false,
   },
+  zaicoding: {
+    env: "ZAI_CODING_PLAN_API_KEY",
+    showMiddleware: false,
+  },
   x: {
     field: "accessToken",
     env: "X_ACCESS_TOKEN",

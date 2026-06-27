@@ -742,6 +742,7 @@ openai	v1.chat.completions	DELETE	https://api.openai.com/v1/chat/completions/{id
 openai	v1.chat.completions	GET	https://api.openai.com/v1/chat/completions/{idOrOpts}	https://platform.openai.com/docs/api-reference
 openai	v1.chat.completions	POST	https://api.openai.com/v1/chat/completions/{id}	https://platform.openai.com/docs/api-reference
 openai	v1.chat.completions.messages	GET	https://api.openai.com/v1/chat/completions/{id}/messages	https://platform.openai.com/docs/api-reference
+openai	v1.conversations	POST	https://api.openai.com/v1/conversations	https://platform.openai.com/docs/api-reference
 openai	v1.embeddings	POST	https://api.openai.com/v1/embeddings	https://platform.openai.com/docs/api-reference
 openai	v1.files	DELETE	https://api.openai.com/v1/files/{id}	https://platform.openai.com/docs/api-reference
 openai	v1.files	GET	https://api.openai.com/v1/files/{idOrOpts}	https://platform.openai.com/docs/api-reference

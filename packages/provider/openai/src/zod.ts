@@ -461,6 +461,18 @@ export const OpenAiResponseInputTokensRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Conversations
+// ---------------------------------------------------------------------------
+
+export const OpenAiConversationCreateRequestSchema = z.object({
+  // Initial items to seed the conversation context (max 20). Reuses the
+  // Responses input-item shapes — messages, function call outputs, references.
+  items: z.array(OpenAiResponseInputItemSchema).max(20).nullable().optional(),
+  // Up to 16 key/value string pairs attached to the conversation.
+  metadata: z.record(z.string(), z.string()).nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Fine-tuning
 // ---------------------------------------------------------------------------
 
@@ -787,6 +799,14 @@ export type OpenAiResponseInputTokensRequestInput =
   OpenAiResponseInputTokensRequest;
 export type OpenAiResponseInputTokensParsedRequest = z.output<
   typeof OpenAiResponseInputTokensRequestSchema
+>;
+export type OpenAiConversationCreateRequest = z.input<
+  typeof OpenAiConversationCreateRequestSchema
+>;
+export type OpenAiConversationCreateRequestInput =
+  OpenAiConversationCreateRequest;
+export type OpenAiConversationCreateParsedRequest = z.output<
+  typeof OpenAiConversationCreateRequestSchema
 >;
 export type OpenAiFineTuningHyperparameters = z.infer<
   typeof OpenAiFineTuningHyperparametersSchema

@@ -75,6 +75,9 @@ export type {
   OpenAiResponseInputTokensRequest,
   OpenAiResponseInputTokensRequestInput,
   OpenAiResponseInputTokensParsedRequest,
+  OpenAiConversationCreateRequest,
+  OpenAiConversationCreateRequestInput,
+  OpenAiConversationCreateParsedRequest,
   OpenAiFineTuningHyperparameters,
   OpenAiFineTuningSupervisedHyperparameters,
   OpenAiFineTuningSupervisedMethod,
@@ -921,6 +924,14 @@ export interface OpenAiProjectRateLimitListResponse {
   has_more: boolean;
 }
 
+// Conversations — durable, replayable threads for multi-step agents.
+export interface OpenAiConversation {
+  id: string;
+  object: "conversation";
+  created_at: number;
+  metadata: Record<string, string> | null;
+}
+
 // ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
@@ -943,6 +954,7 @@ import type {
   OpenAiResponseRequest,
   OpenAiResponseCompactRequest,
   OpenAiResponseInputTokensRequest,
+  OpenAiConversationCreateRequest,
   OpenAiFineTuningJobCreateRequest,
   OpenAiCheckpointPermissionCreateRequest,
   OpenAiOrganizationUsageQuery,
@@ -1058,6 +1070,14 @@ export interface OpenAiPostV1ResponsesCancel {
   (id: string, signal?: AbortSignal): Promise<OpenAiResponseResponse>;
 }
 
+export interface OpenAiPostV1Conversations {
+  (
+    req: OpenAiConversationCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiConversation>;
+  schema: z.ZodType<OpenAiConversationCreateRequest>;
+}
+
 export interface OpenAiPostV1Batches {
   (req: OpenAiBatchCreateRequest, signal?: AbortSignal): Promise<OpenAiBatch>;
   schema: z.ZodType<OpenAiBatchCreateRequest>;
@@ -1148,6 +1168,7 @@ export interface OpenAiPostV1Namespace {
   images: OpenAiPostV1ImagesNamespace;
   moderations: OpenAiPostV1Moderations;
   responses: OpenAiPostV1ResponsesNamespace;
+  conversations: OpenAiPostV1Conversations;
   batches: OpenAiPostV1Batches & {
     cancel: OpenAiPostV1BatchesCancel;
   };

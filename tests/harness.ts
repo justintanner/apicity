@@ -1029,6 +1029,20 @@ export function mintKieMjOtp(request: Record<string, unknown>): {
   };
 }
 
+export function mintKieRunwayOtp(
+  dotPath: "api.v1.runway.generate" | "api.v1.runway.extend",
+  request: Record<string, unknown>
+): { otp: string } {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath,
+      request,
+    }),
+  };
+}
+
 export function mintXaiOtp(
   dotPath: string,
   request: Record<string, unknown>

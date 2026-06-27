@@ -21,6 +21,9 @@ import {
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
   MjGenerateRequest,
+  RunwayGenerateRequest,
+  RunwayExtendRequest,
+  RunwayRecordDetail,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -35,6 +38,9 @@ import {
   FluxKontextGenerateRequestSchema,
   Gpt4oImageGenerateRequestSchema,
   MjGenerateRequestSchema,
+  RunwayGenerateRequestSchema,
+  RunwayExtendRequestSchema,
+  RunwayRecordDetailResponseSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
@@ -618,6 +624,82 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // POST https://api.kie.ai/api/v1/runway/generate
+  // Docs: https://docs.kie.ai/runway-api/generate-ai-video
+  async function runwayGenerate(
+    req: RunwayGenerateRequest
+  ): Promise<TaskResponse> {
+    return kieRequest<TaskResponse>(`${baseURL}/api/v1/runway/generate`, {
+      method: "POST",
+      body: req,
+      apiKey: opts.apiKey,
+      doFetch,
+      timeout,
+    });
+  }
+
+  // POST https://api.kie.ai/api/v1/runway/extend
+  // Docs: https://docs.kie.ai/runway-api/extend-ai-video
+  async function runwayExtend(req: RunwayExtendRequest): Promise<TaskResponse> {
+    return kieRequest<TaskResponse>(`${baseURL}/api/v1/runway/extend`, {
+      method: "POST",
+      body: req,
+      apiKey: opts.apiKey,
+      doFetch,
+      timeout,
+    });
+  }
+
+  // GET https://api.kie.ai/api/v1/runway/record-detail?taskId={taskId}
+  // Docs: https://docs.kie.ai/runway-api/get-ai-video-details
+  async function runwayRecordDetail(
+    taskId: string
+  ): Promise<RunwayRecordDetail> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+      const res = await doFetch(
+        `${baseURL}/api/v1/runway/record-detail?taskId=${encodeURIComponent(taskId)}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${opts.apiKey}`,
+            "Content-Type": "application/json",
+          },
+          signal: controller.signal,
+        }
+      );
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `Kie API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (
+            typeof body === "object" &&
+            body !== null &&
+            "msg" in body &&
+            typeof (body as { msg?: string }).msg === "string"
+          ) {
+            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new KieError(message, res.status, body);
+      }
+
+      return (await res.json()) as RunwayRecordDetail;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof KieError) throw error;
+      throw new KieError(`Failed to get Runway task: ${error}`, 500);
+    }
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -705,6 +787,14 @@ export function createKie(opts: KieOptions): KieProvider {
                   schema: MjGenerateRequestSchema,
                 }),
               },
+              runway: {
+                generate: Object.assign(runwayGenerate, {
+                  schema: RunwayGenerateRequestSchema,
+                }),
+                extend: Object.assign(runwayExtend, {
+                  schema: RunwayExtendRequestSchema,
+                }),
+              },
             },
             fileStreamUpload: Object.assign(fileStreamUpload, {
               schema: UploadMediaRequestSchema,
@@ -731,6 +821,12 @@ export function createKie(opts: KieOptions): KieProvider {
                 recordInfo: Object.assign(gpt4oImageRecordInfo, {
                   schema: RecordInfoRequestSchema,
                   responseSchema: Gpt4oImageRecordInfoResponseSchema,
+                }),
+              },
+              runway: {
+                recordDetail: Object.assign(runwayRecordDetail, {
+                  schema: RecordInfoRequestSchema,
+                  responseSchema: RunwayRecordDetailResponseSchema,
                 }),
               },
               chat: { credit },

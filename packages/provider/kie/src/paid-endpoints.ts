@@ -112,6 +112,32 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
       costNotes: "Billed per generation based on task type, speed, and version",
     },
   },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.runway.generate",
+    },
+    info: {
+      reason:
+        "Runway video generation task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video generation based on duration and quality",
+    },
+  },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.runway.extend",
+    },
+    info: {
+      reason:
+        "Runway video extension task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per video extension based on quality",
+    },
+  },
 ];
 
 /**

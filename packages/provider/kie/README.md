@@ -476,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-31 endpoints across 19 groups. Each method mirrors an upstream URL path.
+36 endpoints across 22 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -591,6 +591,23 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 ```typescript
 const res = await kie.post.api.fileUrlUpload({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+### flux
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.flux.kontext.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/flux/kontext/generate</code>
+
+[Upstream docs ↗](https://docs.kie.ai/flux-kontext-api/generate-or-edit-image)
+
+```typescript
+const res = await kie.post.api.v1.flux.kontext.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
@@ -775,6 +792,23 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 </details>
 
+### gpt4oImage
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.gpt4oImage.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/gpt4o-image/record-info?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/4o-image-api/get-4-o-image-details)
+
+```typescript
+const res = await kie.get.api.v1.gpt4oImage.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
 ### jobs
 
 <details>
@@ -878,6 +912,53 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 ```typescript
 const res = await kie.post.api.v1.omni.character.create({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+### runway
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.runway.recordDetail</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/runway/record-detail?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/runway-api/get-ai-video-details)
+
+```typescript
+const res = await kie.get.api.v1.runway.recordDetail({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.runway.extend</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/runway/extend</code>
+
+[Upstream docs ↗](https://docs.kie.ai/runway-api/extend-ai-video)
+
+```typescript
+const res = await kie.post.api.v1.runway.extend({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.runway.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/runway/generate</code>
+
+[Upstream docs ↗](https://docs.kie.ai/runway-api/generate-ai-video)
+
+```typescript
+const res = await kie.post.api.v1.runway.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)

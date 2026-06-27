@@ -182,6 +182,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "callBackUrl": "https://example.com/cb"
     }
   },
+  "POST api.v1.mj.generate": {
+    "source": "kie/mj-generate",
+    "payload": {
+      "taskType": "mj_txt2img",
+      "prompt": "A sci-fi themed fighter jet in a beautiful sky, computer wallpaper",
+      "speed": "relaxed",
+      "aspectRatio": "16:9",
+      "version": "7",
+      "stylization": 100,
+      "weirdness": 0
+    }
+  },
   "POST api.v1.mp4.generate": {
     "source": "kie/suno/mp4-bogus-ids",
     "payload": {

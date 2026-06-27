@@ -1016,6 +1016,19 @@ export function mintKieGpt4oImageOtp(request: Record<string, unknown>): {
   };
 }
 
+export function mintKieMjOtp(request: Record<string, unknown>): {
+  otp: string;
+} {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.mj.generate",
+      request,
+    }),
+  };
+}
+
 export function mintXaiOtp(
   dotPath: string,
   request: Record<string, unknown>

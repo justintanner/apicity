@@ -104,7 +104,8 @@ export function createZaiCoding(
       { method: "GET", headers: { "Accept-Language": "en-US,en" }, signal },
       "raw"
     );
-    return (await res.json()) as T;
+    const text = await res.text();
+    return text ? (JSON.parse(text) as T) : ({} as T);
   }
 
   return attachExamples({

@@ -66,11 +66,15 @@ export interface ZaiCodingChatResponse {
 
 /** A single quota line item (a token budget, a time window, etc.). */
 export interface ZaiCodingQuotaLimitItem {
-  /** Limit type discriminator (e.g. token budget vs. time window). */
+  /** Limit type discriminator, e.g. "TOKENS_LIMIT" or "TIME_LIMIT". */
   type?: string;
-  /** Unit the limit is measured in (e.g. "TOKEN", "PROMPT", "HOUR"). */
-  unit?: string;
-  /** The limit's ceiling value. */
+  /**
+   * Unit code for the limit's window, paired with `number` to describe the
+   * span (e.g. the rolling 5h window and the weekly 1w window). The live API
+   * returns a numeric code; older/string responses are tolerated.
+   */
+  unit?: number | string;
+  /** The window length in `unit`s (e.g. 5 for the 5h window, 1 for the 1w). */
   number?: number;
   /** Consumed fraction of the limit, 0–100. */
   percentage?: number;

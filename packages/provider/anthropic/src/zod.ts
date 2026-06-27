@@ -118,28 +118,67 @@ export const AnthropicToolInputSchemaSchema = z.object({
   required: z.array(z.string()).optional(),
 });
 
+// Optional properties accepted on every tool definition (user-defined and
+// Anthropic-provided), per the upstream "Tool definition properties" reference.
+// `cache_control` sets a prompt-cache breakpoint, `strict` guarantees schema
+// validation, `defer_loading` excludes the tool from the initial system prompt
+// (tool search), and `allowed_callers` restricts who may invoke the tool.
+const anthropicToolCommonProps = {
+  cache_control: AnthropicCacheControlSchema.optional(),
+  strict: z.boolean().optional(),
+  defer_loading: z.boolean().optional(),
+  allowed_callers: z.array(z.string()).optional(),
+};
+
 export const AnthropicCustomToolSchema = z.object({
   type: z.literal("custom").optional(),
   name: z.string(),
   description: z.string().optional(),
   input_schema: AnthropicToolInputSchemaSchema,
-  cache_control: z.object({ type: z.literal("ephemeral") }).optional(),
+  // Example input objects that help Claude understand how to call the tool.
+  input_examples: z.array(z.record(z.string(), z.unknown())).optional(),
+  ...anthropicToolCommonProps,
 });
 
 export const AnthropicBashToolSchema = z.object({
   type: z.literal("bash_20250124"),
   name: z.literal("bash").optional(),
-  cache_control: z.object({ type: z.literal("ephemeral") }).optional(),
+  ...anthropicToolCommonProps,
 });
 
 export const AnthropicTextEditorToolSchema = z.object({
-  type: z.literal("text_editor_20250124"),
-  name: z.literal("str_replace_editor").optional(),
-  cache_control: z.object({ type: z.literal("ephemeral") }).optional(),
+  // text_editor_20250728 (name "str_replace_based_edit_tool") targets Claude 4
+  // models; text_editor_20250124 (name "str_replace_editor") earlier ones.
+  type: z.enum(["text_editor_20250728", "text_editor_20250124"]),
+  name: z.string().optional(),
+  ...anthropicToolCommonProps,
+});
+
+export const AnthropicComputerToolSchema = z.object({
+  // computer_20251124 (beta computer-use-2025-11-24) for Claude 4.6+/Opus 4.5;
+  // computer_20250124 (beta computer-use-2025-01-24) for earlier models.
+  type: z.enum(["computer_20251124", "computer_20250124"]),
+  name: z.literal("computer").optional(),
+  display_width_px: z.number(),
+  display_height_px: z.number(),
+  display_number: z.number().optional(),
+  ...anthropicToolCommonProps,
+});
+
+export const AnthropicMemoryToolSchema = z.object({
+  type: z.literal("memory_20250818"),
+  name: z.literal("memory").optional(),
+  ...anthropicToolCommonProps,
 });
 
 export const AnthropicWebSearchToolSchema = z.object({
-  type: z.literal("web_search_20250305"),
+  // Versions share the same configuration shape; 20260318/20260209 add dynamic
+  // content filtering over the 20250305 base.
+  type: z.enum([
+    "web_search_20260318",
+    "web_search_20260209",
+    "web_search_20250305",
+  ]),
   name: z.literal("web_search").optional(),
   max_uses: z.number().optional(),
   allowed_domains: z.array(z.string()).optional(),
@@ -153,21 +192,84 @@ export const AnthropicWebSearchToolSchema = z.object({
       timezone: z.string().optional(),
     })
     .optional(),
-  cache_control: z.object({ type: z.literal("ephemeral") }).optional(),
+  ...anthropicToolCommonProps,
+});
+
+export const AnthropicWebFetchToolSchema = z.object({
+  // 20250910 basic fetch; 20260209 adds dynamic filtering; 20260309 adds the
+  // `use_cache` bypass; 20260318 adds `response_inclusion` control.
+  type: z.enum([
+    "web_fetch_20260318",
+    "web_fetch_20260309",
+    "web_fetch_20260209",
+    "web_fetch_20250910",
+  ]),
+  name: z.literal("web_fetch").optional(),
+  max_uses: z.number().optional(),
+  allowed_domains: z.array(z.string()).optional(),
+  blocked_domains: z.array(z.string()).optional(),
+  citations: z.object({ enabled: z.boolean() }).optional(),
+  max_content_tokens: z.number().optional(),
+  use_cache: z.boolean().optional(),
+  response_inclusion: z.enum(["full", "excluded"]).optional(),
+  ...anthropicToolCommonProps,
 });
 
 export const AnthropicCodeExecutionToolSchema = z.object({
-  type: z.literal("code_execution_20250522"),
+  // 20250522 Python-only; 20250825 adds bash + file ops; 20260120 adds
+  // programmatic tool calling; 20260521 discloses the per-cell time limit.
+  type: z.enum([
+    "code_execution_20260521",
+    "code_execution_20260120",
+    "code_execution_20250825",
+    "code_execution_20250522",
+  ]),
   name: z.literal("code_execution").optional(),
-  cache_control: z.object({ type: z.literal("ephemeral") }).optional(),
+  ...anthropicToolCommonProps,
+});
+
+export const AnthropicToolSearchToolSchema = z.object({
+  // Regex and BM25 are two search algorithms released together; the undated
+  // aliases resolve to the latest dated version.
+  type: z.enum([
+    "tool_search_tool_regex_20251119",
+    "tool_search_tool_bm25_20251119",
+    "tool_search_tool_regex",
+    "tool_search_tool_bm25",
+  ]),
+  name: z.string().optional(),
+  ...anthropicToolCommonProps,
+});
+
+export const AnthropicAdvisorToolSchema = z.object({
+  // Beta `advisor-tool-2026-03-01`: a stronger advisor model consulted mid-
+  // generation. `model` is the advisor model id (required).
+  type: z.literal("advisor_20260301"),
+  name: z.literal("advisor").optional(),
+  model: z.string(),
+  max_uses: z.number().optional(),
+  max_tokens: z.number().optional(),
+  caching: z
+    .object({
+      type: z.literal("ephemeral"),
+      ttl: z.enum(["5m", "1h"]).optional(),
+    })
+    .nullable()
+    .optional(),
+  ...anthropicToolCommonProps,
 });
 
 export const AnthropicToolSchema = z.union([
   AnthropicCustomToolSchema,
   AnthropicBashToolSchema,
   AnthropicTextEditorToolSchema,
+  AnthropicComputerToolSchema,
+  AnthropicMemoryToolSchema,
   AnthropicWebSearchToolSchema,
+  AnthropicWebFetchToolSchema,
   AnthropicCodeExecutionToolSchema,
+  AnthropicToolSearchToolSchema,
+  AnthropicAdvisorToolSchema,
 ]);
 
 export const AnthropicToolChoiceSchema = z.object({
@@ -327,12 +429,19 @@ export type AnthropicBashTool = z.infer<typeof AnthropicBashToolSchema>;
 export type AnthropicTextEditorTool = z.infer<
   typeof AnthropicTextEditorToolSchema
 >;
+export type AnthropicComputerTool = z.infer<typeof AnthropicComputerToolSchema>;
+export type AnthropicMemoryTool = z.infer<typeof AnthropicMemoryToolSchema>;
 export type AnthropicWebSearchTool = z.infer<
   typeof AnthropicWebSearchToolSchema
 >;
+export type AnthropicWebFetchTool = z.infer<typeof AnthropicWebFetchToolSchema>;
 export type AnthropicCodeExecutionTool = z.infer<
   typeof AnthropicCodeExecutionToolSchema
 >;
+export type AnthropicToolSearchTool = z.infer<
+  typeof AnthropicToolSearchToolSchema
+>;
+export type AnthropicAdvisorTool = z.infer<typeof AnthropicAdvisorToolSchema>;
 export type AnthropicTool = z.infer<typeof AnthropicToolSchema>;
 export type AnthropicToolChoice = z.infer<typeof AnthropicToolChoiceSchema>;
 export type AnthropicThinkingConfig = z.infer<

@@ -79,6 +79,82 @@ describe("anthropic zod schemas", () => {
       expect(result.success).toBe(true);
     });
 
+    it("should accept the current Anthropic-provided tool set", () => {
+      const result = AnthropicMessageRequestSchema.safeParse({
+        model: "claude-opus-4-8",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: "Help me" }],
+        tools: [
+          { type: "bash_20250124", name: "bash" },
+          {
+            type: "text_editor_20250728",
+            name: "str_replace_based_edit_tool",
+          },
+          {
+            type: "computer_20251124",
+            name: "computer",
+            display_width_px: 1024,
+            display_height_px: 768,
+            display_number: 1,
+          },
+          { type: "memory_20250818", name: "memory" },
+          { type: "web_search_20260318", name: "web_search", max_uses: 3 },
+          {
+            type: "web_fetch_20260318",
+            name: "web_fetch",
+            max_uses: 5,
+            citations: { enabled: true },
+            use_cache: false,
+            response_inclusion: "excluded",
+          },
+          { type: "code_execution_20260521", name: "code_execution" },
+          {
+            type: "tool_search_tool_regex_20251119",
+            name: "tool_search_tool_regex",
+          },
+          {
+            type: "advisor_20260301",
+            name: "advisor",
+            model: "claude-opus-4-8",
+            max_tokens: 2048,
+            caching: { type: "ephemeral", ttl: "1h" },
+          },
+        ],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should accept shared tool-definition properties", () => {
+      const result = AnthropicMessageRequestSchema.safeParse({
+        model: "claude-opus-4-8",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: "What's the weather?" }],
+        tools: [
+          {
+            name: "get_weather",
+            description: "Get weather information",
+            input_schema: { type: "object", properties: {} },
+            input_examples: [{ location: "San Francisco" }],
+            strict: true,
+            defer_loading: true,
+            allowed_callers: ["code_execution_20260120"],
+            cache_control: { type: "ephemeral", ttl: "5m" },
+          },
+        ],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should require an advisor model on the advisor tool", () => {
+      const result = AnthropicMessageRequestSchema.safeParse({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: "Plan this" }],
+        tools: [{ type: "advisor_20260301", name: "advisor" }],
+      });
+      expect(result.success).toBe(false);
+    });
+
     it("should accept payload with tool_choice", () => {
       const result = AnthropicMessageRequestSchema.safeParse({
         model: "claude-sonnet-4-6",

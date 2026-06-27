@@ -45,6 +45,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "temperature": 0
     }
   },
+  "POST v1.conversations": {
+    "source": "openai/conversations-create",
+    "payload": {
+      "items": [
+        {
+          "role": "user",
+          "content": "Hello, let's start a conversation."
+        }
+      ],
+      "metadata": {
+        "topic": "greeting"
+      }
+    }
+  },
   "POST v1.embeddings": {
     "source": "openai/embeddings-hello",
     "payload": {

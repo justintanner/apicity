@@ -36,6 +36,8 @@ import {
   OpenAiResponseCompactResponse,
   OpenAiResponseInputTokensRequest,
   OpenAiResponseInputTokensResponse,
+  OpenAiConversationCreateRequest,
+  OpenAiConversation,
   OpenAiModerationRequest,
   OpenAiModerationResponse,
   OpenAiFineTuningJobCreateRequest,
@@ -87,6 +89,7 @@ import {
   OpenAiResponseRequestSchema,
   OpenAiResponseCompactRequestSchema,
   OpenAiResponseInputTokensRequestSchema,
+  OpenAiConversationCreateRequestSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
   OpenAiOrganizationUsageQuerySchema,
@@ -814,6 +817,23 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
           },
           {}
         ),
+      }
+    ),
+    // POST https://api.openai.com/v1/conversations
+    // Docs: https://platform.openai.com/docs/api-reference
+    conversations: Object.assign(
+      async (
+        req: OpenAiConversationCreateRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiConversation> => {
+        return makeRequest<OpenAiConversation>(
+          "/conversations",
+          jsonRequest(req),
+          signal
+        );
+      },
+      {
+        schema: OpenAiConversationCreateRequestSchema,
       }
     ),
     // POST https://api.openai.com/v1/batches

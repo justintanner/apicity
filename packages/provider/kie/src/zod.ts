@@ -1768,6 +1768,55 @@ export type FluxKontextAspectRatio = z.infer<
   typeof FluxKontextAspectRatioSchema
 >;
 
+// successFlag: 0 GENERATING, 1 SUCCESS, 2 CREATE_TASK_FAILED, 3 GENERATE_FAILED
+export const FluxKontextSuccessFlagSchema = z.union([
+  z.literal(0),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+]);
+
+export const FluxKontextRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+export const FluxKontextRecordInfoDataSchema = z.object({
+  taskId: z.string(),
+  paramJson: z.string().optional(),
+  completeTime: z.string().nullable().optional(),
+  response: z
+    .object({
+      originImageUrl: z.string().optional(),
+      resultImageUrl: z.string().optional(),
+    })
+    .nullable()
+    .optional(),
+  successFlag: FluxKontextSuccessFlagSchema,
+  errorCode: z.number().int().nullable().optional(),
+  errorMessage: z.string().nullable().optional(),
+  createTime: z.string().optional(),
+});
+
+export const FluxKontextRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: FluxKontextRecordInfoDataSchema.nullable().optional(),
+});
+
+export type FluxKontextRecordInfoRequest = z.input<
+  typeof FluxKontextRecordInfoRequestSchema
+>;
+export type FluxKontextRecordInfoRequestInput = FluxKontextRecordInfoRequest;
+export type FluxKontextSuccessFlag = z.infer<
+  typeof FluxKontextSuccessFlagSchema
+>;
+export type FluxKontextRecordInfoData = z.infer<
+  typeof FluxKontextRecordInfoDataSchema
+>;
+export type FluxKontextRecordInfoResponse = z.infer<
+  typeof FluxKontextRecordInfoResponseSchema
+>;
+
 // ---------------------------------------------------------------------------
 // 4o Image schemas
 // ---------------------------------------------------------------------------

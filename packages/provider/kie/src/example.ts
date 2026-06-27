@@ -37,6 +37,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
     }
   },
+  "POST api.v1.flux.kontext.generate": {
+    "source": "kie/flux-kontext-generate",
+    "payload": {
+      "prompt": "A cinematic night city poster with neon reflections on a rainy street.",
+      "aspectRatio": "16:9",
+      "model": "flux-kontext-pro",
+      "outputFormat": "jpeg"
+    }
+  },
   "POST api.v1.generate": {
     "source": "kie/suno/generate-submit",
     "payload": {

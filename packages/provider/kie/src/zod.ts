@@ -1698,6 +1698,51 @@ export type VeoGenerationType =
   | "FIRST_AND_LAST_FRAMES_2_VIDEO";
 
 // ---------------------------------------------------------------------------
+// Flux Kontext schemas
+// ---------------------------------------------------------------------------
+
+export const FluxKontextAspectRatioSchema = z.enum([
+  "21:9",
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+export const FluxKontextModelSchema = z.enum([
+  "flux-kontext-pro",
+  "flux-kontext-max",
+]);
+
+export const FluxKontextGenerateRequestSchema = z.object({
+  prompt: z.string().min(1),
+  enableTranslation: z.boolean().optional(),
+  uploadCn: z.boolean().optional(),
+  // Required only for image-editing mode (edit the referenced image).
+  inputImage: z.string().url().optional(),
+  aspectRatio: FluxKontextAspectRatioSchema.optional(),
+  outputFormat: z.enum(["jpeg", "png"]).optional(),
+  promptUpsampling: z.boolean().optional(),
+  model: FluxKontextModelSchema.optional(),
+  callBackUrl: z.string().url().optional(),
+  safetyTolerance: z.number().int().min(0).max(6).optional(),
+  watermark: z.string().optional(),
+});
+
+export type FluxKontextGenerateRequest = z.input<
+  typeof FluxKontextGenerateRequestSchema
+>;
+export type FluxKontextGenerateRequestInput = FluxKontextGenerateRequest;
+export type FluxKontextGenerateParsedRequest = z.output<
+  typeof FluxKontextGenerateRequestSchema
+>;
+export type FluxKontextModel = z.infer<typeof FluxKontextModelSchema>;
+export type FluxKontextAspectRatio = z.infer<
+  typeof FluxKontextAspectRatioSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Sub-provider schemas: Suno
 // ---------------------------------------------------------------------------
 

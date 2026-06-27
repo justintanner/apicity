@@ -245,6 +245,11 @@ export type {
   GeminiOmniCharacterCreateParsedRequest,
   GeminiOmniCharacterCreateData,
   GeminiOmniCharacterCreateResponse,
+  FluxKontextGenerateRequest,
+  FluxKontextGenerateRequestInput,
+  FluxKontextGenerateParsedRequest,
+  FluxKontextModel,
+  FluxKontextAspectRatio,
   KieGeminiRole,
   KieGeminiThinkingLevel,
   KieGeminiInlineData,
@@ -382,6 +387,7 @@ import type {
   GeminiOmniAudioCreateRequest,
   GeminiOmniCharacterCreateRequest,
   GeminiOmniCharacterCreateResponse,
+  FluxKontextGenerateRequest,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
 } from "./zod";
@@ -427,6 +433,14 @@ interface KieGeminiOmniCharacterCreateMethod {
   responseSchema: ApicitySchema<GeminiOmniCharacterCreateResponse>;
 }
 
+interface KieFluxKontextGenerateMethod {
+  (
+    req: FluxKontextGenerateRequest,
+    approval?: KieApproval
+  ): Promise<TaskResponse>;
+  schema: ApicitySchema<FluxKontextGenerateRequest>;
+}
+
 interface KieRecordInfoMethod {
   (taskId: string): Promise<KieTaskInfo>;
   schema: ApicitySchema<RecordInfoRequest>;
@@ -444,6 +458,11 @@ interface KiePostApiNamespace {
       };
       character: {
         create: KieGeminiOmniCharacterCreateMethod;
+      };
+    };
+    flux: {
+      kontext: {
+        generate: KieFluxKontextGenerateMethod;
       };
     };
   };

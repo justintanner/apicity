@@ -48,6 +48,8 @@ import {
   XaiDocumentSearchResponse,
   XaiResponseRequest,
   XaiResponseResponse,
+  XaiResponseCompactRequest,
+  XaiResponseCompactResponse,
   XaiResponseDeleteResponse,
   XaiRealtimeClientSecretRequest,
   XaiRealtimeClientSecretResponse,
@@ -86,6 +88,7 @@ import {
   XaiCollectionUpdateRequestSchema,
   XaiDocumentSearchRequestSchema,
   XaiResponseRequestSchema,
+  XaiResponseCompactRequestSchema,
   XaiTokenizeTextRequestSchema,
   XaiRealtimeClientSecretRequestSchema,
   XaiTtsRequestSchema,
@@ -1025,6 +1028,24 @@ export function createXai(opts: XaiOptions): XaiProvider {
               },
               {
                 schema: XaiResponseRequestSchema,
+                // POST https://api.x.ai/v1/responses/compact
+                // Docs: https://docs.x.ai/docs/api-reference
+                compact: Object.assign(
+                  async function compactResponses(
+                    req: XaiResponseCompactRequest,
+                    signal?: AbortSignal
+                  ): Promise<XaiResponseCompactResponse> {
+                    return await makeRequest<XaiResponseCompactResponse>(
+                      "POST",
+                      "/responses/compact",
+                      req,
+                      signal
+                    );
+                  },
+                  {
+                    schema: XaiResponseCompactRequestSchema,
+                  }
+                ),
               }
             ),
             chat: {

@@ -29,9 +29,12 @@ import type {
   GoogleGenerateContentResponse,
   GoogleOptions,
   GoogleProvider,
+  GoogleRetrieveUserQuotaRequest,
+  GoogleRetrieveUserQuotaResponse,
 } from "./types";
 import {
   GoogleCountTokensRequestSchema,
+  GoogleRetrieveUserQuotaRequestSchema,
   GoogleFlowAccountsCreateRequestSchema,
   GoogleFlowAssetUploadRequestSchema,
   GoogleFlowCaptchaProvidersRequestSchema,
@@ -155,8 +158,70 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
   const flowBaseURL = opts.flowBaseURL ?? GOOGLE_FLOW_API_URL;
   const normalizedFlowBaseURL = flowBaseURL.replace(/\/+$/, "");
   const flowApiKey = opts.flowApiKey ?? opts.apiKey;
+  // Antigravity / Cloud Code usage surface (un-versioned, OAuth-authed).
+  const cloudCodeBaseURL = (
+    opts.cloudCodeBaseURL ?? "https://cloudcode-pa.googleapis.com"
+  ).replace(/\/+$/, "");
+  const oauthToken = opts.oauthToken ?? opts.apiKey;
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+
+  // POST against the Cloud Code backend (cloudcode-pa.googleapis.com). Unlike
+  // the rest of the factory this authenticates with an OAuth bearer token (the
+  // Antigravity login), not the x-goog-api-key header.
+  async function makeCloudCodeRequest<T>(
+    path: string,
+    body: unknown,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${cloudCodeBaseURL}${path}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${oauthToken}`,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        const code =
+          isGoogleErrorBody(resBody) &&
+          typeof resBody.error === "object" &&
+          resBody.error !== null
+            ? resBody.error.status
+            : undefined;
+        throw new GoogleError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          code
+        );
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof GoogleError) throw error;
+      throw new GoogleError(`Google request failed: ${error}`, 500);
+    }
+  }
 
   async function makeRequest<T>(
     path: string,
@@ -514,6 +579,28 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     },
   };
 
+  const v1internal = {
+    // sig-ok: cloudcode-pa service host omitted from provider namespace
+    // POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota
+    // Docs: https://cloud.google.com/gemini/docs/quotas
+    retrieveUserQuota: Object.assign(
+      async (
+        _req: GoogleRetrieveUserQuotaRequest = {},
+        signal?: AbortSignal
+      ): Promise<GoogleRetrieveUserQuotaResponse> => {
+        // The endpoint requires a strictly empty JSON body — sending any keys
+        // 400s — so the validated request is ignored and `{}` is always sent.
+        parseWithSchema(GoogleRetrieveUserQuotaRequestSchema, _req ?? {});
+        return makeCloudCodeRequest<GoogleRetrieveUserQuotaResponse>(
+          "/v1internal:retrieveUserQuota",
+          {},
+          signal
+        );
+      },
+      { schema: GoogleRetrieveUserQuotaRequestSchema }
+    ),
+  };
+
   const getV1 = {
     googleFlow: {
       // GET https://api.useapi.net/v1/google-flow/accounts
@@ -648,6 +735,7 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
 
   return attachExamples({
     v1: postV1,
+    v1internal,
     post: {
       v1: postV1,
     },

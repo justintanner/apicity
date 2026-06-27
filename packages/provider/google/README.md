@@ -465,6 +465,39 @@ Source: [`packages/provider/google/src/google.ts`](src/google.ts)
 
 </details>
 
+### v1internal
+
+<details>
+<summary><code>POST</code> <b><code>google.v1internal.retrieveUserQuota</code></b></summary>
+
+<code>POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota</code>
+
+[Upstream docs ↗](https://cloud.google.com/gemini/docs/quotas)
+
+Antigravity / Cloud Code usage. Authenticates with the Antigravity OAuth
+bearer token (`oauthToken`, falling back to `apiKey`), not the API key header.
+Each returned bucket carries `remainingFraction` (0–1); the usage percentage the
+Antigravity UI renders is `(1 - remainingFraction) * 100`. Rolling windows (the
+~5h session window vs the weekly 1w window) are distinguished by each bucket's
+`resetTime` horizon and/or `tokenType`.
+
+```typescript
+const google = createGoogle({
+  apiKey: process.env.GOOGLE_API_KEY!,
+  oauthToken: process.env.ANTIGRAVITY_OAUTH_TOKEN,
+});
+
+const usage = await google.v1internal.retrieveUserQuota();
+for (const bucket of usage.buckets ?? []) {
+  const usagePercent = (1 - (bucket.remainingFraction ?? 0)) * 100;
+  console.log(bucket.modelId, bucket.tokenType, `${usagePercent}%`);
+}
+```
+
+Source: [`packages/provider/google/src/google.ts`](src/google.ts)
+
+</details>
+
 Part of the [apicity](https://github.com/justintanner/apicity) monorepo.
 
 ## License

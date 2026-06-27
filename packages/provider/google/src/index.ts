@@ -34,6 +34,10 @@ export type {
   GoogleModalityTokenCount,
   GooglePromptFeedback,
   GoogleUsageMetadata,
+  GoogleV1InternalNamespace,
+  GoogleRetrieveUserQuotaMethod,
+  GoogleRetrieveUserQuotaResponse,
+  GoogleQuotaBucket,
 } from "./types";
 
 export type {
@@ -76,10 +80,12 @@ export type {
   GoogleFlowVideosExtendRequest,
   GoogleFlowVideosConcatenateRequest,
   GoogleFlowJobsRequest,
+  GoogleRetrieveUserQuotaRequest,
 } from "./zod";
 
 export {
   GoogleOptionsSchema,
+  GoogleRetrieveUserQuotaRequestSchema,
   GoogleBlobSchema,
   GoogleFileDataSchema,
   GoogleFunctionCallSchema,

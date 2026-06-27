@@ -5,9 +5,18 @@ export const GoogleOptionsSchema = z.object({
   baseURL: z.string().url().optional(),
   flowApiKey: z.string().optional(),
   flowBaseURL: z.string().url().optional(),
+  // OAuth bearer token for the Antigravity / Cloud Code surface
+  // (cloudcode-pa.googleapis.com). Falls back to `apiKey` when unset.
+  oauthToken: z.string().optional(),
+  cloudCodeBaseURL: z.string().url().optional(),
   timeout: z.number().optional(),
   fetch: z.custom<typeof fetch>().optional(),
 });
+
+// Request body for v1internal:retrieveUserQuota. The endpoint requires an
+// empty JSON object — sending `metadata`/`clientMetadata` 400s — so the schema
+// is a strict empty object kept only as MCP/consumer metadata.
+export const GoogleRetrieveUserQuotaRequestSchema = z.object({}).strict();
 
 export const GoogleBlobSchema = z.object({
   mimeType: z.string(),
@@ -296,6 +305,9 @@ export const GoogleFlowJobsRequestSchema = z
   .passthrough();
 
 export type GoogleOptions = z.infer<typeof GoogleOptionsSchema>;
+export type GoogleRetrieveUserQuotaRequest = z.input<
+  typeof GoogleRetrieveUserQuotaRequestSchema
+>;
 export type GoogleBlob = z.infer<typeof GoogleBlobSchema>;
 export type GoogleFileData = z.infer<typeof GoogleFileDataSchema>;
 export type GoogleFunctionCall = z.infer<typeof GoogleFunctionCallSchema>;

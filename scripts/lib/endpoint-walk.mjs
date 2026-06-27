@@ -531,6 +531,7 @@ const HELPER_METHOD_HINTS = {
   makeMultipartRequest: "POST",
   makeMultipartJsonRequest: "POST",
   makeUploadRequest: "POST",
+  makeCloudCodeRequest: "POST",
 };
 
 // Helpers whose first arg is always a full absolute URL (free only).
@@ -550,6 +551,8 @@ const HELPER_BASE_URLS = {
   makeModelsRequest: "https://api.fireworks.ai",
   // openai Codex usage lives on the ChatGPT backend, not api.openai.com.
   makeCodexGetRequest: "https://chatgpt.com/backend-api",
+  // google Antigravity usage lives on the Cloud Code backend, not aiplatform.
+  makeCloudCodeRequest: "https://cloudcode-pa.googleapis.com",
 };
 
 /**

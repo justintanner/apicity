@@ -23,10 +23,12 @@ import type {
   GoogleFlowVoicesCreateRequest,
   GoogleFlowVoicesListRequest,
   GoogleGenerateContentRequest,
+  GoogleRetrieveUserQuotaRequest,
 } from "./zod";
 
 export type {
   GoogleOptions,
+  GoogleRetrieveUserQuotaRequest,
   GoogleBlob,
   GoogleFileData,
   GoogleFunctionCall,
@@ -254,8 +256,45 @@ export interface GoogleDeleteNamespace {
   v1: GoogleDeleteV1Namespace;
 }
 
+// ---------- Antigravity / Cloud Code usage (rate-limit utilization) ----------
+
+// A single quota bucket. `remainingFraction` is the share of the window's
+// budget still available (0–1); the usage percentage is
+// `(1 - remainingFraction) * 100`. Buckets are scoped per model and per
+// rolling window — the window length is read off `resetTime` (e.g. a ~5h
+// horizon for the session window vs ~1w for the weekly window) and/or
+// `tokenType` (REQUESTS for request-count limits, WTUS for token limits).
+export interface GoogleQuotaBucket {
+  tokenType?: string;
+  modelId?: string;
+  remainingFraction?: number;
+  resetTime?: string;
+  [key: string]: unknown;
+}
+
+// Response of POST /v1internal:retrieveUserQuota. Each bucket's
+// `(1 - remainingFraction) * 100` is the usage percentage the Antigravity
+// usage UI renders for that model/window.
+export interface GoogleRetrieveUserQuotaResponse {
+  buckets?: GoogleQuotaBucket[];
+  [key: string]: unknown;
+}
+
+export interface GoogleRetrieveUserQuotaMethod {
+  (
+    req?: GoogleRetrieveUserQuotaRequest,
+    signal?: AbortSignal
+  ): Promise<GoogleRetrieveUserQuotaResponse>;
+  schema: z.ZodType<GoogleRetrieveUserQuotaRequest>;
+}
+
+export interface GoogleV1InternalNamespace {
+  retrieveUserQuota: GoogleRetrieveUserQuotaMethod;
+}
+
 export interface GoogleProvider {
   v1: GooglePostV1Namespace;
+  v1internal: GoogleV1InternalNamespace;
   post: GooglePostNamespace;
   get: GoogleGetNamespace;
   delete: GoogleDeleteNamespace;

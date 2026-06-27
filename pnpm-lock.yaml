@@ -169,6 +169,9 @@ importers:
       '@apicity/youtube':
         specifier: workspace:*
         version: link:../provider/youtube
+      '@apicity/zaicoding':
+        specifier: workspace:*
+        version: link:../provider/zaicoding
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
@@ -322,7 +325,7 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
-  packages/provider/zai:
+  packages/provider/zaicoding:
     dependencies:
       zod:
         specifier: ^4.4.3

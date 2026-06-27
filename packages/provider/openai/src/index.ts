@@ -201,5 +201,12 @@ export type {
   OpenAiStoredCompletionMessage,
   OpenAiStoredCompletionMessageListOptions,
   OpenAiStoredCompletionMessageListResponse,
+  OpenAiCodexUsageWindow,
+  OpenAiCodexRateLimit,
+  OpenAiCodexAdditionalRateLimit,
+  OpenAiCodexCredits,
+  OpenAiCodexRateLimitReachedType,
+  OpenAiCodexRateLimitResetCredits,
+  OpenAiCodexUsageResponse,
   OpenAiProvider,
 } from "./types";

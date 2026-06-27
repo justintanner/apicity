@@ -23,7 +23,7 @@ import path from "node:path";
 // xai endpoint. Populated as specific docs URLs are filled in.
 const DOCS_HOSTNAME_ALLOWLIST = {
   zaicoding: ["docs.z.ai"],
-  openai: ["platform.openai.com"],
+  openai: ["platform.openai.com", "developers.openai.com"],
   xai: ["docs.x.ai"],
   anthropic: ["docs.anthropic.com", "docs.claude.com"],
   fireworks: ["docs.fireworks.ai", "fireworks.ai"],

@@ -609,6 +609,16 @@ export const OpenAiOrganizationProjectRateLimitListQuerySchema = z.object({
 export const OpenAiOptionsSchema = z.object({
   apiKey: z.string().min(1),
   baseURL: z.string().url().optional(),
+  /**
+   * Base URL for the Codex/ChatGPT backend that serves the usage endpoint
+   * (`get.codex.usage`). Defaults to https://chatgpt.com/backend-api.
+   */
+  codexBaseURL: z.string().url().optional(),
+  /**
+   * ChatGPT account id, sent as the `ChatGPT-Account-Id` header on Codex
+   * backend requests (e.g. `get.codex.usage`). Optional.
+   */
+  chatgptAccountId: z.string().optional(),
   timeout: z.number().int().positive().optional(),
   fetch: z
     .custom<

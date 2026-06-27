@@ -499,6 +499,7 @@ const HELPER_METHOD_HINTS = {
   makeGetRequest: "GET",
   makeGetTextRequest: "GET",
   makeGetBinaryRequest: "GET",
+  makeCodexGetRequest: "GET",
   getRequest: "GET",
   // DELETE family
   makeDeleteRequest: "DELETE",
@@ -547,6 +548,8 @@ const HELPER_BASE_URLS = {
   makeManagementRequest: "https://management-api.x.ai/v1",
   makeManagementRootRequest: "https://management-api.x.ai",
   makeModelsRequest: "https://api.fireworks.ai",
+  // openai Codex usage lives on the ChatGPT backend, not api.openai.com.
+  makeCodexGetRequest: "https://chatgpt.com/backend-api",
 };
 
 /**

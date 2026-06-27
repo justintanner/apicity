@@ -66,6 +66,7 @@ import {
   OpenAiStoredCompletionUpdateRequest,
   OpenAiStoredCompletionMessageListOptions,
   OpenAiStoredCompletionMessageListResponse,
+  OpenAiCodexUsageResponse,
   OpenAiProvider,
   OpenAiError,
   OpenAiTextPart,
@@ -123,6 +124,10 @@ export function firstContent(response: OpenAiChatResponse): string {
 
 export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
   const baseURL = opts.baseURL ?? "https://api.openai.com/v1";
+  // Codex usage is served by the ChatGPT backend, not the API platform.
+  const codexBaseURL = (
+    opts.codexBaseURL ?? "https://chatgpt.com/backend-api"
+  ).replace(/\/$/, "");
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
@@ -270,6 +275,61 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
         headers: {
           Authorization: `Bearer ${opts.apiKey}`,
         },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `OpenAI API error: ${res.status}`;
+        let body: unknown = null;
+        try {
+          body = await res.json();
+          if (typeof body === "object" && body !== null && "error" in body) {
+            const err = (body as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `OpenAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new OpenAiError(message, res.status, body);
+      }
+
+      return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof OpenAiError) throw error;
+      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
+    }
+  }
+
+  // GET against the Codex/ChatGPT backend (codexBaseURL) rather than the API
+  // platform baseURL. Mirrors the headers the Codex CLI sends for `/status`.
+  async function makeCodexGetRequest<T>(
+    path: string,
+    signal?: AbortSignal
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      signal.addEventListener("abort", () => controller.abort());
+    }
+
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${opts.apiKey}`,
+      "User-Agent": "codex-cli",
+    };
+    if (opts.chatgptAccountId) {
+      headers["ChatGPT-Account-Id"] = opts.chatgptAccountId;
+    }
+
+    try {
+      const res = await doFetch(`${codexBaseURL}${path}`, {
+        method: "GET",
+        headers,
         signal: controller.signal,
       });
 
@@ -1405,9 +1465,22 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
     },
   };
 
+  // GET codex namespace — ChatGPT-plan usage, served by the Codex backend
+  // (codexBaseURL) rather than the api.openai.com platform.
+  const getCodex = {
+    // GET https://chatgpt.com/backend-api/wham/usage
+    // Docs: https://developers.openai.com/codex/pricing
+    usage: async (signal?: AbortSignal): Promise<OpenAiCodexUsageResponse> => {
+      return makeCodexGetRequest<OpenAiCodexUsageResponse>(
+        "/wham/usage",
+        signal
+      );
+    },
+  };
+
   return attachExamples({
     post: { v1: postV1 },
-    get: { v1: getV1 },
+    get: { v1: getV1, codex: getCodex },
     delete: { v1: deleteV1 },
   });
 }

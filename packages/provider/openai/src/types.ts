@@ -796,6 +796,68 @@ export interface OpenAiOrganizationUsageResponse {
   next_page: string | null;
 }
 
+// ---------------------------------------------------------------------------
+// Codex usage (ChatGPT-plan rate limits) — GET /backend-api/wham/usage
+// Undocumented internal endpoint the Codex CLI calls to render `/status`.
+// `rate_limit.primary_window` is the rolling 5h window, `secondary_window`
+// the weekly (1w) window; `used_percent` on each is the percentage consumed.
+// ---------------------------------------------------------------------------
+
+export interface OpenAiCodexUsageWindow {
+  /** Percentage of this window's allowance consumed (0–100). */
+  used_percent: number;
+  /** Length of the rolling window in seconds (e.g. 18000 = 5h, 604800 = 1w). */
+  limit_window_seconds?: number;
+  /** Seconds until this window resets. */
+  reset_after_seconds?: number;
+  /** Unix-epoch time (seconds) at which this window resets. */
+  reset_at?: number;
+}
+
+export interface OpenAiCodexRateLimit {
+  allowed?: boolean;
+  limit_reached?: boolean;
+  /** Rolling 5-hour usage window. */
+  primary_window?: OpenAiCodexUsageWindow | null;
+  /** Weekly (1w) usage window. */
+  secondary_window?: OpenAiCodexUsageWindow | null;
+}
+
+export interface OpenAiCodexAdditionalRateLimit {
+  limit_name?: string;
+  metered_feature?: string;
+  rate_limit?: OpenAiCodexRateLimit | null;
+}
+
+export interface OpenAiCodexCredits {
+  has_credits?: boolean;
+  unlimited?: boolean;
+  /** Remaining credit balance, serialized as a string (e.g. "9.99"). */
+  balance?: string | null;
+  approx_local_messages?: unknown[];
+  approx_cloud_messages?: unknown[];
+}
+
+export interface OpenAiCodexRateLimitReachedType {
+  type?: string;
+}
+
+export interface OpenAiCodexRateLimitResetCredits {
+  available_count?: number;
+}
+
+export interface OpenAiCodexUsageResponse {
+  /** ChatGPT plan tier (e.g. "free", "plus", "pro", "team", "enterprise"). */
+  plan_type?: string;
+  /** Primary Codex rate limit (5h + 1w windows). */
+  rate_limit?: OpenAiCodexRateLimit | null;
+  /** Extra metered limits (e.g. code review), each with its own windows. */
+  additional_rate_limits?: OpenAiCodexAdditionalRateLimit[];
+  credits?: OpenAiCodexCredits | null;
+  rate_limit_reached_type?: OpenAiCodexRateLimitReachedType | null;
+  rate_limit_reset_credits?: OpenAiCodexRateLimitResetCredits | null;
+}
+
 export interface OpenAiOrganizationCostAmount {
   value: number;
   currency: string;
@@ -1350,9 +1412,17 @@ export interface OpenAiDeleteV1Namespace {
 
 // --- Provider interface ---
 
+export interface OpenAiGetCodexUsage {
+  (signal?: AbortSignal): Promise<OpenAiCodexUsageResponse>;
+}
+
+export interface OpenAiGetCodexNamespace {
+  usage: OpenAiGetCodexUsage;
+}
+
 export interface OpenAiProvider {
   post: { v1: OpenAiPostV1Namespace };
-  get: { v1: OpenAiGetV1Namespace };
+  get: { v1: OpenAiGetV1Namespace; codex: OpenAiGetCodexNamespace };
   delete: { v1: OpenAiDeleteV1Namespace };
 }
 

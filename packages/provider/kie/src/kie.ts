@@ -19,6 +19,7 @@ import {
   GeminiOmniCharacterCreateRequest,
   GeminiOmniCharacterCreateResponse,
   FluxKontextGenerateRequest,
+  Gpt4oImageGenerateRequest,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -31,6 +32,7 @@ import {
   GeminiOmniCharacterCreateRequestSchema,
   GeminiOmniCharacterCreateResponseSchema,
   FluxKontextGenerateRequestSchema,
+  Gpt4oImageGenerateRequestSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
@@ -588,6 +590,20 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // POST https://api.kie.ai/api/v1/gpt4o-image/generate
+  // Docs: https://docs.kie.ai/4o-image-api/generate-4-o-image
+  async function gpt4oImageGenerate(
+    req: Gpt4oImageGenerateRequest
+  ): Promise<TaskResponse> {
+    return kieRequest<TaskResponse>(`${baseURL}/api/v1/gpt4o-image/generate`, {
+      method: "POST",
+      body: req,
+      apiKey: opts.apiKey,
+      doFetch,
+      timeout,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -664,6 +680,11 @@ export function createKie(opts: KieOptions): KieProvider {
                     schema: FluxKontextGenerateRequestSchema,
                   }),
                 },
+              },
+              gpt4oImage: {
+                generate: Object.assign(gpt4oImageGenerate, {
+                  schema: Gpt4oImageGenerateRequestSchema,
+                }),
               },
             },
             fileStreamUpload: Object.assign(fileStreamUpload, {

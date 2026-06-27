@@ -250,6 +250,11 @@ export type {
   FluxKontextGenerateParsedRequest,
   FluxKontextModel,
   FluxKontextAspectRatio,
+  Gpt4oImageGenerateRequest,
+  Gpt4oImageGenerateRequestInput,
+  Gpt4oImageGenerateParsedRequest,
+  Gpt4oImageSize,
+  Gpt4oImageFallbackModel,
   KieGeminiRole,
   KieGeminiThinkingLevel,
   KieGeminiInlineData,
@@ -415,6 +420,7 @@ import type {
   GeminiOmniCharacterCreateRequest,
   GeminiOmniCharacterCreateResponse,
   FluxKontextGenerateRequest,
+  Gpt4oImageGenerateRequest,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
 } from "./zod";
@@ -468,6 +474,14 @@ interface KieFluxKontextGenerateMethod {
   schema: ApicitySchema<FluxKontextGenerateRequest>;
 }
 
+interface KieGpt4oImageGenerateMethod {
+  (
+    req: Gpt4oImageGenerateRequest,
+    approval?: KieApproval
+  ): Promise<TaskResponse>;
+  schema: ApicitySchema<Gpt4oImageGenerateRequest>;
+}
+
 interface KieRecordInfoMethod {
   (taskId: string): Promise<KieTaskInfo>;
   schema: ApicitySchema<RecordInfoRequest>;
@@ -497,6 +511,9 @@ interface KiePostApiNamespace {
       kontext: {
         generate: KieFluxKontextGenerateMethod;
       };
+    };
+    gpt4oImage: {
+      generate: KieGpt4oImageGenerateMethod;
     };
   };
   fileStreamUpload: KieFileStreamUploadMethod;

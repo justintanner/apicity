@@ -86,6 +86,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
       costNotes: "Billed per image generation based on model (pro/max)",
     },
   },
+  {
+    key: {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.gpt4oImage.generate",
+    },
+    info: {
+      reason:
+        "4o Image generation/edit task that incurs direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per image generation based on size and fallback model",
+    },
+  },
 ];
 
 /**

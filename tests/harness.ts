@@ -1003,6 +1003,19 @@ export function mintKieFluxKontextOtp(request: Record<string, unknown>): {
   };
 }
 
+export function mintKieGpt4oImageOtp(request: Record<string, unknown>): {
+  otp: string;
+} {
+  return {
+    otp: mintOtp(TEST_PAYGATE_SECRET, {
+      provider: "kie",
+      method: "POST",
+      dotPath: "api.v1.gpt4oImage.generate",
+      request,
+    }),
+  };
+}
+
 export function mintXaiOtp(
   dotPath: string,
   request: Record<string, unknown>

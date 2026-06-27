@@ -1769,6 +1769,48 @@ export type FluxKontextAspectRatio = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// 4o Image schemas
+// ---------------------------------------------------------------------------
+
+export const Gpt4oImageSizeSchema = z.enum(["1:1", "3:2", "2:3"]);
+
+export const Gpt4oImageFallbackModelSchema = z.enum([
+  "GPT_IMAGE_1",
+  "FLUX_MAX",
+]);
+
+export const Gpt4oImageGenerateRequestSchema = z
+  .object({
+    // One of `prompt` / `filesUrl` must be provided (enforced below).
+    prompt: z.string().min(1).optional(),
+    // Up to 5 reference image URLs.
+    filesUrl: z.array(z.string().url()).max(5).optional(),
+    size: Gpt4oImageSizeSchema,
+    // Mask URL for inpainting: black = modify, white = preserve.
+    maskUrl: z.string().url().optional(),
+    callBackUrl: z.string().url().optional(),
+    isEnhance: z.boolean().optional(),
+    uploadCn: z.boolean().optional(),
+    enableFallback: z.boolean().optional(),
+    fallbackModel: Gpt4oImageFallbackModelSchema.optional(),
+  })
+  .refine((req) => req.prompt !== undefined || req.filesUrl !== undefined, {
+    message: "At least one of `prompt` or `filesUrl` must be provided",
+  });
+
+export type Gpt4oImageGenerateRequest = z.input<
+  typeof Gpt4oImageGenerateRequestSchema
+>;
+export type Gpt4oImageGenerateRequestInput = Gpt4oImageGenerateRequest;
+export type Gpt4oImageGenerateParsedRequest = z.output<
+  typeof Gpt4oImageGenerateRequestSchema
+>;
+export type Gpt4oImageSize = z.infer<typeof Gpt4oImageSizeSchema>;
+export type Gpt4oImageFallbackModel = z.infer<
+  typeof Gpt4oImageFallbackModelSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Sub-provider schemas: Suno
 // ---------------------------------------------------------------------------
 

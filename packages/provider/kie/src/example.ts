@@ -151,6 +151,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "Continue the chorus then resolve"
     }
   },
+  "POST api.v1.gpt4oImage.generate": {
+    "source": "kie/gpt4o-image-generate",
+    "payload": {
+      "prompt": "A cinematic night city poster with neon reflections on a rainy street.",
+      "size": "3:2",
+      "isEnhance": true
+    }
+  },
   "POST api.v1.jobs.createTask": {
     "source": "kie/grok-video-upscale",
     "payload": {

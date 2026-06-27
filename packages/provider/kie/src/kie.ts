@@ -20,6 +20,7 @@ import {
   GeminiOmniCharacterCreateResponse,
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
+  MjGenerateRequest,
 } from "./types";
 import {
   CreateTaskRequestSchema,
@@ -33,6 +34,7 @@ import {
   GeminiOmniCharacterCreateResponseSchema,
   FluxKontextGenerateRequestSchema,
   Gpt4oImageGenerateRequestSchema,
+  MjGenerateRequestSchema,
   GrokImageToVideoRequestSchema,
   RecordInfoRequestSchema,
   Gpt4oImageRecordInfoResponseSchema,
@@ -604,6 +606,18 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // POST https://api.kie.ai/api/v1/mj/generate
+  // Docs: https://docs.kie.ai/mj-api/generate-mj-image
+  async function mjGenerate(req: MjGenerateRequest): Promise<TaskResponse> {
+    return kieRequest<TaskResponse>(`${baseURL}/api/v1/mj/generate`, {
+      method: "POST",
+      body: req,
+      apiKey: opts.apiKey,
+      doFetch,
+      timeout,
+    });
+  }
+
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
@@ -684,6 +698,11 @@ export function createKie(opts: KieOptions): KieProvider {
               gpt4oImage: {
                 generate: Object.assign(gpt4oImageGenerate, {
                   schema: Gpt4oImageGenerateRequestSchema,
+                }),
+              },
+              mj: {
+                generate: Object.assign(mjGenerate, {
+                  schema: MjGenerateRequestSchema,
                 }),
               },
             },

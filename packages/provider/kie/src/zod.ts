@@ -1811,6 +1811,75 @@ export type Gpt4oImageFallbackModel = z.infer<
 >;
 
 // ---------------------------------------------------------------------------
+// Midjourney (mj) schemas
+// ---------------------------------------------------------------------------
+
+export const MjTaskTypeSchema = z.enum([
+  "mj_txt2img",
+  "mj_img2img",
+  "mj_style_reference",
+  "mj_omni_reference",
+  "mj_video",
+  "mj_video_hd",
+]);
+
+export const MjSpeedSchema = z.enum(["relaxed", "fast", "turbo"]);
+
+export const MjVersionSchema = z.enum(["7", "6.1", "6", "5.2", "5.1", "niji6"]);
+
+export const MjAspectRatioSchema = z.enum([
+  "1:2",
+  "9:16",
+  "2:3",
+  "3:4",
+  "5:6",
+  "6:5",
+  "4:3",
+  "3:2",
+  "1:1",
+  "16:9",
+  "2:1",
+]);
+
+export const MjMotionSchema = z.enum(["high", "low"]);
+
+export const MjGenerateRequestSchema = z.object({
+  prompt: z.string().min(1).max(2000),
+  taskType: MjTaskTypeSchema,
+  // Not required when taskType is mj_video, mj_video_hd, or mj_omni_reference.
+  speed: MjSpeedSchema.optional(),
+  // Single input image; required for image-to-image / image-to-video modes.
+  fileUrl: z.string().url().optional(),
+  // Preferred over fileUrl; for video modes only one image link is allowed.
+  fileUrls: z.array(z.string().url()).optional(),
+  aspectRatio: MjAspectRatioSchema.optional(),
+  version: MjVersionSchema.optional(),
+  variety: z.number().int().min(0).max(100).optional(),
+  stylization: z.number().int().min(0).max(1000).optional(),
+  weirdness: z.number().int().min(0).max(3000).optional(),
+  // Omni reference intensity; only used when taskType is mj_omni_reference.
+  ow: z.number().int().min(1).max(1000).optional(),
+  waterMark: z.string().optional(),
+  enableTranslation: z.boolean().optional(),
+  callBackUrl: z.string().url().optional(),
+  // Video modes only: number of videos to generate.
+  videoBatchSize: z
+    .union([z.literal(1), z.literal(2), z.literal(4)])
+    .optional(),
+  // Required for mj_video / mj_video_hd; controls motion level.
+  motion: MjMotionSchema.optional(),
+});
+
+export type MjGenerateRequest = z.input<typeof MjGenerateRequestSchema>;
+export type MjGenerateRequestInput = MjGenerateRequest;
+export type MjGenerateParsedRequest = z.output<typeof MjGenerateRequestSchema>;
+export type MjTaskType = z.infer<typeof MjTaskTypeSchema>;
+export type MjSpeed = z.infer<typeof MjSpeedSchema>;
+export type MjVersion = z.infer<typeof MjVersionSchema>;
+export type MjAspectRatio = z.infer<typeof MjAspectRatioSchema>;
+export type MjMotion = z.infer<typeof MjMotionSchema>;
+
+// ---------------------------------------------------------------------------
 // Sub-provider schemas: Suno
 // ---------------------------------------------------------------------------
 

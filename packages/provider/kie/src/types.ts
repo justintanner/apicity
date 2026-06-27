@@ -255,6 +255,14 @@ export type {
   Gpt4oImageGenerateParsedRequest,
   Gpt4oImageSize,
   Gpt4oImageFallbackModel,
+  MjGenerateRequest,
+  MjGenerateRequestInput,
+  MjGenerateParsedRequest,
+  MjTaskType,
+  MjSpeed,
+  MjVersion,
+  MjAspectRatio,
+  MjMotion,
   KieGeminiRole,
   KieGeminiThinkingLevel,
   KieGeminiInlineData,
@@ -421,6 +429,7 @@ import type {
   GeminiOmniCharacterCreateResponse,
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
+  MjGenerateRequest,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
 } from "./zod";
@@ -482,6 +491,11 @@ interface KieGpt4oImageGenerateMethod {
   schema: ApicitySchema<Gpt4oImageGenerateRequest>;
 }
 
+interface KieMjGenerateMethod {
+  (req: MjGenerateRequest, approval?: KieApproval): Promise<TaskResponse>;
+  schema: ApicitySchema<MjGenerateRequest>;
+}
+
 interface KieRecordInfoMethod {
   (taskId: string): Promise<KieTaskInfo>;
   schema: ApicitySchema<RecordInfoRequest>;
@@ -514,6 +528,9 @@ interface KiePostApiNamespace {
     };
     gpt4oImage: {
       generate: KieGpt4oImageGenerateMethod;
+    };
+    mj: {
+      generate: KieMjGenerateMethod;
     };
   };
   fileStreamUpload: KieFileStreamUploadMethod;

@@ -1880,6 +1880,98 @@ export type MjAspectRatio = z.infer<typeof MjAspectRatioSchema>;
 export type MjMotion = z.infer<typeof MjMotionSchema>;
 
 // ---------------------------------------------------------------------------
+// Runway schemas
+// ---------------------------------------------------------------------------
+
+export const RunwayQualitySchema = z.enum(["720p", "1080p"]);
+
+// Aspect ratio is required only for text-only generation (no imageUrl); when
+// an imageUrl is supplied the reference image determines the aspect ratio.
+export const RunwayAspectRatioSchema = z.enum([
+  "16:9",
+  "4:3",
+  "1:1",
+  "3:4",
+  "9:16",
+]);
+
+// Video length in seconds. 10s is incompatible with 1080p (per upstream docs).
+export const RunwayDurationSchema = z.union([z.literal(5), z.literal(10)]);
+
+export const RunwayGenerateRequestSchema = z.object({
+  prompt: z.string().min(1).max(1800),
+  duration: RunwayDurationSchema,
+  quality: RunwayQualitySchema,
+  // Reference image to animate; also determines the output aspect ratio.
+  imageUrl: z.string().url().optional(),
+  // Required for text-only generation (omit when imageUrl is provided).
+  aspectRatio: RunwayAspectRatioSchema.optional(),
+  // Overlay text; empty string means no watermark.
+  waterMark: z.string().optional(),
+  callBackUrl: z.string().url().optional(),
+});
+
+export const RunwayExtendRequestSchema = z.object({
+  // Task id of the original Runway generation to continue.
+  taskId: z.string().min(1),
+  prompt: z.string().min(1),
+  quality: RunwayQualitySchema,
+  waterMark: z.string().optional(),
+  callBackUrl: z.string().url().optional(),
+});
+
+// Response shape for GET /api/v1/runway/record-detail.
+export const RunwayVideoInfoSchema = z.object({
+  videoId: z.string().optional(),
+  taskId: z.string().optional(),
+  videoUrl: z.string().optional(),
+  imageUrl: z.string().optional(),
+});
+
+export const RunwayGenerateParamSchema = z
+  .object({
+    prompt: z.string().optional(),
+    imageUrl: z.string().optional(),
+    expandPrompt: z.boolean().optional(),
+  })
+  .passthrough();
+
+export const RunwayRecordDetailDataSchema = z.object({
+  taskId: z.string().optional(),
+  parentTaskId: z.string().nullable().optional(),
+  generateParam: RunwayGenerateParamSchema.nullable().optional(),
+  state: z.string().optional(),
+  generateTime: z.string().nullable().optional(),
+  videoInfo: RunwayVideoInfoSchema.nullable().optional(),
+  failCode: z.number().int().nullable().optional(),
+  failMsg: z.string().nullable().optional(),
+  expireFlag: z.number().int().nullable().optional(),
+});
+
+export const RunwayRecordDetailResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: RunwayRecordDetailDataSchema.nullable().optional(),
+});
+
+export type RunwayGenerateRequest = z.input<typeof RunwayGenerateRequestSchema>;
+export type RunwayGenerateRequestInput = RunwayGenerateRequest;
+export type RunwayGenerateParsedRequest = z.output<
+  typeof RunwayGenerateRequestSchema
+>;
+export type RunwayExtendRequest = z.input<typeof RunwayExtendRequestSchema>;
+export type RunwayExtendRequestInput = RunwayExtendRequest;
+export type RunwayExtendParsedRequest = z.output<
+  typeof RunwayExtendRequestSchema
+>;
+export type RunwayQuality = z.infer<typeof RunwayQualitySchema>;
+export type RunwayAspectRatio = z.infer<typeof RunwayAspectRatioSchema>;
+export type RunwayDuration = z.infer<typeof RunwayDurationSchema>;
+export type RunwayRecordDetailResponseSchemaType = z.infer<
+  typeof RunwayRecordDetailResponseSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Sub-provider schemas: Suno
 // ---------------------------------------------------------------------------
 

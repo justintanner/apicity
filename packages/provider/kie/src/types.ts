@@ -263,6 +263,15 @@ export type {
   MjVersion,
   MjAspectRatio,
   MjMotion,
+  RunwayGenerateRequest,
+  RunwayGenerateRequestInput,
+  RunwayGenerateParsedRequest,
+  RunwayExtendRequest,
+  RunwayExtendRequestInput,
+  RunwayExtendParsedRequest,
+  RunwayQuality,
+  RunwayAspectRatio,
+  RunwayDuration,
   KieGeminiRole,
   KieGeminiThinkingLevel,
   KieGeminiInlineData,
@@ -377,6 +386,38 @@ export interface Gpt4oImageRecordInfo {
   data?: Gpt4oImageRecordInfoData | null;
 }
 
+export interface RunwayVideoInfo {
+  videoId?: string;
+  taskId?: string;
+  videoUrl?: string;
+  imageUrl?: string;
+}
+
+export interface RunwayGenerateParam {
+  prompt?: string;
+  imageUrl?: string;
+  expandPrompt?: boolean;
+  [key: string]: unknown;
+}
+
+export interface RunwayRecordDetailData {
+  taskId?: string;
+  parentTaskId?: string | null;
+  generateParam?: RunwayGenerateParam | null;
+  state?: string;
+  generateTime?: string | null;
+  videoInfo?: RunwayVideoInfo | null;
+  failCode?: number | null;
+  failMsg?: string | null;
+  expireFlag?: number | null;
+}
+
+export interface RunwayRecordDetail {
+  code: number;
+  msg: string;
+  data?: RunwayRecordDetailData | null;
+}
+
 export interface GeminiOmniAudioCreateData {
   audioId: string;
   kieAudioId: string;
@@ -430,6 +471,8 @@ import type {
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
   MjGenerateRequest,
+  RunwayGenerateRequest,
+  RunwayExtendRequest,
   RecordInfoRequest,
   Seedance2MiniRecordInfoResponse,
 } from "./zod";
@@ -508,6 +551,22 @@ interface KieGpt4oImageRecordInfoMethod {
   responseSchema: ApicitySchema<Gpt4oImageRecordInfo>;
 }
 
+interface KieRunwayGenerateMethod {
+  (req: RunwayGenerateRequest, approval?: KieApproval): Promise<TaskResponse>;
+  schema: ApicitySchema<RunwayGenerateRequest>;
+}
+
+interface KieRunwayExtendMethod {
+  (req: RunwayExtendRequest, approval?: KieApproval): Promise<TaskResponse>;
+  schema: ApicitySchema<RunwayExtendRequest>;
+}
+
+interface KieRunwayRecordDetailMethod {
+  (taskId: string): Promise<RunwayRecordDetail>;
+  schema: ApicitySchema<RecordInfoRequest>;
+  responseSchema: ApicitySchema<RunwayRecordDetail>;
+}
+
 // POST namespace
 interface KiePostApiNamespace {
   v1: {
@@ -532,6 +591,10 @@ interface KiePostApiNamespace {
     mj: {
       generate: KieMjGenerateMethod;
     };
+    runway: {
+      generate: KieRunwayGenerateMethod;
+      extend: KieRunwayExtendMethod;
+    };
   };
   fileStreamUpload: KieFileStreamUploadMethod;
   fileUrlUpload: KieFileUrlUploadMethod;
@@ -543,6 +606,7 @@ interface KieGetApiNamespace {
   v1: {
     jobs: { recordInfo: KieRecordInfoMethod };
     gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
+    runway: { recordDetail: KieRunwayRecordDetailMethod };
     chat: { credit(): Promise<KieCreditsResponse> };
   };
 }

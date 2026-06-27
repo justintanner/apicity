@@ -17,10 +17,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
     }
   },
+  "GET api.v1.gpt4oImage.recordInfo": {
+    "source": "kie/gpt4o-image/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    }
+  },
   "GET api.v1.jobs.recordInfo": {
     "source": "kie/bytedance-seedance-2",
     "payload": {
       "taskId": "49265b81be9607661c0246b892144776"
+    }
+  },
+  "GET api.v1.runway.recordDetail": {
+    "source": "kie/runway/record-detail-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
     }
   },
   "POST api.fileBase64Upload": {
@@ -209,6 +221,24 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "name": "Apicity HAR Test Narrator",
       "voice_description": "A calm, clear, friendly voice for a short API smoke test.",
       "example_dialogue": "Hello from the Apicity Kie audio HAR test."
+    }
+  },
+  "POST api.v1.runway.extend": {
+    "source": "kie/runway/extend-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
+      "prompt": "Continue the scene with a slow zoom out.",
+      "quality": "720p"
+    }
+  },
+  "POST api.v1.runway.generate": {
+    "source": "kie/runway-generate",
+    "payload": {
+      "prompt": "A serene drone shot flying over a misty pine forest at dawn.",
+      "duration": 5,
+      "quality": "720p",
+      "aspectRatio": "16:9",
+      "callBackUrl": "https://example.com/runway-callback"
     }
   },
   "POST api.v1.style.generate": {

@@ -1690,11 +1690,26 @@ function renderHeader(
   doc: EndpointDocRow | null,
   endpoint: string,
   apicityPath: string,
-  status: string
+  status: string,
+  generationReview: GenerationReview | null = null
 ): string {
-  const ok = entry.response.status < 400;
+  // A media generation that never reached terminal success must NOT be
+  // headlined with ✅. Each poll returns HTTP 200 while the job is still
+  // running, so the transport status lies about completion — headlining a
+  // "generating"/"waiting" recording (or one whose live poll could not be
+  // settled) with ✅ previews an incomplete generation as if it were done.
+  // Reflect the generation's terminal state instead: ⏳ pending, ❌ failure.
+  const glyph = generationReview
+    ? generationReview.terminal === "success"
+      ? "✅"
+      : generationReview.terminal === "failure"
+        ? "❌"
+        : "⏳"
+    : entry.response.status < 400
+      ? "✅"
+      : "❌";
   const lines: string[] = [
-    `${ok ? "✅" : "❌"} <b>${escapeHtml(recordingHeading(recording))}</b>`,
+    `${glyph} <b>${escapeHtml(recordingHeading(recording))}</b>`,
     `<code>${escapeHtml(apicityPath)}</code>`,
     "",
     `<code>${escapeHtml(endpoint)}</code> → <code>${escapeHtml(status)}</code>`,
@@ -1744,7 +1759,8 @@ function buildMessageFromReview(
     doc,
     endpoint,
     apicityPath,
-    status
+    status,
+    generationReview
   );
   const chunks = chunkMessage(
     header,

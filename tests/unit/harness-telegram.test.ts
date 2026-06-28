@@ -1712,4 +1712,32 @@ describe("harness Telegram live poll-and-wait", () => {
     expect(message.text).toContain("Generation did not reach terminal success");
     expect(mediaUrls(message)).toEqual(["https://example.com/input.png"]);
   });
+
+  it("does not headline an incomplete generation as complete when the live poll is unreachable", async () => {
+    // The recorded taskId / signed media URLs are expired and auth is redacted,
+    // so against a committed HAR the live poll can only fail — exactly the
+    // ac-x8rgr scenario. The message must NOT imply the generation finished:
+    // no ✅, no generated/intermediate output frame, and the status line marks
+    // it incomplete. The recorded input frame may still appear as context.
+    const fetchImpl = (async () => {
+      throw new Error("network down");
+    }) as unknown as typeof fetch;
+
+    const message = await formatTelegramEndpointMessageWithLivePoll(
+      kiePendingGenerationRecording(),
+      endpointDocs,
+      { fetchImpl, sleepImpl: async () => {}, maxAttempts: 2 }
+    );
+
+    // Header must reflect the generation's pending state, not the poll's
+    // HTTP 200 — a ✅ here is the "preview implies completion" bug.
+    expect(message.text).toContain("⏳");
+    expect(message.text).not.toContain("✅");
+    expect(message.text).toContain("Generation did not reach terminal success");
+    // No completed-media preview: the intermediate output frame must never be
+    // offered as uploadable media.
+    expect(mediaUrls(message)).not.toContain(
+      "https://tempfile.aiquickdraw.com/generated/intermediate.jpg"
+    );
+  });
 });

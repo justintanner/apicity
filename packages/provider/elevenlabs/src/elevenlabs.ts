@@ -20,6 +20,8 @@ import {
   ElevenLabsSoundGenerationRequest,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
+  ElevenLabsAudioWithTimestampsResponse,
+  ElevenLabsStreamingAudioChunkWithTimestampsResponse,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
   ElevenLabsStartSpeakerSeparationResponse,
@@ -529,6 +531,18 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     return Object.keys(query).length > 0 ? query : undefined;
   }
 
+  // Parse a newline-delimited JSON (NDJSON) response body into an array of
+  // chunk objects. The streaming text-to-speech-with-timestamps endpoint emits
+  // one JSON object per line as audio is generated.
+  function decodeNdjson<T>(buffer: ArrayBuffer): T[] {
+    const text = new TextDecoder().decode(buffer);
+    return text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
+      .map((line) => JSON.parse(line) as T);
+  }
+
   function buildQueryString(params: object): string {
     const query = new URLSearchParams();
 
@@ -819,6 +833,81 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSoundGenerationRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/stream-with-timestamps
+  const textToSpeechStreamWithTimestamps = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsTextToSpeechRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsStreamingAudioChunkWithTimestampsResponse[]> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+      const buffer = await makeBinaryRequest(
+        `/v1/text-to-speech/${encodeURIComponent(voiceId)}/stream/with-timestamps`,
+        body,
+        query,
+        signal
+      );
+      return decodeNdjson<ElevenLabsStreamingAudioChunkWithTimestampsResponse>(
+        buffer
+      );
+    },
+    { schema: ElevenLabsTextToSpeechRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/stream
+  const textToSpeechStream = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsTextToSpeechRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+      return makeBinaryRequest(
+        `/v1/text-to-speech/${encodeURIComponent(voiceId)}/stream`,
+        body,
+        query,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsTextToSpeechRequestSchema,
+      withTimestamps: textToSpeechStreamWithTimestamps,
+    }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/with-timestamps
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/convert-with-timestamps
+  const textToSpeechWithTimestamps = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsTextToSpeechRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioWithTimestampsResponse> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = buildQueryString({ output_format, enable_logging });
+      return makeJsonRequest<ElevenLabsAudioWithTimestampsResponse>(
+        "POST",
+        `/v1/text-to-speech/${encodeURIComponent(voiceId)}/with-timestamps`,
+        body,
+        signal,
+        query
+      );
+    },
+    { schema: ElevenLabsTextToSpeechRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech/convert
   const textToSpeech = Object.assign(
@@ -840,7 +929,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         signal
       );
     },
-    { schema: ElevenLabsTextToSpeechRequestSchema }
+    {
+      schema: ElevenLabsTextToSpeechRequestSchema,
+      stream: textToSpeechStream,
+      withTimestamps: textToSpeechWithTimestamps,
+    }
   );
 
   // POST https://api.elevenlabs.io/v1/text-to-dialogue

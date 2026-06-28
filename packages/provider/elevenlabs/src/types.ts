@@ -1059,6 +1059,52 @@ export interface ElevenLabsSoundGenerationMethod {
   schema: z.ZodType<ElevenLabsSoundGenerationRequest>;
 }
 
+export interface ElevenLabsCharacterAlignment {
+  characters: string[];
+  character_start_times_seconds: number[];
+  character_end_times_seconds: number[];
+}
+
+export interface ElevenLabsAudioWithTimestampsResponse {
+  audio_base64: string;
+  alignment: ElevenLabsCharacterAlignment | null;
+  normalized_alignment: ElevenLabsCharacterAlignment | null;
+}
+
+export interface ElevenLabsStreamingAudioChunkWithTimestampsResponse {
+  audio_base64: string;
+  alignment: ElevenLabsCharacterAlignment | null;
+  normalized_alignment: ElevenLabsCharacterAlignment | null;
+}
+
+export interface ElevenLabsTextToSpeechStreamWithTimestampsMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsTextToSpeechRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStreamingAudioChunkWithTimestampsResponse[]>;
+  schema: z.ZodType<ElevenLabsTextToSpeechRequest>;
+}
+
+export interface ElevenLabsTextToSpeechStreamMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsTextToSpeechRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsTextToSpeechRequest>;
+  withTimestamps: ElevenLabsTextToSpeechStreamWithTimestampsMethod;
+}
+
+export interface ElevenLabsTextToSpeechWithTimestampsMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsTextToSpeechRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioWithTimestampsResponse>;
+  schema: z.ZodType<ElevenLabsTextToSpeechRequest>;
+}
+
 export interface ElevenLabsTextToSpeechMethod {
   (
     voiceId: string,
@@ -1066,6 +1112,8 @@ export interface ElevenLabsTextToSpeechMethod {
     signal?: AbortSignal
   ): Promise<ArrayBuffer>;
   schema: z.ZodType<ElevenLabsTextToSpeechRequest>;
+  stream: ElevenLabsTextToSpeechStreamMethod;
+  withTimestamps: ElevenLabsTextToSpeechWithTimestampsMethod;
 }
 
 export interface ElevenLabsTextToDialogueMethod {

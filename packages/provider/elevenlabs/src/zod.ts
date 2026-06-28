@@ -632,3 +632,135 @@ export type ElevenLabsUpdateToolRequestInput = ElevenLabsUpdateToolRequest;
 export type ElevenLabsUpdateToolParsedRequest = z.output<
   typeof ElevenLabsUpdateToolRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Agents Platform — Knowledge Base
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/url
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestSchema =
+  z.object({
+    url: z.string().url(),
+    name: z.string().nullable().optional(),
+    parent_folder_id: z.string().nullable().optional(),
+    enable_auto_sync: z.boolean().optional(),
+    auto_remove: z.boolean().optional(),
+  });
+
+export type ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest = z.input<
+  typeof ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestSchema
+>;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestInput =
+  ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromUrlParsedRequest =
+  z.output<typeof ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/text
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestSchema =
+  z.object({
+    text: z.string(),
+    name: z.string().nullable().optional(),
+    parent_folder_id: z.string().nullable().optional(),
+  });
+
+export type ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest = z.input<
+  typeof ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestSchema
+>;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestInput =
+  ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromTextParsedRequest =
+  z.output<typeof ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/file
+// ---------------------------------------------------------------------------
+
+// Multipart form: `file` is the binary document; `name` and `parent_folder_id`
+// are optional text fields.
+export const ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestSchema =
+  z.object({
+    file: z.custom<Blob>(),
+    name: z.string().nullable().optional(),
+    parent_folder_id: z.string().nullable().optional(),
+  });
+
+export type ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest = z.input<
+  typeof ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestSchema
+>;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestInput =
+  ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromFileParsedRequest =
+  z.output<typeof ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListKnowledgeBaseDocumentsRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(100).optional(),
+  search: z.string().nullable().optional(),
+  show_only_owned_documents: z.boolean().optional(),
+  created_by_user_id: z.string().nullable().optional(),
+  types: z
+    .array(z.enum(["file", "url", "text", "folder"]))
+    .nullable()
+    .optional(),
+  parent_folder_id: z.string().nullable().optional(),
+  ancestor_folder_id: z.string().nullable().optional(),
+  folders_first: z.boolean().optional(),
+  sort_direction: z.enum(["asc", "desc"]).optional(),
+  sort_by: z
+    .enum(["name", "created_at", "updated_at", "size"])
+    .nullable()
+    .optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListKnowledgeBaseDocumentsRequest = z.input<
+  typeof ElevenLabsListKnowledgeBaseDocumentsRequestSchema
+>;
+export type ElevenLabsListKnowledgeBaseDocumentsRequestInput =
+  ElevenLabsListKnowledgeBaseDocumentsRequest;
+export type ElevenLabsListKnowledgeBaseDocumentsParsedRequest = z.output<
+  typeof ElevenLabsListKnowledgeBaseDocumentsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base/:documentation_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetKnowledgeBaseDocumentRequestSchema = z.object({
+  agent_id: z.string().optional(),
+});
+
+export type ElevenLabsGetKnowledgeBaseDocumentRequest = z.input<
+  typeof ElevenLabsGetKnowledgeBaseDocumentRequestSchema
+>;
+export type ElevenLabsGetKnowledgeBaseDocumentRequestInput =
+  ElevenLabsGetKnowledgeBaseDocumentRequest;
+export type ElevenLabsGetKnowledgeBaseDocumentParsedRequest = z.output<
+  typeof ElevenLabsGetKnowledgeBaseDocumentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// DELETE /v1/convai/knowledge-base/:documentation_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema = z.object({
+  force: z.boolean().optional(),
+});
+
+export type ElevenLabsDeleteKnowledgeBaseDocumentRequest = z.input<
+  typeof ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema
+>;
+export type ElevenLabsDeleteKnowledgeBaseDocumentRequestInput =
+  ElevenLabsDeleteKnowledgeBaseDocumentRequest;
+export type ElevenLabsDeleteKnowledgeBaseDocumentParsedRequest = z.output<
+  typeof ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema
+>;

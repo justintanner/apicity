@@ -507,6 +507,12 @@ elevenlabs	v1.convai.tools.list	GET	https://api.elevenlabs.io/v1/convai/tools	ht
 elevenlabs	v1.convai.tools.get	GET	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/get
 elevenlabs	v1.convai.tools.update	PATCH	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/update
 elevenlabs	v1.convai.tools.delete	DELETE	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/delete
+elevenlabs	v1.convai.knowledgeBase.url	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/url	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-url
+elevenlabs	v1.convai.knowledgeBase.text	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/text	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-text
+elevenlabs	v1.convai.knowledgeBase.file	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/file	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-file
+elevenlabs	v1.convai.knowledgeBase.list	GET	https://api.elevenlabs.io/v1/convai/knowledge-base	https://elevenlabs.io/docs/api-reference/knowledge-base/list
+elevenlabs	v1.convai.knowledgeBase.get	GET	https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}	https://elevenlabs.io/docs/api-reference/knowledge-base/get-document
+elevenlabs	v1.convai.knowledgeBase.delete	DELETE	https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}	https://elevenlabs.io/docs/api-reference/knowledge-base/delete
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-34 endpoints across 10 groups. Each method mirrors an upstream URL path.
+40 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -245,6 +245,96 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.agents.widget({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.knowledgeBase.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.file</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/file</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-file)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.file({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-document)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.text</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/text</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-text)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.text({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.url</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/url</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-url)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.url({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

@@ -5,6 +5,12 @@
       "page_size": 30
     }
   },
+  "GET v1.convai.knowledgeBase.list": {
+    "source": "elevenlabs/convai-knowledge-base",
+    "payload": {
+      "page_size": 30
+    }
+  },
   "GET v1.convai.tools.list": {
     "source": "elevenlabs/convai-tools",
     "payload": {
@@ -55,6 +61,20 @@
       "tags": [
         "apicity-test"
       ]
+    }
+  },
+  "POST v1.convai.knowledgeBase.text": {
+    "source": "elevenlabs/convai-knowledge-base",
+    "payload": {
+      "name": "Apicity KB route test (text)",
+      "text": "Apicity is a TypeScript monorepo of standalone API provider packages."
+    }
+  },
+  "POST v1.convai.knowledgeBase.url": {
+    "source": "elevenlabs/convai-knowledge-base",
+    "payload": {
+      "name": "Apicity KB route test (url)",
+      "url": "https://elevenlabs.io/docs/api-reference/introduction"
     }
   },
   "POST v1.convai.tools.create": {

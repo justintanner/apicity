@@ -21,6 +21,12 @@ import type {
   ElevenLabsCreateToolRequest,
   ElevenLabsListToolsRequest,
   ElevenLabsUpdateToolRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest,
+  ElevenLabsListKnowledgeBaseDocumentsRequest,
+  ElevenLabsGetKnowledgeBaseDocumentRequest,
+  ElevenLabsDeleteKnowledgeBaseDocumentRequest,
 } from "./zod";
 
 export type {
@@ -88,6 +94,24 @@ export type {
   ElevenLabsUpdateToolRequest,
   ElevenLabsUpdateToolRequestInput,
   ElevenLabsUpdateToolParsedRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestInput,
+  ElevenLabsCreateKnowledgeBaseDocumentFromUrlParsedRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestInput,
+  ElevenLabsCreateKnowledgeBaseDocumentFromTextParsedRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest,
+  ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestInput,
+  ElevenLabsCreateKnowledgeBaseDocumentFromFileParsedRequest,
+  ElevenLabsListKnowledgeBaseDocumentsRequest,
+  ElevenLabsListKnowledgeBaseDocumentsRequestInput,
+  ElevenLabsListKnowledgeBaseDocumentsParsedRequest,
+  ElevenLabsGetKnowledgeBaseDocumentRequest,
+  ElevenLabsGetKnowledgeBaseDocumentRequestInput,
+  ElevenLabsGetKnowledgeBaseDocumentParsedRequest,
+  ElevenLabsDeleteKnowledgeBaseDocumentRequest,
+  ElevenLabsDeleteKnowledgeBaseDocumentRequestInput,
+  ElevenLabsDeleteKnowledgeBaseDocumentParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -744,6 +768,74 @@ export interface ElevenLabsListToolsResponse {
 // DELETE returns an empty body (HTTP 200/204); we surface it as an empty record.
 export type ElevenLabsDeleteToolResponse = Record<string, unknown>;
 
+// -- Agents Platform — Knowledge Base response shapes ------------------------
+
+// Each folder-path segment leading from the workspace root to the document's
+// parent folder.
+export interface ElevenLabsKnowledgeBaseFolderPathSegment {
+  id: string;
+  [key: string]: unknown;
+}
+
+// Shared shape returned by all three create endpoints (url / text / file).
+export interface ElevenLabsCreateKnowledgeBaseDocumentResponse {
+  id: string;
+  name: string;
+  folder_path?: ElevenLabsKnowledgeBaseFolderPathSegment[];
+  [key: string]: unknown;
+}
+
+export type ElevenLabsCreateKnowledgeBaseDocumentFromUrlResponse =
+  ElevenLabsCreateKnowledgeBaseDocumentResponse;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromTextResponse =
+  ElevenLabsCreateKnowledgeBaseDocumentResponse;
+export type ElevenLabsCreateKnowledgeBaseDocumentFromFileResponse =
+  ElevenLabsCreateKnowledgeBaseDocumentResponse;
+
+export interface ElevenLabsKnowledgeBaseDocumentMetadata {
+  created_at_unix_secs: number;
+  last_updated_at_unix_secs: number;
+  size_bytes: number;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsKnowledgeBaseDocumentType =
+  | "file"
+  | "url"
+  | "text"
+  | "folder";
+
+// The list / get responses use a discriminated union over `type` with large,
+// type-specific config trees. We surface the common fields and keep the rest as
+// an opaque record rather than mirroring the entire upstream model graph.
+export interface ElevenLabsKnowledgeBaseDocument {
+  id: string;
+  name: string;
+  type: ElevenLabsKnowledgeBaseDocumentType;
+  metadata: ElevenLabsKnowledgeBaseDocumentMetadata;
+  supported_usages?: string[];
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  folder_parent_id?: string | null;
+  folder_path?: ElevenLabsKnowledgeBaseFolderPathSegment[];
+  dependent_agents?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListKnowledgeBaseDocumentsResponse {
+  documents: ElevenLabsKnowledgeBaseDocument[];
+  has_more: boolean;
+  next_cursor?: string | null;
+}
+
+export type ElevenLabsGetKnowledgeBaseDocumentResponse =
+  ElevenLabsKnowledgeBaseDocument;
+
+// DELETE returns a 200 with an unspecified body; we surface it as a record.
+export type ElevenLabsDeleteKnowledgeBaseDocumentResponse = Record<
+  string,
+  unknown
+>;
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface ElevenLabsDocsMethod {
@@ -1025,6 +1117,56 @@ export interface ElevenLabsDeleteToolMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod {
+  (
+    req: ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateKnowledgeBaseDocumentFromUrlResponse>;
+  schema: z.ZodType<ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest>;
+}
+
+export interface ElevenLabsCreateKnowledgeBaseDocumentFromTextMethod {
+  (
+    req: ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateKnowledgeBaseDocumentFromTextResponse>;
+  schema: z.ZodType<ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest>;
+}
+
+export interface ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod {
+  (
+    req: ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateKnowledgeBaseDocumentFromFileResponse>;
+  schema: z.ZodType<ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest>;
+}
+
+export interface ElevenLabsListKnowledgeBaseDocumentsMethod {
+  (
+    req?: ElevenLabsListKnowledgeBaseDocumentsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListKnowledgeBaseDocumentsResponse>;
+  schema: z.ZodType<ElevenLabsListKnowledgeBaseDocumentsRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDocumentMethod {
+  (
+    documentationId: string,
+    req?: ElevenLabsGetKnowledgeBaseDocumentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseDocumentResponse>;
+  schema: z.ZodType<ElevenLabsGetKnowledgeBaseDocumentRequest>;
+}
+
+export interface ElevenLabsDeleteKnowledgeBaseDocumentMethod {
+  (
+    documentationId: string,
+    req?: ElevenLabsDeleteKnowledgeBaseDocumentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteKnowledgeBaseDocumentResponse>;
+  schema: z.ZodType<ElevenLabsDeleteKnowledgeBaseDocumentRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsConvaiAgentsNamespace {
@@ -1045,9 +1187,19 @@ export interface ElevenLabsConvaiToolsNamespace {
   delete: ElevenLabsDeleteToolMethod;
 }
 
+export interface ElevenLabsConvaiKnowledgeBaseNamespace {
+  url: ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod;
+  text: ElevenLabsCreateKnowledgeBaseDocumentFromTextMethod;
+  file: ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod;
+  list: ElevenLabsListKnowledgeBaseDocumentsMethod;
+  get: ElevenLabsGetKnowledgeBaseDocumentMethod;
+  delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
+}
+
 export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
+  knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
 }
 
 export interface ElevenLabsUserNamespace {
@@ -1103,9 +1255,16 @@ export interface ElevenLabsPostConvaiToolsNamespace {
   create: ElevenLabsCreateToolMethod;
 }
 
+export interface ElevenLabsPostConvaiKnowledgeBaseNamespace {
+  url: ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod;
+  text: ElevenLabsCreateKnowledgeBaseDocumentFromTextMethod;
+  file: ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod;
+}
+
 export interface ElevenLabsPostConvaiNamespace {
   agents: ElevenLabsPostConvaiAgentsNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
+  knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
 }
 
 export interface ElevenLabsPostV1Namespace {
@@ -1174,9 +1333,15 @@ export interface ElevenLabsGetConvaiToolsNamespace {
   get: ElevenLabsGetToolMethod;
 }
 
+export interface ElevenLabsGetConvaiKnowledgeBaseNamespace {
+  list: ElevenLabsListKnowledgeBaseDocumentsMethod;
+  get: ElevenLabsGetKnowledgeBaseDocumentMethod;
+}
+
 export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
+  knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
 }
 
 export interface ElevenLabsGetV1Namespace {
@@ -1204,9 +1369,14 @@ export interface ElevenLabsDeleteConvaiToolsNamespace {
   delete: ElevenLabsDeleteToolMethod;
 }
 
+export interface ElevenLabsDeleteConvaiKnowledgeBaseNamespace {
+  delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
+}
+
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
+  knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;
 }
 
 export interface ElevenLabsDeleteV1Namespace {

@@ -30,6 +30,11 @@ import type {
   ElevenLabsListConversationsRequest,
   ElevenLabsGetConversationRequest,
   ElevenLabsGetSignedUrlRequest,
+  ElevenLabsCreatePhoneNumberRequest,
+  ElevenLabsListPhoneNumbersRequest,
+  ElevenLabsUpdatePhoneNumberRequest,
+  ElevenLabsTwilioOutboundCallRequest,
+  ElevenLabsSipTrunkOutboundCallRequest,
 } from "./zod";
 
 export type {
@@ -124,6 +129,21 @@ export type {
   ElevenLabsGetSignedUrlRequest,
   ElevenLabsGetSignedUrlRequestInput,
   ElevenLabsGetSignedUrlParsedRequest,
+  ElevenLabsCreatePhoneNumberRequest,
+  ElevenLabsCreatePhoneNumberRequestInput,
+  ElevenLabsCreatePhoneNumberParsedRequest,
+  ElevenLabsListPhoneNumbersRequest,
+  ElevenLabsListPhoneNumbersRequestInput,
+  ElevenLabsListPhoneNumbersParsedRequest,
+  ElevenLabsUpdatePhoneNumberRequest,
+  ElevenLabsUpdatePhoneNumberRequestInput,
+  ElevenLabsUpdatePhoneNumberParsedRequest,
+  ElevenLabsTwilioOutboundCallRequest,
+  ElevenLabsTwilioOutboundCallRequestInput,
+  ElevenLabsTwilioOutboundCallParsedRequest,
+  ElevenLabsSipTrunkOutboundCallRequest,
+  ElevenLabsSipTrunkOutboundCallRequestInput,
+  ElevenLabsSipTrunkOutboundCallParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -936,6 +956,60 @@ export interface ElevenLabsGetSignedUrlResponse {
   [key: string]: unknown;
 }
 
+// -- Phone numbers & outbound calls ------------------------------------------
+
+export type ElevenLabsPhoneNumberProviderType =
+  | "twilio"
+  | "exotel"
+  | "sip_trunk";
+
+// Importing a phone number returns just the new id.
+export interface ElevenLabsCreatePhoneNumberResponse {
+  phone_number_id: string;
+}
+
+export interface ElevenLabsAssignedAgent {
+  agent_id: string;
+  agent_name: string;
+}
+
+// Upstream returns a discriminated union keyed on `provider`; the SIP-trunk
+// variant carries extra trunk/livekit config. We surface the common fields
+// concretely and keep provider-specific extras as an open index signature.
+export interface ElevenLabsPhoneNumber {
+  phone_number_id: string;
+  phone_number: string;
+  label: string;
+  provider: ElevenLabsPhoneNumberProviderType;
+  assigned_agent?: ElevenLabsAssignedAgent | null;
+  supports_inbound?: boolean;
+  supports_outbound?: boolean;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsListPhoneNumbersResponse = ElevenLabsPhoneNumber[];
+
+export type ElevenLabsGetPhoneNumberResponse = ElevenLabsPhoneNumber;
+
+export type ElevenLabsUpdatePhoneNumberResponse = ElevenLabsPhoneNumber;
+
+// DELETE returns an arbitrary success body; surface it as an open record.
+export type ElevenLabsDeletePhoneNumberResponse = Record<string, unknown>;
+
+export interface ElevenLabsTwilioOutboundCallResponse {
+  success: boolean;
+  message: string;
+  conversation_id?: string | null;
+  callSid?: string | null;
+}
+
+export interface ElevenLabsSipTrunkOutboundCallResponse {
+  success: boolean;
+  message: string;
+  conversation_id?: string | null;
+  sip_call_id?: string | null;
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface ElevenLabsDocsMethod {
@@ -1306,6 +1380,63 @@ export interface ElevenLabsGetSignedUrlMethod {
   schema: z.ZodType<ElevenLabsGetSignedUrlRequest>;
 }
 
+export interface ElevenLabsCreatePhoneNumberMethod {
+  (
+    req: ElevenLabsCreatePhoneNumberRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreatePhoneNumberResponse>;
+  schema: z.ZodType<ElevenLabsCreatePhoneNumberRequest>;
+}
+
+export interface ElevenLabsListPhoneNumbersMethod {
+  (
+    req?: ElevenLabsListPhoneNumbersRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListPhoneNumbersResponse>;
+  schema: z.ZodType<ElevenLabsListPhoneNumbersRequest>;
+}
+
+export interface ElevenLabsGetPhoneNumberMethod {
+  (
+    phoneNumberId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetPhoneNumberResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdatePhoneNumberMethod {
+  (
+    phoneNumberId: string,
+    req?: ElevenLabsUpdatePhoneNumberRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdatePhoneNumberResponse>;
+  schema: z.ZodType<ElevenLabsUpdatePhoneNumberRequest>;
+}
+
+export interface ElevenLabsDeletePhoneNumberMethod {
+  (
+    phoneNumberId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeletePhoneNumberResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsTwilioOutboundCallMethod {
+  (
+    req: ElevenLabsTwilioOutboundCallRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsTwilioOutboundCallResponse>;
+  schema: z.ZodType<ElevenLabsTwilioOutboundCallRequest>;
+}
+
+export interface ElevenLabsSipTrunkOutboundCallMethod {
+  (
+    req: ElevenLabsSipTrunkOutboundCallRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSipTrunkOutboundCallResponse>;
+  schema: z.ZodType<ElevenLabsSipTrunkOutboundCallRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsConvaiAgentsNamespace {
@@ -1346,12 +1477,31 @@ export interface ElevenLabsConvaiConversationNamespace {
   getSignedUrl: ElevenLabsGetSignedUrlMethod;
 }
 
+export interface ElevenLabsConvaiPhoneNumbersNamespace {
+  create: ElevenLabsCreatePhoneNumberMethod;
+  list: ElevenLabsListPhoneNumbersMethod;
+  get: ElevenLabsGetPhoneNumberMethod;
+  update: ElevenLabsUpdatePhoneNumberMethod;
+  delete: ElevenLabsDeletePhoneNumberMethod;
+}
+
+export interface ElevenLabsConvaiTwilioNamespace {
+  outboundCall: ElevenLabsTwilioOutboundCallMethod;
+}
+
+export interface ElevenLabsConvaiSipTrunkNamespace {
+  outboundCall: ElevenLabsSipTrunkOutboundCallMethod;
+}
+
 export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsConvaiConversationsNamespace;
   conversation: ElevenLabsConvaiConversationNamespace;
+  phoneNumbers: ElevenLabsConvaiPhoneNumbersNamespace;
+  twilio: ElevenLabsConvaiTwilioNamespace;
+  sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
 }
 
 export interface ElevenLabsUserNamespace {
@@ -1413,10 +1563,17 @@ export interface ElevenLabsPostConvaiKnowledgeBaseNamespace {
   file: ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod;
 }
 
+export interface ElevenLabsPostConvaiPhoneNumbersNamespace {
+  create: ElevenLabsCreatePhoneNumberMethod;
+}
+
 export interface ElevenLabsPostConvaiNamespace {
   agents: ElevenLabsPostConvaiAgentsNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
+  phoneNumbers: ElevenLabsPostConvaiPhoneNumbersNamespace;
+  twilio: ElevenLabsConvaiTwilioNamespace;
+  sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
 }
 
 export interface ElevenLabsPostV1Namespace {
@@ -1460,9 +1617,14 @@ export interface ElevenLabsPatchConvaiToolsNamespace {
   update: ElevenLabsUpdateToolMethod;
 }
 
+export interface ElevenLabsPatchConvaiPhoneNumbersNamespace {
+  update: ElevenLabsUpdatePhoneNumberMethod;
+}
+
 export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
   tools: ElevenLabsPatchConvaiToolsNamespace;
+  phoneNumbers: ElevenLabsPatchConvaiPhoneNumbersNamespace;
 }
 
 export interface ElevenLabsPatchV1Namespace {
@@ -1500,12 +1662,18 @@ export interface ElevenLabsGetConvaiConversationNamespace {
   getSignedUrl: ElevenLabsGetSignedUrlMethod;
 }
 
+export interface ElevenLabsGetConvaiPhoneNumbersNamespace {
+  list: ElevenLabsListPhoneNumbersMethod;
+  get: ElevenLabsGetPhoneNumberMethod;
+}
+
 export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsGetConvaiConversationsNamespace;
   conversation: ElevenLabsGetConvaiConversationNamespace;
+  phoneNumbers: ElevenLabsGetConvaiPhoneNumbersNamespace;
 }
 
 export interface ElevenLabsGetV1Namespace {
@@ -1541,11 +1709,16 @@ export interface ElevenLabsDeleteConvaiConversationsNamespace {
   delete: ElevenLabsDeleteConversationMethod;
 }
 
+export interface ElevenLabsDeleteConvaiPhoneNumbersNamespace {
+  delete: ElevenLabsDeletePhoneNumberMethod;
+}
+
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsDeleteConvaiConversationsNamespace;
+  phoneNumbers: ElevenLabsDeleteConvaiPhoneNumbersNamespace;
 }
 
 export interface ElevenLabsDeleteV1Namespace {

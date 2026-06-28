@@ -43,6 +43,12 @@
       "name": "Apicity agents route test (updated)"
     }
   },
+  "PATCH v1.convai.phoneNumbers.update": {
+    "source": "elevenlabs/convai-phone-numbers",
+    "payload": {
+      "label": "Apicity phone-number route test (updated)"
+    }
+  },
   "PATCH v1.convai.tools.update": {
     "source": "elevenlabs/convai-tools",
     "payload": {
@@ -89,6 +95,26 @@
       "url": "https://elevenlabs.io/docs/api-reference/introduction"
     }
   },
+  "POST v1.convai.phoneNumbers.create": {
+    "source": "elevenlabs/convai-phone-numbers",
+    "payload": {
+      "phone_number": "+12025550168",
+      "label": "Apicity phone-number route test",
+      "provider": "sip_trunk",
+      "outbound_trunk_config": {
+        "address": "sip.apicity-route-test.invalid",
+        "transport": "udp"
+      }
+    }
+  },
+  "POST v1.convai.sipTrunk.outboundCall": {
+    "source": "elevenlabs/convai-outbound-calls",
+    "payload": {
+      "agent_id": "apicity-route-test-agent",
+      "agent_phone_number_id": "apicity-route-test-phone",
+      "to_number": "+15005550006"
+    }
+  },
   "POST v1.convai.tools.create": {
     "source": "elevenlabs/convai-tools",
     "payload": {
@@ -101,6 +127,14 @@
           "method": "GET"
         }
       }
+    }
+  },
+  "POST v1.convai.twilio.outboundCall": {
+    "source": "elevenlabs/convai-outbound-calls",
+    "payload": {
+      "agent_id": "apicity-route-test-agent",
+      "agent_phone_number_id": "apicity-route-test-phone",
+      "to_number": "+15005550006"
     }
   },
   "POST v1.soundGeneration": {

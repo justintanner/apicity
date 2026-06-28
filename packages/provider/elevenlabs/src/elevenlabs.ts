@@ -69,6 +69,18 @@ import {
   ElevenLabsDeleteConversationResponse,
   ElevenLabsGetSignedUrlRequest,
   ElevenLabsGetSignedUrlResponse,
+  ElevenLabsCreatePhoneNumberRequest,
+  ElevenLabsCreatePhoneNumberResponse,
+  ElevenLabsListPhoneNumbersRequest,
+  ElevenLabsListPhoneNumbersResponse,
+  ElevenLabsGetPhoneNumberResponse,
+  ElevenLabsUpdatePhoneNumberRequest,
+  ElevenLabsUpdatePhoneNumberResponse,
+  ElevenLabsDeletePhoneNumberResponse,
+  ElevenLabsTwilioOutboundCallRequest,
+  ElevenLabsTwilioOutboundCallResponse,
+  ElevenLabsSipTrunkOutboundCallRequest,
+  ElevenLabsSipTrunkOutboundCallResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -103,6 +115,11 @@ import {
   ElevenLabsListConversationsRequestSchema,
   ElevenLabsGetConversationRequestSchema,
   ElevenLabsGetSignedUrlRequestSchema,
+  ElevenLabsCreatePhoneNumberRequestSchema,
+  ElevenLabsListPhoneNumbersRequestSchema,
+  ElevenLabsUpdatePhoneNumberRequestSchema,
+  ElevenLabsTwilioOutboundCallRequestSchema,
+  ElevenLabsSipTrunkOutboundCallRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -1083,6 +1100,127 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // POST https://api.elevenlabs.io/v1/convai/phone-numbers
+  // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/create
+  const createPhoneNumber = Object.assign(
+    async (
+      req: ElevenLabsCreatePhoneNumberRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreatePhoneNumberResponse> => {
+      return makeJsonRequest<ElevenLabsCreatePhoneNumberResponse>(
+        "POST",
+        "/v1/convai/phone-numbers",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreatePhoneNumberRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/phone-numbers
+  // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/list
+  const listPhoneNumbers = Object.assign(
+    async (
+      req: ElevenLabsListPhoneNumbersRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListPhoneNumbersResponse> => {
+      return makeJsonRequest<ElevenLabsListPhoneNumbersResponse>(
+        "GET",
+        "/v1/convai/phone-numbers",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListPhoneNumbersRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}
+  // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/get
+  const getPhoneNumber = Object.assign(
+    async (
+      phoneNumberId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetPhoneNumberResponse> => {
+      return makeJsonRequest<ElevenLabsGetPhoneNumberResponse>(
+        "GET",
+        `/v1/convai/phone-numbers/${encodeURIComponent(phoneNumberId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}
+  // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/update
+  const updatePhoneNumber = Object.assign(
+    async (
+      phoneNumberId: string,
+      req: ElevenLabsUpdatePhoneNumberRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdatePhoneNumberResponse> => {
+      return makeJsonRequest<ElevenLabsUpdatePhoneNumberResponse>(
+        "PATCH",
+        `/v1/convai/phone-numbers/${encodeURIComponent(phoneNumberId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdatePhoneNumberRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}
+  // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/delete
+  const deletePhoneNumber = Object.assign(
+    async (
+      phoneNumberId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeletePhoneNumberResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeletePhoneNumberResponse>(
+        "DELETE",
+        `/v1/convai/phone-numbers/${encodeURIComponent(phoneNumberId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/twilio/outbound-call
+  // Docs: https://elevenlabs.io/docs/api-reference/twilio/outbound-call
+  const twilioOutboundCall = Object.assign(
+    async (
+      req: ElevenLabsTwilioOutboundCallRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsTwilioOutboundCallResponse> => {
+      return makeJsonRequest<ElevenLabsTwilioOutboundCallResponse>(
+        "POST",
+        "/v1/convai/twilio/outbound-call",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsTwilioOutboundCallRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/sip-trunk/outbound-call
+  // Docs: https://elevenlabs.io/docs/api-reference/sip-trunk/outbound-call
+  const sipTrunkOutboundCall = Object.assign(
+    async (
+      req: ElevenLabsSipTrunkOutboundCallRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSipTrunkOutboundCallResponse> => {
+      return makeJsonRequest<ElevenLabsSipTrunkOutboundCallResponse>(
+        "POST",
+        "/v1/convai/sip-trunk/outbound-call",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsSipTrunkOutboundCallRequestSchema }
+  );
+
   const convaiAgents = {
     create: createAgent,
     list: listAgents,
@@ -1404,12 +1542,24 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const convaiConversation = {
     getSignedUrl,
   };
+  const convaiPhoneNumbers = {
+    create: createPhoneNumber,
+    list: listPhoneNumbers,
+    get: getPhoneNumber,
+    update: updatePhoneNumber,
+    delete: deletePhoneNumber,
+  };
+  const convaiTwilio = { outboundCall: twilioOutboundCall };
+  const convaiSipTrunk = { outboundCall: sipTrunkOutboundCall };
   const convai = {
     agents: convaiAgents,
     tools: convaiTools,
     knowledgeBase: convaiKnowledgeBase,
     conversations: convaiConversations,
     conversation: convaiConversation,
+    phoneNumbers: convaiPhoneNumbers,
+    twilio: convaiTwilio,
+    sipTrunk: convaiSipTrunk,
   };
 
   const user = {
@@ -1474,12 +1624,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         text: createKnowledgeBaseDocumentFromText,
         file: createKnowledgeBaseDocumentFromFile,
       },
+      phoneNumbers: { create: createPhoneNumber },
+      twilio: convaiTwilio,
+      sipTrunk: convaiSipTrunk,
     },
   };
   const patchV1 = {
     convai: {
       agents: { update: updateAgent },
       tools: { update: updateTool },
+      phoneNumbers: { update: updatePhoneNumber },
     },
   };
   const deleteV1 = {
@@ -1495,6 +1649,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       tools: { delete: deleteTool },
       knowledgeBase: { delete: deleteKnowledgeBaseDocument },
       conversations: { delete: deleteConversation },
+      phoneNumbers: { delete: deletePhoneNumber },
     },
   };
   const v1 = {
@@ -1541,6 +1696,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           },
           conversation: {
             getSignedUrl,
+          },
+          phoneNumbers: {
+            list: listPhoneNumbers,
+            get: getPhoneNumber,
           },
         },
       },

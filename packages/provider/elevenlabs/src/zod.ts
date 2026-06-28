@@ -852,3 +852,158 @@ export type ElevenLabsGetSignedUrlRequestInput = ElevenLabsGetSignedUrlRequest;
 export type ElevenLabsGetSignedUrlParsedRequest = z.output<
   typeof ElevenLabsGetSignedUrlRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — phone numbers & outbound calls
+// ---------------------------------------------------------------------------
+
+// SIP-trunk inbound/outbound trunk configs and the per-conversation client
+// data / telephony config are large, deeply-nested objects. We keep them as
+// permissive records so the schema stays a thin metadata surface — callers
+// compose the nested config themselves and the server passes it straight
+// through.
+const ElevenLabsConvaiConfigObjectSchema = z.record(z.string(), z.unknown());
+
+export const ElevenLabsPhoneNumberProvider = z.enum([
+  "twilio",
+  "exotel",
+  "sip_trunk",
+]);
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/phone-numbers
+// ---------------------------------------------------------------------------
+
+// Importing a phone number is a discriminated union upstream (twilio / exotel /
+// sip_trunk), each provider carrying its own credential fields. We model the
+// shared keys as required and every provider-specific field as optional so the
+// request object stays a single flat shape the MCP server can expose; callers
+// supply the fields their chosen `provider` needs.
+export const ElevenLabsCreatePhoneNumberRequestSchema = z.object({
+  phone_number: z.string(),
+  label: z.string(),
+  provider: ElevenLabsPhoneNumberProvider,
+  // Twilio
+  sid: z.string().optional(),
+  token: z.string().optional(),
+  region_config: ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  // Exotel
+  account_sid: z.string().optional(),
+  api_key: z.string().optional(),
+  api_token: z.string().optional(),
+  api_subdomain: z
+    .enum(["api.in.exotel.com", "api.exotel.com"])
+    .nullable()
+    .optional(),
+  app_id: z.string().optional(),
+  applet_url: z.string().nullable().optional(),
+  // SIP trunk
+  inbound_trunk_config:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  outbound_trunk_config:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  // Deprecated upstream, accepted for backwards compatibility.
+  supports_inbound: z.boolean().nullable().optional(),
+  supports_outbound: z.boolean().nullable().optional(),
+});
+
+export type ElevenLabsCreatePhoneNumberRequest = z.input<
+  typeof ElevenLabsCreatePhoneNumberRequestSchema
+>;
+export type ElevenLabsCreatePhoneNumberRequestInput =
+  ElevenLabsCreatePhoneNumberRequest;
+export type ElevenLabsCreatePhoneNumberParsedRequest = z.output<
+  typeof ElevenLabsCreatePhoneNumberRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/phone-numbers
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListPhoneNumbersRequestSchema = z.object({
+  provider: ElevenLabsPhoneNumberProvider.optional(),
+  agent_id: z.string().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListPhoneNumbersRequest = z.input<
+  typeof ElevenLabsListPhoneNumbersRequestSchema
+>;
+export type ElevenLabsListPhoneNumbersRequestInput =
+  ElevenLabsListPhoneNumbersRequest;
+export type ElevenLabsListPhoneNumbersParsedRequest = z.output<
+  typeof ElevenLabsListPhoneNumbersRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/phone-numbers/:phone_number_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdatePhoneNumberRequestSchema = z.object({
+  agent_id: z.string().nullable().optional(),
+  label: z.string().nullable().optional(),
+  inbound_trunk_config:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  outbound_trunk_config:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  livekit_stack: z.string().nullable().optional(),
+  store_sip_messages: z.boolean().nullable().optional(),
+  environment: z.string().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsUpdatePhoneNumberRequest = z.input<
+  typeof ElevenLabsUpdatePhoneNumberRequestSchema
+>;
+export type ElevenLabsUpdatePhoneNumberRequestInput =
+  ElevenLabsUpdatePhoneNumberRequest;
+export type ElevenLabsUpdatePhoneNumberParsedRequest = z.output<
+  typeof ElevenLabsUpdatePhoneNumberRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/twilio/outbound-call
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsTwilioOutboundCallRequestSchema = z.object({
+  agent_id: z.string(),
+  agent_phone_number_id: z.string(),
+  to_number: z.string(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  call_recording_enabled: z.boolean().nullable().optional(),
+  telephony_call_config:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsTwilioOutboundCallRequest = z.input<
+  typeof ElevenLabsTwilioOutboundCallRequestSchema
+>;
+export type ElevenLabsTwilioOutboundCallRequestInput =
+  ElevenLabsTwilioOutboundCallRequest;
+export type ElevenLabsTwilioOutboundCallParsedRequest = z.output<
+  typeof ElevenLabsTwilioOutboundCallRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/sip-trunk/outbound-call
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSipTrunkOutboundCallRequestSchema = z.object({
+  agent_id: z.string(),
+  agent_phone_number_id: z.string(),
+  to_number: z.string(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  telephony_call_config:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsSipTrunkOutboundCallRequest = z.input<
+  typeof ElevenLabsSipTrunkOutboundCallRequestSchema
+>;
+export type ElevenLabsSipTrunkOutboundCallRequestInput =
+  ElevenLabsSipTrunkOutboundCallRequest;
+export type ElevenLabsSipTrunkOutboundCallParsedRequest = z.output<
+  typeof ElevenLabsSipTrunkOutboundCallRequestSchema
+>;

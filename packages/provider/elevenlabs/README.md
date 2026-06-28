@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-45 endpoints across 10 groups. Each method mirrors an upstream URL path.
+52 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -335,6 +335,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.delete({ /* ... */ });
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.phoneNumbers.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/phone-numbers</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/phone-numbers/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.phoneNumbers.create({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -350,6 +358,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.file({ /* ... */ });
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.phoneNumbers.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/phone-numbers/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.phoneNumbers.delete({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -365,6 +381,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.get({ /* ... */ });
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.phoneNumbers.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/phone-numbers/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.phoneNumbers.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -380,6 +404,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.list({ /* ... */ });
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.phoneNumbers.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/phone-numbers</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/phone-numbers/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.phoneNumbers.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -395,6 +427,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.text({ /* ... */ });
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.phoneNumbers.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/phone-numbers/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.phoneNumbers.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -410,6 +450,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.url({ /* ... */ });
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.sipTrunk.outboundCall</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/sip-trunk/outbound-call</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/sip-trunk/outbound-call)
+
+```typescript
+const res = await elevenlabs.v1.convai.sipTrunk.outboundCall({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -485,6 +533,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.tools.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.twilio.outboundCall</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/twilio/outbound-call</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/twilio/outbound-call)
+
+```typescript
+const res = await elevenlabs.v1.convai.twilio.outboundCall({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

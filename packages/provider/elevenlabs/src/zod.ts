@@ -557,6 +557,24 @@ export type ElevenLabsGetAgentWidgetParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// GET /v1/convai/agents/:agent_id/branches
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListAgentBranchesRequestSchema = z.object({
+  include_archived: z.boolean().optional(),
+  limit: z.number().int().optional(),
+});
+
+export type ElevenLabsListAgentBranchesRequest = z.input<
+  typeof ElevenLabsListAgentBranchesRequestSchema
+>;
+export type ElevenLabsListAgentBranchesRequestInput =
+  ElevenLabsListAgentBranchesRequest;
+export type ElevenLabsListAgentBranchesParsedRequest = z.output<
+  typeof ElevenLabsListAgentBranchesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — Tools
 // ---------------------------------------------------------------------------
 

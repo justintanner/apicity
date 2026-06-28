@@ -43,6 +43,8 @@ import {
   ElevenLabsGetAgentWidgetRequest,
   ElevenLabsGetAgentWidgetResponse,
   ElevenLabsGetAgentLinkResponse,
+  ElevenLabsListAgentBranchesRequest,
+  ElevenLabsListAgentBranchesResponse,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolResponse,
   ElevenLabsListToolsRequest,
@@ -103,6 +105,7 @@ import {
   ElevenLabsListAgentsRequestSchema,
   ElevenLabsUpdateAgentRequestSchema,
   ElevenLabsGetAgentWidgetRequestSchema,
+  ElevenLabsListAgentBranchesRequestSchema,
   ElevenLabsCreateToolRequestSchema,
   ElevenLabsListToolsRequestSchema,
   ElevenLabsUpdateToolRequestSchema,
@@ -1100,6 +1103,25 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches
+  const listAgentBranches = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsListAgentBranchesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListAgentBranchesResponse> => {
+      return makeJsonRequest<ElevenLabsListAgentBranchesResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListAgentBranchesRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/phone-numbers
   // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/create
   const createPhoneNumber = Object.assign(
@@ -1229,6 +1251,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     delete: deleteAgent,
     widget: getAgentWidget,
     link: getAgentLink,
+    branches: listAgentBranches,
   };
 
   // POST https://api.elevenlabs.io/v1/convai/tools
@@ -1680,6 +1703,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             get: getAgent,
             widget: getAgentWidget,
             link: getAgentLink,
+            branches: listAgentBranches,
           },
           tools: {
             list: listTools,

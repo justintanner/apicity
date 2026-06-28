@@ -18,6 +18,7 @@ import type {
   ElevenLabsListAgentsRequest,
   ElevenLabsUpdateAgentRequest,
   ElevenLabsGetAgentWidgetRequest,
+  ElevenLabsListAgentBranchesRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsListToolsRequest,
   ElevenLabsUpdateToolRequest,
@@ -93,6 +94,9 @@ export type {
   ElevenLabsGetAgentWidgetRequest,
   ElevenLabsGetAgentWidgetRequestInput,
   ElevenLabsGetAgentWidgetParsedRequest,
+  ElevenLabsListAgentBranchesRequest,
+  ElevenLabsListAgentBranchesRequestInput,
+  ElevenLabsListAgentBranchesParsedRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolRequestInput,
   ElevenLabsCreateToolParsedRequest,
@@ -769,6 +773,37 @@ export interface ElevenLabsGetAgentLinkResponse {
   token?: ElevenLabsConversationToken | null;
 }
 
+export type ElevenLabsAgentBranchProtectionStatus =
+  | "writer_perms_required"
+  | "admin_perms_required";
+
+export interface ElevenLabsAgentBranchSummary {
+  id: string;
+  name: string;
+  agent_id: string;
+  description: string;
+  created_at: number;
+  last_committed_at: number;
+  is_archived: boolean;
+  protection_status: ElevenLabsAgentBranchProtectionStatus;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  current_live_percentage: number;
+  parent_branch_id?: string | null;
+  draft_exists: boolean;
+  calls_7d: number;
+}
+
+export interface ElevenLabsListAgentBranchesMeta {
+  total?: number | null;
+  page?: number | null;
+  page_size?: number | null;
+}
+
+export interface ElevenLabsListAgentBranchesResponse {
+  meta: ElevenLabsListAgentBranchesMeta;
+  results: ElevenLabsAgentBranchSummary[];
+}
+
 // -- Agents Platform (Conversational AI) Tools response shapes ---------------
 
 export interface ElevenLabsToolUsageStats {
@@ -1256,6 +1291,15 @@ export interface ElevenLabsGetAgentLinkMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsListAgentBranchesMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsListAgentBranchesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListAgentBranchesResponse>;
+  schema: z.ZodType<ElevenLabsListAgentBranchesRequest>;
+}
+
 export interface ElevenLabsCreateToolMethod {
   (
     req: ElevenLabsCreateToolRequest,
@@ -1447,6 +1491,7 @@ export interface ElevenLabsConvaiAgentsNamespace {
   delete: ElevenLabsDeleteAgentMethod;
   widget: ElevenLabsGetAgentWidgetMethod;
   link: ElevenLabsGetAgentLinkMethod;
+  branches: ElevenLabsListAgentBranchesMethod;
 }
 
 export interface ElevenLabsConvaiToolsNamespace {
@@ -1640,6 +1685,7 @@ export interface ElevenLabsGetConvaiAgentsNamespace {
   get: ElevenLabsGetAgentMethod;
   widget: ElevenLabsGetAgentWidgetMethod;
   link: ElevenLabsGetAgentLinkMethod;
+  branches: ElevenLabsListAgentBranchesMethod;
 }
 
 export interface ElevenLabsGetConvaiToolsNamespace {

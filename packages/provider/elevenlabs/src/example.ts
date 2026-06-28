@@ -17,6 +17,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30
     }
   },
+  "GET v1.convai.tools.list": {
+    "source": "elevenlabs/convai-tools",
+    "payload": {
+      "page_size": 30
+    }
+  },
   "GET v2.voices": {
     "source": "elevenlabs/voices",
     "payload": {
@@ -29,6 +35,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "elevenlabs/convai-agents",
     "payload": {
       "name": "Apicity agents route test (updated)"
+    }
+  },
+  "PATCH v1.convai.tools.update": {
+    "source": "elevenlabs/convai-tools",
+    "payload": {
+      "tool_config": {
+        "type": "webhook",
+        "name": "apicity_route_test_tool",
+        "description": "Apicity tools route test webhook (updated).",
+        "api_schema": {
+          "url": "https://example.com/apicity/route-test",
+          "method": "GET"
+        }
+      }
     }
   },
   "POST v1.convai.agents.create": {
@@ -47,6 +67,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "tags": [
         "apicity-test"
       ]
+    }
+  },
+  "POST v1.convai.tools.create": {
+    "source": "elevenlabs/convai-tools",
+    "payload": {
+      "tool_config": {
+        "type": "webhook",
+        "name": "apicity_route_test_tool",
+        "description": "Apicity tools route test webhook.",
+        "api_schema": {
+          "url": "https://example.com/apicity/route-test",
+          "method": "GET"
+        }
+      }
     }
   },
   "POST v1.soundGeneration": {

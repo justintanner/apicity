@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-29 endpoints across 10 groups. Each method mirrors an upstream URL path.
+34 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -245,6 +245,81 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.agents.widget({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.tools.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/tools</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.tools.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/tools/{toolId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.tools.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/tools/{toolId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.tools.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/tools</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.tools.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/tools/{toolId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

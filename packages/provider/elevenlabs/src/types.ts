@@ -18,6 +18,9 @@ import type {
   ElevenLabsListAgentsRequest,
   ElevenLabsUpdateAgentRequest,
   ElevenLabsGetAgentWidgetRequest,
+  ElevenLabsCreateToolRequest,
+  ElevenLabsListToolsRequest,
+  ElevenLabsUpdateToolRequest,
 } from "./zod";
 
 export type {
@@ -76,6 +79,15 @@ export type {
   ElevenLabsGetAgentWidgetRequest,
   ElevenLabsGetAgentWidgetRequestInput,
   ElevenLabsGetAgentWidgetParsedRequest,
+  ElevenLabsCreateToolRequest,
+  ElevenLabsCreateToolRequestInput,
+  ElevenLabsCreateToolParsedRequest,
+  ElevenLabsListToolsRequest,
+  ElevenLabsListToolsRequestInput,
+  ElevenLabsListToolsParsedRequest,
+  ElevenLabsUpdateToolRequest,
+  ElevenLabsUpdateToolRequestInput,
+  ElevenLabsUpdateToolParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -701,6 +713,37 @@ export interface ElevenLabsGetAgentLinkResponse {
   token?: ElevenLabsConversationToken | null;
 }
 
+// -- Agents Platform (Conversational AI) Tools response shapes ---------------
+
+export interface ElevenLabsToolUsageStats {
+  total_calls: number;
+  avg_latency_secs: number;
+  [key: string]: unknown;
+}
+
+// `tool_config` is a discriminated union over four tool types (client, webhook,
+// system, mcp); `response_mocks` are equally open-ended. We surface them as
+// opaque records rather than mirroring the entire upstream model graph.
+export interface ElevenLabsToolResponse {
+  id: string;
+  tool_config: Record<string, unknown>;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  usage_stats?: ElevenLabsToolUsageStats | null;
+  response_mocks?: Record<string, unknown>[] | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsCreateToolResponse = ElevenLabsToolResponse;
+
+export interface ElevenLabsListToolsResponse {
+  tools: ElevenLabsToolResponse[];
+  has_more?: boolean;
+  next_cursor?: string | null;
+}
+
+// DELETE returns an empty body (HTTP 200/204); we surface it as an empty record.
+export type ElevenLabsDeleteToolResponse = Record<string, unknown>;
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface ElevenLabsDocsMethod {
@@ -947,6 +990,41 @@ export interface ElevenLabsGetAgentLinkMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsCreateToolMethod {
+  (
+    req: ElevenLabsCreateToolRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateToolResponse>;
+  schema: z.ZodType<ElevenLabsCreateToolRequest>;
+}
+
+export interface ElevenLabsListToolsMethod {
+  (
+    req?: ElevenLabsListToolsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListToolsResponse>;
+  schema: z.ZodType<ElevenLabsListToolsRequest>;
+}
+
+export interface ElevenLabsGetToolMethod {
+  (toolId: string, signal?: AbortSignal): Promise<ElevenLabsToolResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateToolMethod {
+  (
+    toolId: string,
+    req: ElevenLabsUpdateToolRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsToolResponse>;
+  schema: z.ZodType<ElevenLabsUpdateToolRequest>;
+}
+
+export interface ElevenLabsDeleteToolMethod {
+  (toolId: string, signal?: AbortSignal): Promise<ElevenLabsDeleteToolResponse>;
+  schema: undefined;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsConvaiAgentsNamespace {
@@ -959,8 +1037,17 @@ export interface ElevenLabsConvaiAgentsNamespace {
   link: ElevenLabsGetAgentLinkMethod;
 }
 
+export interface ElevenLabsConvaiToolsNamespace {
+  create: ElevenLabsCreateToolMethod;
+  list: ElevenLabsListToolsMethod;
+  get: ElevenLabsGetToolMethod;
+  update: ElevenLabsUpdateToolMethod;
+  delete: ElevenLabsDeleteToolMethod;
+}
+
 export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
+  tools: ElevenLabsConvaiToolsNamespace;
 }
 
 export interface ElevenLabsUserNamespace {
@@ -1012,8 +1099,13 @@ export interface ElevenLabsPostConvaiAgentsNamespace {
   create: ElevenLabsCreateAgentMethod;
 }
 
+export interface ElevenLabsPostConvaiToolsNamespace {
+  create: ElevenLabsCreateToolMethod;
+}
+
 export interface ElevenLabsPostConvaiNamespace {
   agents: ElevenLabsPostConvaiAgentsNamespace;
+  tools: ElevenLabsPostConvaiToolsNamespace;
 }
 
 export interface ElevenLabsPostV1Namespace {
@@ -1053,8 +1145,13 @@ export interface ElevenLabsPatchConvaiAgentsNamespace {
   update: ElevenLabsUpdateAgentMethod;
 }
 
+export interface ElevenLabsPatchConvaiToolsNamespace {
+  update: ElevenLabsUpdateToolMethod;
+}
+
 export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
+  tools: ElevenLabsPatchConvaiToolsNamespace;
 }
 
 export interface ElevenLabsPatchV1Namespace {
@@ -1072,8 +1169,14 @@ export interface ElevenLabsGetConvaiAgentsNamespace {
   link: ElevenLabsGetAgentLinkMethod;
 }
 
+export interface ElevenLabsGetConvaiToolsNamespace {
+  list: ElevenLabsListToolsMethod;
+  get: ElevenLabsGetToolMethod;
+}
+
 export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
+  tools: ElevenLabsGetConvaiToolsNamespace;
 }
 
 export interface ElevenLabsGetV1Namespace {
@@ -1097,8 +1200,13 @@ export interface ElevenLabsDeleteConvaiAgentsNamespace {
   delete: ElevenLabsDeleteAgentMethod;
 }
 
+export interface ElevenLabsDeleteConvaiToolsNamespace {
+  delete: ElevenLabsDeleteToolMethod;
+}
+
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
+  tools: ElevenLabsDeleteConvaiToolsNamespace;
 }
 
 export interface ElevenLabsDeleteV1Namespace {

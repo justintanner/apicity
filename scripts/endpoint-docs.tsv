@@ -502,6 +502,11 @@ elevenlabs	v1.convai.agents.update	PATCH	https://api.elevenlabs.io/v1/convai/age
 elevenlabs	v1.convai.agents.delete	DELETE	https://api.elevenlabs.io/v1/convai/agents/{agentId}	https://elevenlabs.io/docs/api-reference/agents/delete
 elevenlabs	v1.convai.agents.widget	GET	https://api.elevenlabs.io/v1/convai/agents/{agentId}/widget	https://elevenlabs.io/docs/api-reference/widget/get
 elevenlabs	v1.convai.agents.link	GET	https://api.elevenlabs.io/v1/convai/agents/{agentId}/link	https://elevenlabs.io/docs/api-reference/agents/get-link
+elevenlabs	v1.convai.tools.create	POST	https://api.elevenlabs.io/v1/convai/tools	https://elevenlabs.io/docs/api-reference/tools/create
+elevenlabs	v1.convai.tools.list	GET	https://api.elevenlabs.io/v1/convai/tools	https://elevenlabs.io/docs/api-reference/tools/list
+elevenlabs	v1.convai.tools.get	GET	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/get
+elevenlabs	v1.convai.tools.update	PATCH	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/update
+elevenlabs	v1.convai.tools.delete	DELETE	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/delete
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

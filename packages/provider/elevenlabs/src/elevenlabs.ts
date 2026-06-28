@@ -43,6 +43,13 @@ import {
   ElevenLabsGetAgentWidgetRequest,
   ElevenLabsGetAgentWidgetResponse,
   ElevenLabsGetAgentLinkResponse,
+  ElevenLabsCreateToolRequest,
+  ElevenLabsCreateToolResponse,
+  ElevenLabsListToolsRequest,
+  ElevenLabsListToolsResponse,
+  ElevenLabsToolResponse,
+  ElevenLabsUpdateToolRequest,
+  ElevenLabsDeleteToolResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -65,6 +72,9 @@ import {
   ElevenLabsListAgentsRequestSchema,
   ElevenLabsUpdateAgentRequestSchema,
   ElevenLabsGetAgentWidgetRequestSchema,
+  ElevenLabsCreateToolRequestSchema,
+  ElevenLabsListToolsRequestSchema,
+  ElevenLabsUpdateToolRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -1006,7 +1016,102 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     widget: getAgentWidget,
     link: getAgentLink,
   };
-  const convai = { agents: convaiAgents };
+
+  // POST https://api.elevenlabs.io/v1/convai/tools
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/create
+  const createTool = Object.assign(
+    async (
+      req: ElevenLabsCreateToolRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateToolResponse> => {
+      return makeJsonRequest<ElevenLabsCreateToolResponse>(
+        "POST",
+        "/v1/convai/tools",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateToolRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/tools
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/list
+  const listTools = Object.assign(
+    async (
+      req: ElevenLabsListToolsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListToolsResponse> => {
+      return makeJsonRequest<ElevenLabsListToolsResponse>(
+        "GET",
+        "/v1/convai/tools",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListToolsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/tools/{toolId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/get
+  const getTool = Object.assign(
+    async (
+      toolId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsToolResponse> => {
+      return makeJsonRequest<ElevenLabsToolResponse>(
+        "GET",
+        `/v1/convai/tools/${encodeURIComponent(toolId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/tools/{toolId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/update
+  const updateTool = Object.assign(
+    async (
+      toolId: string,
+      req: ElevenLabsUpdateToolRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsToolResponse> => {
+      return makeJsonRequest<ElevenLabsToolResponse>(
+        "PATCH",
+        `/v1/convai/tools/${encodeURIComponent(toolId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateToolRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/tools/{toolId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/delete
+  const deleteTool = Object.assign(
+    async (
+      toolId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteToolResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteToolResponse>(
+        "DELETE",
+        `/v1/convai/tools/${encodeURIComponent(toolId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  const convaiTools = {
+    create: createTool,
+    list: listTools,
+    get: getTool,
+    update: updateTool,
+    delete: deleteTool,
+  };
+  const convai = { agents: convaiAgents, tools: convaiTools };
 
   const user = {
     subscription: userSubscription,
@@ -1062,10 +1167,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       pvc: postPvcVoices,
     },
     workspace,
-    convai: { agents: { create: createAgent } },
+    convai: {
+      agents: { create: createAgent },
+      tools: { create: createTool },
+    },
   };
   const patchV1 = {
-    convai: { agents: { update: updateAgent } },
+    convai: {
+      agents: { update: updateAgent },
+      tools: { update: updateTool },
+    },
   };
   const deleteV1 = {
     voices: {
@@ -1075,7 +1186,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         },
       },
     },
-    convai: { agents: { delete: deleteAgent } },
+    convai: {
+      agents: { delete: deleteAgent },
+      tools: { delete: deleteTool },
+    },
   };
   const v1 = {
     models,
@@ -1105,6 +1219,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             get: getAgent,
             widget: getAgentWidget,
             link: getAgentLink,
+          },
+          tools: {
+            list: listTools,
+            get: getTool,
           },
         },
       },

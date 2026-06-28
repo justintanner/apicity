@@ -555,3 +555,80 @@ export type ElevenLabsGetAgentWidgetRequestInput =
 export type ElevenLabsGetAgentWidgetParsedRequest = z.output<
   typeof ElevenLabsGetAgentWidgetRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — Tools
+// ---------------------------------------------------------------------------
+
+// `tool_config` is a discriminated union over four tool types (client, webhook,
+// system, mcp), each a large nested config tree; `response_mocks` are equally
+// open-ended. We keep both as permissive records so the schema stays a thin
+// metadata surface — callers compose the nested config themselves and the
+// server passes it straight through.
+const ElevenLabsToolConfigObjectSchema = z.record(z.string(), z.unknown());
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/tools
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateToolRequestSchema = z.object({
+  tool_config: ElevenLabsToolConfigObjectSchema,
+  response_mocks: z
+    .array(ElevenLabsToolConfigObjectSchema)
+    .nullable()
+    .optional(),
+});
+
+export type ElevenLabsCreateToolRequest = z.input<
+  typeof ElevenLabsCreateToolRequestSchema
+>;
+export type ElevenLabsCreateToolRequestInput = ElevenLabsCreateToolRequest;
+export type ElevenLabsCreateToolParsedRequest = z.output<
+  typeof ElevenLabsCreateToolRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/tools
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListToolsRequestSchema = z.object({
+  search: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  show_only_owned_documents: z.boolean().optional(),
+  created_by_user_id: z.string().nullable().optional(),
+  types: z
+    .array(z.enum(["webhook", "client", "api_integration_webhook"]))
+    .nullable()
+    .optional(),
+  sort_direction: z.enum(["asc", "desc"]).optional(),
+  sort_by: z.enum(["name", "created_at"]).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListToolsRequest = z.input<
+  typeof ElevenLabsListToolsRequestSchema
+>;
+export type ElevenLabsListToolsRequestInput = ElevenLabsListToolsRequest;
+export type ElevenLabsListToolsParsedRequest = z.output<
+  typeof ElevenLabsListToolsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/tools/:tool_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateToolRequestSchema = z.object({
+  tool_config: ElevenLabsToolConfigObjectSchema,
+  response_mocks: z
+    .array(ElevenLabsToolConfigObjectSchema)
+    .nullable()
+    .optional(),
+});
+
+export type ElevenLabsUpdateToolRequest = z.input<
+  typeof ElevenLabsUpdateToolRequestSchema
+>;
+export type ElevenLabsUpdateToolRequestInput = ElevenLabsUpdateToolRequest;
+export type ElevenLabsUpdateToolParsedRequest = z.output<
+  typeof ElevenLabsUpdateToolRequestSchema
+>;

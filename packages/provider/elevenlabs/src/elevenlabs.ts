@@ -32,6 +32,17 @@ import {
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsRequestsResponse,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
+  ElevenLabsCreateAgentRequest,
+  ElevenLabsCreateAgentResponse,
+  ElevenLabsGetAgentRequest,
+  ElevenLabsGetAgentResponse,
+  ElevenLabsListAgentsRequest,
+  ElevenLabsListAgentsResponse,
+  ElevenLabsUpdateAgentRequest,
+  ElevenLabsDeleteAgentResponse,
+  ElevenLabsGetAgentWidgetRequest,
+  ElevenLabsGetAgentWidgetResponse,
+  ElevenLabsGetAgentLinkResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -49,6 +60,11 @@ import {
   ElevenLabsUpdatePvcVoiceSampleRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema,
+  ElevenLabsCreateAgentRequestSchema,
+  ElevenLabsGetAgentRequestSchema,
+  ElevenLabsListAgentsRequestSchema,
+  ElevenLabsUpdateAgentRequestSchema,
+  ElevenLabsGetAgentWidgetRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -163,7 +179,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   }
 
   async function makeJsonRequest<T>(
-    method: "GET" | "POST" | "DELETE",
+    method: "GET" | "POST" | "DELETE" | "PATCH",
     path: string,
     body?: unknown,
     signal?: AbortSignal,
@@ -211,6 +227,66 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       }
 
       return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
+  // Like makeJsonRequest, but tolerates an empty success body (HTTP 204 / 200
+  // with no content), which the agent DELETE endpoint returns. Parses JSON when
+  // present, otherwise resolves to an empty object.
+  async function makeJsonRequestAllowEmpty<T>(
+    method: "GET" | "POST" | "DELETE" | "PATCH",
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal,
+    queryString = ""
+  ): Promise<T> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        "xi-api-key": opts.apiKey,
+      };
+      const init: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
+
+      if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
+      }
+
+      const res = await doFetch(`${baseURL}${path}${queryString}`, init);
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      const text = await res.text();
+      return (text ? JSON.parse(text) : {}) as T;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof ElevenLabsError) throw error;
@@ -787,6 +863,151 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsWorkspaceAnalyticsRequestsRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/convai/agents/create
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/create
+  const createAgent = Object.assign(
+    async (
+      req: ElevenLabsCreateAgentRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateAgentResponse> => {
+      const { enable_versioning, ...body } = req;
+      const query = buildQueryString({ enable_versioning });
+      return makeJsonRequest<ElevenLabsCreateAgentResponse>(
+        "POST",
+        "/v1/convai/agents/create",
+        body,
+        signal,
+        query
+      );
+    },
+    { schema: ElevenLabsCreateAgentRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/list
+  const listAgents = Object.assign(
+    async (
+      req: ElevenLabsListAgentsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListAgentsResponse> => {
+      return makeJsonRequest<ElevenLabsListAgentsResponse>(
+        "GET",
+        "/v1/convai/agents",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListAgentsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/get
+  const getAgent = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsGetAgentRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentResponse> => {
+      return makeJsonRequest<ElevenLabsGetAgentResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetAgentRequestSchema }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/agents/{agentId}
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/update
+  const updateAgent = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsUpdateAgentRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentResponse> => {
+      const { enable_versioning_if_not_enabled, branch_id, ...body } = req;
+      const query = buildQueryString({
+        enable_versioning_if_not_enabled,
+        branch_id,
+      });
+      return makeJsonRequest<ElevenLabsGetAgentResponse>(
+        "PATCH",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}`,
+        body,
+        signal,
+        query
+      );
+    },
+    { schema: ElevenLabsUpdateAgentRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/agents/{agentId}
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/delete
+  const deleteAgent = Object.assign(
+    async (
+      agentId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteAgentResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteAgentResponse>(
+        "DELETE",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/widget
+  // Docs: https://elevenlabs.io/docs/api-reference/widget/get
+  const getAgentWidget = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsGetAgentWidgetRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentWidgetResponse> => {
+      return makeJsonRequest<ElevenLabsGetAgentWidgetResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/widget`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetAgentWidgetRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/link
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/get-link
+  const getAgentLink = Object.assign(
+    async (
+      agentId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentLinkResponse> => {
+      return makeJsonRequest<ElevenLabsGetAgentLinkResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/link`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  const convaiAgents = {
+    create: createAgent,
+    list: listAgents,
+    get: getAgent,
+    update: updateAgent,
+    delete: deleteAgent,
+    widget: getAgentWidget,
+    link: getAgentLink,
+  };
+  const convai = { agents: convaiAgents };
+
   const user = {
     subscription: userSubscription,
   };
@@ -841,6 +1062,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       pvc: postPvcVoices,
     },
     workspace,
+    convai: { agents: { create: createAgent } },
+  };
+  const patchV1 = {
+    convai: { agents: { update: updateAgent } },
   };
   const deleteV1 = {
     voices: {
@@ -850,6 +1075,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         },
       },
     },
+    convai: { agents: { delete: deleteAgent } },
   };
   const v1 = {
     models,
@@ -860,14 +1086,32 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     speechToText,
     user,
     workspace,
+    convai,
   };
 
   return attachExamples({
     docs,
     v1,
     v2,
-    get: { docs, v1: { models, voices: v1Voices, user }, v2 },
+    get: {
+      docs,
+      v1: {
+        models,
+        voices: v1Voices,
+        user,
+        convai: {
+          agents: {
+            list: listAgents,
+            get: getAgent,
+            widget: getAgentWidget,
+            link: getAgentLink,
+          },
+        },
+      },
+      v2,
+    },
     post: { v1: postV1 },
+    patch: { v1: patchV1 },
     delete: { v1: deleteV1 },
   });
 }

@@ -1,10 +1,40 @@
 {
+  "GET v1.convai.agents.list": {
+    "source": "elevenlabs/convai-agents",
+    "payload": {
+      "page_size": 30
+    }
+  },
   "GET v2.voices": {
     "source": "elevenlabs/voices",
     "payload": {
       "page_size": 1,
       "voice_type": "default",
       "include_total_count": true
+    }
+  },
+  "PATCH v1.convai.agents.update": {
+    "source": "elevenlabs/convai-agents",
+    "payload": {
+      "name": "Apicity agents route test (updated)"
+    }
+  },
+  "POST v1.convai.agents.create": {
+    "source": "elevenlabs/convai-agents",
+    "payload": {
+      "name": "Apicity agents route test",
+      "conversation_config": {
+        "agent": {
+          "prompt": {
+            "prompt": "You are a helpful Apicity route-test assistant."
+          },
+          "first_message": "Hello from Apicity.",
+          "language": "en"
+        }
+      },
+      "tags": [
+        "apicity-test"
+      ]
     }
   },
   "POST v1.soundGeneration": {

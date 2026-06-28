@@ -13,6 +13,11 @@ import type {
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
+  ElevenLabsCreateAgentRequest,
+  ElevenLabsGetAgentRequest,
+  ElevenLabsListAgentsRequest,
+  ElevenLabsUpdateAgentRequest,
+  ElevenLabsGetAgentWidgetRequest,
 } from "./zod";
 
 export type {
@@ -56,6 +61,21 @@ export type {
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestInput,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeParsedRequest,
+  ElevenLabsCreateAgentRequest,
+  ElevenLabsCreateAgentRequestInput,
+  ElevenLabsCreateAgentParsedRequest,
+  ElevenLabsGetAgentRequest,
+  ElevenLabsGetAgentRequestInput,
+  ElevenLabsGetAgentParsedRequest,
+  ElevenLabsListAgentsRequest,
+  ElevenLabsListAgentsRequestInput,
+  ElevenLabsListAgentsParsedRequest,
+  ElevenLabsUpdateAgentRequest,
+  ElevenLabsUpdateAgentRequestInput,
+  ElevenLabsUpdateAgentParsedRequest,
+  ElevenLabsGetAgentWidgetRequest,
+  ElevenLabsGetAgentWidgetRequestInput,
+  ElevenLabsGetAgentWidgetParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -598,6 +618,89 @@ export interface ElevenLabsStartSpeakerSeparationResponse {
 export type ElevenLabsWorkspaceAnalyticsRequestsResponse =
   ElevenLabsWorkspaceAnalyticsQueryResponse;
 
+// -- Agents Platform (Conversational AI) response shapes ---------------------
+
+export interface ElevenLabsCreateAgentResponse {
+  agent_id: string;
+}
+
+export interface ElevenLabsAgentMetadata {
+  created_at_unix_secs: number;
+  updated_at_unix_secs: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsResourceAccessInfo {
+  is_creator: boolean;
+  creator_name: string;
+  creator_email: string;
+  role: string;
+  anonymous_access_level_override?: string | null;
+  access_source?: string | null;
+}
+
+// `conversation_config`, `platform_settings`, and `workflow` are large nested
+// config trees; we surface them as opaque records rather than mirroring the
+// entire upstream model graph.
+export interface ElevenLabsGetAgentResponse {
+  agent_id: string;
+  name: string;
+  conversation_config: Record<string, unknown>;
+  metadata: ElevenLabsAgentMetadata;
+  platform_settings?: Record<string, unknown> | null;
+  phone_numbers?: Record<string, unknown>[];
+  whatsapp_accounts?: Record<string, unknown>[];
+  workflow?: Record<string, unknown> | null;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  tags?: string[];
+  version_id?: string | null;
+  branch_id?: string | null;
+  main_branch_id?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsAgentSummary {
+  agent_id: string;
+  name: string;
+  tags: string[];
+  created_at_unix_secs: number;
+  access_info: ElevenLabsResourceAccessInfo;
+  last_call_time_unix_secs?: number | null;
+  archived?: boolean;
+}
+
+export interface ElevenLabsListAgentsResponse {
+  agents: ElevenLabsAgentSummary[];
+  has_more: boolean;
+  next_cursor?: string | null;
+}
+
+// DELETE returns an empty body (HTTP 200/204); we surface it as an empty record.
+export type ElevenLabsDeleteAgentResponse = Record<string, unknown>;
+
+export interface ElevenLabsGetAgentWidgetResponse {
+  agent_id: string;
+  widget_config: Record<string, unknown>;
+}
+
+export type ElevenLabsConversationTokenPurpose =
+  | "signed_url"
+  | "shareable_link";
+
+export interface ElevenLabsConversationToken {
+  agent_id: string;
+  conversation_token: string;
+  expiration_time_unix_secs?: number | null;
+  conversation_id?: string | null;
+  purpose?: ElevenLabsConversationTokenPurpose;
+  token_requester_user_id?: string | null;
+}
+
+export interface ElevenLabsGetAgentLinkResponse {
+  agent_id: string;
+  token?: ElevenLabsConversationToken | null;
+}
+
 // -- Method interfaces -------------------------------------------------------
 
 export interface ElevenLabsDocsMethod {
@@ -785,7 +888,80 @@ export interface ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeMethod {
   schema: z.ZodType<ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest>;
 }
 
+export interface ElevenLabsCreateAgentMethod {
+  (
+    req: ElevenLabsCreateAgentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateAgentResponse>;
+  schema: z.ZodType<ElevenLabsCreateAgentRequest>;
+}
+
+export interface ElevenLabsGetAgentMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsGetAgentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentResponse>;
+  schema: z.ZodType<ElevenLabsGetAgentRequest>;
+}
+
+export interface ElevenLabsListAgentsMethod {
+  (
+    req?: ElevenLabsListAgentsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListAgentsResponse>;
+  schema: z.ZodType<ElevenLabsListAgentsRequest>;
+}
+
+export interface ElevenLabsUpdateAgentMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsUpdateAgentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentResponse>;
+  schema: z.ZodType<ElevenLabsUpdateAgentRequest>;
+}
+
+export interface ElevenLabsDeleteAgentMethod {
+  (
+    agentId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteAgentResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetAgentWidgetMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsGetAgentWidgetRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentWidgetResponse>;
+  schema: z.ZodType<ElevenLabsGetAgentWidgetRequest>;
+}
+
+export interface ElevenLabsGetAgentLinkMethod {
+  (
+    agentId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentLinkResponse>;
+  schema: undefined;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
+
+export interface ElevenLabsConvaiAgentsNamespace {
+  create: ElevenLabsCreateAgentMethod;
+  list: ElevenLabsListAgentsMethod;
+  get: ElevenLabsGetAgentMethod;
+  update: ElevenLabsUpdateAgentMethod;
+  delete: ElevenLabsDeleteAgentMethod;
+  widget: ElevenLabsGetAgentWidgetMethod;
+  link: ElevenLabsGetAgentLinkMethod;
+}
+
+export interface ElevenLabsConvaiNamespace {
+  agents: ElevenLabsConvaiAgentsNamespace;
+}
 
 export interface ElevenLabsUserNamespace {
   subscription: ElevenLabsUserSubscriptionMethod;
@@ -825,10 +1001,19 @@ export interface ElevenLabsV1Namespace {
   speechToText: ElevenLabsSpeechToTextMethod;
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
+  convai: ElevenLabsConvaiNamespace;
 }
 
 export interface ElevenLabsV2Namespace {
   voices: ElevenLabsListVoicesMethod;
+}
+
+export interface ElevenLabsPostConvaiAgentsNamespace {
+  create: ElevenLabsCreateAgentMethod;
+}
+
+export interface ElevenLabsPostConvaiNamespace {
+  agents: ElevenLabsPostConvaiAgentsNamespace;
 }
 
 export interface ElevenLabsPostV1Namespace {
@@ -838,6 +1023,7 @@ export interface ElevenLabsPostV1Namespace {
   speechToText: ElevenLabsSpeechToTextMethod;
   voices: ElevenLabsPostV1VoicesNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
+  convai: ElevenLabsPostConvaiNamespace;
 }
 
 export interface ElevenLabsPostV1VoicesNamespace {
@@ -863,10 +1049,38 @@ export interface ElevenLabsPostNamespace {
   v1: ElevenLabsPostV1Namespace;
 }
 
+export interface ElevenLabsPatchConvaiAgentsNamespace {
+  update: ElevenLabsUpdateAgentMethod;
+}
+
+export interface ElevenLabsPatchConvaiNamespace {
+  agents: ElevenLabsPatchConvaiAgentsNamespace;
+}
+
+export interface ElevenLabsPatchV1Namespace {
+  convai: ElevenLabsPatchConvaiNamespace;
+}
+
+export interface ElevenLabsPatchNamespace {
+  v1: ElevenLabsPatchV1Namespace;
+}
+
+export interface ElevenLabsGetConvaiAgentsNamespace {
+  list: ElevenLabsListAgentsMethod;
+  get: ElevenLabsGetAgentMethod;
+  widget: ElevenLabsGetAgentWidgetMethod;
+  link: ElevenLabsGetAgentLinkMethod;
+}
+
+export interface ElevenLabsGetConvaiNamespace {
+  agents: ElevenLabsGetConvaiAgentsNamespace;
+}
+
 export interface ElevenLabsGetV1Namespace {
   models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
   user: ElevenLabsUserNamespace;
+  convai: ElevenLabsGetConvaiNamespace;
 }
 
 export interface ElevenLabsGetV2Namespace {
@@ -879,6 +1093,14 @@ export interface ElevenLabsGetNamespace {
   v2: ElevenLabsGetV2Namespace;
 }
 
+export interface ElevenLabsDeleteConvaiAgentsNamespace {
+  delete: ElevenLabsDeleteAgentMethod;
+}
+
+export interface ElevenLabsDeleteConvaiNamespace {
+  agents: ElevenLabsDeleteConvaiAgentsNamespace;
+}
+
 export interface ElevenLabsDeleteV1Namespace {
   voices: {
     pvc: {
@@ -887,6 +1109,7 @@ export interface ElevenLabsDeleteV1Namespace {
       };
     };
   };
+  convai: ElevenLabsDeleteConvaiNamespace;
 }
 
 export interface ElevenLabsDeleteNamespace {
@@ -898,6 +1121,7 @@ export interface ElevenLabsProvider {
   v1: ElevenLabsV1Namespace;
   v2: ElevenLabsV2Namespace;
   post: ElevenLabsPostNamespace;
+  patch: ElevenLabsPatchNamespace;
   get: ElevenLabsGetNamespace;
   delete: ElevenLabsDeleteNamespace;
 }

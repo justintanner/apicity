@@ -142,7 +142,114 @@ for (const w of result.words) {
 
 ## API Reference
 
-22 endpoints across 9 groups. Each method mirrors an upstream URL path.
+29 endpoints across 10 groups. Each method mirrors an upstream URL path.
+
+### convai
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.agents.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/agents/create</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/agents/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.agents.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/agents/{agentId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/agents/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agents.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agents/{agentId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/agents/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agents.link</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/link</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/agents/get-link)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.link({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agents.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agents</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/agents/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.agents.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/agents/{agentId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/agents/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agents.widget</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/widget</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/widget/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.widget({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
 
 ### docs
 

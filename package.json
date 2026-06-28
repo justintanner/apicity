@@ -100,7 +100,7 @@
     "dev:record": "node tests/record.mjs --mode=record-missing",
     "dev:rerecord": "node tests/record.mjs --mode=record",
     "dev:preflight": "pnpm run format && pnpm run typecheck && pnpm run lint && pnpm run test:run",
-    "dev:preflight:provider": "pnpm run format && pnpm run lint && pnpm run test:provider",
+    "dev:preflight:provider": "node scripts/preflight-provider.mjs",
     "ci:local": "pnpm run audit && pnpm run build && pnpm run lint && pnpm run test:run",
     "audit": "pnpm audit --audit-level=moderate",
     "check:op": "op run --env-file=.env -- node scripts/check-op.mjs",

@@ -76,6 +76,68 @@ Work the sub-steps in order. Each sub-step's STOP conditions and exit
 criteria still apply.
 
 
+# Sub-step 0: Singleton guard — refuse a duplicate concurrent release
+
+This release is a singleton. Two polecats once launched the same version's
+release in parallel (a near double-publish the witness had to catch and
+escalate). Nothing coordinated them. Before doing anything else, prove this is
+the only in-progress `mol-apicity-release` run for this rig — and if it isn't,
+STOP without touching npm or the remote.
+
+```bash
+# Identify our OWN workflow root. The running prepare step bead is assigned to
+# this session and carries gc.root_bead_id (the workflow root) + a step_ref.
+self_root=$(bd list --status in_progress --assignee "$GC_SESSION_NAME" --limit 0 --json 2>/dev/null \
+  | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.prepare")][0].metadata."gc.root_bead_id" // empty')
+
+# All in-progress release WORKFLOW roots for this rig. The workflow root's title
+# is exactly "mol-apicity-release"; filter to gc.kind=workflow so fix/feature
+# beads that merely mention the formula in their title are excluded.
+runs_json=$(bd list --status in_progress --title-contains "mol-apicity-release" --limit 0 --json 2>/dev/null \
+  | jq -c '[.[]
+      | select(.metadata."gc.kind" == "workflow")
+      | select((.metadata."gc.root_store_ref" // "") == "rig:apicity")
+      | {id, created_at, version: (.metadata."gc.var.version" // "")}]')
+
+conflict=""
+if [ -n "$self_root" ]; then
+  # Oldest-wins: abort if any OTHER in-progress run started before us. Exactly
+  # one run (the globally oldest) survives, even if two start near-simultaneously.
+  conflict=$(printf '%s' "$runs_json" | jq -r --arg self "$self_root" --arg ver "{{version}}" '
+    ([.[] | select(.id == $self) | .created_at][0]) as $selfTs
+    | if $selfTs == null then empty else
+        [ .[] | select(.id != $self) | select(.created_at < $selfTs) ]
+        | (map(select(.version == $ver)) + map(select(.version != $ver)))
+        | (.[0] // empty)
+        | if . == "" or . == null then empty else "\(.id) (version \(.version))" end
+      end')
+else
+  # Fallback: own workflow root not resolvable. Only treat as a conflict when
+  # there is clearly more than one in-progress run for THIS version (a lone run
+  # must still proceed). Ambiguity → halt rather than risk a double publish.
+  dup=$(printf '%s' "$runs_json" | jq -r --arg ver "{{version}}" '[.[] | select(.version == $ver)] | length')
+  [ "${dup:-0}" -gt 1 ] && conflict="$dup concurrent runs for v{{version}} (self-id unavailable)"
+fi
+
+if [ -n "$conflict" ]; then
+  echo "ABORT: another mol-apicity-release run is already in progress: $conflict"
+  echo "Refusing to start a duplicate concurrent release (see ac-c98tc)."
+  # Leave a breadcrumb on our own workflow root, then halt. Do NOT proceed to any
+  # further sub-step and do NOT run the publish phase — release needs prepare, so
+  # a non-zero exit here keeps npm and the remote untouched.
+  [ -n "$self_root" ] && bd update "$self_root" --set-metadata superseded=true \
+    --notes "Superseded: a prior mol-apicity-release run ($conflict) is already in progress; this duplicate aborted by the prepare singleton guard." >/dev/null 2>&1 || true
+  gc runtime drain-ack
+  exit 1
+fi
+echo "Singleton guard: this is the only in-progress mol-apicity-release run (root=${self_root:-unknown}). Proceeding."
+```
+
+**If the block prints `ABORT`: STOP the entire release here.** Do not run the
+remaining prepare sub-steps and do not enter the publish phase — the conflicting
+run is the canonical one and will publish. This run is a no-op.
+
+
 # Sub-step 1: Load context and verify clean working tree
 
 Initialize the session and verify the repo is in a publishable state.
@@ -426,11 +488,19 @@ the whole filter.
 Annotate the release commit, propagate it to the remote, and create or update
 the public GitHub release page for the pushed `v{{version}}` tag.
 
-**1. Tag and push the release commit:**
+**1. Tag and push the release commit (idempotent):**
+
+A retried release (publish succeeded but a later sub-step failed) must not error
+on an already-existing tag. Create the tag only when missing, and treat an
+already-pushed tag as success.
 ```bash
-git tag -a v{{version}} -m "Release Apicity v{{version}}"
+if git rev-parse -q --verify "refs/tags/v{{version}}" >/dev/null; then
+  echo "Tag v{{version}} already exists locally — skipping creation."
+else
+  git tag -a v{{version}} -m "Release Apicity v{{version}}"
+fi
 git push origin stable
-git push origin v{{version}}
+git push origin v{{version}} || echo "Tag v{{version}} already on origin — continuing."
 ```
 
 **2. Verify GitHub CLI auth:**

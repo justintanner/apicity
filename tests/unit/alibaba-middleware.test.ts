@@ -1,5 +1,5 @@
 // Tests for Alibaba middleware functions — pure HOFs, no API calls
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   withRetry,
   withFallback,
@@ -7,11 +7,33 @@ import {
   withRateLimit,
 } from "../../packages/provider/alibaba/src/middleware";
 
+// Drives an async action to completion under fake timers without burning
+// wall-clock. Mirrors the fal/xai test-speedup pattern (ac-6lf6): real backoff
+// math is exercised, only the wait is virtualized.
+async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
+  const result = action();
+  result.catch(() => {});
+  await vi.runAllTimersAsync();
+  await Promise.resolve();
+  return await result;
+}
 describe("withRetry", () => {
+  // Fake timers for the whole describe: withRetry's backoff uses setTimeout
+  // internally, so without this every retry test pays real baseMs (default
+  // 300ms) of wall-clock. Scoped here so the rate-limiter describes below —
+  // which genuinely test wall-clock timeouts — keep the real clock.
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("should return result on first success", async () => {
     const fn = async (x: number) => x * 2;
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(5)).toBe(10);
+    expect(await runWithFakeTimers(() => retried(5))).toBe(10);
   });
 
   it("should retry on transient error and succeed", async () => {
@@ -22,7 +44,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(3);
   });
 
@@ -31,7 +53,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("always fail"), { status: 500 });
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("always fail");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "always fail"
+    );
   });
 
   it("should not retry on 400 errors (non-transient)", async () => {
@@ -41,7 +65,9 @@ describe("withRetry", () => {
       throw Object.assign(new Error("bad request"), { status: 400 });
     };
     const retried = withRetry(fn, { retries: 3, baseMs: 1, jitter: false });
-    await expect(retried(null)).rejects.toThrow("bad request");
+    await expect(runWithFakeTimers(() => retried(null))).rejects.toThrow(
+      "bad request"
+    );
     expect(calls).toBe(1);
   });
 
@@ -53,7 +79,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -65,7 +91,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -75,7 +101,9 @@ describe("withRetry", () => {
     };
     const retried = withRetry(fn);
     const controller = new AbortController();
-    expect(await retried("hello", controller.signal)).toBe("hello-has-signal");
+    expect(
+      await runWithFakeTimers(() => retried("hello", controller.signal))
+    ).toBe("hello-has-signal");
   });
 
   it("should stop retrying when aborted", async () => {
@@ -89,7 +117,9 @@ describe("withRetry", () => {
     const controller = new AbortController();
     controller.abort();
 
-    await expect(retried(null, controller.signal)).rejects.toThrow("fail");
+    await expect(
+      runWithFakeTimers(() => retried(null, controller.signal))
+    ).rejects.toThrow("fail");
     expect(calls).toBe(1);
   });
 
@@ -100,8 +130,10 @@ describe("withRetry", () => {
       if (calls < 2) throw Object.assign(new Error("fail"), { status: 500 });
       return "ok";
     };
+    // Defaults (baseMs=300, retries=2, jitter=true) still drive the real delay
+    // math; the fake clock just skips the ~300ms wait it used to burn.
     const retried = withRetry(fn);
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -119,7 +151,17 @@ describe("withRetry", () => {
       factor: 2,
       jitter: false,
     });
-    await retried(null);
+
+    // Assert the SCHEDULED delays (100, 200) rather than burning them as
+    // wall-clock; the fake clock virtualizes the wait, the spy captures the
+    // real ms handed to setTimeout.
+    const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+    await runWithFakeTimers(() => retried(null));
+    const delays = setTimeoutSpy.mock.calls.map(
+      ([, timeout]) => timeout as number
+    );
+    expect(delays).toEqual([100, 200]);
+    setTimeoutSpy.mockRestore();
     expect(calls).toBe(3);
   });
 
@@ -132,7 +174,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -144,7 +186,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 
@@ -156,7 +198,7 @@ describe("withRetry", () => {
       return "ok";
     };
     const retried = withRetry(fn, { retries: 2, baseMs: 1, jitter: false });
-    expect(await retried(null)).toBe("ok");
+    expect(await runWithFakeTimers(() => retried(null))).toBe("ok");
     expect(calls).toBe(2);
   });
 });
@@ -426,8 +468,14 @@ describe("withRateLimit", () => {
 
   it("should respect maxQueueMs option", async () => {
     const limiter = createRateLimiter({ concurrent: 1 });
+    // Genuine wall-clock test: the slow call must hold the lone concurrency
+    // slot long enough for the second call's 10ms queue timeout to fire, so
+    // the two real timers must race on the platform clock. Deterministic fake
+    // timers won't reproduce the "slot still held while timeout elapses" race.
     const slow = withRateLimit(async () => {
-      await new Promise((r) => setTimeout(r, 100));
+      const { promise, resolve } = Promise.withResolvers<void>();
+      setTimeout(resolve, 100);
+      await promise;
       return "slow";
     }, limiter);
     // Start slow call without awaiting

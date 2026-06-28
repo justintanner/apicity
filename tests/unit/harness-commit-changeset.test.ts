@@ -5,6 +5,14 @@ import os from "node:os";
 import path from "node:path";
 import { getChangedRecordingsByCommit } from "../har-data";
 
+// Run a git command in the temp repo with stdio suppressed. git writes hints
+// ("hint: Using 'master' as the name…") and status lines ("Switched to a new
+// branch 'feature'") to stderr/stdout; with inherited stdio those leak into
+// the vitest report and pollute every run (three times — once per test).
+function git(args: string): void {
+  execSync(`git ${args}`, { stdio: "ignore" });
+}
+
 function makeHar(recordingName: string): string {
   return JSON.stringify({
     log: {
@@ -38,21 +46,21 @@ describe("getChangedRecordingsByCommit", () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "apicity-harness-"));
     process.chdir(tempDir);
 
-    // Initialize git repo
-    execSync("git init", { encoding: "utf-8" });
-    execSync("git branch -m main", { encoding: "utf-8" });
-    execSync("git config user.email 'test@example.com'", { encoding: "utf-8" });
-    execSync("git config user.name 'Test User'", { encoding: "utf-8" });
+    // Initialize git repo. init.defaultBranch=main creates the base branch
+    // directly so no rename (and its chatter) is needed.
+    git("-c init.defaultBranch=main init");
+    git("config user.email 'test@example.com'");
+    git("config user.name 'Test User'");
 
     // Create base directory structure and base commit on main
     const baseFile = path.join("tests", "recordings", "base.txt");
     fs.mkdirSync(path.dirname(baseFile), { recursive: true });
     fs.writeFileSync(baseFile, "base", "utf-8");
-    execSync("git add .", { encoding: "utf-8" });
-    execSync("git commit -m 'base commit'", { encoding: "utf-8" });
+    git("add .");
+    git("commit -m 'base commit'");
 
     // Create feature branch
-    execSync("git checkout -b feature", { encoding: "utf-8" });
+    git("checkout -b feature");
   });
 
   afterEach(() => {
@@ -78,10 +86,8 @@ describe("getChangedRecordingsByCommit", () => {
       makeHar("chat-completions"),
       "utf-8"
     );
-    execSync("git add .", { encoding: "utf-8" });
-    execSync("git commit -m 'Add openai chat recording'", {
-      encoding: "utf-8",
-    });
+    git("add .");
+    git("commit -m 'Add openai chat recording'");
 
     // Commit 2: add xai recording
     const rec2Dir = path.join(
@@ -96,10 +102,8 @@ describe("getChangedRecordingsByCommit", () => {
       makeHar("grok-chat"),
       "utf-8"
     );
-    execSync("git add .", { encoding: "utf-8" });
-    execSync("git commit -m 'Add xai grok recording'", {
-      encoding: "utf-8",
-    });
+    git("add .");
+    git("commit -m 'Add xai grok recording'");
 
     // Run the function against main
     const changeset = getChangedRecordingsByCommit("main");
@@ -139,8 +143,8 @@ describe("getChangedRecordingsByCommit", () => {
   it("returns empty arrays for commits that do not touch recordings", () => {
     // Commit that touches a non-recording file
     fs.writeFileSync("README.md", "# Hello", "utf-8");
-    execSync("git add .", { encoding: "utf-8" });
-    execSync("git commit -m 'Update readme'", { encoding: "utf-8" });
+    git("add .");
+    git("commit -m 'Update readme'");
 
     const changeset = getChangedRecordingsByCommit("main");
     expect(changeset.size).toBe(1);

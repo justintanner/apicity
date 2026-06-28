@@ -1,11 +1,17 @@
-import { execFile } from "node:child_process";
+import { execFile, execSync } from "node:child_process";
 import { randomBytes, createHash } from "node:crypto";
-import { writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import {
+  writeFileSync,
+  mkdirSync,
+  rmSync,
+  existsSync,
+  statSync,
+} from "node:fs";
 import { join, dirname } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterEach } from "vitest";
 
 import {
   mintOtp,
@@ -226,6 +232,37 @@ describe("CLI subprocess", () => {
       );
     });
   }
+
+  beforeAll(() => {
+    // runCli prefers the BUILT CLI (fast `node dist` spawn) but falls back to
+    // `npx tsx` when dist is missing — the common local case, since `pnpm
+    // test:run` doesn't build first. tsx isn't a project dependency, so each
+    // fallback spawn re-downloads/recompiles (~3s each; ~11s for this file).
+    // Build the dist when it is missing OR stale (a source file is newer than
+    // the built CLI) so we never test a stale artifact. CI skips this entirely
+    // — its build already ran and is current — and local runs pay the one-time
+    // build only, after which every spawn is a sub-200ms `node` invocation.
+    const cliSrcDir = join(
+      dirname(fileURLToPath(import.meta.url)),
+      "../../packages/provider/cost/src"
+    );
+    const sources = ["paygate-cli.ts", "paygate.ts"].map((f) =>
+      join(cliSrcDir, f)
+    );
+    const stale =
+      !existsSync(cliDistPath) ||
+      sources.some(
+        (src) =>
+          existsSync(src) &&
+          statSync(src).mtimeMs > statSync(cliDistPath).mtimeMs
+      );
+    if (stale) {
+      execSync("pnpm --filter @apicity/cost run build", {
+        stdio: "pipe",
+        cwd: join(dirname(fileURLToPath(import.meta.url)), "../.."),
+      });
+    }
+  }, 120000);
 
   beforeEach(() => {
     testDir = makeTestDir();

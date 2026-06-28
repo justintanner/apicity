@@ -72,17 +72,7 @@ function issue(overrides: Partial<Issue>): Issue {
 
 describe("mol-apicity-release workflow", () => {
   it("keeps the release graph consolidated into the expected steps", () => {
-    expect(readStepIds()).toEqual([
-      "load-context",
-      "verify-main-gates",
-      "sync-stable-and-preflight",
-      "prepare-release-commit",
-      "publish-dry-run",
-      "publish",
-      "tag-push-and-github-release",
-      "sync-main-and-smoke-install",
-      "close",
-    ]);
+    expect(readStepIds()).toEqual(["prepare", "release"]);
   });
 });
 

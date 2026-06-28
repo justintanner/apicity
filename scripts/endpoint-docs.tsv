@@ -495,6 +495,13 @@ elevenlabs	v1.user.subscription	GET	https://api.elevenlabs.io/v1/user/subscripti
 elevenlabs	v1.workspace.analytics.query.usageByProductOverTime	POST	https://api.elevenlabs.io/v1/workspace/analytics/query/usage-by-product-over-time	https://elevenlabs.io/docs/api-reference/workspace/usage/get-usage-by-product-over-time
 elevenlabs	v1.workspace.analytics.requests	POST	https://api.elevenlabs.io/v1/workspace/analytics/requests	https://elevenlabs.io/docs/api-reference/workspace/analytics/requests/get
 elevenlabs	v2.voices	GET	https://api.elevenlabs.io/v2/voices	https://elevenlabs.io/docs/api-reference/voices/search
+elevenlabs	v1.convai.agents.create	POST	https://api.elevenlabs.io/v1/convai/agents/create	https://elevenlabs.io/docs/api-reference/agents/create
+elevenlabs	v1.convai.agents.list	GET	https://api.elevenlabs.io/v1/convai/agents	https://elevenlabs.io/docs/api-reference/agents/list
+elevenlabs	v1.convai.agents.get	GET	https://api.elevenlabs.io/v1/convai/agents/{agentId}	https://elevenlabs.io/docs/api-reference/agents/get
+elevenlabs	v1.convai.agents.update	PATCH	https://api.elevenlabs.io/v1/convai/agents/{agentId}	https://elevenlabs.io/docs/api-reference/agents/update
+elevenlabs	v1.convai.agents.delete	DELETE	https://api.elevenlabs.io/v1/convai/agents/{agentId}	https://elevenlabs.io/docs/api-reference/agents/delete
+elevenlabs	v1.convai.agents.widget	GET	https://api.elevenlabs.io/v1/convai/agents/{agentId}/widget	https://elevenlabs.io/docs/api-reference/widget/get
+elevenlabs	v1.convai.agents.link	GET	https://api.elevenlabs.io/v1/convai/agents/{agentId}/link	https://elevenlabs.io/docs/api-reference/agents/get-link
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

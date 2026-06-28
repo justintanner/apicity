@@ -436,3 +436,122 @@ export type ElevenLabsPvcManualVerificationRequestInput =
 export type ElevenLabsPvcManualVerificationParsedRequest = z.output<
   typeof ElevenLabsPvcManualVerificationRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — shared
+// ---------------------------------------------------------------------------
+
+// The agent `conversation_config`, `platform_settings`, and `workflow` payloads
+// are large, deeply-nested config trees. We keep them as permissive records so
+// the schema stays a thin metadata surface — callers compose the nested config
+// themselves and the server passes it straight through.
+const ElevenLabsAgentConfigObjectSchema = z.record(z.string(), z.unknown());
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agents/create
+// ---------------------------------------------------------------------------
+
+// `enable_versioning` is a query-string parameter, not a body field. We carry it
+// on the request object for ergonomics; the factory strips it out and moves it
+// to the URL query before serialising the body.
+export const ElevenLabsCreateAgentRequestSchema = z.object({
+  conversation_config: ElevenLabsAgentConfigObjectSchema,
+  platform_settings: ElevenLabsAgentConfigObjectSchema.nullable().optional(),
+  workflow: ElevenLabsAgentConfigObjectSchema.optional(),
+  name: z.string().nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
+  enable_versioning: z.boolean().optional(),
+});
+
+export type ElevenLabsCreateAgentRequest = z.input<
+  typeof ElevenLabsCreateAgentRequestSchema
+>;
+export type ElevenLabsCreateAgentRequestInput = ElevenLabsCreateAgentRequest;
+export type ElevenLabsCreateAgentParsedRequest = z.output<
+  typeof ElevenLabsCreateAgentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/agents/:agent_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetAgentRequestSchema = z.object({
+  version_id: z.string().optional(),
+  branch_id: z.string().optional(),
+});
+
+export type ElevenLabsGetAgentRequest = z.input<
+  typeof ElevenLabsGetAgentRequestSchema
+>;
+export type ElevenLabsGetAgentRequestInput = ElevenLabsGetAgentRequest;
+export type ElevenLabsGetAgentParsedRequest = z.output<
+  typeof ElevenLabsGetAgentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/agents
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListAgentsRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(100).optional(),
+  search: z.string().nullable().optional(),
+  archived: z.boolean().nullable().optional(),
+  show_only_owned_agents: z.boolean().optional(),
+  created_by_user_id: z.string().nullable().optional(),
+  sort_direction: z.enum(["asc", "desc"]).optional(),
+  sort_by: z
+    .enum(["name", "created_at", "call_count_7d"])
+    .nullable()
+    .optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListAgentsRequest = z.input<
+  typeof ElevenLabsListAgentsRequestSchema
+>;
+export type ElevenLabsListAgentsRequestInput = ElevenLabsListAgentsRequest;
+export type ElevenLabsListAgentsParsedRequest = z.output<
+  typeof ElevenLabsListAgentsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/agents/:agent_id
+// ---------------------------------------------------------------------------
+
+// `enable_versioning_if_not_enabled` and `branch_id` are query-string params.
+// The factory strips them from the body and moves them to the URL query.
+export const ElevenLabsUpdateAgentRequestSchema = z.object({
+  conversation_config: ElevenLabsAgentConfigObjectSchema.nullable().optional(),
+  platform_settings: ElevenLabsAgentConfigObjectSchema.nullable().optional(),
+  workflow: ElevenLabsAgentConfigObjectSchema.optional(),
+  name: z.string().nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
+  version_description: z.string().nullable().optional(),
+  enable_versioning_if_not_enabled: z.boolean().optional(),
+  branch_id: z.string().optional(),
+});
+
+export type ElevenLabsUpdateAgentRequest = z.input<
+  typeof ElevenLabsUpdateAgentRequestSchema
+>;
+export type ElevenLabsUpdateAgentRequestInput = ElevenLabsUpdateAgentRequest;
+export type ElevenLabsUpdateAgentParsedRequest = z.output<
+  typeof ElevenLabsUpdateAgentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/agents/:agent_id/widget
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetAgentWidgetRequestSchema = z.object({
+  conversation_signature: z.string().optional(),
+});
+
+export type ElevenLabsGetAgentWidgetRequest = z.input<
+  typeof ElevenLabsGetAgentWidgetRequestSchema
+>;
+export type ElevenLabsGetAgentWidgetRequestInput =
+  ElevenLabsGetAgentWidgetRequest;
+export type ElevenLabsGetAgentWidgetParsedRequest = z.output<
+  typeof ElevenLabsGetAgentWidgetRequestSchema
+>;

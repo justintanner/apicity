@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Middleware functions
 import {
@@ -8,13 +8,35 @@ import {
   withStreamFallback,
 } from "../../packages/provider/kimicoding/src/middleware";
 
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+// Drives an async action forward under fake timers without burning wall-clock.
+// Kick off the action (its retry/backoff `setTimeout` calls queue on the fake
+// clock), flush every scheduled timer and the microtasks they gate — including
+// those an async generator yields between — then settle the result. Mirrors the
+// fal/xai test-speedup pattern (ac-6lf6); real backoff math is still exercised,
+// only the wait is virtualized.
+async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
+  const result = action();
+  result.catch(() => {});
+  await vi.runAllTimersAsync();
+  await Promise.resolve();
+  return await result;
+}
+
 describe("middleware", () => {
   describe("withRetry", () => {
     it("should return result on first successful call", async () => {
       const fn = vi.fn().mockResolvedValue("success");
       const wrapped = withRetry(fn);
 
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(1);
@@ -29,7 +51,7 @@ describe("middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(3);
@@ -41,7 +63,9 @@ describe("middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
 
-      await expect(wrapped("request")).rejects.toThrow("Persistent failure");
+      await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toThrow(
+        "Persistent failure"
+      );
       expect(fn).toHaveBeenCalledTimes(3); // initial + 2 retries
     });
 
@@ -51,7 +75,9 @@ describe("middleware", () => {
 
       const wrapped = withRetry(fn);
 
-      await expect(wrapped("request")).rejects.toEqual(error);
+      await expect(runWithFakeTimers(() => wrapped("request"))).rejects.toEqual(
+        error
+      );
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -62,7 +88,7 @@ describe("middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(2);
@@ -75,7 +101,7 @@ describe("middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(2);
@@ -88,7 +114,7 @@ describe("middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(2);
@@ -101,26 +127,26 @@ describe("middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(2);
     });
 
     it("should respect abort signal", async () => {
-      const fn = vi.fn().mockImplementation(() => {
-        return new Promise((_, reject) => {
-          setTimeout(() => reject(new Error("Should not reach here")), 100);
-        });
-      });
+      // fn rejects with a transient error; withRetry rethrows without retrying
+      // because the signal is already aborted (checked on error).
+      const fn = vi.fn().mockRejectedValue(new Error("transient"));
 
       const controller = new AbortController();
-      const wrapped = withRetry(fn, { retries: 3, baseMs: 10 });
+      const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
       // Abort immediately
       controller.abort();
 
-      await expect(wrapped("request", controller.signal)).rejects.toThrow();
+      await expect(
+        runWithFakeTimers(() => wrapped("request", controller.signal))
+      ).rejects.toThrow("transient");
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -139,7 +165,7 @@ describe("middleware", () => {
         jitter: false,
       });
 
-      const result = await wrapped("request");
+      const result = await runWithFakeTimers(() => wrapped("request"));
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(4);
     });
@@ -151,13 +177,18 @@ describe("middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 100, jitter: true });
-      const startTime = Date.now();
-      await wrapped("request");
-      const elapsed = Date.now() - startTime;
 
-      // With jitter, delay should be between 80-120ms (0.8-1.2 * 100)
-      expect(elapsed).toBeGreaterThanOrEqual(80);
-      expect(elapsed).toBeLessThan(150);
+      // Assert the SCHEDULED delay (jittered to 0.8–1.2 × baseMs) rather than
+      // burning ~100ms of wall-clock. The fake clock virtualizes the wait; the
+      // spy captures the real ms handed to setTimeout.
+      const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+      await runWithFakeTimers(() => wrapped("request"));
+      const delay = setTimeoutSpy.mock.calls.at(-1)?.[1];
+      setTimeoutSpy.mockRestore();
+
+      expect(delay).toBeGreaterThanOrEqual(80);
+      expect(delay).toBeLessThanOrEqual(120);
+      expect(fn).toHaveBeenCalledTimes(2);
     });
 
     it("should pass signal to wrapped function", async () => {
@@ -165,7 +196,7 @@ describe("middleware", () => {
       const wrapped = withRetry(fn);
 
       const controller = new AbortController();
-      await wrapped("request", controller.signal);
+      await runWithFakeTimers(() => wrapped("request", controller.signal));
 
       expect(fn).toHaveBeenCalledWith("request", controller.signal);
     });
@@ -290,10 +321,13 @@ describe("middleware", () => {
         .mockImplementation(() => createSuccessfulStream(["a", "b", "c"]));
       const wrapped = withStreamRetry(fn);
 
-      const results: string[] = [];
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(results).toEqual(["a", "b", "c"]);
     });
@@ -309,11 +343,14 @@ describe("middleware", () => {
         baseMs: 10,
         jitter: false,
       });
-      const results: string[] = [];
 
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       // Stream restarts fresh on retry, so 'a' is yielded twice (once from each attempt)
       expect(results).toEqual(["a", "a", "b", "c"]);
@@ -331,12 +368,14 @@ describe("middleware", () => {
         jitter: false,
       });
 
-      await expect(async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for await (const _ of wrapped("request")) {
-          // consume
-        }
-      }).rejects.toThrow("Stream error at 0");
+      await expect(
+        runWithFakeTimers(async () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          for await (const _ of wrapped("request")) {
+            // consume
+          }
+        })
+      ).rejects.toThrow("Stream error at 0");
 
       expect(fn).toHaveBeenCalledTimes(3);
     });
@@ -350,12 +389,14 @@ describe("middleware", () => {
       const fn = vi.fn().mockImplementation(() => failingStream());
       const wrapped = withStreamRetry(fn);
 
-      await expect(async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for await (const _ of wrapped("request")) {
-          // consume
-        }
-      }).rejects.toThrow("Client error");
+      await expect(
+        runWithFakeTimers(async () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          for await (const _ of wrapped("request")) {
+            // consume
+          }
+        })
+      ).rejects.toThrow("Client error");
 
       expect(fn).toHaveBeenCalledTimes(1);
     });
@@ -363,7 +404,10 @@ describe("middleware", () => {
     it("should respect abort signal during stream", async () => {
       async function* slowStream(): AsyncIterable<string> {
         yield "a";
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        // A microtask hop stands in for the old 50ms real sleep — enough to let
+        // the consumer observe the first yield and abort before requesting the
+        // next, without burning wall-clock or blocking the fake clock.
+        await Promise.resolve();
         yield "b";
       }
 
@@ -371,16 +415,19 @@ describe("middleware", () => {
       const wrapped = withStreamRetry(fn, { retries: 2, baseMs: 10 });
 
       const controller = new AbortController();
-      const results: string[] = [];
 
-      // Abort after first yield - but stream continues since no error occurred
-      // Abort signal is only checked on error during retry logic
-      for await (const value of wrapped("request", controller.signal)) {
-        results.push(value);
-        if (results.length === 1) {
-          controller.abort();
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        // Abort after first yield - but stream continues since no error occurred
+        // Abort signal is only checked on error during retry logic
+        for await (const value of wrapped("request", controller.signal)) {
+          out.push(value);
+          if (out.length === 1) {
+            controller.abort();
+          }
         }
-      }
+        return out;
+      });
 
       // The abort signal prevents retries but doesn't stop an active stream
       // since values are already buffered/in-flight
@@ -391,10 +438,13 @@ describe("middleware", () => {
       const fn = vi.fn().mockImplementation(() => createSuccessfulStream([]));
       const wrapped = withStreamRetry(fn);
 
-      const results: string[] = [];
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(results).toEqual([]);
     });
@@ -419,11 +469,13 @@ describe("middleware", () => {
       const fn2 = vi.fn().mockImplementation(() => createStream(["c", "d"]));
 
       const wrapped = withStreamFallback([fn1, fn2]);
-      const results: string[] = [];
-
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(results).toEqual(["a", "b"]);
       expect(fn1).toHaveBeenCalledTimes(1);
@@ -435,11 +487,13 @@ describe("middleware", () => {
       const fn2 = vi.fn().mockImplementation(() => createStream(["c", "d"]));
 
       const wrapped = withStreamFallback([fn1, fn2]);
-      const results: string[] = [];
-
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(results).toEqual(["c", "d"]);
       expect(fn1).toHaveBeenCalledTimes(1);
@@ -456,12 +510,14 @@ describe("middleware", () => {
 
       const wrapped = withStreamFallback([fn1, fn2]);
 
-      await expect(async () => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for await (const _ of wrapped("request")) {
-          // consume
-        }
-      }).rejects.toThrow("error2");
+      await expect(
+        runWithFakeTimers(async () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          for await (const _ of wrapped("request")) {
+            // consume
+          }
+        })
+      ).rejects.toThrow("error2");
     });
 
     it("should throw on empty array", () => {
@@ -476,11 +532,13 @@ describe("middleware", () => {
       const fn2 = vi.fn().mockImplementation(() => createStream(["a"]));
 
       const wrapped = withStreamFallback([fn1, fn2], { onFallback });
-      const results: string[] = [];
-
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(onFallback).toHaveBeenCalledTimes(1);
       expect(onFallback).toHaveBeenCalledWith(expect.any(Error), 0);
@@ -493,10 +551,12 @@ describe("middleware", () => {
       const wrapped = withStreamFallback([fn1, fn2]);
       const controller = new AbortController();
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      for await (const _ of wrapped("request", controller.signal)) {
-        // consume
-      }
+      await runWithFakeTimers(async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        for await (const _ of wrapped("request", controller.signal)) {
+          // consume
+        }
+      });
 
       expect(fn1).toHaveBeenCalledWith("request", controller.signal);
       expect(fn2).toHaveBeenCalledWith("request", controller.signal);
@@ -506,11 +566,13 @@ describe("middleware", () => {
       const fn = vi.fn().mockImplementation(() => createStream(["a", "b"]));
 
       const wrapped = withStreamFallback([fn]);
-      const results: string[] = [];
-
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(results).toEqual(["a", "b"]);
     });
@@ -521,11 +583,13 @@ describe("middleware", () => {
       const fn3 = vi.fn().mockImplementation(() => createStream(["success"]));
 
       const wrapped = withStreamFallback([fn1, fn2, fn3]);
-      const results: string[] = [];
-
-      for await (const value of wrapped("request")) {
-        results.push(value);
-      }
+      const results = await runWithFakeTimers(async () => {
+        const out: string[] = [];
+        for await (const value of wrapped("request")) {
+          out.push(value);
+        }
+        return out;
+      });
 
       expect(results).toEqual(["success"]);
       expect(fn1).toHaveBeenCalledTimes(1);

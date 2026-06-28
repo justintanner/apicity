@@ -1,9 +1,31 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 import {
   withRetry,
   withFallback,
 } from "../../packages/provider/anthropic/src/middleware";
+
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+// Drives an async action forward under fake timers without burning wall-clock.
+// Mirrors the pattern established by the fal/xai test-speedup epic (ac-6lf6):
+// kick off the action (its retry/backoff `setTimeout` calls are queued on the
+// fake clock), flush every scheduled timer + the microtasks they gate, then
+// settle the result. Real backoff math is still exercised — only the wait is
+// virtualized.
+async function runWithFakeTimers<T>(action: () => Promise<T>): Promise<T> {
+  const result = action();
+  result.catch(() => {});
+  await vi.runAllTimersAsync();
+  await Promise.resolve();
+  return await result;
+}
 
 describe("anthropic middleware", () => {
   describe("withRetry", () => {
@@ -11,7 +33,7 @@ describe("anthropic middleware", () => {
       const fn = vi.fn().mockResolvedValue("success");
       const wrapped = withRetry(fn);
 
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(1);
@@ -26,7 +48,7 @@ describe("anthropic middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(3);
@@ -39,7 +61,7 @@ describe("anthropic middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(2);
@@ -54,7 +76,7 @@ describe("anthropic middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 4, baseMs: 10, jitter: false });
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(4);
@@ -66,7 +88,9 @@ describe("anthropic middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-      await expect(wrapped("req")).rejects.toEqual(error);
+      await expect(runWithFakeTimers(() => wrapped("req"))).rejects.toEqual(
+        error
+      );
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -76,7 +100,9 @@ describe("anthropic middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-      await expect(wrapped("req")).rejects.toEqual(error);
+      await expect(runWithFakeTimers(() => wrapped("req"))).rejects.toEqual(
+        error
+      );
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -86,7 +112,9 @@ describe("anthropic middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-      await expect(wrapped("req")).rejects.toEqual(error);
+      await expect(runWithFakeTimers(() => wrapped("req"))).rejects.toEqual(
+        error
+      );
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -96,7 +124,9 @@ describe("anthropic middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-      await expect(wrapped("req")).rejects.toEqual(error);
+      await expect(runWithFakeTimers(() => wrapped("req"))).rejects.toEqual(
+        error
+      );
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -107,16 +137,14 @@ describe("anthropic middleware", () => {
         .mockResolvedValue("success");
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       expect(result).toBe("success");
       expect(fn).toHaveBeenCalledTimes(2);
     });
 
     it("should calculate exponential backoff", async () => {
-      const delays: number[] = [];
       const fn = vi.fn().mockImplementation(() => {
-        delays.push(Date.now());
         throw { status: 500 };
       });
 
@@ -127,47 +155,47 @@ describe("anthropic middleware", () => {
         jitter: false,
       });
 
-      const startTime = Date.now();
-      try {
-        await wrapped("req");
-      } catch {
-        // expected to fail
-      }
+      // Assert the SCHEDULED delays (baseMs * factor^(attempt-1)) rather than
+      // burning 100+200+400ms of wall-clock. The fake clock virtualizes the
+      // wait; the spy captures the real ms handed to setTimeout.
+      const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+      await runWithFakeTimers(() => wrapped("req").catch(() => {}));
+      const delays = setTimeoutSpy.mock.calls.map(
+        ([, timeout]) => timeout as number
+      );
+      expect(delays).toEqual([100, 200, 400]);
+      setTimeoutSpy.mockRestore();
 
-      // Check that the function was called 4 times (initial + 3 retries)
       expect(fn).toHaveBeenCalledTimes(4);
-
-      // Check delays increase exponentially (baseMs * factor^(attempt-1))
-      // Attempt 1: 100ms
-      // Attempt 2: 200ms
-      // Attempt 3: 400ms
-      // Total time should be at least 700ms
-      const totalTime = Date.now() - startTime;
-      expect(totalTime).toBeGreaterThanOrEqual(600);
     });
 
     it("should apply jitter to delay when enabled", async () => {
       const fn = vi.fn().mockRejectedValue({ status: 500 });
 
-      const wrapped = withRetry(fn, {
-        retries: 5,
-        baseMs: 100,
-        factor: 2,
-        jitter: true,
-      });
-
-      const startTime = Date.now();
-      try {
-        await wrapped("req");
-      } catch {
-        // expected to fail
+      const delays: number[] = [];
+      // Jitter multiplies each delay by a random 0.8–1.2 factor, so run a few
+      // iterations and assert every scheduled delay lands in that window and
+      // that the randomization actually produces variance.
+      for (let i = 0; i < 5; i++) {
+        const setTimeoutSpy = vi.spyOn(globalThis, "setTimeout");
+        const wrapped = withRetry(fn, {
+          retries: 1,
+          baseMs: 100,
+          jitter: true,
+        });
+        await runWithFakeTimers(() => wrapped("req").catch(() => {}));
+        const delay = setTimeoutSpy.mock.calls.at(-1)?.[1];
+        if (typeof delay === "number") {
+          delays.push(delay);
+        }
+        setTimeoutSpy.mockRestore();
       }
 
-      // With jitter, the total time should vary but still be significant
-      const totalTime = Date.now() - startTime;
-      // With jitter enabled, the delay can be between 0.8x and 1.2x of base
-      // So total time should be less than pure exponential but still > 0
-      expect(totalTime).toBeGreaterThan(0);
+      for (const delay of delays) {
+        expect(delay).toBeGreaterThanOrEqual(80);
+        expect(delay).toBeLessThanOrEqual(120);
+      }
+      expect([...new Set(delays)].length).toBeGreaterThan(1);
     });
 
     it("should respect custom retry options", async () => {
@@ -180,44 +208,33 @@ describe("anthropic middleware", () => {
         jitter: false,
       });
 
-      try {
-        await wrapped("req");
-      } catch {
-        // expected to fail
-      }
+      await runWithFakeTimers(() => wrapped("req").catch(() => {}));
 
       // 1 retry means 2 total calls
       expect(fn).toHaveBeenCalledTimes(2);
     });
 
     it("should abort when signal is triggered", async () => {
-      const fn = vi.fn().mockImplementation(async (_req, signal) => {
-        // Check if aborted immediately
+      const fn = vi.fn().mockImplementation((_req, signal) => {
         if (signal?.aborted) {
           throw new Error("Aborted");
         }
-        // Simulate a slow operation that would be retried
-        await new Promise((_, reject) => {
-          setTimeout(() => {
-            reject({ status: 500 });
-          }, 100);
-        });
-        return "success";
+        throw { status: 500 };
       });
 
       const controller = new AbortController();
       const wrapped = withRetry(fn, {
         retries: 5,
-        baseMs: 1000,
+        baseMs: 10,
         jitter: false,
       });
 
-      // Abort immediately
+      // Abort immediately before calling.
       controller.abort();
 
-      await expect(wrapped("req", controller.signal)).rejects.toThrow(
-        "Aborted"
-      );
+      await expect(
+        runWithFakeTimers(() => wrapped("req", controller.signal))
+      ).rejects.toThrow("Aborted");
 
       // Should have made only 1 attempt before aborting
       expect(fn).toHaveBeenCalledTimes(1);
@@ -228,7 +245,7 @@ describe("anthropic middleware", () => {
       const controller = new AbortController();
 
       const wrapped = withRetry(fn);
-      await wrapped("req", controller.signal);
+      await runWithFakeTimers(() => wrapped("req", controller.signal));
 
       expect(fn).toHaveBeenCalledWith("req", controller.signal);
     });
@@ -242,7 +259,9 @@ describe("anthropic middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 3, baseMs: 10, jitter: false });
 
-      await expect(wrapped("req", controller.signal)).rejects.toEqual(error);
+      await expect(
+        runWithFakeTimers(() => wrapped("req", controller.signal))
+      ).rejects.toEqual(error);
       expect(fn).toHaveBeenCalledTimes(1);
     });
 
@@ -253,8 +272,11 @@ describe("anthropic middleware", () => {
         .mockRejectedValueOnce({ status: 429 })
         .mockResolvedValue("success");
 
+      // Defaults (baseMs=300, factor=2, retries=2, jitter=true) still drive the
+      // real delay math; the fake clock just skips the ~900ms wait it used to
+      // burn on every run.
       const wrapped = withRetry(fn, {});
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       expect(result).toBe("success");
       // Default retries is 2
@@ -267,7 +289,9 @@ describe("anthropic middleware", () => {
 
       const wrapped = withRetry(fn, { retries: 2, baseMs: 10, jitter: false });
 
-      await expect(wrapped("req")).rejects.toEqual(error);
+      await expect(runWithFakeTimers(() => wrapped("req"))).rejects.toEqual(
+        error
+      );
       expect(fn).toHaveBeenCalledTimes(3); // initial + 2 retries
     });
   });
@@ -428,7 +452,7 @@ describe("anthropic middleware", () => {
         jitter: false,
       });
 
-      const result = await retryingFallback("req");
+      const result = await runWithFakeTimers(() => retryingFallback("req"));
 
       // fn1 always fails, so fallback to fn2
       // withFallback succeeds (fn2 works), so withRetry doesn't retry
@@ -445,7 +469,7 @@ describe("anthropic middleware", () => {
       const fn2 = vi.fn().mockResolvedValue("success");
 
       const wrapped = withFallback([fn1, fn2]);
-      const result = await wrapped("req");
+      const result = await runWithFakeTimers(() => wrapped("req"));
 
       // fn1 retries but fails on 400, falls back to fn2
       expect(result).toBe("success");

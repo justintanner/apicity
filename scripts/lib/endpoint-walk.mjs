@@ -530,6 +530,7 @@ const HELPER_METHOD_HINTS = {
   postRequest: "POST",
   makeMultipartRequest: "POST",
   makeMultipartJsonRequest: "POST",
+  makeMultipartBinaryRequest: "POST",
   makeUploadRequest: "POST",
   makeCloudCodeRequest: "POST",
 };

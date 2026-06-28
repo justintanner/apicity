@@ -489,6 +489,8 @@ elevenlabs	v1.voices.pvc.samples.separateSpeakers	POST	https://api.elevenlabs.io
 elevenlabs	v1.voices.pvc.samples.speakers.audio	GET	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/speakers/{speakerId}/audio	https://elevenlabs.io/docs/api-reference/voices/pvc/samples/get-separated-speaker-audio
 elevenlabs	v1.soundGeneration	POST	https://api.elevenlabs.io/v1/sound-generation	https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert
 elevenlabs	v1.speechToText	POST	https://api.elevenlabs.io/v1/speech-to-text	https://elevenlabs.io/docs/api-reference/speech-to-text/convert
+elevenlabs	v1.speechToSpeech	POST	https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}	https://elevenlabs.io/docs/api-reference/speech-to-speech/convert
+elevenlabs	v1.speechToSpeech.stream	POST	https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream	https://elevenlabs.io/docs/api-reference/speech-to-speech/stream
 elevenlabs	v1.textToDialogue	POST	https://api.elevenlabs.io/v1/text-to-dialogue	https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert
 elevenlabs	v1.textToSpeech	POST	https://api.elevenlabs.io/v1/text-to-speech/{voiceId}	https://elevenlabs.io/docs/api-reference/text-to-speech/convert
 elevenlabs	v1.textToSpeech.stream	POST	https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream	https://elevenlabs.io/docs/api-reference/text-to-speech/stream

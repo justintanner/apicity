@@ -321,6 +321,38 @@ export type ElevenLabsSpeechToTextParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/speech-to-speech/{voiceId}  (and /stream)
+// ---------------------------------------------------------------------------
+
+// Multipart form: `audio` is the source recording whose content/emotion drives
+// the conversion. `output_format` and `enable_logging` are query-string params;
+// the factory strips them from the body and moves them to the URL.
+// `voice_settings` must be sent as a JSON-encoded string in the form body; the
+// factory accepts either a settings object (serialized for you) or a string.
+export const ElevenLabsSpeechToSpeechRequestSchema = z.object({
+  audio: z.custom<Blob>(),
+  model_id: z.string().optional(),
+  voice_settings: z
+    .union([ElevenLabsVoiceSettingsSchema, z.string()])
+    .nullable()
+    .optional(),
+  seed: z.number().int().min(0).max(4294967295).nullable().optional(),
+  remove_background_noise: z.boolean().optional(),
+  file_format: z.enum(["pcm_s16le_16", "other"]).nullable().optional(),
+  output_format: z.string().optional(),
+  enable_logging: z.boolean().optional(),
+});
+
+export type ElevenLabsSpeechToSpeechRequest = z.input<
+  typeof ElevenLabsSpeechToSpeechRequestSchema
+>;
+export type ElevenLabsSpeechToSpeechRequestInput =
+  ElevenLabsSpeechToSpeechRequest;
+export type ElevenLabsSpeechToSpeechParsedRequest = z.output<
+  typeof ElevenLabsSpeechToSpeechRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

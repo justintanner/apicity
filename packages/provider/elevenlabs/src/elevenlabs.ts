@@ -24,6 +24,7 @@ import {
   ElevenLabsStreamingAudioChunkWithTimestampsResponse,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
+  ElevenLabsSpeechToSpeechRequest,
   ElevenLabsStartSpeakerSeparationResponse,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleResponse,
@@ -99,6 +100,7 @@ import {
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
+  ElevenLabsSpeechToSpeechRequestSchema,
   ElevenLabsUpdatePvcVoiceSampleRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema,
@@ -445,6 +447,59 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       }
 
       return (await res.json()) as T;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
+  // Like makeMultipartJsonRequest, but for endpoints that respond with raw
+  // audio bytes (e.g. the speech-to-speech voice changer) — uploads a multipart
+  // form and returns the response buffer.
+  async function makeMultipartBinaryRequest(
+    path: string,
+    form: FormData,
+    query: Record<string, string> | undefined,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    const qs = query ? `?${new URLSearchParams(query).toString()}` : "";
+
+    try {
+      const res = await doFetch(`${baseURL}${path}${qs}`, {
+        method: "POST",
+        headers: {
+          "xi-api-key": opts.apiKey,
+        },
+        body: form,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return await res.arrayBuffer();
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof ElevenLabsError) throw error;
@@ -1056,6 +1111,69 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       );
     },
     { schema: ElevenLabsSpeechToTextRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-to-speech/stream
+  const speechToSpeechStream = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsSpeechToSpeechRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+
+      const form = new FormData();
+      for (const [key, value] of Object.entries(body)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartBinaryRequest(
+        `/v1/speech-to-speech/${encodeURIComponent(voiceId)}/stream`,
+        form,
+        query,
+        signal
+      );
+    },
+    { schema: ElevenLabsSpeechToSpeechRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-to-speech/convert
+  const speechToSpeech = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsSpeechToSpeechRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+
+      const form = new FormData();
+      for (const [key, value] of Object.entries(body)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartBinaryRequest(
+        `/v1/speech-to-speech/${encodeURIComponent(voiceId)}`,
+        form,
+        query,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsSpeechToSpeechRequestSchema,
+      stream: speechToSpeechStream,
+    }
   );
 
   // POST https://api.elevenlabs.io/v1/workspace/analytics/query/usage-by-product-over-time
@@ -1808,6 +1926,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToSpeech,
     textToDialogue,
     speechToText,
+    speechToSpeech,
     voices: {
       pvc: postPvcVoices,
     },
@@ -1855,6 +1974,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToSpeech,
     textToDialogue,
     speechToText,
+    speechToSpeech,
     user,
     workspace,
     convai,

@@ -10,6 +10,7 @@ import type {
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
+  ElevenLabsSpeechToSpeechRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -70,6 +71,9 @@ export type {
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextRequestInput,
   ElevenLabsSpeechToTextParsedRequest,
+  ElevenLabsSpeechToSpeechRequest,
+  ElevenLabsSpeechToSpeechRequestInput,
+  ElevenLabsSpeechToSpeechParsedRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
@@ -1159,6 +1163,25 @@ export interface ElevenLabsSpeechToTextMethod {
   schema: z.ZodType<ElevenLabsSpeechToTextRequest>;
 }
 
+export interface ElevenLabsSpeechToSpeechStreamMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsSpeechToSpeechRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsSpeechToSpeechRequest>;
+}
+
+export interface ElevenLabsSpeechToSpeechMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsSpeechToSpeechRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsSpeechToSpeechRequest>;
+  stream: ElevenLabsSpeechToSpeechStreamMethod;
+}
+
 export interface ElevenLabsStartSpeakerSeparationMethod {
   (
     voiceId: string,
@@ -1660,6 +1683,7 @@ export interface ElevenLabsV1Namespace {
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
+  speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsConvaiNamespace;
@@ -1701,6 +1725,7 @@ export interface ElevenLabsPostV1Namespace {
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
+  speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   voices: ElevenLabsPostV1VoicesNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsPostConvaiNamespace;

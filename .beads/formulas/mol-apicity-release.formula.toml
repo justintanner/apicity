@@ -670,36 +670,61 @@ function normalize(value) {
   return String(value || "").replace(/\s+/g, " ").trim();
 }
 
-function shorten(value, maxLength = 260) {
-  const text = normalize(value);
-  if (text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength - 3).trimEnd()}...`;
+// Strip a conventional-commit prefix ("feat(openai): " -> "openai: ") so the
+// line reads as a plain, user-facing description with no internal tags.
+function humanize(text) {
+  const value = normalize(text);
+  const match = /^(\w+)(?:\(([^)]*)\))?!?:\s*(.*)$/.exec(value);
+  if (!match || !match[3]) return value;
+  const scope = match[2] ? `${match[2]}: ` : "";
+  return normalize(`${scope}${match[3]}`);
 }
 
-function printWorkItems(items) {
-  for (const issue of items) {
-    const title = normalize(issue.title);
-    const reason = shorten(issue.close_reason || issue.description);
-    const priority = Number.isInteger(issue.priority)
-      ? `P${issue.priority}`
-      : "P?";
-    const suffix = reason ? ` - ${reason}` : "";
-    console.log(`- **${title}** (\`${issue.id}\`, ${priority})${suffix}`);
-  }
-  console.log("");
+function conventionalType(text) {
+  const match = /^(\w+)(?:\([^)]*\))?!?:/.exec(normalize(text));
+  return match ? match[1].toLowerCase() : "";
 }
 
-function printCommitFallback(commits) {
-  const visible = commits.filter((commit) => !isReleaseCommit(commit));
-  if (!visible.length) return;
-
-  console.log(
-    "No closed bead work was found for this release window, so these non-release commits are listed instead."
-  );
-  console.log("");
-  for (const commit of visible) {
-    console.log(`- \`${commit.hash}\` ${commit.subject}`);
+// New = user-visible additions (feat/add/new); everything else is an Updated
+// change (fix/perf/refactor/improve/...). Classify from the bead's type/labels
+// or its title's conventional-commit prefix / leading verb.
+function classifyIssue(issue) {
+  const type = normalize(issue.issue_type).toLowerCase();
+  const labels = (Array.isArray(issue.labels)
+    ? issue.labels.join(" ")
+    : String(issue.labels || "")
+  ).toLowerCase();
+  const title = normalize(issue.title);
+  const prefix = conventionalType(title);
+  if (prefix === "feat") return "new";
+  if (prefix) return "updated";
+  if (type === "feature" || /\b(feature|enhancement)\b/.test(labels)) {
+    return "new";
   }
+  if (/^(add|adds|added|new|introduce|implement|support|create|enable|expose)\b/i.test(
+    title
+  )) {
+    return "new";
+  }
+  return "updated";
+}
+
+function classifyCommit(commit) {
+  const prefix = conventionalType(commit.subject);
+  if (prefix === "feat") return "new";
+  if (prefix) return "updated";
+  return /^(add|new|introduce|implement|support|create)\b/i.test(
+    normalize(commit.subject)
+  )
+    ? "new"
+    : "updated";
+}
+
+function printSection(heading, lines) {
+  if (!lines.length) return;
+  console.log(`## ${heading}`);
+  console.log("");
+  for (const line of lines) console.log(`- ${line}`);
   console.log("");
 }
 
@@ -707,24 +732,32 @@ const packages = readPackages();
 const previousTag = findPreviousTag();
 const previousRelease = findPreviousReleaseIssue(previousTag);
 const currentDate = tagDate(currentTag) || new Date().toISOString();
-const { previousDate, work } = readClosedWork(
-  previousRelease,
-  previousTag,
-  currentDate
-);
+const { work } = readClosedWork(previousRelease, previousTag, currentDate);
 const commits = readCommits(previousTag);
+
+const newItems = [];
+const updatedItems = [];
+
+if (work.length) {
+  for (const issue of work) {
+    const line = humanize(issue.title);
+    if (!line) continue;
+    (classifyIssue(issue) === "new" ? newItems : updatedItems).push(line);
+  }
+} else {
+  // Fallback: no closed beads in the window — classify non-release commits the
+  // same way, stripping the hash and conventional prefix.
+  for (const commit of commits.filter((commit) => !isReleaseCommit(commit))) {
+    const line = humanize(commit.subject);
+    if (!line) continue;
+    (classifyCommit(commit) === "new" ? newItems : updatedItems).push(line);
+  }
+}
 
 console.log(`# Apicity v${version}`);
 console.log("");
-console.log("## Summary");
-console.log("");
-if (work.length) {
-  printWorkItems(work);
-} else {
-  console.log("No closed non-release beads were found for this release window.");
-  console.log("");
-  printCommitFallback(commits);
-}
+printSection("New", newItems);
+printSection("Updated", updatedItems);
 
 console.log("## Published Packages");
 console.log("");
@@ -735,9 +768,13 @@ NODE
 cat "$notes"
 ```
 
-Review the generated file before uploading it. `Summary` should contain a flat
-list of closed bead work. It should not include release metadata, `Released
-Work`, `What's Changed`, `Release Maintenance`, or type grouping headings.
+Review the generated file before uploading it. It should read like a user
+changelog: a `New` section, an `Updated` section (either omitted when empty),
+then `Published Packages`. Each line is a short, human-readable description with
+NO internal details — no bead IDs, no `P0`/`P1` priorities, no close-reason
+boilerplate, no `(`ac-xxxx`, P1)` suffixes. It should not include release
+metadata, `Summary`, `Released Work`, `What's Changed`, or `Release Maintenance`
+headings.
 
 **4. Create or update the release page:**
 ```bash

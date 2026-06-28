@@ -513,6 +513,11 @@ elevenlabs	v1.convai.knowledgeBase.file	POST	https://api.elevenlabs.io/v1/convai
 elevenlabs	v1.convai.knowledgeBase.list	GET	https://api.elevenlabs.io/v1/convai/knowledge-base	https://elevenlabs.io/docs/api-reference/knowledge-base/list
 elevenlabs	v1.convai.knowledgeBase.get	GET	https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}	https://elevenlabs.io/docs/api-reference/knowledge-base/get-document
 elevenlabs	v1.convai.knowledgeBase.delete	DELETE	https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}	https://elevenlabs.io/docs/api-reference/knowledge-base/delete
+elevenlabs	v1.convai.conversations.list	GET	https://api.elevenlabs.io/v1/convai/conversations	https://elevenlabs.io/docs/api-reference/conversations/list
+elevenlabs	v1.convai.conversations.get	GET	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}	https://elevenlabs.io/docs/api-reference/conversations/get
+elevenlabs	v1.convai.conversations.delete	DELETE	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}	https://elevenlabs.io/docs/api-reference/conversations/delete
+elevenlabs	v1.convai.conversations.audio	GET	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/audio	https://elevenlabs.io/docs/api-reference/conversations/get-audio
+elevenlabs	v1.convai.conversation.getSignedUrl	GET	https://api.elevenlabs.io/v1/convai/conversation/get-signed-url	https://elevenlabs.io/docs/api-reference/conversations/get-signed-url
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

@@ -764,3 +764,91 @@ export type ElevenLabsDeleteKnowledgeBaseDocumentRequestInput =
 export type ElevenLabsDeleteKnowledgeBaseDocumentParsedRequest = z.output<
   typeof ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Agents Platform — Conversations
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/conversations
+// ---------------------------------------------------------------------------
+
+// All fields are query-string filters; the factory serialises them onto the
+// URL. Array-valued filters (`evaluation_params`, `main_languages`, ...) are
+// repeated as multiple query params by `buildQueryString`.
+export const ElevenLabsListConversationsRequestSchema = z.object({
+  cursor: z.string().nullable().optional(),
+  agent_id: z.string().nullable().optional(),
+  call_successful: z
+    .enum(["success", "failure", "unknown"])
+    .nullable()
+    .optional(),
+  call_start_before_unix: z.number().int().nullable().optional(),
+  call_start_after_unix: z.number().int().nullable().optional(),
+  call_duration_min_secs: z.number().int().nullable().optional(),
+  call_duration_max_secs: z.number().int().nullable().optional(),
+  rating_min: z.number().int().nullable().optional(),
+  rating_max: z.number().int().nullable().optional(),
+  has_feedback_comment: z.boolean().nullable().optional(),
+  user_id: z.string().nullable().optional(),
+  evaluation_params: z.array(z.string()).nullable().optional(),
+  data_collection_params: z.array(z.string()).nullable().optional(),
+  tool_names: z.array(z.string()).nullable().optional(),
+  tool_names_successful: z.array(z.string()).nullable().optional(),
+  tool_names_errored: z.array(z.string()).nullable().optional(),
+  main_languages: z.array(z.string()).nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  summary_mode: z.enum(["exclude", "include"]).optional(),
+  search: z.string().nullable().optional(),
+  text_only: z.boolean().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+  topic_ids: z.array(z.string()).nullable().optional(),
+  exclude_statuses: z.array(z.string()).nullable().optional(),
+  tag_ids: z.array(z.string()).nullable().optional(),
+  termination_reasons: z.array(z.string()).nullable().optional(),
+});
+
+export type ElevenLabsListConversationsRequest = z.input<
+  typeof ElevenLabsListConversationsRequestSchema
+>;
+export type ElevenLabsListConversationsRequestInput =
+  ElevenLabsListConversationsRequest;
+export type ElevenLabsListConversationsParsedRequest = z.output<
+  typeof ElevenLabsListConversationsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/conversations/:conversation_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetConversationRequestSchema = z.object({
+  format: z.enum(["json", "opentelemetry"]).optional(),
+});
+
+export type ElevenLabsGetConversationRequest = z.input<
+  typeof ElevenLabsGetConversationRequestSchema
+>;
+export type ElevenLabsGetConversationRequestInput =
+  ElevenLabsGetConversationRequest;
+export type ElevenLabsGetConversationParsedRequest = z.output<
+  typeof ElevenLabsGetConversationRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/conversation/get-signed-url
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetSignedUrlRequestSchema = z.object({
+  agent_id: z.string(),
+  include_conversation_id: z.boolean().optional(),
+  branch_id: z.string().nullable().optional(),
+  environment: z.string().nullable().optional(),
+});
+
+export type ElevenLabsGetSignedUrlRequest = z.input<
+  typeof ElevenLabsGetSignedUrlRequestSchema
+>;
+export type ElevenLabsGetSignedUrlRequestInput = ElevenLabsGetSignedUrlRequest;
+export type ElevenLabsGetSignedUrlParsedRequest = z.output<
+  typeof ElevenLabsGetSignedUrlRequestSchema
+>;

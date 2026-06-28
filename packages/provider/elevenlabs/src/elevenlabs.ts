@@ -62,6 +62,13 @@ import {
   ElevenLabsGetKnowledgeBaseDocumentResponse,
   ElevenLabsDeleteKnowledgeBaseDocumentRequest,
   ElevenLabsDeleteKnowledgeBaseDocumentResponse,
+  ElevenLabsListConversationsRequest,
+  ElevenLabsListConversationsResponse,
+  ElevenLabsGetConversationRequest,
+  ElevenLabsGetConversationResponse,
+  ElevenLabsDeleteConversationResponse,
+  ElevenLabsGetSignedUrlRequest,
+  ElevenLabsGetSignedUrlResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -93,6 +100,9 @@ import {
   ElevenLabsListKnowledgeBaseDocumentsRequestSchema,
   ElevenLabsGetKnowledgeBaseDocumentRequestSchema,
   ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema,
+  ElevenLabsListConversationsRequestSchema,
+  ElevenLabsGetConversationRequestSchema,
+  ElevenLabsGetSignedUrlRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -178,6 +188,54 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return await res.arrayBuffer();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
+  // GET variant of makeBinaryRequest: fetches an endpoint that responds with
+  // raw bytes (e.g. the conversation audio recording) and returns the buffer.
+  async function makeGetBinaryRequest(
+    path: string,
+    queryString = "",
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}${queryString}`, {
+        method: "GET",
+        headers: {
+          "xi-api-key": opts.apiKey,
+        },
         signal: controller.signal,
       });
 
@@ -1122,6 +1180,94 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/conversations
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/list
+  const listConversations = Object.assign(
+    async (
+      req: ElevenLabsListConversationsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListConversationsResponse> => {
+      return makeJsonRequest<ElevenLabsListConversationsResponse>(
+        "GET",
+        "/v1/convai/conversations",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListConversationsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/get
+  const getConversation = Object.assign(
+    async (
+      conversationId: string,
+      req: ElevenLabsGetConversationRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetConversationResponse> => {
+      return makeJsonRequest<ElevenLabsGetConversationResponse>(
+        "GET",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetConversationRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/delete
+  const deleteConversation = Object.assign(
+    async (
+      conversationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteConversationResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteConversationResponse>(
+        "DELETE",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/audio
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/get-audio
+  const getConversationAudio = Object.assign(
+    async (
+      conversationId: string,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeGetBinaryRequest(
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/audio`,
+        "",
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/conversation/get-signed-url
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/get-signed-url
+  const getSignedUrl = Object.assign(
+    async (
+      req: ElevenLabsGetSignedUrlRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetSignedUrlResponse> => {
+      return makeJsonRequest<ElevenLabsGetSignedUrlResponse>(
+        "GET",
+        "/v1/convai/conversation/get-signed-url",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetSignedUrlRequestSchema }
+  );
+
   const convaiTools = {
     create: createTool,
     list: listTools,
@@ -1249,10 +1395,21 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     get: getKnowledgeBaseDocument,
     delete: deleteKnowledgeBaseDocument,
   };
+  const convaiConversations = {
+    list: listConversations,
+    get: getConversation,
+    delete: deleteConversation,
+    audio: getConversationAudio,
+  };
+  const convaiConversation = {
+    getSignedUrl,
+  };
   const convai = {
     agents: convaiAgents,
     tools: convaiTools,
     knowledgeBase: convaiKnowledgeBase,
+    conversations: convaiConversations,
+    conversation: convaiConversation,
   };
 
   const user = {
@@ -1337,6 +1494,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       agents: { delete: deleteAgent },
       tools: { delete: deleteTool },
       knowledgeBase: { delete: deleteKnowledgeBaseDocument },
+      conversations: { delete: deleteConversation },
     },
   };
   const v1 = {
@@ -1375,6 +1533,14 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           knowledgeBase: {
             list: listKnowledgeBaseDocuments,
             get: getKnowledgeBaseDocument,
+          },
+          conversations: {
+            list: listConversations,
+            get: getConversation,
+            audio: getConversationAudio,
+          },
+          conversation: {
+            getSignedUrl,
           },
         },
       },

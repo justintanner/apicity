@@ -27,6 +27,9 @@ import type {
   ElevenLabsListKnowledgeBaseDocumentsRequest,
   ElevenLabsGetKnowledgeBaseDocumentRequest,
   ElevenLabsDeleteKnowledgeBaseDocumentRequest,
+  ElevenLabsListConversationsRequest,
+  ElevenLabsGetConversationRequest,
+  ElevenLabsGetSignedUrlRequest,
 } from "./zod";
 
 export type {
@@ -112,6 +115,15 @@ export type {
   ElevenLabsDeleteKnowledgeBaseDocumentRequest,
   ElevenLabsDeleteKnowledgeBaseDocumentRequestInput,
   ElevenLabsDeleteKnowledgeBaseDocumentParsedRequest,
+  ElevenLabsListConversationsRequest,
+  ElevenLabsListConversationsRequestInput,
+  ElevenLabsListConversationsParsedRequest,
+  ElevenLabsGetConversationRequest,
+  ElevenLabsGetConversationRequestInput,
+  ElevenLabsGetConversationParsedRequest,
+  ElevenLabsGetSignedUrlRequest,
+  ElevenLabsGetSignedUrlRequestInput,
+  ElevenLabsGetSignedUrlParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -827,6 +839,56 @@ export interface ElevenLabsListKnowledgeBaseDocumentsResponse {
   next_cursor?: string | null;
 }
 
+// -- Conversations -----------------------------------------------------------
+
+export type ElevenLabsConversationStatus =
+  | "initiated"
+  | "in-progress"
+  | "processing"
+  | "done"
+  | "failed";
+
+export type ElevenLabsConversationCallSuccessful =
+  | "success"
+  | "failure"
+  | "unknown";
+
+export interface ElevenLabsConversationSentimentAnalysis {
+  overall_label: "positive" | "neutral" | "negative";
+  overall_sentiment_score: number;
+  overall_frustration_score: number;
+  min_user_sentiment_score: number;
+  max_user_frustration_score: number;
+  num_scored_user_turns: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsConversationSummary {
+  agent_id: string;
+  conversation_id: string;
+  start_time_unix_secs: number;
+  call_duration_secs: number;
+  message_count: number;
+  status: ElevenLabsConversationStatus;
+  call_successful: ElevenLabsConversationCallSuccessful;
+  agent_name?: string | null;
+  branch_id?: string | null;
+  version_id?: string | null;
+  transcript_summary?: string | null;
+  call_summary_title?: string | null;
+  main_language?: string | null;
+  direction?: "inbound" | "outbound" | null;
+  rating?: number | null;
+  sentiment_analysis?: ElevenLabsConversationSentimentAnalysis | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListConversationsResponse {
+  conversations: ElevenLabsConversationSummary[];
+  has_more: boolean;
+  next_cursor?: string | null;
+}
+
 export type ElevenLabsGetKnowledgeBaseDocumentResponse =
   ElevenLabsKnowledgeBaseDocument;
 
@@ -835,6 +897,44 @@ export type ElevenLabsDeleteKnowledgeBaseDocumentResponse = Record<
   string,
   unknown
 >;
+
+// The transcript entries and the `metadata`/`analysis`/`conversation_initiation_client_data`
+// trees are large, free-form upstream models; we surface the stable top-level
+// fields and keep the nested structures as opaque records.
+export interface ElevenLabsTranscriptEntry {
+  role: string;
+  message?: string | null;
+  time_in_call_secs?: number | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetConversationResponse {
+  conversation_id: string;
+  agent_id: string;
+  status: ElevenLabsConversationStatus;
+  transcript: ElevenLabsTranscriptEntry[];
+  metadata: Record<string, unknown>;
+  agent_name?: string | null;
+  conversation_product?: string;
+  user_id?: string | null;
+  branch_id?: string | null;
+  version_id?: string | null;
+  analysis?: Record<string, unknown> | null;
+  conversation_initiation_client_data?: Record<string, unknown> | null;
+  has_audio?: boolean;
+  has_user_audio?: boolean;
+  has_response_audio?: boolean;
+  tag_ids?: string[];
+  [key: string]: unknown;
+}
+
+// DELETE returns an empty body (HTTP 200/204); we surface it as an empty record.
+export type ElevenLabsDeleteConversationResponse = Record<string, unknown>;
+
+export interface ElevenLabsGetSignedUrlResponse {
+  signed_url: string;
+  [key: string]: unknown;
+}
 
 // -- Method interfaces -------------------------------------------------------
 
@@ -1167,6 +1267,45 @@ export interface ElevenLabsDeleteKnowledgeBaseDocumentMethod {
   schema: z.ZodType<ElevenLabsDeleteKnowledgeBaseDocumentRequest>;
 }
 
+export interface ElevenLabsListConversationsMethod {
+  (
+    req?: ElevenLabsListConversationsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListConversationsResponse>;
+  schema: z.ZodType<ElevenLabsListConversationsRequest>;
+}
+
+export interface ElevenLabsGetConversationMethod {
+  (
+    conversationId: string,
+    req?: ElevenLabsGetConversationRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetConversationResponse>;
+  schema: z.ZodType<ElevenLabsGetConversationRequest>;
+}
+
+export interface ElevenLabsDeleteConversationMethod {
+  (
+    conversationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteConversationResponse>;
+  schema: undefined;
+}
+
+// Returns the conversation recording as raw audio bytes (audio/mpeg).
+export interface ElevenLabsGetConversationAudioMethod {
+  (conversationId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetSignedUrlMethod {
+  (
+    req: ElevenLabsGetSignedUrlRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetSignedUrlResponse>;
+  schema: z.ZodType<ElevenLabsGetSignedUrlRequest>;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsConvaiAgentsNamespace {
@@ -1196,10 +1335,23 @@ export interface ElevenLabsConvaiKnowledgeBaseNamespace {
   delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
 }
 
+export interface ElevenLabsConvaiConversationsNamespace {
+  list: ElevenLabsListConversationsMethod;
+  get: ElevenLabsGetConversationMethod;
+  delete: ElevenLabsDeleteConversationMethod;
+  audio: ElevenLabsGetConversationAudioMethod;
+}
+
+export interface ElevenLabsConvaiConversationNamespace {
+  getSignedUrl: ElevenLabsGetSignedUrlMethod;
+}
+
 export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
+  conversations: ElevenLabsConvaiConversationsNamespace;
+  conversation: ElevenLabsConvaiConversationNamespace;
 }
 
 export interface ElevenLabsUserNamespace {
@@ -1338,10 +1490,22 @@ export interface ElevenLabsGetConvaiKnowledgeBaseNamespace {
   get: ElevenLabsGetKnowledgeBaseDocumentMethod;
 }
 
+export interface ElevenLabsGetConvaiConversationsNamespace {
+  list: ElevenLabsListConversationsMethod;
+  get: ElevenLabsGetConversationMethod;
+  audio: ElevenLabsGetConversationAudioMethod;
+}
+
+export interface ElevenLabsGetConvaiConversationNamespace {
+  getSignedUrl: ElevenLabsGetSignedUrlMethod;
+}
+
 export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
+  conversations: ElevenLabsGetConvaiConversationsNamespace;
+  conversation: ElevenLabsGetConvaiConversationNamespace;
 }
 
 export interface ElevenLabsGetV1Namespace {
@@ -1373,10 +1537,15 @@ export interface ElevenLabsDeleteConvaiKnowledgeBaseNamespace {
   delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
 }
 
+export interface ElevenLabsDeleteConvaiConversationsNamespace {
+  delete: ElevenLabsDeleteConversationMethod;
+}
+
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;
+  conversations: ElevenLabsDeleteConvaiConversationsNamespace;
 }
 
 export interface ElevenLabsDeleteV1Namespace {

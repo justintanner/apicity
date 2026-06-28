@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-40 endpoints across 10 groups. Each method mirrors an upstream URL path.
+45 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -245,6 +245,81 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.agents.widget({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversation.getSignedUrl</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversation/get-signed-url</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/get-signed-url)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversation.getSignedUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.audio</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/audio</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/get-audio)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.audio({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.conversations.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversations</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

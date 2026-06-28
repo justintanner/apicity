@@ -17,6 +17,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30
     }
   },
+  "GET v1.convai.conversation.getSignedUrl": {
+    "source": "elevenlabs/convai-conversations",
+    "payload": {
+      "agent_id": "agent_7701kvak8r92e03921wqazqbb5kc"
+    }
+  },
+  "GET v1.convai.conversations.list": {
+    "source": "elevenlabs/convai-conversations",
+    "payload": {
+      "page_size": 3
+    }
+  },
   "GET v1.convai.knowledgeBase.list": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {

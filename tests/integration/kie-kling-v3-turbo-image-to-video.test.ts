@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  setupPolly,
+  teardownPolly,
+  getPollyMode,
+  type PollyContext,
+} from "../harness";
 import { createKie } from "@apicity/kie";
 import { mintKieCreateTaskOtp, TEST_PAYGATE_SECRET } from "../harness";
 
@@ -15,19 +20,6 @@ const KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST = {
   },
 } as const;
 
-interface CapturedRequest {
-  url: string;
-  method: string;
-  headers: Record<string, string>;
-  body: string;
-}
-
-function requestUrl(input: RequestInfo | URL): string {
-  if (typeof input === "string") return input;
-  if (input instanceof URL) return input.toString();
-  return input.url;
-}
-
 describe("kie kling/v3-turbo-image-to-video integration", () => {
   let ctx: PollyContext;
 
@@ -35,43 +27,48 @@ describe("kie kling/v3-turbo-image-to-video integration", () => {
     await teardownPolly(ctx);
   });
 
-  it("creates a task with the documented image-to-video payload", async () => {
-    ctx = setupPolly("kie/kling-v3-turbo-image-to-video");
+  it(
+    "creates a task and polls to a successful media result",
+    { timeout: 600_000 },
+    async () => {
+      ctx = setupPolly("kie/kling-v3-turbo-image-to-video");
 
-    let captured: CapturedRequest | undefined;
-    const provider = createKie({
-      paygate: { secret: TEST_PAYGATE_SECRET },
-      apiKey: process.env.KIE_API_KEY ?? "test-key",
-      fetch: async (input, init) => {
-        const headers = new Headers(init?.headers);
-        captured = {
-          url: requestUrl(input),
-          method: init?.method ?? "GET",
-          headers: Object.fromEntries(headers.entries()),
-          body: typeof init?.body === "string" ? init.body : "",
-        };
+      const provider = createKie({
+        paygate: { secret: TEST_PAYGATE_SECRET },
+        apiKey: process.env.KIE_API_KEY ?? "test-key",
+      });
 
-        return globalThis.fetch(input, init);
-      },
-    });
+      const task = await provider.post.api.v1.jobs.createTask(
+        KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST,
+        mintKieCreateTaskOtp(KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST)
+      );
 
-    const task = await provider.post.api.v1.jobs.createTask(
-      KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST,
-      mintKieCreateTaskOtp(KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST)
-    );
+      expect(task.code).toBe(200);
+      expect(task.data?.taskId).toBeTruthy();
 
-    expect(captured).toBeDefined();
-    expect(captured?.url).toBe("https://api.kie.ai/api/v1/jobs/createTask");
-    expect(captured?.method).toBe("POST");
-    expect(captured?.headers.authorization).toBe("Bearer test-key");
-    expect(captured?.headers["content-type"]).toBe("application/json");
-    expect(JSON.parse(captured!.body)).toEqual(
-      KLING_V3_TURBO_IMAGE_TO_VIDEO_REQUEST
-    );
+      const taskId = task.data!.taskId;
+      const pollDelay = getPollyMode() === "replay" ? 0 : 5000;
+      let state = "waiting";
+      let resultJson: string | undefined;
 
-    expect(task.code).toBe(200);
-    expect(task.data?.taskId).toBe(
-      "task_kling_v3_turbo_image_to_video_apicity"
-    );
-  });
+      for (let i = 0; i < 120; i++) {
+        const info = await provider.get.api.v1.jobs.recordInfo(taskId);
+        state = info.data?.state ?? "waiting";
+        if (state === "success" || state === "fail") {
+          expect(info.data?.taskId).toBe(taskId);
+          resultJson = info.data?.resultJson;
+          break;
+        }
+        if (pollDelay) await new Promise((r) => setTimeout(r, pollDelay));
+      }
+
+      expect(state).toBe("success");
+      expect(resultJson).toBeTruthy();
+
+      const result = JSON.parse(resultJson!) as { resultUrls?: string[] };
+      expect(result.resultUrls).toBeInstanceOf(Array);
+      expect(result.resultUrls!.length).toBeGreaterThan(0);
+      expect(result.resultUrls![0]).toMatch(/^https?:\/\//);
+    }
+  );
 });

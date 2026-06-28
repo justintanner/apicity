@@ -62,10 +62,22 @@ description = "Gas City run target for release step execution."
 default = "apicity/gastown.polecat"
 
 [[steps]]
-id = "load-context"
-title = "Load context and verify clean working tree"
+id = "prepare"
+title = "Prepare release: gates, version bump, dry-run"
 metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+description = '''
+Everything reversible and local for the release: load context, verify the
+release commit on `main` is green, fast-forward `stable`, bump every package
+version, and inspect the publish tarballs with --dry-run. Nothing in this
+phase touches the npm registry or the remote. When `dry_run` = true, the
+release ends here (the short-circuit at the end of the dry-run sub-step).
+
+Work the sub-steps in order. Each sub-step's STOP conditions and exit
+criteria still apply.
+
+
+# Sub-step 1: Load context and verify clean working tree
+
 Initialize the session and verify the repo is in a publishable state.
 
 **1. Prime your environment:**
@@ -83,9 +95,7 @@ if [ -z "$release_bead" ]; then
   # sessions, and a re-pour reuses the bead instead of duplicating it.
   release_bead=$(bd list --status open --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
   if [ -z "$release_bead" ]; then
-    release_bead=$(bd create "Release Apicity v{{version}}" --type task --priority 1 \
-      --description "Tracking bead for the @apicity/* v{{version}} npm release (auto-created by mol-apicity-release)." \
-      --json | jq -r '.[0].id // .id')
+    release_bead=$(bd create "Release Apicity v{{version}}" --type task --priority 1 --description "Tracking bead for the @apicity/* v{{version}} npm release (auto-created by mol-apicity-release)." --json | jq -r '.[0].id // .id')
     echo "Auto-created release tracking bead $release_bead"
   else
     echo "Reusing open release tracking bead $release_bead"
@@ -121,21 +131,17 @@ Validate the version before continuing:
 ```bash
 node -e '
 const version = process.argv[1];
-if (!/^[0-9]+\\.[0-9]+\\.[0-9]+$/.test(version)) {
+if (!/^[0-9]+\.[0-9]+\.[0-9]+$/.test(version)) {
   console.error(`Release version must be X.Y.Z, got ${version}`);
   process.exit(1);
 }
 ' "{{version}}"
 ```
 
-**Exit criteria:** Working tree clean, vars confirmed, release bead read."""
+**Exit criteria:** Working tree clean, vars confirmed, release bead read.
 
-[[steps]]
-id = "verify-main-gates"
-title = "Verify tests and CI are green on main"
-needs = ["load-context"]
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+# Sub-step 2: Verify tests and CI are green on main
+
 Before changing `stable`, bumping versions, or publishing, prove that the exact
 `main` commit being released is green.
 
@@ -164,12 +170,7 @@ mirror runs.
 **3. Verify GitHub CI is green for the same `origin/main` SHA:**
 ```bash
 main_sha=$(git rev-parse origin/main)
-run_json=$(gh run list \
-  --branch main \
-  --workflow CI \
-  --commit "$main_sha" \
-  --limit 1 \
-  --json databaseId,status,conclusion,headSha,url)
+run_json=$(gh run list --branch main --workflow CI --commit "$main_sha" --limit 1 --json databaseId,status,conclusion,headSha,url)
 
 node -e '
 const [run] = JSON.parse(process.argv[1]);
@@ -193,14 +194,10 @@ If the GitHub run is missing, pending, cancelled, or failed, STOP. Do not sync
 `stable` and do not publish until CI on `main` is green.
 
 **Exit criteria:** Local `test:run` and `ci:local` pass on `main`, and GitHub
-CI reports success for the same `origin/main` commit."""
+CI reports success for the same `origin/main` commit.
 
-[[steps]]
-id = "sync-stable-and-preflight"
-title = "Fast-forward stable and run the CI mirror"
-needs = ["verify-main-gates"]
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+# Sub-step 3: Fast-forward stable and run the CI mirror
+
 Bring `stable` up to the head of `main` so the release reflects the agent
 working branch's tip, then mirror exactly what CI runs on the release branch
 (`pnpm run ci:local` = build + lint + test:run). A red preflight here means CI
@@ -225,14 +222,10 @@ If `ci:local` fails:
     and STOP.
 
 **Exit criteria:** Local `stable` is at `origin/main` HEAD and
-`pnpm run ci:local` exits 0."""
+`pnpm run ci:local` exits 0.
 
-[[steps]]
-id = "prepare-release-commit"
-title = "Verify publish config and bump every package to {{version}}"
-needs = ["sync-stable-and-preflight"]
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+# Sub-step 4: Verify publish config and bump every package to {{version}}
+
 Confirm every publishable package has the metadata it needs to ship cleanly,
 then create the lockstep version bump release commit.
 
@@ -318,7 +311,7 @@ const packageJsonPaths = readPublishablePackageJsonPaths();
 for (const p of packageJsonPaths) {
   const pkg = JSON.parse(fs.readFileSync(p, "utf8"));
   pkg.version = "{{version}}";
-  fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + "\\n");
+  fs.writeFileSync(p, JSON.stringify(pkg, null, 2) + "\n");
 }
 const wrong = packageJsonPaths.filter(p => JSON.parse(fs.readFileSync(p, "utf8")).version !== "{{version}}");
 if (wrong.length) { console.log("WRONG:", wrong); process.exit(1); }
@@ -333,14 +326,10 @@ git commit -m "chore(release): @apicity/* → {{version}}"
 ```
 
 **Exit criteria:** Every public `@apicity/*` package passes publish-ready
-checks, every manifest is at `{{version}}`, and the release bump is committed."""
+checks, every manifest is at `{{version}}`, and the release bump is committed.
 
-[[steps]]
-id = "publish-dry-run"
-title = "Inspect tarballs with --dry-run"
-needs = ["prepare-release-commit"]
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+# Sub-step 5: Inspect tarballs with --dry-run (dry_run stops here)
+
 Preview every tarball before sending real bytes. This catches:
   - tarballs that ship `tests/recordings/` (they shouldn't — `files` is dist-only)
   - missing `dist/`, `README.md`, or `LICENSE`
@@ -369,15 +358,26 @@ dry-run when {{dry_run}} = true.
 [ "{{dry_run}}" = "true" ] && { echo "dry_run=true → stopping after dry-run"; gc runtime drain-ack; exit 0; } || true
 ```
 
-**Exit criteria:** Dry-run exits 0, every tarball inspected, ready to publish for real."""
+**Exit criteria:** Dry-run exits 0, every tarball inspected, ready to publish for real.'''
 
 [[steps]]
-id = "publish"
-title = "Publish to npm"
-needs = ["publish-dry-run"]
+id = "release"
+title = "Release: publish, tag, GitHub release, sync, close"
+needs = ["prepare"]
 condition = "{{dry_run}} != true"
 metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+description = '''
+Everything irreversible and outward-facing: publish to npm, tag + push the
+release commit, create/update the public GitHub release page, sync `main`
+back up to `stable` with a smoke install, and close the release tracking
+bead. This phase only runs when `dry_run` != true.
+
+Work the sub-steps in order. Each sub-step's STOP conditions and exit
+criteria still apply.
+
+
+# Sub-step 1: Publish to npm
+
 Publish with the npm token stored in 1Password. Do not write the token to the
 repo, shell history, or logs.
 
@@ -389,7 +389,9 @@ tmp_npmrc=$(mktemp)
 cleanup() { rm -f "$tmp_npmrc"; }
 trap cleanup EXIT
 npm_token=$(op read 'op://apicity/NPM_TOKEN/password')
-printf 'registry=https://registry.npmjs.org/\n//registry.npmjs.org/:_authToken=%s\n' "$npm_token" > "$tmp_npmrc"
+printf 'registry=https://registry.npmjs.org/
+//registry.npmjs.org/:_authToken=%s
+' "$npm_token" > "$tmp_npmrc"
 NPM_CONFIG_USERCONFIG="$tmp_npmrc" npm whoami   # MUST print the publishing account
 NPM_CONFIG_USERCONFIG="$tmp_npmrc" npm config get registry
 ```
@@ -417,15 +419,10 @@ packages that didn't get through with the same `NPM_CONFIG_USERCONFIG`
 environment. npm rejects re-publishing the same version, so it's safe to retry
 the whole filter.
 
-**Exit criteria:** Every public `@apicity/*` package is visible at `{{version}}` under `latest`."""
+**Exit criteria:** Every public `@apicity/*` package is visible at `{{version}}` under `latest`.
 
-[[steps]]
-id = "tag-push-and-github-release"
-title = "Tag, push, and update the GitHub release"
-needs = ["publish"]
-condition = "{{dry_run}} != true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = '''
+# Sub-step 2: Tag, push, and update the GitHub release
+
 Annotate the release commit, propagate it to the remote, and create or update
 the public GitHub release page for the pushed `v{{version}}` tag.
 
@@ -754,15 +751,10 @@ gh release view "v{{version}}"
 
 **Exit criteria:** `origin/stable` is up to date, `v{{version}}` is pushed,
 and the GitHub release page exists with current bead-based notes marked as the
-latest release.'''
+latest release.
 
-[[steps]]
-id = "sync-main-and-smoke-install"
-title = "Fast-forward main and smoke install"
-needs = ["tag-push-and-github-release"]
-condition = "{{dry_run}} != true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+# Sub-step 3: Fast-forward main and smoke install
+
 Propagate the release version bump back to `main` so `main` and `stable` do
 not drift after publishing, then verify a fresh consumer install resolves the
 published artifact and the entrypoint loads.
@@ -795,15 +787,10 @@ version before the next release.
 
 **Exit criteria:** `origin/main` and `origin/stable` point at the release
 commit, the working branch is back on `stable`, and the smoke install + import
-succeed."""
+succeed.
 
-[[steps]]
-id = "close"
-title = "Close the release bead"
-needs = ["sync-main-and-smoke-install"]
-condition = "{{dry_run}} != true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = """
+# Sub-step 4: Close the release bead
+
 Record the release in beads memory and close the tracking bead.
 
 ```bash
@@ -812,8 +799,7 @@ if [ -z "$release_bead" ]; then
   release_bead=$(bd list --title-contains "Release Apicity v{{version}}" --limit 0 --json 2>/dev/null | jq -r '.[0].id // empty')
 fi
 bd close "$release_bead" --reason "Published Apicity v{{version}} on npm latest; tag v{{version}} pushed; origin/main and origin/stable synced to release commit"
-bd remember --key apicity-last-release \
-  "version={{version}} tag=v{{version}} npm_tag=latest release_bead=$release_bead released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+bd remember --key apicity-last-release "version={{version}} tag=v{{version}} npm_tag=latest release_bead=$release_bead released_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 ```
 
 **Drain:**
@@ -821,4 +807,4 @@ bd remember --key apicity-last-release \
 gc runtime drain-ack
 ```
 
-**Exit criteria:** Release bead closed, drain acknowledged."""
+**Exit criteria:** Release bead closed, drain acknowledged.'''

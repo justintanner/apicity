@@ -23,6 +23,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "limit": 1
     }
   },
+  "GET v1.fineTuning.jobs": {
+    "source": "openai/fine-tuning-jobs-list",
+    "payload": {
+      "limit": 5
+    }
+  },
   "POST v1.audio.speech": {
     "source": "openai/speech-hello",
     "payload": {
@@ -89,6 +95,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "input": "Say hello in one sentence.",
       "temperature": 0,
       "max_output_tokens": 100
+    }
+  },
+  "POST v1.responses.inputTokens": {
+    "source": "openai/responses-input-tokens",
+    "payload": {
+      "model": "gpt-4o-mini",
+      "input": "Say hello in one sentence."
     }
   }
 };

@@ -254,6 +254,7 @@ export const ElevenLabsTextToDialogueRequestSchema = z.object({
   seed: z.number().int().min(0).max(4294967295).nullable().optional(),
   apply_text_normalization: z.enum(["auto", "on", "off"]).optional(),
   output_format: z.string().optional(),
+  enable_logging: z.boolean().optional(),
 });
 
 export type ElevenLabsTextToDialogueRequest = z.input<

@@ -32,6 +32,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ]
     }
+  },
+  "POST v1.messages.countTokens": {
+    "source": "anthropic/count-tokens",
+    "payload": {
+      "model": "claude-sonnet-4-6",
+      "messages": [
+        {
+          "role": "user",
+          "content": "How many tokens does this sentence use?"
+        }
+      ]
+    }
   }
 };
 

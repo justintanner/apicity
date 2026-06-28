@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-53 endpoints across 10 groups. Each method mirrors an upstream URL path.
+59 endpoints across 10 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -696,6 +696,47 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-dialogue/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert)
+
+```typescript
+const res = await elevenlabs.v1.textToDialogue({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue.withTimestamps</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-dialogue/stream/with-timestamps</code>
+
+```typescript
+const res = await elevenlabs.v1.textToDialogue.withTimestamps({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue.withTimestamps</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-dialogue/with-timestamps</code>
+
+```typescript
+const res = await elevenlabs.v1.textToDialogue.withTimestamps({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### textToSpeech
 
 <details>
@@ -707,6 +748,51 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.textToSpeech("voice_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert)
+
+```typescript
+const res = await elevenlabs.v1.textToSpeech("voice_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech.withTimestamps</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert-with-timestamps)
+
+```typescript
+const res = await elevenlabs.v1.textToSpeech.withTimestamps({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech.withTimestamps</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/with-timestamps</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert-with-timestamps)
+
+```typescript
+const res = await elevenlabs.v1.textToSpeech.withTimestamps({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

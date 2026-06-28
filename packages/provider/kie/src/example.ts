@@ -11,6 +11,12 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET api.v1.flux.kontext.recordInfo": {
+    "source": "kie/flux-kontext-record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    }
+  },
   "GET api.v1.generate.recordInfo": {
     "source": "kie/suno/record-info-not-found",
     "payload": {

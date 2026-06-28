@@ -476,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-36 endpoints across 22 groups. Each method mirrors an upstream URL path.
+39 endpoints across 23 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -598,6 +598,21 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 </details>
 
 ### flux
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.flux.kontext.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/flux-kontext-api/get-image-details)
+
+```typescript
+const res = await kie.get.api.v1.flux.kontext.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>kie.post.api.v1.flux.kontext.generate</code></b></summary>
@@ -809,6 +824,21 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.gpt4oImage.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/gpt4o-image/generate</code>
+
+[Upstream docs ↗](https://docs.kie.ai/4o-image-api/generate-4-o-image)
+
+```typescript
+const res = await kie.post.api.v1.gpt4oImage.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
+
 ### jobs
 
 <details>
@@ -868,6 +898,23 @@ const res = await kie.suno.post.api.v1.midi.generate({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+### mj
+
+<details>
+<summary><code>POST</code> <b><code>kie.post.api.v1.mj.generate</code></b></summary>
+
+<code>POST https://api.kie.ai/api/v1/mj/generate</code>
+
+[Upstream docs ↗](https://docs.kie.ai/mj-api/generate-mj-image)
+
+```typescript
+const res = await kie.post.api.v1.mj.generate({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 
 </details>
 

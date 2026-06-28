@@ -936,6 +936,78 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   );
 
+  // POST https://api.elevenlabs.io/v1/text-to-dialogue/stream/with-timestamps
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/stream-with-timestamps
+  const textToDialogueStreamWithTimestamps = Object.assign(
+    async (
+      req: ElevenLabsTextToDialogueRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsStreamingAudioChunkWithTimestampsResponse[]> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+      const buffer = await makeBinaryRequest(
+        "/v1/text-to-dialogue/stream/with-timestamps",
+        body,
+        query,
+        signal
+      );
+      return decodeNdjson<ElevenLabsStreamingAudioChunkWithTimestampsResponse>(
+        buffer
+      );
+    },
+    { schema: ElevenLabsTextToDialogueRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-dialogue/stream
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/stream
+  const textToDialogueStream = Object.assign(
+    async (
+      req: ElevenLabsTextToDialogueRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
+      return makeBinaryRequest(
+        "/v1/text-to-dialogue/stream",
+        body,
+        query,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsTextToDialogueRequestSchema,
+      withTimestamps: textToDialogueStreamWithTimestamps,
+    }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-dialogue/with-timestamps
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert-with-timestamps
+  const textToDialogueWithTimestamps = Object.assign(
+    async (
+      req: ElevenLabsTextToDialogueRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioWithTimestampsResponse> => {
+      const { output_format, enable_logging, ...body } = req;
+      const query = buildQueryString({ output_format, enable_logging });
+      return makeJsonRequest<ElevenLabsAudioWithTimestampsResponse>(
+        "POST",
+        "/v1/text-to-dialogue/with-timestamps",
+        body,
+        signal,
+        query
+      );
+    },
+    { schema: ElevenLabsTextToDialogueRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/text-to-dialogue
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert
   const textToDialogue = Object.assign(
@@ -943,11 +1015,19 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       req: ElevenLabsTextToDialogueRequest,
       signal?: AbortSignal
     ): Promise<ArrayBuffer> => {
-      const { output_format, ...body } = req;
-      const query = optionalQuery({ output_format });
+      const { output_format, enable_logging, ...body } = req;
+      const query = optionalQuery({
+        output_format,
+        enable_logging:
+          enable_logging === undefined ? undefined : String(enable_logging),
+      });
       return makeBinaryRequest("/v1/text-to-dialogue", body, query, signal);
     },
-    { schema: ElevenLabsTextToDialogueRequestSchema }
+    {
+      schema: ElevenLabsTextToDialogueRequestSchema,
+      stream: textToDialogueStream,
+      withTimestamps: textToDialogueWithTimestamps,
+    }
   );
 
   // POST https://api.elevenlabs.io/v1/speech-to-text

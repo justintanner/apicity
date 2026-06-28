@@ -29,7 +29,7 @@ const google = createGoogle({ apiKey: process.env.GOOGLE_API_KEY! });
 
 ## API Reference
 
-28 endpoints across 2 groups. Each method mirrors an upstream URL path.
+29 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### googleFlow
 
@@ -474,24 +474,8 @@ Source: [`packages/provider/google/src/google.ts`](src/google.ts)
 
 [Upstream docs ↗](https://cloud.google.com/gemini/docs/quotas)
 
-Antigravity / Cloud Code usage. Authenticates with the Antigravity OAuth
-bearer token (`oauthToken`, falling back to `apiKey`), not the API key header.
-Each returned bucket carries `remainingFraction` (0–1); the usage percentage the
-Antigravity UI renders is `(1 - remainingFraction) * 100`. Rolling windows (the
-~5h session window vs the weekly 1w window) are distinguished by each bucket's
-`resetTime` horizon and/or `tokenType`.
-
 ```typescript
-const google = createGoogle({
-  apiKey: process.env.GOOGLE_API_KEY!,
-  oauthToken: process.env.ANTIGRAVITY_OAUTH_TOKEN,
-});
-
-const usage = await google.v1internal.retrieveUserQuota();
-for (const bucket of usage.buckets ?? []) {
-  const usagePercent = (1 - (bucket.remainingFraction ?? 0)) * 100;
-  console.log(bucket.modelId, bucket.tokenType, `${usagePercent}%`);
-}
+const res = await google.v1internal.retrieveUserQuota({ /* ... */ });
 ```
 
 Source: [`packages/provider/google/src/google.ts`](src/google.ts)

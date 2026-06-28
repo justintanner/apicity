@@ -1116,12 +1116,39 @@ export interface ElevenLabsTextToSpeechMethod {
   withTimestamps: ElevenLabsTextToSpeechWithTimestampsMethod;
 }
 
+export interface ElevenLabsTextToDialogueStreamWithTimestampsMethod {
+  (
+    req: ElevenLabsTextToDialogueRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStreamingAudioChunkWithTimestampsResponse[]>;
+  schema: z.ZodType<ElevenLabsTextToDialogueRequest>;
+}
+
+export interface ElevenLabsTextToDialogueStreamMethod {
+  (
+    req: ElevenLabsTextToDialogueRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsTextToDialogueRequest>;
+  withTimestamps: ElevenLabsTextToDialogueStreamWithTimestampsMethod;
+}
+
+export interface ElevenLabsTextToDialogueWithTimestampsMethod {
+  (
+    req: ElevenLabsTextToDialogueRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioWithTimestampsResponse>;
+  schema: z.ZodType<ElevenLabsTextToDialogueRequest>;
+}
+
 export interface ElevenLabsTextToDialogueMethod {
   (
     req: ElevenLabsTextToDialogueRequest,
     signal?: AbortSignal
   ): Promise<ArrayBuffer>;
   schema: z.ZodType<ElevenLabsTextToDialogueRequest>;
+  stream: ElevenLabsTextToDialogueStreamMethod;
+  withTimestamps: ElevenLabsTextToDialogueWithTimestampsMethod;
 }
 
 export interface ElevenLabsSpeechToTextMethod {

@@ -159,6 +159,10 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "maxOutputTokens": 32
       }
     }
+  },
+  "POST v1internal.retrieveUserQuota": {
+    "source": "google/antigravity-usage",
+    "payload": {}
   }
 };
 

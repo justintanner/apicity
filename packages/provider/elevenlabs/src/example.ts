@@ -157,6 +157,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt_influence": 0.3
     }
   },
+  "POST v1.textToSpeech.stream": {
+    "source": "elevenlabs/text-to-speech-stream",
+    "payload": {
+      "text": "Hello from the streaming endpoint.",
+      "model_id": "eleven_multilingual_v2"
+    }
+  },
+  "POST v1.textToSpeech.stream.withTimestamps": {
+    "source": "elevenlabs/text-to-speech-stream-with-timestamps",
+    "payload": {
+      "text": "Streaming with timestamps.",
+      "model_id": "eleven_multilingual_v2"
+    }
+  },
+  "POST v1.textToSpeech.withTimestamps": {
+    "source": "elevenlabs/text-to-speech-with-timestamps",
+    "payload": {
+      "text": "Timestamps please.",
+      "model_id": "eleven_multilingual_v2"
+    }
+  },
   "POST v1.voices.pvc": {
     "source": "elevenlabs/pvc-voice-create",
     "payload": {

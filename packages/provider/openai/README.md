@@ -28,7 +28,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-49 endpoints across 11 groups. Each method mirrors an upstream URL path.
+51 endpoints across 13 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -180,6 +180,40 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 ```typescript
 const res = await openai.v1.chat.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+### codex
+
+<details>
+<summary><code>GET</code> <b><code>openai.codex.usage</code></b></summary>
+
+<code>GET https://chatgpt.com/backend-api/wham/usage</code>
+
+[Upstream docs ↗](https://developers.openai.com/codex/pricing)
+
+```typescript
+const res = await openai.codex.usage({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+### conversations
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.conversations</code></b></summary>
+
+<code>POST https://api.openai.com/v1/conversations</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference)
+
+```typescript
+const res = await openai.v1.conversations({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

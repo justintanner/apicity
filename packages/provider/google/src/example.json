@@ -147,5 +147,9 @@
         "maxOutputTokens": 32
       }
     }
+  },
+  "POST v1internal.retrieveUserQuota": {
+    "source": "google/antigravity-usage",
+    "payload": {}
   }
 }

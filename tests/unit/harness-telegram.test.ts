@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import type { ChangedRecording, HarEntry } from "../har-data";
 import {
   buildTelegramHarnessMessages,
+  buildTelegramHarnessMessagesWithLivePoll,
   chunkMessage,
   collectMedia,
+  formatTelegramEndpointMessageWithLivePoll,
   type EndpointDocRow,
 } from "../harness-telegram";
 
@@ -1023,6 +1025,85 @@ function kieVideoPollRecording(): ChangedRecording {
   };
 }
 
+// A z.ai-style generation whose recorded polls never reach terminal success:
+// the job was still running when the HAR was captured. The last poll carries an
+// intermediate frame that must NOT be sent as the final media.
+function kiePendingGenerationRecording(): ChangedRecording {
+  const taskId = "task-pending";
+  const inputUrl = "https://example.com/input.png";
+  const intermediateUrl =
+    "https://tempfile.aiquickdraw.com/generated/intermediate.jpg";
+  const param = JSON.stringify({
+    input: JSON.stringify({
+      image_urls: [inputUrl],
+      prompt: "Render a slow-baking poster.",
+    }),
+    model: "grok-imagine/image-to-image",
+  });
+
+  return {
+    provider: "kie",
+    recordingName: "kie/grok-imagine-pending",
+    changeType: "new",
+    filePath:
+      "tests/recordings/kie_2079838932/" +
+      "grok-imagine-pending_123/recording.har",
+    entries: [
+      jsonHarEntry(
+        "POST",
+        "https://api.kie.ai/api/v1/jobs/createTask",
+        {
+          model: "grok-imagine/image-to-image",
+          input: {
+            prompt: "Render a slow-baking poster.",
+            image_urls: [inputUrl],
+          },
+        },
+        { code: 200, msg: "success", data: { taskId, recordId: taskId } }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: { taskId, state: "waiting", param, resultJson: "" },
+        }
+      ),
+      jsonHarEntry(
+        "GET",
+        `https://api.kie.ai/api/v1/jobs/recordInfo?taskId=${taskId}`,
+        null,
+        {
+          code: 200,
+          msg: "success",
+          data: {
+            taskId,
+            state: "generating",
+            param,
+            // An intermediate preview frame that must be suppressed.
+            resultJson: JSON.stringify({ resultUrls: [intermediateUrl] }),
+          },
+        }
+      ),
+    ],
+  };
+}
+
+// Build the kie success poll body the live poll endpoint would return.
+function kieLiveSuccessBody(taskId: string, finalUrl: string): string {
+  return JSON.stringify({
+    code: 200,
+    msg: "success",
+    data: {
+      taskId,
+      state: "success",
+      resultJson: JSON.stringify({ resultUrls: [finalUrl] }),
+    },
+  });
+}
+
 function alibabaFailedGenerationRecording(): ChangedRecording {
   const taskId = "task-failed";
   const inputUrl = "https://example.com/source.png";
@@ -1535,5 +1616,100 @@ describe("harness Telegram messages", () => {
     expect(message.text).not.toContain(
       Buffer.from("fake-mp3-bytes").toString("base64")
     );
+  });
+
+  it("suppresses intermediate frames when generation never reaches success", () => {
+    const [message] = buildTelegramHarnessMessages(
+      [kiePendingGenerationRecording()],
+      endpointDocs
+    );
+
+    expect(message.text).toContain("Generation status");
+    expect(message.text).toContain("Generation did not reach terminal success");
+    // The intermediate preview frame must NOT be offered as uploadable media
+    // (it may still appear verbatim inside the recorded response-body preview).
+    expect(mediaUrls(message)).toEqual(["https://example.com/input.png"]);
+    expect(mediaUrls(message)).not.toContain(
+      "https://tempfile.aiquickdraw.com/generated/intermediate.jpg"
+    );
+  });
+});
+
+describe("harness Telegram live poll-and-wait", () => {
+  const FINAL_URL = "https://tempfile.aiquickdraw.com/generated/live-final.jpg";
+
+  it("waits for terminal success before choosing the media to send", async () => {
+    const responses = ["waiting", "generating", "success"];
+    let call = 0;
+    const fetchImpl = (async (url: string | URL) => {
+      const which = responses[Math.min(call, responses.length - 1)];
+      call += 1;
+      const body =
+        which === "success"
+          ? kieLiveSuccessBody("task-pending", FINAL_URL)
+          : JSON.stringify({
+              code: 200,
+              msg: "success",
+              data: { taskId: "task-pending", state: which },
+            });
+      expect(String(url)).toContain("recordInfo?taskId=task-pending");
+      return new Response(body, {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }) as unknown as typeof fetch;
+
+    const message = await formatTelegramEndpointMessageWithLivePoll(
+      kiePendingGenerationRecording(),
+      endpointDocs,
+      { fetchImpl, sleepImpl: async () => {}, maxAttempts: 5 }
+    );
+
+    expect(call).toBe(3);
+    expect(message.text).toContain("Generation completed with status success");
+    expect(mediaUrls(message)).toContain(FINAL_URL);
+    expect(mediaUrls(message)).not.toContain(
+      "https://tempfile.aiquickdraw.com/generated/intermediate.jpg"
+    );
+  });
+
+  it("falls back to the status line when the live poll times out", async () => {
+    let call = 0;
+    const fetchImpl = (async () => {
+      call += 1;
+      return new Response(
+        JSON.stringify({
+          code: 200,
+          msg: "success",
+          data: { taskId: "task-pending", state: "generating" },
+        }),
+        { status: 200, headers: { "content-type": "application/json" } }
+      );
+    }) as unknown as typeof fetch;
+
+    const [message] = await buildTelegramHarnessMessagesWithLivePoll(
+      [kiePendingGenerationRecording()],
+      endpointDocs,
+      { fetchImpl, sleepImpl: async () => {}, maxAttempts: 3 }
+    );
+
+    expect(call).toBe(3);
+    expect(message.text).toContain("Generation did not reach terminal success");
+    expect(mediaUrls(message)).toEqual(["https://example.com/input.png"]);
+  });
+
+  it("gives up gracefully when every live poll errors", async () => {
+    const fetchImpl = (async () => {
+      throw new Error("network down");
+    }) as unknown as typeof fetch;
+
+    const message = await formatTelegramEndpointMessageWithLivePoll(
+      kiePendingGenerationRecording(),
+      endpointDocs,
+      { fetchImpl, sleepImpl: async () => {}, maxAttempts: 2 }
+    );
+
+    expect(message.text).toContain("Generation did not reach terminal success");
+    expect(mediaUrls(message)).toEqual(["https://example.com/input.png"]);
   });
 });

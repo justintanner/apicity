@@ -141,12 +141,31 @@ interface GenerationReview {
   requestEntry: HarEntry;
   responseEntry: HarEntry;
   statusSummary: string;
+  /** Terminal state of the entry whose media/status we surface. */
+  terminal: GenerationStatus["terminal"];
 }
 
 interface GenerationStatus {
   label: string;
   terminal: "success" | "failure" | "pending";
   detail: string | null;
+}
+
+// Live poll-and-wait bounds. When a recording's polls never reached terminal
+// success (the job was still running when the HAR was captured), the send path
+// re-issues the recorded poll request until the task settles — bounded so a
+// stuck job can never block the run.
+const GENERATION_POLL_MAX_ATTEMPTS = 30;
+const GENERATION_POLL_INTERVAL_MS = 3_000;
+const GENERATION_POLL_TIMEOUT_MS = 120_000;
+
+interface LivePollOptions {
+  maxAttempts: number;
+  intervalMs: number;
+  timeoutMs: number;
+  fetchImpl: typeof fetch;
+  sleepImpl: (ms: number) => Promise<void>;
+  now: () => number;
 }
 
 function escapeHtml(text: string): string {
@@ -1132,6 +1151,7 @@ function findGenerationReviewForEntry(
     requestEntry,
     responseEntry,
     statusSummary: generationStatusSummary(status, polls.length),
+    terminal: status.terminal,
   };
 }
 
@@ -1151,6 +1171,118 @@ function findGenerationReview(
   }
 
   return null;
+}
+
+// Build a synthetic HAR entry from a live poll response so the rest of the
+// pipeline (generationStatus, collectMedia, buildSections) can treat it exactly
+// like a recorded poll. Secrets are scrubbed before anything is rendered.
+function liveResponseEntry(
+  request: HarEntry["request"],
+  response: {
+    status: number;
+    statusText: string;
+    text: string;
+    mimeType: string;
+  }
+): HarEntry {
+  const entry: HarEntry = {
+    request,
+    response: {
+      status: response.status,
+      statusText: response.statusText,
+      headers: [],
+      content: { text: response.text, mimeType: response.mimeType },
+    },
+  };
+  scrubSensitiveRecording(entry);
+  return entry;
+}
+
+function generationReviewFromLivePoll(
+  requestEntry: HarEntry,
+  liveEntry: HarEntry,
+  status: GenerationStatus,
+  pollCount: number
+): GenerationReview {
+  return {
+    entry: { request: requestEntry.request, response: liveEntry.response },
+    requestEntry,
+    responseEntry: liveEntry,
+    statusSummary: generationStatusSummary(status, pollCount),
+    terminal: status.terminal,
+  };
+}
+
+// Re-issue the recorded poll request against the live task-status surface until
+// the generation settles (terminal success or failure) or the bounds are hit.
+// Returns an updated review on a settled terminal state, or null when the poll
+// times out / errors — the caller then keeps the recorded (non-terminal) review
+// and its status line. Never throws; a flaky network must not fail the run.
+async function livePollGenerationReview(
+  review: GenerationReview,
+  options: Partial<LivePollOptions> = {}
+): Promise<GenerationReview | null> {
+  if (review.terminal === "success") return null;
+
+  const maxAttempts = options.maxAttempts ?? GENERATION_POLL_MAX_ATTEMPTS;
+  const intervalMs = options.intervalMs ?? GENERATION_POLL_INTERVAL_MS;
+  const timeoutMs = options.timeoutMs ?? GENERATION_POLL_TIMEOUT_MS;
+  const fetchImpl = options.fetchImpl ?? fetch;
+  const sleepImpl = options.sleepImpl ?? sleep;
+  const now = options.now ?? Date.now;
+
+  const pollRequest = review.responseEntry.request;
+  // Only GET poll surfaces are safe to replay; re-POSTing would create a new job.
+  if (pollRequest.method.toUpperCase() !== "GET") return null;
+
+  const headers = new Headers();
+  for (const { name, value } of pollRequest.headers) {
+    if (name.toLowerCase() === "content-length") continue;
+    if (name.toLowerCase() === "host") continue;
+    headers.set(name, value);
+  }
+
+  const deadline = now() + timeoutMs;
+  let settled: GenerationReview | null = null;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    let liveEntry: HarEntry | null = null;
+    try {
+      const response = await fetchImpl(pollRequest.url, {
+        method: "GET",
+        headers,
+        signal: AbortSignal.timeout(MEDIA_DOWNLOAD_TIMEOUT_MS),
+      });
+      const text = await response.text();
+      liveEntry = liveResponseEntry(pollRequest, {
+        status: response.status,
+        statusText: response.statusText,
+        text,
+        mimeType: response.headers.get("content-type") ?? "application/json",
+      });
+    } catch {
+      // Treat a failed poll as "still pending" and keep trying within bounds.
+      liveEntry = null;
+    }
+
+    if (liveEntry) {
+      const status = generationStatus(liveEntry);
+      if (status && status.terminal !== "pending") {
+        settled = generationReviewFromLivePoll(
+          review.requestEntry,
+          liveEntry,
+          status,
+          attempt
+        );
+        break;
+      }
+    }
+
+    if (attempt >= maxAttempts || now() + intervalMs > deadline) break;
+    await sleepImpl(intervalMs);
+  }
+
+  return settled;
 }
 
 function kindFromMime(mime: string): TelegramMediaItem["kind"] | null {
@@ -1285,9 +1417,14 @@ export function collectMedia(
     });
   };
 
-  const base64Entries = generationReview
-    ? [generationReview.responseEntry, generationReview.requestEntry]
-    : recording.entries;
+  // On a non-success review the response entry is an intermediate/failed poll;
+  // never harvest base64 frames from it. Keep only the request's input media.
+  const reviewBase64Entries = generationReview
+    ? generationReview.terminal === "success"
+      ? [generationReview.responseEntry, generationReview.requestEntry]
+      : [generationReview.requestEntry]
+    : null;
+  const base64Entries = reviewBase64Entries ?? recording.entries;
   const requestDataUris = generationReview
     ? entryDataUris(generationReview.requestEntry)
     : [];
@@ -1332,6 +1469,11 @@ export function collectMedia(
 
 function generationMediaUrls(review: GenerationReview): string[] {
   const requestUrls = extractMediaUrls([review.requestEntry]);
+  if (review.terminal !== "success") {
+    // No terminal success → never surface an intermediate/incomplete frame.
+    // Keep only the input media; the status line explains the outcome.
+    return requestUrls;
+  }
   const requestUrlSet = new Set(requestUrls);
   const responseUrls = extractMediaUrls([review.responseEntry]).filter(
     (url) => !requestUrlSet.has(url)
@@ -1574,16 +1716,16 @@ function renderHeader(
   return lines.join("\n");
 }
 
-export function formatTelegramEndpointMessage(
-  recording: ChangedRecording,
-  endpointDocs: EndpointDocRow[] = parseEndpointDocs()
+// Render a fully-resolved message from an already-sanitized recording and a
+// (possibly live-polled) generation review. Shared by the sync and the
+// live-polling builders so both produce byte-identical output for a given
+// review.
+function buildMessageFromReview(
+  sanitizedRecording: ChangedRecording,
+  endpointEntry: HarEntry,
+  generationReview: GenerationReview | null,
+  endpointDocs: EndpointDocRow[]
 ): TelegramHarnessMessage {
-  const sanitizedRecording = sanitizeRecordingForPreview(recording);
-  const endpointEntry = findEndpointEntry(sanitizedRecording, endpointDocs);
-  const generationReview = findGenerationReview(
-    sanitizedRecording,
-    endpointEntry
-  );
   const entry = generationReview?.entry ?? endpointEntry;
   const doc =
     findHintedEndpointDoc(sanitizedRecording, endpointEntry, endpointDocs) ??
@@ -1622,6 +1764,71 @@ export function formatTelegramEndpointMessage(
     media: collectMedia(sanitizedRecording, apicityPath, generationReview),
     parse_mode: "HTML",
   };
+}
+
+export function formatTelegramEndpointMessage(
+  recording: ChangedRecording,
+  endpointDocs: EndpointDocRow[] = parseEndpointDocs()
+): TelegramHarnessMessage {
+  const sanitizedRecording = sanitizeRecordingForPreview(recording);
+  const endpointEntry = findEndpointEntry(sanitizedRecording, endpointDocs);
+  const generationReview = findGenerationReview(
+    sanitizedRecording,
+    endpointEntry
+  );
+  return buildMessageFromReview(
+    sanitizedRecording,
+    endpointEntry,
+    generationReview,
+    endpointDocs
+  );
+}
+
+// Live-polling variant: when a recording's generation never reached terminal
+// success, re-issue the recorded poll request and wait (bounded) for the job to
+// settle before choosing the media to send. Falls back to the recorded review
+// when the live poll times out or errors, so output is never worse than sync.
+export async function formatTelegramEndpointMessageWithLivePoll(
+  recording: ChangedRecording,
+  endpointDocs: EndpointDocRow[] = parseEndpointDocs(),
+  pollOptions: Partial<LivePollOptions> = {}
+): Promise<TelegramHarnessMessage> {
+  const sanitizedRecording = sanitizeRecordingForPreview(recording);
+  const endpointEntry = findEndpointEntry(sanitizedRecording, endpointDocs);
+  let generationReview = findGenerationReview(
+    sanitizedRecording,
+    endpointEntry
+  );
+  if (generationReview && generationReview.terminal !== "success") {
+    const live = await livePollGenerationReview(generationReview, pollOptions);
+    if (live) generationReview = live;
+  }
+  return buildMessageFromReview(
+    sanitizedRecording,
+    endpointEntry,
+    generationReview,
+    endpointDocs
+  );
+}
+
+export async function buildTelegramHarnessMessagesWithLivePoll(
+  recordings: ChangedRecording[],
+  endpointDocs: EndpointDocRow[] = parseEndpointDocs(),
+  pollOptions: Partial<LivePollOptions> = {}
+): Promise<TelegramHarnessMessage[]> {
+  const messages: TelegramHarnessMessage[] = [];
+  for (const recording of recordings.filter(
+    (recording) => recording.entries.length > 0
+  )) {
+    messages.push(
+      await formatTelegramEndpointMessageWithLivePoll(
+        recording,
+        endpointDocs,
+        pollOptions
+      )
+    );
+  }
+  return messages;
 }
 
 function sanitizeRecordingForPreview(
@@ -1887,7 +2094,12 @@ async function main(): Promise<void> {
   const recordings = opts.all
     ? allRecordings(opts.filters)
     : getChangedRecordings(opts.baseBranch);
-  const messages = buildTelegramHarnessMessages(recordings);
+  // Dry-run stays fully offline and deterministic (recorded data only). The
+  // real send path live-polls any generation whose recorded polls never reached
+  // terminal success, so the message reflects the FINAL result.
+  const messages = opts.dryRun
+    ? buildTelegramHarnessMessages(recordings)
+    : await buildTelegramHarnessMessagesWithLivePoll(recordings);
 
   fs.writeFileSync(
     opts.outPath,

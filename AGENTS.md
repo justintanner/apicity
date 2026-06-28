@@ -70,38 +70,11 @@ pnpm run harness                 # Local HAR viewer at localhost:3475
 
 ## Adding a New Endpoint
 
-The workflow is encoded in the `mol-apicity-add-endpoint` beads formula
-(`.beads/formulas/mol-apicity-add-endpoint.formula.toml`):
+Work through the standard endpoint flow: research the upstream docs → add
+types/schema/factory → record a HAR fixture → verify replay → preview the
+Telegram message → run the gates → open the PR (one endpoint per PR).
 
-```bash
-bd formula show mol-apicity-add-endpoint
-bd cook mol-apicity-add-endpoint \
-  --var provider=openai --var method=POST --var endpoint_path=/v1/embeddings \
-  --var docs_url=https://platform.openai.com/docs/api-reference/embeddings \
-  --var bead=<tracking-bead>
-```
-
-Or dispatch it: `gc sling <rig> mol-apicity-add-endpoint --formula --var ...`.
-
-## Ad-Hoc Work Intake
-
-For unstructured Apicity requests, use the `mol-apicity-add` formula. It accepts
-a plain work description, classifies the request as standalone, multi-bead, or
-epic work, and creates the routed bead graph itself. Callers do not need to
-pre-create a convoy or pre-break the request into endpoint operations:
-
-```bash
-bd formula show mol-apicity-add
-bd cook mol-apicity-add \
-  --var work_description='Add the OpenAI Responses API surface from the docs. Break the request into one endpoint bead per upstream operation, include HAR-backed tests where upstream calls are touched, and preserve one endpoint per PR.'
-```
-
-The formula creates the beads for real and routes actionable beads to
-`apicity/gastown.polecat` through `metadata.gc.routed_to`, preserving normal pool
-pickup behavior. Endpoint implementation children should still use
-`mol-apicity-add-endpoint`.
-
-Two invariants worth knowing outside the formula:
+Two invariants worth knowing:
 
 - **URL comment (lint-enforced)** — a 2-line comment immediately above each endpoint property in the factory (`// {METHOD} {full upstream URL}` then `// Docs: {docs URL}`), plus a matching `(provider, dotPath, method, fullUrl, docsUrl)` row in `scripts/endpoint-docs.tsv`. Checked by `pnpm run lint:endpoints`; the docs hostname must be on the provider's allow-list in `scripts/check-endpoint-comments.mjs`. For overloaded endpoints, comment the default path.
 - **One endpoint per PR.**

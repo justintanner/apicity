@@ -188,40 +188,11 @@ GitHub Actions (`ci.yml`): two jobs — **test** (guard against cassette re-reco
 
 ### Adding a New Endpoint
 
-The full workflow (research → types/schema/factory → record → replay →
-telegram preview → gates → PR → close bead) is encoded in the
-`mol-apicity-add-endpoint` beads formula. Run it instead of working from a checklist:
+Work through the full flow in order: research the upstream docs →
+add types/schema/factory → record a HAR fixture → verify replay →
+preview the Telegram message → run the gates → open the PR → close the bead.
 
-```bash
-# Inspect the steps
-bd formula show mol-apicity-add-endpoint
-
-# Instantiate for a task (or dispatch with: gc sling <rig> mol-apicity-add-endpoint --formula --var ...)
-bd cook mol-apicity-add-endpoint \
-  --var provider=openai --var method=POST --var endpoint_path=/v1/embeddings \
-  --var docs_url=https://platform.openai.com/docs/api-reference/embeddings \
-  --var bead=<tracking-bead>
-```
-
-### Ad-Hoc Work Intake
-
-For unstructured Apicity requests, use `mol-apicity-add`. It accepts a plain
-work description, classifies the request as standalone, multi-bead, or epic
-work, and creates the routed bead graph itself. Callers do not need to
-pre-create a convoy or pre-break the request into endpoint operations.
-
-```bash
-bd formula show mol-apicity-add
-bd cook mol-apicity-add \
-  --var work_description='Add the OpenAI Responses API surface from the docs. Break the request into one endpoint bead per upstream operation, include HAR-backed tests where upstream calls are touched, and preserve one endpoint per PR.' \
-```
-
-The formula records
-`metadata.gc.routed_to=apicity/gastown.polecat` instead of assigning children
-directly, so normal pool pickup is preserved. Endpoint children should still
-use `mol-apicity-add-endpoint` when they are implemented.
-
-Two invariants worth knowing outside the formula:
+Two invariants worth knowing:
 
 - **URL comment (lint-enforced)** — a 2-line comment immediately above each
   endpoint property in the factory, plus a matching

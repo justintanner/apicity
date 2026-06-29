@@ -17,6 +17,9 @@ import type {
   ElevenLabsAudioIsolationRequest,
   ElevenLabsAudioIsolationStreamRequest,
   ElevenLabsAudioIsolationHistoryListRequest,
+  ElevenLabsAudioNativeCreateProjectRequest,
+  ElevenLabsAudioNativeUpdateContentFromUrlRequest,
+  ElevenLabsAudioNativeUpdateProjectContentRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -151,6 +154,15 @@ export type {
   ElevenLabsAudioIsolationHistoryListRequest,
   ElevenLabsAudioIsolationHistoryListRequestInput,
   ElevenLabsAudioIsolationHistoryListParsedRequest,
+  ElevenLabsAudioNativeCreateProjectRequest,
+  ElevenLabsAudioNativeCreateProjectRequestInput,
+  ElevenLabsAudioNativeCreateProjectParsedRequest,
+  ElevenLabsAudioNativeUpdateContentFromUrlRequest,
+  ElevenLabsAudioNativeUpdateContentFromUrlRequestInput,
+  ElevenLabsAudioNativeUpdateContentFromUrlParsedRequest,
+  ElevenLabsAudioNativeUpdateProjectContentRequest,
+  ElevenLabsAudioNativeUpdateProjectContentRequestInput,
+  ElevenLabsAudioNativeUpdateProjectContentParsedRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
@@ -1024,6 +1036,42 @@ export type ElevenLabsAudioIsolationDeleteHistoryResponse = Record<
   unknown
 >;
 
+// -- Audio Native response shapes -------------------------------------------
+
+export interface ElevenLabsAudioNativeCreateProjectResponse {
+  project_id: string;
+  converting: boolean;
+  html_snippet: string;
+}
+
+export interface ElevenLabsAudioNativeEditContentResponse {
+  project_id: string;
+  converting: boolean;
+  publishing: boolean;
+  html_snippet: string;
+}
+
+export type ElevenLabsAudioNativeProjectStatus = "processing" | "ready";
+
+export interface ElevenLabsAudioNativeProjectSettings {
+  title: string;
+  image: string;
+  author: string;
+  small: boolean;
+  text_color: string;
+  background_color: string;
+  sessionization: number;
+  audio_path?: string | null;
+  audio_url?: string | null;
+  status?: ElevenLabsAudioNativeProjectStatus;
+}
+
+export interface ElevenLabsAudioNativeProjectSettingsResponse {
+  enabled: boolean;
+  snapshot_id?: string | null;
+  settings?: ElevenLabsAudioNativeProjectSettings | null;
+}
+
 // -- History response shapes -------------------------------------------------
 
 export interface ElevenLabsHistoryFeedback {
@@ -1676,6 +1724,46 @@ export interface ElevenLabsAudioIsolationMethod {
   schema: z.ZodType<ElevenLabsAudioIsolationRequest>;
   stream: ElevenLabsAudioIsolationStreamMethod;
   history: ElevenLabsAudioIsolationHistoryNamespace;
+}
+
+export interface ElevenLabsAudioNativeUpdateContentFromUrlMethod {
+  (
+    req: ElevenLabsAudioNativeUpdateContentFromUrlRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioNativeEditContentResponse>;
+  schema: z.ZodType<ElevenLabsAudioNativeUpdateContentFromUrlRequest>;
+}
+
+export interface ElevenLabsAudioNativeUpdateProjectContentMethod {
+  (
+    projectId: string,
+    req?: ElevenLabsAudioNativeUpdateProjectContentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioNativeEditContentResponse>;
+  schema: z.ZodType<ElevenLabsAudioNativeUpdateProjectContentRequest>;
+}
+
+export interface ElevenLabsAudioNativeProjectSettingsMethod {
+  (
+    projectId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioNativeProjectSettingsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsAudioNativeContentNamespace {
+  fromUrl: ElevenLabsAudioNativeUpdateContentFromUrlMethod;
+  update: ElevenLabsAudioNativeUpdateProjectContentMethod;
+}
+
+export interface ElevenLabsAudioNativeMethod {
+  (
+    req: ElevenLabsAudioNativeCreateProjectRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioNativeCreateProjectResponse>;
+  schema: z.ZodType<ElevenLabsAudioNativeCreateProjectRequest>;
+  content: ElevenLabsAudioNativeContentNamespace;
+  settings: ElevenLabsAudioNativeProjectSettingsMethod;
 }
 
 export interface ElevenLabsCharacterAlignment {

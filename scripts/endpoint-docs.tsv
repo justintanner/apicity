@@ -513,6 +513,10 @@ elevenlabs	v1.audioIsolation	POST	https://api.elevenlabs.io/v1/audio-isolation	h
 elevenlabs	v1.audioIsolation.stream	POST	https://api.elevenlabs.io/v1/audio-isolation/stream	https://elevenlabs.io/docs/api-reference/audio-isolation/stream
 elevenlabs	v1.audioIsolation.history.list	GET	https://api.elevenlabs.io/v1/audio-isolation/history	https://elevenlabs.io/docs/api-reference/audio-isolation/list
 elevenlabs	v1.audioIsolation.history.delete	DELETE	https://api.elevenlabs.io/v1/audio-isolation/history/{historyItemId}	https://elevenlabs.io/docs/api-reference/audio-isolation/delete
+elevenlabs	v1.audioNative	POST	https://api.elevenlabs.io/v1/audio-native	https://elevenlabs.io/docs/api-reference/audio-native/create
+elevenlabs	v1.audioNative.content.fromUrl	POST	https://api.elevenlabs.io/v1/audio-native/content	https://elevenlabs.io/docs/api-reference/audio-native/update-content
+elevenlabs	v1.audioNative.content.update	POST	https://api.elevenlabs.io/v1/audio-native/{projectId}/content	https://elevenlabs.io/docs/api-reference/audio-native/update-content
+elevenlabs	v1.audioNative.settings	GET	https://api.elevenlabs.io/v1/audio-native/{projectId}/settings	https://elevenlabs.io/docs/api-reference/audio-native/get-settings
 elevenlabs	v1.speechToText	POST	https://api.elevenlabs.io/v1/speech-to-text	https://elevenlabs.io/docs/api-reference/speech-to-text/convert
 elevenlabs	v1.speechToText.transcripts.get	GET	https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}	https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/get
 elevenlabs	v1.speechToText.transcripts.delete	DELETE	https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}	https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/delete

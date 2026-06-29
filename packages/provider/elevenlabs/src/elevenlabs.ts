@@ -30,6 +30,12 @@ import {
   ElevenLabsAudioIsolationHistoryListRequest,
   ElevenLabsAudioIsolationHistoryListResponse,
   ElevenLabsAudioIsolationDeleteHistoryResponse,
+  ElevenLabsAudioNativeCreateProjectRequest,
+  ElevenLabsAudioNativeCreateProjectResponse,
+  ElevenLabsAudioNativeUpdateContentFromUrlRequest,
+  ElevenLabsAudioNativeUpdateProjectContentRequest,
+  ElevenLabsAudioNativeEditContentResponse,
+  ElevenLabsAudioNativeProjectSettingsResponse,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsAudioWithTimestampsResponse,
@@ -189,6 +195,9 @@ import {
   ElevenLabsAudioIsolationRequestSchema,
   ElevenLabsAudioIsolationStreamRequestSchema,
   ElevenLabsAudioIsolationHistoryListRequestSchema,
+  ElevenLabsAudioNativeCreateProjectRequestSchema,
+  ElevenLabsAudioNativeUpdateContentFromUrlRequestSchema,
+  ElevenLabsAudioNativeUpdateProjectContentRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
@@ -1570,6 +1579,92 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         list: listAudioIsolationHistory,
         delete: deleteAudioIsolationHistoryItem,
       },
+    }
+  );
+
+  // POST https://api.elevenlabs.io/v1/audio-native/content
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-native/update-content
+  const updateAudioNativeContentFromUrl = Object.assign(
+    async (
+      req: ElevenLabsAudioNativeUpdateContentFromUrlRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioNativeEditContentResponse> => {
+      return makeJsonRequest<ElevenLabsAudioNativeEditContentResponse>(
+        "POST",
+        "/v1/audio-native/content",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsAudioNativeUpdateContentFromUrlRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/audio-native/{projectId}/content
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-native/update-content
+  const updateAudioNativeProjectContent = Object.assign(
+    async (
+      projectId: string,
+      req: ElevenLabsAudioNativeUpdateProjectContentRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioNativeEditContentResponse> => {
+      const form = new FormData();
+      for (const [key, value] of Object.entries(req)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsAudioNativeEditContentResponse>(
+        `/v1/audio-native/${encodeURIComponent(projectId)}/content`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsAudioNativeUpdateProjectContentRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/audio-native/{projectId}/settings
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-native/get-settings
+  const getAudioNativeProjectSettings = Object.assign(
+    async (
+      projectId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioNativeProjectSettingsResponse> => {
+      return makeJsonRequest<ElevenLabsAudioNativeProjectSettingsResponse>(
+        "GET",
+        `/v1/audio-native/${encodeURIComponent(projectId)}/settings`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/audio-native
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-native/create
+  const audioNative = Object.assign(
+    async (
+      req: ElevenLabsAudioNativeCreateProjectRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioNativeCreateProjectResponse> => {
+      const form = new FormData();
+      for (const [key, value] of Object.entries(req)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsAudioNativeCreateProjectResponse>(
+        "/v1/audio-native",
+        form,
+        undefined,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsAudioNativeCreateProjectRequestSchema,
+      content: {
+        fromUrl: updateAudioNativeContentFromUrl,
+        update: updateAudioNativeProjectContent,
+      },
+      settings: getAudioNativeProjectSettings,
     }
   );
 
@@ -3478,6 +3573,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     soundGeneration,
     audioIsolation,
+    audioNative,
     textToSpeech,
     textToDialogue,
     textToVoice,
@@ -3556,6 +3652,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     similarVoices: getSimilarVoices,
     soundGeneration,
     audioIsolation,
+    audioNative,
     textToSpeech,
     textToDialogue,
     textToVoice,
@@ -3595,6 +3692,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           history: {
             list: listAudioIsolationHistory,
           },
+        },
+        audioNative: {
+          settings: getAudioNativeProjectSettings,
         },
         textToVoice: {
           stream: textToVoiceStream,

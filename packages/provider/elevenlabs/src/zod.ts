@@ -618,6 +618,82 @@ export type ElevenLabsAudioIsolationHistoryListParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/audio-native
+// ---------------------------------------------------------------------------
+
+const ElevenLabsAudioNativeTextNormalizationSchema = z.enum([
+  "auto",
+  "on",
+  "off",
+  "apply_english",
+]);
+
+export const ElevenLabsAudioNativeCreateProjectRequestSchema = z.object({
+  name: z.string(),
+  image: z.string().nullable().optional(),
+  author: z.string().nullable().optional(),
+  title: z.string().nullable().optional(),
+  small: z.boolean().optional(),
+  text_color: z.string().nullable().optional(),
+  background_color: z.string().nullable().optional(),
+  sessionization: z.number().int().optional(),
+  voice_id: z.string().nullable().optional(),
+  model_id: z.string().nullable().optional(),
+  file: z.custom<Blob>((value) => value instanceof Blob).optional(),
+  auto_convert: z.boolean().optional(),
+  apply_text_normalization:
+    ElevenLabsAudioNativeTextNormalizationSchema.nullable().optional(),
+  pronunciation_dictionary_locators: z.array(z.string()).optional(),
+});
+
+export type ElevenLabsAudioNativeCreateProjectRequest = z.input<
+  typeof ElevenLabsAudioNativeCreateProjectRequestSchema
+>;
+export type ElevenLabsAudioNativeCreateProjectRequestInput =
+  ElevenLabsAudioNativeCreateProjectRequest;
+export type ElevenLabsAudioNativeCreateProjectParsedRequest = z.output<
+  typeof ElevenLabsAudioNativeCreateProjectRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/audio-native/content
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAudioNativeUpdateContentFromUrlRequestSchema = z.object({
+  url: z.string().url(),
+  author: z.string().nullable().optional(),
+  title: z.string().nullable().optional(),
+});
+
+export type ElevenLabsAudioNativeUpdateContentFromUrlRequest = z.input<
+  typeof ElevenLabsAudioNativeUpdateContentFromUrlRequestSchema
+>;
+export type ElevenLabsAudioNativeUpdateContentFromUrlRequestInput =
+  ElevenLabsAudioNativeUpdateContentFromUrlRequest;
+export type ElevenLabsAudioNativeUpdateContentFromUrlParsedRequest = z.output<
+  typeof ElevenLabsAudioNativeUpdateContentFromUrlRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/audio-native/:project_id/content
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAudioNativeUpdateProjectContentRequestSchema = z.object({
+  file: z.custom<Blob>((value) => value instanceof Blob).optional(),
+  auto_convert: z.boolean().optional(),
+  auto_publish: z.boolean().optional(),
+});
+
+export type ElevenLabsAudioNativeUpdateProjectContentRequest = z.input<
+  typeof ElevenLabsAudioNativeUpdateProjectContentRequestSchema
+>;
+export type ElevenLabsAudioNativeUpdateProjectContentRequestInput =
+  ElevenLabsAudioNativeUpdateProjectContentRequest;
+export type ElevenLabsAudioNativeUpdateProjectContentParsedRequest = z.output<
+  typeof ElevenLabsAudioNativeUpdateProjectContentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

@@ -24,6 +24,8 @@ import {
   ElevenLabsStreamingAudioChunkWithTimestampsResponse,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToTextResponse,
+  ElevenLabsGetTranscriptResponse,
+  ElevenLabsDeleteTranscriptResponse,
   ElevenLabsSpeechToSpeechRequest,
   ElevenLabsStartSpeakerSeparationResponse,
   ElevenLabsUpdatePvcVoiceSampleRequest,
@@ -1085,6 +1087,40 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   );
 
+  // GET https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/get
+  const getTranscript = Object.assign(
+    async (
+      transcriptionId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetTranscriptResponse> => {
+      return makeJsonRequest<ElevenLabsGetTranscriptResponse>(
+        "GET",
+        `/v1/speech-to-text/transcripts/${encodeURIComponent(transcriptionId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/delete
+  const deleteTranscript = Object.assign(
+    async (
+      transcriptionId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteTranscriptResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteTranscriptResponse>(
+        "DELETE",
+        `/v1/speech-to-text/transcripts/${encodeURIComponent(transcriptionId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // POST https://api.elevenlabs.io/v1/speech-to-text
   // Docs: https://elevenlabs.io/docs/api-reference/speech-to-text/convert
   const speechToText = Object.assign(
@@ -1110,7 +1146,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         signal
       );
     },
-    { schema: ElevenLabsSpeechToTextRequestSchema }
+    {
+      schema: ElevenLabsSpeechToTextRequestSchema,
+      transcripts: {
+        get: getTranscript,
+        delete: deleteTranscript,
+      },
+    }
   );
 
   // POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream

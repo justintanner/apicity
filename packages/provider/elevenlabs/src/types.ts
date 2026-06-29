@@ -234,6 +234,12 @@ export type ElevenLabsSpeechToTextResponse =
   | ElevenLabsMultichannelTranscript
   | ElevenLabsWebhookAcknowledgement;
 
+export type ElevenLabsGetTranscriptResponse =
+  | ElevenLabsTranscript
+  | ElevenLabsMultichannelTranscript;
+
+export type ElevenLabsDeleteTranscriptResponse = Record<string, unknown>;
+
 // -- Voice response shapes ---------------------------------------------------
 
 export type ElevenLabsSpeakerSeparationStatus =
@@ -1155,12 +1161,34 @@ export interface ElevenLabsTextToDialogueMethod {
   withTimestamps: ElevenLabsTextToDialogueWithTimestampsMethod;
 }
 
+export interface ElevenLabsSpeechToTextGetTranscriptMethod {
+  (
+    transcriptionId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetTranscriptResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsSpeechToTextDeleteTranscriptMethod {
+  (
+    transcriptionId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteTranscriptResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsSpeechToTextTranscripts {
+  get: ElevenLabsSpeechToTextGetTranscriptMethod;
+  delete: ElevenLabsSpeechToTextDeleteTranscriptMethod;
+}
+
 export interface ElevenLabsSpeechToTextMethod {
   (
     req: ElevenLabsSpeechToTextRequest,
     signal?: AbortSignal
   ): Promise<ElevenLabsSpeechToTextResponse>;
   schema: z.ZodType<ElevenLabsSpeechToTextRequest>;
+  transcripts: ElevenLabsSpeechToTextTranscripts;
 }
 
 export interface ElevenLabsSpeechToSpeechStreamMethod {

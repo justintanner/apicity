@@ -41,6 +41,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30
     }
   },
+  "GET v1.dubbing.list": {
+    "source": "elevenlabs/dubbing",
+    "payload": {
+      "page_size": 50
+    }
+  },
   "GET v1.sharedVoices": {
     "source": "elevenlabs/voice-library",
     "payload": {

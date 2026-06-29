@@ -52,6 +52,8 @@ import type {
   ElevenLabsSimilarVoicesRequest,
   ElevenLabsHistoryListRequest,
   ElevenLabsHistoryDownloadRequest,
+  ElevenLabsListDubbingRequest,
+  ElevenLabsCreateDubbingRequest,
 } from "./zod";
 
 export type {
@@ -212,6 +214,12 @@ export type {
   ElevenLabsHistoryDownloadRequest,
   ElevenLabsHistoryDownloadRequestInput,
   ElevenLabsHistoryDownloadParsedRequest,
+  ElevenLabsListDubbingRequest,
+  ElevenLabsListDubbingRequestInput,
+  ElevenLabsListDubbingParsedRequest,
+  ElevenLabsCreateDubbingRequest,
+  ElevenLabsCreateDubbingRequestInput,
+  ElevenLabsCreateDubbingParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -299,6 +307,60 @@ export type ElevenLabsGetTranscriptResponse =
   | ElevenLabsMultichannelTranscript;
 
 export type ElevenLabsDeleteTranscriptResponse = Record<string, unknown>;
+
+// -- Dubbing response shapes -------------------------------------------------
+
+export interface ElevenLabsDubbingMediaMetadata {
+  content_type: string;
+  duration: number;
+}
+
+export interface ElevenLabsDubbingMetadata {
+  dubbing_id: string;
+  name: string;
+  status: string;
+  source_language: string | null;
+  target_languages: string[];
+  editable?: boolean;
+  created_at: string;
+  media_metadata?: ElevenLabsDubbingMediaMetadata | null;
+  error?: string | null;
+}
+
+export interface ElevenLabsListDubbingResponse {
+  dubs: ElevenLabsDubbingMetadata[];
+  next_cursor: string | null;
+  has_more: boolean;
+}
+
+export interface ElevenLabsCreateDubbingResponse {
+  dubbing_id: string;
+  expected_duration_sec: number;
+}
+
+export interface ElevenLabsDeleteDubbingResponse {
+  status: string;
+}
+
+export interface ElevenLabsDubbingTranscriptUtterance {
+  text: string;
+  speaker_id: string;
+  start_s: number;
+  end_s: number;
+  words: Record<string, unknown>[];
+}
+
+export interface ElevenLabsDubbingTranscript {
+  language: string;
+  utterances: ElevenLabsDubbingTranscriptUtterance[];
+}
+
+export interface ElevenLabsDubbingTranscriptsResponse {
+  transcript_format: "srt" | "webvtt" | "json";
+  srt?: string | null;
+  webvtt?: string | null;
+  json?: ElevenLabsDubbingTranscript | null;
+}
 
 // -- Voice response shapes ---------------------------------------------------
 
@@ -1421,6 +1483,71 @@ export interface ElevenLabsSpeechToTextMethod {
   transcripts: ElevenLabsSpeechToTextTranscripts;
 }
 
+export interface ElevenLabsListDubbingMethod {
+  (
+    req?: ElevenLabsListDubbingRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListDubbingResponse>;
+  schema: z.ZodType<ElevenLabsListDubbingRequest>;
+}
+
+export interface ElevenLabsCreateDubbingMethod {
+  (
+    req: ElevenLabsCreateDubbingRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateDubbingResponse>;
+  schema: z.ZodType<ElevenLabsCreateDubbingRequest>;
+}
+
+export interface ElevenLabsGetDubbingMethod {
+  (dubbingId: string, signal?: AbortSignal): Promise<ElevenLabsDubbingMetadata>;
+  schema: undefined;
+}
+
+export interface ElevenLabsDeleteDubbingMethod {
+  (
+    dubbingId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteDubbingResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetDubbingAudioMethod {
+  (
+    dubbingId: string,
+    languageCode: string,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetDubbingTranscriptMethod {
+  (
+    dubbingId: string,
+    languageCode: string,
+    formatType: "srt" | "webvtt" | "json",
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDubbingTranscriptsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsDubbingAudioNamespace {
+  get: ElevenLabsGetDubbingAudioMethod;
+}
+
+export interface ElevenLabsDubbingTranscriptsNamespace {
+  get: ElevenLabsGetDubbingTranscriptMethod;
+}
+
+export interface ElevenLabsDubbingNamespace {
+  list: ElevenLabsListDubbingMethod;
+  create: ElevenLabsCreateDubbingMethod;
+  get: ElevenLabsGetDubbingMethod;
+  delete: ElevenLabsDeleteDubbingMethod;
+  audio: ElevenLabsDubbingAudioNamespace;
+  transcripts: ElevenLabsDubbingTranscriptsNamespace;
+}
+
 export interface ElevenLabsSpeechToSpeechStreamMethod {
   (
     voiceId: string,
@@ -2168,6 +2295,7 @@ export interface ElevenLabsV1Namespace {
   textToVoice: ElevenLabsTextToVoiceMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
+  dubbing: ElevenLabsDubbingNamespace;
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsConvaiNamespace;

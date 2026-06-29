@@ -64,6 +64,17 @@ import type {
   ElevenLabsUpdateToolRequest,
   ElevenLabsGetToolDependentAgentsRequest,
   ElevenLabsGetToolExecutionsRequest,
+  ElevenLabsCreateAgentTestRequest,
+  ElevenLabsListAgentTestsRequest,
+  ElevenLabsUpdateAgentTestRequest,
+  ElevenLabsGetAgentTestSummariesRequest,
+  ElevenLabsBulkMoveAgentTestsRequest,
+  ElevenLabsCreateAgentTestFolderRequest,
+  ElevenLabsUpdateAgentTestFolderRequest,
+  ElevenLabsDeleteAgentTestFolderRequest,
+  ElevenLabsRunAgentTestsRequest,
+  ElevenLabsListTestInvocationsRequest,
+  ElevenLabsResubmitTestsRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest,
@@ -347,6 +358,39 @@ export type {
   ElevenLabsGetToolExecutionsRequest,
   ElevenLabsGetToolExecutionsRequestInput,
   ElevenLabsGetToolExecutionsParsedRequest,
+  ElevenLabsCreateAgentTestRequest,
+  ElevenLabsCreateAgentTestRequestInput,
+  ElevenLabsCreateAgentTestParsedRequest,
+  ElevenLabsListAgentTestsRequest,
+  ElevenLabsListAgentTestsRequestInput,
+  ElevenLabsListAgentTestsParsedRequest,
+  ElevenLabsUpdateAgentTestRequest,
+  ElevenLabsUpdateAgentTestRequestInput,
+  ElevenLabsUpdateAgentTestParsedRequest,
+  ElevenLabsGetAgentTestSummariesRequest,
+  ElevenLabsGetAgentTestSummariesRequestInput,
+  ElevenLabsGetAgentTestSummariesParsedRequest,
+  ElevenLabsBulkMoveAgentTestsRequest,
+  ElevenLabsBulkMoveAgentTestsRequestInput,
+  ElevenLabsBulkMoveAgentTestsParsedRequest,
+  ElevenLabsCreateAgentTestFolderRequest,
+  ElevenLabsCreateAgentTestFolderRequestInput,
+  ElevenLabsCreateAgentTestFolderParsedRequest,
+  ElevenLabsUpdateAgentTestFolderRequest,
+  ElevenLabsUpdateAgentTestFolderRequestInput,
+  ElevenLabsUpdateAgentTestFolderParsedRequest,
+  ElevenLabsDeleteAgentTestFolderRequest,
+  ElevenLabsDeleteAgentTestFolderRequestInput,
+  ElevenLabsDeleteAgentTestFolderParsedRequest,
+  ElevenLabsRunAgentTestsRequest,
+  ElevenLabsRunAgentTestsRequestInput,
+  ElevenLabsRunAgentTestsParsedRequest,
+  ElevenLabsListTestInvocationsRequest,
+  ElevenLabsListTestInvocationsRequestInput,
+  ElevenLabsListTestInvocationsParsedRequest,
+  ElevenLabsResubmitTestsRequest,
+  ElevenLabsResubmitTestsRequestInput,
+  ElevenLabsResubmitTestsParsedRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestInput,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlParsedRequest,
@@ -2105,6 +2149,172 @@ export interface ElevenLabsAgentBranchPreviewResponse extends ElevenLabsGetAgent
 export interface ElevenLabsLiveConversationCountResponse {
   count: number;
 }
+
+// -- Agents Platform (Conversational AI) Tests response shapes ---------------
+
+export type ElevenLabsAgentTestType = "llm" | "tool" | "simulation" | "folder";
+
+export interface ElevenLabsAgentTestFolderPathSegment {
+  id: string;
+  name?: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsAgentTestSummary {
+  id: string;
+  name: string;
+  created_at_unix_secs: number;
+  last_updated_at_unix_secs: number;
+  type: ElevenLabsAgentTestType;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  entity_type?: "test" | "folder";
+  folder_parent_id?: string | null;
+  folder_path?: ElevenLabsAgentTestFolderPathSegment[];
+  children_count?: number | null;
+  conversation_initiation_source?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsCreateAgentTestResponse {
+  id: string;
+}
+
+export interface ElevenLabsListAgentTestsResponse {
+  tests: ElevenLabsAgentTestSummary[];
+  has_more: boolean;
+  next_cursor?: string | null;
+}
+
+export interface ElevenLabsAgentTestResponse {
+  id: string;
+  name: string;
+  type?: "llm" | "tool" | "simulation";
+  from_conversation_metadata?: Record<string, unknown> | null;
+  dynamic_variables?: Record<string, unknown>;
+  chat_history?: Record<string, unknown>[];
+  conversation_initiation_source?: string | null;
+  success_condition?: string | null;
+  success_conditions?: string[];
+  success_examples?: Record<string, unknown>[];
+  failure_examples?: Record<string, unknown>[];
+  tool_call_parameters?: Record<string, unknown> | null;
+  check_any_tool_matches?: boolean | null;
+  simulation_scenario?: string;
+  simulation_max_turns?: number;
+  simulation_environment?: string | null;
+  tool_mock_config?: Record<string, unknown>;
+  evaluation_model?: string | Record<string, unknown> | null;
+  simulated_user_model?: string | Record<string, unknown> | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsUpdateAgentTestResponse = ElevenLabsAgentTestResponse;
+
+export type ElevenLabsDeleteAgentTestResponse = Record<string, unknown>;
+
+export interface ElevenLabsGetAgentTestSummariesResponse {
+  tests: Record<string, ElevenLabsAgentTestSummary>;
+}
+
+export type ElevenLabsBulkMoveAgentTestsResponse = Record<string, unknown>;
+
+export interface ElevenLabsCreateAgentTestFolderResponse {
+  id: string;
+  name: string;
+}
+
+export interface ElevenLabsAgentTestFolderResponse extends ElevenLabsCreateAgentTestFolderResponse {
+  folder_path?: ElevenLabsAgentTestFolderPathSegment[];
+  children_count?: number;
+}
+
+export type ElevenLabsUpdateAgentTestFolderResponse =
+  ElevenLabsAgentTestFolderResponse;
+
+export type ElevenLabsDeleteAgentTestFolderResponse = Record<string, unknown>;
+
+export interface ElevenLabsTestRunRequestItem {
+  test_id: string;
+  workflow_node_id?: string | null;
+  root_folder_id?: string | null;
+  root_folder_name?: string | null;
+}
+
+export interface ElevenLabsTestInvocationSummary {
+  id: string;
+  created_at_unix_secs: number;
+  test_run_count: number;
+  passed_count: number;
+  failed_count: number;
+  pending_count: number;
+  title: string;
+  agent_id?: string | null;
+  branch_id?: string | null;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  repeat_count?: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListTestInvocationsMeta {
+  total?: number | null;
+  page?: number | null;
+  page_size?: number | null;
+}
+
+export interface ElevenLabsListTestInvocationsResponse {
+  results: ElevenLabsTestInvocationSummary[];
+  has_more: boolean;
+  meta?: ElevenLabsListTestInvocationsMeta;
+  next_cursor?: string | null;
+}
+
+export interface ElevenLabsTestRunResponse {
+  test_run_id: string;
+  test_invocation_id: string;
+  agent_id: string;
+  status: string;
+  test_id: string;
+  test_info?: Record<string, unknown> | null;
+  branch_id?: string | null;
+  workflow_node_id?: string | null;
+  agent_responses?: Record<string, unknown>[] | null;
+  test_name?: string;
+  condition_result?: Record<string, unknown> | null;
+  last_updated_at_unix?: number;
+  metadata?: Record<string, unknown> | null;
+  root_folder_id?: string | null;
+  root_folder_name?: string | null;
+  environment?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsTestRunResultSummary {
+  test_id: string;
+  test_name: string;
+  workflow_node_id?: string | null;
+  buckets: Record<string, unknown>[];
+}
+
+export interface ElevenLabsTestSuiteInvocationResponse {
+  id: string;
+  test_runs: ElevenLabsTestRunResponse[];
+  agent_id?: string | null;
+  branch_id?: string | null;
+  created_at?: number;
+  folder_id?: string | null;
+  repeat_count?: number;
+  bucketing_status?: "pending" | "completed" | "failed" | null;
+  result_groups?: ElevenLabsTestRunResultSummary[];
+  [key: string]: unknown;
+}
+
+export type ElevenLabsRunAgentTestsResponse =
+  ElevenLabsTestSuiteInvocationResponse;
+
+export type ElevenLabsGetTestInvocationResponse =
+  ElevenLabsTestSuiteInvocationResponse;
+
+export type ElevenLabsResubmitTestsResponse = Record<string, unknown>;
 
 // -- Agents Platform (Conversational AI) Tools response shapes ---------------
 
@@ -4032,6 +4242,128 @@ export interface ElevenLabsGetLiveConversationCountMethod {
   schema: z.ZodType<ElevenLabsGetLiveConversationCountRequest>;
 }
 
+export interface ElevenLabsCreateAgentTestMethod {
+  (
+    req: ElevenLabsCreateAgentTestRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateAgentTestResponse>;
+  schema: z.ZodType<ElevenLabsCreateAgentTestRequest>;
+}
+
+export interface ElevenLabsListAgentTestsMethod {
+  (
+    req?: ElevenLabsListAgentTestsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListAgentTestsResponse>;
+  schema: z.ZodType<ElevenLabsListAgentTestsRequest>;
+}
+
+export interface ElevenLabsGetAgentTestMethod {
+  (testId: string, signal?: AbortSignal): Promise<ElevenLabsAgentTestResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateAgentTestMethod {
+  (
+    testId: string,
+    req: ElevenLabsUpdateAgentTestRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateAgentTestResponse>;
+  schema: z.ZodType<ElevenLabsUpdateAgentTestRequest>;
+}
+
+export interface ElevenLabsDeleteAgentTestMethod {
+  (
+    testId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteAgentTestResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetAgentTestSummariesMethod {
+  (
+    req: ElevenLabsGetAgentTestSummariesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentTestSummariesResponse>;
+  schema: z.ZodType<ElevenLabsGetAgentTestSummariesRequest>;
+}
+
+export interface ElevenLabsBulkMoveAgentTestsMethod {
+  (
+    req: ElevenLabsBulkMoveAgentTestsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsBulkMoveAgentTestsResponse>;
+  schema: z.ZodType<ElevenLabsBulkMoveAgentTestsRequest>;
+}
+
+export interface ElevenLabsCreateAgentTestFolderMethod {
+  (
+    req: ElevenLabsCreateAgentTestFolderRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateAgentTestFolderResponse>;
+  schema: z.ZodType<ElevenLabsCreateAgentTestFolderRequest>;
+}
+
+export interface ElevenLabsGetAgentTestFolderMethod {
+  (
+    folderId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentTestFolderResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateAgentTestFolderMethod {
+  (
+    folderId: string,
+    req: ElevenLabsUpdateAgentTestFolderRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateAgentTestFolderResponse>;
+  schema: z.ZodType<ElevenLabsUpdateAgentTestFolderRequest>;
+}
+
+export interface ElevenLabsDeleteAgentTestFolderMethod {
+  (
+    folderId: string,
+    req?: ElevenLabsDeleteAgentTestFolderRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteAgentTestFolderResponse>;
+  schema: z.ZodType<ElevenLabsDeleteAgentTestFolderRequest>;
+}
+
+export interface ElevenLabsRunAgentTestsMethod {
+  (
+    agentId: string,
+    req: ElevenLabsRunAgentTestsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRunAgentTestsResponse>;
+  schema: z.ZodType<ElevenLabsRunAgentTestsRequest>;
+}
+
+export interface ElevenLabsListTestInvocationsMethod {
+  (
+    req?: ElevenLabsListTestInvocationsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListTestInvocationsResponse>;
+  schema: z.ZodType<ElevenLabsListTestInvocationsRequest>;
+}
+
+export interface ElevenLabsGetTestInvocationMethod {
+  (
+    testInvocationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetTestInvocationResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsResubmitTestsMethod {
+  (
+    testInvocationId: string,
+    req: ElevenLabsResubmitTestsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsResubmitTestsResponse>;
+  schema: z.ZodType<ElevenLabsResubmitTestsRequest>;
+}
+
 export interface ElevenLabsCreateToolMethod {
   (
     req: ElevenLabsCreateToolRequest,
@@ -4560,6 +4892,31 @@ export interface ElevenLabsConvaiAgentsNamespace {
   topics: ElevenLabsGetAgentTopicsMethod;
   drafts: ElevenLabsConvaiAgentDraftsNamespace;
   deployments: ElevenLabsCreateAgentDeploymentMethod;
+  runTests: ElevenLabsRunAgentTestsMethod;
+}
+
+export interface ElevenLabsConvaiAgentTestFoldersNamespace {
+  create: ElevenLabsCreateAgentTestFolderMethod;
+  get: ElevenLabsGetAgentTestFolderMethod;
+  update: ElevenLabsUpdateAgentTestFolderMethod;
+  delete: ElevenLabsDeleteAgentTestFolderMethod;
+}
+
+export interface ElevenLabsConvaiAgentTestingNamespace {
+  create: ElevenLabsCreateAgentTestMethod;
+  list: ElevenLabsListAgentTestsMethod;
+  get: ElevenLabsGetAgentTestMethod;
+  update: ElevenLabsUpdateAgentTestMethod;
+  delete: ElevenLabsDeleteAgentTestMethod;
+  summaries: ElevenLabsGetAgentTestSummariesMethod;
+  bulkMove: ElevenLabsBulkMoveAgentTestsMethod;
+  folders: ElevenLabsConvaiAgentTestFoldersNamespace;
+}
+
+export interface ElevenLabsConvaiTestInvocationsNamespace {
+  list: ElevenLabsListTestInvocationsMethod;
+  get: ElevenLabsGetTestInvocationMethod;
+  resubmit: ElevenLabsResubmitTestsMethod;
 }
 
 export interface ElevenLabsConvaiToolsNamespace {
@@ -4680,6 +5037,8 @@ export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
   agent: ElevenLabsConvaiAgentNamespace;
   analytics: ElevenLabsConvaiAnalyticsNamespace;
+  agentTesting: ElevenLabsConvaiAgentTestingNamespace;
+  testInvocations: ElevenLabsConvaiTestInvocationsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsConvaiConversationsNamespace;
@@ -4930,6 +5289,7 @@ export interface ElevenLabsPostConvaiAgentsNamespace {
     create: ElevenLabsCreateAgentDraftMethod;
   };
   deployments: ElevenLabsCreateAgentDeploymentMethod;
+  runTests: ElevenLabsRunAgentTestsMethod;
   branches: {
     create: ElevenLabsCreateAgentBranchMethod;
     rebase: ElevenLabsRebaseAgentBranchMethod;
@@ -4939,6 +5299,19 @@ export interface ElevenLabsPostConvaiAgentsNamespace {
 
 export interface ElevenLabsPostConvaiToolsNamespace {
   create: ElevenLabsCreateToolMethod;
+}
+
+export interface ElevenLabsPostConvaiAgentTestingNamespace {
+  create: ElevenLabsCreateAgentTestMethod;
+  summaries: ElevenLabsGetAgentTestSummariesMethod;
+  bulkMove: ElevenLabsBulkMoveAgentTestsMethod;
+  folders: {
+    create: ElevenLabsCreateAgentTestFolderMethod;
+  };
+}
+
+export interface ElevenLabsPostConvaiTestInvocationsNamespace {
+  resubmit: ElevenLabsResubmitTestsMethod;
 }
 
 export interface ElevenLabsPostConvaiKnowledgeBaseNamespace {
@@ -4975,6 +5348,8 @@ export interface ElevenLabsPostConvaiAgentNamespace {
 export interface ElevenLabsPostConvaiNamespace {
   agents: ElevenLabsPostConvaiAgentsNamespace;
   agent: ElevenLabsPostConvaiAgentNamespace;
+  agentTesting: ElevenLabsPostConvaiAgentTestingNamespace;
+  testInvocations: ElevenLabsPostConvaiTestInvocationsNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsPostConvaiConversationsNamespace;
@@ -5054,6 +5429,12 @@ export interface ElevenLabsPatchConvaiToolsNamespace {
   update: ElevenLabsUpdateToolMethod;
 }
 
+export interface ElevenLabsPatchConvaiAgentTestingNamespace {
+  folders: {
+    update: ElevenLabsUpdateAgentTestFolderMethod;
+  };
+}
+
 export interface ElevenLabsPatchConvaiKnowledgeBaseNamespace {
   update: ElevenLabsUpdateKnowledgeBaseDocumentMethod;
   updateFile: ElevenLabsUpdateKnowledgeBaseFileDocumentMethod;
@@ -5065,6 +5446,7 @@ export interface ElevenLabsPatchConvaiPhoneNumbersNamespace {
 
 export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
+  agentTesting: ElevenLabsPatchConvaiAgentTestingNamespace;
   tools: ElevenLabsPatchConvaiToolsNamespace;
   knowledgeBase: ElevenLabsPatchConvaiKnowledgeBaseNamespace;
   phoneNumbers: ElevenLabsPatchConvaiPhoneNumbersNamespace;
@@ -5085,6 +5467,22 @@ export interface ElevenLabsPatchNamespace {
   v1: ElevenLabsPatchV1Namespace;
 }
 
+export interface ElevenLabsPutConvaiAgentTestingNamespace {
+  update: ElevenLabsUpdateAgentTestMethod;
+}
+
+export interface ElevenLabsPutConvaiNamespace {
+  agentTesting: ElevenLabsPutConvaiAgentTestingNamespace;
+}
+
+export interface ElevenLabsPutV1Namespace {
+  convai: ElevenLabsPutConvaiNamespace;
+}
+
+export interface ElevenLabsPutNamespace {
+  v1: ElevenLabsPutV1Namespace;
+}
+
 export interface ElevenLabsGetConvaiAgentsNamespace {
   list: ElevenLabsListAgentsMethod;
   get: ElevenLabsGetAgentMethod;
@@ -5103,6 +5501,19 @@ export interface ElevenLabsGetConvaiToolsNamespace {
   get: ElevenLabsGetToolMethod;
   dependentAgents: ElevenLabsGetToolDependentAgentsMethod;
   executions: ElevenLabsGetToolExecutionsMethod;
+}
+
+export interface ElevenLabsGetConvaiAgentTestingNamespace {
+  list: ElevenLabsListAgentTestsMethod;
+  get: ElevenLabsGetAgentTestMethod;
+  folders: {
+    get: ElevenLabsGetAgentTestFolderMethod;
+  };
+}
+
+export interface ElevenLabsGetConvaiTestInvocationsNamespace {
+  list: ElevenLabsListTestInvocationsMethod;
+  get: ElevenLabsGetTestInvocationMethod;
 }
 
 export interface ElevenLabsGetConvaiKnowledgeBaseNamespace {
@@ -5152,6 +5563,8 @@ export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
   agent: ElevenLabsGetConvaiAgentNamespace;
   analytics: ElevenLabsGetConvaiAnalyticsNamespace;
+  agentTesting: ElevenLabsGetConvaiAgentTestingNamespace;
+  testInvocations: ElevenLabsGetConvaiTestInvocationsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsGetConvaiConversationsNamespace;
@@ -5213,6 +5626,13 @@ export interface ElevenLabsDeleteConvaiToolsNamespace {
   delete: ElevenLabsDeleteToolMethod;
 }
 
+export interface ElevenLabsDeleteConvaiAgentTestingNamespace {
+  delete: ElevenLabsDeleteAgentTestMethod;
+  folders: {
+    delete: ElevenLabsDeleteAgentTestFolderMethod;
+  };
+}
+
 export interface ElevenLabsDeleteConvaiKnowledgeBaseNamespace {
   delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
   ragIndex: {
@@ -5236,6 +5656,7 @@ export interface ElevenLabsDeleteConvaiPhoneNumbersNamespace {
 
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
+  agentTesting: ElevenLabsDeleteConvaiAgentTestingNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsDeleteConvaiConversationsNamespace;
@@ -5283,6 +5704,7 @@ export interface ElevenLabsProvider {
   v2: ElevenLabsV2Namespace;
   post: ElevenLabsPostNamespace;
   patch: ElevenLabsPatchNamespace;
+  put: ElevenLabsPutNamespace;
   get: ElevenLabsGetNamespace;
   delete: ElevenLabsDeleteNamespace;
 }

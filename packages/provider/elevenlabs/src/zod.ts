@@ -1571,6 +1571,255 @@ export type ElevenLabsGetToolExecutionsParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — Tests / Test Invocations
+// ---------------------------------------------------------------------------
+
+// The test payloads embed conversation transcripts, tool evaluation config,
+// simulation config, and optional ad-hoc agent overrides. Keep those nested
+// trees permissive in the same style as agent/tool config schemas above.
+const ElevenLabsAgentTestObjectSchema = z.record(z.string(), z.unknown());
+const ElevenLabsAgentTestTypeSchema = z.enum([
+  "llm",
+  "tool",
+  "simulation",
+  "folder",
+]);
+const ElevenLabsAgentTestSharingModeSchema = z.enum(["all", "shared_with_me"]);
+
+const ElevenLabsAgentTestPayloadSchema = z.object({
+  from_conversation_metadata:
+    ElevenLabsAgentTestObjectSchema.nullable().optional(),
+  dynamic_variables: z.record(z.string(), z.unknown()).optional(),
+  chat_history: z.array(ElevenLabsAgentTestObjectSchema).max(200).optional(),
+  conversation_initiation_source: z.string().nullable().optional(),
+  type: z.enum(["llm", "tool", "simulation"]).optional(),
+  success_condition: z.string().nullable().optional(),
+  success_conditions: z.array(z.string()).max(30).optional(),
+  success_examples: z.array(ElevenLabsAgentTestObjectSchema).max(5).optional(),
+  failure_examples: z.array(ElevenLabsAgentTestObjectSchema).max(5).optional(),
+  tool_call_parameters: ElevenLabsAgentTestObjectSchema.nullable().optional(),
+  check_any_tool_matches: z.boolean().nullable().optional(),
+  simulation_scenario: z.string().optional(),
+  simulation_max_turns: z.number().int().min(1).max(50).optional(),
+  simulation_environment: z.string().nullable().optional(),
+  tool_mock_config: ElevenLabsAgentTestObjectSchema.optional(),
+  evaluation_model: z
+    .union([z.string(), ElevenLabsAgentTestObjectSchema])
+    .nullable()
+    .optional(),
+  simulated_user_model: z
+    .union([z.string(), ElevenLabsAgentTestObjectSchema])
+    .nullable()
+    .optional(),
+  name: z.string(),
+  parent_folder_id: z.string().nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agent-testing/create
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateAgentTestRequestSchema =
+  ElevenLabsAgentTestPayloadSchema;
+
+export type ElevenLabsCreateAgentTestRequest = z.input<
+  typeof ElevenLabsCreateAgentTestRequestSchema
+>;
+export type ElevenLabsCreateAgentTestRequestInput =
+  ElevenLabsCreateAgentTestRequest;
+export type ElevenLabsCreateAgentTestParsedRequest = z.output<
+  typeof ElevenLabsCreateAgentTestRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/agent-testing
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListAgentTestsRequestSchema = z.object({
+  cursor: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  search: z.string().nullable().optional(),
+  parent_folder_id: z.string().nullable().optional(),
+  types: z.array(ElevenLabsAgentTestTypeSchema).nullable().optional(),
+  include_folders: z.boolean().nullable().optional(),
+  sort_mode: z.enum(["default", "folders_first"]).optional(),
+  sharing_mode: ElevenLabsAgentTestSharingModeSchema.optional(),
+});
+
+export type ElevenLabsListAgentTestsRequest = z.input<
+  typeof ElevenLabsListAgentTestsRequestSchema
+>;
+export type ElevenLabsListAgentTestsRequestInput =
+  ElevenLabsListAgentTestsRequest;
+export type ElevenLabsListAgentTestsParsedRequest = z.output<
+  typeof ElevenLabsListAgentTestsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PUT /v1/convai/agent-testing/:test_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateAgentTestRequestSchema =
+  ElevenLabsAgentTestPayloadSchema;
+
+export type ElevenLabsUpdateAgentTestRequest = z.input<
+  typeof ElevenLabsUpdateAgentTestRequestSchema
+>;
+export type ElevenLabsUpdateAgentTestRequestInput =
+  ElevenLabsUpdateAgentTestRequest;
+export type ElevenLabsUpdateAgentTestParsedRequest = z.output<
+  typeof ElevenLabsUpdateAgentTestRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agent-testing/summaries
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetAgentTestSummariesRequestSchema = z.object({
+  test_ids: z.array(z.string()),
+});
+
+export type ElevenLabsGetAgentTestSummariesRequest = z.input<
+  typeof ElevenLabsGetAgentTestSummariesRequestSchema
+>;
+export type ElevenLabsGetAgentTestSummariesRequestInput =
+  ElevenLabsGetAgentTestSummariesRequest;
+export type ElevenLabsGetAgentTestSummariesParsedRequest = z.output<
+  typeof ElevenLabsGetAgentTestSummariesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agent-testing/bulk-move
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsBulkMoveAgentTestsRequestSchema = z.object({
+  entity_ids: z.array(z.string()).min(1),
+  move_to: z.string().nullable().optional(),
+});
+
+export type ElevenLabsBulkMoveAgentTestsRequest = z.input<
+  typeof ElevenLabsBulkMoveAgentTestsRequestSchema
+>;
+export type ElevenLabsBulkMoveAgentTestsRequestInput =
+  ElevenLabsBulkMoveAgentTestsRequest;
+export type ElevenLabsBulkMoveAgentTestsParsedRequest = z.output<
+  typeof ElevenLabsBulkMoveAgentTestsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST/PATCH/DELETE /v1/convai/agent-testing/folders
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateAgentTestFolderRequestSchema = z.object({
+  name: z.string(),
+  parent_folder_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsCreateAgentTestFolderRequest = z.input<
+  typeof ElevenLabsCreateAgentTestFolderRequestSchema
+>;
+export type ElevenLabsCreateAgentTestFolderRequestInput =
+  ElevenLabsCreateAgentTestFolderRequest;
+export type ElevenLabsCreateAgentTestFolderParsedRequest = z.output<
+  typeof ElevenLabsCreateAgentTestFolderRequestSchema
+>;
+
+export const ElevenLabsUpdateAgentTestFolderRequestSchema = z.object({
+  name: z.string(),
+});
+
+export type ElevenLabsUpdateAgentTestFolderRequest = z.input<
+  typeof ElevenLabsUpdateAgentTestFolderRequestSchema
+>;
+export type ElevenLabsUpdateAgentTestFolderRequestInput =
+  ElevenLabsUpdateAgentTestFolderRequest;
+export type ElevenLabsUpdateAgentTestFolderParsedRequest = z.output<
+  typeof ElevenLabsUpdateAgentTestFolderRequestSchema
+>;
+
+export const ElevenLabsDeleteAgentTestFolderRequestSchema = z.object({
+  force: z.boolean().optional(),
+});
+
+export type ElevenLabsDeleteAgentTestFolderRequest = z.input<
+  typeof ElevenLabsDeleteAgentTestFolderRequestSchema
+>;
+export type ElevenLabsDeleteAgentTestFolderRequestInput =
+  ElevenLabsDeleteAgentTestFolderRequest;
+export type ElevenLabsDeleteAgentTestFolderParsedRequest = z.output<
+  typeof ElevenLabsDeleteAgentTestFolderRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agents/:agent_id/run-tests
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsRunAgentTestsRequestSchema = z.object({
+  tests: z
+    .array(
+      z.object({
+        test_id: z.string(),
+        workflow_node_id: z.string().nullable().optional(),
+        root_folder_id: z.string().nullable().optional(),
+        root_folder_name: z.string().nullable().optional(),
+      })
+    )
+    .min(1)
+    .max(5000),
+  agent_config_override: ElevenLabsAgentTestObjectSchema.nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+  repeat_count: z.number().int().min(1).max(50).optional(),
+});
+
+export type ElevenLabsRunAgentTestsRequest = z.input<
+  typeof ElevenLabsRunAgentTestsRequestSchema
+>;
+export type ElevenLabsRunAgentTestsRequestInput =
+  ElevenLabsRunAgentTestsRequest;
+export type ElevenLabsRunAgentTestsParsedRequest = z.output<
+  typeof ElevenLabsRunAgentTestsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/test-invocations
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListTestInvocationsRequestSchema = z.object({
+  agent_id: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListTestInvocationsRequest = z.input<
+  typeof ElevenLabsListTestInvocationsRequestSchema
+>;
+export type ElevenLabsListTestInvocationsRequestInput =
+  ElevenLabsListTestInvocationsRequest;
+export type ElevenLabsListTestInvocationsParsedRequest = z.output<
+  typeof ElevenLabsListTestInvocationsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/test-invocations/:test_invocation_id/resubmit
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsResubmitTestsRequestSchema = z.object({
+  test_run_ids: z.array(z.string()).min(1).max(5000),
+  agent_config_override: ElevenLabsAgentTestObjectSchema.nullable().optional(),
+  agent_id: z.string(),
+  branch_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsResubmitTestsRequest = z.input<
+  typeof ElevenLabsResubmitTestsRequestSchema
+>;
+export type ElevenLabsResubmitTestsRequestInput =
+  ElevenLabsResubmitTestsRequest;
+export type ElevenLabsResubmitTestsParsedRequest = z.output<
+  typeof ElevenLabsResubmitTestsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform — Knowledge Base
 // ---------------------------------------------------------------------------
 

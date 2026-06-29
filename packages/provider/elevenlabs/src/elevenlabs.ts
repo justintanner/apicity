@@ -145,6 +145,32 @@ import {
   ElevenLabsGetToolDependentAgentsResponse,
   ElevenLabsGetToolExecutionsRequest,
   ElevenLabsGetToolExecutionsResponse,
+  ElevenLabsCreateAgentTestRequest,
+  ElevenLabsCreateAgentTestResponse,
+  ElevenLabsListAgentTestsRequest,
+  ElevenLabsListAgentTestsResponse,
+  ElevenLabsAgentTestResponse,
+  ElevenLabsUpdateAgentTestRequest,
+  ElevenLabsUpdateAgentTestResponse,
+  ElevenLabsDeleteAgentTestResponse,
+  ElevenLabsGetAgentTestSummariesRequest,
+  ElevenLabsGetAgentTestSummariesResponse,
+  ElevenLabsBulkMoveAgentTestsRequest,
+  ElevenLabsBulkMoveAgentTestsResponse,
+  ElevenLabsCreateAgentTestFolderRequest,
+  ElevenLabsCreateAgentTestFolderResponse,
+  ElevenLabsAgentTestFolderResponse,
+  ElevenLabsUpdateAgentTestFolderRequest,
+  ElevenLabsUpdateAgentTestFolderResponse,
+  ElevenLabsDeleteAgentTestFolderRequest,
+  ElevenLabsDeleteAgentTestFolderResponse,
+  ElevenLabsRunAgentTestsRequest,
+  ElevenLabsRunAgentTestsResponse,
+  ElevenLabsListTestInvocationsRequest,
+  ElevenLabsListTestInvocationsResponse,
+  ElevenLabsGetTestInvocationResponse,
+  ElevenLabsResubmitTestsRequest,
+  ElevenLabsResubmitTestsResponse,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlResponse,
   ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
@@ -365,6 +391,17 @@ import {
   ElevenLabsUpdateToolRequestSchema,
   ElevenLabsGetToolDependentAgentsRequestSchema,
   ElevenLabsGetToolExecutionsRequestSchema,
+  ElevenLabsCreateAgentTestRequestSchema,
+  ElevenLabsListAgentTestsRequestSchema,
+  ElevenLabsUpdateAgentTestRequestSchema,
+  ElevenLabsGetAgentTestSummariesRequestSchema,
+  ElevenLabsBulkMoveAgentTestsRequestSchema,
+  ElevenLabsCreateAgentTestFolderRequestSchema,
+  ElevenLabsUpdateAgentTestFolderRequestSchema,
+  ElevenLabsDeleteAgentTestFolderRequestSchema,
+  ElevenLabsRunAgentTestsRequestSchema,
+  ElevenLabsListTestInvocationsRequestSchema,
+  ElevenLabsResubmitTestsRequestSchema,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestSchema,
   ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestSchema,
   ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestSchema,
@@ -640,7 +677,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   }
 
   async function makeJsonRequest<T>(
-    method: "GET" | "POST" | "DELETE" | "PATCH",
+    method: "GET" | "POST" | "DELETE" | "PATCH" | "PUT",
     path: string,
     body?: unknown,
     signal?: AbortSignal,
@@ -699,7 +736,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   // with no content), which the agent DELETE endpoint returns. Parses JSON when
   // present, otherwise resolves to an empty object.
   async function makeJsonRequestAllowEmpty<T>(
-    method: "GET" | "POST" | "DELETE" | "PATCH",
+    method: "GET" | "POST" | "DELETE" | "PATCH" | "PUT",
     path: string,
     body?: unknown,
     signal?: AbortSignal,
@@ -4057,6 +4094,269 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsGetLiveConversationCountRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/convai/agent-testing/create
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/create
+  const createAgentTest = Object.assign(
+    async (
+      req: ElevenLabsCreateAgentTestRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateAgentTestResponse> => {
+      return makeJsonRequest<ElevenLabsCreateAgentTestResponse>(
+        "POST",
+        "/v1/convai/agent-testing/create",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateAgentTestRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agent-testing
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/list
+  const listAgentTests = Object.assign(
+    async (
+      req: ElevenLabsListAgentTestsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListAgentTestsResponse> => {
+      return makeJsonRequest<ElevenLabsListAgentTestsResponse>(
+        "GET",
+        "/v1/convai/agent-testing",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListAgentTestsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agent-testing/{testId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/get
+  const getAgentTest = Object.assign(
+    async (
+      testId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentTestResponse> => {
+      return makeJsonRequest<ElevenLabsAgentTestResponse>(
+        "GET",
+        `/v1/convai/agent-testing/${encodeURIComponent(testId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PUT https://api.elevenlabs.io/v1/convai/agent-testing/{testId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/update
+  const updateAgentTest = Object.assign(
+    async (
+      testId: string,
+      req: ElevenLabsUpdateAgentTestRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateAgentTestResponse> => {
+      return makeJsonRequest<ElevenLabsUpdateAgentTestResponse>(
+        "PUT",
+        `/v1/convai/agent-testing/${encodeURIComponent(testId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateAgentTestRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/agent-testing/{testId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/delete
+  const deleteAgentTest = Object.assign(
+    async (
+      testId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteAgentTestResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteAgentTestResponse>(
+        "DELETE",
+        `/v1/convai/agent-testing/${encodeURIComponent(testId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agent-testing/summaries
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/summaries
+  const getAgentTestSummaries = Object.assign(
+    async (
+      req: ElevenLabsGetAgentTestSummariesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentTestSummariesResponse> => {
+      return makeJsonRequest<ElevenLabsGetAgentTestSummariesResponse>(
+        "POST",
+        "/v1/convai/agent-testing/summaries",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsGetAgentTestSummariesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agent-testing/bulk-move
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/move
+  const bulkMoveAgentTests = Object.assign(
+    async (
+      req: ElevenLabsBulkMoveAgentTestsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsBulkMoveAgentTestsResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsBulkMoveAgentTestsResponse>(
+        "POST",
+        "/v1/convai/agent-testing/bulk-move",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsBulkMoveAgentTestsRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agent-testing/folders
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-folders/create
+  const createAgentTestFolder = Object.assign(
+    async (
+      req: ElevenLabsCreateAgentTestFolderRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateAgentTestFolderResponse> => {
+      return makeJsonRequest<ElevenLabsCreateAgentTestFolderResponse>(
+        "POST",
+        "/v1/convai/agent-testing/folders",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateAgentTestFolderRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agent-testing/folders/{folderId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-folders/get
+  const getAgentTestFolder = Object.assign(
+    async (
+      folderId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentTestFolderResponse> => {
+      return makeJsonRequest<ElevenLabsAgentTestFolderResponse>(
+        "GET",
+        `/v1/convai/agent-testing/folders/${encodeURIComponent(folderId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/agent-testing/folders/{folderId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-folders/update
+  const updateAgentTestFolder = Object.assign(
+    async (
+      folderId: string,
+      req: ElevenLabsUpdateAgentTestFolderRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateAgentTestFolderResponse> => {
+      return makeJsonRequest<ElevenLabsUpdateAgentTestFolderResponse>(
+        "PATCH",
+        `/v1/convai/agent-testing/folders/${encodeURIComponent(folderId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateAgentTestFolderRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/agent-testing/folders/{folderId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-folders/delete
+  const deleteAgentTestFolder = Object.assign(
+    async (
+      folderId: string,
+      req: ElevenLabsDeleteAgentTestFolderRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteAgentTestFolderResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteAgentTestFolderResponse>(
+        "DELETE",
+        `/v1/convai/agent-testing/folders/${encodeURIComponent(folderId)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsDeleteAgentTestFolderRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/run-tests
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/run-tests
+  const runAgentTests = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsRunAgentTestsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsRunAgentTestsResponse> => {
+      return makeJsonRequest<ElevenLabsRunAgentTestsResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/run-tests`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsRunAgentTestsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/test-invocations
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-invocations/list
+  const listTestInvocations = Object.assign(
+    async (
+      req: ElevenLabsListTestInvocationsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListTestInvocationsResponse> => {
+      return makeJsonRequest<ElevenLabsListTestInvocationsResponse>(
+        "GET",
+        "/v1/convai/test-invocations",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListTestInvocationsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/test-invocations/{testInvocationId}
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-invocations/get
+  const getTestInvocation = Object.assign(
+    async (
+      testInvocationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetTestInvocationResponse> => {
+      return makeJsonRequest<ElevenLabsGetTestInvocationResponse>(
+        "GET",
+        `/v1/convai/test-invocations/${encodeURIComponent(testInvocationId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/test-invocations/{testInvocationId}/resubmit
+  // Docs: https://elevenlabs.io/docs/api-reference/tests/test-invocations/resubmit
+  const resubmitTests = Object.assign(
+    async (
+      testInvocationId: string,
+      req: ElevenLabsResubmitTestsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsResubmitTestsResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsResubmitTestsResponse>(
+        "POST",
+        `/v1/convai/test-invocations/${encodeURIComponent(testInvocationId)}/resubmit`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsResubmitTestsRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/phone-numbers
   // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/create
   const createPhoneNumber = Object.assign(
@@ -4208,6 +4508,29 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       delete: deleteAgentDraft,
     },
     deployments: createAgentDeployment,
+    runTests: runAgentTests,
+  };
+
+  const convaiAgentTestFolders = {
+    create: createAgentTestFolder,
+    get: getAgentTestFolder,
+    update: updateAgentTestFolder,
+    delete: deleteAgentTestFolder,
+  };
+  const convaiAgentTesting = {
+    create: createAgentTest,
+    list: listAgentTests,
+    get: getAgentTest,
+    update: updateAgentTest,
+    delete: deleteAgentTest,
+    summaries: getAgentTestSummaries,
+    bulkMove: bulkMoveAgentTests,
+    folders: convaiAgentTestFolders,
+  };
+  const convaiTestInvocations = {
+    list: listTestInvocations,
+    get: getTestInvocation,
+    resubmit: resubmitTests,
   };
 
   // POST https://api.elevenlabs.io/v1/convai/tools
@@ -5228,6 +5551,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       llmUsage: { calculate: calculateAgentLlmUsage },
     },
     analytics: { liveCount: getLiveConversationCount },
+    agentTesting: convaiAgentTesting,
+    testInvocations: convaiTestInvocations,
     tools: convaiTools,
     knowledgeBase: convaiKnowledgeBase,
     conversations: convaiConversations,
@@ -5365,6 +5690,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         simulateConversation,
         drafts: { create: createAgentDraft },
         deployments: createAgentDeployment,
+        runTests: runAgentTests,
         branches: {
           create: createAgentBranch,
           rebase: rebaseAgentBranch,
@@ -5373,6 +5699,17 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       },
       agent: {
         llmUsage: { calculate: calculateAgentLlmUsage },
+      },
+      agentTesting: {
+        create: createAgentTest,
+        summaries: getAgentTestSummaries,
+        bulkMove: bulkMoveAgentTests,
+        folders: {
+          create: createAgentTestFolder,
+        },
+      },
+      testInvocations: {
+        resubmit: resubmitTests,
       },
       tools: { create: createTool },
       knowledgeBase: {
@@ -5417,12 +5754,22 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         update: updateAgent,
         branches: { update: updateAgentBranch },
       },
+      agentTesting: {
+        folders: { update: updateAgentTestFolder },
+      },
       tools: { update: updateTool },
       knowledgeBase: {
         update: updateKnowledgeBaseDocument,
         updateFile: updateKnowledgeBaseFileDocument,
       },
       phoneNumbers: { update: updatePhoneNumber },
+    },
+  };
+  const putV1 = {
+    convai: {
+      agentTesting: {
+        update: updateAgentTest,
+      },
     },
   };
   const deleteV1 = {
@@ -5454,6 +5801,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       agents: {
         delete: deleteAgent,
         drafts: { delete: deleteAgentDraft },
+      },
+      agentTesting: {
+        delete: deleteAgentTest,
+        folders: { delete: deleteAgentTestFolder },
       },
       tools: { delete: deleteTool },
       knowledgeBase: {
@@ -5562,6 +5913,17 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           analytics: {
             liveCount: getLiveConversationCount,
           },
+          agentTesting: {
+            list: listAgentTests,
+            get: getAgentTest,
+            folders: {
+              get: getAgentTestFolder,
+            },
+          },
+          testInvocations: {
+            list: listTestInvocations,
+            get: getTestInvocation,
+          },
           tools: {
             list: listTools,
             get: getTool,
@@ -5608,6 +5970,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     post: { v1: postV1 },
     patch: { v1: patchV1 },
+    put: { v1: putV1 },
     delete: { v1: deleteV1 },
   });
 }

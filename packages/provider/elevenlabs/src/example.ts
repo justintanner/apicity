@@ -17,6 +17,19 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 1000
     }
   },
+  "GET v1.convai.agentTesting.list": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "page_size": 30,
+      "parent_folder_id": "tfld_4801kw9vb0v1ewp9h2c1dc7893yv",
+      "types": [
+        "llm",
+        "folder"
+      ],
+      "sort_mode": "folders_first",
+      "sharing_mode": "all"
+    }
+  },
   "GET v1.convai.agents.list": {
     "source": "elevenlabs/convai-agents",
     "payload": {
@@ -38,6 +51,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "GET v1.convai.knowledgeBase.list": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
+      "page_size": 30
+    }
+  },
+  "GET v1.convai.testInvocations.list": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "agent_id": "agent_4801kw9vazcbedyt8wgke5n8z0x6",
       "page_size": 30
     }
   },
@@ -65,6 +85,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 1,
       "voice_type": "default",
       "include_total_count": true
+    }
+  },
+  "PATCH v1.convai.agentTesting.folders.update": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "name": "Apicity route test folder updated"
     }
   },
   "PATCH v1.convai.agents.update": {
@@ -115,6 +141,44 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "author": "Apicity"
     }
   },
+  "POST v1.convai.agentTesting.bulkMove": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "entity_ids": [
+        "test_7801kw9vb11jfs0vfpn8x9148vmn"
+      ],
+      "move_to": "tfld_4801kw9vb0v1ewp9h2c1dc7893yv"
+    }
+  },
+  "POST v1.convai.agentTesting.create": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "name": "Apicity route response test",
+      "type": "llm",
+      "chat_history": [
+        {
+          "role": "user",
+          "message": "Say hello from Apicity in one short sentence.",
+          "time_in_call_secs": 0
+        }
+      ],
+      "success_condition": "The agent responds with a short greeting that mentions Apicity."
+    }
+  },
+  "POST v1.convai.agentTesting.folders.create": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "name": "Apicity route test folder"
+    }
+  },
+  "POST v1.convai.agentTesting.summaries": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "test_ids": [
+        "test_7801kw9vb11jfs0vfpn8x9148vmn"
+      ]
+    }
+  },
   "POST v1.convai.agents.create": {
     "source": "elevenlabs/convai-agents",
     "payload": {
@@ -131,6 +195,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "tags": [
         "apicity-test"
       ]
+    }
+  },
+  "POST v1.convai.agents.runTests": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "tests": [
+        {
+          "test_id": "test_7801kw9vb11jfs0vfpn8x9148vmn"
+        }
+      ],
+      "repeat_count": 1
     }
   },
   "POST v1.convai.knowledgeBase.text": {
@@ -165,6 +240,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "agent_id": "apicity-route-test-agent",
       "agent_phone_number_id": "apicity-route-test-phone",
       "to_number": "+15005550006"
+    }
+  },
+  "POST v1.convai.testInvocations.resubmit": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "test_run_ids": [
+        "trun_0101kw9vb2keef3bcbyjyk7djx81"
+      ],
+      "agent_id": "agent_4801kw9vazcbedyt8wgke5n8z0x6"
     }
   },
   "POST v1.convai.tools.create": {
@@ -382,6 +466,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "start_time": 4102444800000,
       "limit": 1,
       "sort": "asc"
+    }
+  },
+  "PUT v1.convai.agentTesting.update": {
+    "source": "elevenlabs/convai-agent-testing",
+    "payload": {
+      "name": "Apicity route response test updated",
+      "type": "llm",
+      "chat_history": [
+        {
+          "role": "user",
+          "message": "Say hello from Apicity in one short sentence.",
+          "time_in_call_secs": 0
+        }
+      ],
+      "success_condition": "The agent responds with a short greeting that mentions Apicity.",
+      "parent_folder_id": "tfld_4801kw9vb0v1ewp9h2c1dc7893yv"
     }
   }
 };

@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-210 endpoints across 25 groups. Each method mirrors an upstream URL path.
+225 endpoints across 25 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -294,6 +294,171 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.agent.llmUsage.calculate({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.agentTesting.bulkMove</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/agent-testing/bulk-move</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/move)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.bulkMove({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.agentTesting.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/agent-testing/create</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.agentTesting.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/agent-testing/{testId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.agentTesting.folders.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/agent-testing/folders</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-folders/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.folders.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.agentTesting.folders.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/agent-testing/folders/{folderId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-folders/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.folders.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agentTesting.folders.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agent-testing/folders/{folderId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-folders/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.folders.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.agentTesting.folders.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/agent-testing/folders/{folderId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-folders/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.folders.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agentTesting.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agent-testing/{testId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.agentTesting.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/agent-testing</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.agentTesting.summaries</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/agent-testing/summaries</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/summaries)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.summaries({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PUT</code> <b><code>elevenlabs.v1.convai.agentTesting.update</code></b></summary>
+
+<code>PUT https://api.elevenlabs.io/v1/convai/agent-testing/{testId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.agentTesting.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -564,6 +729,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.agents.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.agents.runTests</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/run-tests</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/run-tests)
+
+```typescript
+const res = await elevenlabs.v1.convai.agents.runTests({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1374,6 +1554,51 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.sipTrunk.outboundCall({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.testInvocations.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/test-invocations/{testInvocationId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-invocations/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.testInvocations.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.testInvocations.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/test-invocations</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-invocations/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.testInvocations.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.testInvocations.resubmit</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/test-invocations/{testInvocationId}/resubmit</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tests/test-invocations/resubmit)
+
+```typescript
+const res = await elevenlabs.v1.convai.testInvocations.resubmit({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

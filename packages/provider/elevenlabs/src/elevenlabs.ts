@@ -142,6 +142,28 @@ import {
   ElevenLabsUpdateConversationTagRequest,
   ElevenLabsUpdateConversationTagResponse,
   ElevenLabsDeleteConversationTagResponse,
+  ElevenLabsUpdateConvaiSettingsRequest,
+  ElevenLabsConvaiSettingsResponse,
+  ElevenLabsUpdateConvaiDashboardSettingsRequest,
+  ElevenLabsConvaiDashboardSettingsResponse,
+  ElevenLabsCreateWorkspaceSecretRequest,
+  ElevenLabsCreateWorkspaceSecretResponse,
+  ElevenLabsListWorkspaceSecretsRequest,
+  ElevenLabsListWorkspaceSecretsResponse,
+  ElevenLabsGetWorkspaceSecretResponse,
+  ElevenLabsUpdateWorkspaceSecretRequest,
+  ElevenLabsUpdateWorkspaceSecretResponse,
+  ElevenLabsDeleteWorkspaceSecretResponse,
+  ElevenLabsSecretDependencyResourceType,
+  ElevenLabsGetSecretDependenciesRequest,
+  ElevenLabsGetSecretDependenciesResponse,
+  ElevenLabsListEnvironmentVariablesRequest,
+  ElevenLabsListEnvironmentVariablesResponse,
+  ElevenLabsCreateEnvironmentVariableRequest,
+  ElevenLabsCreateEnvironmentVariableResponse,
+  ElevenLabsGetEnvironmentVariableResponse,
+  ElevenLabsUpdateEnvironmentVariableRequest,
+  ElevenLabsUpdateEnvironmentVariableResponse,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolResponse,
   ElevenLabsListToolsRequest,
@@ -429,6 +451,15 @@ import {
   ElevenLabsListConversationTagsRequestSchema,
   ElevenLabsCreateConversationTagRequestSchema,
   ElevenLabsUpdateConversationTagRequestSchema,
+  ElevenLabsUpdateConvaiSettingsRequestSchema,
+  ElevenLabsUpdateConvaiDashboardSettingsRequestSchema,
+  ElevenLabsCreateWorkspaceSecretRequestSchema,
+  ElevenLabsListWorkspaceSecretsRequestSchema,
+  ElevenLabsUpdateWorkspaceSecretRequestSchema,
+  ElevenLabsGetSecretDependenciesRequestSchema,
+  ElevenLabsListEnvironmentVariablesRequestSchema,
+  ElevenLabsCreateEnvironmentVariableRequestSchema,
+  ElevenLabsUpdateEnvironmentVariableRequestSchema,
   ElevenLabsCreateToolRequestSchema,
   ElevenLabsListToolsRequestSchema,
   ElevenLabsUpdateToolRequestSchema,
@@ -4888,6 +4919,247 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/settings
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/get
+  const getConvaiSettings = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsConvaiSettingsResponse> => {
+      return makeJsonRequest<ElevenLabsConvaiSettingsResponse>(
+        "GET",
+        "/v1/convai/settings",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/settings
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/update
+  const updateConvaiSettings = Object.assign(
+    async (
+      req: ElevenLabsUpdateConvaiSettingsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsConvaiSettingsResponse> => {
+      return makeJsonRequest<ElevenLabsConvaiSettingsResponse>(
+        "PATCH",
+        "/v1/convai/settings",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateConvaiSettingsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/settings/dashboard
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/dashboard/get
+  const getConvaiDashboardSettings = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<ElevenLabsConvaiDashboardSettingsResponse> => {
+      return makeJsonRequest<ElevenLabsConvaiDashboardSettingsResponse>(
+        "GET",
+        "/v1/convai/settings/dashboard",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/settings/dashboard
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/dashboard/update
+  const updateConvaiDashboardSettings = Object.assign(
+    async (
+      req: ElevenLabsUpdateConvaiDashboardSettingsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsConvaiDashboardSettingsResponse> => {
+      return makeJsonRequest<ElevenLabsConvaiDashboardSettingsResponse>(
+        "PATCH",
+        "/v1/convai/settings/dashboard",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateConvaiDashboardSettingsRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/secrets
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/secrets/create
+  const createWorkspaceSecret = Object.assign(
+    async (
+      req: ElevenLabsCreateWorkspaceSecretRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateWorkspaceSecretResponse> => {
+      return makeJsonRequest<ElevenLabsCreateWorkspaceSecretResponse>(
+        "POST",
+        "/v1/convai/secrets",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateWorkspaceSecretRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/secrets
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/secrets/list
+  const listWorkspaceSecrets = Object.assign(
+    async (
+      req: ElevenLabsListWorkspaceSecretsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListWorkspaceSecretsResponse> => {
+      return makeJsonRequest<ElevenLabsListWorkspaceSecretsResponse>(
+        "GET",
+        "/v1/convai/secrets",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListWorkspaceSecretsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/secrets/{secretId}
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/secrets/get
+  const getWorkspaceSecret = Object.assign(
+    async (
+      secretId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetWorkspaceSecretResponse> => {
+      return makeJsonRequest<ElevenLabsGetWorkspaceSecretResponse>(
+        "GET",
+        `/v1/convai/secrets/${encodeURIComponent(secretId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/secrets/{secretId}
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/secrets/update
+  const updateWorkspaceSecret = Object.assign(
+    async (
+      secretId: string,
+      req: ElevenLabsUpdateWorkspaceSecretRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateWorkspaceSecretResponse> => {
+      return makeJsonRequest<ElevenLabsUpdateWorkspaceSecretResponse>(
+        "PATCH",
+        `/v1/convai/secrets/${encodeURIComponent(secretId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateWorkspaceSecretRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/secrets/{secretId}
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/secrets/delete
+  const deleteWorkspaceSecret = Object.assign(
+    async (
+      secretId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteWorkspaceSecretResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteWorkspaceSecretResponse>(
+        "DELETE",
+        `/v1/convai/secrets/${encodeURIComponent(secretId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/secrets/{secretId}/dependencies/{resourceType}
+  // Docs: https://elevenlabs.io/docs/api-reference/workspace/secrets/get-dependencies
+  const getSecretDependencies = Object.assign(
+    async (
+      secretId: string,
+      resourceType: ElevenLabsSecretDependencyResourceType,
+      req: ElevenLabsGetSecretDependenciesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetSecretDependenciesResponse> => {
+      return makeJsonRequest<ElevenLabsGetSecretDependenciesResponse>(
+        "GET",
+        `/v1/convai/secrets/${encodeURIComponent(secretId)}/dependencies/${encodeURIComponent(resourceType)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetSecretDependenciesRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/environment-variables
+  // Docs: https://elevenlabs.io/docs/api-reference/environment-variables/list
+  const listEnvironmentVariables = Object.assign(
+    async (
+      req: ElevenLabsListEnvironmentVariablesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListEnvironmentVariablesResponse> => {
+      return makeJsonRequest<ElevenLabsListEnvironmentVariablesResponse>(
+        "GET",
+        "/v1/convai/environment-variables",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListEnvironmentVariablesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/environment-variables
+  // Docs: https://elevenlabs.io/docs/api-reference/environment-variables/create
+  const createEnvironmentVariable = Object.assign(
+    async (
+      req: ElevenLabsCreateEnvironmentVariableRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateEnvironmentVariableResponse> => {
+      return makeJsonRequest<ElevenLabsCreateEnvironmentVariableResponse>(
+        "POST",
+        "/v1/convai/environment-variables",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateEnvironmentVariableRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/environment-variables/{envVarId}
+  // Docs: https://elevenlabs.io/docs/api-reference/environment-variables/get
+  const getEnvironmentVariable = Object.assign(
+    async (
+      envVarId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetEnvironmentVariableResponse> => {
+      return makeJsonRequest<ElevenLabsGetEnvironmentVariableResponse>(
+        "GET",
+        `/v1/convai/environment-variables/${encodeURIComponent(envVarId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/environment-variables/{envVarId}
+  // Docs: https://elevenlabs.io/docs/api-reference/environment-variables/update
+  const updateEnvironmentVariable = Object.assign(
+    async (
+      envVarId: string,
+      req: ElevenLabsUpdateEnvironmentVariableRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateEnvironmentVariableResponse> => {
+      return makeJsonRequest<ElevenLabsUpdateEnvironmentVariableResponse>(
+        "PATCH",
+        `/v1/convai/environment-variables/${encodeURIComponent(envVarId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateEnvironmentVariableRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/tools
   // Docs: https://elevenlabs.io/docs/api-reference/tools/create
   const createTool = Object.assign(
@@ -5693,6 +5965,27 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  const convaiDashboardSettings = Object.assign(getConvaiDashboardSettings, {
+    update: updateConvaiDashboardSettings,
+  });
+  const convaiSettings = Object.assign(getConvaiSettings, {
+    update: updateConvaiSettings,
+    dashboard: convaiDashboardSettings,
+  });
+  const convaiSecrets = {
+    create: createWorkspaceSecret,
+    list: listWorkspaceSecrets,
+    get: getWorkspaceSecret,
+    update: updateWorkspaceSecret,
+    delete: deleteWorkspaceSecret,
+    dependencies: getSecretDependencies,
+  };
+  const convaiEnvironmentVariables = {
+    create: createEnvironmentVariable,
+    list: listEnvironmentVariables,
+    get: getEnvironmentVariable,
+    update: updateEnvironmentVariable,
+  };
   const convaiTools = {
     create: createTool,
     list: listTools,
@@ -6271,6 +6564,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     agentTesting: convaiAgentTesting,
     testInvocations: convaiTestInvocations,
     tags: convaiTags,
+    settings: convaiSettings,
+    secrets: convaiSecrets,
+    environmentVariables: convaiEnvironmentVariables,
     tools: convaiTools,
     mcpServers: convaiMcpServers,
     knowledgeBase: convaiKnowledgeBase,
@@ -6435,6 +6731,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         resubmit: resubmitTests,
       },
       tags: { create: createConversationTag },
+      secrets: { create: createWorkspaceSecret },
+      environmentVariables: { create: createEnvironmentVariable },
       tools: { create: createTool },
       mcpServers: {
         create: createMcpServer,
@@ -6494,6 +6792,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         folders: { update: updateAgentTestFolder },
       },
       tags: { update: updateConversationTag },
+      settings: {
+        update: updateConvaiSettings,
+        dashboard: { update: updateConvaiDashboardSettings },
+      },
+      secrets: { update: updateWorkspaceSecret },
+      environmentVariables: { update: updateEnvironmentVariable },
       tools: { update: updateTool },
       mcpServers: {
         update: updateMcpServer,
@@ -6549,6 +6853,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         folders: { delete: deleteAgentTestFolder },
       },
       tags: { delete: deleteConversationTag },
+      secrets: { delete: deleteWorkspaceSecret },
       tools: { delete: deleteTool },
       mcpServers: {
         delete: deleteMcpServer,
@@ -6677,6 +6982,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           tags: {
             list: listConversationTags,
             get: getConversationTag,
+          },
+          settings: convaiSettings,
+          secrets: {
+            list: listWorkspaceSecrets,
+            get: getWorkspaceSecret,
+            dependencies: getSecretDependencies,
+          },
+          environmentVariables: {
+            list: listEnvironmentVariables,
+            get: getEnvironmentVariable,
           },
           tools: {
             list: listTools,

@@ -48,10 +48,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 3
     }
   },
+  "GET v1.convai.environmentVariables.list": {
+    "source": "elevenlabs/convai-settings-secrets-env",
+    "payload": {
+      "label": "apicity_route_test_env_ac292ev28",
+      "page_size": 30,
+      "type": "string"
+    }
+  },
   "GET v1.convai.knowledgeBase.list": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
       "page_size": 30
+    }
+  },
+  "GET v1.convai.secrets.list": {
+    "source": "elevenlabs/convai-settings-secrets-env",
+    "payload": {
+      "page_size": 30,
+      "dependency_limit": 5,
+      "search": "apicity_route_test_secret"
     }
   },
   "GET v1.convai.testInvocations.list": {
@@ -99,10 +115,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "name": "Apicity agents route test (updated)"
     }
   },
+  "PATCH v1.convai.environmentVariables.update": {
+    "source": "elevenlabs/convai-settings-secrets-env",
+    "payload": {
+      "values": {
+        "production": "apicity-route-test"
+      }
+    }
+  },
   "PATCH v1.convai.phoneNumbers.update": {
     "source": "elevenlabs/convai-phone-numbers",
     "payload": {
       "label": "Apicity phone-number route test (updated)"
+    }
+  },
+  "PATCH v1.convai.secrets.update": {
+    "source": "elevenlabs/convai-settings-secrets-env",
+    "payload": {
+      "type": "update",
+      "name": "apicity_route_test_secret_ac292ev28",
+      "value": "updated-secret-value"
     }
   },
   "PATCH v1.convai.tools.update": {
@@ -208,6 +240,16 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "repeat_count": 1
     }
   },
+  "POST v1.convai.environmentVariables.create": {
+    "source": "elevenlabs/convai-settings-secrets-env",
+    "payload": {
+      "type": "string",
+      "label": "apicity_route_test_env_ac292ev28",
+      "values": {
+        "production": "apicity-route-test"
+      }
+    }
+  },
   "POST v1.convai.knowledgeBase.text": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
@@ -232,6 +274,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "address": "sip.apicity-route-test.invalid",
         "transport": "udp"
       }
+    }
+  },
+  "POST v1.convai.secrets.create": {
+    "source": "elevenlabs/convai-settings-secrets-env",
+    "payload": {
+      "type": "new",
+      "name": "apicity_route_test_secret_ac292ev28",
+      "value": "initial-secret-value"
     }
   },
   "POST v1.convai.sipTrunk.outboundCall": {

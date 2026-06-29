@@ -1511,6 +1511,290 @@ export type ElevenLabsUpdateConversationTagParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — Settings / Secrets / Env Variables
+// ---------------------------------------------------------------------------
+
+const ElevenLabsConvaiSecretLocatorSchema = z.object({
+  secret_id: z.string(),
+});
+
+const ElevenLabsConvaiClientDataWebhookSchema = z.object({
+  url: z.string(),
+  request_headers: z.record(
+    z.string(),
+    z.union([z.string(), ElevenLabsConvaiSecretLocatorSchema])
+  ),
+});
+
+const ElevenLabsConvaiWebhookEventSchema = z.enum([
+  "transcript",
+  "audio",
+  "call_initiation_failure",
+  "unredacted_transcript",
+  "unredacted_audio",
+]);
+
+const ElevenLabsConvaiWebhookTranscriptFormatSchema = z.enum([
+  "json",
+  "opentelemetry",
+]);
+
+const ElevenLabsConvaiWebhooksSchema = z.object({
+  post_call_webhook_id: z.string().nullable().optional(),
+  events: z.array(ElevenLabsConvaiWebhookEventSchema).optional(),
+  transcript_format: ElevenLabsConvaiWebhookTranscriptFormatSchema.optional(),
+  send_audio: z.boolean().nullable().optional(),
+});
+
+const ElevenLabsConvaiSettingsSchema = z.object({
+  conversation_initiation_client_data_webhook:
+    ElevenLabsConvaiClientDataWebhookSchema.nullable().optional(),
+  webhooks: ElevenLabsConvaiWebhooksSchema.optional(),
+  can_use_mcp_servers: z.boolean().optional(),
+  rag_retention_period_days: z.number().int().min(1).max(30).optional(),
+  conversation_embedding_retention_days: z
+    .number()
+    .int()
+    .min(1)
+    .max(365)
+    .nullable()
+    .optional(),
+  default_livekit_stack: z.enum(["standard", "static"]).optional(),
+});
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/settings
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateConvaiSettingsRequestSchema =
+  ElevenLabsConvaiSettingsSchema;
+
+export type ElevenLabsUpdateConvaiSettingsRequest = z.input<
+  typeof ElevenLabsUpdateConvaiSettingsRequestSchema
+>;
+export type ElevenLabsUpdateConvaiSettingsRequestInput =
+  ElevenLabsUpdateConvaiSettingsRequest;
+export type ElevenLabsUpdateConvaiSettingsParsedRequest = z.output<
+  typeof ElevenLabsUpdateConvaiSettingsRequestSchema
+>;
+
+const ElevenLabsConvaiDashboardCallSuccessChartSchema = z.object({
+  name: z.string(),
+  type: z.literal("call_success").optional(),
+});
+
+const ElevenLabsConvaiDashboardCriteriaChartSchema = z.object({
+  name: z.string(),
+  type: z.literal("criteria").optional(),
+  criteria_id: z.string(),
+});
+
+const ElevenLabsConvaiDashboardDataCollectionChartSchema = z.object({
+  name: z.string(),
+  type: z.literal("data_collection").optional(),
+  data_collection_id: z.string(),
+});
+
+const ElevenLabsConvaiDashboardChartSchema = z.union([
+  ElevenLabsConvaiDashboardCallSuccessChartSchema,
+  ElevenLabsConvaiDashboardCriteriaChartSchema,
+  ElevenLabsConvaiDashboardDataCollectionChartSchema,
+]);
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/settings/dashboard
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateConvaiDashboardSettingsRequestSchema = z.object({
+  charts: z.array(ElevenLabsConvaiDashboardChartSchema).max(4).optional(),
+});
+
+export type ElevenLabsUpdateConvaiDashboardSettingsRequest = z.input<
+  typeof ElevenLabsUpdateConvaiDashboardSettingsRequestSchema
+>;
+export type ElevenLabsUpdateConvaiDashboardSettingsRequestInput =
+  ElevenLabsUpdateConvaiDashboardSettingsRequest;
+export type ElevenLabsUpdateConvaiDashboardSettingsParsedRequest = z.output<
+  typeof ElevenLabsUpdateConvaiDashboardSettingsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/secrets
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateWorkspaceSecretRequestSchema = z.object({
+  type: z.literal("new"),
+  name: z.string(),
+  value: z.string(),
+});
+
+export type ElevenLabsCreateWorkspaceSecretRequest = z.input<
+  typeof ElevenLabsCreateWorkspaceSecretRequestSchema
+>;
+export type ElevenLabsCreateWorkspaceSecretRequestInput =
+  ElevenLabsCreateWorkspaceSecretRequest;
+export type ElevenLabsCreateWorkspaceSecretParsedRequest = z.output<
+  typeof ElevenLabsCreateWorkspaceSecretRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/secrets
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListWorkspaceSecretsRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(100).nullable().optional(),
+  dependency_limit: z.number().int().min(1).max(100).nullable().optional(),
+  search: z.string().nullable().optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListWorkspaceSecretsRequest = z.input<
+  typeof ElevenLabsListWorkspaceSecretsRequestSchema
+>;
+export type ElevenLabsListWorkspaceSecretsRequestInput =
+  ElevenLabsListWorkspaceSecretsRequest;
+export type ElevenLabsListWorkspaceSecretsParsedRequest = z.output<
+  typeof ElevenLabsListWorkspaceSecretsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/secrets/:secret_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateWorkspaceSecretRequestSchema = z.object({
+  type: z.literal("update"),
+  name: z.string(),
+  value: z.string(),
+});
+
+export type ElevenLabsUpdateWorkspaceSecretRequest = z.input<
+  typeof ElevenLabsUpdateWorkspaceSecretRequestSchema
+>;
+export type ElevenLabsUpdateWorkspaceSecretRequestInput =
+  ElevenLabsUpdateWorkspaceSecretRequest;
+export type ElevenLabsUpdateWorkspaceSecretParsedRequest = z.output<
+  typeof ElevenLabsUpdateWorkspaceSecretRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/secrets/:secret_id/dependencies/:resource_type
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetSecretDependenciesRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsGetSecretDependenciesRequest = z.input<
+  typeof ElevenLabsGetSecretDependenciesRequestSchema
+>;
+export type ElevenLabsGetSecretDependenciesRequestInput =
+  ElevenLabsGetSecretDependenciesRequest;
+export type ElevenLabsGetSecretDependenciesParsedRequest = z.output<
+  typeof ElevenLabsGetSecretDependenciesRequestSchema
+>;
+
+const ElevenLabsEnvironmentVariableSecretValueRequestSchema = z.object({
+  secret_id: z.string(),
+});
+
+const ElevenLabsEnvironmentVariableAuthConnectionValueRequestSchema = z.object({
+  auth_connection_id: z.string(),
+});
+
+const ElevenLabsEnvironmentVariableTypeSchema = z.enum([
+  "string",
+  "secret",
+  "auth_connection",
+]);
+const ElevenLabsEnvironmentVariableLabelSchema = z
+  .string()
+  .regex(/^[a-z][a-z0-9_]{0,63}$/);
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/environment-variables
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListEnvironmentVariablesRequestSchema = z.object({
+  cursor: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  label: z.string().nullable().optional(),
+  environment: z.string().nullable().optional(),
+  type: ElevenLabsEnvironmentVariableTypeSchema.nullable().optional(),
+});
+
+export type ElevenLabsListEnvironmentVariablesRequest = z.input<
+  typeof ElevenLabsListEnvironmentVariablesRequestSchema
+>;
+export type ElevenLabsListEnvironmentVariablesRequestInput =
+  ElevenLabsListEnvironmentVariablesRequest;
+export type ElevenLabsListEnvironmentVariablesParsedRequest = z.output<
+  typeof ElevenLabsListEnvironmentVariablesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/environment-variables
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateEnvironmentVariableRequestSchema =
+  z.discriminatedUnion("type", [
+    z.object({
+      type: z.literal("string"),
+      label: ElevenLabsEnvironmentVariableLabelSchema,
+      values: z.record(z.string(), z.string().min(1)),
+    }),
+    z.object({
+      type: z.literal("secret"),
+      label: ElevenLabsEnvironmentVariableLabelSchema,
+      values: z.record(
+        z.string(),
+        ElevenLabsEnvironmentVariableSecretValueRequestSchema
+      ),
+    }),
+    z.object({
+      type: z.literal("auth_connection"),
+      label: ElevenLabsEnvironmentVariableLabelSchema,
+      values: z.record(
+        z.string(),
+        ElevenLabsEnvironmentVariableAuthConnectionValueRequestSchema
+      ),
+    }),
+  ]);
+
+export type ElevenLabsCreateEnvironmentVariableRequest = z.input<
+  typeof ElevenLabsCreateEnvironmentVariableRequestSchema
+>;
+export type ElevenLabsCreateEnvironmentVariableRequestInput =
+  ElevenLabsCreateEnvironmentVariableRequest;
+export type ElevenLabsCreateEnvironmentVariableParsedRequest = z.output<
+  typeof ElevenLabsCreateEnvironmentVariableRequestSchema
+>;
+
+const ElevenLabsEnvironmentVariableUpdateValueSchema = z.union([
+  z.string().min(1),
+  ElevenLabsEnvironmentVariableSecretValueRequestSchema,
+  ElevenLabsEnvironmentVariableAuthConnectionValueRequestSchema,
+  z.null(),
+]);
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/environment-variables/:env_var_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateEnvironmentVariableRequestSchema = z.object({
+  values: z.record(z.string(), ElevenLabsEnvironmentVariableUpdateValueSchema),
+});
+
+export type ElevenLabsUpdateEnvironmentVariableRequest = z.input<
+  typeof ElevenLabsUpdateEnvironmentVariableRequestSchema
+>;
+export type ElevenLabsUpdateEnvironmentVariableRequestInput =
+  ElevenLabsUpdateEnvironmentVariableRequest;
+export type ElevenLabsUpdateEnvironmentVariableParsedRequest = z.output<
+  typeof ElevenLabsUpdateEnvironmentVariableRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — Tools
 // ---------------------------------------------------------------------------
 

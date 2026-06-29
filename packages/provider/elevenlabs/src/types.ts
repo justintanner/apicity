@@ -62,6 +62,15 @@ import type {
   ElevenLabsListConversationTagsRequest,
   ElevenLabsCreateConversationTagRequest,
   ElevenLabsUpdateConversationTagRequest,
+  ElevenLabsUpdateConvaiSettingsRequest,
+  ElevenLabsUpdateConvaiDashboardSettingsRequest,
+  ElevenLabsCreateWorkspaceSecretRequest,
+  ElevenLabsListWorkspaceSecretsRequest,
+  ElevenLabsUpdateWorkspaceSecretRequest,
+  ElevenLabsGetSecretDependenciesRequest,
+  ElevenLabsListEnvironmentVariablesRequest,
+  ElevenLabsCreateEnvironmentVariableRequest,
+  ElevenLabsUpdateEnvironmentVariableRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsListToolsRequest,
   ElevenLabsUpdateToolRequest,
@@ -369,6 +378,33 @@ export type {
   ElevenLabsUpdateConversationTagRequest,
   ElevenLabsUpdateConversationTagRequestInput,
   ElevenLabsUpdateConversationTagParsedRequest,
+  ElevenLabsUpdateConvaiSettingsRequest,
+  ElevenLabsUpdateConvaiSettingsRequestInput,
+  ElevenLabsUpdateConvaiSettingsParsedRequest,
+  ElevenLabsUpdateConvaiDashboardSettingsRequest,
+  ElevenLabsUpdateConvaiDashboardSettingsRequestInput,
+  ElevenLabsUpdateConvaiDashboardSettingsParsedRequest,
+  ElevenLabsCreateWorkspaceSecretRequest,
+  ElevenLabsCreateWorkspaceSecretRequestInput,
+  ElevenLabsCreateWorkspaceSecretParsedRequest,
+  ElevenLabsListWorkspaceSecretsRequest,
+  ElevenLabsListWorkspaceSecretsRequestInput,
+  ElevenLabsListWorkspaceSecretsParsedRequest,
+  ElevenLabsUpdateWorkspaceSecretRequest,
+  ElevenLabsUpdateWorkspaceSecretRequestInput,
+  ElevenLabsUpdateWorkspaceSecretParsedRequest,
+  ElevenLabsGetSecretDependenciesRequest,
+  ElevenLabsGetSecretDependenciesRequestInput,
+  ElevenLabsGetSecretDependenciesParsedRequest,
+  ElevenLabsListEnvironmentVariablesRequest,
+  ElevenLabsListEnvironmentVariablesRequestInput,
+  ElevenLabsListEnvironmentVariablesParsedRequest,
+  ElevenLabsCreateEnvironmentVariableRequest,
+  ElevenLabsCreateEnvironmentVariableRequestInput,
+  ElevenLabsCreateEnvironmentVariableParsedRequest,
+  ElevenLabsUpdateEnvironmentVariableRequest,
+  ElevenLabsUpdateEnvironmentVariableRequestInput,
+  ElevenLabsUpdateEnvironmentVariableParsedRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolRequestInput,
   ElevenLabsCreateToolParsedRequest,
@@ -2413,6 +2449,262 @@ export interface ElevenLabsListConversationTagsResponse {
 }
 
 export type ElevenLabsDeleteConversationTagResponse = Record<string, unknown>;
+
+// -- Agents Platform (Conversational AI) Settings / Secrets / Env Variables -
+
+export interface ElevenLabsConvaiSecretLocator {
+  secret_id: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsConvaiClientDataWebhook {
+  url: string;
+  request_headers: Record<string, string | ElevenLabsConvaiSecretLocator>;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsConvaiWebhookEventType =
+  | "transcript"
+  | "audio"
+  | "call_initiation_failure"
+  | "unredacted_transcript"
+  | "unredacted_audio";
+
+export type ElevenLabsConvaiWebhookTranscriptFormat = "json" | "opentelemetry";
+
+export interface ElevenLabsConvaiWebhooks {
+  post_call_webhook_id?: string | null;
+  events?: ElevenLabsConvaiWebhookEventType[];
+  transcript_format?: ElevenLabsConvaiWebhookTranscriptFormat;
+  send_audio?: boolean | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsConvaiLivekitStackType = "standard" | "static";
+
+export interface ElevenLabsConvaiSettingsResponse {
+  conversation_initiation_client_data_webhook?: ElevenLabsConvaiClientDataWebhook | null;
+  webhooks?: ElevenLabsConvaiWebhooks;
+  can_use_mcp_servers?: boolean;
+  rag_retention_period_days?: number;
+  conversation_embedding_retention_days?: number | null;
+  default_livekit_stack?: ElevenLabsConvaiLivekitStackType;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsConvaiDashboardCallSuccessChart {
+  name: string;
+  type?: "call_success";
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsConvaiDashboardCriteriaChart {
+  name: string;
+  type?: "criteria";
+  criteria_id: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsConvaiDashboardDataCollectionChart {
+  name: string;
+  type?: "data_collection";
+  data_collection_id: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsConvaiDashboardChart =
+  | ElevenLabsConvaiDashboardCallSuccessChart
+  | ElevenLabsConvaiDashboardCriteriaChart
+  | ElevenLabsConvaiDashboardDataCollectionChart;
+
+export interface ElevenLabsConvaiDashboardSettingsResponse {
+  charts?: ElevenLabsConvaiDashboardChart[];
+  [key: string]: unknown;
+}
+
+export type ElevenLabsSecretDependencyResourceType =
+  | "tools"
+  | "agents"
+  | "phone_numbers";
+
+export type ElevenLabsSecretDependencyAccessLevel =
+  | "admin"
+  | "editor"
+  | "commenter"
+  | "viewer";
+
+export interface ElevenLabsSecretDependentAvailableTool {
+  id: string;
+  name: string;
+  type?: "available";
+  created_at_unix_secs: number;
+  access_level: ElevenLabsSecretDependencyAccessLevel;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSecretDependentUnknownTool {
+  id: string;
+  type?: "unknown";
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSecretDependentAvailableAgent {
+  id: string;
+  name: string;
+  type?: "available";
+  created_at_unix_secs: number;
+  access_level: ElevenLabsSecretDependencyAccessLevel;
+  referenced_resource_ids?: string[];
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSecretDependentUnknownAgent {
+  id: string;
+  type?: "unknown";
+  referenced_resource_ids?: string[];
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSecretDependentPhoneNumber {
+  phone_number_id: string;
+  phone_number: string;
+  label: string;
+  provider: "twilio" | "sip_trunk" | "exotel";
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSecretDependentAvailableMcpServer {
+  id: string;
+  name: string;
+  type?: "available";
+  created_at_unix_secs: number;
+  access_level: ElevenLabsSecretDependencyAccessLevel;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSecretDependentUnknownMcpServer {
+  id: string;
+  type?: "unknown";
+  [key: string]: unknown;
+}
+
+export type ElevenLabsSecretOtherDependencyType =
+  "conversation_initiation_webhook";
+
+export type ElevenLabsSecretDependency =
+  | ElevenLabsSecretDependentAvailableTool
+  | ElevenLabsSecretDependentUnknownTool
+  | ElevenLabsSecretDependentAvailableAgent
+  | ElevenLabsSecretDependentUnknownAgent
+  | ElevenLabsSecretDependentPhoneNumber
+  | ElevenLabsSecretDependentAvailableMcpServer
+  | ElevenLabsSecretDependentUnknownMcpServer;
+
+export interface ElevenLabsStoredSecretDependencies {
+  tools: (
+    | ElevenLabsSecretDependentAvailableTool
+    | ElevenLabsSecretDependentUnknownTool
+  )[];
+  tools_has_more?: boolean;
+  agents: (
+    | ElevenLabsSecretDependentAvailableAgent
+    | ElevenLabsSecretDependentUnknownAgent
+  )[];
+  agents_has_more?: boolean;
+  phone_numbers?: ElevenLabsSecretDependentPhoneNumber[];
+  phone_numbers_has_more?: boolean;
+  mcp_servers?: (
+    | ElevenLabsSecretDependentAvailableMcpServer
+    | ElevenLabsSecretDependentUnknownMcpServer
+  )[];
+  others: ElevenLabsSecretOtherDependencyType[];
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsWorkspaceSecret {
+  type: "stored";
+  secret_id: string;
+  name: string;
+  used_by?: ElevenLabsStoredSecretDependencies;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsWorkspaceSecretMutationResponse {
+  type: "stored";
+  secret_id: string;
+  name: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsCreateWorkspaceSecretResponse =
+  ElevenLabsWorkspaceSecretMutationResponse;
+
+export type ElevenLabsGetWorkspaceSecretResponse = ElevenLabsWorkspaceSecret;
+
+export type ElevenLabsUpdateWorkspaceSecretResponse =
+  ElevenLabsWorkspaceSecretMutationResponse;
+
+export type ElevenLabsDeleteWorkspaceSecretResponse = Record<string, unknown>;
+
+export interface ElevenLabsListWorkspaceSecretsResponse {
+  secrets: ElevenLabsWorkspaceSecret[];
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetSecretDependenciesResponse {
+  dependencies: ElevenLabsSecretDependency[];
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsEnvironmentVariableType =
+  | "string"
+  | "secret"
+  | "auth_connection";
+
+export interface ElevenLabsEnvironmentVariableSecretValue {
+  secret_id: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsEnvironmentVariableAuthConnectionValue {
+  auth_connection_id: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsEnvironmentVariableValue =
+  | string
+  | ElevenLabsEnvironmentVariableSecretValue
+  | ElevenLabsEnvironmentVariableAuthConnectionValue;
+
+export interface ElevenLabsEnvironmentVariableResponse {
+  id: string;
+  workspace_id: string;
+  label: string;
+  type: ElevenLabsEnvironmentVariableType;
+  values: Record<string, ElevenLabsEnvironmentVariableValue>;
+  created_at_unix_secs: number;
+  updated_at_unix_secs: number;
+  created_by_user_id?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListEnvironmentVariablesResponse {
+  environment_variables: ElevenLabsEnvironmentVariableResponse[];
+  has_more: boolean;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsCreateEnvironmentVariableResponse =
+  ElevenLabsEnvironmentVariableResponse;
+
+export type ElevenLabsGetEnvironmentVariableResponse =
+  ElevenLabsEnvironmentVariableResponse;
+
+export type ElevenLabsUpdateEnvironmentVariableResponse =
+  ElevenLabsEnvironmentVariableResponse;
 
 // -- Agents Platform (Conversational AI) Tools response shapes ---------------
 
@@ -4750,6 +5042,116 @@ export interface ElevenLabsDeleteConversationTagMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsGetConvaiSettingsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsConvaiSettingsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateConvaiSettingsMethod {
+  (
+    req: ElevenLabsUpdateConvaiSettingsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsConvaiSettingsResponse>;
+  schema: z.ZodType<ElevenLabsUpdateConvaiSettingsRequest>;
+}
+
+export interface ElevenLabsGetConvaiDashboardSettingsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsConvaiDashboardSettingsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateConvaiDashboardSettingsMethod {
+  (
+    req: ElevenLabsUpdateConvaiDashboardSettingsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsConvaiDashboardSettingsResponse>;
+  schema: z.ZodType<ElevenLabsUpdateConvaiDashboardSettingsRequest>;
+}
+
+export interface ElevenLabsCreateWorkspaceSecretMethod {
+  (
+    req: ElevenLabsCreateWorkspaceSecretRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateWorkspaceSecretResponse>;
+  schema: z.ZodType<ElevenLabsCreateWorkspaceSecretRequest>;
+}
+
+export interface ElevenLabsListWorkspaceSecretsMethod {
+  (
+    req?: ElevenLabsListWorkspaceSecretsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListWorkspaceSecretsResponse>;
+  schema: z.ZodType<ElevenLabsListWorkspaceSecretsRequest>;
+}
+
+export interface ElevenLabsGetWorkspaceSecretMethod {
+  (
+    secretId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetWorkspaceSecretResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateWorkspaceSecretMethod {
+  (
+    secretId: string,
+    req: ElevenLabsUpdateWorkspaceSecretRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateWorkspaceSecretResponse>;
+  schema: z.ZodType<ElevenLabsUpdateWorkspaceSecretRequest>;
+}
+
+export interface ElevenLabsDeleteWorkspaceSecretMethod {
+  (
+    secretId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteWorkspaceSecretResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetSecretDependenciesMethod {
+  (
+    secretId: string,
+    resourceType: ElevenLabsSecretDependencyResourceType,
+    req?: ElevenLabsGetSecretDependenciesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetSecretDependenciesResponse>;
+  schema: z.ZodType<ElevenLabsGetSecretDependenciesRequest>;
+}
+
+export interface ElevenLabsCreateEnvironmentVariableMethod {
+  (
+    req: ElevenLabsCreateEnvironmentVariableRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateEnvironmentVariableResponse>;
+  schema: z.ZodType<ElevenLabsCreateEnvironmentVariableRequest>;
+}
+
+export interface ElevenLabsListEnvironmentVariablesMethod {
+  (
+    req?: ElevenLabsListEnvironmentVariablesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListEnvironmentVariablesResponse>;
+  schema: z.ZodType<ElevenLabsListEnvironmentVariablesRequest>;
+}
+
+export interface ElevenLabsGetEnvironmentVariableMethod {
+  (
+    envVarId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetEnvironmentVariableResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateEnvironmentVariableMethod {
+  (
+    envVarId: string,
+    req: ElevenLabsUpdateEnvironmentVariableRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateEnvironmentVariableResponse>;
+  schema: z.ZodType<ElevenLabsUpdateEnvironmentVariableRequest>;
+}
+
 export interface ElevenLabsCreateToolMethod {
   (
     req: ElevenLabsCreateToolRequest,
@@ -5540,6 +5942,31 @@ export interface ElevenLabsConvaiTagsNamespace {
   delete: ElevenLabsDeleteConversationTagMethod;
 }
 
+export interface ElevenLabsConvaiDashboardSettingsNamespace extends ElevenLabsGetConvaiDashboardSettingsMethod {
+  update: ElevenLabsUpdateConvaiDashboardSettingsMethod;
+}
+
+export interface ElevenLabsConvaiSettingsNamespace extends ElevenLabsGetConvaiSettingsMethod {
+  update: ElevenLabsUpdateConvaiSettingsMethod;
+  dashboard: ElevenLabsConvaiDashboardSettingsNamespace;
+}
+
+export interface ElevenLabsConvaiSecretsNamespace {
+  create: ElevenLabsCreateWorkspaceSecretMethod;
+  list: ElevenLabsListWorkspaceSecretsMethod;
+  get: ElevenLabsGetWorkspaceSecretMethod;
+  update: ElevenLabsUpdateWorkspaceSecretMethod;
+  delete: ElevenLabsDeleteWorkspaceSecretMethod;
+  dependencies: ElevenLabsGetSecretDependenciesMethod;
+}
+
+export interface ElevenLabsConvaiEnvironmentVariablesNamespace {
+  create: ElevenLabsCreateEnvironmentVariableMethod;
+  list: ElevenLabsListEnvironmentVariablesMethod;
+  get: ElevenLabsGetEnvironmentVariableMethod;
+  update: ElevenLabsUpdateEnvironmentVariableMethod;
+}
+
 export interface ElevenLabsConvaiMcpServerToolApprovalsNamespace {
   create: ElevenLabsCreateMcpServerToolApprovalMethod;
   delete: ElevenLabsDeleteMcpServerToolApprovalMethod;
@@ -5701,6 +6128,9 @@ export interface ElevenLabsConvaiNamespace {
   agentTesting: ElevenLabsConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsConvaiTestInvocationsNamespace;
   tags: ElevenLabsConvaiTagsNamespace;
+  settings: ElevenLabsConvaiSettingsNamespace;
+  secrets: ElevenLabsConvaiSecretsNamespace;
+  environmentVariables: ElevenLabsConvaiEnvironmentVariablesNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
   mcpServers: ElevenLabsConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
@@ -5972,6 +6402,14 @@ export interface ElevenLabsPostConvaiTagsNamespace {
   create: ElevenLabsCreateConversationTagMethod;
 }
 
+export interface ElevenLabsPostConvaiSecretsNamespace {
+  create: ElevenLabsCreateWorkspaceSecretMethod;
+}
+
+export interface ElevenLabsPostConvaiEnvironmentVariablesNamespace {
+  create: ElevenLabsCreateEnvironmentVariableMethod;
+}
+
 export interface ElevenLabsPostConvaiAgentTestingNamespace {
   create: ElevenLabsCreateAgentTestMethod;
   summaries: ElevenLabsGetAgentTestSummariesMethod;
@@ -6033,6 +6471,8 @@ export interface ElevenLabsPostConvaiNamespace {
   agentTesting: ElevenLabsPostConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsPostConvaiTestInvocationsNamespace;
   tags: ElevenLabsPostConvaiTagsNamespace;
+  secrets: ElevenLabsPostConvaiSecretsNamespace;
+  environmentVariables: ElevenLabsPostConvaiEnvironmentVariablesNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
   mcpServers: ElevenLabsPostConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
@@ -6120,6 +6560,21 @@ export interface ElevenLabsPatchConvaiTagsNamespace {
   update: ElevenLabsUpdateConversationTagMethod;
 }
 
+export interface ElevenLabsPatchConvaiSettingsNamespace {
+  update: ElevenLabsUpdateConvaiSettingsMethod;
+  dashboard: {
+    update: ElevenLabsUpdateConvaiDashboardSettingsMethod;
+  };
+}
+
+export interface ElevenLabsPatchConvaiSecretsNamespace {
+  update: ElevenLabsUpdateWorkspaceSecretMethod;
+}
+
+export interface ElevenLabsPatchConvaiEnvironmentVariablesNamespace {
+  update: ElevenLabsUpdateEnvironmentVariableMethod;
+}
+
 export interface ElevenLabsPostConvaiMcpServersNamespace {
   create: ElevenLabsCreateMcpServerMethod;
   toolApprovals: {
@@ -6160,6 +6615,9 @@ export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
   agentTesting: ElevenLabsPatchConvaiAgentTestingNamespace;
   tags: ElevenLabsPatchConvaiTagsNamespace;
+  settings: ElevenLabsPatchConvaiSettingsNamespace;
+  secrets: ElevenLabsPatchConvaiSecretsNamespace;
+  environmentVariables: ElevenLabsPatchConvaiEnvironmentVariablesNamespace;
   tools: ElevenLabsPatchConvaiToolsNamespace;
   mcpServers: ElevenLabsPatchConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPatchConvaiKnowledgeBaseNamespace;
@@ -6221,6 +6679,21 @@ export interface ElevenLabsGetConvaiToolsNamespace {
 export interface ElevenLabsGetConvaiTagsNamespace {
   list: ElevenLabsListConversationTagsMethod;
   get: ElevenLabsGetConversationTagMethod;
+}
+
+export interface ElevenLabsGetConvaiSettingsNamespace extends ElevenLabsGetConvaiSettingsMethod {
+  dashboard: ElevenLabsGetConvaiDashboardSettingsMethod;
+}
+
+export interface ElevenLabsGetConvaiSecretsNamespace {
+  list: ElevenLabsListWorkspaceSecretsMethod;
+  get: ElevenLabsGetWorkspaceSecretMethod;
+  dependencies: ElevenLabsGetSecretDependenciesMethod;
+}
+
+export interface ElevenLabsGetConvaiEnvironmentVariablesNamespace {
+  list: ElevenLabsListEnvironmentVariablesMethod;
+  get: ElevenLabsGetEnvironmentVariableMethod;
 }
 
 export interface ElevenLabsGetConvaiMcpServersNamespace {
@@ -6306,6 +6779,9 @@ export interface ElevenLabsGetConvaiNamespace {
   agentTesting: ElevenLabsGetConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsGetConvaiTestInvocationsNamespace;
   tags: ElevenLabsGetConvaiTagsNamespace;
+  settings: ElevenLabsGetConvaiSettingsNamespace;
+  secrets: ElevenLabsGetConvaiSecretsNamespace;
+  environmentVariables: ElevenLabsGetConvaiEnvironmentVariablesNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
   mcpServers: ElevenLabsGetConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
@@ -6374,6 +6850,10 @@ export interface ElevenLabsDeleteConvaiTagsNamespace {
   delete: ElevenLabsDeleteConversationTagMethod;
 }
 
+export interface ElevenLabsDeleteConvaiSecretsNamespace {
+  delete: ElevenLabsDeleteWorkspaceSecretMethod;
+}
+
 export interface ElevenLabsDeleteConvaiMcpServersNamespace {
   delete: ElevenLabsDeleteMcpServerMethod;
   toolApprovals: {
@@ -6424,6 +6904,7 @@ export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   agentTesting: ElevenLabsDeleteConvaiAgentTestingNamespace;
   tags: ElevenLabsDeleteConvaiTagsNamespace;
+  secrets: ElevenLabsDeleteConvaiSecretsNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
   mcpServers: ElevenLabsDeleteConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;

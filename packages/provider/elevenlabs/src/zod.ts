@@ -1453,6 +1453,53 @@ export type ElevenLabsGetLiveConversationCountParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — Misc
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/users
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListConversationUsersRequestSchema = z.object({
+  agent_id: z.string().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+  call_start_before_unix: z.number().int().nullable().optional(),
+  call_start_after_unix: z.number().int().nullable().optional(),
+  search: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  sort_by: z.enum(["last_contact_unix_secs", "conversation_count"]).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListConversationUsersRequest = z.input<
+  typeof ElevenLabsListConversationUsersRequestSchema
+>;
+export type ElevenLabsListConversationUsersRequestInput =
+  ElevenLabsListConversationUsersRequest;
+export type ElevenLabsListConversationUsersParsedRequest = z.output<
+  typeof ElevenLabsListConversationUsersRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/llm-usage/calculate
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCalculateLlmUsageRequestSchema = z.object({
+  prompt_length: z.number().int(),
+  number_of_pages: z.number().int(),
+  rag_enabled: z.boolean(),
+});
+
+export type ElevenLabsCalculateLlmUsageRequest = z.input<
+  typeof ElevenLabsCalculateLlmUsageRequestSchema
+>;
+export type ElevenLabsCalculateLlmUsageRequestInput =
+  ElevenLabsCalculateLlmUsageRequest;
+export type ElevenLabsCalculateLlmUsageParsedRequest = z.output<
+  typeof ElevenLabsCalculateLlmUsageRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — Conversation Tags
 // ---------------------------------------------------------------------------
 

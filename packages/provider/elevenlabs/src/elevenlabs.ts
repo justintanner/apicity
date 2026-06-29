@@ -134,6 +134,11 @@ import {
   ElevenLabsPreviewAgentBranchMergeRequest,
   ElevenLabsGetLiveConversationCountRequest,
   ElevenLabsLiveConversationCountResponse,
+  ElevenLabsListConversationUsersRequest,
+  ElevenLabsListConversationUsersResponse,
+  ElevenLabsCalculateLlmUsageRequest,
+  ElevenLabsCalculateLlmUsageResponse,
+  ElevenLabsListLlmsResponse,
   ElevenLabsListConversationTagsRequest,
   ElevenLabsListConversationTagsResponse,
   ElevenLabsCreateConversationTagRequest,
@@ -448,6 +453,8 @@ import {
   ElevenLabsMergeAgentBranchRequestSchema,
   ElevenLabsPreviewAgentBranchMergeRequestSchema,
   ElevenLabsGetLiveConversationCountRequestSchema,
+  ElevenLabsListConversationUsersRequestSchema,
+  ElevenLabsCalculateLlmUsageRequestSchema,
   ElevenLabsListConversationTagsRequestSchema,
   ElevenLabsCreateConversationTagRequestSchema,
   ElevenLabsUpdateConversationTagRequestSchema,
@@ -4236,6 +4243,55 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsGetLiveConversationCountRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/users
+  // Docs: https://elevenlabs.io/docs/api-reference/users/list
+  const listConversationUsers = Object.assign(
+    async (
+      req: ElevenLabsListConversationUsersRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListConversationUsersResponse> => {
+      return makeJsonRequest<ElevenLabsListConversationUsersResponse>(
+        "GET",
+        "/v1/convai/users",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListConversationUsersRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/llm-usage/calculate
+  // Docs: https://elevenlabs.io/docs/api-reference/llm/calculate
+  const calculateLlmUsage = Object.assign(
+    async (
+      req: ElevenLabsCalculateLlmUsageRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCalculateLlmUsageResponse> => {
+      return makeJsonRequest<ElevenLabsCalculateLlmUsageResponse>(
+        "POST",
+        "/v1/convai/llm-usage/calculate",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCalculateLlmUsageRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/llm/list
+  // Docs: https://elevenlabs.io/docs/api-reference/llm/list
+  const listLlms = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsListLlmsResponse> => {
+      return makeJsonRequest<ElevenLabsListLlmsResponse>(
+        "GET",
+        "/v1/convai/llm/list",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/agent-testing/create
   // Docs: https://elevenlabs.io/docs/api-reference/tests/create
   const createAgentTest = Object.assign(
@@ -6030,6 +6086,15 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     cancel: cancelBatchCall,
     retry: retryBatchCall,
   };
+  const convaiUsers = {
+    list: listConversationUsers,
+  };
+  const convaiLlmUsage = {
+    calculate: calculateLlmUsage,
+  };
+  const convaiLlm = {
+    list: listLlms,
+  };
 
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/url
   // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-url
@@ -6561,6 +6626,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       llmUsage: { calculate: calculateAgentLlmUsage },
     },
     analytics: { liveCount: getLiveConversationCount },
+    users: convaiUsers,
+    llmUsage: convaiLlmUsage,
+    llm: convaiLlm,
     agentTesting: convaiAgentTesting,
     testInvocations: convaiTestInvocations,
     tags: convaiTags,
@@ -6718,6 +6786,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       },
       agent: {
         llmUsage: { calculate: calculateAgentLlmUsage },
+      },
+      llmUsage: {
+        calculate: calculateLlmUsage,
       },
       agentTesting: {
         create: createAgentTest,
@@ -6967,6 +7038,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           },
           analytics: {
             liveCount: getLiveConversationCount,
+          },
+          users: {
+            list: listConversationUsers,
+          },
+          llm: {
+            list: listLlms,
           },
           agentTesting: {
             list: listAgentTests,

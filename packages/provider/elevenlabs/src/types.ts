@@ -59,6 +59,8 @@ import type {
   ElevenLabsMergeAgentBranchRequest,
   ElevenLabsPreviewAgentBranchMergeRequest,
   ElevenLabsGetLiveConversationCountRequest,
+  ElevenLabsListConversationUsersRequest,
+  ElevenLabsCalculateLlmUsageRequest,
   ElevenLabsListConversationTagsRequest,
   ElevenLabsCreateConversationTagRequest,
   ElevenLabsUpdateConversationTagRequest,
@@ -369,6 +371,12 @@ export type {
   ElevenLabsGetLiveConversationCountRequest,
   ElevenLabsGetLiveConversationCountRequestInput,
   ElevenLabsGetLiveConversationCountParsedRequest,
+  ElevenLabsListConversationUsersRequest,
+  ElevenLabsListConversationUsersRequestInput,
+  ElevenLabsListConversationUsersParsedRequest,
+  ElevenLabsCalculateLlmUsageRequest,
+  ElevenLabsCalculateLlmUsageRequestInput,
+  ElevenLabsCalculateLlmUsageParsedRequest,
   ElevenLabsListConversationTagsRequest,
   ElevenLabsListConversationTagsRequestInput,
   ElevenLabsListConversationTagsParsedRequest,
@@ -2252,6 +2260,106 @@ export interface ElevenLabsAgentBranchPreviewResponse extends ElevenLabsGetAgent
 
 export interface ElevenLabsLiveConversationCountResponse {
   count: number;
+}
+
+export type ElevenLabsConversationUsersSortBy =
+  | "last_contact_unix_secs"
+  | "conversation_count";
+
+export interface ElevenLabsConversationUserSentiment {
+  scored_conversation_count: number;
+  positive_count: number;
+  neutral_count: number;
+  negative_count: number;
+  average_sentiment_score: number | null;
+  average_frustration_score: number | null;
+}
+
+export type ElevenLabsConversationUserSentimentLabel =
+  | "positive"
+  | "neutral"
+  | "negative";
+
+export interface ElevenLabsFrustratedConversationRef {
+  conversation_id: string;
+  agent_id: string;
+  start_time_unix_secs: number;
+  overall_label: ElevenLabsConversationUserSentimentLabel;
+  overall_sentiment_score: number;
+  overall_frustration_score: number;
+}
+
+export interface ElevenLabsConversationUser {
+  user_id: string;
+  last_contact_unix_secs: number;
+  first_contact_unix_secs: number;
+  conversation_count: number;
+  last_contact_agent_id?: string | null;
+  last_contact_conversation_id: string;
+  last_contact_agent_name?: string | null;
+  sentiment: ElevenLabsConversationUserSentiment;
+  most_frustrated_conversations?: ElevenLabsFrustratedConversationRef[];
+}
+
+export interface ElevenLabsListConversationUsersResponse {
+  users: ElevenLabsConversationUser[];
+  next_cursor?: string | null;
+  has_more: boolean;
+}
+
+export type ElevenLabsLlmUsagePrice = ElevenLabsAgentLlmUsagePrice;
+
+export interface ElevenLabsCalculateLlmUsageResponse {
+  llm_prices: ElevenLabsLlmUsagePrice[];
+}
+
+export type ElevenLabsLlmReasoningEffort =
+  | "none"
+  | "minimal"
+  | "low"
+  | "medium"
+  | "high"
+  | "xhigh";
+
+export interface ElevenLabsLlmDeprecationConfig {
+  warning_start_days: number;
+  fallback_start_days: number;
+  fallback_complete_days: number;
+  fallback_start_percentage: number;
+  fallback_complete_percentage: number;
+}
+
+export interface ElevenLabsLlmDeprecationInfo {
+  llm: string;
+  is_deprecated: boolean;
+  is_in_warning_period?: boolean;
+  is_in_fallback_period?: boolean;
+  fallback_percentage?: number;
+  provider_deprecation_date?: string | null;
+  replacement_model?: string | null;
+  deprecation_config?: ElevenLabsLlmDeprecationConfig | null;
+}
+
+export interface ElevenLabsRegionalProcessingSurchargeInfo {
+  multiplier: number;
+}
+
+export interface ElevenLabsLlmInfo {
+  llm: string;
+  is_checkpoint: boolean;
+  max_tokens_limit: number;
+  max_context_limit: number;
+  supports_image_input: boolean;
+  supports_document_input: boolean;
+  supports_parallel_tool_calls: boolean;
+  available_reasoning_efforts?: ElevenLabsLlmReasoningEffort[] | null;
+  deprecation_info?: ElevenLabsLlmDeprecationInfo | null;
+  regional_processing_surcharge?: ElevenLabsRegionalProcessingSurchargeInfo | null;
+}
+
+export interface ElevenLabsListLlmsResponse {
+  llms: ElevenLabsLlmInfo[];
+  default_deprecation_config: ElevenLabsLlmDeprecationConfig;
 }
 
 // -- Agents Platform (Conversational AI) Tests response shapes ---------------
@@ -4778,6 +4886,27 @@ export interface ElevenLabsCalculateAgentLlmUsageMethod {
   schema: z.ZodType<ElevenLabsCalculateAgentLlmUsageRequest>;
 }
 
+export interface ElevenLabsListConversationUsersMethod {
+  (
+    req?: ElevenLabsListConversationUsersRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListConversationUsersResponse>;
+  schema: z.ZodType<ElevenLabsListConversationUsersRequest>;
+}
+
+export interface ElevenLabsCalculateLlmUsageMethod {
+  (
+    req: ElevenLabsCalculateLlmUsageRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCalculateLlmUsageResponse>;
+  schema: z.ZodType<ElevenLabsCalculateLlmUsageRequest>;
+}
+
+export interface ElevenLabsListLlmsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsListLlmsResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsCreateAgentDraftMethod {
   (
     agentId: string,
@@ -6121,10 +6250,25 @@ export interface ElevenLabsConvaiAnalyticsNamespace {
   liveCount: ElevenLabsGetLiveConversationCountMethod;
 }
 
+export interface ElevenLabsConvaiUsersNamespace {
+  list: ElevenLabsListConversationUsersMethod;
+}
+
+export interface ElevenLabsConvaiLlmUsageNamespace {
+  calculate: ElevenLabsCalculateLlmUsageMethod;
+}
+
+export interface ElevenLabsConvaiLlmNamespace {
+  list: ElevenLabsListLlmsMethod;
+}
+
 export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
   agent: ElevenLabsConvaiAgentNamespace;
   analytics: ElevenLabsConvaiAnalyticsNamespace;
+  users: ElevenLabsConvaiUsersNamespace;
+  llmUsage: ElevenLabsConvaiLlmUsageNamespace;
+  llm: ElevenLabsConvaiLlmNamespace;
   agentTesting: ElevenLabsConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsConvaiTestInvocationsNamespace;
   tags: ElevenLabsConvaiTagsNamespace;
@@ -6465,9 +6609,14 @@ export interface ElevenLabsPostConvaiAgentNamespace {
   };
 }
 
+export interface ElevenLabsPostConvaiLlmUsageNamespace {
+  calculate: ElevenLabsCalculateLlmUsageMethod;
+}
+
 export interface ElevenLabsPostConvaiNamespace {
   agents: ElevenLabsPostConvaiAgentsNamespace;
   agent: ElevenLabsPostConvaiAgentNamespace;
+  llmUsage: ElevenLabsPostConvaiLlmUsageNamespace;
   agentTesting: ElevenLabsPostConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsPostConvaiTestInvocationsNamespace;
   tags: ElevenLabsPostConvaiTagsNamespace;
@@ -6772,10 +6921,20 @@ export interface ElevenLabsGetConvaiAnalyticsNamespace {
   liveCount: ElevenLabsGetLiveConversationCountMethod;
 }
 
+export interface ElevenLabsGetConvaiUsersNamespace {
+  list: ElevenLabsListConversationUsersMethod;
+}
+
+export interface ElevenLabsGetConvaiLlmNamespace {
+  list: ElevenLabsListLlmsMethod;
+}
+
 export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
   agent: ElevenLabsGetConvaiAgentNamespace;
   analytics: ElevenLabsGetConvaiAnalyticsNamespace;
+  users: ElevenLabsGetConvaiUsersNamespace;
+  llm: ElevenLabsGetConvaiLlmNamespace;
   agentTesting: ElevenLabsGetConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsGetConvaiTestInvocationsNamespace;
   tags: ElevenLabsGetConvaiTagsNamespace;

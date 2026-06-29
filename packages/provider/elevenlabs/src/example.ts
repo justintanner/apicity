@@ -36,6 +36,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30
     }
   },
+  "GET v1.convai.batchCalling.workspace": {
+    "source": "elevenlabs/convai-batch-calling",
+    "payload": {
+      "limit": 3
+    }
+  },
   "GET v1.convai.conversation.getSignedUrl": {
     "source": "elevenlabs/convai-conversations",
     "payload": {
@@ -68,6 +74,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30,
       "dependency_limit": 5,
       "search": "apicity_route_test_secret"
+    }
+  },
+  "GET v1.convai.tags.list": {
+    "source": "elevenlabs/convai-tags",
+    "payload": {
+      "page_size": 30
     }
   },
   "GET v1.convai.testInvocations.list": {
@@ -137,6 +149,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "value": "updated-secret-value"
     }
   },
+  "PATCH v1.convai.tags.update": {
+    "source": "elevenlabs/convai-tags",
+    "payload": {
+      "title": "apicity_route_test_mqzetota_updated",
+      "description": null
+    }
+  },
   "PATCH v1.convai.tools.update": {
     "source": "elevenlabs/convai-tools",
     "payload": {
@@ -149,6 +168,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "method": "GET"
         }
       }
+    }
+  },
+  "PATCH v1.convai.whatsappAccounts.update": {
+    "source": "elevenlabs/convai-telephony-integrations",
+    "payload": {
+      "assigned_agent_id": null,
+      "enable_messaging": true,
+      "enable_audio_message_response": false
     }
   },
   "PATCH v1.productions.orders.update": {
@@ -250,6 +277,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       }
     }
   },
+  "POST v1.convai.exotel.outboundCall": {
+    "source": "elevenlabs/convai-telephony-integrations",
+    "payload": {
+      "agent_id": "apicity-route-test-agent",
+      "agent_phone_number_id": "apicity-route-test-phone",
+      "to_number": "+15005550006",
+      "telephony_call_config": {
+        "ringing_timeout_secs": 30
+      }
+    }
+  },
   "POST v1.convai.knowledgeBase.text": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
@@ -292,6 +330,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "to_number": "+15005550006"
     }
   },
+  "POST v1.convai.tags.create": {
+    "source": "elevenlabs/convai-tags",
+    "payload": {
+      "title": "apicity_route_test_mqzetota",
+      "description": "Apicity route coverage tag."
+    }
+  },
   "POST v1.convai.testInvocations.resubmit": {
     "source": "elevenlabs/convai-agent-testing",
     "payload": {
@@ -321,6 +366,51 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "agent_id": "apicity-route-test-agent",
       "agent_phone_number_id": "apicity-route-test-phone",
       "to_number": "+15005550006"
+    }
+  },
+  "POST v1.convai.twilio.registerCall": {
+    "source": "elevenlabs/convai-telephony-integrations",
+    "payload": {
+      "agent_id": "apicity-route-test-agent",
+      "from_number": "+15005550006",
+      "to_number": "+15005550006",
+      "direction": "inbound",
+      "conversation_initiation_client_data": {
+        "dynamic_variables": {
+          "source": "apicity"
+        }
+      }
+    }
+  },
+  "POST v1.convai.whatsapp.outboundCall": {
+    "source": "elevenlabs/convai-telephony-integrations",
+    "payload": {
+      "whatsapp_phone_number_id": "apicity-route-test-whatsapp-phone",
+      "whatsapp_user_id": "15555550123",
+      "whatsapp_call_permission_request_template_name": "apicity_call_permission",
+      "whatsapp_call_permission_request_template_language_code": "en_US",
+      "agent_id": "apicity-route-test-agent"
+    }
+  },
+  "POST v1.convai.whatsapp.outboundMessage": {
+    "source": "elevenlabs/convai-telephony-integrations",
+    "payload": {
+      "whatsapp_phone_number_id": "apicity-route-test-whatsapp-phone",
+      "whatsapp_user_id": "15555550123",
+      "template_name": "apicity_template",
+      "template_language_code": "en_US",
+      "template_params": [
+        {
+          "type": "body",
+          "parameters": [
+            {
+              "type": "text",
+              "text": "hello"
+            }
+          ]
+        }
+      ],
+      "agent_id": "apicity-route-test-agent"
     }
   },
   "POST v1.music": {

@@ -590,6 +590,9 @@ elevenlabs	v1.convai.agents.branches.rebasePreview	GET	https://api.elevenlabs.io
 elevenlabs	v1.convai.agents.branches.merge	POST	https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{sourceBranchId}/merge	https://elevenlabs.io/docs/api-reference/agents/branches/merge
 elevenlabs	v1.convai.agents.branches.mergePreview	GET	https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{sourceBranchId}/merge-preview	https://elevenlabs.io/docs/api-reference/agents/branches/preview
 elevenlabs	v1.convai.analytics.liveCount	GET	https://api.elevenlabs.io/v1/convai/analytics/live-count	https://elevenlabs.io/docs/api-reference/analytics/get
+elevenlabs	v1.convai.users.list	GET	https://api.elevenlabs.io/v1/convai/users	https://elevenlabs.io/docs/api-reference/users/list
+elevenlabs	v1.convai.llmUsage.calculate	POST	https://api.elevenlabs.io/v1/convai/llm-usage/calculate	https://elevenlabs.io/docs/api-reference/llm/calculate
+elevenlabs	v1.convai.llm.list	GET	https://api.elevenlabs.io/v1/convai/llm/list	https://elevenlabs.io/docs/api-reference/llm/list
 elevenlabs	v1.convai.agentTesting.create	POST	https://api.elevenlabs.io/v1/convai/agent-testing/create	https://elevenlabs.io/docs/api-reference/tests/create
 elevenlabs	v1.convai.agentTesting.list	GET	https://api.elevenlabs.io/v1/convai/agent-testing	https://elevenlabs.io/docs/api-reference/tests/list
 elevenlabs	v1.convai.agentTesting.get	GET	https://api.elevenlabs.io/v1/convai/agent-testing/{testId}	https://elevenlabs.io/docs/api-reference/tests/get

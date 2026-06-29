@@ -269,8 +269,7 @@ export const ElevenLabsEditPvcVoiceRequestSchema = z.object({
 export type ElevenLabsEditPvcVoiceRequest = z.input<
   typeof ElevenLabsEditPvcVoiceRequestSchema
 >;
-export type ElevenLabsEditPvcVoiceRequestInput =
-  ElevenLabsEditPvcVoiceRequest;
+export type ElevenLabsEditPvcVoiceRequestInput = ElevenLabsEditPvcVoiceRequest;
 export type ElevenLabsEditPvcVoiceParsedRequest = z.output<
   typeof ElevenLabsEditPvcVoiceRequestSchema
 >;

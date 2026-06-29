@@ -131,6 +131,13 @@ import {
   ElevenLabsDisableWorkspaceApiKeyResponse,
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest,
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingResponse,
+  ElevenLabsCreateServiceAccountApiKeyRequest,
+  ElevenLabsCreateServiceAccountApiKeyResponse,
+  ElevenLabsDeleteServiceAccountApiKeyResponse,
+  ElevenLabsServiceAccountApiKeysResponse,
+  ElevenLabsServiceAccountsResponse,
+  ElevenLabsUpdateServiceAccountApiKeyRequest,
+  ElevenLabsUpdateServiceAccountApiKeyResponse,
   ElevenLabsCreateAgentRequest,
   ElevenLabsCreateAgentResponse,
   ElevenLabsGetAgentRequest,
@@ -490,6 +497,8 @@ import {
   ElevenLabsUpdateWorkspaceAuthConnectionRequestSchema,
   ElevenLabsDisableWorkspaceApiKeyRequestSchema,
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestSchema,
+  ElevenLabsCreateServiceAccountApiKeyRequestSchema,
+  ElevenLabsUpdateServiceAccountApiKeyRequestSchema,
   ElevenLabsCreateAgentRequestSchema,
   ElevenLabsGetAgentRequestSchema,
   ElevenLabsListAgentsRequestSchema,
@@ -4122,6 +4131,94 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/service-accounts
+  // Docs: https://elevenlabs.io/docs/api-reference/service-accounts/list
+  const listServiceAccounts = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<ElevenLabsServiceAccountsResponse> => {
+      return makeJsonRequest<ElevenLabsServiceAccountsResponse>(
+        "GET",
+        "/v1/service-accounts",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys
+  // Docs: https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/list
+  const listServiceAccountApiKeys = Object.assign(
+    async (
+      serviceAccountUserId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsServiceAccountApiKeysResponse> => {
+      return makeJsonRequest<ElevenLabsServiceAccountApiKeysResponse>(
+        "GET",
+        `/v1/service-accounts/${encodeURIComponent(serviceAccountUserId)}/api-keys`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys
+  // Docs: https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/create
+  const createServiceAccountApiKey = Object.assign(
+    async (
+      serviceAccountUserId: string,
+      req: ElevenLabsCreateServiceAccountApiKeyRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateServiceAccountApiKeyResponse> => {
+      return makeJsonRequest<ElevenLabsCreateServiceAccountApiKeyResponse>(
+        "POST",
+        `/v1/service-accounts/${encodeURIComponent(serviceAccountUserId)}/api-keys`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateServiceAccountApiKeyRequestSchema }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys/{apiKeyId}
+  // Docs: https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/update
+  const updateServiceAccountApiKey = Object.assign(
+    async (
+      serviceAccountUserId: string,
+      apiKeyId: string,
+      req: ElevenLabsUpdateServiceAccountApiKeyRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateServiceAccountApiKeyResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsUpdateServiceAccountApiKeyResponse>(
+        "PATCH",
+        `/v1/service-accounts/${encodeURIComponent(serviceAccountUserId)}/api-keys/${encodeURIComponent(apiKeyId)}`,
+        Object.keys(req).length > 0 ? req : undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateServiceAccountApiKeyRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys/{apiKeyId}
+  // Docs: https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/delete
+  const deleteServiceAccountApiKey = Object.assign(
+    async (
+      serviceAccountUserId: string,
+      apiKeyId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteServiceAccountApiKeyResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteServiceAccountApiKeyResponse>(
+        "DELETE",
+        `/v1/service-accounts/${encodeURIComponent(serviceAccountUserId)}/api-keys/${encodeURIComponent(apiKeyId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // POST https://api.elevenlabs.io/v1/workspaces/api-keys/disable
   // Docs: https://elevenlabs.io/docs/api-reference/workspaces/api-keys/disable
   const disableWorkspaceApiKey = Object.assign(
@@ -7193,6 +7290,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       thirdPartyDisabling: setWorkspaceApiKeyThirdPartyDisabling,
     },
   };
+  const serviceAccountApiKeys = {
+    list: listServiceAccountApiKeys,
+    create: createServiceAccountApiKey,
+    update: updateServiceAccountApiKey,
+    delete: deleteServiceAccountApiKey,
+  };
+  const serviceAccounts = {
+    list: listServiceAccounts,
+    apiKeys: serviceAccountApiKeys,
+  };
   const getWorkspace = {
     auditLogs: listWorkspaceAuditLogs,
     groups: {
@@ -7230,12 +7337,22 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     analytics: workspace.analytics,
   };
+  const postServiceAccounts = {
+    apiKeys: {
+      create: createServiceAccountApiKey,
+    },
+  };
   const patchWorkspace = {
     webhooks: {
       update: updateWorkspaceWebhook,
     },
     authConnections: {
       update: updateWorkspaceAuthConnection,
+    },
+  };
+  const patchServiceAccounts = {
+    apiKeys: {
+      update: updateServiceAccountApiKey,
     },
   };
   const deleteWorkspace = {
@@ -7247,6 +7364,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     authConnections: {
       delete: deleteWorkspaceAuthConnection,
+    },
+  };
+  const deleteServiceAccounts = {
+    apiKeys: {
+      delete: deleteServiceAccountApiKey,
     },
   };
   const v1VoicesAdd = Object.assign(addVoice, {
@@ -7314,6 +7436,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     workspace: postWorkspace,
     workspaces,
+    serviceAccounts: postServiceAccounts,
     convai: {
       agents: {
         create: createAgent,
@@ -7427,6 +7550,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       whatsappAccounts: { update: updateWhatsAppAccount },
     },
     workspace: patchWorkspace,
+    serviceAccounts: patchServiceAccounts,
   };
   const putV1 = {
     convai: {
@@ -7491,6 +7615,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       whatsappAccounts: { delete: deleteWhatsAppAccount },
     },
     workspace: deleteWorkspace,
+    serviceAccounts: deleteServiceAccounts,
     history: {
       delete: deleteHistoryItem,
     },
@@ -7520,6 +7645,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     user,
     workspace,
     workspaces,
+    serviceAccounts,
     convai,
     history: {
       list: listHistory,
@@ -7672,6 +7798,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           },
         },
         workspace: getWorkspace,
+        serviceAccounts: {
+          list: listServiceAccounts,
+          apiKeys: {
+            list: listServiceAccountApiKeys,
+          },
+        },
         history: {
           list: listHistory,
           get: getHistoryItem,

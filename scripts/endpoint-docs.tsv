@@ -582,6 +582,11 @@ elevenlabs	v1.workspace.authConnections.update	PATCH	https://api.elevenlabs.io/v
 elevenlabs	v1.workspace.authConnections.delete	DELETE	https://api.elevenlabs.io/v1/workspace/auth-connections/{authConnectionId}	https://elevenlabs.io/docs/api-reference/workspace/auth-connections/delete
 elevenlabs	v1.workspaces.apiKeys.disable	POST	https://api.elevenlabs.io/v1/workspaces/api-keys/disable	https://elevenlabs.io/docs/api-reference/workspaces/api-keys/disable
 elevenlabs	v1.workspaces.apiKeys.thirdPartyDisabling	POST	https://api.elevenlabs.io/v1/workspaces/api-keys/third-party-disabling	https://elevenlabs.io/docs/api-reference/workspaces/api-keys/third-party-disabling
+elevenlabs	v1.serviceAccounts.list	GET	https://api.elevenlabs.io/v1/service-accounts	https://elevenlabs.io/docs/api-reference/service-accounts/list
+elevenlabs	v1.serviceAccounts.apiKeys.list	GET	https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys	https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/list
+elevenlabs	v1.serviceAccounts.apiKeys.create	POST	https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys	https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/create
+elevenlabs	v1.serviceAccounts.apiKeys.update	PATCH	https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys/{apiKeyId}	https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/update
+elevenlabs	v1.serviceAccounts.apiKeys.delete	DELETE	https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys/{apiKeyId}	https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/delete
 elevenlabs	v2.voices	GET	https://api.elevenlabs.io/v2/voices	https://elevenlabs.io/docs/api-reference/voices/search
 elevenlabs	v1.convai.agents.create	POST	https://api.elevenlabs.io/v1/convai/agents/create	https://elevenlabs.io/docs/api-reference/agents/create
 elevenlabs	v1.convai.agents.list	GET	https://api.elevenlabs.io/v1/convai/agents	https://elevenlabs.io/docs/api-reference/agents/list

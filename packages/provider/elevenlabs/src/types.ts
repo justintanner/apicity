@@ -57,6 +57,8 @@ import type {
   ElevenLabsUpdateWorkspaceAuthConnectionRequest,
   ElevenLabsDisableWorkspaceApiKeyRequest,
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest,
+  ElevenLabsCreateServiceAccountApiKeyRequest,
+  ElevenLabsUpdateServiceAccountApiKeyRequest,
   ElevenLabsCreateAgentRequest,
   ElevenLabsGetAgentRequest,
   ElevenLabsListAgentsRequest,
@@ -383,6 +385,12 @@ export type {
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest,
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestInput,
   ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingParsedRequest,
+  ElevenLabsCreateServiceAccountApiKeyRequest,
+  ElevenLabsCreateServiceAccountApiKeyRequestInput,
+  ElevenLabsCreateServiceAccountApiKeyParsedRequest,
+  ElevenLabsUpdateServiceAccountApiKeyRequest,
+  ElevenLabsUpdateServiceAccountApiKeyRequestInput,
+  ElevenLabsUpdateServiceAccountApiKeyParsedRequest,
   ElevenLabsCreateAgentRequest,
   ElevenLabsCreateAgentRequestInput,
   ElevenLabsCreateAgentParsedRequest,
@@ -2499,6 +2507,108 @@ export type ElevenLabsDeleteWorkspaceAuthConnectionResponse =
 export type ElevenLabsDisableWorkspaceApiKeyResponse =
   ElevenLabsWorkspaceOperationResponse;
 export type ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingResponse =
+  ElevenLabsWorkspaceOperationResponse;
+
+export type ElevenLabsServiceAccountPermission =
+  | "text_to_speech"
+  | "speech_to_speech"
+  | "speech_to_text"
+  | "models_read"
+  | "models_write"
+  | "voices_read"
+  | "voices_write"
+  | "speech_history_read"
+  | "speech_history_write"
+  | "sound_generation"
+  | "audio_isolation"
+  | "voice_generation"
+  | "dubbing_read"
+  | "dubbing_write"
+  | "pronunciation_dictionaries_read"
+  | "pronunciation_dictionaries_write"
+  | "user_read"
+  | "user_write"
+  | "projects_read"
+  | "projects_write"
+  | "audio_native_read"
+  | "audio_native_write"
+  | "workspace_read"
+  | "workspace_write"
+  | "forced_alignment"
+  | "convai_read"
+  | "convai_write"
+  | "music_generation"
+  | "image_video_generation"
+  | "add_voice_from_voice_library"
+  | "create_instant_voice_clone"
+  | "create_professional_voice_clone"
+  | "publish_voice_to_voice_library"
+  | "share_voice_externally"
+  | "create_user_api_key"
+  | "workspace_analytics_full_read"
+  | "webhooks_write"
+  | "service_account_write"
+  | "group_members_manage"
+  | "workspace_members_read"
+  | "workspace_members_invite"
+  | "workspace_members_remove"
+  | "terms_of_service_accept"
+  | "audit_log_read"
+  | "conversation_privacy_manage"
+  | "copy_resources_cross_workspace"
+  | "synthid_detector";
+
+export type ElevenLabsServiceAccountApiKeyDisableReason =
+  | "trial_ended"
+  | "subscription_downgrade"
+  | "exposed_publicly"
+  | "self_disabled";
+
+export interface ElevenLabsServiceAccountApiKey {
+  name: string;
+  hint: string;
+  key_id: string;
+  service_account_user_id: string;
+  created_at_unix?: number | null;
+  is_disabled?: boolean;
+  permissions?: ElevenLabsServiceAccountPermission[] | null;
+  disable_reason?: ElevenLabsServiceAccountApiKeyDisableReason | null;
+  character_limit?: number | null;
+  character_count?: number | null;
+  hashed_xi_api_key: string;
+  allowed_ips?: string[] | null;
+  third_party_disable_allowed?: boolean | null;
+}
+
+export interface ElevenLabsServiceAccountApiKeysResponse {
+  "api-keys": ElevenLabsServiceAccountApiKey[];
+}
+
+export interface ElevenLabsCreateServiceAccountApiKeyResponse {
+  "xi-api-key": string;
+  key_id: string;
+}
+
+export interface ElevenLabsServiceAccountDefaultSharingGroup {
+  group: ElevenLabsWorkspaceGroup;
+  permission_level: "admin" | "editor" | "viewer";
+}
+
+export interface ElevenLabsServiceAccount {
+  service_account_user_id: string;
+  name: string;
+  created_at_unix?: number | null;
+  "api-keys": ElevenLabsServiceAccountApiKey[];
+  default_sharing_groups?: ElevenLabsServiceAccountDefaultSharingGroup[];
+}
+
+export interface ElevenLabsServiceAccountsResponse {
+  "service-accounts": ElevenLabsServiceAccount[];
+}
+
+export type ElevenLabsUpdateServiceAccountApiKeyResponse =
+  ElevenLabsWorkspaceOperationResponse;
+export type ElevenLabsDeleteServiceAccountApiKeyResponse =
   ElevenLabsWorkspaceOperationResponse;
 
 // -- Agents Platform (Conversational AI) response shapes ---------------------
@@ -5403,6 +5513,47 @@ export interface ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingMethod {
   schema: z.ZodType<ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest>;
 }
 
+export interface ElevenLabsListServiceAccountsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsServiceAccountsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsListServiceAccountApiKeysMethod {
+  (
+    serviceAccountUserId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsServiceAccountApiKeysResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCreateServiceAccountApiKeyMethod {
+  (
+    serviceAccountUserId: string,
+    req: ElevenLabsCreateServiceAccountApiKeyRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateServiceAccountApiKeyResponse>;
+  schema: z.ZodType<ElevenLabsCreateServiceAccountApiKeyRequest>;
+}
+
+export interface ElevenLabsUpdateServiceAccountApiKeyMethod {
+  (
+    serviceAccountUserId: string,
+    apiKeyId: string,
+    req?: ElevenLabsUpdateServiceAccountApiKeyRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateServiceAccountApiKeyResponse>;
+  schema: z.ZodType<ElevenLabsUpdateServiceAccountApiKeyRequest>;
+}
+
+export interface ElevenLabsDeleteServiceAccountApiKeyMethod {
+  (
+    serviceAccountUserId: string,
+    apiKeyId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteServiceAccountApiKeyResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsCreateAgentMethod {
   (
     req: ElevenLabsCreateAgentRequest,
@@ -7028,6 +7179,18 @@ export interface ElevenLabsWorkspacesNamespace {
   apiKeys: ElevenLabsWorkspacesApiKeysNamespace;
 }
 
+export interface ElevenLabsServiceAccountApiKeysNamespace {
+  list: ElevenLabsListServiceAccountApiKeysMethod;
+  create: ElevenLabsCreateServiceAccountApiKeyMethod;
+  update: ElevenLabsUpdateServiceAccountApiKeyMethod;
+  delete: ElevenLabsDeleteServiceAccountApiKeyMethod;
+}
+
+export interface ElevenLabsServiceAccountsNamespace {
+  list: ElevenLabsListServiceAccountsMethod;
+  apiKeys: ElevenLabsServiceAccountApiKeysNamespace;
+}
+
 export interface ElevenLabsGetWorkspaceGroupsNamespace {
   list: ElevenLabsListWorkspaceGroupsMethod;
   search: ElevenLabsSearchWorkspaceGroupsMethod;
@@ -7309,6 +7472,7 @@ export interface ElevenLabsV1Namespace {
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   workspaces: ElevenLabsWorkspacesNamespace;
+  serviceAccounts: ElevenLabsServiceAccountsNamespace;
   convai: ElevenLabsConvaiNamespace;
   history: ElevenLabsHistoryNamespace;
 }
@@ -7457,6 +7621,11 @@ export interface ElevenLabsPostV1Namespace {
   voices: ElevenLabsPostV1VoicesNamespace;
   workspace: ElevenLabsPostWorkspaceNamespace;
   workspaces: ElevenLabsWorkspacesNamespace;
+  serviceAccounts: {
+    apiKeys: {
+      create: ElevenLabsCreateServiceAccountApiKeyMethod;
+    };
+  };
   convai: ElevenLabsPostConvaiNamespace;
   history: { download: ElevenLabsHistoryDownloadMethod };
 }
@@ -7581,6 +7750,11 @@ export interface ElevenLabsPatchV1Namespace {
   };
   convai: ElevenLabsPatchConvaiNamespace;
   workspace: ElevenLabsPatchWorkspaceNamespace;
+  serviceAccounts: {
+    apiKeys: {
+      update: ElevenLabsUpdateServiceAccountApiKeyMethod;
+    };
+  };
 }
 
 export interface ElevenLabsPatchNamespace {
@@ -7776,6 +7950,12 @@ export interface ElevenLabsGetV1Namespace {
   };
   convai: ElevenLabsGetConvaiNamespace;
   workspace: ElevenLabsGetWorkspaceNamespace;
+  serviceAccounts: {
+    list: ElevenLabsListServiceAccountsMethod;
+    apiKeys: {
+      list: ElevenLabsListServiceAccountApiKeysMethod;
+    };
+  };
   history: {
     list: ElevenLabsHistoryListMethod;
     get: ElevenLabsHistoryGetMethod;
@@ -7899,6 +8079,11 @@ export interface ElevenLabsDeleteV1Namespace {
   };
   convai: ElevenLabsDeleteConvaiNamespace;
   workspace: ElevenLabsDeleteWorkspaceNamespace;
+  serviceAccounts: {
+    apiKeys: {
+      delete: ElevenLabsDeleteServiceAccountApiKeyMethod;
+    };
+  };
   history: {
     delete: ElevenLabsHistoryDeleteMethod;
   };

@@ -1480,6 +1480,121 @@ export type ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingParsedRequest =
   z.output<typeof ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestSchema>;
 
 // ---------------------------------------------------------------------------
+// Service account shared schemas
+// ---------------------------------------------------------------------------
+
+const ElevenLabsServiceAccountPermissionSchema = z.enum([
+  "text_to_speech",
+  "speech_to_speech",
+  "speech_to_text",
+  "models_read",
+  "models_write",
+  "voices_read",
+  "voices_write",
+  "speech_history_read",
+  "speech_history_write",
+  "sound_generation",
+  "audio_isolation",
+  "voice_generation",
+  "dubbing_read",
+  "dubbing_write",
+  "pronunciation_dictionaries_read",
+  "pronunciation_dictionaries_write",
+  "user_read",
+  "user_write",
+  "projects_read",
+  "projects_write",
+  "audio_native_read",
+  "audio_native_write",
+  "workspace_read",
+  "workspace_write",
+  "forced_alignment",
+  "convai_read",
+  "convai_write",
+  "music_generation",
+  "image_video_generation",
+  "add_voice_from_voice_library",
+  "create_instant_voice_clone",
+  "create_professional_voice_clone",
+  "publish_voice_to_voice_library",
+  "share_voice_externally",
+  "create_user_api_key",
+  "workspace_analytics_full_read",
+  "webhooks_write",
+  "service_account_write",
+  "group_members_manage",
+  "workspace_members_read",
+  "workspace_members_invite",
+  "workspace_members_remove",
+  "terms_of_service_accept",
+  "audit_log_read",
+  "conversation_privacy_manage",
+  "copy_resources_cross_workspace",
+  "synthid_detector",
+]);
+
+const ElevenLabsServiceAccountPermissionsSchema = z.union([
+  z.array(ElevenLabsServiceAccountPermissionSchema),
+  z.literal("all"),
+]);
+
+const ElevenLabsAllowedIpsSchema = z.array(z.string()).min(1).max(100);
+
+// ---------------------------------------------------------------------------
+// POST /v1/service-accounts/:service_account_user_id/api-keys
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateServiceAccountApiKeyRequestSchema = z.object({
+  name: z.string(),
+  permissions: ElevenLabsServiceAccountPermissionsSchema,
+  character_limit: z.number().int().nullable().optional(),
+  allowed_ips: ElevenLabsAllowedIpsSchema.nullable().optional(),
+  third_party_disable_allowed: z.boolean().nullable().optional(),
+});
+
+export type ElevenLabsCreateServiceAccountApiKeyRequest = z.input<
+  typeof ElevenLabsCreateServiceAccountApiKeyRequestSchema
+>;
+export type ElevenLabsCreateServiceAccountApiKeyRequestInput =
+  ElevenLabsCreateServiceAccountApiKeyRequest;
+export type ElevenLabsCreateServiceAccountApiKeyParsedRequest = z.output<
+  typeof ElevenLabsCreateServiceAccountApiKeyRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/service-accounts/:service_account_user_id/api-keys/:api_key_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateServiceAccountApiKeyRequestSchema = z.object({
+  is_enabled: z.union([z.boolean(), z.literal("no_update")]).optional(),
+  name: z.string().nullable().optional(),
+  permissions: z
+    .union([
+      z.array(ElevenLabsServiceAccountPermissionSchema),
+      z.enum(["all", "no_update"]),
+    ])
+    .optional(),
+  character_limit: z
+    .union([z.number().int(), z.literal("no_update"), z.null()])
+    .optional(),
+  allowed_ips: z
+    .union([ElevenLabsAllowedIpsSchema, z.enum(["clear", "no_update"])])
+    .optional(),
+  third_party_disable_allowed: z
+    .union([z.boolean(), z.enum(["clear", "no_update"])])
+    .optional(),
+});
+
+export type ElevenLabsUpdateServiceAccountApiKeyRequest = z.input<
+  typeof ElevenLabsUpdateServiceAccountApiKeyRequestSchema
+>;
+export type ElevenLabsUpdateServiceAccountApiKeyRequestInput =
+  ElevenLabsUpdateServiceAccountApiKeyRequest;
+export type ElevenLabsUpdateServiceAccountApiKeyParsedRequest = z.output<
+  typeof ElevenLabsUpdateServiceAccountApiKeyRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

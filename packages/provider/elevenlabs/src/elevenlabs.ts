@@ -155,6 +155,20 @@ import {
   ElevenLabsStudioChapterSnapshotExtended,
   ElevenLabsProvider,
   ElevenLabsError,
+  ElevenLabsListPronunciationDictionariesRequest,
+  ElevenLabsListPronunciationDictionariesResponse,
+  ElevenLabsAddPronunciationDictionaryFromFileRequest,
+  ElevenLabsAddPronunciationDictionaryResponse,
+  ElevenLabsAddPronunciationDictionaryFromRulesRequest,
+  ElevenLabsGetPronunciationDictionaryRequest,
+  ElevenLabsGetPronunciationDictionaryResponse,
+  ElevenLabsUpdatePronunciationDictionaryRequest,
+  ElevenLabsPronunciationDictionaryMetadata,
+  ElevenLabsAddPronunciationDictionaryRulesRequest,
+  ElevenLabsPronunciationDictionaryRulesResponse,
+  ElevenLabsRemovePronunciationDictionaryRulesRequest,
+  ElevenLabsSetPronunciationDictionaryRulesRequest,
+  ElevenLabsDownloadPronunciationDictionaryRequest,
 } from "./types";
 import {
   ElevenLabsCreatePvcVoiceRequestSchema,
@@ -220,6 +234,15 @@ import {
   ElevenLabsStudioStreamAudioRequestSchema,
   ElevenLabsStudioCreateChapterRequestSchema,
   ElevenLabsStudioUpdateChapterRequestSchema,
+  ElevenLabsListPronunciationDictionariesRequestSchema,
+  ElevenLabsAddPronunciationDictionaryFromFileRequestSchema,
+  ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema,
+  ElevenLabsGetPronunciationDictionaryRequestSchema,
+  ElevenLabsUpdatePronunciationDictionaryRequestSchema,
+  ElevenLabsAddPronunciationDictionaryRulesRequestSchema,
+  ElevenLabsRemovePronunciationDictionaryRulesRequestSchema,
+  ElevenLabsSetPronunciationDictionaryRulesRequestSchema,
+  ElevenLabsDownloadPronunciationDictionaryRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -711,7 +734,166 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     return serialized ? `?${serialized}` : "";
   }
 
-  // -- Endpoints -------------------------------------------------------------
+  
+  // GET /v1/pronunciation-dictionaries
+  const listPronunciationDictionaries = Object.assign(
+    async (
+      req: ElevenLabsListPronunciationDictionariesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListPronunciationDictionariesResponse> => {
+      return makeJsonRequest<ElevenLabsListPronunciationDictionariesResponse>(
+        "GET",
+        "/v1/pronunciation-dictionaries",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListPronunciationDictionariesRequestSchema }
+  );
+
+  // POST /v1/pronunciation-dictionaries/add-from-file
+  const addPronunciationDictionaryFromFile = Object.assign(
+    async (
+      req: ElevenLabsAddPronunciationDictionaryFromFileRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAddPronunciationDictionaryResponse> => {
+      const form = new FormData();
+      appendFormField(form, "name", req.name);
+      if (req.file) appendFormField(form, "file", req.file);
+      if (req.description) appendFormField(form, "description", req.description);
+      if (req.workspace_access) appendFormField(form, "workspace_access", req.workspace_access);
+
+      return makeMultipartJsonRequest<ElevenLabsAddPronunciationDictionaryResponse>(
+        "/v1/pronunciation-dictionaries/add-from-file",
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsAddPronunciationDictionaryFromFileRequestSchema }
+  );
+
+  // POST /v1/pronunciation-dictionaries/add-from-rules
+  const addPronunciationDictionaryFromRules = Object.assign(
+    async (
+      req: ElevenLabsAddPronunciationDictionaryFromRulesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAddPronunciationDictionaryResponse> => {
+      return makeJsonRequest<ElevenLabsAddPronunciationDictionaryResponse>(
+        "POST",
+        "/v1/pronunciation-dictionaries/add-from-rules",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema }
+  );
+
+  // GET /v1/pronunciation-dictionaries/{id}
+  const getPronunciationDictionary = Object.assign(
+    async (
+      id: string,
+      req: ElevenLabsGetPronunciationDictionaryRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetPronunciationDictionaryResponse> => {
+      return makeJsonRequest<ElevenLabsGetPronunciationDictionaryResponse>(
+        "GET",
+        `/v1/pronunciation-dictionaries/${encodeURIComponent(id)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetPronunciationDictionaryRequestSchema }
+  );
+
+  // PATCH /v1/pronunciation-dictionaries/{id}
+  const updatePronunciationDictionary = Object.assign(
+    async (
+      id: string,
+      req: ElevenLabsUpdatePronunciationDictionaryRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPronunciationDictionaryMetadata> => {
+      return makeJsonRequest<ElevenLabsPronunciationDictionaryMetadata>(
+        "PATCH",
+        `/v1/pronunciation-dictionaries/${encodeURIComponent(id)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdatePronunciationDictionaryRequestSchema }
+  );
+
+  // POST /v1/pronunciation-dictionaries/{id}/add-rules
+  const addPronunciationDictionaryRules = Object.assign(
+    async (
+      id: string,
+      req: ElevenLabsAddPronunciationDictionaryRulesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPronunciationDictionaryRulesResponse> => {
+      return makeJsonRequest<ElevenLabsPronunciationDictionaryRulesResponse>(
+        "POST",
+        `/v1/pronunciation-dictionaries/${encodeURIComponent(id)}/add-rules`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsAddPronunciationDictionaryRulesRequestSchema }
+  );
+
+  // POST /v1/pronunciation-dictionaries/{id}/remove-rules
+  const removePronunciationDictionaryRules = Object.assign(
+    async (
+      id: string,
+      req: ElevenLabsRemovePronunciationDictionaryRulesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPronunciationDictionaryRulesResponse> => {
+      return makeJsonRequest<ElevenLabsPronunciationDictionaryRulesResponse>(
+        "POST",
+        `/v1/pronunciation-dictionaries/${encodeURIComponent(id)}/remove-rules`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsRemovePronunciationDictionaryRulesRequestSchema }
+  );
+
+  // POST /v1/pronunciation-dictionaries/{id}/set-rules
+  const setPronunciationDictionaryRules = Object.assign(
+    async (
+      id: string,
+      req: ElevenLabsSetPronunciationDictionaryRulesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPronunciationDictionaryRulesResponse> => {
+      return makeJsonRequest<ElevenLabsPronunciationDictionaryRulesResponse>(
+        "POST",
+        `/v1/pronunciation-dictionaries/${encodeURIComponent(id)}/set-rules`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsSetPronunciationDictionaryRulesRequestSchema }
+  );
+
+  // GET /v1/pronunciation-dictionaries/{id}/{versionId}/download
+  const downloadPronunciationDictionary = Object.assign(
+    async (
+      id: string,
+      versionId: string,
+      req: ElevenLabsDownloadPronunciationDictionaryRequest = {},
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeGetBinaryRequest(
+        `/v1/pronunciation-dictionaries/${encodeURIComponent(id)}/${encodeURIComponent(versionId)}/download`,
+        buildQueryString(req),
+        signal
+      );
+    },
+    { schema: ElevenLabsDownloadPronunciationDictionaryRequestSchema }
+  );
+
+// -- Endpoints -------------------------------------------------------------
 
   // GET https://api.elevenlabs.io/docs
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech
@@ -3137,6 +3319,19 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     train: pvcTrain,
     verification: pvcManualVerification,
   });
+  
+  const pronunciationDictionaries = {
+    list: listPronunciationDictionaries,
+    addFromFile: addPronunciationDictionaryFromFile,
+    addFromRules: addPronunciationDictionaryFromRules,
+    get: getPronunciationDictionary,
+    update: updatePronunciationDictionary,
+    addRules: addPronunciationDictionaryRules,
+    removeRules: removePronunciationDictionaryRules,
+    setRules: setPronunciationDictionaryRules,
+    download: downloadPronunciationDictionary,
+  };
+
   const workspace = {
     analytics: {
       requests: workspaceAnalyticsRequests,
@@ -3170,6 +3365,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     voices,
   };
   const postV1 = {
+    pronunciationDictionaries: {
+      addFromFile: addPronunciationDictionaryFromFile,
+      addFromRules: addPronunciationDictionaryFromRules,
+      addRules: addPronunciationDictionaryRules,
+      removeRules: removePronunciationDictionaryRules,
+      setRules: setPronunciationDictionaryRules,
+    },
     soundGeneration,
     textToSpeech,
     textToDialogue,
@@ -3203,6 +3405,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
   };
   const patchV1 = {
+    pronunciationDictionaries: {
+      update: updatePronunciationDictionary,
+    },
     convai: {
       agents: { update: updateAgent },
       tools: { update: updateTool },
@@ -3233,6 +3438,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
   };
   const v1 = {
+    pronunciationDictionaries,
+
     models,
     voices: v1Voices,
     sharedVoices: getSharedVoices,
@@ -3264,6 +3471,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     get: {
       docs,
       v1: {
+        pronunciationDictionaries: {
+          list: listPronunciationDictionaries,
+          get: getPronunciationDictionary,
+          download: downloadPronunciationDictionary,
+        },
         models,
         voices: v1Voices,
         sharedVoices: getSharedVoices,

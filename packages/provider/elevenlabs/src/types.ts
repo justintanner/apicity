@@ -63,6 +63,42 @@ import type {
   ElevenLabsStudioStreamAudioRequest,
   ElevenLabsStudioCreateChapterRequest,
   ElevenLabsStudioUpdateChapterRequest,
+  ElevenLabsListPronunciationDictionariesRequest,
+  ElevenLabsListPronunciationDictionariesRequestInput,
+  ElevenLabsListPronunciationDictionariesParsedRequest,
+  ElevenLabsAddPronunciationDictionaryFromFileRequest,
+  ElevenLabsAddPronunciationDictionaryFromFileRequestInput,
+  ElevenLabsAddPronunciationDictionaryFromFileParsedRequest,
+  ElevenLabsAddPronunciationDictionaryFromRulesRequest,
+  ElevenLabsAddPronunciationDictionaryFromRulesRequestInput,
+  ElevenLabsAddPronunciationDictionaryFromRulesParsedRequest,
+  ElevenLabsGetPronunciationDictionaryRequest,
+  ElevenLabsGetPronunciationDictionaryRequestInput,
+  ElevenLabsGetPronunciationDictionaryParsedRequest,
+  ElevenLabsUpdatePronunciationDictionaryRequest,
+  ElevenLabsUpdatePronunciationDictionaryRequestInput,
+  ElevenLabsUpdatePronunciationDictionaryParsedRequest,
+  ElevenLabsAddPronunciationDictionaryRulesRequest,
+  ElevenLabsAddPronunciationDictionaryRulesRequestInput,
+  ElevenLabsAddPronunciationDictionaryRulesParsedRequest,
+  ElevenLabsRemovePronunciationDictionaryRulesRequest,
+  ElevenLabsRemovePronunciationDictionaryRulesRequestInput,
+  ElevenLabsRemovePronunciationDictionaryRulesParsedRequest,
+  ElevenLabsSetPronunciationDictionaryRulesRequest,
+  ElevenLabsSetPronunciationDictionaryRulesRequestInput,
+  ElevenLabsSetPronunciationDictionaryRulesParsedRequest,
+  ElevenLabsDownloadPronunciationDictionaryRequest,
+  ElevenLabsDownloadPronunciationDictionaryRequestInput,
+  ElevenLabsDownloadPronunciationDictionaryParsedRequest,
+  ElevenLabsPronunciationDictionaryAliasRuleRequest,
+  ElevenLabsPronunciationDictionaryAliasRuleRequestInput,
+  ElevenLabsPronunciationDictionaryAliasRuleParsedRequest,
+  ElevenLabsPronunciationDictionaryPhonemeRuleRequest,
+  ElevenLabsPronunciationDictionaryPhonemeRuleRequestInput,
+  ElevenLabsPronunciationDictionaryPhonemeRuleParsedRequest,
+  ElevenLabsPronunciationDictionaryRuleRequest,
+  ElevenLabsPronunciationDictionaryRuleRequestInput,
+  ElevenLabsPronunciationDictionaryRuleParsedRequest,
 } from "./zod";
 
 export type {
@@ -256,6 +292,42 @@ export type {
   ElevenLabsStudioUpdateChapterRequest,
   ElevenLabsStudioUpdateChapterRequestInput,
   ElevenLabsStudioUpdateChapterParsedRequest,
+  ElevenLabsListPronunciationDictionariesRequest,
+  ElevenLabsListPronunciationDictionariesRequestInput,
+  ElevenLabsListPronunciationDictionariesParsedRequest,
+  ElevenLabsAddPronunciationDictionaryFromFileRequest,
+  ElevenLabsAddPronunciationDictionaryFromFileRequestInput,
+  ElevenLabsAddPronunciationDictionaryFromFileParsedRequest,
+  ElevenLabsAddPronunciationDictionaryFromRulesRequest,
+  ElevenLabsAddPronunciationDictionaryFromRulesRequestInput,
+  ElevenLabsAddPronunciationDictionaryFromRulesParsedRequest,
+  ElevenLabsGetPronunciationDictionaryRequest,
+  ElevenLabsGetPronunciationDictionaryRequestInput,
+  ElevenLabsGetPronunciationDictionaryParsedRequest,
+  ElevenLabsUpdatePronunciationDictionaryRequest,
+  ElevenLabsUpdatePronunciationDictionaryRequestInput,
+  ElevenLabsUpdatePronunciationDictionaryParsedRequest,
+  ElevenLabsAddPronunciationDictionaryRulesRequest,
+  ElevenLabsAddPronunciationDictionaryRulesRequestInput,
+  ElevenLabsAddPronunciationDictionaryRulesParsedRequest,
+  ElevenLabsRemovePronunciationDictionaryRulesRequest,
+  ElevenLabsRemovePronunciationDictionaryRulesRequestInput,
+  ElevenLabsRemovePronunciationDictionaryRulesParsedRequest,
+  ElevenLabsSetPronunciationDictionaryRulesRequest,
+  ElevenLabsSetPronunciationDictionaryRulesRequestInput,
+  ElevenLabsSetPronunciationDictionaryRulesParsedRequest,
+  ElevenLabsDownloadPronunciationDictionaryRequest,
+  ElevenLabsDownloadPronunciationDictionaryRequestInput,
+  ElevenLabsDownloadPronunciationDictionaryParsedRequest,
+  ElevenLabsPronunciationDictionaryAliasRuleRequest,
+  ElevenLabsPronunciationDictionaryAliasRuleRequestInput,
+  ElevenLabsPronunciationDictionaryAliasRuleParsedRequest,
+  ElevenLabsPronunciationDictionaryPhonemeRuleRequest,
+  ElevenLabsPronunciationDictionaryPhonemeRuleRequestInput,
+  ElevenLabsPronunciationDictionaryPhonemeRuleParsedRequest,
+  ElevenLabsPronunciationDictionaryRuleRequest,
+  ElevenLabsPronunciationDictionaryRuleRequestInput,
+  ElevenLabsPronunciationDictionaryRuleParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -2739,7 +2811,180 @@ export interface ElevenLabsPvcVoiceSamplesNamespace extends ElevenLabsUpdatePvcV
 
 export type ElevenLabsPvcVoicesNamespace = ElevenLabsPvcVoiceNamespace;
 
+
+// -- Pronunciation Dictionaries ----------------------------------------------
+
+export interface ElevenLabsPronunciationDictionaryMetadata {
+  id: string;
+  name: string;
+  created_by: string;
+  creation_time_unix: number;
+  latest_version_id: string;
+  latest_version_rules_num: number;
+  permission_on_resource?: "admin" | "editor" | "commenter" | "viewer" | null;
+  archived_time_unix?: number | null;
+  description?: string | null;
+}
+
+export interface ElevenLabsListPronunciationDictionariesResponse {
+  pronunciation_dictionaries: ElevenLabsPronunciationDictionaryMetadata[];
+  next_cursor: string | null;
+  has_more: boolean;
+}
+
+export interface ElevenLabsAddPronunciationDictionaryResponse {
+  id: string;
+  name: string;
+  created_by: string;
+  creation_time_unix: number;
+  version_id: string;
+  version_rules_num: number;
+  permission_on_resource?: "admin" | "editor" | "commenter" | "viewer" | null;
+  description?: string | null;
+}
+
+export interface ElevenLabsPronunciationDictionaryAliasRuleResponse {
+  string_to_replace: string;
+  type: "alias";
+  alias: string;
+  case_sensitive?: boolean;
+  word_boundaries?: boolean;
+}
+
+export interface ElevenLabsPronunciationDictionaryPhonemeRuleResponse {
+  string_to_replace: string;
+  type: "phoneme";
+  phoneme: string;
+  alphabet: string;
+  case_sensitive?: boolean;
+  word_boundaries?: boolean;
+}
+
+export type ElevenLabsPronunciationDictionaryRuleResponse =
+  | ElevenLabsPronunciationDictionaryAliasRuleResponse
+  | ElevenLabsPronunciationDictionaryPhonemeRuleResponse;
+
+export interface ElevenLabsGetPronunciationDictionaryResponse extends ElevenLabsPronunciationDictionaryMetadata {
+  rules: ElevenLabsPronunciationDictionaryRuleResponse[];
+}
+
+export interface ElevenLabsPronunciationDictionaryRulesResponse {
+  id: string;
+  version_id: string;
+  version_rules_num: number;
+}
+
+export interface ElevenLabsListPronunciationDictionariesMethod {
+  (
+    req?: ElevenLabsListPronunciationDictionariesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListPronunciationDictionariesResponse>;
+  schema: z.ZodType<ElevenLabsListPronunciationDictionariesRequest>;
+}
+
+export interface ElevenLabsAddPronunciationDictionaryFromFileMethod {
+  (
+    req: ElevenLabsAddPronunciationDictionaryFromFileRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddPronunciationDictionaryResponse>;
+  schema: z.ZodType<ElevenLabsAddPronunciationDictionaryFromFileRequest>;
+}
+
+export interface ElevenLabsAddPronunciationDictionaryFromRulesMethod {
+  (
+    req: ElevenLabsAddPronunciationDictionaryFromRulesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddPronunciationDictionaryResponse>;
+  schema: z.ZodType<ElevenLabsAddPronunciationDictionaryFromRulesRequest>;
+}
+
+export interface ElevenLabsGetPronunciationDictionaryMethod {
+  (
+    id: string,
+    req?: ElevenLabsGetPronunciationDictionaryRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetPronunciationDictionaryResponse>;
+  schema: z.ZodType<ElevenLabsGetPronunciationDictionaryRequest>;
+}
+
+export interface ElevenLabsUpdatePronunciationDictionaryMethod {
+  (
+    id: string,
+    req?: ElevenLabsUpdatePronunciationDictionaryRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPronunciationDictionaryMetadata>;
+  schema: z.ZodType<ElevenLabsUpdatePronunciationDictionaryRequest>;
+}
+
+export interface ElevenLabsAddPronunciationDictionaryRulesMethod {
+  (
+    id: string,
+    req: ElevenLabsAddPronunciationDictionaryRulesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPronunciationDictionaryRulesResponse>;
+  schema: z.ZodType<ElevenLabsAddPronunciationDictionaryRulesRequest>;
+}
+
+export interface ElevenLabsRemovePronunciationDictionaryRulesMethod {
+  (
+    id: string,
+    req: ElevenLabsRemovePronunciationDictionaryRulesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPronunciationDictionaryRulesResponse>;
+  schema: z.ZodType<ElevenLabsRemovePronunciationDictionaryRulesRequest>;
+}
+
+export interface ElevenLabsSetPronunciationDictionaryRulesMethod {
+  (
+    id: string,
+    req: ElevenLabsSetPronunciationDictionaryRulesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPronunciationDictionaryRulesResponse>;
+  schema: z.ZodType<ElevenLabsSetPronunciationDictionaryRulesRequest>;
+}
+
+export interface ElevenLabsDownloadPronunciationDictionaryMethod {
+  (
+    id: string,
+    versionId: string,
+    req?: ElevenLabsDownloadPronunciationDictionaryRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsDownloadPronunciationDictionaryRequest>;
+}
+
+export interface ElevenLabsPronunciationDictionariesNamespace {
+  list: ElevenLabsListPronunciationDictionariesMethod;
+  addFromFile: ElevenLabsAddPronunciationDictionaryFromFileMethod;
+  addFromRules: ElevenLabsAddPronunciationDictionaryFromRulesMethod;
+  get: ElevenLabsGetPronunciationDictionaryMethod;
+  update: ElevenLabsUpdatePronunciationDictionaryMethod;
+  addRules: ElevenLabsAddPronunciationDictionaryRulesMethod;
+  removeRules: ElevenLabsRemovePronunciationDictionaryRulesMethod;
+  setRules: ElevenLabsSetPronunciationDictionaryRulesMethod;
+  download: ElevenLabsDownloadPronunciationDictionaryMethod;
+}
+
+export interface ElevenLabsGetPronunciationDictionariesNamespace {
+  list: ElevenLabsListPronunciationDictionariesMethod;
+  get: ElevenLabsGetPronunciationDictionaryMethod;
+  download: ElevenLabsDownloadPronunciationDictionaryMethod;
+}
+
+export interface ElevenLabsPostPronunciationDictionariesNamespace {
+  addFromFile: ElevenLabsAddPronunciationDictionaryFromFileMethod;
+  addFromRules: ElevenLabsAddPronunciationDictionaryFromRulesMethod;
+  addRules: ElevenLabsAddPronunciationDictionaryRulesMethod;
+  removeRules: ElevenLabsRemovePronunciationDictionaryRulesMethod;
+  setRules: ElevenLabsSetPronunciationDictionaryRulesMethod;
+}
+
+export interface ElevenLabsPatchPronunciationDictionariesNamespace {
+  update: ElevenLabsUpdatePronunciationDictionaryMethod;
+}
+
 export interface ElevenLabsV1Namespace {
+  pronunciationDictionaries: ElevenLabsPronunciationDictionariesNamespace;
   models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
   sharedVoices: ElevenLabsSharedVoicesMethod;
@@ -2790,6 +3035,7 @@ export interface ElevenLabsPostConvaiNamespace {
 }
 
 export interface ElevenLabsPostV1Namespace {
+  pronunciationDictionaries: ElevenLabsPostPronunciationDictionariesNamespace;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
@@ -2852,6 +3098,7 @@ export interface ElevenLabsPatchConvaiNamespace {
 }
 
 export interface ElevenLabsPatchV1Namespace {
+  pronunciationDictionaries: ElevenLabsPatchPronunciationDictionariesNamespace;
   convai: ElevenLabsPatchConvaiNamespace;
 }
 
@@ -2902,6 +3149,7 @@ export interface ElevenLabsGetConvaiNamespace {
 }
 
 export interface ElevenLabsGetV1Namespace {
+  pronunciationDictionaries: ElevenLabsGetPronunciationDictionariesNamespace;
   models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
   sharedVoices: ElevenLabsSharedVoicesMethod;

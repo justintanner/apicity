@@ -525,6 +525,11 @@ elevenlabs	v1.music.stream	POST	https://api.elevenlabs.io/v1/music/stream	https:
 elevenlabs	v1.music.stemSeparation	POST	https://api.elevenlabs.io/v1/music/stem-separation	https://elevenlabs.io/docs/api-reference/music/stem-separation
 elevenlabs	v1.music.upload	POST	https://api.elevenlabs.io/v1/music/upload	https://elevenlabs.io/docs/api-reference/music/upload
 elevenlabs	v1.music.videoToMusic	POST	https://api.elevenlabs.io/v1/music/video-to-music	https://elevenlabs.io/docs/api-reference/music/video-to-music
+elevenlabs	v1.speechEngine.list	GET	https://api.elevenlabs.io/v1/speech-engine	https://elevenlabs.io/docs/api-reference/speech-engine/list
+elevenlabs	v1.speechEngine.create	POST	https://api.elevenlabs.io/v1/speech-engine	https://elevenlabs.io/docs/api-reference/speech-engine/create
+elevenlabs	v1.speechEngine.get	GET	https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}	https://elevenlabs.io/docs/api-reference/speech-engine/get
+elevenlabs	v1.speechEngine.update	PATCH	https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}	https://elevenlabs.io/docs/api-reference/speech-engine/update
+elevenlabs	v1.speechEngine.delete	DELETE	https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}	https://elevenlabs.io/docs/api-reference/speech-engine/delete
 elevenlabs	v1.productions.orders.list	GET	https://api.elevenlabs.io/v1/productions/orders	https://elevenlabs.io/docs/api-reference/productions/orders/list
 elevenlabs	v1.productions.orders.create	POST	https://api.elevenlabs.io/v1/productions/orders	https://elevenlabs.io/docs/api-reference/productions/orders/create
 elevenlabs	v1.productions.orders.get	GET	https://api.elevenlabs.io/v1/productions/orders/{orderId}	https://elevenlabs.io/docs/api-reference/productions/orders/get

@@ -47,6 +47,12 @@ import {
   ElevenLabsMusicUploadRequest,
   ElevenLabsMusicUploadResponse,
   ElevenLabsVideoToMusicRequest,
+  ElevenLabsListSpeechEnginesRequest,
+  ElevenLabsListSpeechEnginesResponse,
+  ElevenLabsCreateSpeechEngineRequest,
+  ElevenLabsSpeechEngineResponse,
+  ElevenLabsUpdateSpeechEngineRequest,
+  ElevenLabsDeleteSpeechEngineResponse,
   ElevenLabsListOrdersRequest,
   ElevenLabsListOrdersResponse,
   ElevenLabsCreateOrderRequest,
@@ -234,6 +240,9 @@ import {
   ElevenLabsMusicStemSeparationRequestSchema,
   ElevenLabsMusicUploadRequestSchema,
   ElevenLabsVideoToMusicRequestSchema,
+  ElevenLabsListSpeechEnginesRequestSchema,
+  ElevenLabsCreateSpeechEngineRequestSchema,
+  ElevenLabsUpdateSpeechEngineRequestSchema,
   ElevenLabsListOrdersRequestSchema,
   ElevenLabsCreateOrderRequestSchema,
   ElevenLabsUpdateOrderRequestSchema,
@@ -1872,6 +1881,101 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       videoToMusic: videoToMusic,
     }
   );
+
+  // GET https://api.elevenlabs.io/v1/speech-engine
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-engine/list
+  const listSpeechEngines = Object.assign(
+    async (
+      req: ElevenLabsListSpeechEnginesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListSpeechEnginesResponse> => {
+      return makeJsonRequest<ElevenLabsListSpeechEnginesResponse>(
+        "GET",
+        "/v1/speech-engine",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListSpeechEnginesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/speech-engine
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-engine/create
+  const createSpeechEngine = Object.assign(
+    async (
+      req: ElevenLabsCreateSpeechEngineRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSpeechEngineResponse> => {
+      return makeJsonRequest<ElevenLabsSpeechEngineResponse>(
+        "POST",
+        "/v1/speech-engine",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateSpeechEngineRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-engine/get
+  const getSpeechEngine = Object.assign(
+    async (
+      speechEngineId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSpeechEngineResponse> => {
+      return makeJsonRequest<ElevenLabsSpeechEngineResponse>(
+        "GET",
+        `/v1/speech-engine/${encodeURIComponent(speechEngineId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-engine/update
+  const updateSpeechEngine = Object.assign(
+    async (
+      speechEngineId: string,
+      req: ElevenLabsUpdateSpeechEngineRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSpeechEngineResponse> => {
+      return makeJsonRequest<ElevenLabsSpeechEngineResponse>(
+        "PATCH",
+        `/v1/speech-engine/${encodeURIComponent(speechEngineId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateSpeechEngineRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}
+  // Docs: https://elevenlabs.io/docs/api-reference/speech-engine/delete
+  const deleteSpeechEngine = Object.assign(
+    async (
+      speechEngineId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteSpeechEngineResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteSpeechEngineResponse>(
+        "DELETE",
+        `/v1/speech-engine/${encodeURIComponent(speechEngineId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  const speechEngine = {
+    list: listSpeechEngines,
+    create: createSpeechEngine,
+    get: getSpeechEngine,
+    update: updateSpeechEngine,
+    delete: deleteSpeechEngine,
+  };
 
   // GET https://api.elevenlabs.io/v1/productions/orders
   // Docs: https://elevenlabs.io/docs/api-reference/productions/orders/list
@@ -4000,6 +4104,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     audioNative,
     forcedAlignment,
     music,
+    speechEngine: {
+      create: createSpeechEngine,
+    },
     productions: {
       orders: {
         create: createOrder,
@@ -4043,6 +4150,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     pronunciationDictionaries: {
       update: updatePronunciationDictionary,
     },
+    speechEngine: {
+      update: updateSpeechEngine,
+    },
     productions: {
       orders: { update: updateOrder },
     },
@@ -4057,6 +4167,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       history: {
         delete: deleteAudioIsolationHistoryItem,
       },
+    },
+    speechEngine: {
+      delete: deleteSpeechEngine,
     },
     productions: {
       orders: {
@@ -4097,6 +4210,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     audioNative,
     forcedAlignment,
     music,
+    speechEngine,
     productions,
     textToSpeech,
     textToDialogue,
@@ -4140,6 +4254,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         },
         audioNative: {
           settings: getAudioNativeProjectSettings,
+        },
+        speechEngine: {
+          list: listSpeechEngines,
+          get: getSpeechEngine,
         },
         productions: {
           orders: {

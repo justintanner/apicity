@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-129 endpoints across 19 groups. Each method mirrors an upstream URL path.
+157 endpoints across 24 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -200,6 +200,68 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.audioIsolation.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### audioNative
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.audioNative</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/audio-native</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-native/create)
+
+```typescript
+const res = await elevenlabs.v1.audioNative({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.audioNative.content.fromUrl</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/audio-native/content</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-native/update-content)
+
+```typescript
+const res = await elevenlabs.v1.audioNative.content.fromUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.audioNative.content.update</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/audio-native/{projectId}/content</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-native/update-content)
+
+```typescript
+const res = await elevenlabs.v1.audioNative.content.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.audioNative.settings</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/audio-native/{projectId}/settings</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-native/get-settings)
+
+```typescript
+const res = await elevenlabs.v1.audioNative.settings({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -782,6 +844,23 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+### forcedAlignment
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.forcedAlignment</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/forced-alignment</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/forced-alignment/create)
+
+```typescript
+const res = await elevenlabs.v1.forcedAlignment({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### history
 
 <details>
@@ -860,6 +939,280 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.models();
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### music
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/compose)
+
+```typescript
+const res = await elevenlabs.v1.music({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music.detailed</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music/detailed</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/compose-detailed)
+
+```typescript
+const res = await elevenlabs.v1.music.detailed({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music.plan</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music/plan</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/compose-plan)
+
+```typescript
+const res = await elevenlabs.v1.music.plan({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music.stemSeparation</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music/stem-separation</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/stem-separation)
+
+```typescript
+const res = await elevenlabs.v1.music.stemSeparation({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music.stream</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/compose-stream)
+
+```typescript
+const res = await elevenlabs.v1.music.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music.upload</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music/upload</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/upload)
+
+```typescript
+const res = await elevenlabs.v1.music.upload({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.music.videoToMusic</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/music/video-to-music</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/music/video-to-music)
+
+```typescript
+const res = await elevenlabs.v1.music.videoToMusic({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### productions
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.productions.orders.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/productions/orders</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/create)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.productions.orders.deliverables</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/productions/orders/{orderId}/deliverables</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/deliverables)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.deliverables({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.productions.orders.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/productions/orders/{orderId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/get)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.productions.orders.items.remove</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/productions/orders/{orderId}/items/{itemId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/items/remove)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.items.remove({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.productions.orders.items.upsert</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/items</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/items/upsert)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.items.upsert({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.productions.orders.languages</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/productions/orders/languages/{orderItemKind}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/languages)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.languages({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.productions.orders.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/productions/orders</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/list)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.productions.orders.media.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/productions/orders/{orderId}/media/{mediaId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/media/get)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.media.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.productions.orders.media.register</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/media</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/media/register)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.media.register({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.productions.orders.submit</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/productions/orders/{orderId}/submit</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/submit)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.submit({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.productions.orders.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/productions/orders/{orderId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/productions/orders/update)
+
+```typescript
+const res = await elevenlabs.v1.productions.orders.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1048,6 +1401,83 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.soundGeneration({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### speechEngine
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.speechEngine.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/speech-engine</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-engine/create)
+
+```typescript
+const res = await elevenlabs.v1.speechEngine.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.speechEngine.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-engine/delete)
+
+```typescript
+const res = await elevenlabs.v1.speechEngine.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.speechEngine.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-engine/get)
+
+```typescript
+const res = await elevenlabs.v1.speechEngine.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.speechEngine.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/speech-engine</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-engine/list)
+
+```typescript
+const res = await elevenlabs.v1.speechEngine.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.speechEngine.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/speech-engine/{speechEngineId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-engine/update)
+
+```typescript
+const res = await elevenlabs.v1.speechEngine.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

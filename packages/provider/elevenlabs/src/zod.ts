@@ -2307,6 +2307,106 @@ export type ElevenLabsPronunciationDictionaryRuleParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Speech Engine
+// ---------------------------------------------------------------------------
+
+const ElevenLabsSpeechEngineHeaderValueSchema = z.union([
+  z.string(),
+  z.object({ secret_id: z.string() }),
+  z.object({ variable_name: z.string() }),
+]);
+
+const ElevenLabsSpeechEngineConfigSchema = z.object({
+  ws_url: z.string(),
+  request_headers: z
+    .record(z.string(), ElevenLabsSpeechEngineHeaderValueSchema)
+    .optional(),
+});
+
+const ElevenLabsSpeechEngineObjectConfigSchema = z.record(
+  z.string(),
+  z.unknown()
+);
+
+// ---------------------------------------------------------------------------
+// GET /v1/speech-engine
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListSpeechEnginesRequestSchema = z.object({
+  page_size: z.number().int().max(100).optional(),
+  search: z.string().nullable().optional(),
+  sort_direction: z.enum(["asc", "desc"]).optional(),
+  sort_by: z
+    .enum(["name", "created_at", "call_count_7d"])
+    .nullable()
+    .optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListSpeechEnginesRequest = z.input<
+  typeof ElevenLabsListSpeechEnginesRequestSchema
+>;
+export type ElevenLabsListSpeechEnginesRequestInput =
+  ElevenLabsListSpeechEnginesRequest;
+export type ElevenLabsListSpeechEnginesParsedRequest = z.output<
+  typeof ElevenLabsListSpeechEnginesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/speech-engine
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateSpeechEngineRequestSchema = z.object({
+  name: z.string().optional(),
+  speech_engine: ElevenLabsSpeechEngineConfigSchema,
+  asr: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+  tts: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+  turn: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+  conversation: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+  privacy: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+  call_limits: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+  language: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  overrides: ElevenLabsSpeechEngineObjectConfigSchema.optional(),
+});
+
+export type ElevenLabsCreateSpeechEngineRequest = z.input<
+  typeof ElevenLabsCreateSpeechEngineRequestSchema
+>;
+export type ElevenLabsCreateSpeechEngineRequestInput =
+  ElevenLabsCreateSpeechEngineRequest;
+export type ElevenLabsCreateSpeechEngineParsedRequest = z.output<
+  typeof ElevenLabsCreateSpeechEngineRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/speech-engine/{speechEngineId}
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateSpeechEngineRequestSchema = z.object({
+  name: z.string().nullable().optional(),
+  speech_engine: ElevenLabsSpeechEngineConfigSchema.nullable().optional(),
+  asr: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+  tts: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+  turn: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+  conversation: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+  privacy: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+  call_limits: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+  language: z.string().nullable().optional(),
+  tags: z.array(z.string()).nullable().optional(),
+  overrides: ElevenLabsSpeechEngineObjectConfigSchema.nullable().optional(),
+});
+
+export type ElevenLabsUpdateSpeechEngineRequest = z.input<
+  typeof ElevenLabsUpdateSpeechEngineRequestSchema
+>;
+export type ElevenLabsUpdateSpeechEngineRequestInput =
+  ElevenLabsUpdateSpeechEngineRequest;
+export type ElevenLabsUpdateSpeechEngineParsedRequest = z.output<
+  typeof ElevenLabsUpdateSpeechEngineRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Productions / Orders shared schemas
 // ---------------------------------------------------------------------------
 

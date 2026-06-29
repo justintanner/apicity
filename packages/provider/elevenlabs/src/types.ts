@@ -28,6 +28,9 @@ import type {
   ElevenLabsMusicStemSeparationRequest,
   ElevenLabsMusicUploadRequest,
   ElevenLabsVideoToMusicRequest,
+  ElevenLabsListSpeechEnginesRequest,
+  ElevenLabsCreateSpeechEngineRequest,
+  ElevenLabsUpdateSpeechEngineRequest,
   ElevenLabsListOrdersRequest,
   ElevenLabsCreateOrderRequest,
   ElevenLabsUpdateOrderRequest,
@@ -200,6 +203,15 @@ export type {
   ElevenLabsVideoToMusicRequest,
   ElevenLabsVideoToMusicRequestInput,
   ElevenLabsVideoToMusicParsedRequest,
+  ElevenLabsListSpeechEnginesRequest,
+  ElevenLabsListSpeechEnginesRequestInput,
+  ElevenLabsListSpeechEnginesParsedRequest,
+  ElevenLabsCreateSpeechEngineRequest,
+  ElevenLabsCreateSpeechEngineRequestInput,
+  ElevenLabsCreateSpeechEngineParsedRequest,
+  ElevenLabsUpdateSpeechEngineRequest,
+  ElevenLabsUpdateSpeechEngineRequestInput,
+  ElevenLabsUpdateSpeechEngineParsedRequest,
   ElevenLabsListOrdersRequest,
   ElevenLabsListOrdersRequestInput,
   ElevenLabsListOrdersParsedRequest,
@@ -1212,6 +1224,62 @@ export interface ElevenLabsMusicUploadResponse {
   words_timestamps?: ElevenLabsMusicWordTimestamp[] | null;
 }
 
+// -- Speech Engine response shapes ------------------------------------------
+
+export interface ElevenLabsSpeechEngineSecretLocator {
+  secret_id: string;
+}
+
+export interface ElevenLabsSpeechEngineDynamicVariable {
+  variable_name: string;
+}
+
+export type ElevenLabsSpeechEngineHeaderValue =
+  | string
+  | ElevenLabsSpeechEngineSecretLocator
+  | ElevenLabsSpeechEngineDynamicVariable;
+
+export interface ElevenLabsSpeechEngineConfig {
+  ws_url: string;
+  request_headers?: Record<string, ElevenLabsSpeechEngineHeaderValue>;
+}
+
+export type ElevenLabsSpeechEngineObjectConfig = Record<string, unknown>;
+
+export interface ElevenLabsSpeechEngineSummary {
+  speech_engine_id: string;
+  name: string;
+  created_at_unix_secs: number;
+  tags: string[];
+  access_info: ElevenLabsResourceAccessInfo;
+}
+
+export interface ElevenLabsListSpeechEnginesResponse {
+  speech_engines: ElevenLabsSpeechEngineSummary[];
+  has_more: boolean;
+  next_cursor?: string | null;
+}
+
+export interface ElevenLabsSpeechEngineResponse {
+  speech_engine_id: string;
+  name: string;
+  speech_engine: ElevenLabsSpeechEngineConfig;
+  asr: ElevenLabsSpeechEngineObjectConfig;
+  tts: ElevenLabsSpeechEngineObjectConfig;
+  turn: ElevenLabsSpeechEngineObjectConfig;
+  conversation: ElevenLabsSpeechEngineObjectConfig;
+  privacy: ElevenLabsSpeechEngineObjectConfig;
+  call_limits: ElevenLabsSpeechEngineObjectConfig;
+  language: string;
+  tags: string[];
+  overrides: ElevenLabsSpeechEngineObjectConfig;
+  metadata: ElevenLabsAgentMetadata;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+}
+
+// DELETE returns an empty body (HTTP 204); surface it as an empty record.
+export type ElevenLabsDeleteSpeechEngineResponse = Record<string, unknown>;
+
 // -- Productions / Orders response shapes ------------------------------------
 
 export type ElevenLabsOrderState =
@@ -2129,6 +2197,55 @@ export interface ElevenLabsMusicMethod {
   stemSeparation: ElevenLabsMusicStemSeparationMethod;
   upload: ElevenLabsMusicUploadMethod;
   videoToMusic: ElevenLabsVideoToMusicMethod;
+}
+
+export interface ElevenLabsListSpeechEnginesMethod {
+  (
+    req?: ElevenLabsListSpeechEnginesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListSpeechEnginesResponse>;
+  schema: z.ZodType<ElevenLabsListSpeechEnginesRequest>;
+}
+
+export interface ElevenLabsCreateSpeechEngineMethod {
+  (
+    req: ElevenLabsCreateSpeechEngineRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSpeechEngineResponse>;
+  schema: z.ZodType<ElevenLabsCreateSpeechEngineRequest>;
+}
+
+export interface ElevenLabsGetSpeechEngineMethod {
+  (
+    speechEngineId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSpeechEngineResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateSpeechEngineMethod {
+  (
+    speechEngineId: string,
+    req: ElevenLabsUpdateSpeechEngineRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSpeechEngineResponse>;
+  schema: z.ZodType<ElevenLabsUpdateSpeechEngineRequest>;
+}
+
+export interface ElevenLabsDeleteSpeechEngineMethod {
+  (
+    speechEngineId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteSpeechEngineResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsSpeechEngineNamespace {
+  list: ElevenLabsListSpeechEnginesMethod;
+  create: ElevenLabsCreateSpeechEngineMethod;
+  get: ElevenLabsGetSpeechEngineMethod;
+  update: ElevenLabsUpdateSpeechEngineMethod;
+  delete: ElevenLabsDeleteSpeechEngineMethod;
 }
 
 export interface ElevenLabsListOrdersMethod {
@@ -3612,6 +3729,7 @@ export interface ElevenLabsV1Namespace {
   audioIsolation: ElevenLabsAudioIsolationMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
   music: ElevenLabsMusicMethod;
+  speechEngine: ElevenLabsSpeechEngineNamespace;
   productions: ElevenLabsProductionsNamespace;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
@@ -3663,6 +3781,9 @@ export interface ElevenLabsPostV1Namespace {
   audioIsolation: ElevenLabsAudioIsolationMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
   music: ElevenLabsMusicMethod;
+  speechEngine: {
+    create: ElevenLabsCreateSpeechEngineMethod;
+  };
   productions: {
     orders: {
       create: ElevenLabsCreateOrderMethod;
@@ -3733,6 +3854,9 @@ export interface ElevenLabsPatchConvaiNamespace {
 
 export interface ElevenLabsPatchV1Namespace {
   pronunciationDictionaries: ElevenLabsPatchPronunciationDictionariesNamespace;
+  speechEngine: {
+    update: ElevenLabsUpdateSpeechEngineMethod;
+  };
   productions: {
     orders: { update: ElevenLabsUpdateOrderMethod };
   };
@@ -3796,6 +3920,10 @@ export interface ElevenLabsGetV1Namespace {
     history: {
       list: ElevenLabsAudioIsolationHistoryListMethod;
     };
+  };
+  speechEngine: {
+    list: ElevenLabsListSpeechEnginesMethod;
+    get: ElevenLabsGetSpeechEngineMethod;
   };
   productions: {
     orders: {
@@ -3873,6 +4001,9 @@ export interface ElevenLabsDeleteV1Namespace {
     orders: {
       items: { remove: ElevenLabsRemoveOrderItemMethod };
     };
+  };
+  speechEngine: {
+    delete: ElevenLabsDeleteSpeechEngineMethod;
   };
   convai: ElevenLabsDeleteConvaiNamespace;
   history: {

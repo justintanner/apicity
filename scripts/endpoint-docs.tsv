@@ -518,6 +518,13 @@ elevenlabs	v1.audioNative.content.fromUrl	POST	https://api.elevenlabs.io/v1/audi
 elevenlabs	v1.audioNative.content.update	POST	https://api.elevenlabs.io/v1/audio-native/{projectId}/content	https://elevenlabs.io/docs/api-reference/audio-native/update-content
 elevenlabs	v1.audioNative.settings	GET	https://api.elevenlabs.io/v1/audio-native/{projectId}/settings	https://elevenlabs.io/docs/api-reference/audio-native/get-settings
 elevenlabs	v1.forcedAlignment	POST	https://api.elevenlabs.io/v1/forced-alignment	https://elevenlabs.io/docs/api-reference/forced-alignment/create
+elevenlabs	v1.music	POST	https://api.elevenlabs.io/v1/music	https://elevenlabs.io/docs/api-reference/music/compose
+elevenlabs	v1.music.detailed	POST	https://api.elevenlabs.io/v1/music/detailed	https://elevenlabs.io/docs/api-reference/music/compose-detailed
+elevenlabs	v1.music.plan	POST	https://api.elevenlabs.io/v1/music/plan	https://elevenlabs.io/docs/api-reference/music/compose-plan
+elevenlabs	v1.music.stream	POST	https://api.elevenlabs.io/v1/music/stream	https://elevenlabs.io/docs/api-reference/music/compose-stream
+elevenlabs	v1.music.stemSeparation	POST	https://api.elevenlabs.io/v1/music/stem-separation	https://elevenlabs.io/docs/api-reference/music/stem-separation
+elevenlabs	v1.music.upload	POST	https://api.elevenlabs.io/v1/music/upload	https://elevenlabs.io/docs/api-reference/music/upload
+elevenlabs	v1.music.videoToMusic	POST	https://api.elevenlabs.io/v1/music/video-to-music	https://elevenlabs.io/docs/api-reference/music/video-to-music
 elevenlabs	v1.speechToText	POST	https://api.elevenlabs.io/v1/speech-to-text	https://elevenlabs.io/docs/api-reference/speech-to-text/convert
 elevenlabs	v1.speechToText.transcripts.get	GET	https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}	https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/get
 elevenlabs	v1.speechToText.transcripts.delete	DELETE	https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}	https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/delete

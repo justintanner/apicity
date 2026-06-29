@@ -712,6 +712,234 @@ export type ElevenLabsForcedAlignmentParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Music shared schemas
+// ---------------------------------------------------------------------------
+
+const ElevenLabsMusicTimeRangeSchema = z.object({
+  start_ms: z.number().int(),
+  end_ms: z.number().int(),
+});
+
+const ElevenLabsMusicSongSectionSchema = z.object({
+  section_name: z.string(),
+  positive_local_styles: z.array(z.string()),
+  negative_local_styles: z.array(z.string()),
+  duration_ms: z.number().int(),
+  lines: z.array(z.string()),
+  source_from: z
+    .object({
+      song_id: z.string(),
+      range: ElevenLabsMusicTimeRangeSchema,
+      negative_ranges: z.array(ElevenLabsMusicTimeRangeSchema).optional(),
+    })
+    .nullable()
+    .optional(),
+});
+
+const ElevenLabsMusicPromptSchema = z.object({
+  positive_global_styles: z.array(z.string()),
+  negative_global_styles: z.array(z.string()),
+  sections: z.array(ElevenLabsMusicSongSectionSchema),
+});
+
+const ElevenLabsMusicAudioRefChunkSchema = z.object({
+  song_id: z.string(),
+  range: ElevenLabsMusicTimeRangeSchema,
+});
+
+const ElevenLabsMusicGenerationChunkSchema = z.object({
+  text: z.string(),
+  duration_ms: z.number().int(),
+  positive_styles: z.array(z.string()),
+  negative_styles: z.array(z.string()).optional(),
+  context_adherence: z.enum(["low", "medium", "high"]).optional(),
+  conditioning_ref: ElevenLabsMusicAudioRefChunkSchema.nullable().optional(),
+  condition_strength: z
+    .enum(["low", "medium", "high", "xhigh"])
+    .nullable()
+    .optional(),
+});
+
+const ElevenLabsCompositionPlanSchema = z.object({
+  chunks: z.array(
+    z.union([
+      ElevenLabsMusicGenerationChunkSchema,
+      ElevenLabsMusicAudioRefChunkSchema,
+    ])
+  ),
+});
+
+const ElevenLabsMusicCompositionPlanSchema = z.union([
+  ElevenLabsMusicPromptSchema,
+  ElevenLabsCompositionPlanSchema,
+]);
+
+const ElevenLabsMusicModelIdSchema = z.enum(["music_v1", "music_v2"]);
+
+// `output_format` is a query-string parameter, not a body field. As with the
+// other audio endpoints, it is carried on the same request object and the
+// factory strips it out and moves it to the URL query.
+const musicComposeBaseShape = {
+  prompt: z.string().max(4100).nullable().optional(),
+  generation_mode: z
+    .enum(["track", "loop", "ambience", "video_to_music"])
+    .nullable()
+    .optional(),
+  lyrics_text: z.string().max(4000).nullable().optional(),
+  composition_plan: ElevenLabsMusicCompositionPlanSchema.nullable().optional(),
+  music_length_ms: z.number().int().min(3000).max(600000).nullable().optional(),
+  model_id: ElevenLabsMusicModelIdSchema.optional(),
+  seed: z.number().int().min(0).max(2147483647).nullable().optional(),
+  force_instrumental: z.boolean().optional(),
+  finetune_id: z.string().max(100).nullable().optional(),
+  finetune_strength: z.number().optional(),
+  use_phonetic_names: z.boolean().optional(),
+  store_for_inpainting: z.boolean().optional(),
+};
+
+// ---------------------------------------------------------------------------
+// POST /v1/music
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsComposeMusicRequestSchema = z.object({
+  ...musicComposeBaseShape,
+  respect_sections_durations: z.boolean().optional(),
+  sign_with_c2pa: z.boolean().optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsComposeMusicRequest = z.input<
+  typeof ElevenLabsComposeMusicRequestSchema
+>;
+export type ElevenLabsComposeMusicRequestInput = ElevenLabsComposeMusicRequest;
+export type ElevenLabsComposeMusicParsedRequest = z.output<
+  typeof ElevenLabsComposeMusicRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/music/detailed
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsComposeMusicDetailedRequestSchema = z.object({
+  ...musicComposeBaseShape,
+  respect_sections_durations: z.boolean().optional(),
+  with_timestamps: z.boolean().optional(),
+  sign_with_c2pa: z.boolean().optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsComposeMusicDetailedRequest = z.input<
+  typeof ElevenLabsComposeMusicDetailedRequestSchema
+>;
+export type ElevenLabsComposeMusicDetailedRequestInput =
+  ElevenLabsComposeMusicDetailedRequest;
+export type ElevenLabsComposeMusicDetailedParsedRequest = z.output<
+  typeof ElevenLabsComposeMusicDetailedRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/music/stream
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsComposeMusicStreamRequestSchema = z.object({
+  ...musicComposeBaseShape,
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsComposeMusicStreamRequest = z.input<
+  typeof ElevenLabsComposeMusicStreamRequestSchema
+>;
+export type ElevenLabsComposeMusicStreamRequestInput =
+  ElevenLabsComposeMusicStreamRequest;
+export type ElevenLabsComposeMusicStreamParsedRequest = z.output<
+  typeof ElevenLabsComposeMusicStreamRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/music/plan
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsMusicPlanRequestSchema = z.object({
+  prompt: z.string().max(4100),
+  music_length_ms: z.number().int().min(3000).max(600000).nullable().optional(),
+  source_composition_plan:
+    ElevenLabsMusicCompositionPlanSchema.nullable().optional(),
+  model_id: ElevenLabsMusicModelIdSchema.optional(),
+});
+
+export type ElevenLabsMusicPlanRequest = z.input<
+  typeof ElevenLabsMusicPlanRequestSchema
+>;
+export type ElevenLabsMusicPlanRequestInput = ElevenLabsMusicPlanRequest;
+export type ElevenLabsMusicPlanParsedRequest = z.output<
+  typeof ElevenLabsMusicPlanRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/music/stem-separation
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsMusicStemSeparationRequestSchema = z.object({
+  file: z.custom<Blob>((value) => value instanceof Blob),
+  stem_variation_id: z.enum(["two_stems_v1", "six_stems_v1"]).optional(),
+  sign_with_c2pa: z.boolean().optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsMusicStemSeparationRequest = z.input<
+  typeof ElevenLabsMusicStemSeparationRequestSchema
+>;
+export type ElevenLabsMusicStemSeparationRequestInput =
+  ElevenLabsMusicStemSeparationRequest;
+export type ElevenLabsMusicStemSeparationParsedRequest = z.output<
+  typeof ElevenLabsMusicStemSeparationRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/music/upload
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsMusicUploadRequestSchema = z.object({
+  file: z.custom<Blob>((value) => value instanceof Blob),
+  extract_composition_plan: z
+    .union([z.boolean(), z.enum(["music_v1", "music_v2"])])
+    .optional(),
+  with_timestamps: z.boolean().optional(),
+});
+
+export type ElevenLabsMusicUploadRequest = z.input<
+  typeof ElevenLabsMusicUploadRequestSchema
+>;
+export type ElevenLabsMusicUploadRequestInput = ElevenLabsMusicUploadRequest;
+export type ElevenLabsMusicUploadParsedRequest = z.output<
+  typeof ElevenLabsMusicUploadRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/music/video-to-music
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsVideoToMusicRequestSchema = z.object({
+  videos: z
+    .array(z.custom<Blob>((value) => value instanceof Blob))
+    .min(1)
+    .max(10),
+  description: z.string().min(1).max(1000).nullable().optional(),
+  tags: z.array(z.string()).max(10).optional(),
+  model_id: ElevenLabsMusicModelIdSchema.optional(),
+  sign_with_c2pa: z.boolean().optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsVideoToMusicRequest = z.input<
+  typeof ElevenLabsVideoToMusicRequestSchema
+>;
+export type ElevenLabsVideoToMusicRequestInput = ElevenLabsVideoToMusicRequest;
+export type ElevenLabsVideoToMusicParsedRequest = z.output<
+  typeof ElevenLabsVideoToMusicRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

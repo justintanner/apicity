@@ -21,6 +21,13 @@ import type {
   ElevenLabsAudioNativeUpdateContentFromUrlRequest,
   ElevenLabsAudioNativeUpdateProjectContentRequest,
   ElevenLabsForcedAlignmentRequest,
+  ElevenLabsComposeMusicRequest,
+  ElevenLabsComposeMusicDetailedRequest,
+  ElevenLabsComposeMusicStreamRequest,
+  ElevenLabsMusicPlanRequest,
+  ElevenLabsMusicStemSeparationRequest,
+  ElevenLabsMusicUploadRequest,
+  ElevenLabsVideoToMusicRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -167,6 +174,27 @@ export type {
   ElevenLabsForcedAlignmentRequest,
   ElevenLabsForcedAlignmentRequestInput,
   ElevenLabsForcedAlignmentParsedRequest,
+  ElevenLabsComposeMusicRequest,
+  ElevenLabsComposeMusicRequestInput,
+  ElevenLabsComposeMusicParsedRequest,
+  ElevenLabsComposeMusicDetailedRequest,
+  ElevenLabsComposeMusicDetailedRequestInput,
+  ElevenLabsComposeMusicDetailedParsedRequest,
+  ElevenLabsComposeMusicStreamRequest,
+  ElevenLabsComposeMusicStreamRequestInput,
+  ElevenLabsComposeMusicStreamParsedRequest,
+  ElevenLabsMusicPlanRequest,
+  ElevenLabsMusicPlanRequestInput,
+  ElevenLabsMusicPlanParsedRequest,
+  ElevenLabsMusicStemSeparationRequest,
+  ElevenLabsMusicStemSeparationRequestInput,
+  ElevenLabsMusicStemSeparationParsedRequest,
+  ElevenLabsMusicUploadRequest,
+  ElevenLabsMusicUploadRequestInput,
+  ElevenLabsMusicUploadParsedRequest,
+  ElevenLabsVideoToMusicRequest,
+  ElevenLabsVideoToMusicRequestInput,
+  ElevenLabsVideoToMusicParsedRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
@@ -1097,6 +1125,73 @@ export interface ElevenLabsForcedAlignmentResponse {
   loss: number;
 }
 
+// -- Music response shapes ---------------------------------------------------
+
+export interface ElevenLabsMusicTimeRange {
+  start_ms: number;
+  end_ms: number;
+}
+
+export interface ElevenLabsMusicSectionSource {
+  song_id: string;
+  range: ElevenLabsMusicTimeRange;
+  negative_ranges?: ElevenLabsMusicTimeRange[];
+}
+
+export interface ElevenLabsMusicSongSection {
+  section_name: string;
+  positive_local_styles: string[];
+  negative_local_styles: string[];
+  duration_ms: number;
+  lines: string[];
+  source_from?: ElevenLabsMusicSectionSource | null;
+}
+
+// Composition plan for the `music_v1` model.
+export interface ElevenLabsMusicPrompt {
+  positive_global_styles: string[];
+  negative_global_styles: string[];
+  sections: ElevenLabsMusicSongSection[];
+}
+
+export interface ElevenLabsMusicAudioRefChunk {
+  song_id: string;
+  range: ElevenLabsMusicTimeRange;
+}
+
+export interface ElevenLabsMusicGenerationChunk {
+  text: string;
+  duration_ms: number;
+  positive_styles: string[];
+  negative_styles?: string[];
+  context_adherence?: "low" | "medium" | "high";
+  conditioning_ref?: ElevenLabsMusicAudioRefChunk | null;
+  condition_strength?: "low" | "medium" | "high" | "xhigh" | null;
+}
+
+// Composition plan for the `music_v2` model.
+export interface ElevenLabsCompositionPlan {
+  chunks: Array<ElevenLabsMusicGenerationChunk | ElevenLabsMusicAudioRefChunk>;
+}
+
+export type ElevenLabsMusicCompositionPlan =
+  | ElevenLabsMusicPrompt
+  | ElevenLabsCompositionPlan;
+
+export type ElevenLabsMusicPlanResponse = ElevenLabsMusicCompositionPlan;
+
+export interface ElevenLabsMusicWordTimestamp {
+  word: string;
+  start_ms: number;
+  end_ms: number;
+}
+
+export interface ElevenLabsMusicUploadResponse {
+  song_id: string;
+  composition_plan?: ElevenLabsMusicCompositionPlan | null;
+  words_timestamps?: ElevenLabsMusicWordTimestamp[] | null;
+}
+
 // -- History response shapes -------------------------------------------------
 
 export interface ElevenLabsHistoryFeedback {
@@ -1797,6 +1892,68 @@ export interface ElevenLabsForcedAlignmentMethod {
     signal?: AbortSignal
   ): Promise<ElevenLabsForcedAlignmentResponse>;
   schema: z.ZodType<ElevenLabsForcedAlignmentRequest>;
+}
+
+export interface ElevenLabsComposeMusicDetailedMethod {
+  (
+    req: ElevenLabsComposeMusicDetailedRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsComposeMusicDetailedRequest>;
+}
+
+export interface ElevenLabsComposeMusicStreamMethod {
+  (
+    req: ElevenLabsComposeMusicStreamRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsComposeMusicStreamRequest>;
+}
+
+export interface ElevenLabsMusicPlanMethod {
+  (
+    req: ElevenLabsMusicPlanRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMusicPlanResponse>;
+  schema: z.ZodType<ElevenLabsMusicPlanRequest>;
+}
+
+export interface ElevenLabsMusicStemSeparationMethod {
+  (
+    req: ElevenLabsMusicStemSeparationRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsMusicStemSeparationRequest>;
+}
+
+export interface ElevenLabsMusicUploadMethod {
+  (
+    req: ElevenLabsMusicUploadRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMusicUploadResponse>;
+  schema: z.ZodType<ElevenLabsMusicUploadRequest>;
+}
+
+export interface ElevenLabsVideoToMusicMethod {
+  (
+    req: ElevenLabsVideoToMusicRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsVideoToMusicRequest>;
+}
+
+export interface ElevenLabsMusicMethod {
+  (
+    req: ElevenLabsComposeMusicRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsComposeMusicRequest>;
+  detailed: ElevenLabsComposeMusicDetailedMethod;
+  plan: ElevenLabsMusicPlanMethod;
+  stream: ElevenLabsComposeMusicStreamMethod;
+  stemSeparation: ElevenLabsMusicStemSeparationMethod;
+  upload: ElevenLabsMusicUploadMethod;
+  videoToMusic: ElevenLabsVideoToMusicMethod;
 }
 
 export interface ElevenLabsCharacterAlignment {
@@ -3163,6 +3320,7 @@ export interface ElevenLabsV1Namespace {
   soundGeneration: ElevenLabsSoundGenerationMethod;
   audioIsolation: ElevenLabsAudioIsolationMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
+  music: ElevenLabsMusicMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
@@ -3212,6 +3370,7 @@ export interface ElevenLabsPostV1Namespace {
   soundGeneration: ElevenLabsSoundGenerationMethod;
   audioIsolation: ElevenLabsAudioIsolationMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
+  music: ElevenLabsMusicMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;

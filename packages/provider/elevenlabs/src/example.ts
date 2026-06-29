@@ -41,6 +41,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30
     }
   },
+  "GET v1.sharedVoices": {
+    "source": "elevenlabs/voice-library",
+    "payload": {
+      "page_size": 3
+    }
+  },
   "GET v2.voices": {
     "source": "elevenlabs/voices",
     "payload": {
@@ -178,6 +184,28 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model_id": "eleven_multilingual_v2"
     }
   },
+  "POST v1.textToVoice": {
+    "source": "elevenlabs/text-to-voice",
+    "payload": {
+      "voice_name": "Apicity Test Narrator",
+      "voice_description": "A warm, friendly middle-aged narrator with a calm British accent.",
+      "generated_voice_id": "4leCOcdTmRHiiAQF2IbG"
+    }
+  },
+  "POST v1.textToVoice.design": {
+    "source": "elevenlabs/text-to-voice",
+    "payload": {
+      "voice_description": "A warm, friendly middle-aged narrator with a calm British accent.",
+      "auto_generate_text": true
+    }
+  },
+  "POST v1.textToVoice.remix": {
+    "source": "elevenlabs/text-to-voice",
+    "payload": {
+      "voice_description": "Make it brighter and more energetic.",
+      "auto_generate_text": true
+    }
+  },
   "POST v1.voices.pvc": {
     "source": "elevenlabs/pvc-voice-create",
     "payload": {
@@ -204,6 +232,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "elevenlabs/pvc-train",
     "payload": {
       "model_id": "eleven_turbo_v2"
+    }
+  },
+  "POST v1.voices.settings.edit": {
+    "source": "elevenlabs/voice-crud",
+    "payload": {
+      "stability": 0.4,
+      "similarity_boost": 0.8
     }
   },
   "POST v1.workspace.analytics.query.usageByProductOverTime": {

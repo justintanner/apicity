@@ -113,6 +113,11 @@ import {
   ElevenLabsSharedVoicesRequest,
   ElevenLabsSimilarVoicesRequest,
   ElevenLabsLibraryVoicesResponse,
+  ElevenLabsHistoryListRequest,
+  ElevenLabsHistoryListResponse,
+  ElevenLabsHistoryItem,
+  ElevenLabsHistoryDeleteResponse,
+  ElevenLabsHistoryDownloadRequest,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -167,6 +172,8 @@ import {
   ElevenLabsAddSharedVoiceRequestSchema,
   ElevenLabsSharedVoicesRequestSchema,
   ElevenLabsSimilarVoicesRequestSchema,
+  ElevenLabsHistoryListRequestSchema,
+  ElevenLabsHistoryDownloadRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -2118,6 +2125,86 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsListConversationsRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/history
+  // Docs: https://elevenlabs.io/docs/api-reference/history/get-generated-items
+  const listHistory = Object.assign(
+    async (
+      req: ElevenLabsHistoryListRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsHistoryListResponse> => {
+      return makeJsonRequest<ElevenLabsHistoryListResponse>(
+        "GET",
+        "/v1/history",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsHistoryListRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/history/{historyItemId}
+  // Docs: https://elevenlabs.io/docs/api-reference/history/get-history-item-by-id
+  const getHistoryItem = Object.assign(
+    async (
+      historyItemId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsHistoryItem> => {
+      return makeJsonRequest<ElevenLabsHistoryItem>(
+        "GET",
+        `/v1/history/${encodeURIComponent(historyItemId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/history/{historyItemId}
+  // Docs: https://elevenlabs.io/docs/api-reference/history/delete-history-item
+  const deleteHistoryItem = Object.assign(
+    async (
+      historyItemId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsHistoryDeleteResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsHistoryDeleteResponse>(
+        "DELETE",
+        `/v1/history/${encodeURIComponent(historyItemId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/history/{historyItemId}/audio
+  // Docs: https://elevenlabs.io/docs/api-reference/history/get-audio-from-history-item
+  const getHistoryItemAudio = Object.assign(
+    async (
+      historyItemId: string,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeGetBinaryRequest(
+        `/v1/history/${encodeURIComponent(historyItemId)}/audio`,
+        "",
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/history/download
+  // Docs: https://elevenlabs.io/docs/api-reference/history/download-history-items
+  const downloadHistory = Object.assign(
+    async (
+      req: ElevenLabsHistoryDownloadRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeBinaryRequest("/v1/history/download", req, undefined, signal);
+    },
+    { schema: ElevenLabsHistoryDownloadRequestSchema }
+  );
+
   // GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/get
   const getConversation = Object.assign(
@@ -2440,6 +2527,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       twilio: convaiTwilio,
       sipTrunk: convaiSipTrunk,
     },
+    history: {
+      download: downloadHistory,
+    },
   };
   const patchV1 = {
     convai: {
@@ -2467,6 +2557,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       conversations: { delete: deleteConversation },
       phoneNumbers: { delete: deletePhoneNumber },
     },
+    history: {
+      delete: deleteHistoryItem,
+    },
   };
   const v1 = {
     models,
@@ -2482,6 +2575,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     user,
     workspace,
     convai,
+    history: {
+      list: listHistory,
+      get: getHistoryItem,
+      delete: deleteHistoryItem,
+      audio: getHistoryItemAudio,
+      download: downloadHistory,
+    },
   };
 
   return attachExamples({
@@ -2526,6 +2626,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             list: listPhoneNumbers,
             get: getPhoneNumber,
           },
+        },
+        history: {
+          list: listHistory,
+          get: getHistoryItem,
+          audio: getHistoryItemAudio,
         },
       },
       v2,

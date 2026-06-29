@@ -1343,3 +1343,45 @@ export type ElevenLabsVoiceRemixRequestInput = ElevenLabsVoiceRemixRequest;
 export type ElevenLabsVoiceRemixParsedRequest = z.output<
   typeof ElevenLabsVoiceRemixRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// GET /v1/history
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsHistoryListRequestSchema = z.object({
+  page_size: z.number().int().max(1000).optional(),
+  start_after_history_item_id: z.string().nullable().optional(),
+  voice_id: z.string().nullable().optional(),
+  model_id: z.string().nullable().optional(),
+  date_before_unix: z.number().int().nullable().optional(),
+  date_after_unix: z.number().int().nullable().optional(),
+  sort_direction: z.enum(["asc", "desc"]).nullable().optional(),
+  search: z.string().nullable().optional(),
+  source: z.enum(["TTS", "STS", "Flows"]).nullable().optional(),
+});
+
+export type ElevenLabsHistoryListRequest = z.input<
+  typeof ElevenLabsHistoryListRequestSchema
+>;
+export type ElevenLabsHistoryListRequestInput = ElevenLabsHistoryListRequest;
+export type ElevenLabsHistoryListParsedRequest = z.output<
+  typeof ElevenLabsHistoryListRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/history/download
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsHistoryDownloadRequestSchema = z.object({
+  history_item_ids: z.array(z.string()),
+  output_format: z.string().nullable().optional(),
+});
+
+export type ElevenLabsHistoryDownloadRequest = z.input<
+  typeof ElevenLabsHistoryDownloadRequestSchema
+>;
+export type ElevenLabsHistoryDownloadRequestInput =
+  ElevenLabsHistoryDownloadRequest;
+export type ElevenLabsHistoryDownloadParsedRequest = z.output<
+  typeof ElevenLabsHistoryDownloadRequestSchema
+>;

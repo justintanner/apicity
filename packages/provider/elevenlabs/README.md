@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-67 endpoints across 12 groups. Each method mirrors an upstream URL path.
+87 endpoints across 15 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -628,6 +628,73 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+### history
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.history.audio</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/history/{historyItemId}/audio</code>
+
+```typescript
+const res = await elevenlabs.v1.history.audio({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.history.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/history/{historyItemId}</code>
+
+```typescript
+const res = await elevenlabs.v1.history.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.history.download</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/history/download</code>
+
+```typescript
+const res = await elevenlabs.v1.history.download({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.history.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/history/{historyItemId}</code>
+
+```typescript
+const res = await elevenlabs.v1.history.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.history.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/history</code>
+
+```typescript
+const res = await elevenlabs.v1.history.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### models
 
 <details>
@@ -639,6 +706,40 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.models();
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### sharedVoices
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.sharedVoices</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/shared-voices</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/get-shared)
+
+```typescript
+const res = await elevenlabs.v1.sharedVoices({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### similarVoices
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.similarVoices</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/similar-voices</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/find-similar-voices)
+
+```typescript
+const res = await elevenlabs.v1.similarVoices({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -868,6 +969,8 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 <code>POST https://api.elevenlabs.io/v1/text-to-voice</code>
 
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-voice/create)
+
 ```typescript
 const res = await elevenlabs.v1.textToVoice({ /* ... */ });
 ```
@@ -880,6 +983,8 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 <summary><code>POST</code> <b><code>elevenlabs.v1.textToVoice.design</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/text-to-voice/design</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-voice/design)
 
 ```typescript
 const res = await elevenlabs.v1.textToVoice.design({ /* ... */ });
@@ -894,6 +999,8 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 <code>POST https://api.elevenlabs.io/v1/text-to-voice/{voiceId}/remix</code>
 
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-voice/remix)
+
 ```typescript
 const res = await elevenlabs.v1.textToVoice.remix({ /* ... */ });
 ```
@@ -906,6 +1013,8 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 <summary><code>GET</code> <b><code>elevenlabs.v1.textToVoice</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/text-to-voice/{generatedVoiceId}/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-voice/create)
 
 ```typescript
 const res = await elevenlabs.v1.textToVoice({ /* ... */ });
@@ -943,6 +1052,81 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.voices("voice_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.add</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/add</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/ivc/create)
+
+```typescript
+const res = await elevenlabs.v1.voices.add({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.add.share</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/add/{publicUserId}/{voiceId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/share)
+
+```typescript
+const res = await elevenlabs.v1.voices.add.share({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.voices.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/voices/{voiceId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/delete)
+
+```typescript
+const res = await elevenlabs.v1.voices.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.edit</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/{voiceId}/edit</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/edit)
+
+```typescript
+const res = await elevenlabs.v1.voices.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/get-all)
+
+```typescript
+const res = await elevenlabs.v1.voices.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -995,6 +1179,19 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.pvc.edit</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}</code>
+
+```typescript
+const res = await elevenlabs.v1.voices.pvc.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.voices.pvc.samples</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}</code>
@@ -1003,6 +1200,32 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.voices.pvc.samples("voice_id", "sample_id", { /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.pvc.samples.add</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples</code>
+
+```typescript
+const res = await elevenlabs.v1.voices.pvc.samples.add({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices.pvc.samples.audio</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/audio</code>
+
+```typescript
+const res = await elevenlabs.v1.voices.pvc.samples.audio({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1033,6 +1256,19 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.voices.pvc.samples.separateSpeakers("voice_id", "sample_id");
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices.pvc.samples.speakers</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/speakers</code>
+
+```typescript
+const res = await elevenlabs.v1.voices.pvc.samples.speakers({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1100,6 +1336,36 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices.samples.audio</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}/audio</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/samples/audio)
+
+```typescript
+const res = await elevenlabs.v1.voices.samples.audio({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.voices.samples.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/samples/delete)
+
+```typescript
+const res = await elevenlabs.v1.voices.samples.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>elevenlabs.v1.voices.settings</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/voices/{voiceId}/settings</code>
@@ -1108,6 +1374,36 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.voices.settings("voice_id");
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.voices.settings.default</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/voices/settings/default</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/settings/get-default)
+
+```typescript
+const res = await elevenlabs.v1.voices.settings.default({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.voices.settings.edit</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/voices/{voiceId}/settings/edit</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/voices/settings/update)
+
+```typescript
+const res = await elevenlabs.v1.voices.settings.edit({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

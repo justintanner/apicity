@@ -50,6 +50,8 @@ import type {
   ElevenLabsAddSharedVoiceRequest,
   ElevenLabsSharedVoicesRequest,
   ElevenLabsSimilarVoicesRequest,
+  ElevenLabsHistoryListRequest,
+  ElevenLabsHistoryDownloadRequest,
 } from "./zod";
 
 export type {
@@ -204,6 +206,12 @@ export type {
   ElevenLabsVoiceRemixRequest,
   ElevenLabsVoiceRemixRequestInput,
   ElevenLabsVoiceRemixParsedRequest,
+  ElevenLabsHistoryListRequest,
+  ElevenLabsHistoryListRequestInput,
+  ElevenLabsHistoryListParsedRequest,
+  ElevenLabsHistoryDownloadRequest,
+  ElevenLabsHistoryDownloadRequestInput,
+  ElevenLabsHistoryDownloadParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -673,6 +681,81 @@ export interface ElevenLabsPvcTrainResponse {
 }
 
 export interface ElevenLabsDeleteVoiceSampleResponse {
+  status: string;
+}
+
+// -- History response shapes -------------------------------------------------
+
+export interface ElevenLabsHistoryFeedback {
+  thumbs_up: boolean;
+  feedback: string;
+  emotions: boolean;
+  inaccurate_clone: boolean;
+  glitches: boolean;
+  audio_quality: boolean;
+  other: boolean;
+  review_status?: string;
+}
+
+export interface ElevenLabsHistoryAlignment {
+  characters: string[];
+  character_start_times_seconds: number[];
+  character_end_times_seconds: number[];
+}
+
+export interface ElevenLabsHistoryAlignments {
+  alignment: ElevenLabsHistoryAlignment;
+  normalized_alignment: ElevenLabsHistoryAlignment;
+}
+
+export interface ElevenLabsDialogueInput {
+  text: string;
+  voice_id: string;
+  voice_name: string;
+}
+
+export interface ElevenLabsHistoryItem {
+  history_item_id: string;
+  request_id?: string | null;
+  voice_id?: string | null;
+  model_id?: string | null;
+  voice_name?: string | null;
+  voice_category?: "premade" | "cloned" | "generated" | "professional" | null;
+  text?: string | null;
+  date_unix: number;
+  character_count_change_from: number;
+  character_count_change_to: number;
+  content_type: string;
+  state: "created" | "deleted" | "processing";
+  settings?: Record<string, unknown> | null;
+  feedback?: ElevenLabsHistoryFeedback | null;
+  share_link_id?: string | null;
+  source?:
+    | "TTS"
+    | "STS"
+    | "Projects"
+    | "PD"
+    | "AN"
+    | "Dubbing"
+    | "PlayAPI"
+    | "ConvAI"
+    | "VoiceGeneration"
+    | "InVPC"
+    | "Flows"
+    | null;
+  alignments?: ElevenLabsHistoryAlignments | null;
+  dialogue?: ElevenLabsDialogueInput[] | null;
+  output_format?: string | null;
+}
+
+export interface ElevenLabsHistoryListResponse {
+  history: ElevenLabsHistoryItem[];
+  last_history_item_id?: string | null;
+  has_more: boolean;
+  scanned_until?: number | null;
+}
+
+export interface ElevenLabsHistoryDeleteResponse {
   status: string;
 }
 
@@ -1931,6 +2014,50 @@ export interface ElevenLabsSipTrunkOutboundCallMethod {
   schema: z.ZodType<ElevenLabsSipTrunkOutboundCallRequest>;
 }
 
+// -- History methods ---------------------------------------------------------
+
+export interface ElevenLabsHistoryListMethod {
+  (
+    req?: ElevenLabsHistoryListRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsHistoryListResponse>;
+  schema: z.ZodType<ElevenLabsHistoryListRequest>;
+}
+
+export interface ElevenLabsHistoryGetMethod {
+  (historyItemId: string, signal?: AbortSignal): Promise<ElevenLabsHistoryItem>;
+  schema: undefined;
+}
+
+export interface ElevenLabsHistoryDeleteMethod {
+  (
+    historyItemId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsHistoryDeleteResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsHistoryGetAudioMethod {
+  (historyItemId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
+  schema: undefined;
+}
+
+export interface ElevenLabsHistoryDownloadMethod {
+  (
+    req: ElevenLabsHistoryDownloadRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsHistoryDownloadRequest>;
+}
+
+export interface ElevenLabsHistoryNamespace {
+  list: ElevenLabsHistoryListMethod;
+  get: ElevenLabsHistoryGetMethod;
+  delete: ElevenLabsHistoryDeleteMethod;
+  audio: ElevenLabsHistoryGetAudioMethod;
+  download: ElevenLabsHistoryDownloadMethod;
+}
+
 // -- Namespace interfaces ----------------------------------------------------
 
 export interface ElevenLabsConvaiAgentsNamespace {
@@ -2044,6 +2171,7 @@ export interface ElevenLabsV1Namespace {
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsConvaiNamespace;
+  history: ElevenLabsHistoryNamespace;
 }
 
 export interface ElevenLabsV2Namespace {
@@ -2088,6 +2216,7 @@ export interface ElevenLabsPostV1Namespace {
   voices: ElevenLabsPostV1VoicesNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsPostConvaiNamespace;
+  history: { download: ElevenLabsHistoryDownloadMethod };
 }
 
 export interface ElevenLabsPostV1VoicesSettingsNamespace {
@@ -2195,6 +2324,11 @@ export interface ElevenLabsGetV1Namespace {
   user: ElevenLabsUserNamespace;
   textToVoice: ElevenLabsGetV1TextToVoiceNamespace;
   convai: ElevenLabsGetConvaiNamespace;
+  history: {
+    list: ElevenLabsHistoryListMethod;
+    get: ElevenLabsHistoryGetMethod;
+    audio: ElevenLabsHistoryGetAudioMethod;
+  };
 }
 
 export interface ElevenLabsGetV2Namespace {
@@ -2248,6 +2382,9 @@ export interface ElevenLabsDeleteV1Namespace {
     };
   };
   convai: ElevenLabsDeleteConvaiNamespace;
+  history: {
+    delete: ElevenLabsHistoryDeleteMethod;
+  };
 }
 
 export interface ElevenLabsDeleteNamespace {

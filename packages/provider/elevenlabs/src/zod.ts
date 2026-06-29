@@ -1730,3 +1730,119 @@ export type ElevenLabsStudioUpdateChapterRequestInput =
 export type ElevenLabsStudioUpdateChapterParsedRequest = z.output<
   typeof ElevenLabsStudioUpdateChapterRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Pronunciation Dictionaries
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListPronunciationDictionariesRequestSchema = z.object({
+  cursor: z.string().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  sort: z.enum(["creation_time_unix", "name"]).optional(),
+  sort_direction: z.string().optional(),
+});
+
+export const ElevenLabsAddPronunciationDictionaryFromFileRequestSchema = z.object({
+  name: z.string(),
+  file: z.any().optional(),
+  description: z.string().optional(),
+  workspace_access: z.enum(["admin", "editor", "commenter", "viewer"]).optional(),
+});
+
+export const ElevenLabsPronunciationDictionaryAliasRuleRequestSchema = z.object({
+  string_to_replace: z.string(),
+  case_sensitive: z.boolean().optional(),
+  word_boundaries: z.boolean().optional(),
+  type: z.literal("alias"),
+  alias: z.string(),
+});
+
+export const ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema = z.object({
+  string_to_replace: z.string(),
+  case_sensitive: z.boolean().optional(),
+  word_boundaries: z.boolean().optional(),
+  type: z.literal("phoneme"),
+  phoneme: z.string(),
+  alphabet: z.string(),
+});
+
+export const ElevenLabsPronunciationDictionaryRuleRequestSchema = z.union([
+  ElevenLabsPronunciationDictionaryAliasRuleRequestSchema,
+  ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema,
+]);
+
+export const ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema = z.object({
+  name: z.string(),
+  description: z.string().optional(),
+  workspace_access: z.enum(["admin", "editor", "commenter", "viewer"]).optional(),
+  rules: z.array(ElevenLabsPronunciationDictionaryRuleRequestSchema),
+});
+
+export const ElevenLabsGetPronunciationDictionaryRequestSchema = z.object({});
+
+export const ElevenLabsUpdatePronunciationDictionaryRequestSchema = z.object({
+  name: z.string().optional(),
+  archived: z.boolean().optional(),
+});
+
+export const ElevenLabsAddPronunciationDictionaryRulesRequestSchema = z.object({
+  rules: z.array(ElevenLabsPronunciationDictionaryRuleRequestSchema),
+});
+
+export const ElevenLabsRemovePronunciationDictionaryRulesRequestSchema = z.object({
+  rule_strings: z.array(z.string()),
+});
+
+export const ElevenLabsSetPronunciationDictionaryRulesRequestSchema = z.object({
+  rules: z.array(ElevenLabsPronunciationDictionaryRuleRequestSchema),
+});
+
+export const ElevenLabsDownloadPronunciationDictionaryRequestSchema = z.object({});
+
+export type ElevenLabsListPronunciationDictionariesRequest = z.infer<typeof ElevenLabsListPronunciationDictionariesRequestSchema>;
+export type ElevenLabsListPronunciationDictionariesRequestInput = z.input<typeof ElevenLabsListPronunciationDictionariesRequestSchema>;
+export type ElevenLabsListPronunciationDictionariesParsedRequest = z.output<typeof ElevenLabsListPronunciationDictionariesRequestSchema>;
+
+export type ElevenLabsAddPronunciationDictionaryFromFileRequest = z.infer<typeof ElevenLabsAddPronunciationDictionaryFromFileRequestSchema>;
+export type ElevenLabsAddPronunciationDictionaryFromFileRequestInput = z.input<typeof ElevenLabsAddPronunciationDictionaryFromFileRequestSchema>;
+export type ElevenLabsAddPronunciationDictionaryFromFileParsedRequest = z.output<typeof ElevenLabsAddPronunciationDictionaryFromFileRequestSchema>;
+
+export type ElevenLabsAddPronunciationDictionaryFromRulesRequest = z.infer<typeof ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema>;
+export type ElevenLabsAddPronunciationDictionaryFromRulesRequestInput = z.input<typeof ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema>;
+export type ElevenLabsAddPronunciationDictionaryFromRulesParsedRequest = z.output<typeof ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema>;
+
+export type ElevenLabsGetPronunciationDictionaryRequest = z.infer<typeof ElevenLabsGetPronunciationDictionaryRequestSchema>;
+export type ElevenLabsGetPronunciationDictionaryRequestInput = z.input<typeof ElevenLabsGetPronunciationDictionaryRequestSchema>;
+export type ElevenLabsGetPronunciationDictionaryParsedRequest = z.output<typeof ElevenLabsGetPronunciationDictionaryRequestSchema>;
+
+export type ElevenLabsUpdatePronunciationDictionaryRequest = z.infer<typeof ElevenLabsUpdatePronunciationDictionaryRequestSchema>;
+export type ElevenLabsUpdatePronunciationDictionaryRequestInput = z.input<typeof ElevenLabsUpdatePronunciationDictionaryRequestSchema>;
+export type ElevenLabsUpdatePronunciationDictionaryParsedRequest = z.output<typeof ElevenLabsUpdatePronunciationDictionaryRequestSchema>;
+
+export type ElevenLabsAddPronunciationDictionaryRulesRequest = z.infer<typeof ElevenLabsAddPronunciationDictionaryRulesRequestSchema>;
+export type ElevenLabsAddPronunciationDictionaryRulesRequestInput = z.input<typeof ElevenLabsAddPronunciationDictionaryRulesRequestSchema>;
+export type ElevenLabsAddPronunciationDictionaryRulesParsedRequest = z.output<typeof ElevenLabsAddPronunciationDictionaryRulesRequestSchema>;
+
+export type ElevenLabsRemovePronunciationDictionaryRulesRequest = z.infer<typeof ElevenLabsRemovePronunciationDictionaryRulesRequestSchema>;
+export type ElevenLabsRemovePronunciationDictionaryRulesRequestInput = z.input<typeof ElevenLabsRemovePronunciationDictionaryRulesRequestSchema>;
+export type ElevenLabsRemovePronunciationDictionaryRulesParsedRequest = z.output<typeof ElevenLabsRemovePronunciationDictionaryRulesRequestSchema>;
+
+export type ElevenLabsSetPronunciationDictionaryRulesRequest = z.infer<typeof ElevenLabsSetPronunciationDictionaryRulesRequestSchema>;
+export type ElevenLabsSetPronunciationDictionaryRulesRequestInput = z.input<typeof ElevenLabsSetPronunciationDictionaryRulesRequestSchema>;
+export type ElevenLabsSetPronunciationDictionaryRulesParsedRequest = z.output<typeof ElevenLabsSetPronunciationDictionaryRulesRequestSchema>;
+
+export type ElevenLabsDownloadPronunciationDictionaryRequest = z.infer<typeof ElevenLabsDownloadPronunciationDictionaryRequestSchema>;
+export type ElevenLabsDownloadPronunciationDictionaryRequestInput = z.input<typeof ElevenLabsDownloadPronunciationDictionaryRequestSchema>;
+export type ElevenLabsDownloadPronunciationDictionaryParsedRequest = z.output<typeof ElevenLabsDownloadPronunciationDictionaryRequestSchema>;
+
+export type ElevenLabsPronunciationDictionaryAliasRuleRequest = z.infer<typeof ElevenLabsPronunciationDictionaryAliasRuleRequestSchema>;
+export type ElevenLabsPronunciationDictionaryAliasRuleRequestInput = z.input<typeof ElevenLabsPronunciationDictionaryAliasRuleRequestSchema>;
+export type ElevenLabsPronunciationDictionaryAliasRuleParsedRequest = z.output<typeof ElevenLabsPronunciationDictionaryAliasRuleRequestSchema>;
+
+export type ElevenLabsPronunciationDictionaryPhonemeRuleRequest = z.infer<typeof ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema>;
+export type ElevenLabsPronunciationDictionaryPhonemeRuleRequestInput = z.input<typeof ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema>;
+export type ElevenLabsPronunciationDictionaryPhonemeRuleParsedRequest = z.output<typeof ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema>;
+
+export type ElevenLabsPronunciationDictionaryRuleRequest = z.infer<typeof ElevenLabsPronunciationDictionaryRuleRequestSchema>;
+export type ElevenLabsPronunciationDictionaryRuleRequestInput = z.input<typeof ElevenLabsPronunciationDictionaryRuleRequestSchema>;
+export type ElevenLabsPronunciationDictionaryRuleParsedRequest = z.output<typeof ElevenLabsPronunciationDictionaryRuleRequestSchema>;

@@ -1453,6 +1453,64 @@ export type ElevenLabsGetLiveConversationCountParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — Conversation Tags
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/tags
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListConversationTagsRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListConversationTagsRequest = z.input<
+  typeof ElevenLabsListConversationTagsRequestSchema
+>;
+export type ElevenLabsListConversationTagsRequestInput =
+  ElevenLabsListConversationTagsRequest;
+export type ElevenLabsListConversationTagsParsedRequest = z.output<
+  typeof ElevenLabsListConversationTagsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/tags
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateConversationTagRequestSchema = z.object({
+  title: z.string().min(1).max(120),
+  description: z.string().max(1000).nullable().optional(),
+});
+
+export type ElevenLabsCreateConversationTagRequest = z.input<
+  typeof ElevenLabsCreateConversationTagRequestSchema
+>;
+export type ElevenLabsCreateConversationTagRequestInput =
+  ElevenLabsCreateConversationTagRequest;
+export type ElevenLabsCreateConversationTagParsedRequest = z.output<
+  typeof ElevenLabsCreateConversationTagRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/tags/:tag_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateConversationTagRequestSchema = z.object({
+  title: z.string().min(1).max(120).nullable().optional(),
+  description: z.string().max(1000).nullable().optional(),
+});
+
+export type ElevenLabsUpdateConversationTagRequest = z.input<
+  typeof ElevenLabsUpdateConversationTagRequestSchema
+>;
+export type ElevenLabsUpdateConversationTagRequestInput =
+  ElevenLabsUpdateConversationTagRequest;
+export type ElevenLabsUpdateConversationTagParsedRequest = z.output<
+  typeof ElevenLabsUpdateConversationTagRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — Tools
 // ---------------------------------------------------------------------------
 

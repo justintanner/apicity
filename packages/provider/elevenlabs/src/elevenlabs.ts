@@ -134,6 +134,14 @@ import {
   ElevenLabsPreviewAgentBranchMergeRequest,
   ElevenLabsGetLiveConversationCountRequest,
   ElevenLabsLiveConversationCountResponse,
+  ElevenLabsListConversationTagsRequest,
+  ElevenLabsListConversationTagsResponse,
+  ElevenLabsCreateConversationTagRequest,
+  ElevenLabsCreateConversationTagResponse,
+  ElevenLabsGetConversationTagResponse,
+  ElevenLabsUpdateConversationTagRequest,
+  ElevenLabsUpdateConversationTagResponse,
+  ElevenLabsDeleteConversationTagResponse,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolResponse,
   ElevenLabsListToolsRequest,
@@ -418,6 +426,9 @@ import {
   ElevenLabsMergeAgentBranchRequestSchema,
   ElevenLabsPreviewAgentBranchMergeRequestSchema,
   ElevenLabsGetLiveConversationCountRequestSchema,
+  ElevenLabsListConversationTagsRequestSchema,
+  ElevenLabsCreateConversationTagRequestSchema,
+  ElevenLabsUpdateConversationTagRequestSchema,
   ElevenLabsCreateToolRequestSchema,
   ElevenLabsListToolsRequestSchema,
   ElevenLabsUpdateToolRequestSchema,
@@ -4790,6 +4801,93 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     resubmit: resubmitTests,
   };
 
+  // GET https://api.elevenlabs.io/v1/convai/tags
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/list
+  const listConversationTags = Object.assign(
+    async (
+      req: ElevenLabsListConversationTagsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListConversationTagsResponse> => {
+      return makeJsonRequest<ElevenLabsListConversationTagsResponse>(
+        "GET",
+        "/v1/convai/tags",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListConversationTagsRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/tags
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/create
+  const createConversationTag = Object.assign(
+    async (
+      req: ElevenLabsCreateConversationTagRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateConversationTagResponse> => {
+      return makeJsonRequest<ElevenLabsCreateConversationTagResponse>(
+        "POST",
+        "/v1/convai/tags",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateConversationTagRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/tags/{tagId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/get
+  const getConversationTag = Object.assign(
+    async (
+      tagId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetConversationTagResponse> => {
+      return makeJsonRequest<ElevenLabsGetConversationTagResponse>(
+        "GET",
+        `/v1/convai/tags/${encodeURIComponent(tagId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/tags/{tagId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/update
+  const updateConversationTag = Object.assign(
+    async (
+      tagId: string,
+      req: ElevenLabsUpdateConversationTagRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateConversationTagResponse> => {
+      return makeJsonRequest<ElevenLabsUpdateConversationTagResponse>(
+        "PATCH",
+        `/v1/convai/tags/${encodeURIComponent(tagId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateConversationTagRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/tags/{tagId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/delete
+  const deleteConversationTag = Object.assign(
+    async (
+      tagId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteConversationTagResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteConversationTagResponse>(
+        "DELETE",
+        `/v1/convai/tags/${encodeURIComponent(tagId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/tools
   // Docs: https://elevenlabs.io/docs/api-reference/tools/create
   const createTool = Object.assign(
@@ -5604,6 +5702,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     dependentAgents: getToolDependentAgents,
     executions: getToolExecutions,
   };
+  const convaiTags = {
+    create: createConversationTag,
+    list: listConversationTags,
+    get: getConversationTag,
+    update: updateConversationTag,
+    delete: deleteConversationTag,
+  };
   const convaiMcpServerToolApprovals = {
     create: createMcpServerToolApproval,
     delete: deleteMcpServerToolApproval,
@@ -6165,6 +6270,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     analytics: { liveCount: getLiveConversationCount },
     agentTesting: convaiAgentTesting,
     testInvocations: convaiTestInvocations,
+    tags: convaiTags,
     tools: convaiTools,
     mcpServers: convaiMcpServers,
     knowledgeBase: convaiKnowledgeBase,
@@ -6328,6 +6434,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       testInvocations: {
         resubmit: resubmitTests,
       },
+      tags: { create: createConversationTag },
       tools: { create: createTool },
       mcpServers: {
         create: createMcpServer,
@@ -6386,6 +6493,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       agentTesting: {
         folders: { update: updateAgentTestFolder },
       },
+      tags: { update: updateConversationTag },
       tools: { update: updateTool },
       mcpServers: {
         update: updateMcpServer,
@@ -6440,6 +6548,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         delete: deleteAgentTest,
         folders: { delete: deleteAgentTestFolder },
       },
+      tags: { delete: deleteConversationTag },
       tools: { delete: deleteTool },
       mcpServers: {
         delete: deleteMcpServer,
@@ -6564,6 +6673,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           testInvocations: {
             list: listTestInvocations,
             get: getTestInvocation,
+          },
+          tags: {
+            list: listConversationTags,
+            get: getConversationTag,
           },
           tools: {
             list: listTools,

@@ -59,6 +59,9 @@ import type {
   ElevenLabsMergeAgentBranchRequest,
   ElevenLabsPreviewAgentBranchMergeRequest,
   ElevenLabsGetLiveConversationCountRequest,
+  ElevenLabsListConversationTagsRequest,
+  ElevenLabsCreateConversationTagRequest,
+  ElevenLabsUpdateConversationTagRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsListToolsRequest,
   ElevenLabsUpdateToolRequest,
@@ -357,6 +360,15 @@ export type {
   ElevenLabsGetLiveConversationCountRequest,
   ElevenLabsGetLiveConversationCountRequestInput,
   ElevenLabsGetLiveConversationCountParsedRequest,
+  ElevenLabsListConversationTagsRequest,
+  ElevenLabsListConversationTagsRequestInput,
+  ElevenLabsListConversationTagsParsedRequest,
+  ElevenLabsCreateConversationTagRequest,
+  ElevenLabsCreateConversationTagRequestInput,
+  ElevenLabsCreateConversationTagParsedRequest,
+  ElevenLabsUpdateConversationTagRequest,
+  ElevenLabsUpdateConversationTagRequestInput,
+  ElevenLabsUpdateConversationTagParsedRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolRequestInput,
   ElevenLabsCreateToolParsedRequest,
@@ -2371,6 +2383,36 @@ export type ElevenLabsGetTestInvocationResponse =
   ElevenLabsTestSuiteInvocationResponse;
 
 export type ElevenLabsResubmitTestsResponse = Record<string, unknown>;
+
+// -- Agents Platform (Conversational AI) Conversation Tags response shapes ---
+
+export interface ElevenLabsConversationTagResponse {
+  tag_id: string;
+  workspace_id: string;
+  owner_user_id: string;
+  title: string;
+  description: string | null;
+  created_at_unix_secs: number;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsCreateConversationTagResponse =
+  ElevenLabsConversationTagResponse;
+
+export type ElevenLabsGetConversationTagResponse =
+  ElevenLabsConversationTagResponse;
+
+export type ElevenLabsUpdateConversationTagResponse =
+  ElevenLabsConversationTagResponse;
+
+export interface ElevenLabsListConversationTagsResponse {
+  conversation_tags: ElevenLabsConversationTagResponse[];
+  has_more: boolean;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsDeleteConversationTagResponse = Record<string, unknown>;
 
 // -- Agents Platform (Conversational AI) Tools response shapes ---------------
 
@@ -4667,6 +4709,47 @@ export interface ElevenLabsResubmitTestsMethod {
   schema: z.ZodType<ElevenLabsResubmitTestsRequest>;
 }
 
+export interface ElevenLabsCreateConversationTagMethod {
+  (
+    req: ElevenLabsCreateConversationTagRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateConversationTagResponse>;
+  schema: z.ZodType<ElevenLabsCreateConversationTagRequest>;
+}
+
+export interface ElevenLabsListConversationTagsMethod {
+  (
+    req?: ElevenLabsListConversationTagsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListConversationTagsResponse>;
+  schema: z.ZodType<ElevenLabsListConversationTagsRequest>;
+}
+
+export interface ElevenLabsGetConversationTagMethod {
+  (
+    tagId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetConversationTagResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateConversationTagMethod {
+  (
+    tagId: string,
+    req: ElevenLabsUpdateConversationTagRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateConversationTagResponse>;
+  schema: z.ZodType<ElevenLabsUpdateConversationTagRequest>;
+}
+
+export interface ElevenLabsDeleteConversationTagMethod {
+  (
+    tagId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteConversationTagResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsCreateToolMethod {
   (
     req: ElevenLabsCreateToolRequest,
@@ -5449,6 +5532,14 @@ export interface ElevenLabsConvaiToolsNamespace {
   executions: ElevenLabsGetToolExecutionsMethod;
 }
 
+export interface ElevenLabsConvaiTagsNamespace {
+  create: ElevenLabsCreateConversationTagMethod;
+  list: ElevenLabsListConversationTagsMethod;
+  get: ElevenLabsGetConversationTagMethod;
+  update: ElevenLabsUpdateConversationTagMethod;
+  delete: ElevenLabsDeleteConversationTagMethod;
+}
+
 export interface ElevenLabsConvaiMcpServerToolApprovalsNamespace {
   create: ElevenLabsCreateMcpServerToolApprovalMethod;
   delete: ElevenLabsDeleteMcpServerToolApprovalMethod;
@@ -5609,6 +5700,7 @@ export interface ElevenLabsConvaiNamespace {
   analytics: ElevenLabsConvaiAnalyticsNamespace;
   agentTesting: ElevenLabsConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsConvaiTestInvocationsNamespace;
+  tags: ElevenLabsConvaiTagsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
   mcpServers: ElevenLabsConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
@@ -5876,6 +5968,10 @@ export interface ElevenLabsPostConvaiToolsNamespace {
   create: ElevenLabsCreateToolMethod;
 }
 
+export interface ElevenLabsPostConvaiTagsNamespace {
+  create: ElevenLabsCreateConversationTagMethod;
+}
+
 export interface ElevenLabsPostConvaiAgentTestingNamespace {
   create: ElevenLabsCreateAgentTestMethod;
   summaries: ElevenLabsGetAgentTestSummariesMethod;
@@ -5936,6 +6032,7 @@ export interface ElevenLabsPostConvaiNamespace {
   agent: ElevenLabsPostConvaiAgentNamespace;
   agentTesting: ElevenLabsPostConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsPostConvaiTestInvocationsNamespace;
+  tags: ElevenLabsPostConvaiTagsNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
   mcpServers: ElevenLabsPostConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
@@ -6019,6 +6116,10 @@ export interface ElevenLabsPatchConvaiToolsNamespace {
   update: ElevenLabsUpdateToolMethod;
 }
 
+export interface ElevenLabsPatchConvaiTagsNamespace {
+  update: ElevenLabsUpdateConversationTagMethod;
+}
+
 export interface ElevenLabsPostConvaiMcpServersNamespace {
   create: ElevenLabsCreateMcpServerMethod;
   toolApprovals: {
@@ -6058,6 +6159,7 @@ export interface ElevenLabsPatchConvaiWhatsAppAccountsNamespace {
 export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
   agentTesting: ElevenLabsPatchConvaiAgentTestingNamespace;
+  tags: ElevenLabsPatchConvaiTagsNamespace;
   tools: ElevenLabsPatchConvaiToolsNamespace;
   mcpServers: ElevenLabsPatchConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPatchConvaiKnowledgeBaseNamespace;
@@ -6114,6 +6216,11 @@ export interface ElevenLabsGetConvaiToolsNamespace {
   get: ElevenLabsGetToolMethod;
   dependentAgents: ElevenLabsGetToolDependentAgentsMethod;
   executions: ElevenLabsGetToolExecutionsMethod;
+}
+
+export interface ElevenLabsGetConvaiTagsNamespace {
+  list: ElevenLabsListConversationTagsMethod;
+  get: ElevenLabsGetConversationTagMethod;
 }
 
 export interface ElevenLabsGetConvaiMcpServersNamespace {
@@ -6198,6 +6305,7 @@ export interface ElevenLabsGetConvaiNamespace {
   analytics: ElevenLabsGetConvaiAnalyticsNamespace;
   agentTesting: ElevenLabsGetConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsGetConvaiTestInvocationsNamespace;
+  tags: ElevenLabsGetConvaiTagsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
   mcpServers: ElevenLabsGetConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
@@ -6262,6 +6370,10 @@ export interface ElevenLabsDeleteConvaiToolsNamespace {
   delete: ElevenLabsDeleteToolMethod;
 }
 
+export interface ElevenLabsDeleteConvaiTagsNamespace {
+  delete: ElevenLabsDeleteConversationTagMethod;
+}
+
 export interface ElevenLabsDeleteConvaiMcpServersNamespace {
   delete: ElevenLabsDeleteMcpServerMethod;
   toolApprovals: {
@@ -6311,6 +6423,7 @@ export interface ElevenLabsDeleteConvaiWhatsAppAccountsNamespace {
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   agentTesting: ElevenLabsDeleteConvaiAgentTestingNamespace;
+  tags: ElevenLabsDeleteConvaiTagsNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
   mcpServers: ElevenLabsDeleteConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;

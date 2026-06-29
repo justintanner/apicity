@@ -665,6 +665,11 @@ elevenlabs	v1.convai.conversations.feedback	POST	https://api.elevenlabs.io/v1/co
 elevenlabs	v1.convai.conversations.files	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files	https://elevenlabs.io/docs/api-reference/conversations/upload-file
 elevenlabs	v1.convai.conversations.files.delete	DELETE	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files/{fileId}	https://elevenlabs.io/docs/api-reference/conversations/delete-file
 elevenlabs	v1.convai.conversations.sipMessages	GET	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/sip-messages	https://elevenlabs.io/docs/api-reference/conversations/get-sip-messages
+elevenlabs	v1.convai.tags.list	GET	https://api.elevenlabs.io/v1/convai/tags	https://elevenlabs.io/docs/api-reference/conversations/tags/list
+elevenlabs	v1.convai.tags.create	POST	https://api.elevenlabs.io/v1/convai/tags	https://elevenlabs.io/docs/api-reference/conversations/tags/create
+elevenlabs	v1.convai.tags.get	GET	https://api.elevenlabs.io/v1/convai/tags/{tagId}	https://elevenlabs.io/docs/api-reference/conversations/tags/get
+elevenlabs	v1.convai.tags.update	PATCH	https://api.elevenlabs.io/v1/convai/tags/{tagId}	https://elevenlabs.io/docs/api-reference/conversations/tags/update
+elevenlabs	v1.convai.tags.delete	DELETE	https://api.elevenlabs.io/v1/convai/tags/{tagId}	https://elevenlabs.io/docs/api-reference/conversations/tags/delete
 elevenlabs	v1.convai.conversations.tags	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags	https://elevenlabs.io/docs/api-reference/conversations/tags/assign
 elevenlabs	v1.convai.conversations.tags.unassign	DELETE	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags/{tagId}	https://elevenlabs.io/docs/api-reference/conversations/tags/unassign
 elevenlabs	v1.convai.conversations.analysis	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/run	https://elevenlabs.io/docs/api-reference/conversations/analysis/run-analysis

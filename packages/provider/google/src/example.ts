@@ -163,6 +163,10 @@ const EXAMPLES: Record<string, EndpointExample> = {
   "POST v1internal.retrieveUserQuota": {
     "source": "google/antigravity-usage",
     "payload": {}
+  },
+  "POST v1internal.retrieveUserQuotaSummary": {
+    "source": "google/antigravity-quota-summary",
+    "payload": {}
   }
 };
 

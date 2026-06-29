@@ -24,11 +24,13 @@ import type {
   GoogleFlowVoicesListRequest,
   GoogleGenerateContentRequest,
   GoogleRetrieveUserQuotaRequest,
+  GoogleRetrieveUserQuotaSummaryRequest,
 } from "./zod";
 
 export type {
   GoogleOptions,
   GoogleRetrieveUserQuotaRequest,
+  GoogleRetrieveUserQuotaSummaryRequest,
   GoogleBlob,
   GoogleFileData,
   GoogleFunctionCall,
@@ -280,6 +282,31 @@ export interface GoogleRetrieveUserQuotaResponse {
   [key: string]: unknown;
 }
 
+// A grouped Antigravity subscription quota bucket. `window` names the quota
+// window when returned (for example weekly or five-hour); `remainingFraction`
+// is the share still available (0-1).
+export interface GoogleQuotaSummaryBucket {
+  window?: string;
+  remainingFraction?: number;
+  resetTime?: string;
+  [key: string]: unknown;
+}
+
+export interface GoogleQuotaGroup {
+  label?: string;
+  models?: string[];
+  buckets?: GoogleQuotaSummaryBucket[];
+  [key: string]: unknown;
+}
+
+// Response of POST /v1internal:retrieveUserQuotaSummary. Successful response
+// field names are based on the Antigravity quota panel and remain permissive
+// until an entitled-token fixture is captured.
+export interface GoogleRetrieveUserQuotaSummaryResponse {
+  groups?: GoogleQuotaGroup[];
+  [key: string]: unknown;
+}
+
 export interface GoogleRetrieveUserQuotaMethod {
   (
     req?: GoogleRetrieveUserQuotaRequest,
@@ -288,8 +315,17 @@ export interface GoogleRetrieveUserQuotaMethod {
   schema: z.ZodType<GoogleRetrieveUserQuotaRequest>;
 }
 
+export interface GoogleRetrieveUserQuotaSummaryMethod {
+  (
+    req?: GoogleRetrieveUserQuotaSummaryRequest,
+    signal?: AbortSignal
+  ): Promise<GoogleRetrieveUserQuotaSummaryResponse>;
+  schema: z.ZodType<GoogleRetrieveUserQuotaSummaryRequest>;
+}
+
 export interface GoogleV1InternalNamespace {
   retrieveUserQuota: GoogleRetrieveUserQuotaMethod;
+  retrieveUserQuotaSummary: GoogleRetrieveUserQuotaSummaryMethod;
 }
 
 export interface GoogleProvider {

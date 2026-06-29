@@ -31,10 +31,13 @@ import type {
   GoogleProvider,
   GoogleRetrieveUserQuotaRequest,
   GoogleRetrieveUserQuotaResponse,
+  GoogleRetrieveUserQuotaSummaryRequest,
+  GoogleRetrieveUserQuotaSummaryResponse,
 } from "./types";
 import {
   GoogleCountTokensRequestSchema,
   GoogleRetrieveUserQuotaRequestSchema,
+  GoogleRetrieveUserQuotaSummaryRequestSchema,
   GoogleFlowAccountsCreateRequestSchema,
   GoogleFlowAssetUploadRequestSchema,
   GoogleFlowCaptchaProvidersRequestSchema,
@@ -598,6 +601,27 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
         );
       },
       { schema: GoogleRetrieveUserQuotaRequestSchema }
+    ),
+    // sig-ok: cloudcode-pa service host omitted from provider namespace
+    // POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary
+    // Docs: https://cloud.google.com/gemini/docs/quotas
+    retrieveUserQuotaSummary: Object.assign(
+      async (
+        _req: GoogleRetrieveUserQuotaSummaryRequest = {},
+        signal?: AbortSignal
+      ): Promise<GoogleRetrieveUserQuotaSummaryResponse> => {
+        // Like retrieveUserQuota, this RPC requires a strictly empty JSON body.
+        parseWithSchema(
+          GoogleRetrieveUserQuotaSummaryRequestSchema,
+          _req ?? {}
+        );
+        return makeCloudCodeRequest<GoogleRetrieveUserQuotaSummaryResponse>(
+          "/v1internal:retrieveUserQuotaSummary",
+          {},
+          signal
+        );
+      },
+      { schema: GoogleRetrieveUserQuotaSummaryRequestSchema }
     ),
   };
 

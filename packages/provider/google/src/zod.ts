@@ -18,6 +18,12 @@ export const GoogleOptionsSchema = z.object({
 // is a strict empty object kept only as MCP/consumer metadata.
 export const GoogleRetrieveUserQuotaRequestSchema = z.object({}).strict();
 
+// Request body for v1internal:retrieveUserQuotaSummary. The endpoint also
+// requires a strict empty JSON object; callers cannot pass metadata fields.
+export const GoogleRetrieveUserQuotaSummaryRequestSchema = z
+  .object({})
+  .strict();
+
 export const GoogleBlobSchema = z.object({
   mimeType: z.string(),
   data: z.string(),
@@ -307,6 +313,9 @@ export const GoogleFlowJobsRequestSchema = z
 export type GoogleOptions = z.infer<typeof GoogleOptionsSchema>;
 export type GoogleRetrieveUserQuotaRequest = z.input<
   typeof GoogleRetrieveUserQuotaRequestSchema
+>;
+export type GoogleRetrieveUserQuotaSummaryRequest = z.input<
+  typeof GoogleRetrieveUserQuotaSummaryRequestSchema
 >;
 export type GoogleBlob = z.infer<typeof GoogleBlobSchema>;
 export type GoogleFileData = z.infer<typeof GoogleFileDataSchema>;

@@ -777,6 +777,7 @@ google	v1.googleFlow.voices	GET	https://api.useapi.net/v1/google-flow/voices{que
 google	v1.googleFlow.voices	POST	https://api.useapi.net/v1/google-flow/voices	https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices
 google	v1.googleFlow.voices.retrieve	GET	https://api.useapi.net/v1/google-flow/voices/{ref}	https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref
 google	v1internal.retrieveUserQuota	POST	https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota	https://cloud.google.com/gemini/docs/quotas
+google	v1internal.retrieveUserQuotaSummary	POST	https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary	https://cloud.google.com/gemini/docs/quotas
 free-media-upload	catbox.upload	POST	https://catbox.moe/user/api.php	https://catbox.moe/tools.php
 free-media-upload	filebin.upload	POST	https://filebin.net/{bin}/{filename}	https://filebin.net/
 free-media-upload	gofile.upload	POST	https://upload.gofile.io/uploadfile	https://gofile.io/api

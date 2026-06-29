@@ -29,7 +29,7 @@ const google = createGoogle({ apiKey: process.env.GOOGLE_API_KEY! });
 
 ## API Reference
 
-29 endpoints across 3 groups. Each method mirrors an upstream URL path.
+30 endpoints across 3 groups. Each method mirrors an upstream URL path.
 
 ### googleFlow
 
@@ -476,6 +476,21 @@ Source: [`packages/provider/google/src/google.ts`](src/google.ts)
 
 ```typescript
 const res = await google.v1internal.retrieveUserQuota({ /* ... */ });
+```
+
+Source: [`packages/provider/google/src/google.ts`](src/google.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>google.v1internal.retrieveUserQuotaSummary</code></b></summary>
+
+<code>POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuotaSummary</code>
+
+[Upstream docs ↗](https://cloud.google.com/gemini/docs/quotas)
+
+```typescript
+const res = await google.v1internal.retrieveUserQuotaSummary({ /* ... */ });
 ```
 
 Source: [`packages/provider/google/src/google.ts`](src/google.ts)

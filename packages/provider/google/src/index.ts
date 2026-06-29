@@ -37,7 +37,11 @@ export type {
   GoogleV1InternalNamespace,
   GoogleRetrieveUserQuotaMethod,
   GoogleRetrieveUserQuotaResponse,
+  GoogleRetrieveUserQuotaSummaryMethod,
+  GoogleRetrieveUserQuotaSummaryResponse,
+  GoogleQuotaGroup,
   GoogleQuotaBucket,
+  GoogleQuotaSummaryBucket,
 } from "./types";
 
 export type {
@@ -81,11 +85,13 @@ export type {
   GoogleFlowVideosConcatenateRequest,
   GoogleFlowJobsRequest,
   GoogleRetrieveUserQuotaRequest,
+  GoogleRetrieveUserQuotaSummaryRequest,
 } from "./zod";
 
 export {
   GoogleOptionsSchema,
   GoogleRetrieveUserQuotaRequestSchema,
+  GoogleRetrieveUserQuotaSummaryRequestSchema,
   GoogleBlobSchema,
   GoogleFileDataSchema,
   GoogleFunctionCallSchema,

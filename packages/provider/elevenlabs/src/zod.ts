@@ -940,6 +940,546 @@ export type ElevenLabsVideoToMusicParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Workspace administration shared schemas
+// ---------------------------------------------------------------------------
+
+const ElevenLabsWorkspaceSeatTypeSchema = z.enum([
+  "workspace_admin",
+  "workspace_member",
+  "workspace_lite_member",
+]);
+
+const ElevenLabsWorkspaceResourceTypeSchema = z.enum([
+  "voice",
+  "voice_collection",
+  "pronunciation_dictionary",
+  "dubbing",
+  "project",
+  "convai_agents",
+  "convai_knowledge_base_documents",
+  "convai_tools",
+  "convai_settings",
+  "convai_secrets",
+  "workspace_auth_connections",
+  "convai_phone_numbers",
+  "convai_mcp_servers",
+  "convai_api_integration_connections",
+  "convai_api_integration_trigger_connections",
+  "convai_batch_calls",
+  "convai_agent_response_tests",
+  "convai_test_suite_invocations",
+  "convai_crawl_jobs",
+  "convai_crawl_tasks",
+  "convai_whatsapp_accounts",
+  "convai_agent_versions",
+  "convai_agent_branches",
+  "convai_agent_versions_deployments",
+  "convai_memory_entries",
+  "convai_coaching_proposals",
+  "convai_templates",
+  "dashboard",
+  "dashboard_configuration",
+  "convai_agent_drafts",
+  "resource_locators",
+  "assets",
+  "content_generations",
+  "content_templates",
+  "songs",
+  "transcription_tasks",
+  "avatars",
+  "avatar_video_generations",
+  "resource_collection",
+  "studio_projects",
+]);
+
+const ElevenLabsWorkspaceResourceRoleSchema = z.enum([
+  "admin",
+  "editor",
+  "commenter",
+  "viewer",
+]);
+
+const ElevenLabsWorkspaceWebhookHmacSettingsSchema = z.object({
+  auth_type: z.literal("hmac"),
+  name: z.string(),
+  webhook_url: z.string(),
+  request_headers: z.record(z.string(), z.string()).nullable().optional(),
+});
+
+const ElevenLabsWorkspaceAuthAlgorithmSchema = z.enum([
+  "HS256",
+  "HS384",
+  "HS512",
+  "RS256",
+  "RS384",
+  "RS512",
+]);
+
+const ElevenLabsWorkspaceAuthTokenResponseFieldSchema = z.enum([
+  "access_token",
+  "id_token",
+]);
+
+const ElevenLabsWorkspaceAuthStringMapSchema = z.record(z.string(), z.string());
+
+// ---------------------------------------------------------------------------
+// GET /v1/workspace/audit-logs
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListWorkspaceAuditLogsRequestSchema = z.object({
+  limit: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().nullable().optional(),
+  time_from_unix_ms: z.number().int().nullable().optional(),
+  time_to_unix_ms: z.number().int().nullable().optional(),
+  actor_uid: z.string().nullable().optional(),
+  class_name: z.string().nullable().optional(),
+  activity_name: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListWorkspaceAuditLogsRequest = z.input<
+  typeof ElevenLabsListWorkspaceAuditLogsRequestSchema
+>;
+export type ElevenLabsListWorkspaceAuditLogsRequestInput =
+  ElevenLabsListWorkspaceAuditLogsRequest;
+export type ElevenLabsListWorkspaceAuditLogsParsedRequest = z.output<
+  typeof ElevenLabsListWorkspaceAuditLogsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/workspace/groups/search
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSearchWorkspaceGroupsRequestSchema = z.object({
+  name: z.string(),
+});
+
+export type ElevenLabsSearchWorkspaceGroupsRequest = z.input<
+  typeof ElevenLabsSearchWorkspaceGroupsRequestSchema
+>;
+export type ElevenLabsSearchWorkspaceGroupsRequestInput =
+  ElevenLabsSearchWorkspaceGroupsRequest;
+export type ElevenLabsSearchWorkspaceGroupsParsedRequest = z.output<
+  typeof ElevenLabsSearchWorkspaceGroupsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/groups/:group_id/members
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAddWorkspaceGroupMemberRequestSchema = z.object({
+  email: z.string(),
+});
+
+export type ElevenLabsAddWorkspaceGroupMemberRequest = z.input<
+  typeof ElevenLabsAddWorkspaceGroupMemberRequestSchema
+>;
+export type ElevenLabsAddWorkspaceGroupMemberRequestInput =
+  ElevenLabsAddWorkspaceGroupMemberRequest;
+export type ElevenLabsAddWorkspaceGroupMemberParsedRequest = z.output<
+  typeof ElevenLabsAddWorkspaceGroupMemberRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/groups/:group_id/members/remove
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsRemoveWorkspaceGroupMemberRequestSchema = z.object({
+  email: z.string(),
+});
+
+export type ElevenLabsRemoveWorkspaceGroupMemberRequest = z.input<
+  typeof ElevenLabsRemoveWorkspaceGroupMemberRequestSchema
+>;
+export type ElevenLabsRemoveWorkspaceGroupMemberRequestInput =
+  ElevenLabsRemoveWorkspaceGroupMemberRequest;
+export type ElevenLabsRemoveWorkspaceGroupMemberParsedRequest = z.output<
+  typeof ElevenLabsRemoveWorkspaceGroupMemberRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/members
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateWorkspaceMemberRequestSchema = z.object({
+  email: z.string(),
+  is_locked: z.boolean().nullable().optional(),
+  workspace_role: ElevenLabsWorkspaceSeatTypeSchema.nullable().optional(),
+  workspace_seat_type: ElevenLabsWorkspaceSeatTypeSchema.nullable().optional(),
+});
+
+export type ElevenLabsUpdateWorkspaceMemberRequest = z.input<
+  typeof ElevenLabsUpdateWorkspaceMemberRequestSchema
+>;
+export type ElevenLabsUpdateWorkspaceMemberRequestInput =
+  ElevenLabsUpdateWorkspaceMemberRequest;
+export type ElevenLabsUpdateWorkspaceMemberParsedRequest = z.output<
+  typeof ElevenLabsUpdateWorkspaceMemberRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/invites/add
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAddWorkspaceInviteRequestSchema = z.object({
+  email: z.string(),
+  workspace_permission: z.string().nullable().optional(),
+  seat_type: ElevenLabsWorkspaceSeatTypeSchema.nullable().optional(),
+  group_ids: z.array(z.string()).nullable().optional(),
+});
+
+export type ElevenLabsAddWorkspaceInviteRequest = z.input<
+  typeof ElevenLabsAddWorkspaceInviteRequestSchema
+>;
+export type ElevenLabsAddWorkspaceInviteRequestInput =
+  ElevenLabsAddWorkspaceInviteRequest;
+export type ElevenLabsAddWorkspaceInviteParsedRequest = z.output<
+  typeof ElevenLabsAddWorkspaceInviteRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/invites/add-bulk
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAddWorkspaceInvitesBulkRequestSchema = z.object({
+  emails: z.array(z.string()),
+  seat_type: ElevenLabsWorkspaceSeatTypeSchema.nullable().optional(),
+  group_ids: z.array(z.string()).nullable().optional(),
+});
+
+export type ElevenLabsAddWorkspaceInvitesBulkRequest = z.input<
+  typeof ElevenLabsAddWorkspaceInvitesBulkRequestSchema
+>;
+export type ElevenLabsAddWorkspaceInvitesBulkRequestInput =
+  ElevenLabsAddWorkspaceInvitesBulkRequest;
+export type ElevenLabsAddWorkspaceInvitesBulkParsedRequest = z.output<
+  typeof ElevenLabsAddWorkspaceInvitesBulkRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// DELETE /v1/workspace/invites
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsDeleteWorkspaceInviteRequestSchema = z.object({
+  email: z.string(),
+});
+
+export type ElevenLabsDeleteWorkspaceInviteRequest = z.input<
+  typeof ElevenLabsDeleteWorkspaceInviteRequestSchema
+>;
+export type ElevenLabsDeleteWorkspaceInviteRequestInput =
+  ElevenLabsDeleteWorkspaceInviteRequest;
+export type ElevenLabsDeleteWorkspaceInviteParsedRequest = z.output<
+  typeof ElevenLabsDeleteWorkspaceInviteRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/workspace/resources/:resource_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetWorkspaceResourceRequestSchema = z.object({
+  resource_type: ElevenLabsWorkspaceResourceTypeSchema,
+});
+
+export type ElevenLabsGetWorkspaceResourceRequest = z.input<
+  typeof ElevenLabsGetWorkspaceResourceRequestSchema
+>;
+export type ElevenLabsGetWorkspaceResourceRequestInput =
+  ElevenLabsGetWorkspaceResourceRequest;
+export type ElevenLabsGetWorkspaceResourceParsedRequest = z.output<
+  typeof ElevenLabsGetWorkspaceResourceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/resources/:resource_id/share
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsShareWorkspaceResourceRequestSchema = z.object({
+  role: ElevenLabsWorkspaceResourceRoleSchema,
+  resource_type: ElevenLabsWorkspaceResourceTypeSchema,
+  user_email: z.string().nullable().optional(),
+  group_id: z.string().nullable().optional(),
+  workspace_api_key_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsShareWorkspaceResourceRequest = z.input<
+  typeof ElevenLabsShareWorkspaceResourceRequestSchema
+>;
+export type ElevenLabsShareWorkspaceResourceRequestInput =
+  ElevenLabsShareWorkspaceResourceRequest;
+export type ElevenLabsShareWorkspaceResourceParsedRequest = z.output<
+  typeof ElevenLabsShareWorkspaceResourceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/resources/:resource_id/unshare
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUnshareWorkspaceResourceRequestSchema = z.object({
+  resource_type: ElevenLabsWorkspaceResourceTypeSchema,
+  user_email: z.string().nullable().optional(),
+  group_id: z.string().nullable().optional(),
+  workspace_api_key_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsUnshareWorkspaceResourceRequest = z.input<
+  typeof ElevenLabsUnshareWorkspaceResourceRequestSchema
+>;
+export type ElevenLabsUnshareWorkspaceResourceRequestInput =
+  ElevenLabsUnshareWorkspaceResourceRequest;
+export type ElevenLabsUnshareWorkspaceResourceParsedRequest = z.output<
+  typeof ElevenLabsUnshareWorkspaceResourceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/workspace/webhooks
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListWorkspaceWebhooksRequestSchema = z.object({
+  include_usages: z.boolean().optional(),
+});
+
+export type ElevenLabsListWorkspaceWebhooksRequest = z.input<
+  typeof ElevenLabsListWorkspaceWebhooksRequestSchema
+>;
+export type ElevenLabsListWorkspaceWebhooksRequestInput =
+  ElevenLabsListWorkspaceWebhooksRequest;
+export type ElevenLabsListWorkspaceWebhooksParsedRequest = z.output<
+  typeof ElevenLabsListWorkspaceWebhooksRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/webhooks
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateWorkspaceWebhookRequestSchema = z.object({
+  settings: ElevenLabsWorkspaceWebhookHmacSettingsSchema,
+});
+
+export type ElevenLabsCreateWorkspaceWebhookRequest = z.input<
+  typeof ElevenLabsCreateWorkspaceWebhookRequestSchema
+>;
+export type ElevenLabsCreateWorkspaceWebhookRequestInput =
+  ElevenLabsCreateWorkspaceWebhookRequest;
+export type ElevenLabsCreateWorkspaceWebhookParsedRequest = z.output<
+  typeof ElevenLabsCreateWorkspaceWebhookRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/workspace/webhooks/:webhook_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateWorkspaceWebhookRequestSchema = z.object({
+  is_disabled: z.boolean(),
+  name: z.string(),
+  retry_enabled: z.boolean().nullable().optional(),
+  request_headers: z.record(z.string(), z.string()).nullable().optional(),
+});
+
+export type ElevenLabsUpdateWorkspaceWebhookRequest = z.input<
+  typeof ElevenLabsUpdateWorkspaceWebhookRequestSchema
+>;
+export type ElevenLabsUpdateWorkspaceWebhookRequestInput =
+  ElevenLabsUpdateWorkspaceWebhookRequest;
+export type ElevenLabsUpdateWorkspaceWebhookParsedRequest = z.output<
+  typeof ElevenLabsUpdateWorkspaceWebhookRequestSchema
+>;
+
+const ElevenLabsCreateOAuth2ClientCredsRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("oauth2_client_credentials").optional(),
+  provider: z.string(),
+  client_id: z.string(),
+  token_url: z.string(),
+  scopes: z.array(z.string()).optional(),
+  extra_params: ElevenLabsWorkspaceAuthStringMapSchema.optional(),
+  basic_auth_in_header: z.boolean().optional(),
+  client_secret: z.string(),
+  custom_headers: ElevenLabsWorkspaceAuthStringMapSchema.optional(),
+});
+
+const ElevenLabsCreateCustomHeaderAuthRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("custom_header_auth").optional(),
+  provider: z.string(),
+  header_name: z.string(),
+  token: z.string(),
+});
+
+const ElevenLabsCreateBasicAuthRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("basic_auth").optional(),
+  provider: z.string(),
+  username: z.string(),
+  password: z.string(),
+});
+
+const ElevenLabsCreateBearerAuthRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("bearer_auth").optional(),
+  provider: z.string(),
+  token: z.string(),
+});
+
+const ElevenLabsCreateOAuth2JwtRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("oauth2_jwt").optional(),
+  provider: z.string(),
+  algorithm: ElevenLabsWorkspaceAuthAlgorithmSchema.optional(),
+  key_id: z.string().nullable().optional(),
+  issuer: z.string(),
+  audience: z.string(),
+  subject: z.string(),
+  expiration_seconds: z.number().int().min(60).max(86400).optional(),
+  extra_params: ElevenLabsWorkspaceAuthStringMapSchema.optional(),
+  token_url: z.string(),
+  scopes: z.array(z.string()).optional(),
+  token_response_field:
+    ElevenLabsWorkspaceAuthTokenResponseFieldSchema.optional(),
+  secret_key: z.string(),
+});
+
+const ElevenLabsCreatePrivateKeyJwtRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("private_key_jwt").optional(),
+  provider: z.string(),
+  algorithm: ElevenLabsWorkspaceAuthAlgorithmSchema.optional(),
+  key_id: z.string().nullable().optional(),
+  issuer: z.string(),
+  audience: z.string(),
+  subject: z.string(),
+  expiration_seconds: z.number().int().min(60).max(86400).optional(),
+  extra_params: ElevenLabsWorkspaceAuthStringMapSchema.optional(),
+  secret_key: z.string(),
+});
+
+const ElevenLabsCreateMtlsAuthRequestSchema = z.object({
+  name: z.string(),
+  auth_type: z.literal("mtls").optional(),
+  provider: z.string(),
+  client_certificate: z.string(),
+  client_key: z.string(),
+  ca_certificate: z.string().nullable().optional(),
+  key_passphrase: z.string().nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspace/auth-connections
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateWorkspaceAuthConnectionRequestSchema = z.union([
+  ElevenLabsCreateOAuth2ClientCredsRequestSchema,
+  ElevenLabsCreateCustomHeaderAuthRequestSchema,
+  ElevenLabsCreateBasicAuthRequestSchema,
+  ElevenLabsCreateBearerAuthRequestSchema,
+  ElevenLabsCreateOAuth2JwtRequestSchema,
+  ElevenLabsCreatePrivateKeyJwtRequestSchema,
+  ElevenLabsCreateMtlsAuthRequestSchema,
+]);
+
+export type ElevenLabsCreateWorkspaceAuthConnectionRequest = z.input<
+  typeof ElevenLabsCreateWorkspaceAuthConnectionRequestSchema
+>;
+export type ElevenLabsCreateWorkspaceAuthConnectionRequestInput =
+  ElevenLabsCreateWorkspaceAuthConnectionRequest;
+export type ElevenLabsCreateWorkspaceAuthConnectionParsedRequest = z.output<
+  typeof ElevenLabsCreateWorkspaceAuthConnectionRequestSchema
+>;
+
+const ElevenLabsUpdateOAuth2ClientCredsRequestSchema = z.object({
+  auth_type: z.literal("oauth2_client_credentials").optional(),
+  provider: z.string().nullable().optional(),
+  client_id: z.string().nullable().optional(),
+  scopes: z.array(z.string()).nullable().optional(),
+  extra_params: ElevenLabsWorkspaceAuthStringMapSchema.nullable().optional(),
+  basic_auth_in_header: z.boolean().nullable().optional(),
+  client_secret: z.string().nullable().optional(),
+  custom_headers: ElevenLabsWorkspaceAuthStringMapSchema.nullable().optional(),
+});
+
+const ElevenLabsUpdateBasicAuthRequestSchema = z.object({
+  auth_type: z.literal("basic_auth").optional(),
+  provider: z.string().nullable().optional(),
+  username: z.string().nullable().optional(),
+  password: z.string().nullable().optional(),
+});
+
+const ElevenLabsUpdateBearerAuthRequestSchema = z.object({
+  auth_type: z.literal("bearer_auth").optional(),
+  provider: z.string().nullable().optional(),
+  token: z.string().nullable().optional(),
+});
+
+const ElevenLabsUpdateOAuth2JwtRequestSchema = z.object({
+  auth_type: z.literal("oauth2_jwt").optional(),
+  provider: z.string().nullable().optional(),
+  algorithm: ElevenLabsWorkspaceAuthAlgorithmSchema.nullable().optional(),
+  key_id: z.string().nullable().optional(),
+  issuer: z.string().nullable().optional(),
+  audience: z.string().nullable().optional(),
+  subject: z.string().nullable().optional(),
+  expiration_seconds: z.number().int().min(60).max(86400).nullable().optional(),
+  extra_params: ElevenLabsWorkspaceAuthStringMapSchema.nullable().optional(),
+  scopes: z.array(z.string()).nullable().optional(),
+  token_response_field:
+    ElevenLabsWorkspaceAuthTokenResponseFieldSchema.nullable().optional(),
+  secret_key: z.string().nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/workspace/auth-connections/:auth_connection_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateWorkspaceAuthConnectionRequestSchema = z.union([
+  ElevenLabsUpdateOAuth2ClientCredsRequestSchema,
+  ElevenLabsUpdateBasicAuthRequestSchema,
+  ElevenLabsUpdateBearerAuthRequestSchema,
+  ElevenLabsUpdateOAuth2JwtRequestSchema,
+]);
+
+export type ElevenLabsUpdateWorkspaceAuthConnectionRequest = z.input<
+  typeof ElevenLabsUpdateWorkspaceAuthConnectionRequestSchema
+>;
+export type ElevenLabsUpdateWorkspaceAuthConnectionRequestInput =
+  ElevenLabsUpdateWorkspaceAuthConnectionRequest;
+export type ElevenLabsUpdateWorkspaceAuthConnectionParsedRequest = z.output<
+  typeof ElevenLabsUpdateWorkspaceAuthConnectionRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspaces/api-keys/disable
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsDisableWorkspaceApiKeyRequestSchema = z.object({
+  api_key_name: z.literal("self"),
+});
+
+export type ElevenLabsDisableWorkspaceApiKeyRequest = z.input<
+  typeof ElevenLabsDisableWorkspaceApiKeyRequestSchema
+>;
+export type ElevenLabsDisableWorkspaceApiKeyRequestInput =
+  ElevenLabsDisableWorkspaceApiKeyRequest;
+export type ElevenLabsDisableWorkspaceApiKeyParsedRequest = z.output<
+  typeof ElevenLabsDisableWorkspaceApiKeyRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/workspaces/api-keys/third-party-disabling
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestSchema =
+  z.object({
+    third_party_disable_allowed: z.boolean().nullable().optional(),
+  });
+
+export type ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest = z.input<
+  typeof ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestSchema
+>;
+export type ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestInput =
+  ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest;
+export type ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingParsedRequest =
+  z.output<typeof ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestSchema>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

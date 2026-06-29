@@ -39,6 +39,24 @@ import type {
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
+  ElevenLabsListWorkspaceAuditLogsRequest,
+  ElevenLabsSearchWorkspaceGroupsRequest,
+  ElevenLabsAddWorkspaceGroupMemberRequest,
+  ElevenLabsRemoveWorkspaceGroupMemberRequest,
+  ElevenLabsUpdateWorkspaceMemberRequest,
+  ElevenLabsAddWorkspaceInviteRequest,
+  ElevenLabsAddWorkspaceInvitesBulkRequest,
+  ElevenLabsDeleteWorkspaceInviteRequest,
+  ElevenLabsGetWorkspaceResourceRequest,
+  ElevenLabsShareWorkspaceResourceRequest,
+  ElevenLabsUnshareWorkspaceResourceRequest,
+  ElevenLabsListWorkspaceWebhooksRequest,
+  ElevenLabsCreateWorkspaceWebhookRequest,
+  ElevenLabsUpdateWorkspaceWebhookRequest,
+  ElevenLabsCreateWorkspaceAuthConnectionRequest,
+  ElevenLabsUpdateWorkspaceAuthConnectionRequest,
+  ElevenLabsDisableWorkspaceApiKeyRequest,
+  ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest,
   ElevenLabsCreateAgentRequest,
   ElevenLabsGetAgentRequest,
   ElevenLabsListAgentsRequest,
@@ -311,6 +329,60 @@ export type {
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestInput,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeParsedRequest,
+  ElevenLabsListWorkspaceAuditLogsRequest,
+  ElevenLabsListWorkspaceAuditLogsRequestInput,
+  ElevenLabsListWorkspaceAuditLogsParsedRequest,
+  ElevenLabsSearchWorkspaceGroupsRequest,
+  ElevenLabsSearchWorkspaceGroupsRequestInput,
+  ElevenLabsSearchWorkspaceGroupsParsedRequest,
+  ElevenLabsAddWorkspaceGroupMemberRequest,
+  ElevenLabsAddWorkspaceGroupMemberRequestInput,
+  ElevenLabsAddWorkspaceGroupMemberParsedRequest,
+  ElevenLabsRemoveWorkspaceGroupMemberRequest,
+  ElevenLabsRemoveWorkspaceGroupMemberRequestInput,
+  ElevenLabsRemoveWorkspaceGroupMemberParsedRequest,
+  ElevenLabsUpdateWorkspaceMemberRequest,
+  ElevenLabsUpdateWorkspaceMemberRequestInput,
+  ElevenLabsUpdateWorkspaceMemberParsedRequest,
+  ElevenLabsAddWorkspaceInviteRequest,
+  ElevenLabsAddWorkspaceInviteRequestInput,
+  ElevenLabsAddWorkspaceInviteParsedRequest,
+  ElevenLabsAddWorkspaceInvitesBulkRequest,
+  ElevenLabsAddWorkspaceInvitesBulkRequestInput,
+  ElevenLabsAddWorkspaceInvitesBulkParsedRequest,
+  ElevenLabsDeleteWorkspaceInviteRequest,
+  ElevenLabsDeleteWorkspaceInviteRequestInput,
+  ElevenLabsDeleteWorkspaceInviteParsedRequest,
+  ElevenLabsGetWorkspaceResourceRequest,
+  ElevenLabsGetWorkspaceResourceRequestInput,
+  ElevenLabsGetWorkspaceResourceParsedRequest,
+  ElevenLabsShareWorkspaceResourceRequest,
+  ElevenLabsShareWorkspaceResourceRequestInput,
+  ElevenLabsShareWorkspaceResourceParsedRequest,
+  ElevenLabsUnshareWorkspaceResourceRequest,
+  ElevenLabsUnshareWorkspaceResourceRequestInput,
+  ElevenLabsUnshareWorkspaceResourceParsedRequest,
+  ElevenLabsListWorkspaceWebhooksRequest,
+  ElevenLabsListWorkspaceWebhooksRequestInput,
+  ElevenLabsListWorkspaceWebhooksParsedRequest,
+  ElevenLabsCreateWorkspaceWebhookRequest,
+  ElevenLabsCreateWorkspaceWebhookRequestInput,
+  ElevenLabsCreateWorkspaceWebhookParsedRequest,
+  ElevenLabsUpdateWorkspaceWebhookRequest,
+  ElevenLabsUpdateWorkspaceWebhookRequestInput,
+  ElevenLabsUpdateWorkspaceWebhookParsedRequest,
+  ElevenLabsCreateWorkspaceAuthConnectionRequest,
+  ElevenLabsCreateWorkspaceAuthConnectionRequestInput,
+  ElevenLabsCreateWorkspaceAuthConnectionParsedRequest,
+  ElevenLabsUpdateWorkspaceAuthConnectionRequest,
+  ElevenLabsUpdateWorkspaceAuthConnectionRequestInput,
+  ElevenLabsUpdateWorkspaceAuthConnectionParsedRequest,
+  ElevenLabsDisableWorkspaceApiKeyRequest,
+  ElevenLabsDisableWorkspaceApiKeyRequestInput,
+  ElevenLabsDisableWorkspaceApiKeyParsedRequest,
+  ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest,
+  ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequestInput,
+  ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingParsedRequest,
   ElevenLabsCreateAgentRequest,
   ElevenLabsCreateAgentRequestInput,
   ElevenLabsCreateAgentParsedRequest,
@@ -2014,6 +2086,420 @@ export interface ElevenLabsStartSpeakerSeparationResponse {
 
 export type ElevenLabsWorkspaceAnalyticsRequestsResponse =
   ElevenLabsWorkspaceAnalyticsQueryResponse;
+
+// -- Workspace administration response shapes -------------------------------
+
+export type ElevenLabsWorkspaceOperationResponse = Record<string, unknown>;
+
+export interface ElevenLabsWorkspaceStatusResponse {
+  status: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsWorkspaceAuditLogUser {
+  name?: string | null;
+  uid?: string | null;
+  type_id?: number;
+  type?: string | null;
+  email_addr?: string | null;
+  full_name?: string | null;
+  domain?: string | null;
+}
+
+export interface ElevenLabsWorkspaceAuditLogActor {
+  user: ElevenLabsWorkspaceAuditLogUser;
+  app_name?: string | null;
+  app_uid?: string | null;
+  session?: Record<string, unknown> | null;
+}
+
+export interface ElevenLabsWorkspaceAuditLogEntry {
+  activity_id: number;
+  activity_name: string;
+  status_id: number;
+  actor: ElevenLabsWorkspaceAuditLogActor;
+  message: string;
+  id: string;
+  time_dt: string;
+  type_uid: number;
+  type_name: string;
+  metadata?: Record<string, unknown>;
+  time?: number;
+  category_name?: string;
+  category_uid?: number;
+  class_name?: string;
+  class_uid?: number;
+  severity_id?: number;
+  device?: Record<string, unknown> | null;
+  http_request?: Record<string, unknown> | null;
+  unmapped?: Record<string, unknown>;
+}
+
+export interface ElevenLabsWorkspaceAuditLogsPageResponse {
+  entries: ElevenLabsWorkspaceAuditLogEntry[];
+  has_more: boolean;
+  next_cursor: string | null;
+}
+
+export type ElevenLabsWorkspaceGroupPermission =
+  | "text_to_speech"
+  | "speech_to_speech"
+  | "speech_to_text"
+  | "voice_lab"
+  | "sound_effects"
+  | "projects"
+  | "voiceover_studio"
+  | "dubbing"
+  | "audio_native"
+  | "conversational_ai"
+  | "conversational_ai_read"
+  | "voice_isolator"
+  | "ai_speech_classifier"
+  | "synthid_detector"
+  | "add_voice_from_voice_library"
+  | "create_instant_voice_clone"
+  | "create_professional_voice_clone"
+  | "create_user_api_key"
+  | "publish_studio_project"
+  | "music"
+  | "image_video_generation"
+  | "share_voice_externally"
+  | "publish_voice_to_voice_library"
+  | "view_fiat_balance"
+  | "workspace_analytics_full_read"
+  | "service_accounts_manage"
+  | "webhooks_manage"
+  | "group_members_manage"
+  | "workspace_members_invite"
+  | "workspace_members_remove"
+  | "terms_of_service_accept"
+  | "audit_log_read"
+  | "conversation_privacy_manage"
+  | "copy_resources_cross_workspace"
+  | "voice_design";
+
+export interface ElevenLabsWorkspaceScimGroup {
+  scim_external_id: string | null;
+  display_name: string;
+  created_at_unix?: number | null;
+  updated_at_unix?: number | null;
+  seat_type?: ElevenLabsSeatType | null;
+}
+
+export interface ElevenLabsWorkspaceGroup {
+  name: string;
+  id: string;
+  members: string[];
+  permissions: ElevenLabsWorkspaceGroupPermission[] | null;
+  group_usage_limit?: number | "unlimited" | null;
+  group_pvc_limit?: number | "unlimited" | null;
+  character_count?: number | null;
+  scim_external_id?: string | null;
+  is_scim_synced?: boolean;
+  scim_group?: ElevenLabsWorkspaceScimGroup | null;
+  scim_frozen?: boolean;
+}
+
+export type ElevenLabsWorkspaceGroupsResponse = Record<
+  string,
+  ElevenLabsWorkspaceGroup
+>;
+
+export interface ElevenLabsWorkspaceGroupSearchResult {
+  name: string;
+  id: string;
+  members_emails: string[];
+}
+
+export type ElevenLabsSearchWorkspaceGroupsResponse =
+  ElevenLabsWorkspaceGroupSearchResult[];
+
+export type ElevenLabsAddWorkspaceGroupMemberResponse =
+  ElevenLabsWorkspaceStatusResponse;
+export type ElevenLabsRemoveWorkspaceGroupMemberResponse =
+  ElevenLabsWorkspaceStatusResponse;
+export type ElevenLabsUpdateWorkspaceMemberResponse =
+  ElevenLabsWorkspaceStatusResponse;
+export type ElevenLabsAddWorkspaceInviteResponse =
+  ElevenLabsWorkspaceStatusResponse;
+export type ElevenLabsDeleteWorkspaceInviteResponse =
+  ElevenLabsWorkspaceStatusResponse;
+
+export type ElevenLabsWorkspaceResourceRole =
+  | "admin"
+  | "editor"
+  | "commenter"
+  | "viewer";
+
+export type ElevenLabsWorkspaceResourceType =
+  | "voice"
+  | "voice_collection"
+  | "pronunciation_dictionary"
+  | "dubbing"
+  | "project"
+  | "convai_agents"
+  | "convai_knowledge_base_documents"
+  | "convai_tools"
+  | "convai_settings"
+  | "convai_secrets"
+  | "workspace_auth_connections"
+  | "convai_phone_numbers"
+  | "convai_mcp_servers"
+  | "convai_api_integration_connections"
+  | "convai_api_integration_trigger_connections"
+  | "convai_batch_calls"
+  | "convai_agent_response_tests"
+  | "convai_test_suite_invocations"
+  | "convai_crawl_jobs"
+  | "convai_crawl_tasks"
+  | "convai_whatsapp_accounts"
+  | "convai_agent_versions"
+  | "convai_agent_branches"
+  | "convai_agent_versions_deployments"
+  | "convai_memory_entries"
+  | "convai_coaching_proposals"
+  | "convai_templates"
+  | "dashboard"
+  | "dashboard_configuration"
+  | "convai_agent_drafts"
+  | "resource_locators"
+  | "assets"
+  | "content_generations"
+  | "content_templates"
+  | "songs"
+  | "transcription_tasks"
+  | "avatars"
+  | "avatar_video_generations"
+  | "resource_collection"
+  | "studio_projects";
+
+export interface ElevenLabsWorkspaceShareOption {
+  name: string;
+  id: string;
+  type: "user" | "group" | "key";
+}
+
+export interface ElevenLabsWorkspaceResourceMetadataResponse {
+  resource_id: string;
+  resource_name: string | null;
+  resource_type: ElevenLabsWorkspaceResourceType;
+  creator_user_id: string | null;
+  anonymous_access_level_override: ElevenLabsWorkspaceResourceRole | null;
+  role_to_group_ids: Partial<Record<ElevenLabsWorkspaceResourceRole, string[]>>;
+  share_options: ElevenLabsWorkspaceShareOption[];
+}
+
+export type ElevenLabsShareWorkspaceResourceResponse =
+  ElevenLabsWorkspaceOperationResponse;
+export type ElevenLabsUnshareWorkspaceResourceResponse =
+  ElevenLabsWorkspaceOperationResponse;
+
+export type ElevenLabsWorkspaceWebhookAuthType = "hmac" | "oauth2" | "mtls";
+
+export type ElevenLabsWorkspaceWebhookUsageType =
+  | "ConvAI Agent Settings"
+  | "ConvAI Settings"
+  | "Voice Library Removal Notices"
+  | "Speech to Text"
+  | "Agent QA Evaluations";
+
+export interface ElevenLabsWorkspaceWebhookUsage {
+  usage_type: ElevenLabsWorkspaceWebhookUsageType;
+}
+
+export interface ElevenLabsWorkspaceWebhook {
+  name: string;
+  webhook_id: string;
+  webhook_url: string;
+  is_disabled: boolean;
+  is_auto_disabled: boolean;
+  created_at_unix: number;
+  auth_type: ElevenLabsWorkspaceWebhookAuthType;
+  usage?: ElevenLabsWorkspaceWebhookUsage[] | null;
+  most_recent_failure_error_code?: number | null;
+  most_recent_failure_timestamp?: number | null;
+}
+
+export interface ElevenLabsListWorkspaceWebhooksResponse {
+  webhooks: ElevenLabsWorkspaceWebhook[];
+}
+
+export interface ElevenLabsCreateWorkspaceWebhookResponse {
+  webhook_id: string;
+  webhook_secret?: string | null;
+}
+
+export type ElevenLabsUpdateWorkspaceWebhookResponse =
+  ElevenLabsWorkspaceStatusResponse;
+export type ElevenLabsDeleteWorkspaceWebhookResponse =
+  ElevenLabsWorkspaceStatusResponse;
+
+export type ElevenLabsWorkspaceAuthConnectionType =
+  | "oauth2_client_credentials"
+  | "basic_auth"
+  | "bearer_auth"
+  | "oauth2_jwt"
+  | "private_key_jwt"
+  | "mtls"
+  | "custom_header_auth"
+  | "api_integration_oauth2_auth_code"
+  | "api_integration_oauth2_custom_app"
+  | "whatsapp_auth"
+  | "slack_bot_auth"
+  | "url_secret";
+
+export type ElevenLabsWorkspaceAuthConnectionStatus =
+  | "active"
+  | "refresh_failed"
+  | "revoked"
+  | "credential_invalid";
+
+export type ElevenLabsWorkspaceAuthAlgorithm =
+  | "HS256"
+  | "HS384"
+  | "HS512"
+  | "RS256"
+  | "RS384"
+  | "RS512";
+
+export interface ElevenLabsWorkspaceAuthConnectionBase {
+  name: string;
+  auth_type?: ElevenLabsWorkspaceAuthConnectionType;
+  provider?: string;
+  id: string;
+  used_by?: Record<string, unknown> | null;
+  status?: ElevenLabsWorkspaceAuthConnectionStatus;
+  status_detail?: string | null;
+  status_updated_at?: string | null;
+}
+
+export interface ElevenLabsOAuth2ClientCredsAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "oauth2_client_credentials";
+  provider: string;
+  client_id: string;
+  token_url: string;
+  scopes?: string[];
+  extra_params?: Record<string, string>;
+  basic_auth_in_header?: boolean;
+  custom_headers?: Record<string, string>;
+}
+
+export interface ElevenLabsBasicAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "basic_auth";
+  provider: string;
+  username: string;
+}
+
+export interface ElevenLabsBearerAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "bearer_auth";
+  provider: string;
+}
+
+export interface ElevenLabsOAuth2JwtAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "oauth2_jwt";
+  provider: string;
+  algorithm?: ElevenLabsWorkspaceAuthAlgorithm;
+  key_id?: string | null;
+  issuer: string;
+  audience: string;
+  subject: string;
+  expiration_seconds?: number;
+  extra_params?: Record<string, string>;
+  token_url: string;
+  scopes?: string[];
+  token_response_field?: "access_token" | "id_token";
+}
+
+export interface ElevenLabsPrivateKeyJwtAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "private_key_jwt";
+  provider: string;
+  algorithm?: ElevenLabsWorkspaceAuthAlgorithm;
+  key_id?: string | null;
+  issuer: string;
+  audience: string;
+  subject: string;
+  expiration_seconds?: number;
+  extra_params?: Record<string, string>;
+}
+
+export interface ElevenLabsMtlsAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "mtls";
+  provider: string;
+}
+
+export interface ElevenLabsCustomHeaderAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "custom_header_auth";
+  provider: string;
+  header_name: string;
+}
+
+export interface ElevenLabsApiIntegrationOAuth2AuthCodeConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "api_integration_oauth2_auth_code";
+  provider: string;
+  token_url: string;
+  scopes: string[];
+  scope_separator?: " " | ",";
+  expires_at: string;
+  integration_id: string;
+  credential_id: string;
+}
+
+export interface ElevenLabsApiIntegrationOAuth2CustomAppConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "api_integration_oauth2_custom_app";
+  provider: string;
+  token_url: string;
+  scopes: string[];
+  scope_separator?: " " | ",";
+  expires_at: string;
+  integration_id: string;
+  credential_id: string;
+  client_id: string;
+}
+
+export interface ElevenLabsWhatsAppAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "whatsapp_auth";
+  provider?: "whatsapp";
+  phone_number_id: string;
+}
+
+export interface ElevenLabsSlackBotAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "slack_bot_auth";
+  provider?: "Slack";
+}
+
+export interface ElevenLabsUrlSecretAuthConnection extends ElevenLabsWorkspaceAuthConnectionBase {
+  auth_type?: "url_secret";
+  provider: string;
+}
+
+export type ElevenLabsWorkspaceAuthConnection =
+  | ElevenLabsOAuth2ClientCredsAuthConnection
+  | ElevenLabsBasicAuthConnection
+  | ElevenLabsBearerAuthConnection
+  | ElevenLabsOAuth2JwtAuthConnection
+  | ElevenLabsPrivateKeyJwtAuthConnection
+  | ElevenLabsMtlsAuthConnection
+  | ElevenLabsCustomHeaderAuthConnection
+  | ElevenLabsApiIntegrationOAuth2AuthCodeConnection
+  | ElevenLabsApiIntegrationOAuth2CustomAppConnection
+  | ElevenLabsWhatsAppAuthConnection
+  | ElevenLabsSlackBotAuthConnection
+  | ElevenLabsUrlSecretAuthConnection;
+
+export interface ElevenLabsListWorkspaceAuthConnectionsResponse {
+  auth_connections: ElevenLabsWorkspaceAuthConnection[];
+}
+
+export type ElevenLabsCreateWorkspaceAuthConnectionResponse =
+  ElevenLabsWorkspaceAuthConnection;
+export type ElevenLabsUpdateWorkspaceAuthConnectionResponse =
+  ElevenLabsWorkspaceAuthConnection;
+export type ElevenLabsDeleteWorkspaceAuthConnectionResponse =
+  ElevenLabsWorkspaceOperationResponse;
+export type ElevenLabsDisableWorkspaceApiKeyResponse =
+  ElevenLabsWorkspaceOperationResponse;
+export type ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingResponse =
+  ElevenLabsWorkspaceOperationResponse;
 
 // -- Agents Platform (Conversational AI) response shapes ---------------------
 
@@ -4738,6 +5224,185 @@ export interface ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeMethod {
   schema: z.ZodType<ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest>;
 }
 
+export interface ElevenLabsListWorkspaceAuditLogsMethod {
+  (
+    req?: ElevenLabsListWorkspaceAuditLogsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWorkspaceAuditLogsPageResponse>;
+  schema: z.ZodType<ElevenLabsListWorkspaceAuditLogsRequest>;
+}
+
+export interface ElevenLabsListWorkspaceGroupsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsWorkspaceGroupsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsSearchWorkspaceGroupsMethod {
+  (
+    req: ElevenLabsSearchWorkspaceGroupsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSearchWorkspaceGroupsResponse>;
+  schema: z.ZodType<ElevenLabsSearchWorkspaceGroupsRequest>;
+}
+
+export interface ElevenLabsAddWorkspaceGroupMemberMethod {
+  (
+    groupId: string,
+    req: ElevenLabsAddWorkspaceGroupMemberRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddWorkspaceGroupMemberResponse>;
+  schema: z.ZodType<ElevenLabsAddWorkspaceGroupMemberRequest>;
+}
+
+export interface ElevenLabsRemoveWorkspaceGroupMemberMethod {
+  (
+    groupId: string,
+    req: ElevenLabsRemoveWorkspaceGroupMemberRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRemoveWorkspaceGroupMemberResponse>;
+  schema: z.ZodType<ElevenLabsRemoveWorkspaceGroupMemberRequest>;
+}
+
+export interface ElevenLabsUpdateWorkspaceMemberMethod {
+  (
+    req: ElevenLabsUpdateWorkspaceMemberRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateWorkspaceMemberResponse>;
+  schema: z.ZodType<ElevenLabsUpdateWorkspaceMemberRequest>;
+}
+
+export interface ElevenLabsAddWorkspaceInviteMethod {
+  (
+    req: ElevenLabsAddWorkspaceInviteRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddWorkspaceInviteResponse>;
+  schema: z.ZodType<ElevenLabsAddWorkspaceInviteRequest>;
+}
+
+export interface ElevenLabsAddWorkspaceInvitesBulkMethod {
+  (
+    req: ElevenLabsAddWorkspaceInvitesBulkRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddWorkspaceInviteResponse>;
+  schema: z.ZodType<ElevenLabsAddWorkspaceInvitesBulkRequest>;
+}
+
+export interface ElevenLabsDeleteWorkspaceInviteMethod {
+  (
+    req: ElevenLabsDeleteWorkspaceInviteRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteWorkspaceInviteResponse>;
+  schema: z.ZodType<ElevenLabsDeleteWorkspaceInviteRequest>;
+}
+
+export interface ElevenLabsGetWorkspaceResourceMethod {
+  (
+    resourceId: string,
+    req: ElevenLabsGetWorkspaceResourceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWorkspaceResourceMetadataResponse>;
+  schema: z.ZodType<ElevenLabsGetWorkspaceResourceRequest>;
+}
+
+export interface ElevenLabsShareWorkspaceResourceMethod {
+  (
+    resourceId: string,
+    req: ElevenLabsShareWorkspaceResourceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsShareWorkspaceResourceResponse>;
+  schema: z.ZodType<ElevenLabsShareWorkspaceResourceRequest>;
+}
+
+export interface ElevenLabsUnshareWorkspaceResourceMethod {
+  (
+    resourceId: string,
+    req: ElevenLabsUnshareWorkspaceResourceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUnshareWorkspaceResourceResponse>;
+  schema: z.ZodType<ElevenLabsUnshareWorkspaceResourceRequest>;
+}
+
+export interface ElevenLabsListWorkspaceWebhooksMethod {
+  (
+    req?: ElevenLabsListWorkspaceWebhooksRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListWorkspaceWebhooksResponse>;
+  schema: z.ZodType<ElevenLabsListWorkspaceWebhooksRequest>;
+}
+
+export interface ElevenLabsCreateWorkspaceWebhookMethod {
+  (
+    req: ElevenLabsCreateWorkspaceWebhookRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateWorkspaceWebhookResponse>;
+  schema: z.ZodType<ElevenLabsCreateWorkspaceWebhookRequest>;
+}
+
+export interface ElevenLabsUpdateWorkspaceWebhookMethod {
+  (
+    webhookId: string,
+    req: ElevenLabsUpdateWorkspaceWebhookRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateWorkspaceWebhookResponse>;
+  schema: z.ZodType<ElevenLabsUpdateWorkspaceWebhookRequest>;
+}
+
+export interface ElevenLabsDeleteWorkspaceWebhookMethod {
+  (
+    webhookId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteWorkspaceWebhookResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsListWorkspaceAuthConnectionsMethod {
+  (
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListWorkspaceAuthConnectionsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCreateWorkspaceAuthConnectionMethod {
+  (
+    req: ElevenLabsCreateWorkspaceAuthConnectionRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateWorkspaceAuthConnectionResponse>;
+  schema: z.ZodType<ElevenLabsCreateWorkspaceAuthConnectionRequest>;
+}
+
+export interface ElevenLabsUpdateWorkspaceAuthConnectionMethod {
+  (
+    authConnectionId: string,
+    req: ElevenLabsUpdateWorkspaceAuthConnectionRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateWorkspaceAuthConnectionResponse>;
+  schema: z.ZodType<ElevenLabsUpdateWorkspaceAuthConnectionRequest>;
+}
+
+export interface ElevenLabsDeleteWorkspaceAuthConnectionMethod {
+  (
+    authConnectionId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteWorkspaceAuthConnectionResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsDisableWorkspaceApiKeyMethod {
+  (
+    req: ElevenLabsDisableWorkspaceApiKeyRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDisableWorkspaceApiKeyResponse>;
+  schema: z.ZodType<ElevenLabsDisableWorkspaceApiKeyRequest>;
+}
+
+export interface ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingMethod {
+  (
+    req: ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingResponse>;
+  schema: z.ZodType<ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingRequest>;
+}
+
 export interface ElevenLabsCreateAgentMethod {
   (
     req: ElevenLabsCreateAgentRequest,
@@ -6302,8 +6967,138 @@ export interface ElevenLabsWorkspaceAnalyticsNamespace {
   query: ElevenLabsWorkspaceAnalyticsQueryNamespace;
 }
 
+export interface ElevenLabsWorkspaceGroupMembersNamespace {
+  add: ElevenLabsAddWorkspaceGroupMemberMethod;
+  remove: ElevenLabsRemoveWorkspaceGroupMemberMethod;
+}
+
+export interface ElevenLabsWorkspaceGroupsNamespace {
+  list: ElevenLabsListWorkspaceGroupsMethod;
+  search: ElevenLabsSearchWorkspaceGroupsMethod;
+  members: ElevenLabsWorkspaceGroupMembersNamespace;
+}
+
+export interface ElevenLabsWorkspaceMembersNamespace {
+  update: ElevenLabsUpdateWorkspaceMemberMethod;
+}
+
+export interface ElevenLabsWorkspaceInvitesNamespace {
+  add: ElevenLabsAddWorkspaceInviteMethod;
+  addBulk: ElevenLabsAddWorkspaceInvitesBulkMethod;
+  delete: ElevenLabsDeleteWorkspaceInviteMethod;
+}
+
+export interface ElevenLabsWorkspaceResourcesNamespace {
+  get: ElevenLabsGetWorkspaceResourceMethod;
+  share: ElevenLabsShareWorkspaceResourceMethod;
+  unshare: ElevenLabsUnshareWorkspaceResourceMethod;
+}
+
+export interface ElevenLabsWorkspaceWebhooksNamespace {
+  list: ElevenLabsListWorkspaceWebhooksMethod;
+  create: ElevenLabsCreateWorkspaceWebhookMethod;
+  update: ElevenLabsUpdateWorkspaceWebhookMethod;
+  delete: ElevenLabsDeleteWorkspaceWebhookMethod;
+}
+
+export interface ElevenLabsWorkspaceAuthConnectionsNamespace {
+  list: ElevenLabsListWorkspaceAuthConnectionsMethod;
+  create: ElevenLabsCreateWorkspaceAuthConnectionMethod;
+  update: ElevenLabsUpdateWorkspaceAuthConnectionMethod;
+  delete: ElevenLabsDeleteWorkspaceAuthConnectionMethod;
+}
+
 export interface ElevenLabsWorkspaceNamespace {
+  auditLogs: ElevenLabsListWorkspaceAuditLogsMethod;
+  groups: ElevenLabsWorkspaceGroupsNamespace;
+  members: ElevenLabsWorkspaceMembersNamespace;
+  invites: ElevenLabsWorkspaceInvitesNamespace;
+  resources: ElevenLabsWorkspaceResourcesNamespace;
+  webhooks: ElevenLabsWorkspaceWebhooksNamespace;
+  authConnections: ElevenLabsWorkspaceAuthConnectionsNamespace;
   analytics: ElevenLabsWorkspaceAnalyticsNamespace;
+}
+
+export interface ElevenLabsWorkspacesApiKeysNamespace {
+  disable: ElevenLabsDisableWorkspaceApiKeyMethod;
+  thirdPartyDisabling: ElevenLabsSetWorkspaceApiKeyThirdPartyDisablingMethod;
+}
+
+export interface ElevenLabsWorkspacesNamespace {
+  apiKeys: ElevenLabsWorkspacesApiKeysNamespace;
+}
+
+export interface ElevenLabsGetWorkspaceGroupsNamespace {
+  list: ElevenLabsListWorkspaceGroupsMethod;
+  search: ElevenLabsSearchWorkspaceGroupsMethod;
+}
+
+export interface ElevenLabsGetWorkspaceResourcesNamespace {
+  get: ElevenLabsGetWorkspaceResourceMethod;
+}
+
+export interface ElevenLabsGetWorkspaceWebhooksNamespace {
+  list: ElevenLabsListWorkspaceWebhooksMethod;
+}
+
+export interface ElevenLabsGetWorkspaceAuthConnectionsNamespace {
+  list: ElevenLabsListWorkspaceAuthConnectionsMethod;
+}
+
+export interface ElevenLabsGetWorkspaceNamespace {
+  auditLogs: ElevenLabsListWorkspaceAuditLogsMethod;
+  groups: ElevenLabsGetWorkspaceGroupsNamespace;
+  resources: ElevenLabsGetWorkspaceResourcesNamespace;
+  webhooks: ElevenLabsGetWorkspaceWebhooksNamespace;
+  authConnections: ElevenLabsGetWorkspaceAuthConnectionsNamespace;
+}
+
+export interface ElevenLabsPostWorkspaceGroupsNamespace {
+  members: {
+    add: ElevenLabsAddWorkspaceGroupMemberMethod;
+    remove: ElevenLabsRemoveWorkspaceGroupMemberMethod;
+  };
+}
+
+export interface ElevenLabsPostWorkspaceNamespace {
+  groups: ElevenLabsPostWorkspaceGroupsNamespace;
+  members: ElevenLabsWorkspaceMembersNamespace;
+  invites: {
+    add: ElevenLabsAddWorkspaceInviteMethod;
+    addBulk: ElevenLabsAddWorkspaceInvitesBulkMethod;
+  };
+  resources: {
+    share: ElevenLabsShareWorkspaceResourceMethod;
+    unshare: ElevenLabsUnshareWorkspaceResourceMethod;
+  };
+  webhooks: {
+    create: ElevenLabsCreateWorkspaceWebhookMethod;
+  };
+  authConnections: {
+    create: ElevenLabsCreateWorkspaceAuthConnectionMethod;
+  };
+  analytics: ElevenLabsWorkspaceAnalyticsNamespace;
+}
+
+export interface ElevenLabsPatchWorkspaceNamespace {
+  webhooks: {
+    update: ElevenLabsUpdateWorkspaceWebhookMethod;
+  };
+  authConnections: {
+    update: ElevenLabsUpdateWorkspaceAuthConnectionMethod;
+  };
+}
+
+export interface ElevenLabsDeleteWorkspaceNamespace {
+  invites: {
+    delete: ElevenLabsDeleteWorkspaceInviteMethod;
+  };
+  webhooks: {
+    delete: ElevenLabsDeleteWorkspaceWebhookMethod;
+  };
+  authConnections: {
+    delete: ElevenLabsDeleteWorkspaceAuthConnectionMethod;
+  };
 }
 
 export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace extends ElevenLabsGetPvcSampleSpeakersMethod {
@@ -6513,6 +7308,7 @@ export interface ElevenLabsV1Namespace {
   studio: ElevenLabsStudioNamespace;
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
+  workspaces: ElevenLabsWorkspacesNamespace;
   convai: ElevenLabsConvaiNamespace;
   history: ElevenLabsHistoryNamespace;
 }
@@ -6659,7 +7455,8 @@ export interface ElevenLabsPostV1Namespace {
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   similarVoices: ElevenLabsSimilarVoicesMethod;
   voices: ElevenLabsPostV1VoicesNamespace;
-  workspace: ElevenLabsWorkspaceNamespace;
+  workspace: ElevenLabsPostWorkspaceNamespace;
+  workspaces: ElevenLabsWorkspacesNamespace;
   convai: ElevenLabsPostConvaiNamespace;
   history: { download: ElevenLabsHistoryDownloadMethod };
 }
@@ -6783,6 +7580,7 @@ export interface ElevenLabsPatchV1Namespace {
     orders: { update: ElevenLabsUpdateOrderMethod };
   };
   convai: ElevenLabsPatchConvaiNamespace;
+  workspace: ElevenLabsPatchWorkspaceNamespace;
 }
 
 export interface ElevenLabsPatchNamespace {
@@ -6977,6 +7775,7 @@ export interface ElevenLabsGetV1Namespace {
     };
   };
   convai: ElevenLabsGetConvaiNamespace;
+  workspace: ElevenLabsGetWorkspaceNamespace;
   history: {
     list: ElevenLabsHistoryListMethod;
     get: ElevenLabsHistoryGetMethod;
@@ -7099,6 +7898,7 @@ export interface ElevenLabsDeleteV1Namespace {
     delete: ElevenLabsDeleteSpeechEngineMethod;
   };
   convai: ElevenLabsDeleteConvaiNamespace;
+  workspace: ElevenLabsDeleteWorkspaceNamespace;
   history: {
     delete: ElevenLabsHistoryDeleteMethod;
   };

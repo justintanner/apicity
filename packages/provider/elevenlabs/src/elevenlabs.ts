@@ -36,6 +36,8 @@ import {
   ElevenLabsAudioNativeUpdateProjectContentRequest,
   ElevenLabsAudioNativeEditContentResponse,
   ElevenLabsAudioNativeProjectSettingsResponse,
+  ElevenLabsForcedAlignmentRequest,
+  ElevenLabsForcedAlignmentResponse,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsAudioWithTimestampsResponse,
@@ -198,6 +200,7 @@ import {
   ElevenLabsAudioNativeCreateProjectRequestSchema,
   ElevenLabsAudioNativeUpdateContentFromUrlRequestSchema,
   ElevenLabsAudioNativeUpdateProjectContentRequestSchema,
+  ElevenLabsForcedAlignmentRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
@@ -1666,6 +1669,28 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       },
       settings: getAudioNativeProjectSettings,
     }
+  );
+
+  // POST https://api.elevenlabs.io/v1/forced-alignment
+  // Docs: https://elevenlabs.io/docs/api-reference/forced-alignment/create
+  const forcedAlignment = Object.assign(
+    async (
+      req: ElevenLabsForcedAlignmentRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsForcedAlignmentResponse> => {
+      const form = new FormData();
+      for (const [key, value] of Object.entries(req)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsForcedAlignmentResponse>(
+        "/v1/forced-alignment",
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsForcedAlignmentRequestSchema }
   );
 
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps
@@ -3574,6 +3599,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     soundGeneration,
     audioIsolation,
     audioNative,
+    forcedAlignment,
     textToSpeech,
     textToDialogue,
     textToVoice,
@@ -3653,6 +3679,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     soundGeneration,
     audioIsolation,
     audioNative,
+    forcedAlignment,
     textToSpeech,
     textToDialogue,
     textToVoice,

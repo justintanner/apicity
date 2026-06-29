@@ -20,6 +20,7 @@ import type {
   ElevenLabsAudioNativeCreateProjectRequest,
   ElevenLabsAudioNativeUpdateContentFromUrlRequest,
   ElevenLabsAudioNativeUpdateProjectContentRequest,
+  ElevenLabsForcedAlignmentRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -163,6 +164,9 @@ export type {
   ElevenLabsAudioNativeUpdateProjectContentRequest,
   ElevenLabsAudioNativeUpdateProjectContentRequestInput,
   ElevenLabsAudioNativeUpdateProjectContentParsedRequest,
+  ElevenLabsForcedAlignmentRequest,
+  ElevenLabsForcedAlignmentRequestInput,
+  ElevenLabsForcedAlignmentParsedRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
@@ -1072,6 +1076,27 @@ export interface ElevenLabsAudioNativeProjectSettingsResponse {
   settings?: ElevenLabsAudioNativeProjectSettings | null;
 }
 
+// -- Forced alignment response shapes ----------------------------------------
+
+export interface ElevenLabsForcedAlignmentCharacter {
+  text: string;
+  start: number;
+  end: number;
+}
+
+export interface ElevenLabsForcedAlignmentWord {
+  text: string;
+  start: number;
+  end: number;
+  loss: number;
+}
+
+export interface ElevenLabsForcedAlignmentResponse {
+  characters: ElevenLabsForcedAlignmentCharacter[];
+  words: ElevenLabsForcedAlignmentWord[];
+  loss: number;
+}
+
 // -- History response shapes -------------------------------------------------
 
 export interface ElevenLabsHistoryFeedback {
@@ -1764,6 +1789,14 @@ export interface ElevenLabsAudioNativeMethod {
   schema: z.ZodType<ElevenLabsAudioNativeCreateProjectRequest>;
   content: ElevenLabsAudioNativeContentNamespace;
   settings: ElevenLabsAudioNativeProjectSettingsMethod;
+}
+
+export interface ElevenLabsForcedAlignmentMethod {
+  (
+    req: ElevenLabsForcedAlignmentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsForcedAlignmentResponse>;
+  schema: z.ZodType<ElevenLabsForcedAlignmentRequest>;
 }
 
 export interface ElevenLabsCharacterAlignment {
@@ -3129,6 +3162,7 @@ export interface ElevenLabsV1Namespace {
   similarVoices: ElevenLabsSimilarVoicesMethod;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   audioIsolation: ElevenLabsAudioIsolationMethod;
+  forcedAlignment: ElevenLabsForcedAlignmentMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
@@ -3177,6 +3211,7 @@ export interface ElevenLabsPostV1Namespace {
   pronunciationDictionaries: ElevenLabsPostPronunciationDictionariesNamespace;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   audioIsolation: ElevenLabsAudioIsolationMethod;
+  forcedAlignment: ElevenLabsForcedAlignmentMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;

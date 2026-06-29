@@ -694,6 +694,24 @@ export type ElevenLabsAudioNativeUpdateProjectContentParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/forced-alignment
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsForcedAlignmentRequestSchema = z.object({
+  file: z.custom<Blob>((value) => value instanceof Blob),
+  text: z.string(),
+});
+
+export type ElevenLabsForcedAlignmentRequest = z.input<
+  typeof ElevenLabsForcedAlignmentRequestSchema
+>;
+export type ElevenLabsForcedAlignmentRequestInput =
+  ElevenLabsForcedAlignmentRequest;
+export type ElevenLabsForcedAlignmentParsedRequest = z.output<
+  typeof ElevenLabsForcedAlignmentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

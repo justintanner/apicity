@@ -9,6 +9,13 @@ import {
   ElevenLabsListVoicesResponse,
   ElevenLabsOptions,
   ElevenLabsCreatePvcVoiceRequest,
+  ElevenLabsEditPvcVoiceRequest,
+  ElevenLabsEditPvcVoiceResponse,
+  ElevenLabsAddPvcSamplesRequest,
+  ElevenLabsAddPvcSamplesResponse,
+  ElevenLabsGetPvcSampleAudioRequest,
+  ElevenLabsVoiceSamplePreviewResponse,
+  ElevenLabsSpeakerSeparation,
   ElevenLabsPvcTrainRequest,
   ElevenLabsPvcTrainResponse,
   ElevenLabsPvcVoiceCaptchaRequest,
@@ -111,6 +118,9 @@ import {
 } from "./types";
 import {
   ElevenLabsCreatePvcVoiceRequestSchema,
+  ElevenLabsEditPvcVoiceRequestSchema,
+  ElevenLabsAddPvcSamplesRequestSchema,
+  ElevenLabsGetPvcSampleAudioRequestSchema,
   ElevenLabsGetVoiceRequestSchema,
   ElevenLabsListVoicesRequestSchema,
   ElevenLabsPvcTrainRequestSchema,
@@ -945,6 +955,24 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsCreatePvcVoiceRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/edit
+  const editPvcVoice = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsEditPvcVoiceRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsEditPvcVoiceResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsEditPvcVoiceResponse>(
+        "POST",
+        `/v1/voices/pvc/${encodeURIComponent(voiceId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsEditPvcVoiceRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha
   // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha/verify
   const pvcVoiceCaptcha = Object.assign(
@@ -1002,6 +1030,75 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       );
     },
     { schema: ElevenLabsUpdatePvcVoiceSampleRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/create
+  const addPvcSamples = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsAddPvcSamplesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAddPvcSamplesResponse> => {
+      const { files, ...rest } = req;
+      const form = new FormData();
+      for (const file of files) {
+        form.append("files", file);
+      }
+      for (const [key, value] of Object.entries(rest)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsAddPvcSamplesResponse>(
+        `/v1/voices/pvc/${encodeURIComponent(voiceId)}/samples`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsAddPvcSamplesRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/audio
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/audio
+  const getPvcSampleAudio = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      req: ElevenLabsGetPvcSampleAudioRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsVoiceSamplePreviewResponse> => {
+      return makeJsonRequest<ElevenLabsVoiceSamplePreviewResponse>(
+        "GET",
+        `/v1/voices/pvc/${encodeURIComponent(
+          voiceId
+        )}/samples/${encodeURIComponent(sampleId)}/audio`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetPvcSampleAudioRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/speakers
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/pvc/samples/speakers
+  const getPvcSampleSpeakers = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSpeakerSeparation> => {
+      return makeJsonRequest<ElevenLabsSpeakerSeparation>(
+        "GET",
+        `/v1/voices/pvc/${encodeURIComponent(
+          voiceId
+        )}/samples/${encodeURIComponent(sampleId)}/speakers`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
   );
 
   // POST https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/samples/{sampleId}/separate-speakers
@@ -2250,28 +2347,33 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const user = {
     subscription: userSubscription,
   };
-  const pvcSamplesSpeakers = {
+  const pvcSamplesSpeakers = Object.assign(getPvcSampleSpeakers, {
     audio: getSeparatedSpeakerAudio,
-  };
+  });
   const pvcVoiceSamples = Object.assign(updatePvcVoiceSample, {
+    add: addPvcSamples,
+    audio: getPvcSampleAudio,
     delete: deletePvcVoiceSample,
     separateSpeakers: startSpeakerSeparation,
     speakers: pvcSamplesSpeakers,
     waveform: getPvcVoiceSampleWaveform,
   });
   const postPvcVoiceSamples = Object.assign(updatePvcVoiceSample, {
+    add: addPvcSamples,
     separateSpeakers: startSpeakerSeparation,
   });
   const pvcVoiceCaptchaWithGet = Object.assign(pvcVoiceCaptcha, {
     get: getPvcVoiceCaptcha,
   });
   const pvcVoices = Object.assign(createPvcVoice, {
+    edit: editPvcVoice,
     captcha: pvcVoiceCaptchaWithGet,
     samples: pvcVoiceSamples,
     train: pvcTrain,
     verification: pvcManualVerification,
   });
   const postPvcVoices = Object.assign(createPvcVoice, {
+    edit: editPvcVoice,
     captcha: pvcVoiceCaptchaWithGet,
     samples: postPvcVoiceSamples,
     train: pvcTrain,

@@ -1,6 +1,9 @@
 import type { z } from "zod";
 import type {
   ElevenLabsCreatePvcVoiceRequest,
+  ElevenLabsEditPvcVoiceRequest,
+  ElevenLabsAddPvcSamplesRequest,
+  ElevenLabsGetPvcSampleAudioRequest,
   ElevenLabsGetVoiceRequest,
   ElevenLabsListVoicesRequest,
   ElevenLabsPvcTrainRequest,
@@ -54,6 +57,15 @@ export type {
   ElevenLabsCreatePvcVoiceRequest,
   ElevenLabsCreatePvcVoiceRequestInput,
   ElevenLabsCreatePvcVoiceParsedRequest,
+  ElevenLabsEditPvcVoiceRequest,
+  ElevenLabsEditPvcVoiceRequestInput,
+  ElevenLabsEditPvcVoiceParsedRequest,
+  ElevenLabsAddPvcSamplesRequest,
+  ElevenLabsAddPvcSamplesRequestInput,
+  ElevenLabsAddPvcSamplesParsedRequest,
+  ElevenLabsGetPvcSampleAudioRequest,
+  ElevenLabsGetPvcSampleAudioRequestInput,
+  ElevenLabsGetPvcSampleAudioParsedRequest,
   ElevenLabsGetVoiceRequest,
   ElevenLabsGetVoiceRequestInput,
   ElevenLabsGetVoiceParsedRequest,
@@ -634,6 +646,21 @@ export interface ElevenLabsSpeakerAudioResponse {
 
 export interface ElevenLabsUpdatePvcVoiceSampleResponse {
   voice_id: string;
+}
+
+export interface ElevenLabsEditPvcVoiceResponse {
+  status?: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsAddPvcSamplesResponse = ElevenLabsVoiceSample[];
+
+export interface ElevenLabsVoiceSamplePreviewResponse {
+  audio_base_64: string;
+  voice_id: string;
+  sample_id: string;
+  media_type: string;
+  duration_secs?: number | null;
 }
 
 export interface ElevenLabsPvcVoiceSampleWaveformResponse {
@@ -1395,6 +1422,43 @@ export interface ElevenLabsUpdatePvcVoiceSampleMethod {
   separateSpeakers: ElevenLabsStartSpeakerSeparationMethod;
 }
 
+export interface ElevenLabsEditPvcVoiceMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsEditPvcVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsEditPvcVoiceResponse>;
+  schema: z.ZodType<ElevenLabsEditPvcVoiceRequest>;
+}
+
+export interface ElevenLabsAddPvcSamplesMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsAddPvcSamplesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddPvcSamplesResponse>;
+  schema: z.ZodType<ElevenLabsAddPvcSamplesRequest>;
+}
+
+export interface ElevenLabsGetPvcSampleAudioMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    req?: ElevenLabsGetPvcSampleAudioRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsVoiceSamplePreviewResponse>;
+  schema: z.ZodType<ElevenLabsGetPvcSampleAudioRequest>;
+}
+
+export interface ElevenLabsGetPvcSampleSpeakersMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSpeakerSeparation>;
+  schema: undefined;
+}
+
 export interface ElevenLabsDeletePvcVoiceSampleMethod {
   (
     voiceId: string,
@@ -1587,6 +1651,7 @@ export interface ElevenLabsPvcVoiceNamespace {
     signal?: AbortSignal
   ): Promise<ElevenLabsCreatePvcVoiceResponse>;
   schema: z.ZodType<ElevenLabsCreatePvcVoiceRequest>;
+  edit: ElevenLabsEditPvcVoiceMethod;
   captcha: ElevenLabsPvcVoiceCaptchaMethod;
   samples: ElevenLabsPvcVoiceSamplesNamespace;
   train: ElevenLabsPvcTrainMethod;
@@ -1951,11 +2016,13 @@ export interface ElevenLabsWorkspaceNamespace {
   analytics: ElevenLabsWorkspaceAnalyticsNamespace;
 }
 
-export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace {
+export interface ElevenLabsPvcVoiceSamplesSpeakersNamespace extends ElevenLabsGetPvcSampleSpeakersMethod {
   audio: ElevenLabsGetSeparatedSpeakerAudioMethod;
 }
 
 export interface ElevenLabsPvcVoiceSamplesNamespace extends ElevenLabsUpdatePvcVoiceSampleMethod {
+  add: ElevenLabsAddPvcSamplesMethod;
+  audio: ElevenLabsGetPvcSampleAudioMethod;
   delete: ElevenLabsDeletePvcVoiceSampleMethod;
   speakers: ElevenLabsPvcVoiceSamplesSpeakersNamespace;
   waveform: ElevenLabsPvcVoiceSampleWaveformMethod;

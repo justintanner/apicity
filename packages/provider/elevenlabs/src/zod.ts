@@ -256,6 +256,61 @@ export type ElevenLabsCreatePvcVoiceParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/voices/pvc/:voice_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsEditPvcVoiceRequestSchema = z.object({
+  name: z.string().max(100),
+  language: z.string(),
+  description: z.string().max(500).nullable().optional(),
+  labels: z.record(z.string(), z.string()).nullable().optional(),
+});
+
+export type ElevenLabsEditPvcVoiceRequest = z.input<
+  typeof ElevenLabsEditPvcVoiceRequestSchema
+>;
+export type ElevenLabsEditPvcVoiceRequestInput =
+  ElevenLabsEditPvcVoiceRequest;
+export type ElevenLabsEditPvcVoiceParsedRequest = z.output<
+  typeof ElevenLabsEditPvcVoiceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/voices/pvc/:voice_id/samples
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAddPvcSamplesRequestSchema = z.object({
+  files: z.array(z.custom<Blob>((value) => value instanceof Blob)).min(1),
+  remove_background_noise: z.boolean().optional(),
+});
+
+export type ElevenLabsAddPvcSamplesRequest = z.input<
+  typeof ElevenLabsAddPvcSamplesRequestSchema
+>;
+export type ElevenLabsAddPvcSamplesRequestInput =
+  ElevenLabsAddPvcSamplesRequest;
+export type ElevenLabsAddPvcSamplesParsedRequest = z.output<
+  typeof ElevenLabsAddPvcSamplesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/voices/pvc/:voice_id/samples/:sample_id/audio
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetPvcSampleAudioRequestSchema = z.object({
+  remove_background_noise: z.boolean().optional(),
+});
+
+export type ElevenLabsGetPvcSampleAudioRequest = z.input<
+  typeof ElevenLabsGetPvcSampleAudioRequestSchema
+>;
+export type ElevenLabsGetPvcSampleAudioRequestInput =
+  ElevenLabsGetPvcSampleAudioRequest;
+export type ElevenLabsGetPvcSampleAudioParsedRequest = z.output<
+  typeof ElevenLabsGetPvcSampleAudioRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/voices/pvc/:voice_id/captcha
 // ---------------------------------------------------------------------------
 

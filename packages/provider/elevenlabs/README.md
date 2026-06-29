@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-59 endpoints across 10 groups. Each method mirrors an upstream URL path.
+67 endpoints across 12 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -662,6 +662,38 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+### speechToSpeech
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.speechToSpeech</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-speech/convert)
+
+```typescript
+const res = await elevenlabs.v1.speechToSpeech({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.speechToSpeech</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-speech/convert)
+
+```typescript
+const res = await elevenlabs.v1.speechToSpeech({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### speechToText
 
 <details>
@@ -673,6 +705,36 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.speechToText({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.speechToText.transcripts.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/delete)
+
+```typescript
+const res = await elevenlabs.v1.speechToText.transcripts.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.speechToText.transcripts.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/get)
+
+```typescript
+const res = await elevenlabs.v1.speechToText.transcripts.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -793,6 +855,60 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.textToSpeech.withTimestamps({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### textToVoice
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToVoice</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-voice</code>
+
+```typescript
+const res = await elevenlabs.v1.textToVoice({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToVoice.design</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-voice/design</code>
+
+```typescript
+const res = await elevenlabs.v1.textToVoice.design({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToVoice.remix</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/text-to-voice/{voiceId}/remix</code>
+
+```typescript
+const res = await elevenlabs.v1.textToVoice.remix({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.textToVoice</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/text-to-voice/{generatedVoiceId}/stream</code>
+
+```typescript
+const res = await elevenlabs.v1.textToVoice({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

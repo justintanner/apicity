@@ -674,8 +674,17 @@ elevenlabs	v1.convai.phoneNumbers.list	GET	https://api.elevenlabs.io/v1/convai/p
 elevenlabs	v1.convai.phoneNumbers.get	GET	https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/phone-numbers/get
 elevenlabs	v1.convai.phoneNumbers.update	PATCH	https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/phone-numbers/update
 elevenlabs	v1.convai.phoneNumbers.delete	DELETE	https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/phone-numbers/delete
+elevenlabs	v1.convai.phoneNumbers.sipMessages	GET	https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}/sip-messages	https://elevenlabs.io/docs/api-reference/phone-numbers/get-sip-messages
+elevenlabs	v1.convai.twilio.registerCall	POST	https://api.elevenlabs.io/v1/convai/twilio/register-call	https://elevenlabs.io/docs/api-reference/twilio/register-call
 elevenlabs	v1.convai.twilio.outboundCall	POST	https://api.elevenlabs.io/v1/convai/twilio/outbound-call	https://elevenlabs.io/docs/api-reference/twilio/outbound-call
 elevenlabs	v1.convai.sipTrunk.outboundCall	POST	https://api.elevenlabs.io/v1/convai/sip-trunk/outbound-call	https://elevenlabs.io/docs/api-reference/sip-trunk/outbound-call
+elevenlabs	v1.convai.exotel.outboundCall	POST	https://api.elevenlabs.io/v1/convai/exotel/outbound-call	https://elevenlabs.io/docs/api-reference/exotel/outbound-call
+elevenlabs	v1.convai.whatsapp.outboundCall	POST	https://api.elevenlabs.io/v1/convai/whatsapp/outbound-call	https://elevenlabs.io/docs/api-reference/whats-app/outbound-call
+elevenlabs	v1.convai.whatsapp.outboundMessage	POST	https://api.elevenlabs.io/v1/convai/whatsapp/outbound-message	https://elevenlabs.io/docs/api-reference/whats-app/outbound-message
+elevenlabs	v1.convai.whatsappAccounts.list	GET	https://api.elevenlabs.io/v1/convai/whatsapp-accounts	https://elevenlabs.io/docs/api-reference/whats-app/accounts/list
+elevenlabs	v1.convai.whatsappAccounts.get	GET	https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/whats-app/accounts/get
+elevenlabs	v1.convai.whatsappAccounts.update	PATCH	https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/whats-app/accounts/update
+elevenlabs	v1.convai.whatsappAccounts.delete	DELETE	https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/whats-app/accounts/delete
 elevenlabs	v1.voices.list	GET	https://api.elevenlabs.io/v1/voices	https://elevenlabs.io/docs/api-reference/voices/get-all
 elevenlabs	v1.voices.delete	DELETE	https://api.elevenlabs.io/v1/voices/{voiceId}	https://elevenlabs.io/docs/api-reference/voices/delete
 elevenlabs	v1.voices.add	POST	https://api.elevenlabs.io/v1/voices/add	https://elevenlabs.io/docs/api-reference/voices/ivc/create

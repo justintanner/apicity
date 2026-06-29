@@ -114,8 +114,15 @@ import type {
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsListPhoneNumbersRequest,
   ElevenLabsUpdatePhoneNumberRequest,
+  ElevenLabsGetPhoneNumberSipMessagesRequest,
+  ElevenLabsRegisterTwilioCallRequest,
   ElevenLabsTwilioOutboundCallRequest,
   ElevenLabsSipTrunkOutboundCallRequest,
+  ElevenLabsExotelOutboundCallRequest,
+  ElevenLabsWhatsAppOutboundCallRequest,
+  ElevenLabsWhatsAppOutboundMessageRequest,
+  ElevenLabsListWhatsAppAccountsRequest,
+  ElevenLabsUpdateWhatsAppAccountRequest,
   ElevenLabsCreateVoiceFromPreviewRequest,
   ElevenLabsVoiceDesignRequest,
   ElevenLabsVoiceRemixRequest,
@@ -515,12 +522,33 @@ export type {
   ElevenLabsUpdatePhoneNumberRequest,
   ElevenLabsUpdatePhoneNumberRequestInput,
   ElevenLabsUpdatePhoneNumberParsedRequest,
+  ElevenLabsGetPhoneNumberSipMessagesRequest,
+  ElevenLabsGetPhoneNumberSipMessagesRequestInput,
+  ElevenLabsGetPhoneNumberSipMessagesParsedRequest,
+  ElevenLabsRegisterTwilioCallRequest,
+  ElevenLabsRegisterTwilioCallRequestInput,
+  ElevenLabsRegisterTwilioCallParsedRequest,
   ElevenLabsTwilioOutboundCallRequest,
   ElevenLabsTwilioOutboundCallRequestInput,
   ElevenLabsTwilioOutboundCallParsedRequest,
   ElevenLabsSipTrunkOutboundCallRequest,
   ElevenLabsSipTrunkOutboundCallRequestInput,
   ElevenLabsSipTrunkOutboundCallParsedRequest,
+  ElevenLabsExotelOutboundCallRequest,
+  ElevenLabsExotelOutboundCallRequestInput,
+  ElevenLabsExotelOutboundCallParsedRequest,
+  ElevenLabsWhatsAppOutboundCallRequest,
+  ElevenLabsWhatsAppOutboundCallRequestInput,
+  ElevenLabsWhatsAppOutboundCallParsedRequest,
+  ElevenLabsWhatsAppOutboundMessageRequest,
+  ElevenLabsWhatsAppOutboundMessageRequestInput,
+  ElevenLabsWhatsAppOutboundMessageParsedRequest,
+  ElevenLabsListWhatsAppAccountsRequest,
+  ElevenLabsListWhatsAppAccountsRequestInput,
+  ElevenLabsListWhatsAppAccountsParsedRequest,
+  ElevenLabsUpdateWhatsAppAccountRequest,
+  ElevenLabsUpdateWhatsAppAccountRequestInput,
+  ElevenLabsUpdateWhatsAppAccountParsedRequest,
   ElevenLabsCreateVoiceFromPreviewRequest,
   ElevenLabsCreateVoiceFromPreviewRequestInput,
   ElevenLabsCreateVoiceFromPreviewParsedRequest,
@@ -3071,6 +3099,11 @@ export type ElevenLabsUpdatePhoneNumberResponse = ElevenLabsPhoneNumber;
 // DELETE returns an arbitrary success body; surface it as an open record.
 export type ElevenLabsDeletePhoneNumberResponse = Record<string, unknown>;
 
+export type ElevenLabsGetPhoneNumberSipMessagesResponse =
+  ElevenLabsGetConversationSipMessagesResponse;
+
+export type ElevenLabsRegisterTwilioCallResponse = string;
+
 export interface ElevenLabsTwilioOutboundCallResponse {
   success: boolean;
   message: string;
@@ -3084,6 +3117,51 @@ export interface ElevenLabsSipTrunkOutboundCallResponse {
   conversation_id?: string | null;
   sip_call_id?: string | null;
 }
+
+export interface ElevenLabsExotelOutboundCallResponse {
+  success: boolean;
+  message: string;
+  conversation_id: string | null;
+  callSid: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsWhatsAppOutboundCallResponse {
+  success: boolean;
+  message: string;
+  conversation_id: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsWhatsAppOutboundMessageResponse {
+  conversation_id: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsWhatsAppAccount {
+  business_account_id: string;
+  phone_number_id: string;
+  business_account_name: string;
+  phone_number_name: string;
+  phone_number: string;
+  assigned_agent_id?: string | null;
+  enable_messaging?: boolean;
+  enable_audio_message_response?: boolean;
+  assigned_agent_name: string | null;
+  is_token_expired?: boolean;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListWhatsAppAccountsResponse {
+  items: ElevenLabsWhatsAppAccount[];
+  [key: string]: unknown;
+}
+
+export type ElevenLabsGetWhatsAppAccountResponse = ElevenLabsWhatsAppAccount;
+
+export type ElevenLabsUpdateWhatsAppAccountResponse = Record<string, unknown>;
+
+export type ElevenLabsDeleteWhatsAppAccountResponse = Record<string, unknown>;
 
 // -- Method interfaces -------------------------------------------------------
 
@@ -5162,6 +5240,23 @@ export interface ElevenLabsDeletePhoneNumberMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsGetPhoneNumberSipMessagesMethod {
+  (
+    phoneNumberId: string,
+    req?: ElevenLabsGetPhoneNumberSipMessagesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetPhoneNumberSipMessagesResponse>;
+  schema: z.ZodType<ElevenLabsGetPhoneNumberSipMessagesRequest>;
+}
+
+export interface ElevenLabsRegisterTwilioCallMethod {
+  (
+    req: ElevenLabsRegisterTwilioCallRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRegisterTwilioCallResponse>;
+  schema: z.ZodType<ElevenLabsRegisterTwilioCallRequest>;
+}
+
 export interface ElevenLabsTwilioOutboundCallMethod {
   (
     req: ElevenLabsTwilioOutboundCallRequest,
@@ -5176,6 +5271,63 @@ export interface ElevenLabsSipTrunkOutboundCallMethod {
     signal?: AbortSignal
   ): Promise<ElevenLabsSipTrunkOutboundCallResponse>;
   schema: z.ZodType<ElevenLabsSipTrunkOutboundCallRequest>;
+}
+
+export interface ElevenLabsExotelOutboundCallMethod {
+  (
+    req: ElevenLabsExotelOutboundCallRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsExotelOutboundCallResponse>;
+  schema: z.ZodType<ElevenLabsExotelOutboundCallRequest>;
+}
+
+export interface ElevenLabsWhatsAppOutboundCallMethod {
+  (
+    req: ElevenLabsWhatsAppOutboundCallRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWhatsAppOutboundCallResponse>;
+  schema: z.ZodType<ElevenLabsWhatsAppOutboundCallRequest>;
+}
+
+export interface ElevenLabsWhatsAppOutboundMessageMethod {
+  (
+    req: ElevenLabsWhatsAppOutboundMessageRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWhatsAppOutboundMessageResponse>;
+  schema: z.ZodType<ElevenLabsWhatsAppOutboundMessageRequest>;
+}
+
+export interface ElevenLabsListWhatsAppAccountsMethod {
+  (
+    req?: ElevenLabsListWhatsAppAccountsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListWhatsAppAccountsResponse>;
+  schema: z.ZodType<ElevenLabsListWhatsAppAccountsRequest>;
+}
+
+export interface ElevenLabsGetWhatsAppAccountMethod {
+  (
+    phoneNumberId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetWhatsAppAccountResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateWhatsAppAccountMethod {
+  (
+    phoneNumberId: string,
+    req: ElevenLabsUpdateWhatsAppAccountRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateWhatsAppAccountResponse>;
+  schema: z.ZodType<ElevenLabsUpdateWhatsAppAccountRequest>;
+}
+
+export interface ElevenLabsDeleteWhatsAppAccountMethod {
+  (
+    phoneNumberId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteWhatsAppAccountResponse>;
+  schema: undefined;
 }
 
 // -- History methods ---------------------------------------------------------
@@ -5406,14 +5558,32 @@ export interface ElevenLabsConvaiPhoneNumbersNamespace {
   get: ElevenLabsGetPhoneNumberMethod;
   update: ElevenLabsUpdatePhoneNumberMethod;
   delete: ElevenLabsDeletePhoneNumberMethod;
+  sipMessages: ElevenLabsGetPhoneNumberSipMessagesMethod;
 }
 
 export interface ElevenLabsConvaiTwilioNamespace {
   outboundCall: ElevenLabsTwilioOutboundCallMethod;
+  registerCall: ElevenLabsRegisterTwilioCallMethod;
 }
 
 export interface ElevenLabsConvaiSipTrunkNamespace {
   outboundCall: ElevenLabsSipTrunkOutboundCallMethod;
+}
+
+export interface ElevenLabsConvaiExotelNamespace {
+  outboundCall: ElevenLabsExotelOutboundCallMethod;
+}
+
+export interface ElevenLabsConvaiWhatsAppNamespace {
+  outboundCall: ElevenLabsWhatsAppOutboundCallMethod;
+  outboundMessage: ElevenLabsWhatsAppOutboundMessageMethod;
+}
+
+export interface ElevenLabsConvaiWhatsAppAccountsNamespace {
+  list: ElevenLabsListWhatsAppAccountsMethod;
+  get: ElevenLabsGetWhatsAppAccountMethod;
+  update: ElevenLabsUpdateWhatsAppAccountMethod;
+  delete: ElevenLabsDeleteWhatsAppAccountMethod;
 }
 
 export interface ElevenLabsConvaiAgentKnowledgeBaseNamespace {
@@ -5448,6 +5618,9 @@ export interface ElevenLabsConvaiNamespace {
   phoneNumbers: ElevenLabsConvaiPhoneNumbersNamespace;
   twilio: ElevenLabsConvaiTwilioNamespace;
   sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
+  exotel: ElevenLabsConvaiExotelNamespace;
+  whatsapp: ElevenLabsConvaiWhatsAppNamespace;
+  whatsappAccounts: ElevenLabsConvaiWhatsAppAccountsNamespace;
 }
 
 export interface ElevenLabsUserNamespace extends ElevenLabsGetUserMethod {
@@ -5747,6 +5920,11 @@ export interface ElevenLabsPostConvaiPhoneNumbersNamespace {
   create: ElevenLabsCreatePhoneNumberMethod;
 }
 
+export interface ElevenLabsPostConvaiWhatsAppNamespace {
+  outboundCall: ElevenLabsWhatsAppOutboundCallMethod;
+  outboundMessage: ElevenLabsWhatsAppOutboundMessageMethod;
+}
+
 export interface ElevenLabsPostConvaiAgentNamespace {
   llmUsage: {
     calculate: ElevenLabsCalculateAgentLlmUsageMethod;
@@ -5766,6 +5944,8 @@ export interface ElevenLabsPostConvaiNamespace {
   phoneNumbers: ElevenLabsPostConvaiPhoneNumbersNamespace;
   twilio: ElevenLabsConvaiTwilioNamespace;
   sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
+  exotel: ElevenLabsConvaiExotelNamespace;
+  whatsapp: ElevenLabsPostConvaiWhatsAppNamespace;
 }
 
 export interface ElevenLabsPostV1Namespace {
@@ -5871,6 +6051,10 @@ export interface ElevenLabsPatchConvaiPhoneNumbersNamespace {
   update: ElevenLabsUpdatePhoneNumberMethod;
 }
 
+export interface ElevenLabsPatchConvaiWhatsAppAccountsNamespace {
+  update: ElevenLabsUpdateWhatsAppAccountMethod;
+}
+
 export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
   agentTesting: ElevenLabsPatchConvaiAgentTestingNamespace;
@@ -5878,6 +6062,7 @@ export interface ElevenLabsPatchConvaiNamespace {
   mcpServers: ElevenLabsPatchConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPatchConvaiKnowledgeBaseNamespace;
   phoneNumbers: ElevenLabsPatchConvaiPhoneNumbersNamespace;
+  whatsappAccounts: ElevenLabsPatchConvaiWhatsAppAccountsNamespace;
 }
 
 export interface ElevenLabsPatchV1Namespace {
@@ -5989,6 +6174,12 @@ export interface ElevenLabsGetConvaiBatchCallingNamespace {
 export interface ElevenLabsGetConvaiPhoneNumbersNamespace {
   list: ElevenLabsListPhoneNumbersMethod;
   get: ElevenLabsGetPhoneNumberMethod;
+  sipMessages: ElevenLabsGetPhoneNumberSipMessagesMethod;
+}
+
+export interface ElevenLabsGetConvaiWhatsAppAccountsNamespace {
+  list: ElevenLabsListWhatsAppAccountsMethod;
+  get: ElevenLabsGetWhatsAppAccountMethod;
 }
 
 export interface ElevenLabsGetConvaiAgentNamespace {
@@ -6014,6 +6205,7 @@ export interface ElevenLabsGetConvaiNamespace {
   conversation: ElevenLabsGetConvaiConversationNamespace;
   batchCalling: ElevenLabsGetConvaiBatchCallingNamespace;
   phoneNumbers: ElevenLabsGetConvaiPhoneNumbersNamespace;
+  whatsappAccounts: ElevenLabsGetConvaiWhatsAppAccountsNamespace;
 }
 
 export interface ElevenLabsGetV1Namespace {
@@ -6112,6 +6304,10 @@ export interface ElevenLabsDeleteConvaiPhoneNumbersNamespace {
   delete: ElevenLabsDeletePhoneNumberMethod;
 }
 
+export interface ElevenLabsDeleteConvaiWhatsAppAccountsNamespace {
+  delete: ElevenLabsDeleteWhatsAppAccountMethod;
+}
+
 export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   agentTesting: ElevenLabsDeleteConvaiAgentTestingNamespace;
@@ -6121,6 +6317,7 @@ export interface ElevenLabsDeleteConvaiNamespace {
   conversations: ElevenLabsDeleteConvaiConversationsNamespace;
   batchCalling: ElevenLabsDeleteConvaiBatchCallingNamespace;
   phoneNumbers: ElevenLabsDeleteConvaiPhoneNumbersNamespace;
+  whatsappAccounts: ElevenLabsDeleteConvaiWhatsAppAccountsNamespace;
 }
 
 export interface ElevenLabsDeleteV1Namespace {

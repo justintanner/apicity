@@ -263,10 +263,26 @@ import {
   ElevenLabsUpdatePhoneNumberRequest,
   ElevenLabsUpdatePhoneNumberResponse,
   ElevenLabsDeletePhoneNumberResponse,
+  ElevenLabsGetPhoneNumberSipMessagesRequest,
+  ElevenLabsGetPhoneNumberSipMessagesResponse,
+  ElevenLabsRegisterTwilioCallRequest,
+  ElevenLabsRegisterTwilioCallResponse,
   ElevenLabsTwilioOutboundCallRequest,
   ElevenLabsTwilioOutboundCallResponse,
   ElevenLabsSipTrunkOutboundCallRequest,
   ElevenLabsSipTrunkOutboundCallResponse,
+  ElevenLabsExotelOutboundCallRequest,
+  ElevenLabsExotelOutboundCallResponse,
+  ElevenLabsWhatsAppOutboundCallRequest,
+  ElevenLabsWhatsAppOutboundCallResponse,
+  ElevenLabsWhatsAppOutboundMessageRequest,
+  ElevenLabsWhatsAppOutboundMessageResponse,
+  ElevenLabsListWhatsAppAccountsRequest,
+  ElevenLabsListWhatsAppAccountsResponse,
+  ElevenLabsGetWhatsAppAccountResponse,
+  ElevenLabsUpdateWhatsAppAccountRequest,
+  ElevenLabsUpdateWhatsAppAccountResponse,
+  ElevenLabsDeleteWhatsAppAccountResponse,
   ElevenLabsCreateVoiceFromPreviewRequest,
   ElevenLabsVoiceDesignRequest,
   ElevenLabsVoicePreviewsResponse,
@@ -457,8 +473,15 @@ import {
   ElevenLabsCreatePhoneNumberRequestSchema,
   ElevenLabsListPhoneNumbersRequestSchema,
   ElevenLabsUpdatePhoneNumberRequestSchema,
+  ElevenLabsGetPhoneNumberSipMessagesRequestSchema,
+  ElevenLabsRegisterTwilioCallRequestSchema,
   ElevenLabsTwilioOutboundCallRequestSchema,
   ElevenLabsSipTrunkOutboundCallRequestSchema,
+  ElevenLabsExotelOutboundCallRequestSchema,
+  ElevenLabsWhatsAppOutboundCallRequestSchema,
+  ElevenLabsWhatsAppOutboundMessageRequestSchema,
+  ElevenLabsListWhatsAppAccountsRequestSchema,
+  ElevenLabsUpdateWhatsAppAccountRequestSchema,
   ElevenLabsCreateVoiceFromPreviewRequestSchema,
   ElevenLabsVoiceDesignRequestSchema,
   ElevenLabsVoiceRemixRequestSchema,
@@ -673,6 +696,60 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         },
         signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return await res.text();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
+  async function makeTextBodyRequest(
+    method: "POST",
+    path: string,
+    body?: unknown,
+    signal?: AbortSignal
+  ): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        "xi-api-key": opts.apiKey,
+      };
+      const init: RequestInit = {
+        method,
+        headers,
+        signal: controller.signal,
+      };
+      if (body !== undefined) {
+        headers["Content-Type"] = "application/json";
+        init.body = JSON.stringify(body);
+      }
+
+      const res = await doFetch(`${baseURL}${path}`, init);
 
       clearTimeout(timeoutId);
 
@@ -4467,6 +4544,42 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}/sip-messages
+  // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/get-sip-messages
+  const getPhoneNumberSipMessages = Object.assign(
+    async (
+      phoneNumberId: string,
+      req: ElevenLabsGetPhoneNumberSipMessagesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetPhoneNumberSipMessagesResponse> => {
+      return makeJsonRequest<ElevenLabsGetPhoneNumberSipMessagesResponse>(
+        "GET",
+        `/v1/convai/phone-numbers/${encodeURIComponent(phoneNumberId)}/sip-messages`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetPhoneNumberSipMessagesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/twilio/register-call
+  // Docs: https://elevenlabs.io/docs/api-reference/twilio/register-call
+  const registerTwilioCall = Object.assign(
+    async (
+      req: ElevenLabsRegisterTwilioCallRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsRegisterTwilioCallResponse> => {
+      return makeTextBodyRequest(
+        "POST",
+        "/v1/convai/twilio/register-call",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsRegisterTwilioCallRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/twilio/outbound-call
   // Docs: https://elevenlabs.io/docs/api-reference/twilio/outbound-call
   const twilioOutboundCall = Object.assign(
@@ -4499,6 +4612,127 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       );
     },
     { schema: ElevenLabsSipTrunkOutboundCallRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/exotel/outbound-call
+  // Docs: https://elevenlabs.io/docs/api-reference/exotel/outbound-call
+  const exotelOutboundCall = Object.assign(
+    async (
+      req: ElevenLabsExotelOutboundCallRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsExotelOutboundCallResponse> => {
+      return makeJsonRequest<ElevenLabsExotelOutboundCallResponse>(
+        "POST",
+        "/v1/convai/exotel/outbound-call",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsExotelOutboundCallRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/whatsapp/outbound-call
+  // Docs: https://elevenlabs.io/docs/api-reference/whats-app/outbound-call
+  const whatsAppOutboundCall = Object.assign(
+    async (
+      req: ElevenLabsWhatsAppOutboundCallRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsWhatsAppOutboundCallResponse> => {
+      return makeJsonRequest<ElevenLabsWhatsAppOutboundCallResponse>(
+        "POST",
+        "/v1/convai/whatsapp/outbound-call",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsWhatsAppOutboundCallRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/whatsapp/outbound-message
+  // Docs: https://elevenlabs.io/docs/api-reference/whats-app/outbound-message
+  const whatsAppOutboundMessage = Object.assign(
+    async (
+      req: ElevenLabsWhatsAppOutboundMessageRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsWhatsAppOutboundMessageResponse> => {
+      return makeJsonRequest<ElevenLabsWhatsAppOutboundMessageResponse>(
+        "POST",
+        "/v1/convai/whatsapp/outbound-message",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsWhatsAppOutboundMessageRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/whatsapp-accounts
+  // Docs: https://elevenlabs.io/docs/api-reference/whats-app/accounts/list
+  const listWhatsAppAccounts = Object.assign(
+    async (
+      req: ElevenLabsListWhatsAppAccountsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListWhatsAppAccountsResponse> => {
+      return makeJsonRequest<ElevenLabsListWhatsAppAccountsResponse>(
+        "GET",
+        "/v1/convai/whatsapp-accounts",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListWhatsAppAccountsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}
+  // Docs: https://elevenlabs.io/docs/api-reference/whats-app/accounts/get
+  const getWhatsAppAccount = Object.assign(
+    async (
+      phoneNumberId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetWhatsAppAccountResponse> => {
+      return makeJsonRequest<ElevenLabsGetWhatsAppAccountResponse>(
+        "GET",
+        `/v1/convai/whatsapp-accounts/${encodeURIComponent(phoneNumberId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}
+  // Docs: https://elevenlabs.io/docs/api-reference/whats-app/accounts/update
+  const updateWhatsAppAccount = Object.assign(
+    async (
+      phoneNumberId: string,
+      req: ElevenLabsUpdateWhatsAppAccountRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateWhatsAppAccountResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsUpdateWhatsAppAccountResponse>(
+        "PATCH",
+        `/v1/convai/whatsapp-accounts/${encodeURIComponent(phoneNumberId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateWhatsAppAccountRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}
+  // Docs: https://elevenlabs.io/docs/api-reference/whats-app/accounts/delete
+  const deleteWhatsAppAccount = Object.assign(
+    async (
+      phoneNumberId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteWhatsAppAccountResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteWhatsAppAccountResponse>(
+        "DELETE",
+        `/v1/convai/whatsapp-accounts/${encodeURIComponent(phoneNumberId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
   );
 
   const convaiAgentBranches = Object.assign(listAgentBranches, {
@@ -5904,9 +6138,24 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     get: getPhoneNumber,
     update: updatePhoneNumber,
     delete: deletePhoneNumber,
+    sipMessages: getPhoneNumberSipMessages,
   };
-  const convaiTwilio = { outboundCall: twilioOutboundCall };
+  const convaiTwilio = {
+    outboundCall: twilioOutboundCall,
+    registerCall: registerTwilioCall,
+  };
   const convaiSipTrunk = { outboundCall: sipTrunkOutboundCall };
+  const convaiExotel = { outboundCall: exotelOutboundCall };
+  const convaiWhatsApp = {
+    outboundCall: whatsAppOutboundCall,
+    outboundMessage: whatsAppOutboundMessage,
+  };
+  const convaiWhatsAppAccounts = {
+    list: listWhatsAppAccounts,
+    get: getWhatsAppAccount,
+    update: updateWhatsAppAccount,
+    delete: deleteWhatsAppAccount,
+  };
   const convai = {
     agents: convaiAgents,
     agent: {
@@ -5925,6 +6174,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     phoneNumbers: convaiPhoneNumbers,
     twilio: convaiTwilio,
     sipTrunk: convaiSipTrunk,
+    exotel: convaiExotel,
+    whatsapp: convaiWhatsApp,
+    whatsappAccounts: convaiWhatsAppAccounts,
   };
 
   const user = Object.assign(getUser, {
@@ -6109,6 +6361,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       phoneNumbers: { create: createPhoneNumber },
       twilio: convaiTwilio,
       sipTrunk: convaiSipTrunk,
+      exotel: convaiExotel,
+      whatsapp: convaiWhatsApp,
     },
     history: {
       download: downloadHistory,
@@ -6142,6 +6396,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         updateFile: updateKnowledgeBaseFileDocument,
       },
       phoneNumbers: { update: updatePhoneNumber },
+      whatsappAccounts: { update: updateWhatsAppAccount },
     },
   };
   const putV1 = {
@@ -6202,6 +6457,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         tags: { unassign: unassignConversationTag },
       },
       phoneNumbers: { delete: deletePhoneNumber },
+      whatsappAccounts: { delete: deleteWhatsAppAccount },
     },
     history: {
       delete: deleteHistoryItem,
@@ -6355,6 +6611,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           phoneNumbers: {
             list: listPhoneNumbers,
             get: getPhoneNumber,
+            sipMessages: getPhoneNumberSipMessages,
+          },
+          whatsappAccounts: {
+            list: listWhatsAppAccounts,
+            get: getWhatsAppAccount,
           },
         },
         history: {

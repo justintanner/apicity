@@ -2854,6 +2854,50 @@ export type ElevenLabsUpdatePhoneNumberParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// GET /v1/convai/phone-numbers/:phone_number_id/sip-messages
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetPhoneNumberSipMessagesRequestSchema =
+  ElevenLabsGetConversationSipMessagesRequestSchema;
+
+export type ElevenLabsGetPhoneNumberSipMessagesRequest = z.input<
+  typeof ElevenLabsGetPhoneNumberSipMessagesRequestSchema
+>;
+export type ElevenLabsGetPhoneNumberSipMessagesRequestInput =
+  ElevenLabsGetPhoneNumberSipMessagesRequest;
+export type ElevenLabsGetPhoneNumberSipMessagesParsedRequest = z.output<
+  typeof ElevenLabsGetPhoneNumberSipMessagesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/twilio/register-call
+// ---------------------------------------------------------------------------
+
+const ElevenLabsTelephonyDirectionSchema = z.enum(["inbound", "outbound"]);
+
+const ElevenLabsTelephonyCallConfigSchema = z.object({
+  ringing_timeout_secs: z.number().int().min(1).max(999).optional(),
+});
+
+export const ElevenLabsRegisterTwilioCallRequestSchema = z.object({
+  agent_id: z.string(),
+  from_number: z.string(),
+  to_number: z.string(),
+  direction: ElevenLabsTelephonyDirectionSchema.optional(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsRegisterTwilioCallRequest = z.input<
+  typeof ElevenLabsRegisterTwilioCallRequestSchema
+>;
+export type ElevenLabsRegisterTwilioCallRequestInput =
+  ElevenLabsRegisterTwilioCallRequest;
+export type ElevenLabsRegisterTwilioCallParsedRequest = z.output<
+  typeof ElevenLabsRegisterTwilioCallRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/convai/twilio/outbound-call
 // ---------------------------------------------------------------------------
 
@@ -2898,6 +2942,167 @@ export type ElevenLabsSipTrunkOutboundCallRequestInput =
   ElevenLabsSipTrunkOutboundCallRequest;
 export type ElevenLabsSipTrunkOutboundCallParsedRequest = z.output<
   typeof ElevenLabsSipTrunkOutboundCallRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/exotel/outbound-call
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsExotelOutboundCallRequestSchema = z.object({
+  agent_id: z.string(),
+  agent_phone_number_id: z.string(),
+  to_number: z.string(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+  telephony_call_config:
+    ElevenLabsTelephonyCallConfigSchema.nullable().optional(),
+});
+
+export type ElevenLabsExotelOutboundCallRequest = z.input<
+  typeof ElevenLabsExotelOutboundCallRequestSchema
+>;
+export type ElevenLabsExotelOutboundCallRequestInput =
+  ElevenLabsExotelOutboundCallRequest;
+export type ElevenLabsExotelOutboundCallParsedRequest = z.output<
+  typeof ElevenLabsExotelOutboundCallRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/whatsapp/outbound-call
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsWhatsAppOutboundCallRequestSchema = z.object({
+  whatsapp_phone_number_id: z.string(),
+  whatsapp_user_id: z.string(),
+  whatsapp_call_permission_request_template_name: z.string(),
+  whatsapp_call_permission_request_template_language_code: z.string(),
+  agent_id: z.string(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsWhatsAppOutboundCallRequest = z.input<
+  typeof ElevenLabsWhatsAppOutboundCallRequestSchema
+>;
+export type ElevenLabsWhatsAppOutboundCallRequestInput =
+  ElevenLabsWhatsAppOutboundCallRequest;
+export type ElevenLabsWhatsAppOutboundCallParsedRequest = z.output<
+  typeof ElevenLabsWhatsAppOutboundCallRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/whatsapp/outbound-message
+// ---------------------------------------------------------------------------
+
+const ElevenLabsWhatsAppTemplateTextParamSchema = z.object({
+  parameter_name: z.string().nullable().optional(),
+  type: z.literal("text").optional(),
+  text: z.string(),
+});
+
+const ElevenLabsWhatsAppTemplateImageParamSchema = z.object({
+  type: z.literal("image").optional(),
+  image: z.object({
+    link: z.string(),
+  }),
+});
+
+const ElevenLabsWhatsAppTemplateDocumentParamSchema = z.object({
+  type: z.literal("document").optional(),
+  document: z.object({
+    link: z.string(),
+    filename: z.string().nullable().optional(),
+  }),
+});
+
+const ElevenLabsWhatsAppTemplateLocationParamSchema = z.object({
+  type: z.literal("location").optional(),
+  location: z.object({
+    latitude: z.string(),
+    longitude: z.string(),
+    name: z.string(),
+    address: z.string(),
+  }),
+});
+
+const ElevenLabsWhatsAppTemplateHeaderParamSchema = z.union([
+  ElevenLabsWhatsAppTemplateTextParamSchema,
+  ElevenLabsWhatsAppTemplateImageParamSchema,
+  ElevenLabsWhatsAppTemplateDocumentParamSchema,
+  ElevenLabsWhatsAppTemplateLocationParamSchema,
+]);
+
+const ElevenLabsWhatsAppTemplateComponentSchema = z.union([
+  z.object({
+    type: z.literal("header").optional(),
+    parameters: z.array(ElevenLabsWhatsAppTemplateHeaderParamSchema),
+  }),
+  z.object({
+    type: z.literal("body").optional(),
+    parameters: z.array(ElevenLabsWhatsAppTemplateTextParamSchema),
+  }),
+  z.object({
+    type: z.literal("button").optional(),
+    parameters: z.array(ElevenLabsWhatsAppTemplateTextParamSchema),
+    index: z.number().int(),
+    sub_type: z.string(),
+  }),
+]);
+
+export const ElevenLabsWhatsAppOutboundMessageRequestSchema = z.object({
+  whatsapp_phone_number_id: z.string(),
+  whatsapp_user_id: z.string(),
+  template_name: z.string(),
+  template_language_code: z.string(),
+  template_params: z.array(ElevenLabsWhatsAppTemplateComponentSchema),
+  agent_id: z.string(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsWhatsAppOutboundMessageRequest = z.input<
+  typeof ElevenLabsWhatsAppOutboundMessageRequestSchema
+>;
+export type ElevenLabsWhatsAppOutboundMessageRequestInput =
+  ElevenLabsWhatsAppOutboundMessageRequest;
+export type ElevenLabsWhatsAppOutboundMessageParsedRequest = z.output<
+  typeof ElevenLabsWhatsAppOutboundMessageRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/whatsapp-accounts
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListWhatsAppAccountsRequestSchema = z.object({
+  agent_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListWhatsAppAccountsRequest = z.input<
+  typeof ElevenLabsListWhatsAppAccountsRequestSchema
+>;
+export type ElevenLabsListWhatsAppAccountsRequestInput =
+  ElevenLabsListWhatsAppAccountsRequest;
+export type ElevenLabsListWhatsAppAccountsParsedRequest = z.output<
+  typeof ElevenLabsListWhatsAppAccountsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/whatsapp-accounts/:phone_number_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateWhatsAppAccountRequestSchema = z.object({
+  assigned_agent_id: z.string().nullable().optional(),
+  enable_messaging: z.boolean().nullable().optional(),
+  enable_audio_message_response: z.boolean().nullable().optional(),
+});
+
+export type ElevenLabsUpdateWhatsAppAccountRequest = z.input<
+  typeof ElevenLabsUpdateWhatsAppAccountRequestSchema
+>;
+export type ElevenLabsUpdateWhatsAppAccountRequestInput =
+  ElevenLabsUpdateWhatsAppAccountRequest;
+export type ElevenLabsUpdateWhatsAppAccountParsedRequest = z.output<
+  typeof ElevenLabsUpdateWhatsAppAccountRequestSchema
 >;
 
 // ---------------------------------------------------------------------------

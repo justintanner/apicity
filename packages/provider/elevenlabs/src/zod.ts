@@ -82,6 +82,160 @@ export type ElevenLabsGetVoiceParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// GET /v1/voices
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListV1VoicesRequestSchema = z.object({
+  show_legacy: z.boolean().nullable().optional(),
+});
+
+export type ElevenLabsListV1VoicesRequest = z.input<
+  typeof ElevenLabsListV1VoicesRequestSchema
+>;
+export type ElevenLabsListV1VoicesRequestInput = ElevenLabsListV1VoicesRequest;
+export type ElevenLabsListV1VoicesParsedRequest = z.output<
+  typeof ElevenLabsListV1VoicesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/voices/add
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAddVoiceRequestSchema = z.object({
+  name: z.string(),
+  files: z.array(z.custom<Blob>((value) => value instanceof Blob)).min(1),
+  remove_background_noise: z.boolean().optional(),
+  description: z.string().nullable().optional(),
+  labels: z
+    .union([z.record(z.string(), z.string()), z.string()])
+    .nullable()
+    .optional(),
+});
+
+export type ElevenLabsAddVoiceRequest = z.input<
+  typeof ElevenLabsAddVoiceRequestSchema
+>;
+export type ElevenLabsAddVoiceRequestInput = ElevenLabsAddVoiceRequest;
+export type ElevenLabsAddVoiceParsedRequest = z.output<
+  typeof ElevenLabsAddVoiceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/voices/:voice_id/edit
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsEditVoiceRequestSchema = z.object({
+  name: z.string(),
+  files: z.array(z.custom<Blob>((value) => value instanceof Blob)).optional(),
+  remove_background_noise: z.boolean().optional(),
+  description: z.string().nullable().optional(),
+  labels: z
+    .union([z.record(z.string(), z.string()), z.string()])
+    .nullable()
+    .optional(),
+  moderate_metadata: z.boolean().optional(),
+});
+
+export type ElevenLabsEditVoiceRequest = z.input<
+  typeof ElevenLabsEditVoiceRequestSchema
+>;
+export type ElevenLabsEditVoiceRequestInput = ElevenLabsEditVoiceRequest;
+export type ElevenLabsEditVoiceParsedRequest = z.output<
+  typeof ElevenLabsEditVoiceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/voices/:voice_id/settings/edit
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsEditVoiceSettingsRequestSchema = z.object({
+  stability: z.number().nullable().optional(),
+  use_speaker_boost: z.boolean().nullable().optional(),
+  similarity_boost: z.number().nullable().optional(),
+  style: z.number().nullable().optional(),
+  speed: z.number().nullable().optional(),
+});
+
+export type ElevenLabsEditVoiceSettingsRequest = z.input<
+  typeof ElevenLabsEditVoiceSettingsRequestSchema
+>;
+export type ElevenLabsEditVoiceSettingsRequestInput =
+  ElevenLabsEditVoiceSettingsRequest;
+export type ElevenLabsEditVoiceSettingsParsedRequest = z.output<
+  typeof ElevenLabsEditVoiceSettingsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/voices/add/:public_user_id/:voice_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAddSharedVoiceRequestSchema = z.object({
+  new_name: z.string(),
+  bookmarked: z.boolean().optional(),
+});
+
+export type ElevenLabsAddSharedVoiceRequest = z.input<
+  typeof ElevenLabsAddSharedVoiceRequestSchema
+>;
+export type ElevenLabsAddSharedVoiceRequestInput =
+  ElevenLabsAddSharedVoiceRequest;
+export type ElevenLabsAddSharedVoiceParsedRequest = z.output<
+  typeof ElevenLabsAddSharedVoiceRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/shared-voices
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSharedVoicesRequestSchema = z.object({
+  page_size: z.number().int().optional(),
+  category: z.string().nullable().optional(),
+  gender: z.string().nullable().optional(),
+  age: z.string().nullable().optional(),
+  accent: z.string().nullable().optional(),
+  language: z.string().nullable().optional(),
+  locale: z.string().nullable().optional(),
+  search: z.string().nullable().optional(),
+  use_cases: z.array(z.string()).nullable().optional(),
+  descriptives: z.array(z.string()).nullable().optional(),
+  featured: z.boolean().optional(),
+  min_notice_period_days: z.number().int().nullable().optional(),
+  include_custom_rates: z.boolean().nullable().optional(),
+  include_live_moderated: z.boolean().nullable().optional(),
+  reader_app_enabled: z.boolean().optional(),
+  owner_id: z.string().nullable().optional(),
+  sort: z.string().nullable().optional(),
+  page: z.number().int().optional(),
+});
+
+export type ElevenLabsSharedVoicesRequest = z.input<
+  typeof ElevenLabsSharedVoicesRequestSchema
+>;
+export type ElevenLabsSharedVoicesRequestInput = ElevenLabsSharedVoicesRequest;
+export type ElevenLabsSharedVoicesParsedRequest = z.output<
+  typeof ElevenLabsSharedVoicesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/similar-voices
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSimilarVoicesRequestSchema = z.object({
+  audio_file: z.custom<Blob>((value) => value instanceof Blob).optional(),
+  similarity_threshold: z.number().nullable().optional(),
+  top_k: z.number().int().nullable().optional(),
+});
+
+export type ElevenLabsSimilarVoicesRequest = z.input<
+  typeof ElevenLabsSimilarVoicesRequestSchema
+>;
+export type ElevenLabsSimilarVoicesRequestInput =
+  ElevenLabsSimilarVoicesRequest;
+export type ElevenLabsSimilarVoicesParsedRequest = z.output<
+  typeof ElevenLabsSimilarVoicesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/voices/pvc
 // ---------------------------------------------------------------------------
 

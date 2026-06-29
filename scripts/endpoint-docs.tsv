@@ -537,6 +537,17 @@ elevenlabs	v1.convai.phoneNumbers.update	PATCH	https://api.elevenlabs.io/v1/conv
 elevenlabs	v1.convai.phoneNumbers.delete	DELETE	https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/phone-numbers/delete
 elevenlabs	v1.convai.twilio.outboundCall	POST	https://api.elevenlabs.io/v1/convai/twilio/outbound-call	https://elevenlabs.io/docs/api-reference/twilio/outbound-call
 elevenlabs	v1.convai.sipTrunk.outboundCall	POST	https://api.elevenlabs.io/v1/convai/sip-trunk/outbound-call	https://elevenlabs.io/docs/api-reference/sip-trunk/outbound-call
+elevenlabs	v1.voices.list	GET	https://api.elevenlabs.io/v1/voices	https://elevenlabs.io/docs/api-reference/voices/get-all
+elevenlabs	v1.voices.delete	DELETE	https://api.elevenlabs.io/v1/voices/{voiceId}	https://elevenlabs.io/docs/api-reference/voices/delete
+elevenlabs	v1.voices.add	POST	https://api.elevenlabs.io/v1/voices/add	https://elevenlabs.io/docs/api-reference/voices/ivc/create
+elevenlabs	v1.voices.add.share	POST	https://api.elevenlabs.io/v1/voices/add/{publicUserId}/{voiceId}	https://elevenlabs.io/docs/api-reference/voices/share
+elevenlabs	v1.voices.edit	POST	https://api.elevenlabs.io/v1/voices/{voiceId}/edit	https://elevenlabs.io/docs/api-reference/voices/edit
+elevenlabs	v1.voices.settings.edit	POST	https://api.elevenlabs.io/v1/voices/{voiceId}/settings/edit	https://elevenlabs.io/docs/api-reference/voices/settings/update
+elevenlabs	v1.voices.settings.default	GET	https://api.elevenlabs.io/v1/voices/settings/default	https://elevenlabs.io/docs/api-reference/voices/settings/get-default
+elevenlabs	v1.voices.samples.delete	DELETE	https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}	https://elevenlabs.io/docs/api-reference/samples/delete
+elevenlabs	v1.voices.samples.audio	GET	https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}/audio	https://elevenlabs.io/docs/api-reference/samples/audio
+elevenlabs	v1.sharedVoices	GET	https://api.elevenlabs.io/v1/shared-voices	https://elevenlabs.io/docs/api-reference/voices/get-shared
+elevenlabs	v1.similarVoices	POST	https://api.elevenlabs.io/v1/similar-voices	https://elevenlabs.io/docs/api-reference/voices/find-similar-voices
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

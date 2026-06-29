@@ -92,6 +92,20 @@ import {
   ElevenLabsVoiceDesignRequest,
   ElevenLabsVoicePreviewsResponse,
   ElevenLabsVoiceRemixRequest,
+  ElevenLabsListV1VoicesRequest,
+  ElevenLabsListV1VoicesResponse,
+  ElevenLabsDeleteVoiceResponse,
+  ElevenLabsAddVoiceRequest,
+  ElevenLabsAddVoiceResponse,
+  ElevenLabsEditVoiceRequest,
+  ElevenLabsEditVoiceResponse,
+  ElevenLabsEditVoiceSettingsRequest,
+  ElevenLabsEditVoiceSettingsResponse,
+  ElevenLabsAddSharedVoiceRequest,
+  ElevenLabsAddSharedVoiceResponse,
+  ElevenLabsSharedVoicesRequest,
+  ElevenLabsSimilarVoicesRequest,
+  ElevenLabsLibraryVoicesResponse,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -136,6 +150,13 @@ import {
   ElevenLabsCreateVoiceFromPreviewRequestSchema,
   ElevenLabsVoiceDesignRequestSchema,
   ElevenLabsVoiceRemixRequestSchema,
+  ElevenLabsListV1VoicesRequestSchema,
+  ElevenLabsAddVoiceRequestSchema,
+  ElevenLabsEditVoiceRequestSchema,
+  ElevenLabsEditVoiceSettingsRequestSchema,
+  ElevenLabsAddSharedVoiceRequestSchema,
+  ElevenLabsSharedVoicesRequestSchema,
+  ElevenLabsSimilarVoicesRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -686,6 +707,225 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       );
     },
     { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/voices
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/get-all
+  const listV1Voices = Object.assign(
+    async (
+      req: ElevenLabsListV1VoicesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListV1VoicesResponse> => {
+      return makeJsonRequest<ElevenLabsListV1VoicesResponse>(
+        "GET",
+        "/v1/voices",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListV1VoicesRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/voices/{voiceId}
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/delete
+  const deleteVoice = Object.assign(
+    async (
+      voiceId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteVoiceResponse> => {
+      return makeJsonRequest<ElevenLabsDeleteVoiceResponse>(
+        "DELETE",
+        `/v1/voices/${encodeURIComponent(voiceId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/voices/add
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/ivc/create
+  const addVoice = async (
+    req: ElevenLabsAddVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddVoiceResponse> => {
+    const { files, ...rest } = req;
+    const form = new FormData();
+    for (const file of files) {
+      form.append("files", file);
+    }
+    for (const [key, value] of Object.entries(rest)) {
+      appendFormField(form, key, value);
+    }
+
+    return makeMultipartJsonRequest<ElevenLabsAddVoiceResponse>(
+      "/v1/voices/add",
+      form,
+      undefined,
+      signal
+    );
+  };
+
+  // POST https://api.elevenlabs.io/v1/voices/add/{publicUserId}/{voiceId}
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/share
+  const addSharedVoice = Object.assign(
+    async (
+      publicUserId: string,
+      voiceId: string,
+      req: ElevenLabsAddSharedVoiceRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAddSharedVoiceResponse> => {
+      return makeJsonRequest<ElevenLabsAddSharedVoiceResponse>(
+        "POST",
+        `/v1/voices/add/${encodeURIComponent(
+          publicUserId
+        )}/${encodeURIComponent(voiceId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsAddSharedVoiceRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/voices/{voiceId}/edit
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/edit
+  const editVoice = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsEditVoiceRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsEditVoiceResponse> => {
+      const { files, ...rest } = req;
+      const form = new FormData();
+      if (files) {
+        for (const file of files) {
+          form.append("files", file);
+        }
+      }
+      for (const [key, value] of Object.entries(rest)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsEditVoiceResponse>(
+        `/v1/voices/${encodeURIComponent(voiceId)}/edit`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsEditVoiceRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/voices/{voiceId}/settings/edit
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/settings/update
+  const editVoiceSettings = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsEditVoiceSettingsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsEditVoiceSettingsResponse> => {
+      return makeJsonRequest<ElevenLabsEditVoiceSettingsResponse>(
+        "POST",
+        `/v1/voices/${encodeURIComponent(voiceId)}/settings/edit`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsEditVoiceSettingsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/voices/settings/default
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/settings/get-default
+  const getDefaultVoiceSettings = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsVoiceSettings> => {
+      return makeJsonRequest<ElevenLabsVoiceSettings>(
+        "GET",
+        "/v1/voices/settings/default",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}
+  // Docs: https://elevenlabs.io/docs/api-reference/samples/delete
+  const deleteVoiceSample = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteVoiceSampleResponse> => {
+      return makeJsonRequest<ElevenLabsDeleteVoiceSampleResponse>(
+        "DELETE",
+        `/v1/voices/${encodeURIComponent(voiceId)}/samples/${encodeURIComponent(
+          sampleId
+        )}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}/audio
+  // Docs: https://elevenlabs.io/docs/api-reference/samples/audio
+  const getVoiceSampleAudio = Object.assign(
+    async (
+      voiceId: string,
+      sampleId: string,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeGetBinaryRequest(
+        `/v1/voices/${encodeURIComponent(voiceId)}/samples/${encodeURIComponent(
+          sampleId
+        )}/audio`,
+        "",
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/shared-voices
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/get-shared
+  const getSharedVoices = Object.assign(
+    async (
+      req: ElevenLabsSharedVoicesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsLibraryVoicesResponse> => {
+      return makeJsonRequest<ElevenLabsLibraryVoicesResponse>(
+        "GET",
+        "/v1/shared-voices",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsSharedVoicesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/similar-voices
+  // Docs: https://elevenlabs.io/docs/api-reference/voices/find-similar-voices
+  const getSimilarVoices = Object.assign(
+    async (
+      req: ElevenLabsSimilarVoicesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsLibraryVoicesResponse> => {
+      const form = new FormData();
+      for (const [key, value] of Object.entries(req)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartJsonRequest<ElevenLabsLibraryVoicesResponse>(
+        "/v1/similar-voices",
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsSimilarVoicesRequestSchema }
   );
 
   // POST https://api.elevenlabs.io/v1/voices/pvc
@@ -2045,8 +2285,25 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       },
     },
   };
+  const v1VoicesAdd = Object.assign(addVoice, {
+    schema: ElevenLabsAddVoiceRequestSchema,
+    share: addSharedVoice,
+  });
+  const v1VoiceSettings = Object.assign(getVoiceSettings, {
+    default: getDefaultVoiceSettings,
+    edit: editVoiceSettings,
+  });
+  const v1VoiceSamples = {
+    delete: deleteVoiceSample,
+    audio: getVoiceSampleAudio,
+  };
   const v1Voices = Object.assign(getVoice, {
-    settings: getVoiceSettings,
+    list: listV1Voices,
+    delete: deleteVoice,
+    add: v1VoicesAdd,
+    edit: editVoice,
+    settings: v1VoiceSettings,
+    samples: v1VoiceSamples,
     pvc: pvcVoices,
   });
   const v2 = {
@@ -2059,7 +2316,13 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToVoice,
     speechToText,
     speechToSpeech,
+    similarVoices: getSimilarVoices,
     voices: {
+      add: v1VoicesAdd,
+      edit: editVoice,
+      settings: {
+        edit: editVoiceSettings,
+      },
       pvc: postPvcVoices,
     },
     workspace,
@@ -2085,6 +2348,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   };
   const deleteV1 = {
     voices: {
+      delete: deleteVoice,
+      samples: {
+        delete: deleteVoiceSample,
+      },
       pvc: {
         samples: {
           delete: deletePvcVoiceSample,
@@ -2102,6 +2369,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const v1 = {
     models,
     voices: v1Voices,
+    sharedVoices: getSharedVoices,
+    similarVoices: getSimilarVoices,
     soundGeneration,
     textToSpeech,
     textToDialogue,
@@ -2122,6 +2391,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       v1: {
         models,
         voices: v1Voices,
+        sharedVoices: getSharedVoices,
         user,
         textToVoice: {
           stream: textToVoiceStream,

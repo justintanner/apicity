@@ -40,6 +40,13 @@ import type {
   ElevenLabsCreateVoiceFromPreviewRequest,
   ElevenLabsVoiceDesignRequest,
   ElevenLabsVoiceRemixRequest,
+  ElevenLabsListV1VoicesRequest,
+  ElevenLabsAddVoiceRequest,
+  ElevenLabsEditVoiceRequest,
+  ElevenLabsEditVoiceSettingsRequest,
+  ElevenLabsAddSharedVoiceRequest,
+  ElevenLabsSharedVoicesRequest,
+  ElevenLabsSimilarVoicesRequest,
 } from "./zod";
 
 export type {
@@ -50,6 +57,27 @@ export type {
   ElevenLabsGetVoiceRequest,
   ElevenLabsGetVoiceRequestInput,
   ElevenLabsGetVoiceParsedRequest,
+  ElevenLabsListV1VoicesRequest,
+  ElevenLabsListV1VoicesRequestInput,
+  ElevenLabsListV1VoicesParsedRequest,
+  ElevenLabsAddVoiceRequest,
+  ElevenLabsAddVoiceRequestInput,
+  ElevenLabsAddVoiceParsedRequest,
+  ElevenLabsEditVoiceRequest,
+  ElevenLabsEditVoiceRequestInput,
+  ElevenLabsEditVoiceParsedRequest,
+  ElevenLabsEditVoiceSettingsRequest,
+  ElevenLabsEditVoiceSettingsRequestInput,
+  ElevenLabsEditVoiceSettingsParsedRequest,
+  ElevenLabsAddSharedVoiceRequest,
+  ElevenLabsAddSharedVoiceRequestInput,
+  ElevenLabsAddSharedVoiceParsedRequest,
+  ElevenLabsSharedVoicesRequest,
+  ElevenLabsSharedVoicesRequestInput,
+  ElevenLabsSharedVoicesParsedRequest,
+  ElevenLabsSimilarVoicesRequest,
+  ElevenLabsSimilarVoicesRequestInput,
+  ElevenLabsSimilarVoicesParsedRequest,
   ElevenLabsListVoicesRequest,
   ElevenLabsListVoicesRequestInput,
   ElevenLabsListVoicesParsedRequest,
@@ -515,6 +543,73 @@ export interface ElevenLabsListVoicesResponse {
   has_more: boolean;
   total_count: number;
   next_page_token?: string | null;
+}
+
+export interface ElevenLabsListV1VoicesResponse {
+  voices: ElevenLabsVoice[];
+}
+
+export interface ElevenLabsDeleteVoiceResponse {
+  status: string;
+}
+
+export interface ElevenLabsAddVoiceResponse {
+  voice_id: string;
+  requires_verification: boolean;
+}
+
+export interface ElevenLabsEditVoiceResponse {
+  status: string;
+}
+
+export interface ElevenLabsEditVoiceSettingsResponse {
+  status: string;
+}
+
+export interface ElevenLabsAddSharedVoiceResponse {
+  voice_id: string;
+}
+
+export interface ElevenLabsLibraryVoice {
+  public_owner_id: string;
+  voice_id: string;
+  date_unix: number;
+  name: string;
+  accent: string;
+  gender: string;
+  age: string;
+  descriptive: string;
+  use_case: string;
+  category: ElevenLabsVoiceCategory;
+  language?: string | null;
+  locale?: string | null;
+  description?: string | null;
+  preview_url?: string | null;
+  usage_character_count_1y: number;
+  usage_character_count_7d: number;
+  play_api_usage_character_count_1y: number;
+  cloned_by_count: number;
+  rate?: number | null;
+  fiat_rate?: number | null;
+  free_users_allowed: boolean;
+  live_moderation_enabled: boolean;
+  featured: boolean;
+  verified_languages?: ElevenLabsVerifiedVoiceLanguage[] | null;
+  notice_period?: number | null;
+  instagram_username?: string | null;
+  twitter_username?: string | null;
+  youtube_username?: string | null;
+  tiktok_username?: string | null;
+  image_url?: string | null;
+  is_added_by_user?: boolean | null;
+  is_bookmarked?: boolean | null;
+}
+
+export interface ElevenLabsLibraryVoicesResponse {
+  voices: ElevenLabsLibraryVoice[];
+  has_more: boolean;
+  total_count?: number;
+  last_sort_id?: string | null;
 }
 
 export interface ElevenLabsPvcManualVerificationResponse {
@@ -1333,12 +1428,114 @@ export interface ElevenLabsGetVoiceMethod {
     signal?: AbortSignal
   ): Promise<ElevenLabsVoice>;
   schema: z.ZodType<ElevenLabsGetVoiceRequest>;
+  list: ElevenLabsListV1VoicesMethod;
+  delete: ElevenLabsDeleteVoiceMethod;
+  add: ElevenLabsAddVoiceMethod;
+  edit: ElevenLabsEditVoiceMethod;
   settings: ElevenLabsGetVoiceSettingsMethod;
+  samples: ElevenLabsVoiceSamplesNamespace;
   pvc: ElevenLabsPvcVoiceNamespace;
 }
 
 export interface ElevenLabsGetVoiceSettingsMethod {
   (voiceId: string, signal?: AbortSignal): Promise<ElevenLabsVoiceSettings>;
+  default: ElevenLabsGetDefaultVoiceSettingsMethod;
+  edit: ElevenLabsEditVoiceSettingsMethod;
+}
+
+export interface ElevenLabsListV1VoicesMethod {
+  (
+    req?: ElevenLabsListV1VoicesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListV1VoicesResponse>;
+  schema: z.ZodType<ElevenLabsListV1VoicesRequest>;
+}
+
+export interface ElevenLabsDeleteVoiceMethod {
+  (
+    voiceId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteVoiceResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsAddSharedVoiceMethod {
+  (
+    publicUserId: string,
+    voiceId: string,
+    req: ElevenLabsAddSharedVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddSharedVoiceResponse>;
+  schema: z.ZodType<ElevenLabsAddSharedVoiceRequest>;
+}
+
+export interface ElevenLabsAddVoiceMethod {
+  (
+    req: ElevenLabsAddVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAddVoiceResponse>;
+  schema: z.ZodType<ElevenLabsAddVoiceRequest>;
+  share: ElevenLabsAddSharedVoiceMethod;
+}
+
+export interface ElevenLabsEditVoiceMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsEditVoiceRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsEditVoiceResponse>;
+  schema: z.ZodType<ElevenLabsEditVoiceRequest>;
+}
+
+export interface ElevenLabsEditVoiceSettingsMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsEditVoiceSettingsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsEditVoiceSettingsResponse>;
+  schema: z.ZodType<ElevenLabsEditVoiceSettingsRequest>;
+}
+
+export interface ElevenLabsGetDefaultVoiceSettingsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsVoiceSettings>;
+}
+
+export interface ElevenLabsSharedVoicesMethod {
+  (
+    req?: ElevenLabsSharedVoicesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsLibraryVoicesResponse>;
+  schema: z.ZodType<ElevenLabsSharedVoicesRequest>;
+}
+
+export interface ElevenLabsSimilarVoicesMethod {
+  (
+    req?: ElevenLabsSimilarVoicesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsLibraryVoicesResponse>;
+  schema: z.ZodType<ElevenLabsSimilarVoicesRequest>;
+}
+
+export interface ElevenLabsDeleteVoiceSampleMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteVoiceSampleResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetVoiceSampleAudioMethod {
+  (
+    voiceId: string,
+    sampleId: string,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+}
+
+export interface ElevenLabsVoiceSamplesNamespace {
+  delete: ElevenLabsDeleteVoiceSampleMethod;
+  audio: ElevenLabsGetVoiceSampleAudioMethod;
 }
 
 export interface ElevenLabsPvcVoiceCaptchaMethod {
@@ -1769,6 +1966,8 @@ export type ElevenLabsPvcVoicesNamespace = ElevenLabsPvcVoiceNamespace;
 export interface ElevenLabsV1Namespace {
   models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
+  sharedVoices: ElevenLabsSharedVoicesMethod;
+  similarVoices: ElevenLabsSimilarVoicesMethod;
   soundGeneration: ElevenLabsSoundGenerationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
@@ -1818,12 +2017,20 @@ export interface ElevenLabsPostV1Namespace {
   textToVoice: ElevenLabsTextToVoiceMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
+  similarVoices: ElevenLabsSimilarVoicesMethod;
   voices: ElevenLabsPostV1VoicesNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsPostConvaiNamespace;
 }
 
+export interface ElevenLabsPostV1VoicesSettingsNamespace {
+  edit: ElevenLabsEditVoiceSettingsMethod;
+}
+
 export interface ElevenLabsPostV1VoicesNamespace {
+  add: ElevenLabsAddVoiceMethod;
+  edit: ElevenLabsEditVoiceMethod;
+  settings: ElevenLabsPostV1VoicesSettingsNamespace;
   pvc: ElevenLabsPostV1VoicesPvcNamespace;
 }
 
@@ -1917,6 +2124,7 @@ export interface ElevenLabsGetConvaiNamespace {
 export interface ElevenLabsGetV1Namespace {
   models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
+  sharedVoices: ElevenLabsSharedVoicesMethod;
   user: ElevenLabsUserNamespace;
   textToVoice: ElevenLabsGetV1TextToVoiceNamespace;
   convai: ElevenLabsGetConvaiNamespace;
@@ -1962,6 +2170,10 @@ export interface ElevenLabsDeleteConvaiNamespace {
 
 export interface ElevenLabsDeleteV1Namespace {
   voices: {
+    delete: ElevenLabsDeleteVoiceMethod;
+    samples: {
+      delete: ElevenLabsDeleteVoiceSampleMethod;
+    };
     pvc: {
       samples: {
         delete: ElevenLabsDeletePvcVoiceSampleMethod;

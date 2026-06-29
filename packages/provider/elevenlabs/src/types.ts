@@ -62,6 +62,8 @@ import type {
   ElevenLabsCreateToolRequest,
   ElevenLabsListToolsRequest,
   ElevenLabsUpdateToolRequest,
+  ElevenLabsGetToolDependentAgentsRequest,
+  ElevenLabsGetToolExecutionsRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromFileRequest,
@@ -339,6 +341,12 @@ export type {
   ElevenLabsUpdateToolRequest,
   ElevenLabsUpdateToolRequestInput,
   ElevenLabsUpdateToolParsedRequest,
+  ElevenLabsGetToolDependentAgentsRequest,
+  ElevenLabsGetToolDependentAgentsRequestInput,
+  ElevenLabsGetToolDependentAgentsParsedRequest,
+  ElevenLabsGetToolExecutionsRequest,
+  ElevenLabsGetToolExecutionsRequestInput,
+  ElevenLabsGetToolExecutionsParsedRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestInput,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlParsedRequest,
@@ -2128,6 +2136,45 @@ export interface ElevenLabsListToolsResponse {
 
 // DELETE returns an empty body (HTTP 200/204); we surface it as an empty record.
 export type ElevenLabsDeleteToolResponse = Record<string, unknown>;
+
+export type ElevenLabsToolDependentAgent =
+  ElevenLabsKnowledgeBaseDependentAgent;
+
+export type ElevenLabsToolDependentBranch =
+  ElevenLabsKnowledgeBaseDependentBranch;
+
+export interface ElevenLabsGetToolDependentAgentsResponse {
+  agents: ElevenLabsToolDependentAgent[];
+  branches?: ElevenLabsToolDependentBranch[];
+  has_more: boolean;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsToolExecutionResponse {
+  id: string;
+  tool_id: string;
+  tool_request_id: string;
+  conversation_id: string;
+  agent_id: string;
+  branch_id?: string | null;
+  timestamp: number;
+  latency_secs: number;
+  is_error?: boolean;
+  request_payload?: string | null;
+  response_payload?: string | null;
+  error_message?: string | null;
+  error_type?: string | null;
+  tool_call_details?: Record<string, unknown> | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetToolExecutionsResponse {
+  executions: ElevenLabsToolExecutionResponse[];
+  has_more: boolean;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
 
 // -- Agents Platform — Knowledge Base response shapes ------------------------
 
@@ -4020,6 +4067,24 @@ export interface ElevenLabsDeleteToolMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsGetToolDependentAgentsMethod {
+  (
+    toolId: string,
+    req?: ElevenLabsGetToolDependentAgentsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetToolDependentAgentsResponse>;
+  schema: z.ZodType<ElevenLabsGetToolDependentAgentsRequest>;
+}
+
+export interface ElevenLabsGetToolExecutionsMethod {
+  (
+    toolId: string,
+    req?: ElevenLabsGetToolExecutionsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetToolExecutionsResponse>;
+  schema: z.ZodType<ElevenLabsGetToolExecutionsRequest>;
+}
+
 export interface ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod {
   (
     req: ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
@@ -4503,6 +4568,8 @@ export interface ElevenLabsConvaiToolsNamespace {
   get: ElevenLabsGetToolMethod;
   update: ElevenLabsUpdateToolMethod;
   delete: ElevenLabsDeleteToolMethod;
+  dependentAgents: ElevenLabsGetToolDependentAgentsMethod;
+  executions: ElevenLabsGetToolExecutionsMethod;
 }
 
 export interface ElevenLabsConvaiKnowledgeBaseNamespace {
@@ -5034,6 +5101,8 @@ export interface ElevenLabsGetConvaiAgentsNamespace {
 export interface ElevenLabsGetConvaiToolsNamespace {
   list: ElevenLabsListToolsMethod;
   get: ElevenLabsGetToolMethod;
+  dependentAgents: ElevenLabsGetToolDependentAgentsMethod;
+  executions: ElevenLabsGetToolExecutionsMethod;
 }
 
 export interface ElevenLabsGetConvaiKnowledgeBaseNamespace {

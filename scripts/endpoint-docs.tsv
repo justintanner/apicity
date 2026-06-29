@@ -594,6 +594,8 @@ elevenlabs	v1.convai.tools.list	GET	https://api.elevenlabs.io/v1/convai/tools	ht
 elevenlabs	v1.convai.tools.get	GET	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/get
 elevenlabs	v1.convai.tools.update	PATCH	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/update
 elevenlabs	v1.convai.tools.delete	DELETE	https://api.elevenlabs.io/v1/convai/tools/{toolId}	https://elevenlabs.io/docs/api-reference/tools/delete
+elevenlabs	v1.convai.tools.dependentAgents	GET	https://api.elevenlabs.io/v1/convai/tools/{toolId}/dependent-agents	https://elevenlabs.io/docs/api-reference/tools/get-dependent-agents
+elevenlabs	v1.convai.tools.executions	GET	https://api.elevenlabs.io/v1/convai/tools/{toolId}/executions	https://elevenlabs.io/docs/api-reference/tools/get-executions
 elevenlabs	v1.convai.knowledgeBase.url	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/url	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-url
 elevenlabs	v1.convai.knowledgeBase.text	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/text	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-text
 elevenlabs	v1.convai.knowledgeBase.file	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/file	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-file

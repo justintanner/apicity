@@ -141,6 +141,10 @@ import {
   ElevenLabsToolResponse,
   ElevenLabsUpdateToolRequest,
   ElevenLabsDeleteToolResponse,
+  ElevenLabsGetToolDependentAgentsRequest,
+  ElevenLabsGetToolDependentAgentsResponse,
+  ElevenLabsGetToolExecutionsRequest,
+  ElevenLabsGetToolExecutionsResponse,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlResponse,
   ElevenLabsCreateKnowledgeBaseDocumentFromTextRequest,
@@ -359,6 +363,8 @@ import {
   ElevenLabsCreateToolRequestSchema,
   ElevenLabsListToolsRequestSchema,
   ElevenLabsUpdateToolRequestSchema,
+  ElevenLabsGetToolDependentAgentsRequestSchema,
+  ElevenLabsGetToolExecutionsRequestSchema,
   ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequestSchema,
   ElevenLabsCreateKnowledgeBaseDocumentFromTextRequestSchema,
   ElevenLabsCreateKnowledgeBaseDocumentFromFileRequestSchema,
@@ -4291,6 +4297,44 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/tools/{toolId}/dependent-agents
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/get-dependent-agents
+  const getToolDependentAgents = Object.assign(
+    async (
+      toolId: string,
+      req: ElevenLabsGetToolDependentAgentsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetToolDependentAgentsResponse> => {
+      return makeJsonRequest<ElevenLabsGetToolDependentAgentsResponse>(
+        "GET",
+        `/v1/convai/tools/${encodeURIComponent(toolId)}/dependent-agents`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetToolDependentAgentsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/tools/{toolId}/executions
+  // Docs: https://elevenlabs.io/docs/api-reference/tools/get-executions
+  const getToolExecutions = Object.assign(
+    async (
+      toolId: string,
+      req: ElevenLabsGetToolExecutionsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetToolExecutionsResponse> => {
+      return makeJsonRequest<ElevenLabsGetToolExecutionsResponse>(
+        "GET",
+        `/v1/convai/tools/${encodeURIComponent(toolId)}/executions`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetToolExecutionsRequestSchema }
+  );
+
   // GET https://api.elevenlabs.io/v1/convai/conversations
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/list
   const listConversations = Object.assign(
@@ -4665,6 +4709,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     get: getTool,
     update: updateTool,
     delete: deleteTool,
+    dependentAgents: getToolDependentAgents,
+    executions: getToolExecutions,
   };
 
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/url
@@ -5519,6 +5565,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           tools: {
             list: listTools,
             get: getTool,
+            dependentAgents: getToolDependentAgents,
+            executions: getToolExecutions,
           },
           knowledgeBase: {
             list: listKnowledgeBaseDocuments,

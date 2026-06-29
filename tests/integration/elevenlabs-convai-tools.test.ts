@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import {
   createElevenLabs,
   type ElevenLabsCreateToolRequest,
+  type ElevenLabsGetToolDependentAgentsRequest,
+  type ElevenLabsGetToolExecutionsRequest,
   type ElevenLabsUpdateToolRequest,
 } from "@apicity/elevenlabs";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
@@ -31,6 +33,12 @@ describe("elevenlabs v1.convai.tools", () => {
       provider.v1.convai.tools.list
     );
     expect(provider.get.v1.convai.tools.get).toBe(provider.v1.convai.tools.get);
+    expect(provider.get.v1.convai.tools.dependentAgents).toBe(
+      provider.v1.convai.tools.dependentAgents
+    );
+    expect(provider.get.v1.convai.tools.executions).toBe(
+      provider.v1.convai.tools.executions
+    );
     expect(provider.patch.v1.convai.tools.update).toBe(
       provider.v1.convai.tools.update
     );
@@ -65,11 +73,42 @@ describe("elevenlabs v1.convai.tools", () => {
     expect(fetched.id).toBe(toolId);
     expect(typeof fetched.tool_config).toBe("object");
 
-    // 3. List
+    // 3. List dependencies and executions
+    const dependentAgentsReq: ElevenLabsGetToolDependentAgentsRequest = {
+      page_size: 30,
+    };
+    expect(
+      provider.v1.convai.tools.dependentAgents.schema.safeParse(
+        dependentAgentsReq
+      ).success
+    ).toBe(true);
+    const dependentAgents = await provider.v1.convai.tools.dependentAgents(
+      toolId,
+      dependentAgentsReq
+    );
+    expect(Array.isArray(dependentAgents.agents)).toBe(true);
+    expect(typeof dependentAgents.has_more).toBe("boolean");
+
+    const executionsReq: ElevenLabsGetToolExecutionsRequest = {
+      page_size: 30,
+      is_error: null,
+    };
+    expect(
+      provider.v1.convai.tools.executions.schema.safeParse(executionsReq)
+        .success
+    ).toBe(true);
+    const executions = await provider.v1.convai.tools.executions(
+      toolId,
+      executionsReq
+    );
+    expect(Array.isArray(executions.executions)).toBe(true);
+    expect(typeof executions.has_more).toBe("boolean");
+
+    // 4. List
     const listed = await provider.v1.convai.tools.list({ page_size: 30 });
     expect(Array.isArray(listed.tools)).toBe(true);
 
-    // 4. Update
+    // 5. Update
     const updateReq: ElevenLabsUpdateToolRequest = {
       tool_config: {
         type: "webhook",
@@ -88,7 +127,7 @@ describe("elevenlabs v1.convai.tools", () => {
     expect(updated.id).toBe(toolId);
     expect(typeof updated.tool_config).toBe("object");
 
-    // 5. Delete
+    // 6. Delete
     await expect(
       provider.v1.convai.tools.delete(toolId)
     ).resolves.toBeDefined();

@@ -1530,6 +1530,47 @@ export type ElevenLabsUpdateToolParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// GET /v1/convai/tools/:tool_id/dependent-agents
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetToolDependentAgentsRequestSchema = z.object({
+  cursor: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+});
+
+export type ElevenLabsGetToolDependentAgentsRequest = z.input<
+  typeof ElevenLabsGetToolDependentAgentsRequestSchema
+>;
+export type ElevenLabsGetToolDependentAgentsRequestInput =
+  ElevenLabsGetToolDependentAgentsRequest;
+export type ElevenLabsGetToolDependentAgentsParsedRequest = z.output<
+  typeof ElevenLabsGetToolDependentAgentsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/tools/:tool_id/executions
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetToolExecutionsRequestSchema = z.object({
+  cursor: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  is_error: z.boolean().nullable().optional(),
+  agent_id: z.string().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+  start_time: z.number().nullable().optional(),
+  end_time: z.number().nullable().optional(),
+});
+
+export type ElevenLabsGetToolExecutionsRequest = z.input<
+  typeof ElevenLabsGetToolExecutionsRequestSchema
+>;
+export type ElevenLabsGetToolExecutionsRequestInput =
+  ElevenLabsGetToolExecutionsRequest;
+export type ElevenLabsGetToolExecutionsParsedRequest = z.output<
+  typeof ElevenLabsGetToolExecutionsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform — Knowledge Base
 // ---------------------------------------------------------------------------
 

@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-208 endpoints across 25 groups. Each method mirrors an upstream URL path.
+210 endpoints across 25 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -1404,6 +1404,36 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.tools.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.tools.dependentAgents</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/tools/{toolId}/dependent-agents</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/get-dependent-agents)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.dependentAgents({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.tools.executions</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/tools/{toolId}/executions</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tools/get-executions)
+
+```typescript
+const res = await elevenlabs.v1.convai.tools.executions({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

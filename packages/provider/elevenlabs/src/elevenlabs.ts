@@ -734,7 +734,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     return serialized ? `?${serialized}` : "";
   }
 
-  // GET /v1/pronunciation-dictionaries
+  // GET https://api.elevenlabs.io/v1/pronunciation-dictionaries
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/list
   const listPronunciationDictionaries = Object.assign(
     async (
       req: ElevenLabsListPronunciationDictionariesRequest = {},
@@ -751,7 +752,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsListPronunciationDictionariesRequestSchema }
   );
 
-  // POST /v1/pronunciation-dictionaries/add-from-file
+  // POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-file
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-file
   const addPronunciationDictionaryFromFile = Object.assign(
     async (
       req: ElevenLabsAddPronunciationDictionaryFromFileRequest,
@@ -775,7 +777,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsAddPronunciationDictionaryFromFileRequestSchema }
   );
 
-  // POST /v1/pronunciation-dictionaries/add-from-rules
+  // POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-rules
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-rules
   const addPronunciationDictionaryFromRules = Object.assign(
     async (
       req: ElevenLabsAddPronunciationDictionaryFromRulesRequest,
@@ -791,7 +794,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema }
   );
 
-  // GET /v1/pronunciation-dictionaries/{id}
+  // GET https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/get
   const getPronunciationDictionary = Object.assign(
     async (
       id: string,
@@ -809,7 +813,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsGetPronunciationDictionaryRequestSchema }
   );
 
-  // PATCH /v1/pronunciation-dictionaries/{id}
+  // PATCH https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/update
   const updatePronunciationDictionary = Object.assign(
     async (
       id: string,
@@ -826,7 +831,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsUpdatePronunciationDictionaryRequestSchema }
   );
 
-  // POST /v1/pronunciation-dictionaries/{id}/add-rules
+  // POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/add-rules
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/add
   const addPronunciationDictionaryRules = Object.assign(
     async (
       id: string,
@@ -843,7 +849,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsAddPronunciationDictionaryRulesRequestSchema }
   );
 
-  // POST /v1/pronunciation-dictionaries/{id}/remove-rules
+  // POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/remove-rules
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/remove
   const removePronunciationDictionaryRules = Object.assign(
     async (
       id: string,
@@ -860,7 +867,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsRemovePronunciationDictionaryRulesRequestSchema }
   );
 
-  // POST /v1/pronunciation-dictionaries/{id}/set-rules
+  // POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/set-rules
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/set
   const setPronunciationDictionaryRules = Object.assign(
     async (
       id: string,
@@ -877,7 +885,8 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSetPronunciationDictionaryRulesRequestSchema }
   );
 
-  // GET /v1/pronunciation-dictionaries/{id}/{versionId}/download
+  // GET https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/{versionId}/download
+  // Docs: https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/download
   const downloadPronunciationDictionary = Object.assign(
     async (
       id: string,

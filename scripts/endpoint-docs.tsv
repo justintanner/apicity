@@ -475,6 +475,15 @@ dolthub	v1alpha1.sql.writePoll	GET	https://www.dolthub.com/api/v1alpha1/{owner}/
 dolthub	v1alpha1.user	GET	https://www.dolthub.com/api/v1alpha1/user
 elevenlabs	docs	GET	https://api.elevenlabs.io/docs	https://elevenlabs.io/docs/api-reference/text-to-speech
 elevenlabs	v1.models	GET	https://api.elevenlabs.io/v1/models	https://elevenlabs.io/docs/api-reference/models/list
+elevenlabs	v1.pronunciationDictionaries.list	GET	https://api.elevenlabs.io/v1/pronunciation-dictionaries	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/list
+elevenlabs	v1.pronunciationDictionaries.addFromFile	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-file	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-file
+elevenlabs	v1.pronunciationDictionaries.addFromRules	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-rules	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-rules
+elevenlabs	v1.pronunciationDictionaries	GET	https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/get
+elevenlabs	v1.pronunciationDictionaries.update	PATCH	https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/update
+elevenlabs	v1.pronunciationDictionaries.addRules	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/add-rules	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/add
+elevenlabs	v1.pronunciationDictionaries.removeRules	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/remove-rules	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/remove
+elevenlabs	v1.pronunciationDictionaries.setRules	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/set-rules	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/set
+elevenlabs	v1.pronunciationDictionaries.download	GET	https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/{versionId}/download	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/download
 elevenlabs	v1.voices	GET	https://api.elevenlabs.io/v1/voices/{voiceId}	https://elevenlabs.io/docs/api-reference/voices/get
 elevenlabs	v1.voices.pvc	POST	https://api.elevenlabs.io/v1/voices/pvc	https://elevenlabs.io/docs/api-reference/voices/pvc/create
 elevenlabs	v1.voices.pvc.captcha	POST	https://api.elevenlabs.io/v1/voices/pvc/{voiceId}/captcha	https://elevenlabs.io/docs/api-reference/voices/pvc/verification/captcha/verify

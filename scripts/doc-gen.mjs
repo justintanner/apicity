@@ -464,6 +464,7 @@ const REST_ALIAS_SUFFIXES = new Set([
   "update",
   "cancel",
   "get",
+  "stream",
   "results",
 ]);
 

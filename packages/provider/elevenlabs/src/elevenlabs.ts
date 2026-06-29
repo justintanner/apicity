@@ -25,6 +25,11 @@ import {
   ElevenLabsPvcVoiceSampleWaveformResponse,
   ElevenLabsSpeakerAudioResponse,
   ElevenLabsSoundGenerationRequest,
+  ElevenLabsAudioIsolationRequest,
+  ElevenLabsAudioIsolationStreamRequest,
+  ElevenLabsAudioIsolationHistoryListRequest,
+  ElevenLabsAudioIsolationHistoryListResponse,
+  ElevenLabsAudioIsolationDeleteHistoryResponse,
   ElevenLabsTextToDialogueRequest,
   ElevenLabsTextToSpeechRequest,
   ElevenLabsAudioWithTimestampsResponse,
@@ -181,6 +186,9 @@ import {
   ElevenLabsPvcVoiceCaptchaRequestSchema,
   ElevenLabsPvcManualVerificationRequestSchema,
   ElevenLabsSoundGenerationRequestSchema,
+  ElevenLabsAudioIsolationRequestSchema,
+  ElevenLabsAudioIsolationStreamRequestSchema,
+  ElevenLabsAudioIsolationHistoryListRequestSchema,
   ElevenLabsTextToDialogueRequestSchema,
   ElevenLabsTextToSpeechRequestSchema,
   ElevenLabsSpeechToTextRequestSchema,
@@ -1477,6 +1485,92 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       return makeBinaryRequest("/v1/sound-generation", body, query, signal);
     },
     { schema: ElevenLabsSoundGenerationRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/audio-isolation/stream
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-isolation/stream
+  const audioIsolationStream = Object.assign(
+    async (
+      req: ElevenLabsAudioIsolationStreamRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const form = new FormData();
+      for (const [key, value] of Object.entries(req)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartBinaryRequest(
+        "/v1/audio-isolation/stream",
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsAudioIsolationStreamRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/audio-isolation/history
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-isolation/list
+  const listAudioIsolationHistory = Object.assign(
+    async (
+      req: ElevenLabsAudioIsolationHistoryListRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioIsolationHistoryListResponse> => {
+      return makeJsonRequest<ElevenLabsAudioIsolationHistoryListResponse>(
+        "GET",
+        "/v1/audio-isolation/history",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsAudioIsolationHistoryListRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/audio-isolation/history/{historyItemId}
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-isolation/delete
+  const deleteAudioIsolationHistoryItem = Object.assign(
+    async (
+      historyItemId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAudioIsolationDeleteHistoryResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsAudioIsolationDeleteHistoryResponse>(
+        "DELETE",
+        `/v1/audio-isolation/history/${encodeURIComponent(historyItemId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/audio-isolation
+  // Docs: https://elevenlabs.io/docs/api-reference/audio-isolation/convert
+  const audioIsolation = Object.assign(
+    async (
+      req: ElevenLabsAudioIsolationRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      const form = new FormData();
+      for (const [key, value] of Object.entries(req)) {
+        appendFormField(form, key, value);
+      }
+
+      return makeMultipartBinaryRequest(
+        "/v1/audio-isolation",
+        form,
+        undefined,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsAudioIsolationRequestSchema,
+      stream: audioIsolationStream,
+      history: {
+        list: listAudioIsolationHistory,
+        delete: deleteAudioIsolationHistoryItem,
+      },
+    }
   );
 
   // POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream/with-timestamps
@@ -3383,6 +3477,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       setRules: setPronunciationDictionaryRules,
     },
     soundGeneration,
+    audioIsolation,
     textToSpeech,
     textToDialogue,
     textToVoice,
@@ -3425,6 +3520,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
   };
   const deleteV1 = {
+    audioIsolation: {
+      history: {
+        delete: deleteAudioIsolationHistoryItem,
+      },
+    },
     voices: {
       delete: deleteVoice,
       samples: {
@@ -3455,6 +3555,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     sharedVoices: getSharedVoices,
     similarVoices: getSimilarVoices,
     soundGeneration,
+    audioIsolation,
     textToSpeech,
     textToDialogue,
     textToVoice,
@@ -3490,6 +3591,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         voices: v1Voices,
         sharedVoices: getSharedVoices,
         user,
+        audioIsolation: {
+          history: {
+            list: listAudioIsolationHistory,
+          },
+        },
         textToVoice: {
           stream: textToVoiceStream,
         },

@@ -142,7 +142,69 @@ for (const w of result.words) {
 
 ## API Reference
 
-93 endpoints across 16 groups. Each method mirrors an upstream URL path.
+129 endpoints across 19 groups. Each method mirrors an upstream URL path.
+
+### audioIsolation
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.audioIsolation</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/audio-isolation</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-isolation/convert)
+
+```typescript
+const res = await elevenlabs.v1.audioIsolation({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.audioIsolation.history.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/audio-isolation/history/{historyItemId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-isolation/delete)
+
+```typescript
+const res = await elevenlabs.v1.audioIsolation.history.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.audioIsolation.history.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/audio-isolation/history</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-isolation/list)
+
+```typescript
+const res = await elevenlabs.v1.audioIsolation.history.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.audioIsolation.stream</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/audio-isolation/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/audio-isolation/stream)
+
+```typescript
+const res = await elevenlabs.v1.audioIsolation.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
 
 ### convai
 
@@ -804,6 +866,143 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+### pronunciationDictionaries
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.pronunciationDictionaries.addFromFile</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-file</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-file)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.addFromFile({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.pronunciationDictionaries.addFromRules</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-rules</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-rules)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.addFromRules({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.pronunciationDictionaries.addRules</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/add-rules</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/add)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.addRules({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.pronunciationDictionaries.download</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/{versionId}/download</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/download)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.download({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.pronunciationDictionaries.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/get)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.pronunciationDictionaries.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/pronunciation-dictionaries</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/list)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.pronunciationDictionaries.removeRules</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/remove-rules</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/remove)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.removeRules({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.pronunciationDictionaries.setRules</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}/set-rules</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/rules/set)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.setRules({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.pronunciationDictionaries.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/pronunciation-dictionaries/{id}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/update)
+
+```typescript
+const res = await elevenlabs.v1.pronunciationDictionaries.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### sharedVoices
 
 <details>
@@ -873,14 +1072,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>elevenlabs.v1.speechToSpeech</code></b></summary>
+<summary><code>POST</code> <b><code>elevenlabs.v1.speechToSpeech.stream</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/speech-to-speech/{voiceId}/stream</code>
 
-[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-speech/convert)
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/speech-to-speech/stream)
 
 ```typescript
-const res = await elevenlabs.v1.speechToSpeech({ /* ... */ });
+const res = await elevenlabs.v1.speechToSpeech.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -934,6 +1133,353 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+### studio
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.podcasts.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/podcasts</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/create-podcast)
+
+```typescript
+const res = await elevenlabs.v1.studio.podcasts.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.chapters.convert</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/convert</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/convert-chapter)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.convert({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.chapters.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/create-chapter)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.studio.projects.chapters.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/delete-chapter)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.chapters.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-chapter)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.chapters.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-chapters)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.chapters.snapshots.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-chapter-snapshot)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.snapshots.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.chapters.snapshots.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-chapter-snapshots)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.snapshots.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.chapters.snapshots.stream</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}/snapshots/{chapterSnapshotId}/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/stream-chapter-audio)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.snapshots.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.chapters.update</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/chapters/{chapterId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/edit-chapter)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.chapters.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.content.update</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/content</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/edit-project-content)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.content.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.convert</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/convert</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/convert-project)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.convert({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/add-project)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.studio.projects.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/studio/projects/{projectId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/delete-project)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-project)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-projects)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.mutedTracks.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/muted-tracks</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-project-muted-tracks)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.mutedTracks.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.pronunciationDictionaries.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/pronunciation-dictionaries</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/create-pronunciation-dictionaries)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.pronunciationDictionaries.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.snapshots.archive</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/snapshots/{snapshotId}/archive</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/archive-project-snapshot)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.snapshots.archive({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.snapshots.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/snapshots/{snapshotId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-project-snapshot)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.snapshots.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.studio.projects.snapshots.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/studio/projects/{projectId}/snapshots</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/get-project-snapshots)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.snapshots.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.snapshots.stream</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}/snapshots/{snapshotId}/stream</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/stream-project-audio)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.snapshots.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.studio.projects.update</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/studio/projects/{projectId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/studio/edit-project)
+
+```typescript
+const res = await elevenlabs.v1.studio.projects.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### textToDialogue
 
 <details>
@@ -952,14 +1498,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue</code></b></summary>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToDialogue.stream</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/text-to-dialogue/stream</code>
 
 [Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-dialogue/convert)
 
 ```typescript
-const res = await elevenlabs.v1.textToDialogue({ /* ... */ });
+const res = await elevenlabs.v1.textToDialogue.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1010,14 +1556,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech</code></b></summary>
+<summary><code>POST</code> <b><code>elevenlabs.v1.textToSpeech.stream</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/text-to-speech/{voiceId}/stream</code>
 
-[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/convert)
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-speech/stream)
 
 ```typescript
-const res = await elevenlabs.v1.textToSpeech("voice_id", { /* ... */ });
+const res = await elevenlabs.v1.textToSpeech.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1102,14 +1648,14 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
-<summary><code>GET</code> <b><code>elevenlabs.v1.textToVoice</code></b></summary>
+<summary><code>GET</code> <b><code>elevenlabs.v1.textToVoice.stream</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/text-to-voice/{generatedVoiceId}/stream</code>
 
-[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-voice/create)
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/text-to-voice/stream)
 
 ```typescript
-const res = await elevenlabs.v1.textToVoice({ /* ... */ });
+const res = await elevenlabs.v1.textToVoice.stream({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

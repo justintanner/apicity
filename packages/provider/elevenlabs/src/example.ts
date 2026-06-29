@@ -11,6 +11,12 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
+  "GET v1.audioIsolation.history.list": {
+    "source": "elevenlabs/audio-isolation",
+    "payload": {
+      "page_size": 1000
+    }
+  },
   "GET v1.convai.agents.list": {
     "source": "elevenlabs/convai-agents",
     "payload": {
@@ -167,6 +173,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "text": "soft ui click",
       "duration_seconds": 0.5,
       "prompt_influence": 0.3
+    }
+  },
+  "POST v1.studio.podcasts.create": {
+    "source": "elevenlabs/studio",
+    "payload": {
+      "model_id": "eleven_multilingual_v2",
+      "mode": {
+        "type": "bulletin",
+        "bulletin": {
+          "host_voice_id": "apicity-fake-voice"
+        }
+      },
+      "source": {
+        "type": "text",
+        "text": "Hello from apicity."
+      }
     }
   },
   "POST v1.textToSpeech.stream": {

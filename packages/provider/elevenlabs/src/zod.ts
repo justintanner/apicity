@@ -561,6 +561,63 @@ export type ElevenLabsSpeechToSpeechParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// POST /v1/audio-isolation  (and /stream)
+// ---------------------------------------------------------------------------
+
+const ElevenLabsAudioIsolationFileFormatSchema = z.enum([
+  "pcm_s16le_16",
+  "other",
+]);
+
+export const ElevenLabsAudioIsolationRequestSchema = z.object({
+  audio: z.custom<Blob>((value) => value instanceof Blob),
+  file_format: ElevenLabsAudioIsolationFileFormatSchema.nullable().optional(),
+  preview_b64: z.string().nullable().optional(),
+});
+
+export type ElevenLabsAudioIsolationRequest = z.input<
+  typeof ElevenLabsAudioIsolationRequestSchema
+>;
+export type ElevenLabsAudioIsolationRequestInput =
+  ElevenLabsAudioIsolationRequest;
+export type ElevenLabsAudioIsolationParsedRequest = z.output<
+  typeof ElevenLabsAudioIsolationRequestSchema
+>;
+
+export const ElevenLabsAudioIsolationStreamRequestSchema = z.object({
+  audio: z.custom<Blob>((value) => value instanceof Blob),
+  file_format: ElevenLabsAudioIsolationFileFormatSchema.nullable().optional(),
+});
+
+export type ElevenLabsAudioIsolationStreamRequest = z.input<
+  typeof ElevenLabsAudioIsolationStreamRequestSchema
+>;
+export type ElevenLabsAudioIsolationStreamRequestInput =
+  ElevenLabsAudioIsolationStreamRequest;
+export type ElevenLabsAudioIsolationStreamParsedRequest = z.output<
+  typeof ElevenLabsAudioIsolationStreamRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/audio-isolation/history
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAudioIsolationHistoryListRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(1000).optional(),
+  page: z.number().int().min(1).optional(),
+  search: z.string().nullable().optional(),
+});
+
+export type ElevenLabsAudioIsolationHistoryListRequest = z.input<
+  typeof ElevenLabsAudioIsolationHistoryListRequestSchema
+>;
+export type ElevenLabsAudioIsolationHistoryListRequestInput =
+  ElevenLabsAudioIsolationHistoryListRequest;
+export type ElevenLabsAudioIsolationHistoryListParsedRequest = z.output<
+  typeof ElevenLabsAudioIsolationHistoryListRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Workspace analytics shared schemas
 // ---------------------------------------------------------------------------
 

@@ -14,6 +14,9 @@ import type {
   ElevenLabsTextToSpeechRequest,
   ElevenLabsSpeechToTextRequest,
   ElevenLabsSpeechToSpeechRequest,
+  ElevenLabsAudioIsolationRequest,
+  ElevenLabsAudioIsolationStreamRequest,
+  ElevenLabsAudioIsolationHistoryListRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -139,6 +142,15 @@ export type {
   ElevenLabsSpeechToSpeechRequest,
   ElevenLabsSpeechToSpeechRequestInput,
   ElevenLabsSpeechToSpeechParsedRequest,
+  ElevenLabsAudioIsolationRequest,
+  ElevenLabsAudioIsolationRequestInput,
+  ElevenLabsAudioIsolationParsedRequest,
+  ElevenLabsAudioIsolationStreamRequest,
+  ElevenLabsAudioIsolationStreamRequestInput,
+  ElevenLabsAudioIsolationStreamParsedRequest,
+  ElevenLabsAudioIsolationHistoryListRequest,
+  ElevenLabsAudioIsolationHistoryListRequestInput,
+  ElevenLabsAudioIsolationHistoryListParsedRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
@@ -985,6 +997,33 @@ export interface ElevenLabsDeleteVoiceSampleResponse {
   status: string;
 }
 
+// -- Audio Isolation response shapes -----------------------------------------
+
+export interface ElevenLabsAudioIsolationHistoryItem {
+  id: string;
+  title: string | null;
+  created_at_unix: number;
+  format: string;
+  duration_seconds: number | null;
+  download_url: string | null;
+  icon_url: string | null;
+  source_video_url: string | null;
+  supports_video: boolean;
+  processing: boolean;
+  video_processing_failed: boolean;
+  preview_b64: string | null;
+}
+
+export interface ElevenLabsAudioIsolationHistoryListResponse {
+  items: ElevenLabsAudioIsolationHistoryItem[];
+  has_more: boolean;
+}
+
+export type ElevenLabsAudioIsolationDeleteHistoryResponse = Record<
+  string,
+  unknown
+>;
+
 // -- History response shapes -------------------------------------------------
 
 export interface ElevenLabsHistoryFeedback {
@@ -1598,6 +1637,45 @@ export interface ElevenLabsSoundGenerationMethod {
     signal?: AbortSignal
   ): Promise<ArrayBuffer>;
   schema: z.ZodType<ElevenLabsSoundGenerationRequest>;
+}
+
+export interface ElevenLabsAudioIsolationStreamMethod {
+  (
+    req: ElevenLabsAudioIsolationStreamRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsAudioIsolationStreamRequest>;
+}
+
+export interface ElevenLabsAudioIsolationHistoryListMethod {
+  (
+    req?: ElevenLabsAudioIsolationHistoryListRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioIsolationHistoryListResponse>;
+  schema: z.ZodType<ElevenLabsAudioIsolationHistoryListRequest>;
+}
+
+export interface ElevenLabsAudioIsolationHistoryDeleteMethod {
+  (
+    historyItemId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAudioIsolationDeleteHistoryResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsAudioIsolationHistoryNamespace {
+  list: ElevenLabsAudioIsolationHistoryListMethod;
+  delete: ElevenLabsAudioIsolationHistoryDeleteMethod;
+}
+
+export interface ElevenLabsAudioIsolationMethod {
+  (
+    req: ElevenLabsAudioIsolationRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsAudioIsolationRequest>;
+  stream: ElevenLabsAudioIsolationStreamMethod;
+  history: ElevenLabsAudioIsolationHistoryNamespace;
 }
 
 export interface ElevenLabsCharacterAlignment {
@@ -2962,6 +3040,7 @@ export interface ElevenLabsV1Namespace {
   sharedVoices: ElevenLabsSharedVoicesMethod;
   similarVoices: ElevenLabsSimilarVoicesMethod;
   soundGeneration: ElevenLabsSoundGenerationMethod;
+  audioIsolation: ElevenLabsAudioIsolationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
@@ -3009,6 +3088,7 @@ export interface ElevenLabsPostConvaiNamespace {
 export interface ElevenLabsPostV1Namespace {
   pronunciationDictionaries: ElevenLabsPostPronunciationDictionariesNamespace;
   soundGeneration: ElevenLabsSoundGenerationMethod;
+  audioIsolation: ElevenLabsAudioIsolationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
@@ -3127,6 +3207,11 @@ export interface ElevenLabsGetV1Namespace {
   sharedVoices: ElevenLabsSharedVoicesMethod;
   user: ElevenLabsUserNamespace;
   textToVoice: ElevenLabsGetV1TextToVoiceNamespace;
+  audioIsolation: {
+    history: {
+      list: ElevenLabsAudioIsolationHistoryListMethod;
+    };
+  };
   convai: ElevenLabsGetConvaiNamespace;
   history: {
     list: ElevenLabsHistoryListMethod;
@@ -3174,6 +3259,11 @@ export interface ElevenLabsDeleteConvaiNamespace {
 }
 
 export interface ElevenLabsDeleteV1Namespace {
+  audioIsolation: {
+    history: {
+      delete: ElevenLabsAudioIsolationHistoryDeleteMethod;
+    };
+  };
   voices: {
     delete: ElevenLabsDeleteVoiceMethod;
     samples: {

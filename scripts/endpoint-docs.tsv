@@ -623,6 +623,12 @@ elevenlabs	v1.convai.mcpServers.toolConfigs.create	POST	https://api.elevenlabs.i
 elevenlabs	v1.convai.mcpServers.toolConfigs.get	GET	https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}	https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/get
 elevenlabs	v1.convai.mcpServers.toolConfigs.update	PATCH	https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}	https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/update
 elevenlabs	v1.convai.mcpServers.toolConfigs.delete	DELETE	https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}	https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/delete
+elevenlabs	v1.convai.batchCalling.submit	POST	https://api.elevenlabs.io/v1/convai/batch-calling/submit	https://elevenlabs.io/docs/api-reference/batch-calling/create
+elevenlabs	v1.convai.batchCalling.workspace	GET	https://api.elevenlabs.io/v1/convai/batch-calling/workspace	https://elevenlabs.io/docs/api-reference/batch-calling/list
+elevenlabs	v1.convai.batchCalling.get	GET	https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}	https://elevenlabs.io/docs/api-reference/batch-calling/get
+elevenlabs	v1.convai.batchCalling.delete	DELETE	https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}	https://elevenlabs.io/docs/api-reference/batch-calling/delete
+elevenlabs	v1.convai.batchCalling.cancel	POST	https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}/cancel	https://elevenlabs.io/docs/api-reference/batch-calling/cancel
+elevenlabs	v1.convai.batchCalling.retry	POST	https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}/retry	https://elevenlabs.io/docs/api-reference/batch-calling/retry
 elevenlabs	v1.convai.knowledgeBase.url	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/url	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-url
 elevenlabs	v1.convai.knowledgeBase.text	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/text	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-text
 elevenlabs	v1.convai.knowledgeBase.file	POST	https://api.elevenlabs.io/v1/convai/knowledge-base/file	https://elevenlabs.io/docs/api-reference/knowledge-base/create-from-file

@@ -109,6 +109,8 @@ import type {
   ElevenLabsGetConversationSipMessagesRequest,
   ElevenLabsAssignConversationTagsRequest,
   ElevenLabsRunConversationEvaluationsRequest,
+  ElevenLabsSubmitBatchCallRequest,
+  ElevenLabsListWorkspaceBatchCallsRequest,
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsListPhoneNumbersRequest,
   ElevenLabsUpdatePhoneNumberRequest,
@@ -498,6 +500,12 @@ export type {
   ElevenLabsRunConversationEvaluationsRequest,
   ElevenLabsRunConversationEvaluationsRequestInput,
   ElevenLabsRunConversationEvaluationsParsedRequest,
+  ElevenLabsSubmitBatchCallRequest,
+  ElevenLabsSubmitBatchCallRequestInput,
+  ElevenLabsSubmitBatchCallParsedRequest,
+  ElevenLabsListWorkspaceBatchCallsRequest,
+  ElevenLabsListWorkspaceBatchCallsRequestInput,
+  ElevenLabsListWorkspaceBatchCallsParsedRequest,
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsCreatePhoneNumberRequestInput,
   ElevenLabsCreatePhoneNumberParsedRequest,
@@ -2939,7 +2947,91 @@ export type ElevenLabsRunConversationAnalysisResponse =
 export type ElevenLabsRunConversationEvaluationsResponse =
   ElevenLabsGetConversationResponse;
 
-// -- Phone numbers & outbound calls ------------------------------------------
+// -- Batch calling / telephony -----------------------------------------------
+
+export type ElevenLabsBatchCallStatus =
+  | "pending"
+  | "in_progress"
+  | "completed"
+  | "failed"
+  | "cancelled";
+
+export type ElevenLabsBatchCallRecipientStatus =
+  | "pending"
+  | "dispatched"
+  | "initiated"
+  | "in_progress"
+  | "completed"
+  | "failed"
+  | "cancelled"
+  | "voicemail";
+
+export interface ElevenLabsBatchCallWhatsAppParams {
+  whatsapp_phone_number_id?: string | null;
+  whatsapp_call_permission_request_template_name: string;
+  whatsapp_call_permission_request_template_language_code: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsBatchCallTelephonyConfig {
+  ringing_timeout_secs?: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsBatchCallRecipient {
+  id?: string | null;
+  phone_number?: string | null;
+  whatsapp_user_id?: string | null;
+  conversation_initiation_client_data?: Record<string, unknown> | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsBatchCallRecipientResponse extends ElevenLabsBatchCallRecipient {
+  id: string;
+  status: ElevenLabsBatchCallRecipientStatus;
+  created_at_unix: number;
+  updated_at_unix: number;
+  conversation_id: string | null;
+}
+
+export interface ElevenLabsBatchCallResponse {
+  id: string;
+  phone_number_id: string | null;
+  phone_provider: ElevenLabsPhoneNumberProviderType | null;
+  whatsapp_params: ElevenLabsBatchCallWhatsAppParams | null;
+  name: string;
+  agent_id: string;
+  branch_id: string | null;
+  environment: string | null;
+  created_at_unix: number;
+  scheduled_time_unix: number;
+  timezone: string | null;
+  total_calls_dispatched: number;
+  total_calls_scheduled: number;
+  total_calls_finished: number;
+  last_updated_at_unix: number;
+  status: ElevenLabsBatchCallStatus;
+  retry_count: number;
+  telephony_call_config: ElevenLabsBatchCallTelephonyConfig;
+  target_concurrency_limit: number | null;
+  agent_name: string;
+  branch_name: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsBatchCallDetailedResponse extends ElevenLabsBatchCallResponse {
+  recipients: ElevenLabsBatchCallRecipientResponse[];
+}
+
+export interface ElevenLabsWorkspaceBatchCallsResponse {
+  batch_calls: ElevenLabsBatchCallResponse[];
+  next_doc?: string | null;
+  has_more?: boolean;
+  [key: string]: unknown;
+}
+
+// DELETE returns HTTP 204 with no documented body.
+export type ElevenLabsDeleteBatchCallResponse = Record<string, unknown>;
 
 export type ElevenLabsPhoneNumberProviderType =
   | "twilio"
@@ -4987,6 +5079,48 @@ export interface ElevenLabsRunConversationEvaluationsMethod {
   schema: z.ZodType<ElevenLabsRunConversationEvaluationsRequest>;
 }
 
+export interface ElevenLabsSubmitBatchCallMethod {
+  (
+    req: ElevenLabsSubmitBatchCallRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsBatchCallResponse>;
+  schema: z.ZodType<ElevenLabsSubmitBatchCallRequest>;
+}
+
+export interface ElevenLabsListWorkspaceBatchCallsMethod {
+  (
+    req?: ElevenLabsListWorkspaceBatchCallsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsWorkspaceBatchCallsResponse>;
+  schema: z.ZodType<ElevenLabsListWorkspaceBatchCallsRequest>;
+}
+
+export interface ElevenLabsGetBatchCallMethod {
+  (
+    batchId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsBatchCallDetailedResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsDeleteBatchCallMethod {
+  (
+    batchId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteBatchCallResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCancelBatchCallMethod {
+  (batchId: string, signal?: AbortSignal): Promise<ElevenLabsBatchCallResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsRetryBatchCallMethod {
+  (batchId: string, signal?: AbortSignal): Promise<ElevenLabsBatchCallResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsCreatePhoneNumberMethod {
   (
     req: ElevenLabsCreatePhoneNumberRequest,
@@ -5257,6 +5391,15 @@ export interface ElevenLabsConvaiConversationNamespace {
   token: ElevenLabsGetConversationTokenMethod;
 }
 
+export interface ElevenLabsConvaiBatchCallingNamespace {
+  submit: ElevenLabsSubmitBatchCallMethod;
+  workspace: ElevenLabsListWorkspaceBatchCallsMethod;
+  get: ElevenLabsGetBatchCallMethod;
+  delete: ElevenLabsDeleteBatchCallMethod;
+  cancel: ElevenLabsCancelBatchCallMethod;
+  retry: ElevenLabsRetryBatchCallMethod;
+}
+
 export interface ElevenLabsConvaiPhoneNumbersNamespace {
   create: ElevenLabsCreatePhoneNumberMethod;
   list: ElevenLabsListPhoneNumbersMethod;
@@ -5301,6 +5444,7 @@ export interface ElevenLabsConvaiNamespace {
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsConvaiConversationsNamespace;
   conversation: ElevenLabsConvaiConversationNamespace;
+  batchCalling: ElevenLabsConvaiBatchCallingNamespace;
   phoneNumbers: ElevenLabsConvaiPhoneNumbersNamespace;
   twilio: ElevenLabsConvaiTwilioNamespace;
   sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
@@ -5593,6 +5737,12 @@ export interface ElevenLabsPostConvaiConversationsNamespace {
   analysis: ElevenLabsConvaiConversationAnalysisNamespace;
 }
 
+export interface ElevenLabsPostConvaiBatchCallingNamespace {
+  submit: ElevenLabsSubmitBatchCallMethod;
+  cancel: ElevenLabsCancelBatchCallMethod;
+  retry: ElevenLabsRetryBatchCallMethod;
+}
+
 export interface ElevenLabsPostConvaiPhoneNumbersNamespace {
   create: ElevenLabsCreatePhoneNumberMethod;
 }
@@ -5612,6 +5762,7 @@ export interface ElevenLabsPostConvaiNamespace {
   mcpServers: ElevenLabsPostConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsPostConvaiConversationsNamespace;
+  batchCalling: ElevenLabsPostConvaiBatchCallingNamespace;
   phoneNumbers: ElevenLabsPostConvaiPhoneNumbersNamespace;
   twilio: ElevenLabsConvaiTwilioNamespace;
   sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
@@ -5830,6 +5981,11 @@ export interface ElevenLabsGetConvaiConversationNamespace {
   token: ElevenLabsGetConversationTokenMethod;
 }
 
+export interface ElevenLabsGetConvaiBatchCallingNamespace {
+  workspace: ElevenLabsListWorkspaceBatchCallsMethod;
+  get: ElevenLabsGetBatchCallMethod;
+}
+
 export interface ElevenLabsGetConvaiPhoneNumbersNamespace {
   list: ElevenLabsListPhoneNumbersMethod;
   get: ElevenLabsGetPhoneNumberMethod;
@@ -5856,6 +6012,7 @@ export interface ElevenLabsGetConvaiNamespace {
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsGetConvaiConversationsNamespace;
   conversation: ElevenLabsGetConvaiConversationNamespace;
+  batchCalling: ElevenLabsGetConvaiBatchCallingNamespace;
   phoneNumbers: ElevenLabsGetConvaiPhoneNumbersNamespace;
 }
 
@@ -5947,6 +6104,10 @@ export interface ElevenLabsDeleteConvaiConversationsNamespace {
   };
 }
 
+export interface ElevenLabsDeleteConvaiBatchCallingNamespace {
+  delete: ElevenLabsDeleteBatchCallMethod;
+}
+
 export interface ElevenLabsDeleteConvaiPhoneNumbersNamespace {
   delete: ElevenLabsDeletePhoneNumberMethod;
 }
@@ -5958,6 +6119,7 @@ export interface ElevenLabsDeleteConvaiNamespace {
   mcpServers: ElevenLabsDeleteConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsDeleteConvaiConversationsNamespace;
+  batchCalling: ElevenLabsDeleteConvaiBatchCallingNamespace;
   phoneNumbers: ElevenLabsDeleteConvaiPhoneNumbersNamespace;
 }
 

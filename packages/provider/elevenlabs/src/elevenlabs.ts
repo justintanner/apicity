@@ -249,6 +249,12 @@ import {
   ElevenLabsRunConversationAnalysisResponse,
   ElevenLabsRunConversationEvaluationsRequest,
   ElevenLabsRunConversationEvaluationsResponse,
+  ElevenLabsSubmitBatchCallRequest,
+  ElevenLabsBatchCallResponse,
+  ElevenLabsListWorkspaceBatchCallsRequest,
+  ElevenLabsWorkspaceBatchCallsResponse,
+  ElevenLabsBatchCallDetailedResponse,
+  ElevenLabsDeleteBatchCallResponse,
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsCreatePhoneNumberResponse,
   ElevenLabsListPhoneNumbersRequest,
@@ -446,6 +452,8 @@ import {
   ElevenLabsGetConversationSipMessagesRequestSchema,
   ElevenLabsAssignConversationTagsRequestSchema,
   ElevenLabsRunConversationEvaluationsRequestSchema,
+  ElevenLabsSubmitBatchCallRequestSchema,
+  ElevenLabsListWorkspaceBatchCallsRequestSchema,
   ElevenLabsCreatePhoneNumberRequestSchema,
   ElevenLabsListPhoneNumbersRequestSchema,
   ElevenLabsUpdatePhoneNumberRequestSchema,
@@ -5250,6 +5258,109 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsRunConversationEvaluationsRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/convai/batch-calling/submit
+  // Docs: https://elevenlabs.io/docs/api-reference/batch-calling/create
+  const submitBatchCall = Object.assign(
+    async (
+      req: ElevenLabsSubmitBatchCallRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsBatchCallResponse> => {
+      return makeJsonRequest<ElevenLabsBatchCallResponse>(
+        "POST",
+        "/v1/convai/batch-calling/submit",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsSubmitBatchCallRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/batch-calling/workspace
+  // Docs: https://elevenlabs.io/docs/api-reference/batch-calling/list
+  const listWorkspaceBatchCalls = Object.assign(
+    async (
+      req: ElevenLabsListWorkspaceBatchCallsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsWorkspaceBatchCallsResponse> => {
+      return makeJsonRequest<ElevenLabsWorkspaceBatchCallsResponse>(
+        "GET",
+        "/v1/convai/batch-calling/workspace",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListWorkspaceBatchCallsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}
+  // Docs: https://elevenlabs.io/docs/api-reference/batch-calling/get
+  const getBatchCall = Object.assign(
+    async (
+      batchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsBatchCallDetailedResponse> => {
+      return makeJsonRequest<ElevenLabsBatchCallDetailedResponse>(
+        "GET",
+        `/v1/convai/batch-calling/${encodeURIComponent(batchId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}
+  // Docs: https://elevenlabs.io/docs/api-reference/batch-calling/delete
+  const deleteBatchCall = Object.assign(
+    async (
+      batchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteBatchCallResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteBatchCallResponse>(
+        "DELETE",
+        `/v1/convai/batch-calling/${encodeURIComponent(batchId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}/cancel
+  // Docs: https://elevenlabs.io/docs/api-reference/batch-calling/cancel
+  const cancelBatchCall = Object.assign(
+    async (
+      batchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsBatchCallResponse> => {
+      return makeJsonRequest<ElevenLabsBatchCallResponse>(
+        "POST",
+        `/v1/convai/batch-calling/${encodeURIComponent(batchId)}/cancel`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}/retry
+  // Docs: https://elevenlabs.io/docs/api-reference/batch-calling/retry
+  const retryBatchCall = Object.assign(
+    async (
+      batchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsBatchCallResponse> => {
+      return makeJsonRequest<ElevenLabsBatchCallResponse>(
+        "POST",
+        `/v1/convai/batch-calling/${encodeURIComponent(batchId)}/retry`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   const convaiTools = {
     create: createTool,
     list: listTools,
@@ -5278,6 +5389,14 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     tools: listMcpServerTools,
     toolApprovals: convaiMcpServerToolApprovals,
     toolConfigs: convaiMcpServerToolConfigs,
+  };
+  const convaiBatchCalling = {
+    submit: submitBatchCall,
+    workspace: listWorkspaceBatchCalls,
+    get: getBatchCall,
+    delete: deleteBatchCall,
+    cancel: cancelBatchCall,
+    retry: retryBatchCall,
   };
 
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/url
@@ -5802,6 +5921,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     knowledgeBase: convaiKnowledgeBase,
     conversations: convaiConversations,
     conversation: convaiConversation,
+    batchCalling: convaiBatchCalling,
     phoneNumbers: convaiPhoneNumbers,
     twilio: convaiTwilio,
     sipTrunk: convaiSipTrunk,
@@ -5962,6 +6082,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         toolApprovals: { create: createMcpServerToolApproval },
         toolConfigs: { create: createMcpToolConfigOverride },
       },
+      batchCalling: {
+        submit: submitBatchCall,
+        cancel: cancelBatchCall,
+        retry: retryBatchCall,
+      },
       knowledgeBase: {
         url: createKnowledgeBaseDocumentFromUrl,
         text: createKnowledgeBaseDocumentFromText,
@@ -6066,6 +6191,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         toolApprovals: { delete: deleteMcpServerToolApproval },
         toolConfigs: { delete: deleteMcpToolConfigOverride },
       },
+      batchCalling: { delete: deleteBatchCall },
       knowledgeBase: {
         delete: deleteKnowledgeBaseDocument,
         ragIndex: { delete: deleteKnowledgeBaseDocumentRagIndex },
@@ -6196,6 +6322,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             toolConfigs: {
               get: getMcpToolConfigOverride,
             },
+          },
+          batchCalling: {
+            workspace: listWorkspaceBatchCalls,
+            get: getBatchCall,
           },
           knowledgeBase: {
             list: listKnowledgeBaseDocuments,

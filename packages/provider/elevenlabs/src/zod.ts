@@ -2681,7 +2681,7 @@ export type ElevenLabsRunConversationEvaluationsParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
-// Agents Platform (Conversational AI) — phone numbers & outbound calls
+// Agents Platform (Conversational AI) — batch calling / telephony
 // ---------------------------------------------------------------------------
 
 // SIP-trunk inbound/outbound trunk configs and the per-conversation client
@@ -2690,6 +2690,71 @@ export type ElevenLabsRunConversationEvaluationsParsedRequest = z.output<
 // compose the nested config themselves and the server passes it straight
 // through.
 const ElevenLabsConvaiConfigObjectSchema = z.record(z.string(), z.unknown());
+
+const ElevenLabsBatchCallWhatsAppParamsSchema = z.object({
+  whatsapp_phone_number_id: z.string().nullable().optional(),
+  whatsapp_call_permission_request_template_name: z.string(),
+  whatsapp_call_permission_request_template_language_code: z.string(),
+});
+
+const ElevenLabsBatchCallTelephonyConfigSchema = z.object({
+  ringing_timeout_secs: z.number().int().min(1).max(999).optional(),
+});
+
+const ElevenLabsBatchCallRecipientSchema = z.object({
+  id: z.string().nullable().optional(),
+  phone_number: z.string().nullable().optional(),
+  whatsapp_user_id: z.string().nullable().optional(),
+  conversation_initiation_client_data:
+    ElevenLabsConvaiConfigObjectSchema.nullable().optional(),
+});
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/batch-calling/submit
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSubmitBatchCallRequestSchema = z.object({
+  call_name: z.string(),
+  agent_id: z.string(),
+  recipients: z.array(ElevenLabsBatchCallRecipientSchema).max(10000),
+  scheduled_time_unix: z.number().int().nullable().optional(),
+  agent_phone_number_id: z.string().nullable().optional(),
+  whatsapp_params:
+    ElevenLabsBatchCallWhatsAppParamsSchema.nullable().optional(),
+  timezone: z.string().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+  environment: z.string().nullable().optional(),
+  telephony_call_config: ElevenLabsBatchCallTelephonyConfigSchema.optional(),
+  target_concurrency_limit: z.number().int().min(1).nullable().optional(),
+});
+
+export type ElevenLabsSubmitBatchCallRequest = z.input<
+  typeof ElevenLabsSubmitBatchCallRequestSchema
+>;
+export type ElevenLabsSubmitBatchCallRequestInput =
+  ElevenLabsSubmitBatchCallRequest;
+export type ElevenLabsSubmitBatchCallParsedRequest = z.output<
+  typeof ElevenLabsSubmitBatchCallRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/batch-calling/workspace
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListWorkspaceBatchCallsRequestSchema = z.object({
+  limit: z.number().int().optional(),
+  last_doc: z.string().nullable().optional(),
+  agent_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListWorkspaceBatchCallsRequest = z.input<
+  typeof ElevenLabsListWorkspaceBatchCallsRequestSchema
+>;
+export type ElevenLabsListWorkspaceBatchCallsRequestInput =
+  ElevenLabsListWorkspaceBatchCallsRequest;
+export type ElevenLabsListWorkspaceBatchCallsParsedRequest = z.output<
+  typeof ElevenLabsListWorkspaceBatchCallsRequestSchema
+>;
 
 export const ElevenLabsPhoneNumberProvider = z.enum([
   "twilio",

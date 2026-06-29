@@ -1571,6 +1571,201 @@ export type ElevenLabsGetToolExecutionsParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// Agents Platform (Conversational AI) — MCP Servers
+// ---------------------------------------------------------------------------
+
+const ElevenLabsMcpApprovalPolicySchema = z.enum([
+  "auto_approve_all",
+  "require_approval_all",
+  "require_approval_per_tool",
+]);
+const ElevenLabsMcpToolApprovalPolicySchema = z.enum([
+  "auto_approved",
+  "requires_approval",
+]);
+const ElevenLabsMcpServerTransportSchema = z.enum(["SSE", "STREAMABLE_HTTP"]);
+const ElevenLabsPreToolSpeechModeSchema = z.enum(["auto", "force", "off"]);
+const ElevenLabsToolCallSoundTypeSchema = z.enum([
+  "typing",
+  "elevator1",
+  "elevator2",
+  "elevator3",
+  "elevator4",
+]);
+const ElevenLabsToolCallSoundBehaviorSchema = z.enum(["auto", "always"]);
+const ElevenLabsToolExecutionModeSchema = z.enum([
+  "immediate",
+  "post_tool_speech",
+  "async",
+]);
+
+const ElevenLabsMcpConfigObjectSchema = z.record(z.string(), z.unknown());
+const ElevenLabsMcpHeaderValueSchema = z.union([
+  z.string(),
+  ElevenLabsMcpConfigObjectSchema,
+]);
+const ElevenLabsMcpResponseTimeoutSchema = z.number().int().min(5).max(300);
+
+const ElevenLabsMcpToolApprovalHashSchema = z.object({
+  tool_name: z.string(),
+  tool_hash: z.string(),
+  approval_policy: ElevenLabsMcpToolApprovalPolicySchema.optional(),
+});
+
+const ElevenLabsMcpToolConfigOverrideBaseSchema = z.object({
+  force_pre_tool_speech: z.boolean().nullable().optional(),
+  pre_tool_speech: ElevenLabsPreToolSpeechModeSchema.nullable().optional(),
+  disable_interruptions: z.boolean().nullable().optional(),
+  tool_call_sound: ElevenLabsToolCallSoundTypeSchema.nullable().optional(),
+  tool_call_sound_behavior:
+    ElevenLabsToolCallSoundBehaviorSchema.nullable().optional(),
+  execution_mode: ElevenLabsToolExecutionModeSchema.nullable().optional(),
+  response_timeout_secs:
+    ElevenLabsMcpResponseTimeoutSchema.nullable().optional(),
+  assignments: z.array(ElevenLabsMcpConfigObjectSchema).nullable().optional(),
+  input_overrides: z
+    .record(z.string(), ElevenLabsMcpConfigObjectSchema)
+    .nullable()
+    .optional(),
+  response_mocks: z
+    .array(ElevenLabsMcpConfigObjectSchema)
+    .nullable()
+    .optional(),
+});
+
+const ElevenLabsMcpToolConfigOverrideWithNameSchema =
+  ElevenLabsMcpToolConfigOverrideBaseSchema.extend({
+    tool_name: z.string(),
+  });
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/mcp-servers
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateMcpServerRequestSchema = z.object({
+  config: z.object({
+    approval_policy: ElevenLabsMcpApprovalPolicySchema.optional(),
+    tool_approval_hashes: z
+      .array(ElevenLabsMcpToolApprovalHashSchema)
+      .optional(),
+    transport: ElevenLabsMcpServerTransportSchema.optional(),
+    url: z.union([z.string(), ElevenLabsMcpConfigObjectSchema]),
+    secret_token: ElevenLabsMcpConfigObjectSchema.nullable().optional(),
+    request_headers: z
+      .record(z.string(), ElevenLabsMcpHeaderValueSchema)
+      .optional(),
+    auth_connection: ElevenLabsMcpConfigObjectSchema.nullable().optional(),
+    name: z.string(),
+    description: z.string().optional(),
+    force_pre_tool_speech: z.boolean().optional(),
+    pre_tool_speech: ElevenLabsPreToolSpeechModeSchema.optional(),
+    disable_interruptions: z.boolean().optional(),
+    tool_call_sound: ElevenLabsToolCallSoundTypeSchema.nullable().optional(),
+    tool_call_sound_behavior: ElevenLabsToolCallSoundBehaviorSchema.optional(),
+    execution_mode: ElevenLabsToolExecutionModeSchema.optional(),
+    response_timeout_secs: ElevenLabsMcpResponseTimeoutSchema.optional(),
+    tool_config_overrides: z
+      .array(ElevenLabsMcpToolConfigOverrideWithNameSchema)
+      .optional(),
+    disable_compression: z.boolean().optional(),
+  }),
+});
+
+export type ElevenLabsCreateMcpServerRequest = z.input<
+  typeof ElevenLabsCreateMcpServerRequestSchema
+>;
+export type ElevenLabsCreateMcpServerRequestInput =
+  ElevenLabsCreateMcpServerRequest;
+export type ElevenLabsCreateMcpServerParsedRequest = z.output<
+  typeof ElevenLabsCreateMcpServerRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/mcp-servers/:mcp_server_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateMcpServerRequestSchema = z.object({
+  approval_policy: ElevenLabsMcpApprovalPolicySchema.nullable().optional(),
+  force_pre_tool_speech: z.boolean().nullable().optional(),
+  pre_tool_speech: ElevenLabsPreToolSpeechModeSchema.nullable().optional(),
+  disable_interruptions: z.boolean().nullable().optional(),
+  tool_call_sound: ElevenLabsToolCallSoundTypeSchema.nullable().optional(),
+  tool_call_sound_behavior:
+    ElevenLabsToolCallSoundBehaviorSchema.nullable().optional(),
+  execution_mode: ElevenLabsToolExecutionModeSchema.nullable().optional(),
+  response_timeout_secs:
+    ElevenLabsMcpResponseTimeoutSchema.nullable().optional(),
+  request_headers: z
+    .record(z.string(), ElevenLabsMcpHeaderValueSchema)
+    .nullable()
+    .optional(),
+  disable_compression: z.boolean().nullable().optional(),
+  secret_token: ElevenLabsMcpConfigObjectSchema.nullable().optional(),
+  auth_connection: ElevenLabsMcpConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsUpdateMcpServerRequest = z.input<
+  typeof ElevenLabsUpdateMcpServerRequestSchema
+>;
+export type ElevenLabsUpdateMcpServerRequestInput =
+  ElevenLabsUpdateMcpServerRequest;
+export type ElevenLabsUpdateMcpServerParsedRequest = z.output<
+  typeof ElevenLabsUpdateMcpServerRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/mcp-servers/:mcp_server_id/tool-approvals
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateMcpServerToolApprovalRequestSchema = z.object({
+  tool_name: z.string(),
+  tool_description: z.string(),
+  input_schema: ElevenLabsMcpConfigObjectSchema.optional(),
+  approval_policy: ElevenLabsMcpToolApprovalPolicySchema.optional(),
+});
+
+export type ElevenLabsCreateMcpServerToolApprovalRequest = z.input<
+  typeof ElevenLabsCreateMcpServerToolApprovalRequestSchema
+>;
+export type ElevenLabsCreateMcpServerToolApprovalRequestInput =
+  ElevenLabsCreateMcpServerToolApprovalRequest;
+export type ElevenLabsCreateMcpServerToolApprovalParsedRequest = z.output<
+  typeof ElevenLabsCreateMcpServerToolApprovalRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/mcp-servers/:mcp_server_id/tool-configs
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateMcpToolConfigOverrideRequestSchema =
+  ElevenLabsMcpToolConfigOverrideWithNameSchema;
+
+export type ElevenLabsCreateMcpToolConfigOverrideRequest = z.input<
+  typeof ElevenLabsCreateMcpToolConfigOverrideRequestSchema
+>;
+export type ElevenLabsCreateMcpToolConfigOverrideRequestInput =
+  ElevenLabsCreateMcpToolConfigOverrideRequest;
+export type ElevenLabsCreateMcpToolConfigOverrideParsedRequest = z.output<
+  typeof ElevenLabsCreateMcpToolConfigOverrideRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/mcp-servers/:mcp_server_id/tool-configs/:tool_name
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateMcpToolConfigOverrideRequestSchema =
+  ElevenLabsMcpToolConfigOverrideBaseSchema;
+
+export type ElevenLabsUpdateMcpToolConfigOverrideRequest = z.input<
+  typeof ElevenLabsUpdateMcpToolConfigOverrideRequestSchema
+>;
+export type ElevenLabsUpdateMcpToolConfigOverrideRequestInput =
+  ElevenLabsUpdateMcpToolConfigOverrideRequest;
+export type ElevenLabsUpdateMcpToolConfigOverrideParsedRequest = z.output<
+  typeof ElevenLabsUpdateMcpToolConfigOverrideRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — Tests / Test Invocations
 // ---------------------------------------------------------------------------
 

@@ -64,6 +64,11 @@ import type {
   ElevenLabsUpdateToolRequest,
   ElevenLabsGetToolDependentAgentsRequest,
   ElevenLabsGetToolExecutionsRequest,
+  ElevenLabsCreateMcpServerRequest,
+  ElevenLabsUpdateMcpServerRequest,
+  ElevenLabsCreateMcpServerToolApprovalRequest,
+  ElevenLabsCreateMcpToolConfigOverrideRequest,
+  ElevenLabsUpdateMcpToolConfigOverrideRequest,
   ElevenLabsCreateAgentTestRequest,
   ElevenLabsListAgentTestsRequest,
   ElevenLabsUpdateAgentTestRequest,
@@ -358,6 +363,21 @@ export type {
   ElevenLabsGetToolExecutionsRequest,
   ElevenLabsGetToolExecutionsRequestInput,
   ElevenLabsGetToolExecutionsParsedRequest,
+  ElevenLabsCreateMcpServerRequest,
+  ElevenLabsCreateMcpServerRequestInput,
+  ElevenLabsCreateMcpServerParsedRequest,
+  ElevenLabsUpdateMcpServerRequest,
+  ElevenLabsUpdateMcpServerRequestInput,
+  ElevenLabsUpdateMcpServerParsedRequest,
+  ElevenLabsCreateMcpServerToolApprovalRequest,
+  ElevenLabsCreateMcpServerToolApprovalRequestInput,
+  ElevenLabsCreateMcpServerToolApprovalParsedRequest,
+  ElevenLabsCreateMcpToolConfigOverrideRequest,
+  ElevenLabsCreateMcpToolConfigOverrideRequestInput,
+  ElevenLabsCreateMcpToolConfigOverrideParsedRequest,
+  ElevenLabsUpdateMcpToolConfigOverrideRequest,
+  ElevenLabsUpdateMcpToolConfigOverrideRequestInput,
+  ElevenLabsUpdateMcpToolConfigOverrideParsedRequest,
   ElevenLabsCreateAgentTestRequest,
   ElevenLabsCreateAgentTestRequestInput,
   ElevenLabsCreateAgentTestParsedRequest,
@@ -2383,6 +2403,119 @@ export interface ElevenLabsGetToolExecutionsResponse {
   executions: ElevenLabsToolExecutionResponse[];
   has_more: boolean;
   next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+// -- Agents Platform (Conversational AI) MCP Servers response shapes ---------
+
+export type ElevenLabsMcpApprovalPolicy =
+  | "auto_approve_all"
+  | "require_approval_all"
+  | "require_approval_per_tool";
+
+export type ElevenLabsMcpToolApprovalPolicy =
+  | "auto_approved"
+  | "requires_approval";
+
+export type ElevenLabsMcpServerTransport = "SSE" | "STREAMABLE_HTTP";
+export type ElevenLabsPreToolSpeechMode = "auto" | "force" | "off";
+export type ElevenLabsToolCallSoundType =
+  | "typing"
+  | "elevator1"
+  | "elevator2"
+  | "elevator3"
+  | "elevator4";
+export type ElevenLabsToolCallSoundBehavior = "auto" | "always";
+export type ElevenLabsToolExecutionMode =
+  | "immediate"
+  | "post_tool_speech"
+  | "async";
+
+export interface ElevenLabsMcpToolApprovalHash {
+  tool_name: string;
+  tool_hash: string;
+  approval_policy?: ElevenLabsMcpToolApprovalPolicy;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMcpToolConfigOverride {
+  tool_name: string;
+  force_pre_tool_speech?: boolean | null;
+  pre_tool_speech?: ElevenLabsPreToolSpeechMode | null;
+  disable_interruptions?: boolean | null;
+  tool_call_sound?: ElevenLabsToolCallSoundType | null;
+  tool_call_sound_behavior?: ElevenLabsToolCallSoundBehavior | null;
+  execution_mode?: ElevenLabsToolExecutionMode | null;
+  response_timeout_secs?: number | null;
+  assignments?: Record<string, unknown>[] | null;
+  input_overrides?: Record<string, Record<string, unknown>> | null;
+  response_mocks?: Record<string, unknown>[] | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMcpServerConfig {
+  approval_policy?: ElevenLabsMcpApprovalPolicy;
+  tool_approval_hashes?: ElevenLabsMcpToolApprovalHash[];
+  transport?: ElevenLabsMcpServerTransport;
+  url: string | Record<string, unknown>;
+  secret_token?: Record<string, unknown> | null;
+  request_headers?: Record<string, string | Record<string, unknown>>;
+  auth_connection?: Record<string, unknown> | null;
+  name: string;
+  description?: string;
+  force_pre_tool_speech?: boolean;
+  pre_tool_speech?: ElevenLabsPreToolSpeechMode;
+  disable_interruptions?: boolean;
+  tool_call_sound?: ElevenLabsToolCallSoundType | null;
+  tool_call_sound_behavior?: ElevenLabsToolCallSoundBehavior;
+  execution_mode?: ElevenLabsToolExecutionMode;
+  response_timeout_secs?: number;
+  tool_config_overrides?: ElevenLabsMcpToolConfigOverride[];
+  disable_compression?: boolean;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMcpServerMetadata {
+  created_at: number;
+  owner_user_id?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMcpServerResponse {
+  id: string;
+  config: ElevenLabsMcpServerConfig;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  dependent_agents?: Record<string, unknown>[];
+  metadata: ElevenLabsMcpServerMetadata;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListMcpServersResponse {
+  mcp_servers: ElevenLabsMcpServerResponse[];
+  [key: string]: unknown;
+}
+
+// DELETE returns a 200 with an unspecified body; tolerate either empty JSON or
+// a provider-specific payload.
+export type ElevenLabsDeleteMcpServerResponse = Record<string, unknown>;
+
+export interface ElevenLabsMcpToolDefinition {
+  name: string;
+  title?: string | null;
+  description?: string | null;
+  inputSchema: Record<string, unknown>;
+  outputSchema?: Record<string, unknown> | null;
+  icons?: Record<string, unknown>[] | null;
+  annotations?: Record<string, unknown> | null;
+  _meta?: Record<string, unknown> | null;
+  execution?: Record<string, unknown> | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListMcpServerToolsResponse {
+  success: boolean;
+  tools: ElevenLabsMcpToolDefinition[];
+  error_message?: string | null;
   [key: string]: unknown;
 }
 
@@ -4417,6 +4550,107 @@ export interface ElevenLabsGetToolExecutionsMethod {
   schema: z.ZodType<ElevenLabsGetToolExecutionsRequest>;
 }
 
+export interface ElevenLabsCreateMcpServerMethod {
+  (
+    req: ElevenLabsCreateMcpServerRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: z.ZodType<ElevenLabsCreateMcpServerRequest>;
+}
+
+export interface ElevenLabsListMcpServersMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsListMcpServersResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetMcpServerMethod {
+  (
+    mcpServerId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateMcpServerMethod {
+  (
+    mcpServerId: string,
+    req: ElevenLabsUpdateMcpServerRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: z.ZodType<ElevenLabsUpdateMcpServerRequest>;
+}
+
+export interface ElevenLabsDeleteMcpServerMethod {
+  (
+    mcpServerId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteMcpServerResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsListMcpServerToolsMethod {
+  (
+    mcpServerId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListMcpServerToolsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCreateMcpServerToolApprovalMethod {
+  (
+    mcpServerId: string,
+    req: ElevenLabsCreateMcpServerToolApprovalRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: z.ZodType<ElevenLabsCreateMcpServerToolApprovalRequest>;
+}
+
+export interface ElevenLabsDeleteMcpServerToolApprovalMethod {
+  (
+    mcpServerId: string,
+    toolName: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCreateMcpToolConfigOverrideMethod {
+  (
+    mcpServerId: string,
+    req: ElevenLabsCreateMcpToolConfigOverrideRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: z.ZodType<ElevenLabsCreateMcpToolConfigOverrideRequest>;
+}
+
+export interface ElevenLabsGetMcpToolConfigOverrideMethod {
+  (
+    mcpServerId: string,
+    toolName: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpToolConfigOverride>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateMcpToolConfigOverrideMethod {
+  (
+    mcpServerId: string,
+    toolName: string,
+    req: ElevenLabsUpdateMcpToolConfigOverrideRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: z.ZodType<ElevenLabsUpdateMcpToolConfigOverrideRequest>;
+}
+
+export interface ElevenLabsDeleteMcpToolConfigOverrideMethod {
+  (
+    mcpServerId: string,
+    toolName: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMcpServerResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod {
   (
     req: ElevenLabsCreateKnowledgeBaseDocumentFromUrlRequest,
@@ -4929,6 +5163,29 @@ export interface ElevenLabsConvaiToolsNamespace {
   executions: ElevenLabsGetToolExecutionsMethod;
 }
 
+export interface ElevenLabsConvaiMcpServerToolApprovalsNamespace {
+  create: ElevenLabsCreateMcpServerToolApprovalMethod;
+  delete: ElevenLabsDeleteMcpServerToolApprovalMethod;
+}
+
+export interface ElevenLabsConvaiMcpServerToolConfigsNamespace {
+  create: ElevenLabsCreateMcpToolConfigOverrideMethod;
+  get: ElevenLabsGetMcpToolConfigOverrideMethod;
+  update: ElevenLabsUpdateMcpToolConfigOverrideMethod;
+  delete: ElevenLabsDeleteMcpToolConfigOverrideMethod;
+}
+
+export interface ElevenLabsConvaiMcpServersNamespace {
+  create: ElevenLabsCreateMcpServerMethod;
+  list: ElevenLabsListMcpServersMethod;
+  get: ElevenLabsGetMcpServerMethod;
+  update: ElevenLabsUpdateMcpServerMethod;
+  delete: ElevenLabsDeleteMcpServerMethod;
+  tools: ElevenLabsListMcpServerToolsMethod;
+  toolApprovals: ElevenLabsConvaiMcpServerToolApprovalsNamespace;
+  toolConfigs: ElevenLabsConvaiMcpServerToolConfigsNamespace;
+}
+
 export interface ElevenLabsConvaiKnowledgeBaseNamespace {
   url: ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod;
   text: ElevenLabsCreateKnowledgeBaseDocumentFromTextMethod;
@@ -5040,6 +5297,7 @@ export interface ElevenLabsConvaiNamespace {
   agentTesting: ElevenLabsConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsConvaiTestInvocationsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
+  mcpServers: ElevenLabsConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsConvaiConversationsNamespace;
   conversation: ElevenLabsConvaiConversationNamespace;
@@ -5351,6 +5609,7 @@ export interface ElevenLabsPostConvaiNamespace {
   agentTesting: ElevenLabsPostConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsPostConvaiTestInvocationsNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
+  mcpServers: ElevenLabsPostConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsPostConvaiConversationsNamespace;
   phoneNumbers: ElevenLabsPostConvaiPhoneNumbersNamespace;
@@ -5429,6 +5688,23 @@ export interface ElevenLabsPatchConvaiToolsNamespace {
   update: ElevenLabsUpdateToolMethod;
 }
 
+export interface ElevenLabsPostConvaiMcpServersNamespace {
+  create: ElevenLabsCreateMcpServerMethod;
+  toolApprovals: {
+    create: ElevenLabsCreateMcpServerToolApprovalMethod;
+  };
+  toolConfigs: {
+    create: ElevenLabsCreateMcpToolConfigOverrideMethod;
+  };
+}
+
+export interface ElevenLabsPatchConvaiMcpServersNamespace {
+  update: ElevenLabsUpdateMcpServerMethod;
+  toolConfigs: {
+    update: ElevenLabsUpdateMcpToolConfigOverrideMethod;
+  };
+}
+
 export interface ElevenLabsPatchConvaiAgentTestingNamespace {
   folders: {
     update: ElevenLabsUpdateAgentTestFolderMethod;
@@ -5448,6 +5724,7 @@ export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
   agentTesting: ElevenLabsPatchConvaiAgentTestingNamespace;
   tools: ElevenLabsPatchConvaiToolsNamespace;
+  mcpServers: ElevenLabsPatchConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsPatchConvaiKnowledgeBaseNamespace;
   phoneNumbers: ElevenLabsPatchConvaiPhoneNumbersNamespace;
 }
@@ -5501,6 +5778,15 @@ export interface ElevenLabsGetConvaiToolsNamespace {
   get: ElevenLabsGetToolMethod;
   dependentAgents: ElevenLabsGetToolDependentAgentsMethod;
   executions: ElevenLabsGetToolExecutionsMethod;
+}
+
+export interface ElevenLabsGetConvaiMcpServersNamespace {
+  list: ElevenLabsListMcpServersMethod;
+  get: ElevenLabsGetMcpServerMethod;
+  tools: ElevenLabsListMcpServerToolsMethod;
+  toolConfigs: {
+    get: ElevenLabsGetMcpToolConfigOverrideMethod;
+  };
 }
 
 export interface ElevenLabsGetConvaiAgentTestingNamespace {
@@ -5566,6 +5852,7 @@ export interface ElevenLabsGetConvaiNamespace {
   agentTesting: ElevenLabsGetConvaiAgentTestingNamespace;
   testInvocations: ElevenLabsGetConvaiTestInvocationsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
+  mcpServers: ElevenLabsGetConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsGetConvaiConversationsNamespace;
   conversation: ElevenLabsGetConvaiConversationNamespace;
@@ -5626,6 +5913,16 @@ export interface ElevenLabsDeleteConvaiToolsNamespace {
   delete: ElevenLabsDeleteToolMethod;
 }
 
+export interface ElevenLabsDeleteConvaiMcpServersNamespace {
+  delete: ElevenLabsDeleteMcpServerMethod;
+  toolApprovals: {
+    delete: ElevenLabsDeleteMcpServerToolApprovalMethod;
+  };
+  toolConfigs: {
+    delete: ElevenLabsDeleteMcpToolConfigOverrideMethod;
+  };
+}
+
 export interface ElevenLabsDeleteConvaiAgentTestingNamespace {
   delete: ElevenLabsDeleteAgentTestMethod;
   folders: {
@@ -5658,6 +5955,7 @@ export interface ElevenLabsDeleteConvaiNamespace {
   agents: ElevenLabsDeleteConvaiAgentsNamespace;
   agentTesting: ElevenLabsDeleteConvaiAgentTestingNamespace;
   tools: ElevenLabsDeleteConvaiToolsNamespace;
+  mcpServers: ElevenLabsDeleteConvaiMcpServersNamespace;
   knowledgeBase: ElevenLabsDeleteConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsDeleteConvaiConversationsNamespace;
   phoneNumbers: ElevenLabsDeleteConvaiPhoneNumbersNamespace;

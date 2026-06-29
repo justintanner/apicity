@@ -145,6 +145,16 @@ import {
   ElevenLabsGetToolDependentAgentsResponse,
   ElevenLabsGetToolExecutionsRequest,
   ElevenLabsGetToolExecutionsResponse,
+  ElevenLabsCreateMcpServerRequest,
+  ElevenLabsMcpServerResponse,
+  ElevenLabsListMcpServersResponse,
+  ElevenLabsUpdateMcpServerRequest,
+  ElevenLabsDeleteMcpServerResponse,
+  ElevenLabsListMcpServerToolsResponse,
+  ElevenLabsCreateMcpServerToolApprovalRequest,
+  ElevenLabsCreateMcpToolConfigOverrideRequest,
+  ElevenLabsMcpToolConfigOverride,
+  ElevenLabsUpdateMcpToolConfigOverrideRequest,
   ElevenLabsCreateAgentTestRequest,
   ElevenLabsCreateAgentTestResponse,
   ElevenLabsListAgentTestsRequest,
@@ -391,6 +401,11 @@ import {
   ElevenLabsUpdateToolRequestSchema,
   ElevenLabsGetToolDependentAgentsRequestSchema,
   ElevenLabsGetToolExecutionsRequestSchema,
+  ElevenLabsCreateMcpServerRequestSchema,
+  ElevenLabsUpdateMcpServerRequestSchema,
+  ElevenLabsCreateMcpServerToolApprovalRequestSchema,
+  ElevenLabsCreateMcpToolConfigOverrideRequestSchema,
+  ElevenLabsUpdateMcpToolConfigOverrideRequestSchema,
   ElevenLabsCreateAgentTestRequestSchema,
   ElevenLabsListAgentTestsRequestSchema,
   ElevenLabsUpdateAgentTestRequestSchema,
@@ -4658,6 +4673,215 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsGetToolExecutionsRequestSchema }
   );
 
+  // POST https://api.elevenlabs.io/v1/convai/mcp-servers
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/create
+  const createMcpServer = Object.assign(
+    async (
+      req: ElevenLabsCreateMcpServerRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "POST",
+        "/v1/convai/mcp-servers",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateMcpServerRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/mcp-servers
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/list
+  const listMcpServers = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsListMcpServersResponse> => {
+      return makeJsonRequest<ElevenLabsListMcpServersResponse>(
+        "GET",
+        "/v1/convai/mcp-servers",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/get
+  const getMcpServer = Object.assign(
+    async (
+      mcpServerId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "GET",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/update
+  const updateMcpServer = Object.assign(
+    async (
+      mcpServerId: string,
+      req: ElevenLabsUpdateMcpServerRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "PATCH",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateMcpServerRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/delete
+  const deleteMcpServer = Object.assign(
+    async (
+      mcpServerId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteMcpServerResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsDeleteMcpServerResponse>(
+        "DELETE",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tools
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/list-tools
+  const listMcpServerTools = Object.assign(
+    async (
+      mcpServerId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListMcpServerToolsResponse> => {
+      return makeJsonRequest<ElevenLabsListMcpServerToolsResponse>(
+        "GET",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tools`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-approvals
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/approval-policies/create
+  const createMcpServerToolApproval = Object.assign(
+    async (
+      mcpServerId: string,
+      req: ElevenLabsCreateMcpServerToolApprovalRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "POST",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tool-approvals`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateMcpServerToolApprovalRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-approvals/{toolName}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/approval-policies/delete
+  const deleteMcpServerToolApproval = Object.assign(
+    async (
+      mcpServerId: string,
+      toolName: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "DELETE",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tool-approvals/${encodeURIComponent(toolName)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/create
+  const createMcpToolConfigOverride = Object.assign(
+    async (
+      mcpServerId: string,
+      req: ElevenLabsCreateMcpToolConfigOverrideRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "POST",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tool-configs`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateMcpToolConfigOverrideRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/get
+  const getMcpToolConfigOverride = Object.assign(
+    async (
+      mcpServerId: string,
+      toolName: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpToolConfigOverride> => {
+      return makeJsonRequest<ElevenLabsMcpToolConfigOverride>(
+        "GET",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tool-configs/${encodeURIComponent(toolName)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/update
+  const updateMcpToolConfigOverride = Object.assign(
+    async (
+      mcpServerId: string,
+      toolName: string,
+      req: ElevenLabsUpdateMcpToolConfigOverrideRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "PATCH",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tool-configs/${encodeURIComponent(toolName)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateMcpToolConfigOverrideRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}
+  // Docs: https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/delete
+  const deleteMcpToolConfigOverride = Object.assign(
+    async (
+      mcpServerId: string,
+      toolName: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMcpServerResponse> => {
+      return makeJsonRequest<ElevenLabsMcpServerResponse>(
+        "DELETE",
+        `/v1/convai/mcp-servers/${encodeURIComponent(mcpServerId)}/tool-configs/${encodeURIComponent(toolName)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v1/convai/conversations
   // Docs: https://elevenlabs.io/docs/api-reference/conversations/list
   const listConversations = Object.assign(
@@ -5034,6 +5258,26 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     delete: deleteTool,
     dependentAgents: getToolDependentAgents,
     executions: getToolExecutions,
+  };
+  const convaiMcpServerToolApprovals = {
+    create: createMcpServerToolApproval,
+    delete: deleteMcpServerToolApproval,
+  };
+  const convaiMcpServerToolConfigs = {
+    create: createMcpToolConfigOverride,
+    get: getMcpToolConfigOverride,
+    update: updateMcpToolConfigOverride,
+    delete: deleteMcpToolConfigOverride,
+  };
+  const convaiMcpServers = {
+    create: createMcpServer,
+    list: listMcpServers,
+    get: getMcpServer,
+    update: updateMcpServer,
+    delete: deleteMcpServer,
+    tools: listMcpServerTools,
+    toolApprovals: convaiMcpServerToolApprovals,
+    toolConfigs: convaiMcpServerToolConfigs,
   };
 
   // POST https://api.elevenlabs.io/v1/convai/knowledge-base/url
@@ -5554,6 +5798,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     agentTesting: convaiAgentTesting,
     testInvocations: convaiTestInvocations,
     tools: convaiTools,
+    mcpServers: convaiMcpServers,
     knowledgeBase: convaiKnowledgeBase,
     conversations: convaiConversations,
     conversation: convaiConversation,
@@ -5712,6 +5957,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         resubmit: resubmitTests,
       },
       tools: { create: createTool },
+      mcpServers: {
+        create: createMcpServer,
+        toolApprovals: { create: createMcpServerToolApproval },
+        toolConfigs: { create: createMcpToolConfigOverride },
+      },
       knowledgeBase: {
         url: createKnowledgeBaseDocumentFromUrl,
         text: createKnowledgeBaseDocumentFromText,
@@ -5758,6 +6008,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         folders: { update: updateAgentTestFolder },
       },
       tools: { update: updateTool },
+      mcpServers: {
+        update: updateMcpServer,
+        toolConfigs: { update: updateMcpToolConfigOverride },
+      },
       knowledgeBase: {
         update: updateKnowledgeBaseDocument,
         updateFile: updateKnowledgeBaseFileDocument,
@@ -5807,6 +6061,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         folders: { delete: deleteAgentTestFolder },
       },
       tools: { delete: deleteTool },
+      mcpServers: {
+        delete: deleteMcpServer,
+        toolApprovals: { delete: deleteMcpServerToolApproval },
+        toolConfigs: { delete: deleteMcpToolConfigOverride },
+      },
       knowledgeBase: {
         delete: deleteKnowledgeBaseDocument,
         ragIndex: { delete: deleteKnowledgeBaseDocumentRagIndex },
@@ -5929,6 +6188,14 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             get: getTool,
             dependentAgents: getToolDependentAgents,
             executions: getToolExecutions,
+          },
+          mcpServers: {
+            list: listMcpServers,
+            get: getMcpServer,
+            tools: listMcpServerTools,
+            toolConfigs: {
+              get: getMcpToolConfigOverride,
+            },
           },
           knowledgeBase: {
             list: listKnowledgeBaseDocuments,

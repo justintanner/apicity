@@ -45,6 +45,20 @@ import type {
   ElevenLabsUpdateAgentRequest,
   ElevenLabsGetAgentWidgetRequest,
   ElevenLabsListAgentBranchesRequest,
+  ElevenLabsGetAgentSummariesRequest,
+  ElevenLabsDuplicateAgentRequest,
+  ElevenLabsPostAgentAvatarRequest,
+  ElevenLabsSimulateConversationRequest,
+  ElevenLabsGetAgentTopicsRequest,
+  ElevenLabsCalculateAgentLlmUsageRequest,
+  ElevenLabsCreateAgentDraftRequest,
+  ElevenLabsDeleteAgentDraftRequest,
+  ElevenLabsCreateAgentDeploymentRequest,
+  ElevenLabsCreateAgentBranchRequest,
+  ElevenLabsUpdateAgentBranchRequest,
+  ElevenLabsMergeAgentBranchRequest,
+  ElevenLabsPreviewAgentBranchMergeRequest,
+  ElevenLabsGetLiveConversationCountRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsListToolsRequest,
   ElevenLabsUpdateToolRequest,
@@ -254,6 +268,48 @@ export type {
   ElevenLabsListAgentBranchesRequest,
   ElevenLabsListAgentBranchesRequestInput,
   ElevenLabsListAgentBranchesParsedRequest,
+  ElevenLabsGetAgentSummariesRequest,
+  ElevenLabsGetAgentSummariesRequestInput,
+  ElevenLabsGetAgentSummariesParsedRequest,
+  ElevenLabsDuplicateAgentRequest,
+  ElevenLabsDuplicateAgentRequestInput,
+  ElevenLabsDuplicateAgentParsedRequest,
+  ElevenLabsPostAgentAvatarRequest,
+  ElevenLabsPostAgentAvatarRequestInput,
+  ElevenLabsPostAgentAvatarParsedRequest,
+  ElevenLabsSimulateConversationRequest,
+  ElevenLabsSimulateConversationRequestInput,
+  ElevenLabsSimulateConversationParsedRequest,
+  ElevenLabsGetAgentTopicsRequest,
+  ElevenLabsGetAgentTopicsRequestInput,
+  ElevenLabsGetAgentTopicsParsedRequest,
+  ElevenLabsCalculateAgentLlmUsageRequest,
+  ElevenLabsCalculateAgentLlmUsageRequestInput,
+  ElevenLabsCalculateAgentLlmUsageParsedRequest,
+  ElevenLabsCreateAgentDraftRequest,
+  ElevenLabsCreateAgentDraftRequestInput,
+  ElevenLabsCreateAgentDraftParsedRequest,
+  ElevenLabsDeleteAgentDraftRequest,
+  ElevenLabsDeleteAgentDraftRequestInput,
+  ElevenLabsDeleteAgentDraftParsedRequest,
+  ElevenLabsCreateAgentDeploymentRequest,
+  ElevenLabsCreateAgentDeploymentRequestInput,
+  ElevenLabsCreateAgentDeploymentParsedRequest,
+  ElevenLabsCreateAgentBranchRequest,
+  ElevenLabsCreateAgentBranchRequestInput,
+  ElevenLabsCreateAgentBranchParsedRequest,
+  ElevenLabsUpdateAgentBranchRequest,
+  ElevenLabsUpdateAgentBranchRequestInput,
+  ElevenLabsUpdateAgentBranchParsedRequest,
+  ElevenLabsMergeAgentBranchRequest,
+  ElevenLabsMergeAgentBranchRequestInput,
+  ElevenLabsMergeAgentBranchParsedRequest,
+  ElevenLabsPreviewAgentBranchMergeRequest,
+  ElevenLabsPreviewAgentBranchMergeRequestInput,
+  ElevenLabsPreviewAgentBranchMergeParsedRequest,
+  ElevenLabsGetLiveConversationCountRequest,
+  ElevenLabsGetLiveConversationCountRequestInput,
+  ElevenLabsGetLiveConversationCountParsedRequest,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolRequestInput,
   ElevenLabsCreateToolParsedRequest,
@@ -1829,6 +1885,139 @@ export interface ElevenLabsListAgentBranchesResponse {
   results: ElevenLabsAgentBranchSummary[];
 }
 
+export interface ElevenLabsAgentSummaryBatchSuccess {
+  status: "success";
+  data: ElevenLabsAgentSummary;
+}
+
+export interface ElevenLabsBatchFailure {
+  status: "failure";
+  error_code: number;
+  error_status: string;
+  error_message: string;
+}
+
+export type ElevenLabsAgentSummaryBatchResult =
+  | ElevenLabsAgentSummaryBatchSuccess
+  | ElevenLabsBatchFailure;
+
+export type ElevenLabsGetAgentSummariesResponse = Record<
+  string,
+  ElevenLabsAgentSummaryBatchResult
+>;
+
+export type ElevenLabsDuplicateAgentResponse = ElevenLabsCreateAgentResponse;
+
+export interface ElevenLabsPostAgentAvatarResponse {
+  agent_id: string;
+  avatar_url?: string | null;
+}
+
+export interface ElevenLabsAgentVersionParents {
+  in_branch_parent_id?: string | null;
+  out_of_branch_parent_id?: string | null;
+  merged_into_branch_id?: string | null;
+  merged_from_branch_id?: string | null;
+  merged_from_version_id?: string | null;
+  rebased_from_version_id?: string | null;
+}
+
+export interface ElevenLabsAgentVersionMetadata {
+  id: string;
+  agent_id: string;
+  branch_id: string;
+  version_description: string;
+  seq_no_in_branch: number;
+  time_committed_secs: number;
+  parents: ElevenLabsAgentVersionParents;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+}
+
+export interface ElevenLabsSimulatedConversationResponse {
+  simulated_conversation: Record<string, unknown>[];
+  analysis: Record<string, unknown>;
+}
+
+export interface ElevenLabsAgentTopic {
+  topic_id: string;
+  label: string;
+  description: string;
+  conversation_count: number;
+  parent_topic_id?: string | null;
+  x_2d?: number | null;
+  y_2d?: number | null;
+}
+
+export interface ElevenLabsGetAgentTopicsResponse {
+  topics: ElevenLabsAgentTopic[];
+  window_start_unix_secs: number;
+  window_end_unix_secs: number;
+}
+
+export interface ElevenLabsAgentKnowledgeBaseSizeResponse {
+  number_of_pages: number;
+}
+
+export interface ElevenLabsAgentLlmUsagePrice {
+  llm: string;
+  price_per_minute: number;
+}
+
+export interface ElevenLabsCalculateAgentLlmUsageResponse {
+  llm_prices: ElevenLabsAgentLlmUsagePrice[];
+}
+
+export type ElevenLabsAgentDraftResponse = Record<string, unknown>;
+
+export interface ElevenLabsAgentDeploymentRequestItem {
+  branch_id: string;
+  deployment_strategy: Record<string, unknown>;
+}
+
+export interface ElevenLabsAgentDeploymentRequestPayload {
+  requests: ElevenLabsAgentDeploymentRequestItem[];
+}
+
+export interface ElevenLabsAgentDeploymentResponse {
+  traffic_percentage_branch_id_map?: Record<string, number>;
+}
+
+export interface ElevenLabsCreateAgentBranchResponse {
+  created_branch_id: string;
+  created_version_id: string;
+}
+
+export interface ElevenLabsAgentBranchBasicInfo {
+  id: string;
+  name: string;
+}
+
+export interface ElevenLabsAgentBranchResponse {
+  id: string;
+  name: string;
+  agent_id: string;
+  description: string;
+  created_at: number;
+  last_committed_at: number;
+  is_archived: boolean;
+  protection_status?: ElevenLabsAgentBranchProtectionStatus;
+  access_info?: ElevenLabsResourceAccessInfo | null;
+  current_live_percentage?: number;
+  parent_branch?: ElevenLabsAgentBranchBasicInfo | null;
+  most_recent_versions?: ElevenLabsAgentVersionMetadata[];
+}
+
+export type ElevenLabsAgentBranchMutationResponse = Record<string, unknown>;
+
+export interface ElevenLabsAgentBranchPreviewResponse extends ElevenLabsGetAgentResponse {
+  overridden_fields?: string[];
+  source_identical_to_target?: boolean;
+}
+
+export interface ElevenLabsLiveConversationCountResponse {
+  count: number;
+}
+
 // -- Agents Platform (Conversational AI) Tools response shapes ---------------
 
 export interface ElevenLabsToolUsageStats {
@@ -3271,6 +3460,187 @@ export interface ElevenLabsListAgentBranchesMethod {
   schema: z.ZodType<ElevenLabsListAgentBranchesRequest>;
 }
 
+export interface ElevenLabsGetAgentSummariesMethod {
+  (
+    req: ElevenLabsGetAgentSummariesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentSummariesResponse>;
+  schema: z.ZodType<ElevenLabsGetAgentSummariesRequest>;
+}
+
+export interface ElevenLabsDuplicateAgentMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsDuplicateAgentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDuplicateAgentResponse>;
+  schema: z.ZodType<ElevenLabsDuplicateAgentRequest>;
+}
+
+export interface ElevenLabsPostAgentAvatarMethod {
+  (
+    agentId: string,
+    req: ElevenLabsPostAgentAvatarRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsPostAgentAvatarResponse>;
+  schema: z.ZodType<ElevenLabsPostAgentAvatarRequest>;
+}
+
+export interface ElevenLabsGetAgentVersionMethod {
+  (
+    agentId: string,
+    versionId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentVersionMetadata>;
+  schema: undefined;
+}
+
+export interface ElevenLabsSimulateConversationStreamMethod {
+  (
+    agentId: string,
+    req: ElevenLabsSimulateConversationRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsSimulateConversationRequest>;
+}
+
+export interface ElevenLabsSimulateConversationMethod {
+  (
+    agentId: string,
+    req: ElevenLabsSimulateConversationRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSimulatedConversationResponse>;
+  schema: z.ZodType<ElevenLabsSimulateConversationRequest>;
+  stream: ElevenLabsSimulateConversationStreamMethod;
+}
+
+export interface ElevenLabsGetAgentTopicsMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsGetAgentTopicsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetAgentTopicsResponse>;
+  schema: z.ZodType<ElevenLabsGetAgentTopicsRequest>;
+}
+
+export interface ElevenLabsGetAgentKnowledgeBaseSizeMethod {
+  (
+    agentId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentKnowledgeBaseSizeResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCalculateAgentLlmUsageMethod {
+  (
+    agentId: string,
+    req?: ElevenLabsCalculateAgentLlmUsageRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCalculateAgentLlmUsageResponse>;
+  schema: z.ZodType<ElevenLabsCalculateAgentLlmUsageRequest>;
+}
+
+export interface ElevenLabsCreateAgentDraftMethod {
+  (
+    agentId: string,
+    req: ElevenLabsCreateAgentDraftRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentDraftResponse>;
+  schema: z.ZodType<ElevenLabsCreateAgentDraftRequest>;
+}
+
+export interface ElevenLabsDeleteAgentDraftMethod {
+  (
+    agentId: string,
+    req: ElevenLabsDeleteAgentDraftRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentDraftResponse>;
+  schema: z.ZodType<ElevenLabsDeleteAgentDraftRequest>;
+}
+
+export interface ElevenLabsCreateAgentDeploymentMethod {
+  (
+    agentId: string,
+    req: ElevenLabsCreateAgentDeploymentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentDeploymentResponse>;
+  schema: z.ZodType<ElevenLabsCreateAgentDeploymentRequest>;
+}
+
+export interface ElevenLabsCreateAgentBranchMethod {
+  (
+    agentId: string,
+    req: ElevenLabsCreateAgentBranchRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateAgentBranchResponse>;
+  schema: z.ZodType<ElevenLabsCreateAgentBranchRequest>;
+}
+
+export interface ElevenLabsGetAgentBranchMethod {
+  (
+    agentId: string,
+    branchId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentBranchResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateAgentBranchMethod {
+  (
+    agentId: string,
+    branchId: string,
+    req?: ElevenLabsUpdateAgentBranchRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentBranchResponse>;
+  schema: z.ZodType<ElevenLabsUpdateAgentBranchRequest>;
+}
+
+export interface ElevenLabsRebaseAgentBranchMethod {
+  (
+    agentId: string,
+    branchId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentBranchMutationResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsPreviewAgentBranchRebaseMethod {
+  (
+    agentId: string,
+    branchId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentBranchPreviewResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsMergeAgentBranchMethod {
+  (
+    agentId: string,
+    sourceBranchId: string,
+    req: ElevenLabsMergeAgentBranchRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentBranchMutationResponse>;
+  schema: z.ZodType<ElevenLabsMergeAgentBranchRequest>;
+}
+
+export interface ElevenLabsPreviewAgentBranchMergeMethod {
+  (
+    agentId: string,
+    sourceBranchId: string,
+    req: ElevenLabsPreviewAgentBranchMergeRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAgentBranchPreviewResponse>;
+  schema: z.ZodType<ElevenLabsPreviewAgentBranchMergeRequest>;
+}
+
+export interface ElevenLabsGetLiveConversationCountMethod {
+  (
+    req?: ElevenLabsGetLiveConversationCountRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsLiveConversationCountResponse>;
+  schema: z.ZodType<ElevenLabsGetLiveConversationCountRequest>;
+}
+
 export interface ElevenLabsCreateToolMethod {
   (
     req: ElevenLabsCreateToolRequest,
@@ -3498,6 +3868,25 @@ export interface ElevenLabsHistoryNamespace {
 
 // -- Namespace interfaces ----------------------------------------------------
 
+export interface ElevenLabsConvaiAgentVersionsNamespace {
+  get: ElevenLabsGetAgentVersionMethod;
+}
+
+export interface ElevenLabsConvaiAgentDraftsNamespace {
+  create: ElevenLabsCreateAgentDraftMethod;
+  delete: ElevenLabsDeleteAgentDraftMethod;
+}
+
+export interface ElevenLabsConvaiAgentBranchesNamespace extends ElevenLabsListAgentBranchesMethod {
+  create: ElevenLabsCreateAgentBranchMethod;
+  get: ElevenLabsGetAgentBranchMethod;
+  update: ElevenLabsUpdateAgentBranchMethod;
+  rebase: ElevenLabsRebaseAgentBranchMethod;
+  rebasePreview: ElevenLabsPreviewAgentBranchRebaseMethod;
+  merge: ElevenLabsMergeAgentBranchMethod;
+  mergePreview: ElevenLabsPreviewAgentBranchMergeMethod;
+}
+
 export interface ElevenLabsConvaiAgentsNamespace {
   create: ElevenLabsCreateAgentMethod;
   list: ElevenLabsListAgentsMethod;
@@ -3506,7 +3895,15 @@ export interface ElevenLabsConvaiAgentsNamespace {
   delete: ElevenLabsDeleteAgentMethod;
   widget: ElevenLabsGetAgentWidgetMethod;
   link: ElevenLabsGetAgentLinkMethod;
-  branches: ElevenLabsListAgentBranchesMethod;
+  branches: ElevenLabsConvaiAgentBranchesNamespace;
+  summaries: ElevenLabsGetAgentSummariesMethod;
+  duplicate: ElevenLabsDuplicateAgentMethod;
+  avatar: ElevenLabsPostAgentAvatarMethod;
+  versions: ElevenLabsConvaiAgentVersionsNamespace;
+  simulateConversation: ElevenLabsSimulateConversationMethod;
+  topics: ElevenLabsGetAgentTopicsMethod;
+  drafts: ElevenLabsConvaiAgentDraftsNamespace;
+  deployments: ElevenLabsCreateAgentDeploymentMethod;
 }
 
 export interface ElevenLabsConvaiToolsNamespace {
@@ -3553,8 +3950,27 @@ export interface ElevenLabsConvaiSipTrunkNamespace {
   outboundCall: ElevenLabsSipTrunkOutboundCallMethod;
 }
 
+export interface ElevenLabsConvaiAgentKnowledgeBaseNamespace {
+  size: ElevenLabsGetAgentKnowledgeBaseSizeMethod;
+}
+
+export interface ElevenLabsConvaiAgentLlmUsageNamespace {
+  calculate: ElevenLabsCalculateAgentLlmUsageMethod;
+}
+
+export interface ElevenLabsConvaiAgentNamespace {
+  knowledgeBase: ElevenLabsConvaiAgentKnowledgeBaseNamespace;
+  llmUsage: ElevenLabsConvaiAgentLlmUsageNamespace;
+}
+
+export interface ElevenLabsConvaiAnalyticsNamespace {
+  liveCount: ElevenLabsGetLiveConversationCountMethod;
+}
+
 export interface ElevenLabsConvaiNamespace {
   agents: ElevenLabsConvaiAgentsNamespace;
+  agent: ElevenLabsConvaiAgentNamespace;
+  analytics: ElevenLabsConvaiAnalyticsNamespace;
   tools: ElevenLabsConvaiToolsNamespace;
   knowledgeBase: ElevenLabsConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsConvaiConversationsNamespace;
@@ -3798,6 +4214,18 @@ export interface ElevenLabsV2Namespace {
 
 export interface ElevenLabsPostConvaiAgentsNamespace {
   create: ElevenLabsCreateAgentMethod;
+  duplicate: ElevenLabsDuplicateAgentMethod;
+  avatar: ElevenLabsPostAgentAvatarMethod;
+  simulateConversation: ElevenLabsSimulateConversationMethod;
+  drafts: {
+    create: ElevenLabsCreateAgentDraftMethod;
+  };
+  deployments: ElevenLabsCreateAgentDeploymentMethod;
+  branches: {
+    create: ElevenLabsCreateAgentBranchMethod;
+    rebase: ElevenLabsRebaseAgentBranchMethod;
+    merge: ElevenLabsMergeAgentBranchMethod;
+  };
 }
 
 export interface ElevenLabsPostConvaiToolsNamespace {
@@ -3814,8 +4242,15 @@ export interface ElevenLabsPostConvaiPhoneNumbersNamespace {
   create: ElevenLabsCreatePhoneNumberMethod;
 }
 
+export interface ElevenLabsPostConvaiAgentNamespace {
+  llmUsage: {
+    calculate: ElevenLabsCalculateAgentLlmUsageMethod;
+  };
+}
+
 export interface ElevenLabsPostConvaiNamespace {
   agents: ElevenLabsPostConvaiAgentsNamespace;
+  agent: ElevenLabsPostConvaiAgentNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
   phoneNumbers: ElevenLabsPostConvaiPhoneNumbersNamespace;
@@ -3885,6 +4320,9 @@ export interface ElevenLabsPostNamespace {
 
 export interface ElevenLabsPatchConvaiAgentsNamespace {
   update: ElevenLabsUpdateAgentMethod;
+  branches: {
+    update: ElevenLabsUpdateAgentBranchMethod;
+  };
 }
 
 export interface ElevenLabsPatchConvaiToolsNamespace {
@@ -3921,7 +4359,12 @@ export interface ElevenLabsGetConvaiAgentsNamespace {
   get: ElevenLabsGetAgentMethod;
   widget: ElevenLabsGetAgentWidgetMethod;
   link: ElevenLabsGetAgentLinkMethod;
-  branches: ElevenLabsListAgentBranchesMethod;
+  summaries: ElevenLabsGetAgentSummariesMethod;
+  versions: {
+    get: ElevenLabsGetAgentVersionMethod;
+  };
+  topics: ElevenLabsGetAgentTopicsMethod;
+  branches: ElevenLabsConvaiAgentBranchesNamespace;
 }
 
 export interface ElevenLabsGetConvaiToolsNamespace {
@@ -3949,8 +4392,20 @@ export interface ElevenLabsGetConvaiPhoneNumbersNamespace {
   get: ElevenLabsGetPhoneNumberMethod;
 }
 
+export interface ElevenLabsGetConvaiAgentNamespace {
+  knowledgeBase: {
+    size: ElevenLabsGetAgentKnowledgeBaseSizeMethod;
+  };
+}
+
+export interface ElevenLabsGetConvaiAnalyticsNamespace {
+  liveCount: ElevenLabsGetLiveConversationCountMethod;
+}
+
 export interface ElevenLabsGetConvaiNamespace {
   agents: ElevenLabsGetConvaiAgentsNamespace;
+  agent: ElevenLabsGetConvaiAgentNamespace;
+  analytics: ElevenLabsGetConvaiAnalyticsNamespace;
   tools: ElevenLabsGetConvaiToolsNamespace;
   knowledgeBase: ElevenLabsGetConvaiKnowledgeBaseNamespace;
   conversations: ElevenLabsGetConvaiConversationsNamespace;
@@ -4003,6 +4458,9 @@ export interface ElevenLabsGetNamespace {
 
 export interface ElevenLabsDeleteConvaiAgentsNamespace {
   delete: ElevenLabsDeleteAgentMethod;
+  drafts: {
+    delete: ElevenLabsDeleteAgentDraftMethod;
+  };
 }
 
 export interface ElevenLabsDeleteConvaiToolsNamespace {

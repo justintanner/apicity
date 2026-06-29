@@ -105,6 +105,35 @@ import {
   ElevenLabsGetAgentLinkResponse,
   ElevenLabsListAgentBranchesRequest,
   ElevenLabsListAgentBranchesResponse,
+  ElevenLabsGetAgentSummariesRequest,
+  ElevenLabsGetAgentSummariesResponse,
+  ElevenLabsDuplicateAgentRequest,
+  ElevenLabsDuplicateAgentResponse,
+  ElevenLabsPostAgentAvatarRequest,
+  ElevenLabsPostAgentAvatarResponse,
+  ElevenLabsAgentVersionMetadata,
+  ElevenLabsSimulateConversationRequest,
+  ElevenLabsSimulatedConversationResponse,
+  ElevenLabsGetAgentTopicsRequest,
+  ElevenLabsGetAgentTopicsResponse,
+  ElevenLabsAgentKnowledgeBaseSizeResponse,
+  ElevenLabsCalculateAgentLlmUsageRequest,
+  ElevenLabsCalculateAgentLlmUsageResponse,
+  ElevenLabsCreateAgentDraftRequest,
+  ElevenLabsDeleteAgentDraftRequest,
+  ElevenLabsAgentDraftResponse,
+  ElevenLabsCreateAgentDeploymentRequest,
+  ElevenLabsAgentDeploymentResponse,
+  ElevenLabsCreateAgentBranchRequest,
+  ElevenLabsCreateAgentBranchResponse,
+  ElevenLabsAgentBranchResponse,
+  ElevenLabsUpdateAgentBranchRequest,
+  ElevenLabsAgentBranchMutationResponse,
+  ElevenLabsAgentBranchPreviewResponse,
+  ElevenLabsMergeAgentBranchRequest,
+  ElevenLabsPreviewAgentBranchMergeRequest,
+  ElevenLabsGetLiveConversationCountRequest,
+  ElevenLabsLiveConversationCountResponse,
   ElevenLabsCreateToolRequest,
   ElevenLabsCreateToolResponse,
   ElevenLabsListToolsRequest,
@@ -264,6 +293,20 @@ import {
   ElevenLabsUpdateAgentRequestSchema,
   ElevenLabsGetAgentWidgetRequestSchema,
   ElevenLabsListAgentBranchesRequestSchema,
+  ElevenLabsGetAgentSummariesRequestSchema,
+  ElevenLabsDuplicateAgentRequestSchema,
+  ElevenLabsPostAgentAvatarRequestSchema,
+  ElevenLabsSimulateConversationRequestSchema,
+  ElevenLabsGetAgentTopicsRequestSchema,
+  ElevenLabsCalculateAgentLlmUsageRequestSchema,
+  ElevenLabsCreateAgentDraftRequestSchema,
+  ElevenLabsDeleteAgentDraftRequestSchema,
+  ElevenLabsCreateAgentDeploymentRequestSchema,
+  ElevenLabsCreateAgentBranchRequestSchema,
+  ElevenLabsUpdateAgentBranchRequestSchema,
+  ElevenLabsMergeAgentBranchRequestSchema,
+  ElevenLabsPreviewAgentBranchMergeRequestSchema,
+  ElevenLabsGetLiveConversationCountRequestSchema,
   ElevenLabsCreateToolRequestSchema,
   ElevenLabsListToolsRequestSchema,
   ElevenLabsUpdateToolRequestSchema,
@@ -3502,6 +3545,380 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsListAgentBranchesRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/agents/summaries
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/get-summaries
+  const getAgentSummaries = Object.assign(
+    async (
+      req: ElevenLabsGetAgentSummariesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentSummariesResponse> => {
+      return makeJsonRequest<ElevenLabsGetAgentSummariesResponse>(
+        "GET",
+        "/v1/convai/agents/summaries",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetAgentSummariesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/duplicate
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/duplicate
+  const duplicateAgent = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsDuplicateAgentRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDuplicateAgentResponse> => {
+      return makeJsonRequest<ElevenLabsDuplicateAgentResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/duplicate`,
+        Object.keys(req).length > 0 ? req : undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsDuplicateAgentRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/avatar
+  // Docs: https://elevenlabs.io/docs/api-reference/widget/create
+  const postAgentAvatar = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsPostAgentAvatarRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsPostAgentAvatarResponse> => {
+      const form = new FormData();
+      appendFormField(form, "avatar_file", req.avatar_file);
+      return makeMultipartJsonRequest<ElevenLabsPostAgentAvatarResponse>(
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/avatar`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsPostAgentAvatarRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/versions/{versionId}
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/versions/get
+  const getAgentVersion = Object.assign(
+    async (
+      agentId: string,
+      versionId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentVersionMetadata> => {
+      return makeJsonRequest<ElevenLabsAgentVersionMetadata>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/versions/${encodeURIComponent(versionId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/simulate-conversation/stream
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/simulate-conversation-stream
+  const simulateConversationStream = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsSimulateConversationRequest,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeBinaryRequest(
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/simulate-conversation/stream`,
+        req,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsSimulateConversationRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/simulate-conversation
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/simulate-conversation
+  const simulateConversation = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsSimulateConversationRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSimulatedConversationResponse> => {
+      return makeJsonRequest<ElevenLabsSimulatedConversationResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/simulate-conversation`,
+        req,
+        signal
+      );
+    },
+    {
+      schema: ElevenLabsSimulateConversationRequestSchema,
+      stream: simulateConversationStream,
+    }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/topics
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/topics/get
+  const getAgentTopics = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsGetAgentTopicsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetAgentTopicsResponse> => {
+      return makeJsonRequest<ElevenLabsGetAgentTopicsResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/topics`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetAgentTopicsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agent/{agentId}/knowledge-base/size
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/size
+  const getAgentKnowledgeBaseSize = Object.assign(
+    async (
+      agentId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentKnowledgeBaseSizeResponse> => {
+      return makeJsonRequest<ElevenLabsAgentKnowledgeBaseSizeResponse>(
+        "GET",
+        `/v1/convai/agent/${encodeURIComponent(agentId)}/knowledge-base/size`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agent/{agentId}/llm-usage/calculate
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/calculate
+  const calculateAgentLlmUsage = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsCalculateAgentLlmUsageRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCalculateAgentLlmUsageResponse> => {
+      return makeJsonRequest<ElevenLabsCalculateAgentLlmUsageResponse>(
+        "POST",
+        `/v1/convai/agent/${encodeURIComponent(agentId)}/llm-usage/calculate`,
+        Object.keys(req).length > 0 ? req : undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsCalculateAgentLlmUsageRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/drafts
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/drafts/create
+  const createAgentDraft = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsCreateAgentDraftRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentDraftResponse> => {
+      const { branch_id, ...body } = req;
+      return makeJsonRequest<ElevenLabsAgentDraftResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/drafts`,
+        body,
+        signal,
+        buildQueryString({ branch_id })
+      );
+    },
+    { schema: ElevenLabsCreateAgentDraftRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/agents/{agentId}/drafts
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/drafts/delete
+  const deleteAgentDraft = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsDeleteAgentDraftRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentDraftResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsAgentDraftResponse>(
+        "DELETE",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/drafts`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsDeleteAgentDraftRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/deployments
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/deployments/create
+  const createAgentDeployment = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsCreateAgentDeploymentRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentDeploymentResponse> => {
+      return makeJsonRequest<ElevenLabsAgentDeploymentResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/deployments`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateAgentDeploymentRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/create
+  const createAgentBranch = Object.assign(
+    async (
+      agentId: string,
+      req: ElevenLabsCreateAgentBranchRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateAgentBranchResponse> => {
+      return makeJsonRequest<ElevenLabsCreateAgentBranchResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateAgentBranchRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{branchId}
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/get
+  const getAgentBranch = Object.assign(
+    async (
+      agentId: string,
+      branchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentBranchResponse> => {
+      return makeJsonRequest<ElevenLabsAgentBranchResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches/${encodeURIComponent(branchId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{branchId}
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/update
+  const updateAgentBranch = Object.assign(
+    async (
+      agentId: string,
+      branchId: string,
+      req: ElevenLabsUpdateAgentBranchRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentBranchResponse> => {
+      return makeJsonRequest<ElevenLabsAgentBranchResponse>(
+        "PATCH",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches/${encodeURIComponent(branchId)}`,
+        Object.keys(req).length > 0 ? req : undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateAgentBranchRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{branchId}/rebase
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/rebase
+  const rebaseAgentBranch = Object.assign(
+    async (
+      agentId: string,
+      branchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentBranchMutationResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsAgentBranchMutationResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches/${encodeURIComponent(branchId)}/rebase`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{branchId}/rebase-preview
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/preview
+  const previewAgentBranchRebase = Object.assign(
+    async (
+      agentId: string,
+      branchId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentBranchPreviewResponse> => {
+      return makeJsonRequest<ElevenLabsAgentBranchPreviewResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches/${encodeURIComponent(branchId)}/rebase-preview`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{sourceBranchId}/merge
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/merge
+  const mergeAgentBranch = Object.assign(
+    async (
+      agentId: string,
+      sourceBranchId: string,
+      req: ElevenLabsMergeAgentBranchRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentBranchMutationResponse> => {
+      const { target_branch_id, ...body } = req;
+      return makeJsonRequestAllowEmpty<ElevenLabsAgentBranchMutationResponse>(
+        "POST",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches/${encodeURIComponent(sourceBranchId)}/merge`,
+        Object.keys(body).length > 0 ? body : undefined,
+        signal,
+        buildQueryString({ target_branch_id })
+      );
+    },
+    { schema: ElevenLabsMergeAgentBranchRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/agents/{agentId}/branches/{sourceBranchId}/merge-preview
+  // Docs: https://elevenlabs.io/docs/api-reference/agents/branches/preview
+  const previewAgentBranchMerge = Object.assign(
+    async (
+      agentId: string,
+      sourceBranchId: string,
+      req: ElevenLabsPreviewAgentBranchMergeRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAgentBranchPreviewResponse> => {
+      return makeJsonRequest<ElevenLabsAgentBranchPreviewResponse>(
+        "GET",
+        `/v1/convai/agents/${encodeURIComponent(agentId)}/branches/${encodeURIComponent(sourceBranchId)}/merge-preview`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsPreviewAgentBranchMergeRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/analytics/live-count
+  // Docs: https://elevenlabs.io/docs/api-reference/analytics/get
+  const getLiveConversationCount = Object.assign(
+    async (
+      req: ElevenLabsGetLiveConversationCountRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsLiveConversationCountResponse> => {
+      return makeJsonRequest<ElevenLabsLiveConversationCountResponse>(
+        "GET",
+        "/v1/convai/analytics/live-count",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetLiveConversationCountRequestSchema }
+  );
+
   // POST https://api.elevenlabs.io/v1/convai/phone-numbers
   // Docs: https://elevenlabs.io/docs/api-reference/phone-numbers/create
   const createPhoneNumber = Object.assign(
@@ -3623,6 +4040,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsSipTrunkOutboundCallRequestSchema }
   );
 
+  const convaiAgentBranches = Object.assign(listAgentBranches, {
+    create: createAgentBranch,
+    get: getAgentBranch,
+    update: updateAgentBranch,
+    rebase: rebaseAgentBranch,
+    rebasePreview: previewAgentBranchRebase,
+    merge: mergeAgentBranch,
+    mergePreview: previewAgentBranchMerge,
+  });
+
   const convaiAgents = {
     create: createAgent,
     list: listAgents,
@@ -3631,7 +4058,18 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     delete: deleteAgent,
     widget: getAgentWidget,
     link: getAgentLink,
-    branches: listAgentBranches,
+    branches: convaiAgentBranches,
+    summaries: getAgentSummaries,
+    duplicate: duplicateAgent,
+    avatar: postAgentAvatar,
+    versions: { get: getAgentVersion },
+    simulateConversation,
+    topics: getAgentTopics,
+    drafts: {
+      create: createAgentDraft,
+      delete: deleteAgentDraft,
+    },
+    deployments: createAgentDeployment,
   };
 
   // POST https://api.elevenlabs.io/v1/convai/tools
@@ -4036,6 +4474,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
   const convaiSipTrunk = { outboundCall: sipTrunkOutboundCall };
   const convai = {
     agents: convaiAgents,
+    agent: {
+      knowledgeBase: { size: getAgentKnowledgeBaseSize },
+      llmUsage: { calculate: calculateAgentLlmUsage },
+    },
+    analytics: { liveCount: getLiveConversationCount },
     tools: convaiTools,
     knowledgeBase: convaiKnowledgeBase,
     conversations: convaiConversations,
@@ -4166,7 +4609,22 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     },
     workspace,
     convai: {
-      agents: { create: createAgent },
+      agents: {
+        create: createAgent,
+        duplicate: duplicateAgent,
+        avatar: postAgentAvatar,
+        simulateConversation,
+        drafts: { create: createAgentDraft },
+        deployments: createAgentDeployment,
+        branches: {
+          create: createAgentBranch,
+          rebase: rebaseAgentBranch,
+          merge: mergeAgentBranch,
+        },
+      },
+      agent: {
+        llmUsage: { calculate: calculateAgentLlmUsage },
+      },
       tools: { create: createTool },
       knowledgeBase: {
         url: createKnowledgeBaseDocumentFromUrl,
@@ -4192,7 +4650,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       orders: { update: updateOrder },
     },
     convai: {
-      agents: { update: updateAgent },
+      agents: {
+        update: updateAgent,
+        branches: { update: updateAgentBranch },
+      },
       tools: { update: updateTool },
       phoneNumbers: { update: updatePhoneNumber },
     },
@@ -4223,7 +4684,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       },
     },
     convai: {
-      agents: { delete: deleteAgent },
+      agents: {
+        delete: deleteAgent,
+        drafts: { delete: deleteAgentDraft },
+      },
       tools: { delete: deleteTool },
       knowledgeBase: { delete: deleteKnowledgeBaseDocument },
       conversations: { delete: deleteConversation },
@@ -4313,7 +4777,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             get: getAgent,
             widget: getAgentWidget,
             link: getAgentLink,
-            branches: listAgentBranches,
+            summaries: getAgentSummaries,
+            versions: { get: getAgentVersion },
+            topics: getAgentTopics,
+            branches: convaiAgentBranches,
+          },
+          agent: {
+            knowledgeBase: { size: getAgentKnowledgeBaseSize },
+          },
+          analytics: {
+            liveCount: getLiveConversationCount,
           },
           tools: {
             list: listTools,

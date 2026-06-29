@@ -7,6 +7,16 @@ import {
   ElevenLabsSpeechToTextRequestSchema,
   ElevenLabsPvcTrainRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
+  ElevenLabsGetAgentSummariesRequestSchema,
+  ElevenLabsPostAgentAvatarRequestSchema,
+  ElevenLabsSimulateConversationRequestSchema,
+  ElevenLabsCreateAgentDraftRequestSchema,
+  ElevenLabsCreateAgentDeploymentRequestSchema,
+  ElevenLabsCreateAgentBranchRequestSchema,
+  ElevenLabsUpdateAgentBranchRequestSchema,
+  ElevenLabsMergeAgentBranchRequestSchema,
+  ElevenLabsPreviewAgentBranchMergeRequestSchema,
+  ElevenLabsGetLiveConversationCountRequestSchema,
 } from "../../packages/provider/elevenlabs/src/zod";
 
 describe("ElevenLabs Zod schema validation", () => {
@@ -118,6 +128,101 @@ describe("ElevenLabs Zod schema validation", () => {
       expect(
         ElevenLabsPvcTrainRequestSchema.safeParse({ model_id: 123 }).success
       ).toBe(false);
+    });
+  });
+
+  describe("ConvAI agent extension schemas", () => {
+    it("validates batch summaries and avatar payloads", () => {
+      expect(
+        ElevenLabsGetAgentSummariesRequestSchema.safeParse({
+          agent_ids: ["agent_1"],
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsGetAgentSummariesRequestSchema.safeParse({
+          agent_ids: Array.from({ length: 101 }, (_, i) => `agent_${i}`),
+        }).success
+      ).toBe(false);
+      expect(
+        ElevenLabsPostAgentAvatarRequestSchema.safeParse({
+          avatar_file: new Blob(["png"], { type: "image/png" }),
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsPostAgentAvatarRequestSchema.safeParse({
+          avatar_file: "not-a-file",
+        }).success
+      ).toBe(false);
+    });
+
+    it("validates simulation, draft, deployment, branch, and analytics payloads", () => {
+      expect(
+        ElevenLabsSimulateConversationRequestSchema.safeParse({
+          simulation_specification: {
+            simulated_user_config: { first_message: "Hello" },
+          },
+          new_turns_limit: 3,
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsSimulateConversationRequestSchema.safeParse({}).success
+      ).toBe(false);
+      expect(
+        ElevenLabsCreateAgentDraftRequestSchema.safeParse({
+          branch_id: "branch_1",
+          conversation_config: {},
+          platform_settings: {},
+          workflow: {},
+          name: "Draft",
+          tags: ["test"],
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsCreateAgentDeploymentRequestSchema.safeParse({
+          deployment_request: {
+            requests: [
+              {
+                branch_id: "branch_1",
+                deployment_strategy: { type: "percentage", percentage: 100 },
+              },
+            ],
+          },
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsCreateAgentBranchRequestSchema.safeParse({
+          parent_version_id: "version_1",
+          name: "Draft",
+          description: "Draft branch",
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsUpdateAgentBranchRequestSchema.safeParse({
+          protection_status: "writer_perms_required",
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsUpdateAgentBranchRequestSchema.safeParse({
+          protection_status: "owner_only",
+        }).success
+      ).toBe(false);
+      expect(
+        ElevenLabsMergeAgentBranchRequestSchema.safeParse({
+          target_branch_id: "main",
+          archive_source_branch: false,
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsPreviewAgentBranchMergeRequestSchema.safeParse({
+          target_branch_id: "main",
+          force: true,
+        }).success
+      ).toBe(true);
+      expect(
+        ElevenLabsGetLiveConversationCountRequestSchema.safeParse({
+          agent_id: null,
+        }).success
+      ).toBe(true);
     });
   });
 

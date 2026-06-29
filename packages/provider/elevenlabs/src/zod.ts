@@ -1195,6 +1195,264 @@ export type ElevenLabsListAgentBranchesParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// GET /v1/convai/agents/summaries
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetAgentSummariesRequestSchema = z.object({
+  agent_ids: z.array(z.string()).max(100),
+});
+
+export type ElevenLabsGetAgentSummariesRequest = z.input<
+  typeof ElevenLabsGetAgentSummariesRequestSchema
+>;
+export type ElevenLabsGetAgentSummariesRequestInput =
+  ElevenLabsGetAgentSummariesRequest;
+export type ElevenLabsGetAgentSummariesParsedRequest = z.output<
+  typeof ElevenLabsGetAgentSummariesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agents/:agent_id/duplicate
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsDuplicateAgentRequestSchema = z.object({
+  name: z.string().nullable().optional(),
+});
+
+export type ElevenLabsDuplicateAgentRequest = z.input<
+  typeof ElevenLabsDuplicateAgentRequestSchema
+>;
+export type ElevenLabsDuplicateAgentRequestInput =
+  ElevenLabsDuplicateAgentRequest;
+export type ElevenLabsDuplicateAgentParsedRequest = z.output<
+  typeof ElevenLabsDuplicateAgentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agents/:agent_id/avatar
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsPostAgentAvatarRequestSchema = z.object({
+  avatar_file: z.custom<Blob>((value) => value instanceof Blob),
+});
+
+export type ElevenLabsPostAgentAvatarRequest = z.input<
+  typeof ElevenLabsPostAgentAvatarRequestSchema
+>;
+export type ElevenLabsPostAgentAvatarRequestInput =
+  ElevenLabsPostAgentAvatarRequest;
+export type ElevenLabsPostAgentAvatarParsedRequest = z.output<
+  typeof ElevenLabsPostAgentAvatarRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agents/:agent_id/simulate-conversation
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSimulateConversationRequestSchema = z.object({
+  simulation_specification: ElevenLabsAgentConfigObjectSchema,
+  extra_evaluation_criteria: z
+    .array(ElevenLabsAgentConfigObjectSchema)
+    .nullable()
+    .optional(),
+  new_turns_limit: z.number().int().optional(),
+});
+
+export type ElevenLabsSimulateConversationRequest = z.input<
+  typeof ElevenLabsSimulateConversationRequestSchema
+>;
+export type ElevenLabsSimulateConversationRequestInput =
+  ElevenLabsSimulateConversationRequest;
+export type ElevenLabsSimulateConversationParsedRequest = z.output<
+  typeof ElevenLabsSimulateConversationRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/agents/:agent_id/topics
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetAgentTopicsRequestSchema = z.object({
+  from_unix_secs: z.number().int().nullable().optional(),
+  to_unix_secs: z.number().int().nullable().optional(),
+});
+
+export type ElevenLabsGetAgentTopicsRequest = z.input<
+  typeof ElevenLabsGetAgentTopicsRequestSchema
+>;
+export type ElevenLabsGetAgentTopicsRequestInput =
+  ElevenLabsGetAgentTopicsRequest;
+export type ElevenLabsGetAgentTopicsParsedRequest = z.output<
+  typeof ElevenLabsGetAgentTopicsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agent/:agent_id/llm-usage/calculate
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCalculateAgentLlmUsageRequestSchema = z.object({
+  prompt_length: z.number().int().nullable().optional(),
+  number_of_pages: z.number().int().nullable().optional(),
+  rag_enabled: z.boolean().nullable().optional(),
+});
+
+export type ElevenLabsCalculateAgentLlmUsageRequest = z.input<
+  typeof ElevenLabsCalculateAgentLlmUsageRequestSchema
+>;
+export type ElevenLabsCalculateAgentLlmUsageRequestInput =
+  ElevenLabsCalculateAgentLlmUsageRequest;
+export type ElevenLabsCalculateAgentLlmUsageParsedRequest = z.output<
+  typeof ElevenLabsCalculateAgentLlmUsageRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST/DELETE /v1/convai/agents/:agent_id/drafts
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateAgentDraftRequestSchema = z.object({
+  branch_id: z.string(),
+  conversation_config: ElevenLabsAgentConfigObjectSchema,
+  platform_settings: ElevenLabsAgentConfigObjectSchema,
+  workflow: ElevenLabsAgentConfigObjectSchema,
+  name: z.string(),
+  tags: z.array(z.string()).nullable().optional(),
+});
+
+export type ElevenLabsCreateAgentDraftRequest = z.input<
+  typeof ElevenLabsCreateAgentDraftRequestSchema
+>;
+export type ElevenLabsCreateAgentDraftRequestInput =
+  ElevenLabsCreateAgentDraftRequest;
+export type ElevenLabsCreateAgentDraftParsedRequest = z.output<
+  typeof ElevenLabsCreateAgentDraftRequestSchema
+>;
+
+export const ElevenLabsDeleteAgentDraftRequestSchema = z.object({
+  branch_id: z.string(),
+});
+
+export type ElevenLabsDeleteAgentDraftRequest = z.input<
+  typeof ElevenLabsDeleteAgentDraftRequestSchema
+>;
+export type ElevenLabsDeleteAgentDraftRequestInput =
+  ElevenLabsDeleteAgentDraftRequest;
+export type ElevenLabsDeleteAgentDraftParsedRequest = z.output<
+  typeof ElevenLabsDeleteAgentDraftRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/agents/:agent_id/deployments
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateAgentDeploymentRequestSchema = z.object({
+  deployment_request: z.object({
+    requests: z.array(
+      z.object({
+        branch_id: z.string(),
+        deployment_strategy: ElevenLabsAgentConfigObjectSchema,
+      })
+    ),
+  }),
+});
+
+export type ElevenLabsCreateAgentDeploymentRequest = z.input<
+  typeof ElevenLabsCreateAgentDeploymentRequestSchema
+>;
+export type ElevenLabsCreateAgentDeploymentRequestInput =
+  ElevenLabsCreateAgentDeploymentRequest;
+export type ElevenLabsCreateAgentDeploymentParsedRequest = z.output<
+  typeof ElevenLabsCreateAgentDeploymentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST/PATCH /v1/convai/agents/:agent_id/branches
+// ---------------------------------------------------------------------------
+
+const ElevenLabsAgentBranchProtectionStatusSchema = z.enum([
+  "writer_perms_required",
+  "admin_perms_required",
+]);
+
+export const ElevenLabsCreateAgentBranchRequestSchema = z.object({
+  parent_version_id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  conversation_config: ElevenLabsAgentConfigObjectSchema.nullable().optional(),
+  platform_settings: ElevenLabsAgentConfigObjectSchema.nullable().optional(),
+  workflow: ElevenLabsAgentConfigObjectSchema.nullable().optional(),
+});
+
+export type ElevenLabsCreateAgentBranchRequest = z.input<
+  typeof ElevenLabsCreateAgentBranchRequestSchema
+>;
+export type ElevenLabsCreateAgentBranchRequestInput =
+  ElevenLabsCreateAgentBranchRequest;
+export type ElevenLabsCreateAgentBranchParsedRequest = z.output<
+  typeof ElevenLabsCreateAgentBranchRequestSchema
+>;
+
+export const ElevenLabsUpdateAgentBranchRequestSchema = z.object({
+  name: z.string().nullable().optional(),
+  is_archived: z.boolean().nullable().optional(),
+  protection_status:
+    ElevenLabsAgentBranchProtectionStatusSchema.nullable().optional(),
+});
+
+export type ElevenLabsUpdateAgentBranchRequest = z.input<
+  typeof ElevenLabsUpdateAgentBranchRequestSchema
+>;
+export type ElevenLabsUpdateAgentBranchRequestInput =
+  ElevenLabsUpdateAgentBranchRequest;
+export type ElevenLabsUpdateAgentBranchParsedRequest = z.output<
+  typeof ElevenLabsUpdateAgentBranchRequestSchema
+>;
+
+export const ElevenLabsMergeAgentBranchRequestSchema = z.object({
+  target_branch_id: z.string(),
+  archive_source_branch: z.boolean().optional(),
+  force: z.boolean().optional(),
+});
+
+export type ElevenLabsMergeAgentBranchRequest = z.input<
+  typeof ElevenLabsMergeAgentBranchRequestSchema
+>;
+export type ElevenLabsMergeAgentBranchRequestInput =
+  ElevenLabsMergeAgentBranchRequest;
+export type ElevenLabsMergeAgentBranchParsedRequest = z.output<
+  typeof ElevenLabsMergeAgentBranchRequestSchema
+>;
+
+export const ElevenLabsPreviewAgentBranchMergeRequestSchema = z.object({
+  target_branch_id: z.string(),
+  force: z.boolean().optional(),
+});
+
+export type ElevenLabsPreviewAgentBranchMergeRequest = z.input<
+  typeof ElevenLabsPreviewAgentBranchMergeRequestSchema
+>;
+export type ElevenLabsPreviewAgentBranchMergeRequestInput =
+  ElevenLabsPreviewAgentBranchMergeRequest;
+export type ElevenLabsPreviewAgentBranchMergeParsedRequest = z.output<
+  typeof ElevenLabsPreviewAgentBranchMergeRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/analytics/live-count
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetLiveConversationCountRequestSchema = z.object({
+  agent_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsGetLiveConversationCountRequest = z.input<
+  typeof ElevenLabsGetLiveConversationCountRequestSchema
+>;
+export type ElevenLabsGetLiveConversationCountRequestInput =
+  ElevenLabsGetLiveConversationCountRequest;
+export type ElevenLabsGetLiveConversationCountParsedRequest = z.output<
+  typeof ElevenLabsGetLiveConversationCountRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — Tools
 // ---------------------------------------------------------------------------
 

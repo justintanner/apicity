@@ -442,4 +442,399 @@ describe("ElevenLabs endpoint wiring", () => {
       model_id: "eleven_v3",
     });
   });
+
+  it("routes remaining ConvAI agent endpoints", async () => {
+    const mockFetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ "agent/1": { status: "failure" } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ agent_id: "agent-copy" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            agent_id: "agent/1",
+            avatar_url: "https://example.com/avatar.png",
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            id: "version/1",
+            agent_id: "agent/1",
+            branch_id: "branch/1",
+            version_description: "Initial",
+            seq_no_in_branch: 1,
+            time_committed_secs: 123,
+            parents: {},
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            simulated_conversation: [],
+            analysis: {},
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(new Uint8Array([1, 2, 3]), { status: 200 })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            topics: [],
+            window_start_unix_secs: 1,
+            window_end_unix_secs: 2,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ number_of_pages: 0 }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ llm_prices: [] }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({}), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            traffic_percentage_branch_id_map: { "branch/1": 100 },
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            created_branch_id: "branch/2",
+            created_version_id: "version/2",
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            id: "branch/2",
+            name: "Draft",
+            agent_id: "agent/1",
+            description: "Draft branch",
+            created_at: 1,
+            last_committed_at: 1,
+            is_archived: false,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            id: "branch/2",
+            name: "Draft updated",
+            agent_id: "agent/1",
+            description: "Draft branch",
+            created_at: 1,
+            last_committed_at: 2,
+            is_archived: false,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            agent_id: "agent/1",
+            name: "Preview",
+            conversation_config: {},
+            metadata: {},
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            agent_id: "agent/1",
+            name: "Preview",
+            conversation_config: {},
+            metadata: {},
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ count: 0 }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    expect(provider.get.v1.convai.agents.summaries).toBe(
+      provider.v1.convai.agents.summaries
+    );
+    expect(provider.post.v1.convai.agents.duplicate).toBe(
+      provider.v1.convai.agents.duplicate
+    );
+    expect(provider.post.v1.convai.agents.avatar).toBe(
+      provider.v1.convai.agents.avatar
+    );
+    expect(provider.get.v1.convai.agents.versions.get).toBe(
+      provider.v1.convai.agents.versions.get
+    );
+    expect(provider.v1.convai.agents.simulateConversation.stream).toBe(
+      provider.post.v1.convai.agents.simulateConversation.stream
+    );
+    expect(provider.get.v1.convai.agents.branches).toBe(
+      provider.v1.convai.agents.branches
+    );
+    expect(provider.post.v1.convai.agents.branches.create).toBe(
+      provider.v1.convai.agents.branches.create
+    );
+    expect(provider.patch.v1.convai.agents.branches.update).toBe(
+      provider.v1.convai.agents.branches.update
+    );
+    expect(provider.delete.v1.convai.agents.drafts.delete).toBe(
+      provider.v1.convai.agents.drafts.delete
+    );
+    expect(provider.get.v1.convai.analytics.liveCount).toBe(
+      provider.v1.convai.analytics.liveCount
+    );
+
+    await provider.v1.convai.agents.summaries({
+      agent_ids: ["agent/1", "agent 2"],
+    });
+    await provider.v1.convai.agents.duplicate("agent/1", {
+      name: "Copy",
+    });
+    await provider.v1.convai.agents.avatar("agent/1", {
+      avatar_file: new Blob(["avatar"], { type: "image/png" }),
+    });
+    await provider.v1.convai.agents.versions.get("agent/1", "version/1");
+    await provider.v1.convai.agents.simulateConversation("agent/1", {
+      simulation_specification: {
+        simulated_user_config: { first_message: "Hello" },
+      },
+    });
+    const stream = await provider.v1.convai.agents.simulateConversation.stream(
+      "agent/1",
+      {
+        simulation_specification: {
+          simulated_user_config: { first_message: "Hello" },
+        },
+      }
+    );
+    await provider.v1.convai.agents.topics("agent/1", {
+      from_unix_secs: 1,
+      to_unix_secs: 2,
+    });
+    await provider.v1.convai.agent.knowledgeBase.size("agent/1");
+    await provider.v1.convai.agent.llmUsage.calculate("agent/1", {
+      prompt_length: 100,
+    });
+    await provider.v1.convai.agents.drafts.create("agent/1", {
+      branch_id: "branch/1",
+      conversation_config: {},
+      platform_settings: {},
+      workflow: {},
+      name: "Draft",
+    });
+    await provider.v1.convai.agents.drafts.delete("agent/1", {
+      branch_id: "branch/1",
+    });
+    await provider.v1.convai.agents.deployments("agent/1", {
+      deployment_request: {
+        requests: [
+          {
+            branch_id: "branch/1",
+            deployment_strategy: { type: "percentage", percentage: 100 },
+          },
+        ],
+      },
+    });
+    await provider.v1.convai.agents.branches.create("agent/1", {
+      parent_version_id: "version/1",
+      name: "Draft",
+      description: "Draft branch",
+    });
+    await provider.v1.convai.agents.branches.get("agent/1", "branch/2");
+    await provider.v1.convai.agents.branches.update("agent/1", "branch/2", {
+      name: "Draft updated",
+    });
+    await provider.v1.convai.agents.branches.rebase("agent/1", "branch/2");
+    await provider.v1.convai.agents.branches.rebasePreview(
+      "agent/1",
+      "branch/2"
+    );
+    await provider.v1.convai.agents.branches.merge("agent/1", "branch/2", {
+      target_branch_id: "branch/1",
+      archive_source_branch: false,
+    });
+    await provider.v1.convai.agents.branches.mergePreview(
+      "agent/1",
+      "branch/2",
+      {
+        target_branch_id: "branch/1",
+        force: true,
+      }
+    );
+    await provider.v1.convai.analytics.liveCount({
+      agent_id: "agent/1",
+    });
+
+    expect(stream.byteLength).toBe(3);
+    const calls = mockFetch.mock.calls.map(([url, init]) => ({
+      url,
+      method: init.method,
+    }));
+    expect(calls).toEqual([
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/summaries?agent_ids=agent%2F1&agent_ids=agent+2",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/duplicate",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/avatar",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/versions/version%2F1",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/simulate-conversation",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/simulate-conversation/stream",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/topics?from_unix_secs=1&to_unix_secs=2",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agent/agent%2F1/knowledge-base/size",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agent/agent%2F1/llm-usage/calculate",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/drafts?branch_id=branch%2F1",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/drafts?branch_id=branch%2F1",
+        method: "DELETE",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/deployments",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches/branch%2F2",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches/branch%2F2",
+        method: "PATCH",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches/branch%2F2/rebase",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches/branch%2F2/rebase-preview",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches/branch%2F2/merge?target_branch_id=branch%2F1",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/agents/agent%2F1/branches/branch%2F2/merge-preview?target_branch_id=branch%2F1&force=true",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/analytics/live-count?agent_id=agent%2F1",
+        method: "GET",
+      },
+    ]);
+    const [, duplicateInit] = mockFetch.mock.calls[1];
+    expect(JSON.parse(duplicateInit.body as string)).toEqual({ name: "Copy" });
+    const [, avatarInit] = mockFetch.mock.calls[2];
+    expect(avatarInit.body).toBeInstanceOf(FormData);
+  });
 });

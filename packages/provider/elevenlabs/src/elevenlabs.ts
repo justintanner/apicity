@@ -88,6 +88,10 @@ import {
   ElevenLabsTwilioOutboundCallResponse,
   ElevenLabsSipTrunkOutboundCallRequest,
   ElevenLabsSipTrunkOutboundCallResponse,
+  ElevenLabsCreateVoiceFromPreviewRequest,
+  ElevenLabsVoiceDesignRequest,
+  ElevenLabsVoicePreviewsResponse,
+  ElevenLabsVoiceRemixRequest,
   ElevenLabsProvider,
   ElevenLabsError,
 } from "./types";
@@ -129,6 +133,9 @@ import {
   ElevenLabsUpdatePhoneNumberRequestSchema,
   ElevenLabsTwilioOutboundCallRequestSchema,
   ElevenLabsSipTrunkOutboundCallRequestSchema,
+  ElevenLabsCreateVoiceFromPreviewRequestSchema,
+  ElevenLabsVoiceDesignRequestSchema,
+  ElevenLabsVoiceRemixRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
 
@@ -1087,6 +1094,88 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   );
 
+  // POST https://api.elevenlabs.io/v1/text-to-voice
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-voice/create
+  const textToVoiceCreateVoice = Object.assign(
+    async (
+      req: ElevenLabsCreateVoiceFromPreviewRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsVoice> => {
+      return makeJsonRequest<ElevenLabsVoice>(
+        "POST",
+        "/v1/text-to-voice",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateVoiceFromPreviewRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-voice/design
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-voice/design
+  const textToVoiceDesign = Object.assign(
+    async (
+      req: ElevenLabsVoiceDesignRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsVoicePreviewsResponse> => {
+      const { output_format, ...body } = req;
+      const query = optionalQuery({ output_format });
+      return makeJsonRequest<ElevenLabsVoicePreviewsResponse>(
+        "POST",
+        "/v1/text-to-voice/design",
+        Object.keys(body).length > 0 ? body : undefined,
+        signal,
+        query ? buildQueryString(query) : ""
+      );
+    },
+    { schema: ElevenLabsVoiceDesignRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/text-to-voice/{voiceId}/remix
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-voice/remix
+  const textToVoiceRemix = Object.assign(
+    async (
+      voiceId: string,
+      req: ElevenLabsVoiceRemixRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsVoicePreviewsResponse> => {
+      const { output_format, ...body } = req;
+      const query = optionalQuery({ output_format });
+      return makeJsonRequest<ElevenLabsVoicePreviewsResponse>(
+        "POST",
+        `/v1/text-to-voice/${encodeURIComponent(voiceId)}/remix`,
+        Object.keys(body).length > 0 ? body : undefined,
+        signal,
+        query ? buildQueryString(query) : ""
+      );
+    },
+    { schema: ElevenLabsVoiceRemixRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/text-to-voice/{generatedVoiceId}/stream
+  // Docs: https://elevenlabs.io/docs/api-reference/text-to-voice/stream
+  const textToVoiceStream = Object.assign(
+    async (
+      generatedVoiceId: string,
+      signal?: AbortSignal
+    ): Promise<ArrayBuffer> => {
+      return makeGetBinaryRequest(
+        `/v1/text-to-voice/${encodeURIComponent(generatedVoiceId)}/stream`,
+        "",
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // Callable text-to-voice namespace: create (POST) is the base call, with
+  // design/remix (POST) and stream (GET) attached as sub-methods.
+  const textToVoice = Object.assign(textToVoiceCreateVoice, {
+    design: textToVoiceDesign,
+    remix: textToVoiceRemix,
+    stream: textToVoiceStream,
+  });
+
   // GET https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}
   // Docs: https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/get
   const getTranscript = Object.assign(
@@ -1967,6 +2056,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     soundGeneration,
     textToSpeech,
     textToDialogue,
+    textToVoice,
     speechToText,
     speechToSpeech,
     voices: {
@@ -2015,6 +2105,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     soundGeneration,
     textToSpeech,
     textToDialogue,
+    textToVoice,
     speechToText,
     speechToSpeech,
     user,
@@ -2032,6 +2123,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         models,
         voices: v1Voices,
         user,
+        textToVoice: {
+          stream: textToVoiceStream,
+        },
         convai: {
           agents: {
             list: listAgents,

@@ -1058,3 +1058,80 @@ export type ElevenLabsSipTrunkOutboundCallRequestInput =
 export type ElevenLabsSipTrunkOutboundCallParsedRequest = z.output<
   typeof ElevenLabsSipTrunkOutboundCallRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// POST /v1/text-to-voice
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateVoiceFromPreviewRequestSchema = z.object({
+  voice_name: z.string(),
+  voice_description: z.string().min(20).max(1000),
+  generated_voice_id: z.string(),
+  labels: z.record(z.string(), z.string()).nullable().optional(),
+  played_not_selected_voice_ids: z.array(z.string()).nullable().optional(),
+});
+
+export type ElevenLabsCreateVoiceFromPreviewRequest = z.input<
+  typeof ElevenLabsCreateVoiceFromPreviewRequestSchema
+>;
+export type ElevenLabsCreateVoiceFromPreviewRequestInput =
+  ElevenLabsCreateVoiceFromPreviewRequest;
+export type ElevenLabsCreateVoiceFromPreviewParsedRequest = z.output<
+  typeof ElevenLabsCreateVoiceFromPreviewRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/text-to-voice/design
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsVoiceDesignRequestSchema = z.object({
+  voice_description: z.string().min(20).max(1000),
+  model_id: z.enum(["eleven_multilingual_ttv_v2", "eleven_ttv_v3"]).optional(),
+  text: z.string().min(100).max(1000).nullable().optional(),
+  auto_generate_text: z.boolean().optional(),
+  loudness: z.number().min(-1.0).max(1.0).optional(),
+  seed: z.number().int().min(0).max(2147483647).nullable().optional(),
+  guidance_scale: z.number().min(0.0).max(100.0).optional(),
+  stream_previews: z.boolean().optional(),
+  should_enhance: z.boolean().optional(),
+  remixing_session_id: z.string().nullable().optional(),
+  remixing_session_iteration_id: z.string().nullable().optional(),
+  quality: z.number().min(-1.0).max(1.0).nullable().optional(),
+  reference_audio_base64: z.string().nullable().optional(),
+  prompt_strength: z.number().min(0.0).max(1.0).nullable().optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsVoiceDesignRequest = z.input<
+  typeof ElevenLabsVoiceDesignRequestSchema
+>;
+export type ElevenLabsVoiceDesignRequestInput = ElevenLabsVoiceDesignRequest;
+export type ElevenLabsVoiceDesignParsedRequest = z.output<
+  typeof ElevenLabsVoiceDesignRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/text-to-voice/:voice_id/remix
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsVoiceRemixRequestSchema = z.object({
+  voice_description: z.string().min(5).max(1000),
+  text: z.string().min(100).max(1000).nullable().optional(),
+  auto_generate_text: z.boolean().optional(),
+  loudness: z.number().min(-1.0).max(1.0).optional(),
+  seed: z.number().int().min(0).max(2147483647).nullable().optional(),
+  guidance_scale: z.number().min(0.0).max(100.0).optional(),
+  stream_previews: z.boolean().optional(),
+  remixing_session_id: z.string().nullable().optional(),
+  remixing_session_iteration_id: z.string().nullable().optional(),
+  prompt_strength: z.number().min(0.0).max(1.0).nullable().optional(),
+  output_format: z.string().optional(),
+});
+
+export type ElevenLabsVoiceRemixRequest = z.input<
+  typeof ElevenLabsVoiceRemixRequestSchema
+>;
+export type ElevenLabsVoiceRemixRequestInput = ElevenLabsVoiceRemixRequest;
+export type ElevenLabsVoiceRemixParsedRequest = z.output<
+  typeof ElevenLabsVoiceRemixRequestSchema
+>;

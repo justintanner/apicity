@@ -37,6 +37,9 @@ import type {
   ElevenLabsUpdatePhoneNumberRequest,
   ElevenLabsTwilioOutboundCallRequest,
   ElevenLabsSipTrunkOutboundCallRequest,
+  ElevenLabsCreateVoiceFromPreviewRequest,
+  ElevenLabsVoiceDesignRequest,
+  ElevenLabsVoiceRemixRequest,
 } from "./zod";
 
 export type {
@@ -152,6 +155,15 @@ export type {
   ElevenLabsSipTrunkOutboundCallRequest,
   ElevenLabsSipTrunkOutboundCallRequestInput,
   ElevenLabsSipTrunkOutboundCallParsedRequest,
+  ElevenLabsCreateVoiceFromPreviewRequest,
+  ElevenLabsCreateVoiceFromPreviewRequestInput,
+  ElevenLabsCreateVoiceFromPreviewParsedRequest,
+  ElevenLabsVoiceDesignRequest,
+  ElevenLabsVoiceDesignRequestInput,
+  ElevenLabsVoiceDesignParsedRequest,
+  ElevenLabsVoiceRemixRequest,
+  ElevenLabsVoiceRemixRequestInput,
+  ElevenLabsVoiceRemixParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -241,6 +253,19 @@ export type ElevenLabsGetTranscriptResponse =
 export type ElevenLabsDeleteTranscriptResponse = Record<string, unknown>;
 
 // -- Voice response shapes ---------------------------------------------------
+
+export interface ElevenLabsVoicePreview {
+  audio_base_64: string;
+  generated_voice_id: string;
+  media_type: string;
+  duration_secs: number;
+  language: string | null;
+}
+
+export interface ElevenLabsVoicePreviewsResponse {
+  previews: ElevenLabsVoicePreview[];
+  text: string;
+}
 
 export type ElevenLabsSpeakerSeparationStatus =
   | "not_started"
@@ -1210,6 +1235,43 @@ export interface ElevenLabsSpeechToSpeechMethod {
   stream: ElevenLabsSpeechToSpeechStreamMethod;
 }
 
+export interface ElevenLabsTextToVoiceDesignMethod {
+  (
+    req: ElevenLabsVoiceDesignRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsVoicePreviewsResponse>;
+  schema: z.ZodType<ElevenLabsVoiceDesignRequest>;
+}
+
+export interface ElevenLabsTextToVoiceRemixMethod {
+  (
+    voiceId: string,
+    req: ElevenLabsVoiceRemixRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsVoicePreviewsResponse>;
+  schema: z.ZodType<ElevenLabsVoiceRemixRequest>;
+}
+
+export interface ElevenLabsTextToVoiceStreamMethod {
+  (generatedVoiceId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
+  schema: undefined;
+}
+
+export interface ElevenLabsTextToVoiceMethod {
+  (
+    req: ElevenLabsCreateVoiceFromPreviewRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsVoice>;
+  schema: z.ZodType<ElevenLabsCreateVoiceFromPreviewRequest>;
+  design: ElevenLabsTextToVoiceDesignMethod;
+  remix: ElevenLabsTextToVoiceRemixMethod;
+  stream: ElevenLabsTextToVoiceStreamMethod;
+}
+
+export interface ElevenLabsGetV1TextToVoiceNamespace {
+  stream: ElevenLabsTextToVoiceStreamMethod;
+}
+
 export interface ElevenLabsStartSpeakerSeparationMethod {
   (
     voiceId: string,
@@ -1710,6 +1772,7 @@ export interface ElevenLabsV1Namespace {
   soundGeneration: ElevenLabsSoundGenerationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
+  textToVoice: ElevenLabsTextToVoiceMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   user: ElevenLabsUserNamespace;
@@ -1752,6 +1815,7 @@ export interface ElevenLabsPostV1Namespace {
   soundGeneration: ElevenLabsSoundGenerationMethod;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
+  textToVoice: ElevenLabsTextToVoiceMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   voices: ElevenLabsPostV1VoicesNamespace;
@@ -1854,6 +1918,7 @@ export interface ElevenLabsGetV1Namespace {
   models: ElevenLabsListModelsMethod;
   voices: ElevenLabsGetVoiceMethod;
   user: ElevenLabsUserNamespace;
+  textToVoice: ElevenLabsGetV1TextToVoiceNamespace;
   convai: ElevenLabsGetConvaiNamespace;
 }
 

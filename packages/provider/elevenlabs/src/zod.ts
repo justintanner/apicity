@@ -2305,3 +2305,148 @@ export type ElevenLabsPronunciationDictionaryRuleRequestInput = z.input<
 export type ElevenLabsPronunciationDictionaryRuleParsedRequest = z.output<
   typeof ElevenLabsPronunciationDictionaryRuleRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// Productions / Orders shared schemas
+// ---------------------------------------------------------------------------
+
+const ElevenLabsOrderRequestStateSchema = z.enum([
+  "open",
+  "submitted",
+  "paid",
+  "accepted",
+  "rejected",
+  "done",
+]);
+
+const ElevenLabsCueOptionsRequestSchema = z.object({
+  min_duration_ms: z.number().int().max(2000).optional(),
+  max_duration_ms: z.number().int().min(4000).optional(),
+  max_lines_per_cue: z.number().int().min(1).max(3).optional(),
+  max_chars_per_line: z.number().int().min(16).max(50).optional(),
+  max_chars_per_s: z.number().int().min(15).max(30).nullable().optional(),
+  min_gap_between_cues_frames: z
+    .number()
+    .int()
+    .min(0)
+    .max(6)
+    .nullable()
+    .optional(),
+});
+
+const ElevenLabsDubOrderItemRequestSchema = z.object({
+  kind: z.literal("dub").optional(),
+  media_id: z.string(),
+  source_language: z.string(),
+  destination_languages: z.array(z.string()),
+  include_captions: z.boolean(),
+  include_source_captions: z.boolean(),
+  instructions: z.string().nullable().optional(),
+  captions_sdh: z.boolean().nullable().optional(),
+});
+
+const ElevenLabsSubtitleOrderItemRequestSchema = z.object({
+  kind: z.literal("subtitles").optional(),
+  media_ids: z.array(z.string()),
+  source_language: z.string(),
+  destination_languages: z.array(z.string()),
+  cue_options: ElevenLabsCueOptionsRequestSchema.optional(),
+  sdh: z.boolean().optional(),
+  instructions: z.string().nullable().optional(),
+});
+
+const ElevenLabsOrderItemRequestSchema = z.union([
+  ElevenLabsDubOrderItemRequestSchema,
+  ElevenLabsSubtitleOrderItemRequestSchema,
+]);
+
+// ---------------------------------------------------------------------------
+// GET /v1/productions/orders
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListOrdersRequestSchema = z.object({
+  page_size: z.number().int().max(100).optional(),
+  offset: z.number().int().min(0).optional(),
+  status: z.array(ElevenLabsOrderRequestStateSchema).nullable().optional(),
+  start_date: z.string().nullable().optional(),
+  end_date: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListOrdersRequest = z.input<
+  typeof ElevenLabsListOrdersRequestSchema
+>;
+export type ElevenLabsListOrdersRequestInput = ElevenLabsListOrdersRequest;
+export type ElevenLabsListOrdersParsedRequest = z.output<
+  typeof ElevenLabsListOrdersRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/productions/orders
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateOrderRequestSchema = z.object({
+  sandbox: z.boolean().optional(),
+});
+
+export type ElevenLabsCreateOrderRequest = z.input<
+  typeof ElevenLabsCreateOrderRequestSchema
+>;
+export type ElevenLabsCreateOrderRequestInput = ElevenLabsCreateOrderRequest;
+export type ElevenLabsCreateOrderParsedRequest = z.output<
+  typeof ElevenLabsCreateOrderRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/productions/orders/{orderId}
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateOrderRequestSchema = z.object({
+  name: z.string().min(1).max(120),
+});
+
+export type ElevenLabsUpdateOrderRequest = z.input<
+  typeof ElevenLabsUpdateOrderRequestSchema
+>;
+export type ElevenLabsUpdateOrderRequestInput = ElevenLabsUpdateOrderRequest;
+export type ElevenLabsUpdateOrderParsedRequest = z.output<
+  typeof ElevenLabsUpdateOrderRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/productions/orders/{orderId}/items
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpsertOrderItemRequestSchema = z.object({
+  item: ElevenLabsOrderItemRequestSchema,
+  item_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsUpsertOrderItemRequest = z.input<
+  typeof ElevenLabsUpsertOrderItemRequestSchema
+>;
+export type ElevenLabsUpsertOrderItemRequestInput =
+  ElevenLabsUpsertOrderItemRequest;
+export type ElevenLabsUpsertOrderItemParsedRequest = z.output<
+  typeof ElevenLabsUpsertOrderItemRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/productions/orders/{orderId}/media
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsRegisterOrderMediaRequestSchema = z.object({
+  declared_language: z.string(),
+  media: z.custom<Blob>((value) => value instanceof Blob).optional(),
+  media_url: z.string().nullable().optional(),
+  media_url_filename: z.string().nullable().optional(),
+  media_url_content_type: z.string().nullable().optional(),
+});
+
+export type ElevenLabsRegisterOrderMediaRequest = z.input<
+  typeof ElevenLabsRegisterOrderMediaRequestSchema
+>;
+export type ElevenLabsRegisterOrderMediaRequestInput =
+  ElevenLabsRegisterOrderMediaRequest;
+export type ElevenLabsRegisterOrderMediaParsedRequest = z.output<
+  typeof ElevenLabsRegisterOrderMediaRequestSchema
+>;

@@ -525,6 +525,17 @@ elevenlabs	v1.music.stream	POST	https://api.elevenlabs.io/v1/music/stream	https:
 elevenlabs	v1.music.stemSeparation	POST	https://api.elevenlabs.io/v1/music/stem-separation	https://elevenlabs.io/docs/api-reference/music/stem-separation
 elevenlabs	v1.music.upload	POST	https://api.elevenlabs.io/v1/music/upload	https://elevenlabs.io/docs/api-reference/music/upload
 elevenlabs	v1.music.videoToMusic	POST	https://api.elevenlabs.io/v1/music/video-to-music	https://elevenlabs.io/docs/api-reference/music/video-to-music
+elevenlabs	v1.productions.orders.list	GET	https://api.elevenlabs.io/v1/productions/orders	https://elevenlabs.io/docs/api-reference/productions/orders/list
+elevenlabs	v1.productions.orders.create	POST	https://api.elevenlabs.io/v1/productions/orders	https://elevenlabs.io/docs/api-reference/productions/orders/create
+elevenlabs	v1.productions.orders.get	GET	https://api.elevenlabs.io/v1/productions/orders/{orderId}	https://elevenlabs.io/docs/api-reference/productions/orders/get
+elevenlabs	v1.productions.orders.update	PATCH	https://api.elevenlabs.io/v1/productions/orders/{orderId}	https://elevenlabs.io/docs/api-reference/productions/orders/update
+elevenlabs	v1.productions.orders.submit	POST	https://api.elevenlabs.io/v1/productions/orders/{orderId}/submit	https://elevenlabs.io/docs/api-reference/productions/orders/submit
+elevenlabs	v1.productions.orders.deliverables	GET	https://api.elevenlabs.io/v1/productions/orders/{orderId}/deliverables	https://elevenlabs.io/docs/api-reference/productions/orders/deliverables
+elevenlabs	v1.productions.orders.items.upsert	POST	https://api.elevenlabs.io/v1/productions/orders/{orderId}/items	https://elevenlabs.io/docs/api-reference/productions/orders/items/upsert
+elevenlabs	v1.productions.orders.items.remove	DELETE	https://api.elevenlabs.io/v1/productions/orders/{orderId}/items/{itemId}	https://elevenlabs.io/docs/api-reference/productions/orders/items/remove
+elevenlabs	v1.productions.orders.media.register	POST	https://api.elevenlabs.io/v1/productions/orders/{orderId}/media	https://elevenlabs.io/docs/api-reference/productions/orders/media/register
+elevenlabs	v1.productions.orders.media.get	GET	https://api.elevenlabs.io/v1/productions/orders/{orderId}/media/{mediaId}	https://elevenlabs.io/docs/api-reference/productions/orders/media/get
+elevenlabs	v1.productions.orders.languages	GET	https://api.elevenlabs.io/v1/productions/orders/languages/{orderItemKind}	https://elevenlabs.io/docs/api-reference/productions/orders/languages
 elevenlabs	v1.speechToText	POST	https://api.elevenlabs.io/v1/speech-to-text	https://elevenlabs.io/docs/api-reference/speech-to-text/convert
 elevenlabs	v1.speechToText.transcripts.get	GET	https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}	https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/get
 elevenlabs	v1.speechToText.transcripts.delete	DELETE	https://api.elevenlabs.io/v1/speech-to-text/transcripts/{transcriptionId}	https://elevenlabs.io/docs/api-reference/speech-to-text/transcripts/delete

@@ -28,6 +28,11 @@ import type {
   ElevenLabsMusicStemSeparationRequest,
   ElevenLabsMusicUploadRequest,
   ElevenLabsVideoToMusicRequest,
+  ElevenLabsListOrdersRequest,
+  ElevenLabsCreateOrderRequest,
+  ElevenLabsUpdateOrderRequest,
+  ElevenLabsUpsertOrderItemRequest,
+  ElevenLabsRegisterOrderMediaRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
@@ -195,6 +200,21 @@ export type {
   ElevenLabsVideoToMusicRequest,
   ElevenLabsVideoToMusicRequestInput,
   ElevenLabsVideoToMusicParsedRequest,
+  ElevenLabsListOrdersRequest,
+  ElevenLabsListOrdersRequestInput,
+  ElevenLabsListOrdersParsedRequest,
+  ElevenLabsCreateOrderRequest,
+  ElevenLabsCreateOrderRequestInput,
+  ElevenLabsCreateOrderParsedRequest,
+  ElevenLabsUpdateOrderRequest,
+  ElevenLabsUpdateOrderRequestInput,
+  ElevenLabsUpdateOrderParsedRequest,
+  ElevenLabsUpsertOrderItemRequest,
+  ElevenLabsUpsertOrderItemRequestInput,
+  ElevenLabsUpsertOrderItemParsedRequest,
+  ElevenLabsRegisterOrderMediaRequest,
+  ElevenLabsRegisterOrderMediaRequestInput,
+  ElevenLabsRegisterOrderMediaParsedRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
@@ -1192,6 +1212,161 @@ export interface ElevenLabsMusicUploadResponse {
   words_timestamps?: ElevenLabsMusicWordTimestamp[] | null;
 }
 
+// -- Productions / Orders response shapes ------------------------------------
+
+export type ElevenLabsOrderState =
+  | "open"
+  | "submitted"
+  | "paid"
+  | "accepted"
+  | "rejected"
+  | "done";
+
+export type ElevenLabsOrderItemKind = "dub" | "subtitles";
+
+export interface ElevenLabsDubOrderItem {
+  kind: "dub";
+  media_id: string;
+  source_language: string;
+  destination_languages: string[];
+  include_captions: boolean;
+  include_source_captions: boolean;
+  instructions?: string | null;
+  captions_sdh?: boolean | null;
+}
+
+export interface ElevenLabsSubtitleCueOptions {
+  min_duration_ms?: number;
+  max_duration_ms?: number;
+  max_lines_per_cue?: number;
+  max_chars_per_line?: number;
+  max_chars_per_s?: number | null;
+  min_gap_between_cues_frames?: number | null;
+}
+
+export interface ElevenLabsSubtitleOrderItem {
+  kind: "subtitles";
+  media_ids: string[];
+  source_language: string;
+  destination_languages: string[];
+  cue_options?: ElevenLabsSubtitleCueOptions;
+  sdh?: boolean;
+  instructions?: string | null;
+}
+
+export type ElevenLabsOrderItem =
+  | ElevenLabsDubOrderItem
+  | ElevenLabsSubtitleOrderItem;
+
+export interface ElevenLabsOrderQuote {
+  amount_usd: number;
+}
+
+export interface ElevenLabsOrderItemInfo {
+  item_id: string;
+  item: ElevenLabsOrderItem;
+  quote?: ElevenLabsOrderQuote | null;
+}
+
+export interface ElevenLabsOrderSummary {
+  order_id: string;
+  name: string;
+  state: ElevenLabsOrderState;
+  total_amount_usd?: number | null;
+  sandbox?: boolean;
+  submitted_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface ElevenLabsListOrdersResponse {
+  orders: ElevenLabsOrderSummary[];
+}
+
+export interface ElevenLabsCreateOrderResponse {
+  order_id: string;
+  sandbox?: boolean;
+}
+
+export interface ElevenLabsOrderResponse {
+  order_id: string;
+  name: string;
+  state: ElevenLabsOrderState;
+  items: ElevenLabsOrderItemInfo[];
+  total_amount_usd?: number | null;
+  sandbox?: boolean;
+  created_at: string;
+  submitted_at?: string | null;
+  paid_at?: string | null;
+  accepted_at?: string | null;
+  completed_at?: string | null;
+}
+
+export interface ElevenLabsUpdateOrderResponse {
+  name: string;
+}
+
+export interface ElevenLabsSubmitOrderResponse {
+  order_id: string;
+  state: ElevenLabsOrderState;
+  submitted_at: string;
+}
+
+export interface ElevenLabsOrderDeliverable {
+  signed_url: string;
+  content_type: string;
+  name: string;
+  version?: number;
+}
+
+export interface ElevenLabsOrderDeliverablesResponse {
+  deliverables: ElevenLabsOrderDeliverable[];
+}
+
+export interface ElevenLabsUpsertOrderItemResponse {
+  item_id: string;
+  quote?: ElevenLabsOrderQuote | null;
+}
+
+export interface ElevenLabsRemoveOrderItemResponse {
+  success: boolean;
+}
+
+export interface ElevenLabsRegisterOrderMediaResponse {
+  media_id: string;
+}
+
+export interface ElevenLabsOrderMediaResponse {
+  media_id: string;
+  name: string;
+  content_type: string;
+  language?: string | null;
+  signed_url: string;
+}
+
+export interface ElevenLabsOrderLanguageInfo {
+  code: string;
+  label: string;
+}
+
+export interface ElevenLabsOrderLanguagePairInfo {
+  source_language: ElevenLabsOrderLanguageInfo;
+  destination_languages: ElevenLabsOrderLanguageInfo[];
+}
+
+export interface ElevenLabsPairedLanguagesResponse {
+  kind: "pair";
+  language_pairs: ElevenLabsOrderLanguagePairInfo[];
+}
+
+export interface ElevenLabsSingleLanguagesResponse {
+  kind: "single";
+  languages: ElevenLabsOrderLanguageInfo[];
+}
+
+export type ElevenLabsOrderLanguagesResponse =
+  | ElevenLabsPairedLanguagesResponse
+  | ElevenLabsSingleLanguagesResponse;
+
 // -- History response shapes -------------------------------------------------
 
 export interface ElevenLabsHistoryFeedback {
@@ -1954,6 +2129,122 @@ export interface ElevenLabsMusicMethod {
   stemSeparation: ElevenLabsMusicStemSeparationMethod;
   upload: ElevenLabsMusicUploadMethod;
   videoToMusic: ElevenLabsVideoToMusicMethod;
+}
+
+export interface ElevenLabsListOrdersMethod {
+  (
+    req?: ElevenLabsListOrdersRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListOrdersResponse>;
+  schema: z.ZodType<ElevenLabsListOrdersRequest>;
+}
+
+export interface ElevenLabsCreateOrderMethod {
+  (
+    req?: ElevenLabsCreateOrderRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateOrderResponse>;
+  schema: z.ZodType<ElevenLabsCreateOrderRequest>;
+}
+
+export interface ElevenLabsGetOrderMethod {
+  (orderId: string, signal?: AbortSignal): Promise<ElevenLabsOrderResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateOrderMethod {
+  (
+    orderId: string,
+    req: ElevenLabsUpdateOrderRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateOrderResponse>;
+  schema: z.ZodType<ElevenLabsUpdateOrderRequest>;
+}
+
+export interface ElevenLabsSubmitOrderMethod {
+  (
+    orderId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSubmitOrderResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetOrderDeliverablesMethod {
+  (
+    orderId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsOrderDeliverablesResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpsertOrderItemMethod {
+  (
+    orderId: string,
+    req: ElevenLabsUpsertOrderItemRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpsertOrderItemResponse>;
+  schema: z.ZodType<ElevenLabsUpsertOrderItemRequest>;
+}
+
+export interface ElevenLabsRemoveOrderItemMethod {
+  (
+    orderId: string,
+    itemId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRemoveOrderItemResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsRegisterOrderMediaMethod {
+  (
+    orderId: string,
+    req: ElevenLabsRegisterOrderMediaRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRegisterOrderMediaResponse>;
+  schema: z.ZodType<ElevenLabsRegisterOrderMediaRequest>;
+}
+
+export interface ElevenLabsGetOrderMediaMethod {
+  (
+    orderId: string,
+    mediaId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsOrderMediaResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetOrderLanguagesMethod {
+  (
+    orderItemKind: ElevenLabsOrderItemKind,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsOrderLanguagesResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsProductionsOrdersItemsNamespace {
+  upsert: ElevenLabsUpsertOrderItemMethod;
+  remove: ElevenLabsRemoveOrderItemMethod;
+}
+
+export interface ElevenLabsProductionsOrdersMediaNamespace {
+  register: ElevenLabsRegisterOrderMediaMethod;
+  get: ElevenLabsGetOrderMediaMethod;
+}
+
+export interface ElevenLabsProductionsOrdersNamespace {
+  list: ElevenLabsListOrdersMethod;
+  create: ElevenLabsCreateOrderMethod;
+  get: ElevenLabsGetOrderMethod;
+  update: ElevenLabsUpdateOrderMethod;
+  submit: ElevenLabsSubmitOrderMethod;
+  deliverables: ElevenLabsGetOrderDeliverablesMethod;
+  items: ElevenLabsProductionsOrdersItemsNamespace;
+  media: ElevenLabsProductionsOrdersMediaNamespace;
+  languages: ElevenLabsGetOrderLanguagesMethod;
+}
+
+export interface ElevenLabsProductionsNamespace {
+  orders: ElevenLabsProductionsOrdersNamespace;
 }
 
 export interface ElevenLabsCharacterAlignment {
@@ -3321,6 +3612,7 @@ export interface ElevenLabsV1Namespace {
   audioIsolation: ElevenLabsAudioIsolationMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
   music: ElevenLabsMusicMethod;
+  productions: ElevenLabsProductionsNamespace;
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
@@ -3371,6 +3663,14 @@ export interface ElevenLabsPostV1Namespace {
   audioIsolation: ElevenLabsAudioIsolationMethod;
   forcedAlignment: ElevenLabsForcedAlignmentMethod;
   music: ElevenLabsMusicMethod;
+  productions: {
+    orders: {
+      create: ElevenLabsCreateOrderMethod;
+      submit: ElevenLabsSubmitOrderMethod;
+      items: { upsert: ElevenLabsUpsertOrderItemMethod };
+      media: { register: ElevenLabsRegisterOrderMediaMethod };
+    };
+  };
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
@@ -3433,6 +3733,9 @@ export interface ElevenLabsPatchConvaiNamespace {
 
 export interface ElevenLabsPatchV1Namespace {
   pronunciationDictionaries: ElevenLabsPatchPronunciationDictionariesNamespace;
+  productions: {
+    orders: { update: ElevenLabsUpdateOrderMethod };
+  };
   convai: ElevenLabsPatchConvaiNamespace;
 }
 
@@ -3492,6 +3795,15 @@ export interface ElevenLabsGetV1Namespace {
   audioIsolation: {
     history: {
       list: ElevenLabsAudioIsolationHistoryListMethod;
+    };
+  };
+  productions: {
+    orders: {
+      list: ElevenLabsListOrdersMethod;
+      get: ElevenLabsGetOrderMethod;
+      deliverables: ElevenLabsGetOrderDeliverablesMethod;
+      languages: ElevenLabsGetOrderLanguagesMethod;
+      media: { get: ElevenLabsGetOrderMediaMethod };
     };
   };
   convai: ElevenLabsGetConvaiNamespace;
@@ -3555,6 +3867,11 @@ export interface ElevenLabsDeleteV1Namespace {
       samples: {
         delete: ElevenLabsDeletePvcVoiceSampleMethod;
       };
+    };
+  };
+  productions: {
+    orders: {
+      items: { remove: ElevenLabsRemoveOrderItemMethod };
     };
   };
   convai: ElevenLabsDeleteConvaiNamespace;

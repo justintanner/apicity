@@ -87,6 +87,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/binance/src"
       ),
+      "@apicity/dropbox/zod": path.resolve(
+        __dirname,
+        "../packages/provider/dropbox/src/zod"
+      ),
+      "@apicity/dropbox": path.resolve(
+        __dirname,
+        "../packages/provider/dropbox/src"
+      ),
       "@apicity/openligadb/zod": path.resolve(
         __dirname,
         "../packages/provider/openligadb/src/zod"

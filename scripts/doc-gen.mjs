@@ -3235,6 +3235,11 @@ const PROVIDER_AUTH = {
     noAuth: true,
     showMiddleware: false,
   },
+  dropbox: {
+    field: "oauthToken",
+    env: "DROPBOX_OAUTH_TOKEN",
+    showMiddleware: false,
+  },
   thesportsdb: {
     env: "THESPORTSDB_API_KEY",
     optionalAuth: true,
@@ -3275,6 +3280,8 @@ const PROVIDER_DOCS = {
   telegram: "https://core.telegram.org/bots/api",
   binance:
     "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/general-api-information",
+  dropbox:
+    "https://www.dropbox.com/developers/documentation/http/documentation",
   openf1: "https://openf1.org/docs/",
   s3: "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html",
   b2: "https://www.backblaze.com/docs/en/cloud-storage-call-the-s3-compatible-api",
@@ -3333,6 +3340,9 @@ const PROVIDER_DEP_NOTES = {
   },
   openf1: {
     zod: "request schemas attached to OpenF1 endpoint methods as `.schema`",
+  },
+  dropbox: {
+    zod: "request schemas attached to Dropbox endpoint methods as `.schema`",
   },
 };
 
@@ -3479,6 +3489,16 @@ async function generateReadme(providerDir, providerName, endpoints) {
       "Do not expose KIE API keys to browsers, mobile clients, public logs, or"
     );
     sections.push("frontend bundles.");
+    sections.push("");
+  }
+
+  if (providerName === "dropbox") {
+    sections.push(
+      "If `oauthToken` is omitted, the provider reads `DROPBOX_OAUTH_TOKEN` at request time."
+    );
+    sections.push(
+      "Tokens are only sent in the `Authorization: Bearer ...` header."
+    );
     sections.push("");
   }
 

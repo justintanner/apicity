@@ -66,6 +66,11 @@ const PROVIDERS = [
     factoryNames: ["createBinance"],
   },
   {
+    name: "dropbox",
+    entryFiles: ["packages/provider/dropbox/src/dropbox.ts"],
+    factoryNames: ["createDropbox"],
+  },
+  {
     name: "openligadb",
     entryFiles: ["packages/provider/openligadb/src/openligadb.ts"],
     factoryNames: ["createOpenLigaDB"],
@@ -1140,7 +1145,10 @@ async function* walkAllEndpointsRaw(project) {
             baseOverride,
           } = extractMethodAndPath(leafNode);
           const methodFromPath = methodFromPathStack(dotPath);
-          const method = methodFromPath || methodFromBody;
+          const method =
+            provider.name === "dropbox" && methodFromBody
+              ? methodFromBody
+              : methodFromPath || methodFromBody;
           const pth = rawPath;
           const logical = logicalDotPath(dotPath, provider.name);
           const full = fullDotPath(dotPath);

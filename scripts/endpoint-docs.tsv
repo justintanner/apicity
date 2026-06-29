@@ -1,4 +1,16 @@
 provider	dotPath	method	fullUrl	docsUrl
+dropbox	users.getCurrentAccount	POST	https://api.dropboxapi.com/2/users/get_current_account	https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
+dropbox	files.listFolder	POST	https://api.dropboxapi.com/2/files/list_folder	https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
+dropbox	files.listFolderContinue	POST	https://api.dropboxapi.com/2/files/list_folder/continue	https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue
+dropbox	files.getMetadata	POST	https://api.dropboxapi.com/2/files/get_metadata	https://www.dropbox.com/developers/documentation/http/documentation#files-get_metadata
+dropbox	files.createFolderV2	POST	https://api.dropboxapi.com/2/files/create_folder_v2	https://www.dropbox.com/developers/documentation/http/documentation#files-create_folder_v2
+dropbox	files.deleteV2	POST	https://api.dropboxapi.com/2/files/delete_v2	https://www.dropbox.com/developers/documentation/http/documentation#files-delete_v2
+dropbox	files.copyV2	POST	https://api.dropboxapi.com/2/files/copy_v2	https://www.dropbox.com/developers/documentation/http/documentation#files-copy_v2
+dropbox	files.moveV2	POST	https://api.dropboxapi.com/2/files/move_v2	https://www.dropbox.com/developers/documentation/http/documentation#files-move_v2
+dropbox	files.upload	POST	https://content.dropboxapi.com/2/files/upload	https://www.dropbox.com/developers/documentation/http/documentation#files-upload
+dropbox	files.download	POST	https://content.dropboxapi.com/2/files/download	https://www.dropbox.com/developers/documentation/http/documentation#files-download
+dropbox	sharing.createSharedLinkWithSettings	POST	https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings	https://www.dropbox.com/developers/documentation/http/documentation#sharing-create_shared_link_with_settings
+dropbox	sharing.listSharedLinks	POST	https://api.dropboxapi.com/2/sharing/list_shared_links	https://www.dropbox.com/developers/documentation/http/documentation#sharing-list_shared_links
 simplefunctions	api.agent.feed	GET	https://simplefunctions.dev/api/agent/feed/{topic}{query}	https://docs.simplefunctions.dev/api-reference/agent
 simplefunctions	api.agent.inspect	GET	https://simplefunctions.dev/api/agent/inspect/{ticker}{query}	https://docs.simplefunctions.dev/api-reference/agent
 simplefunctions	api.agent.world	GET	https://simplefunctions.dev/api/agent/world{query}	https://docs.simplefunctions.dev/api-reference/world-state

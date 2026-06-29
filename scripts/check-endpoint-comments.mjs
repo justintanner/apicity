@@ -38,6 +38,7 @@ const DOCS_HOSTNAME_ALLOWLIST = {
     "www.alibabacloud.com",
   ],
   binance: ["developers.binance.com"],
+  dropbox: ["www.dropbox.com"],
   openligadb: ["api.openligadb.de", "github.com"],
   openf1: ["openf1.org"],
   s3: ["docs.aws.amazon.com"],

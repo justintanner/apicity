@@ -1,7 +1,7 @@
 {
   "name": "apicity",
   "version": "0.1.0",
-  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/openligadb, @apicity/openf1, @apicity/thesportsdb, @apicity/cost, and @apicity/mcp-server",
+  "description": "Standalone AI provider packages — @apicity/openai, @apicity/xai, @apicity/fal, @apicity/google, @apicity/kimicoding, @apicity/kie, @apicity/anthropic, @apicity/fireworks, @apicity/alibaba, @apicity/binance, @apicity/dropbox, @apicity/elevenlabs, @apicity/s3, @apicity/b2, @apicity/free-media-upload, @apicity/x, @apicity/meta, @apicity/polymarket, @apicity/youtube, @apicity/dolthub, @apicity/simplefunctions, @apicity/telegram, @apicity/openligadb, @apicity/openf1, @apicity/thesportsdb, @apicity/cost, and @apicity/mcp-server",
   "type": "module",
   "engines": {
     "node": ">=18.12.0",
@@ -15,6 +15,7 @@
   "scripts": {
     "build": "pnpm run gen:examples && pnpm -r --filter './packages/**' run build && pnpm run doc-gen",
     "build:dolthub": "pnpm --filter @apicity/dolthub run build",
+    "build:dropbox": "pnpm --filter @apicity/dropbox run build",
     "build:google": "pnpm --filter @apicity/google run build",
     "build:openai": "pnpm --filter @apicity/openai run build",
     "build:kimicoding": "pnpm --filter @apicity/kimicoding run build",
@@ -48,6 +49,7 @@
     "doc-gen:openai": "node scripts/doc-gen.mjs openai",
     "doc-gen:xai": "node scripts/doc-gen.mjs xai",
     "doc-gen:dolthub": "node scripts/doc-gen.mjs dolthub",
+    "doc-gen:dropbox": "node scripts/doc-gen.mjs dropbox",
     "doc-gen:google": "node scripts/doc-gen.mjs google",
     "doc-gen:anthropic": "node scripts/doc-gen.mjs anthropic",
     "doc-gen:fireworks": "node scripts/doc-gen.mjs fireworks",

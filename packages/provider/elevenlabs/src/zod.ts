@@ -1455,3 +1455,278 @@ export type ElevenLabsCreateDubbingRequestInput =
 export type ElevenLabsCreateDubbingParsedRequest = z.output<
   typeof ElevenLabsCreateDubbingRequestSchema
 >;
+
+// ===========================================================================
+// Studio / Projects
+// ===========================================================================
+
+const StudioPronunciationDictionaryLocatorSchema = z.object({
+  pronunciation_dictionary_id: z.string(),
+  version_id: z.string().nullable().optional(),
+});
+
+const StudioApplyTextNormalizationSchema = z.enum([
+  "auto",
+  "on",
+  "off",
+  "apply_english",
+]);
+
+const StudioQualityPresetSchema = z.enum([
+  "standard",
+  "high",
+  "ultra",
+  "ultra_lossless",
+]);
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/podcasts
+// ---------------------------------------------------------------------------
+
+const StudioPodcastSourceSchema = z.union([
+  z.object({ type: z.literal("text"), text: z.string() }),
+  z.object({ type: z.literal("url"), url: z.string() }),
+]);
+
+export const ElevenLabsStudioCreatePodcastRequestSchema = z.object({
+  model_id: z.string(),
+  mode: z.union([
+    z.object({
+      type: z.literal("conversation"),
+      conversation: z.object({
+        host_voice_id: z.string(),
+        guest_voice_id: z.string(),
+      }),
+    }),
+    z.object({
+      type: z.literal("bulletin"),
+      bulletin: z.object({ host_voice_id: z.string() }),
+    }),
+  ]),
+  source: z.union([
+    StudioPodcastSourceSchema,
+    z.array(StudioPodcastSourceSchema),
+  ]),
+  quality_preset: StudioQualityPresetSchema.optional(),
+  duration_scale: z.enum(["short", "default", "long"]).optional(),
+  language: z.string().length(2).nullable().optional(),
+  intro: z.string().max(1500).nullable().optional(),
+  outro: z.string().max(1500).nullable().optional(),
+  instructions_prompt: z.string().max(3000).nullable().optional(),
+  highlights: z.array(z.string().min(10).max(70)).nullable().optional(),
+  callback_url: z.string().nullable().optional(),
+  apply_text_normalization:
+    StudioApplyTextNormalizationSchema.nullable().optional(),
+});
+
+export type ElevenLabsStudioCreatePodcastRequest = z.input<
+  typeof ElevenLabsStudioCreatePodcastRequestSchema
+>;
+export type ElevenLabsStudioCreatePodcastRequestInput =
+  ElevenLabsStudioCreatePodcastRequest;
+export type ElevenLabsStudioCreatePodcastParsedRequest = z.output<
+  typeof ElevenLabsStudioCreatePodcastRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/studio/projects/{project_id}
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioGetProjectRequestSchema = z.object({
+  share_id: z.string().nullable().optional(),
+});
+
+export type ElevenLabsStudioGetProjectRequest = z.input<
+  typeof ElevenLabsStudioGetProjectRequestSchema
+>;
+export type ElevenLabsStudioGetProjectRequestInput =
+  ElevenLabsStudioGetProjectRequest;
+export type ElevenLabsStudioGetProjectParsedRequest = z.output<
+  typeof ElevenLabsStudioGetProjectRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects  (multipart/form-data)
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioCreateProjectRequestSchema = z.object({
+  name: z.string(),
+  default_title_voice_id: z.string().nullable().optional(),
+  default_paragraph_voice_id: z.string().nullable().optional(),
+  default_model_id: z.string().nullable().optional(),
+  from_url: z.string().nullable().optional(),
+  from_document: z.custom<Blob>().nullable().optional(),
+  from_content_json: z.string().optional(),
+  quality_preset: StudioQualityPresetSchema.optional(),
+  title: z.string().nullable().optional(),
+  author: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  genres: z.array(z.string()).optional(),
+  target_audience: z
+    .enum(["children", "young adult", "adult", "all ages"])
+    .nullable()
+    .optional(),
+  language: z.string().length(2).nullable().optional(),
+  content_type: z.string().nullable().optional(),
+  original_publication_date: z.string().nullable().optional(),
+  mature_content: z.boolean().nullable().optional(),
+  isbn_number: z.string().nullable().optional(),
+  acx_volume_normalization: z.boolean().optional(),
+  volume_normalization: z.boolean().optional(),
+  pronunciation_dictionary_locators: z
+    .array(StudioPronunciationDictionaryLocatorSchema)
+    .optional(),
+  callback_url: z.string().nullable().optional(),
+  fiction: z.enum(["fiction", "non-fiction"]).nullable().optional(),
+  apply_text_normalization:
+    StudioApplyTextNormalizationSchema.nullable().optional(),
+  auto_convert: z.boolean().optional(),
+  auto_assign_voices: z.boolean().nullable().optional(),
+  source_type: z
+    .enum(["blank", "book", "article", "genfm", "video", "screenplay"])
+    .nullable()
+    .optional(),
+  voice_settings: z.array(z.record(z.string(), z.unknown())).optional(),
+  create_publishing_read: z.boolean().nullable().optional(),
+});
+
+export type ElevenLabsStudioCreateProjectRequest = z.input<
+  typeof ElevenLabsStudioCreateProjectRequestSchema
+>;
+export type ElevenLabsStudioCreateProjectRequestInput =
+  ElevenLabsStudioCreateProjectRequest;
+export type ElevenLabsStudioCreateProjectParsedRequest = z.output<
+  typeof ElevenLabsStudioCreateProjectRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects/{project_id}
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioUpdateProjectRequestSchema = z.object({
+  name: z.string(),
+  default_title_voice_id: z.string(),
+  default_paragraph_voice_id: z.string(),
+  title: z.string().nullable().optional(),
+  author: z.string().nullable().optional(),
+  isbn_number: z.string().nullable().optional(),
+  volume_normalization: z.boolean().optional(),
+});
+
+export type ElevenLabsStudioUpdateProjectRequest = z.input<
+  typeof ElevenLabsStudioUpdateProjectRequestSchema
+>;
+export type ElevenLabsStudioUpdateProjectRequestInput =
+  ElevenLabsStudioUpdateProjectRequest;
+export type ElevenLabsStudioUpdateProjectParsedRequest = z.output<
+  typeof ElevenLabsStudioUpdateProjectRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects/{project_id}/content  (multipart/form-data)
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioUpdateProjectContentRequestSchema = z.object({
+  from_url: z.string().nullable().optional(),
+  from_document: z.custom<Blob>().nullable().optional(),
+  from_content_json: z.string().optional(),
+  auto_convert: z.boolean().optional(),
+});
+
+export type ElevenLabsStudioUpdateProjectContentRequest = z.input<
+  typeof ElevenLabsStudioUpdateProjectContentRequestSchema
+>;
+export type ElevenLabsStudioUpdateProjectContentRequestInput =
+  ElevenLabsStudioUpdateProjectContentRequest;
+export type ElevenLabsStudioUpdateProjectContentParsedRequest = z.output<
+  typeof ElevenLabsStudioUpdateProjectContentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects/{project_id}/pronunciation-dictionaries
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioCreatePronunciationDictionariesRequestSchema =
+  z.object({
+    pronunciation_dictionary_locators: z.array(
+      StudioPronunciationDictionaryLocatorSchema
+    ),
+    invalidate_affected_text: z.boolean().optional(),
+  });
+
+export type ElevenLabsStudioCreatePronunciationDictionariesRequest = z.input<
+  typeof ElevenLabsStudioCreatePronunciationDictionariesRequestSchema
+>;
+export type ElevenLabsStudioCreatePronunciationDictionariesRequestInput =
+  ElevenLabsStudioCreatePronunciationDictionariesRequest;
+export type ElevenLabsStudioCreatePronunciationDictionariesParsedRequest =
+  z.output<typeof ElevenLabsStudioCreatePronunciationDictionariesRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects/{project_id}/snapshots/{snapshot_id}/stream
+// POST .../chapters/{chapter_id}/snapshots/{chapter_snapshot_id}/stream
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioStreamAudioRequestSchema = z.object({
+  convert_to_mpeg: z.boolean().optional(),
+});
+
+export type ElevenLabsStudioStreamAudioRequest = z.input<
+  typeof ElevenLabsStudioStreamAudioRequestSchema
+>;
+export type ElevenLabsStudioStreamAudioRequestInput =
+  ElevenLabsStudioStreamAudioRequest;
+export type ElevenLabsStudioStreamAudioParsedRequest = z.output<
+  typeof ElevenLabsStudioStreamAudioRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects/{project_id}/chapters
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsStudioCreateChapterRequestSchema = z.object({
+  name: z.string(),
+  from_url: z.string().nullable().optional(),
+});
+
+export type ElevenLabsStudioCreateChapterRequest = z.input<
+  typeof ElevenLabsStudioCreateChapterRequestSchema
+>;
+export type ElevenLabsStudioCreateChapterRequestInput =
+  ElevenLabsStudioCreateChapterRequest;
+export type ElevenLabsStudioCreateChapterParsedRequest = z.output<
+  typeof ElevenLabsStudioCreateChapterRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/studio/projects/{project_id}/chapters/{chapter_id}
+// ---------------------------------------------------------------------------
+
+const StudioChapterContentNodeSchema = z.object({
+  type: z.string(),
+  text: z.string(),
+  voice_id: z.string(),
+});
+
+const StudioChapterContentBlockSchema = z.object({
+  sub_type: z.enum(["p", "h1", "h2", "h3"]).nullable().optional(),
+  nodes: z.array(StudioChapterContentNodeSchema),
+  block_id: z.string().nullable().optional(),
+});
+
+export const ElevenLabsStudioUpdateChapterRequestSchema = z.object({
+  name: z.string().nullable().optional(),
+  content: z
+    .object({ blocks: z.array(StudioChapterContentBlockSchema) })
+    .nullable()
+    .optional(),
+});
+
+export type ElevenLabsStudioUpdateChapterRequest = z.input<
+  typeof ElevenLabsStudioUpdateChapterRequestSchema
+>;
+export type ElevenLabsStudioUpdateChapterRequestInput =
+  ElevenLabsStudioUpdateChapterRequest;
+export type ElevenLabsStudioUpdateChapterParsedRequest = z.output<
+  typeof ElevenLabsStudioUpdateChapterRequestSchema
+>;

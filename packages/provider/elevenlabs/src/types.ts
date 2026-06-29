@@ -54,6 +54,15 @@ import type {
   ElevenLabsHistoryDownloadRequest,
   ElevenLabsListDubbingRequest,
   ElevenLabsCreateDubbingRequest,
+  ElevenLabsStudioCreatePodcastRequest,
+  ElevenLabsStudioGetProjectRequest,
+  ElevenLabsStudioCreateProjectRequest,
+  ElevenLabsStudioUpdateProjectRequest,
+  ElevenLabsStudioUpdateProjectContentRequest,
+  ElevenLabsStudioCreatePronunciationDictionariesRequest,
+  ElevenLabsStudioStreamAudioRequest,
+  ElevenLabsStudioCreateChapterRequest,
+  ElevenLabsStudioUpdateChapterRequest,
 } from "./zod";
 
 export type {
@@ -220,6 +229,33 @@ export type {
   ElevenLabsCreateDubbingRequest,
   ElevenLabsCreateDubbingRequestInput,
   ElevenLabsCreateDubbingParsedRequest,
+  ElevenLabsStudioCreatePodcastRequest,
+  ElevenLabsStudioCreatePodcastRequestInput,
+  ElevenLabsStudioCreatePodcastParsedRequest,
+  ElevenLabsStudioGetProjectRequest,
+  ElevenLabsStudioGetProjectRequestInput,
+  ElevenLabsStudioGetProjectParsedRequest,
+  ElevenLabsStudioCreateProjectRequest,
+  ElevenLabsStudioCreateProjectRequestInput,
+  ElevenLabsStudioCreateProjectParsedRequest,
+  ElevenLabsStudioUpdateProjectRequest,
+  ElevenLabsStudioUpdateProjectRequestInput,
+  ElevenLabsStudioUpdateProjectParsedRequest,
+  ElevenLabsStudioUpdateProjectContentRequest,
+  ElevenLabsStudioUpdateProjectContentRequestInput,
+  ElevenLabsStudioUpdateProjectContentParsedRequest,
+  ElevenLabsStudioCreatePronunciationDictionariesRequest,
+  ElevenLabsStudioCreatePronunciationDictionariesRequestInput,
+  ElevenLabsStudioCreatePronunciationDictionariesParsedRequest,
+  ElevenLabsStudioStreamAudioRequest,
+  ElevenLabsStudioStreamAudioRequestInput,
+  ElevenLabsStudioStreamAudioParsedRequest,
+  ElevenLabsStudioCreateChapterRequest,
+  ElevenLabsStudioCreateChapterRequestInput,
+  ElevenLabsStudioCreateChapterParsedRequest,
+  ElevenLabsStudioUpdateChapterRequest,
+  ElevenLabsStudioUpdateChapterRequestInput,
+  ElevenLabsStudioUpdateChapterParsedRequest,
 } from "./zod";
 
 // -- Error -------------------------------------------------------------------
@@ -360,6 +396,164 @@ export interface ElevenLabsDubbingTranscriptsResponse {
   srt?: string | null;
   webvtt?: string | null;
   json?: ElevenLabsDubbingTranscript | null;
+}
+
+// -- Studio / Projects response shapes ---------------------------------------
+
+export interface ElevenLabsStudioProject {
+  project_id: string;
+  name: string;
+  create_date_unix: number;
+  created_by_user_id: string | null;
+  default_title_voice_ref_id: string;
+  default_paragraph_voice_ref_id: string;
+  default_model_id: string;
+  last_conversion_date_unix?: number | null;
+  can_be_downloaded: boolean;
+  title?: string | null;
+  author?: string | null;
+  description?: string | null;
+  genres?: string[] | null;
+  cover_image_url?: string | null;
+  target_audience?: string | null;
+  language?: string | null;
+  content_type?: string | null;
+  original_publication_date?: string | null;
+  mature_content?: boolean | null;
+  isbn_number?: string | null;
+  volume_normalization: boolean;
+  state: "creating" | "default" | "converting" | "in_queue";
+  access_level: "admin" | "editor" | "commenter" | "viewer";
+  fiction?: string | null;
+  quality_check_on: boolean;
+  quality_check_on_when_bulk_convert: boolean;
+  creation_meta?: Record<string, unknown> | null;
+  source_type?: string | null;
+  chapters_enabled?: boolean | null;
+  captions_enabled?: boolean | null;
+  caption_style?: Record<string, unknown> | null;
+  caption_style_template_overrides?: Record<string, unknown> | null;
+  public_share_id?: string | null;
+  aspect_ratio?: string | null;
+  agent_settings?: Record<string, unknown> | null;
+  default_title_voice_id: string;
+  default_paragraph_voice_id: string;
+}
+
+export interface ElevenLabsStudioProjectExtended extends ElevenLabsStudioProject {
+  quality_preset?: string;
+  chapters?: ElevenLabsStudioChapter[];
+  pronunciation_dictionary_versions?: Record<string, unknown>[];
+  pronunciation_dictionary_locators?: Record<string, unknown>[];
+  voices?: Record<string, unknown>[];
+  base_voices?: Record<string, unknown>[];
+  assets?: Record<string, unknown>[];
+  experimental?: Record<string, unknown> | null;
+  publishing_read?: Record<string, unknown> | null;
+}
+
+export interface ElevenLabsStudioListProjectsResponse {
+  projects: ElevenLabsStudioProject[];
+}
+
+export interface ElevenLabsStudioAddProjectResponse {
+  project: ElevenLabsStudioProject;
+}
+
+export interface ElevenLabsStudioEditProjectResponse {
+  project: ElevenLabsStudioProject;
+}
+
+export interface ElevenLabsStudioCreatePodcastResponse {
+  project: ElevenLabsStudioProject;
+}
+
+export interface ElevenLabsStudioDeleteProjectResponse {
+  status: string;
+}
+
+export interface ElevenLabsStudioConvertProjectResponse {
+  status: string;
+}
+
+export interface ElevenLabsStudioCreatePronunciationDictionariesResponse {
+  status: string;
+}
+
+export interface ElevenLabsStudioMutedTracksResponse {
+  chapter_ids: string[];
+}
+
+export interface ElevenLabsStudioProjectSnapshot {
+  project_snapshot_id: string;
+  project_id: string;
+  created_at_unix: number;
+  name: string;
+  audio_upload?: Record<string, unknown> | null;
+  zip_upload?: Record<string, unknown> | null;
+}
+
+export interface ElevenLabsStudioProjectSnapshotExtended extends ElevenLabsStudioProjectSnapshot {
+  character_alignments: Record<string, unknown>[];
+  audio_duration_secs: number;
+}
+
+export interface ElevenLabsStudioListProjectSnapshotsResponse {
+  snapshots: ElevenLabsStudioProjectSnapshot[];
+}
+
+export interface ElevenLabsStudioChapter {
+  chapter_id: string;
+  name: string;
+  last_conversion_date_unix?: number | null;
+  conversion_progress?: number | null;
+  can_be_downloaded: boolean;
+  state: "default" | "converting";
+  has_video?: boolean | null;
+  has_visual_content?: boolean | null;
+  voice_ids?: string[] | null;
+  statistics?: Record<string, unknown> | null;
+  last_conversion_error?: string | null;
+}
+
+export interface ElevenLabsStudioChapterWithContent extends ElevenLabsStudioChapter {
+  content: Record<string, unknown>;
+}
+
+export interface ElevenLabsStudioListChaptersResponse {
+  chapters: ElevenLabsStudioChapter[];
+}
+
+export interface ElevenLabsStudioAddChapterResponse {
+  chapter: ElevenLabsStudioChapterWithContent;
+}
+
+export interface ElevenLabsStudioEditChapterResponse {
+  chapter: ElevenLabsStudioChapterWithContent;
+}
+
+export interface ElevenLabsStudioDeleteChapterResponse {
+  status: string;
+}
+
+export interface ElevenLabsStudioConvertChapterResponse {
+  status: string;
+}
+
+export interface ElevenLabsStudioChapterSnapshot {
+  chapter_snapshot_id: string;
+  project_id: string;
+  chapter_id: string;
+  created_at_unix: number;
+  name: string;
+}
+
+export interface ElevenLabsStudioChapterSnapshotExtended extends ElevenLabsStudioChapterSnapshot {
+  character_alignments: Record<string, unknown>[];
+}
+
+export interface ElevenLabsStudioListChapterSnapshotsResponse {
+  snapshots: ElevenLabsStudioChapterSnapshot[];
 }
 
 // -- Voice response shapes ---------------------------------------------------
@@ -1548,6 +1742,267 @@ export interface ElevenLabsDubbingNamespace {
   transcripts: ElevenLabsDubbingTranscriptsNamespace;
 }
 
+// -- Studio / Projects method + namespace shapes -----------------------------
+
+export interface ElevenLabsStudioCreatePodcastMethod {
+  (
+    req: ElevenLabsStudioCreatePodcastRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioCreatePodcastResponse>;
+  schema: z.ZodType<ElevenLabsStudioCreatePodcastRequest>;
+}
+
+export interface ElevenLabsStudioListProjectsMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsStudioListProjectsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioCreateProjectMethod {
+  (
+    req: ElevenLabsStudioCreateProjectRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioAddProjectResponse>;
+  schema: z.ZodType<ElevenLabsStudioCreateProjectRequest>;
+}
+
+export interface ElevenLabsStudioGetProjectMethod {
+  (
+    projectId: string,
+    req?: ElevenLabsStudioGetProjectRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioProjectExtended>;
+  schema: z.ZodType<ElevenLabsStudioGetProjectRequest>;
+}
+
+export interface ElevenLabsStudioUpdateProjectMethod {
+  (
+    projectId: string,
+    req: ElevenLabsStudioUpdateProjectRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioEditProjectResponse>;
+  schema: z.ZodType<ElevenLabsStudioUpdateProjectRequest>;
+}
+
+export interface ElevenLabsStudioDeleteProjectMethod {
+  (
+    projectId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioDeleteProjectResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioConvertProjectMethod {
+  (
+    projectId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioConvertProjectResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioUpdateProjectContentMethod {
+  (
+    projectId: string,
+    req?: ElevenLabsStudioUpdateProjectContentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioEditProjectResponse>;
+  schema: z.ZodType<ElevenLabsStudioUpdateProjectContentRequest>;
+}
+
+export interface ElevenLabsStudioGetMutedTracksMethod {
+  (
+    projectId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioMutedTracksResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioCreatePronunciationDictionariesMethod {
+  (
+    projectId: string,
+    req: ElevenLabsStudioCreatePronunciationDictionariesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioCreatePronunciationDictionariesResponse>;
+  schema: z.ZodType<ElevenLabsStudioCreatePronunciationDictionariesRequest>;
+}
+
+export interface ElevenLabsStudioListProjectSnapshotsMethod {
+  (
+    projectId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioListProjectSnapshotsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioGetProjectSnapshotMethod {
+  (
+    projectId: string,
+    snapshotId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioProjectSnapshotExtended>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioStreamProjectSnapshotMethod {
+  (
+    projectId: string,
+    snapshotId: string,
+    req?: ElevenLabsStudioStreamAudioRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsStudioStreamAudioRequest>;
+}
+
+export interface ElevenLabsStudioArchiveProjectSnapshotMethod {
+  (
+    projectId: string,
+    snapshotId: string,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioListChaptersMethod {
+  (
+    projectId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioListChaptersResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioCreateChapterMethod {
+  (
+    projectId: string,
+    req: ElevenLabsStudioCreateChapterRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioAddChapterResponse>;
+  schema: z.ZodType<ElevenLabsStudioCreateChapterRequest>;
+}
+
+export interface ElevenLabsStudioGetChapterMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioChapterWithContent>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioUpdateChapterMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    req: ElevenLabsStudioUpdateChapterRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioEditChapterResponse>;
+  schema: z.ZodType<ElevenLabsStudioUpdateChapterRequest>;
+}
+
+export interface ElevenLabsStudioDeleteChapterMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioDeleteChapterResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioConvertChapterMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioConvertChapterResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioListChapterSnapshotsMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioListChapterSnapshotsResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioGetChapterSnapshotMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    chapterSnapshotId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsStudioChapterSnapshotExtended>;
+  schema: undefined;
+}
+
+export interface ElevenLabsStudioStreamChapterSnapshotMethod {
+  (
+    projectId: string,
+    chapterId: string,
+    chapterSnapshotId: string,
+    req?: ElevenLabsStudioStreamAudioRequest,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer>;
+  schema: z.ZodType<ElevenLabsStudioStreamAudioRequest>;
+}
+
+export interface ElevenLabsStudioProjectSnapshotsNamespace {
+  list: ElevenLabsStudioListProjectSnapshotsMethod;
+  get: ElevenLabsStudioGetProjectSnapshotMethod;
+  stream: ElevenLabsStudioStreamProjectSnapshotMethod;
+  archive: ElevenLabsStudioArchiveProjectSnapshotMethod;
+}
+
+export interface ElevenLabsStudioChapterSnapshotsNamespace {
+  list: ElevenLabsStudioListChapterSnapshotsMethod;
+  get: ElevenLabsStudioGetChapterSnapshotMethod;
+  stream: ElevenLabsStudioStreamChapterSnapshotMethod;
+}
+
+export interface ElevenLabsStudioChaptersNamespace {
+  list: ElevenLabsStudioListChaptersMethod;
+  create: ElevenLabsStudioCreateChapterMethod;
+  get: ElevenLabsStudioGetChapterMethod;
+  update: ElevenLabsStudioUpdateChapterMethod;
+  delete: ElevenLabsStudioDeleteChapterMethod;
+  convert: ElevenLabsStudioConvertChapterMethod;
+  snapshots: ElevenLabsStudioChapterSnapshotsNamespace;
+}
+
+export interface ElevenLabsStudioProjectContentNamespace {
+  update: ElevenLabsStudioUpdateProjectContentMethod;
+}
+
+export interface ElevenLabsStudioProjectMutedTracksNamespace {
+  get: ElevenLabsStudioGetMutedTracksMethod;
+}
+
+export interface ElevenLabsStudioProjectPronunciationDictionariesNamespace {
+  create: ElevenLabsStudioCreatePronunciationDictionariesMethod;
+}
+
+export interface ElevenLabsStudioProjectsNamespace {
+  list: ElevenLabsStudioListProjectsMethod;
+  create: ElevenLabsStudioCreateProjectMethod;
+  get: ElevenLabsStudioGetProjectMethod;
+  update: ElevenLabsStudioUpdateProjectMethod;
+  delete: ElevenLabsStudioDeleteProjectMethod;
+  convert: ElevenLabsStudioConvertProjectMethod;
+  content: ElevenLabsStudioProjectContentNamespace;
+  mutedTracks: ElevenLabsStudioProjectMutedTracksNamespace;
+  pronunciationDictionaries: ElevenLabsStudioProjectPronunciationDictionariesNamespace;
+  snapshots: ElevenLabsStudioProjectSnapshotsNamespace;
+  chapters: ElevenLabsStudioChaptersNamespace;
+}
+
+export interface ElevenLabsStudioPodcastsNamespace {
+  create: ElevenLabsStudioCreatePodcastMethod;
+}
+
+export interface ElevenLabsStudioNamespace {
+  podcasts: ElevenLabsStudioPodcastsNamespace;
+  projects: ElevenLabsStudioProjectsNamespace;
+}
+
 export interface ElevenLabsSpeechToSpeechStreamMethod {
   (
     voiceId: string,
@@ -2296,6 +2751,7 @@ export interface ElevenLabsV1Namespace {
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   dubbing: ElevenLabsDubbingNamespace;
+  studio: ElevenLabsStudioNamespace;
   user: ElevenLabsUserNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   convai: ElevenLabsConvaiNamespace;

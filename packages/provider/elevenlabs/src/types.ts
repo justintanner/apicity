@@ -1546,7 +1546,12 @@ export interface ElevenLabsModel {
 
 export type ElevenLabsListModelsResponse = ElevenLabsModel[];
 
-// -- User/subscription response shapes ---------------------------------------
+// -- User/account response shapes -------------------------------------------
+
+export type ElevenLabsSeatType =
+  | "workspace_admin"
+  | "workspace_member"
+  | "workspace_lite_member";
 
 export interface ElevenLabsMoneyAmount {
   amount: string;
@@ -1576,11 +1581,10 @@ export interface ElevenLabsPendingSubscriptionChange {
   [key: string]: unknown;
 }
 
-export interface ElevenLabsSubscription {
+export interface ElevenLabsSubscriptionDetails {
   tier: string;
   character_count: number;
   character_limit: number;
-  remaining_character_count: number;
   max_character_limit_extension?: number | null;
   max_credit_limit_extension?: number | "unlimited" | null;
   can_extend_character_limit?: boolean;
@@ -1609,7 +1613,37 @@ export interface ElevenLabsSubscription {
   [key: string]: unknown;
 }
 
+export interface ElevenLabsSubscription extends ElevenLabsSubscriptionDetails {
+  remaining_character_count: number;
+}
+
 export type ElevenLabsUserSubscriptionResponse = ElevenLabsSubscription;
+
+export interface ElevenLabsUserResponse {
+  user_id: string;
+  subscription: ElevenLabsSubscriptionDetails;
+  is_new_user: boolean;
+  xi_api_key?: string | null;
+  can_use_delayed_payment_methods: boolean;
+  is_onboarding_completed: boolean;
+  is_onboarding_checklist_completed: boolean;
+  show_compliance_terms?: boolean;
+  first_name?: string | null;
+  is_api_key_hashed?: boolean;
+  xi_api_key_preview?: string | null;
+  referral_link_code?: string | null;
+  partnerstack_partner_default_link?: string | null;
+  created_at: number;
+  seat_type: ElevenLabsSeatType;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsSingleUseTokenType = "realtime_scribe" | "tts_websocket";
+
+export interface ElevenLabsSingleUseTokenResponse {
+  token: string;
+  [key: string]: unknown;
+}
 
 // -- Docs redirect response shape -------------------------------------------
 
@@ -3136,6 +3170,19 @@ export interface ElevenLabsUserSubscriptionMethod {
   (signal?: AbortSignal): Promise<ElevenLabsUserSubscriptionResponse>;
 }
 
+export interface ElevenLabsGetUserMethod {
+  (signal?: AbortSignal): Promise<ElevenLabsUserResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCreateSingleUseTokenMethod {
+  (
+    tokenType: ElevenLabsSingleUseTokenType,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSingleUseTokenResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsListModelsMethod {
   (signal?: AbortSignal): Promise<ElevenLabsListModelsResponse>;
 }
@@ -3517,7 +3564,7 @@ export interface ElevenLabsConvaiNamespace {
   sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
 }
 
-export interface ElevenLabsUserNamespace {
+export interface ElevenLabsUserNamespace extends ElevenLabsGetUserMethod {
   subscription: ElevenLabsUserSubscriptionMethod;
 }
 
@@ -3734,6 +3781,7 @@ export interface ElevenLabsV1Namespace {
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
+  singleUseToken: ElevenLabsCreateSingleUseTokenMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   dubbing: ElevenLabsDubbingNamespace;
@@ -3795,6 +3843,7 @@ export interface ElevenLabsPostV1Namespace {
   textToSpeech: ElevenLabsTextToSpeechMethod;
   textToDialogue: ElevenLabsTextToDialogueMethod;
   textToVoice: ElevenLabsTextToVoiceMethod;
+  singleUseToken: ElevenLabsCreateSingleUseTokenMethod;
   speechToText: ElevenLabsSpeechToTextMethod;
   speechToSpeech: ElevenLabsSpeechToSpeechMethod;
   similarVoices: ElevenLabsSimilarVoicesMethod;

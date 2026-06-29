@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-157 endpoints across 24 groups. Each method mirrors an upstream URL path.
+159 endpoints across 25 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -1390,6 +1390,23 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 </details>
 
+### singleUseToken
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.singleUseToken</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/single-use-token/{tokenType}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/tokens/create)
+
+```typescript
+const res = await elevenlabs.v1.singleUseToken({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
 ### soundGeneration
 
 <details>
@@ -2093,6 +2110,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 ### user
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.user</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/user</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/user/get)
+
+```typescript
+const res = await elevenlabs.v1.user({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>elevenlabs.v1.user.subscription</code></b></summary>

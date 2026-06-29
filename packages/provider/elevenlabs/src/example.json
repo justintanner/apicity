@@ -81,6 +81,28 @@
       }
     }
   },
+  "PATCH v1.productions.orders.update": {
+    "source": "elevenlabs/productions-orders",
+    "payload": {
+      "request": {
+        "name": "Spanish Dubs"
+      }
+    }
+  },
+  "PATCH v1.speechEngine.update": {
+    "source": "elevenlabs/speech-engine",
+    "payload": {
+      "name": "Updated Speech Engine"
+    }
+  },
+  "POST v1.audioNative.content.fromUrl": {
+    "source": "elevenlabs/audio-native-content-url",
+    "payload": {
+      "url": "https://elevenlabs.io/blog",
+      "title": "Apicity Audio Native URL",
+      "author": "Apicity"
+    }
+  },
   "POST v1.convai.agents.create": {
     "source": "elevenlabs/convai-agents",
     "payload": {
@@ -155,12 +177,85 @@
       "to_number": "+15005550006"
     }
   },
+  "POST v1.music": {
+    "source": "elevenlabs/music-compose",
+    "payload": {
+      "prompt": "calm lo-fi piano loop",
+      "music_length_ms": 10000,
+      "force_instrumental": true
+    }
+  },
+  "POST v1.music.detailed": {
+    "source": "elevenlabs/music-detailed",
+    "payload": {
+      "prompt": "calm lo-fi piano loop",
+      "music_length_ms": 10000,
+      "force_instrumental": true
+    }
+  },
+  "POST v1.music.plan": {
+    "source": "elevenlabs/music-plan",
+    "payload": {
+      "prompt": "calm lo-fi piano loop",
+      "music_length_ms": 10000
+    }
+  },
+  "POST v1.music.stream": {
+    "source": "elevenlabs/music-stream",
+    "payload": {
+      "prompt": "calm lo-fi piano loop",
+      "music_length_ms": 10000,
+      "force_instrumental": true
+    }
+  },
+  "POST v1.productions.orders.create": {
+    "source": "elevenlabs/productions-orders",
+    "payload": {
+      "sandbox": true
+    }
+  },
+  "POST v1.productions.orders.items.upsert": {
+    "source": "elevenlabs/productions-orders",
+    "payload": {
+      "request": {
+        "item": {
+          "kind": "dub",
+          "media_id": "prodmedia_01jgb2zd68f8f9tfvbb968wb8z",
+          "source_language": "en",
+          "destination_languages": [
+            "es",
+            "fr"
+          ],
+          "include_captions": true,
+          "include_source_captions": false
+        }
+      }
+    }
+  },
   "POST v1.soundGeneration": {
     "source": "elevenlabs/sound-generation",
     "payload": {
       "text": "soft ui click",
       "duration_seconds": 0.5,
       "prompt_influence": 0.3
+    }
+  },
+  "POST v1.speechEngine.create": {
+    "source": "elevenlabs/speech-engine",
+    "payload": {
+      "name": "Apicity Speech Engine route test",
+      "speech_engine": {
+        "ws_url": "wss://example.com/transcript",
+        "request_headers": {
+          "authorization": {
+            "variable_name": "transcript_auth"
+          }
+        }
+      },
+      "language": "en",
+      "tags": [
+        "apicity"
+      ]
     }
   },
   "POST v1.studio.podcasts.create": {

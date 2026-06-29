@@ -82,7 +82,10 @@ import {
   ElevenLabsStartSpeakerSeparationResponse,
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleResponse,
+  ElevenLabsUserResponse,
   ElevenLabsUserSubscriptionResponse,
+  ElevenLabsSingleUseTokenType,
+  ElevenLabsSingleUseTokenResponse,
   ElevenLabsVoice,
   ElevenLabsVoiceSettings,
   ElevenLabsWorkspaceAnalyticsQueryResponse,
@@ -3274,6 +3277,20 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsPvcManualVerificationRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/user
+  // Docs: https://elevenlabs.io/docs/api-reference/user/get
+  const getUser = Object.assign(
+    async (signal?: AbortSignal): Promise<ElevenLabsUserResponse> => {
+      return makeJsonRequest<ElevenLabsUserResponse>(
+        "GET",
+        "/v1/user",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v1/user/subscription
   // Docs: https://elevenlabs.io/docs/api-reference/user/subscription/get
   const userSubscription = Object.assign(
@@ -3294,6 +3311,23 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           subscription.character_limit - subscription.character_count
         ),
       };
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/single-use-token/{tokenType}
+  // Docs: https://elevenlabs.io/docs/api-reference/tokens/create
+  const singleUseToken = Object.assign(
+    async (
+      tokenType: ElevenLabsSingleUseTokenType,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSingleUseTokenResponse> => {
+      return makeJsonRequest<ElevenLabsSingleUseTokenResponse>(
+        "POST",
+        `/v1/single-use-token/${encodeURIComponent(tokenType)}`,
+        undefined,
+        signal
+      );
     },
     { schema: undefined }
   );
@@ -4011,9 +4045,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     sipTrunk: convaiSipTrunk,
   };
 
-  const user = {
+  const user = Object.assign(getUser, {
     subscription: userSubscription,
-  };
+  });
   const pvcSamplesSpeakers = Object.assign(getPvcSampleSpeakers, {
     audio: getSeparatedSpeakerAudio,
   });
@@ -4118,6 +4152,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToSpeech,
     textToDialogue,
     textToVoice,
+    singleUseToken,
     speechToText,
     speechToSpeech,
     similarVoices: getSimilarVoices,
@@ -4215,6 +4250,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     textToSpeech,
     textToDialogue,
     textToVoice,
+    singleUseToken,
     speechToText,
     speechToSpeech,
     dubbing,

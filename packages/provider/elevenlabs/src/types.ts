@@ -68,6 +68,18 @@ import type {
   ElevenLabsListKnowledgeBaseDocumentsRequest,
   ElevenLabsGetKnowledgeBaseDocumentRequest,
   ElevenLabsDeleteKnowledgeBaseDocumentRequest,
+  ElevenLabsGetKnowledgeBaseSummariesRequest,
+  ElevenLabsSearchKnowledgeBaseContentRequest,
+  ElevenLabsUpdateKnowledgeBaseDocumentRequest,
+  ElevenLabsListKnowledgeBaseDocumentChunksRequest,
+  ElevenLabsGetKnowledgeBaseDocumentChunkRequest,
+  ElevenLabsGetKnowledgeBaseDependentAgentsRequest,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentRequest,
+  ElevenLabsComputeKnowledgeBaseRagIndexesRequest,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest,
+  ElevenLabsCreateKnowledgeBaseFolderRequest,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest,
+  ElevenLabsMoveKnowledgeBaseEntityRequest,
   ElevenLabsListConversationsRequest,
   ElevenLabsGetConversationRequest,
   ElevenLabsGetSignedUrlRequest,
@@ -345,6 +357,42 @@ export type {
   ElevenLabsDeleteKnowledgeBaseDocumentRequest,
   ElevenLabsDeleteKnowledgeBaseDocumentRequestInput,
   ElevenLabsDeleteKnowledgeBaseDocumentParsedRequest,
+  ElevenLabsGetKnowledgeBaseSummariesRequest,
+  ElevenLabsGetKnowledgeBaseSummariesRequestInput,
+  ElevenLabsGetKnowledgeBaseSummariesParsedRequest,
+  ElevenLabsSearchKnowledgeBaseContentRequest,
+  ElevenLabsSearchKnowledgeBaseContentRequestInput,
+  ElevenLabsSearchKnowledgeBaseContentParsedRequest,
+  ElevenLabsUpdateKnowledgeBaseDocumentRequest,
+  ElevenLabsUpdateKnowledgeBaseDocumentRequestInput,
+  ElevenLabsUpdateKnowledgeBaseDocumentParsedRequest,
+  ElevenLabsListKnowledgeBaseDocumentChunksRequest,
+  ElevenLabsListKnowledgeBaseDocumentChunksRequestInput,
+  ElevenLabsListKnowledgeBaseDocumentChunksParsedRequest,
+  ElevenLabsGetKnowledgeBaseDocumentChunkRequest,
+  ElevenLabsGetKnowledgeBaseDocumentChunkRequestInput,
+  ElevenLabsGetKnowledgeBaseDocumentChunkParsedRequest,
+  ElevenLabsGetKnowledgeBaseDependentAgentsRequest,
+  ElevenLabsGetKnowledgeBaseDependentAgentsRequestInput,
+  ElevenLabsGetKnowledgeBaseDependentAgentsParsedRequest,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentRequest,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentRequestInput,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentParsedRequest,
+  ElevenLabsComputeKnowledgeBaseRagIndexesRequest,
+  ElevenLabsComputeKnowledgeBaseRagIndexesRequestInput,
+  ElevenLabsComputeKnowledgeBaseRagIndexesParsedRequest,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestInput,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexParsedRequest,
+  ElevenLabsCreateKnowledgeBaseFolderRequest,
+  ElevenLabsCreateKnowledgeBaseFolderRequestInput,
+  ElevenLabsCreateKnowledgeBaseFolderParsedRequest,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestInput,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsParsedRequest,
+  ElevenLabsMoveKnowledgeBaseEntityRequest,
+  ElevenLabsMoveKnowledgeBaseEntityRequestInput,
+  ElevenLabsMoveKnowledgeBaseEntityParsedRequest,
   ElevenLabsListConversationsRequest,
   ElevenLabsListConversationsRequestInput,
   ElevenLabsListConversationsParsedRequest,
@@ -2199,6 +2247,183 @@ export type ElevenLabsDeleteKnowledgeBaseDocumentResponse = Record<
   unknown
 >;
 
+export interface ElevenLabsKnowledgeBaseBatchFailure {
+  status: "failure";
+  error_code: number;
+  error_status: string;
+  error_message: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsKnowledgeBaseSummaryBatchSuccess {
+  status: "success";
+  data: ElevenLabsKnowledgeBaseDocument;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsKnowledgeBaseSummaryBatchResult =
+  | ElevenLabsKnowledgeBaseSummaryBatchSuccess
+  | ElevenLabsKnowledgeBaseBatchFailure;
+
+export type ElevenLabsGetKnowledgeBaseSummariesResponse = Record<
+  string,
+  ElevenLabsKnowledgeBaseSummaryBatchResult
+>;
+
+export interface ElevenLabsKnowledgeBaseContentSearchResult {
+  document: ElevenLabsKnowledgeBaseDocument;
+  score: number;
+  search_snippet?: Record<string, unknown>[] | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsSearchKnowledgeBaseContentResponse {
+  results: ElevenLabsKnowledgeBaseContentSearchResult[];
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsUpdateKnowledgeBaseDocumentResponse =
+  ElevenLabsKnowledgeBaseDocument;
+
+export type ElevenLabsGetKnowledgeBaseDocumentContentResponse = string;
+
+export interface ElevenLabsKnowledgeBaseDocumentChunk {
+  id: string;
+  name: string;
+  content: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsListKnowledgeBaseDocumentChunksResponse {
+  chunks: ElevenLabsKnowledgeBaseDocumentChunk[];
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsGetKnowledgeBaseDocumentChunkResponse =
+  ElevenLabsKnowledgeBaseDocumentChunk;
+
+export type ElevenLabsKnowledgeBaseDependentType =
+  | "direct"
+  | "transitive"
+  | "all";
+
+export interface ElevenLabsKnowledgeBaseDependentAgent {
+  id?: string;
+  name?: string;
+  type?: "available" | "unknown" | string;
+  referenced_resource_ids?: string[];
+  created_at_unix_secs?: number;
+  access_level?: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsKnowledgeBaseDependentBranch {
+  agent_id: string;
+  agent_name: string;
+  branch_id: string;
+  branch_name: string;
+  is_main: boolean;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDependentAgentsResponse {
+  agents: ElevenLabsKnowledgeBaseDependentAgent[];
+  branches?: ElevenLabsKnowledgeBaseDependentBranch[];
+  has_more: boolean;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetKnowledgeBaseSourceFileUrlResponse {
+  signed_url: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsRefreshKnowledgeBaseDocumentResponse =
+  ElevenLabsKnowledgeBaseDocument;
+
+export type ElevenLabsUpdateKnowledgeBaseFileDocumentResponse =
+  ElevenLabsKnowledgeBaseDocument;
+
+export type ElevenLabsKnowledgeBaseEmbeddingModel =
+  | "e5_mistral_7b_instruct"
+  | "multilingual_e5_large_instruct";
+
+export type ElevenLabsKnowledgeBaseRagIndexStatus =
+  | "new"
+  | "created"
+  | "processing"
+  | "failed"
+  | "succeeded"
+  | "rag_limit_exceeded"
+  | "document_too_small"
+  | "cannot_index_folder";
+
+export interface ElevenLabsKnowledgeBaseRagIndexUsage {
+  used_bytes: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsKnowledgeBaseRagIndex {
+  id: string;
+  model: ElevenLabsKnowledgeBaseEmbeddingModel;
+  status: ElevenLabsKnowledgeBaseRagIndexStatus;
+  progress_percentage: number;
+  document_model_index_usage: ElevenLabsKnowledgeBaseRagIndexUsage;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsKnowledgeBaseRagIndexBatchSuccess {
+  status: "success";
+  data: ElevenLabsKnowledgeBaseRagIndex;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsKnowledgeBaseRagIndexBatchResult =
+  | ElevenLabsKnowledgeBaseRagIndexBatchSuccess
+  | ElevenLabsKnowledgeBaseBatchFailure;
+
+export type ElevenLabsComputeKnowledgeBaseRagIndexesResponse = Record<
+  string,
+  ElevenLabsKnowledgeBaseRagIndexBatchResult
+>;
+
+export interface ElevenLabsKnowledgeBaseRagIndexOverviewModel {
+  model: ElevenLabsKnowledgeBaseEmbeddingModel;
+  used_bytes: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetKnowledgeBaseRagIndexOverviewResponse {
+  total_used_bytes: number;
+  total_max_bytes: number;
+  models: ElevenLabsKnowledgeBaseRagIndexOverviewModel[];
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDocumentRagIndexesResponse {
+  indexes: ElevenLabsKnowledgeBaseRagIndex[];
+  [key: string]: unknown;
+}
+
+export type ElevenLabsComputeKnowledgeBaseDocumentRagIndexResponse =
+  ElevenLabsKnowledgeBaseRagIndex;
+
+export type ElevenLabsDeleteKnowledgeBaseDocumentRagIndexResponse =
+  ElevenLabsKnowledgeBaseRagIndex;
+
+export type ElevenLabsCreateKnowledgeBaseFolderResponse =
+  ElevenLabsCreateKnowledgeBaseDocumentResponse;
+
+export type ElevenLabsMoveKnowledgeBaseEntityResponse = Record<string, unknown>;
+
+export type ElevenLabsBulkMoveKnowledgeBaseDocumentsResponse = Record<
+  string,
+  unknown
+>;
+
 // The transcript entries and the `metadata`/`analysis`/`conversation_initiation_client_data`
 // trees are large, free-form upstream models; we surface the stable top-level
 // fields and keep the nested structures as opaque records.
@@ -3845,6 +4070,158 @@ export interface ElevenLabsDeleteKnowledgeBaseDocumentMethod {
   schema: z.ZodType<ElevenLabsDeleteKnowledgeBaseDocumentRequest>;
 }
 
+export interface ElevenLabsGetKnowledgeBaseSummariesMethod {
+  (
+    req: ElevenLabsGetKnowledgeBaseSummariesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseSummariesResponse>;
+  schema: z.ZodType<ElevenLabsGetKnowledgeBaseSummariesRequest>;
+}
+
+export interface ElevenLabsSearchKnowledgeBaseContentMethod {
+  (
+    req: ElevenLabsSearchKnowledgeBaseContentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSearchKnowledgeBaseContentResponse>;
+  schema: z.ZodType<ElevenLabsSearchKnowledgeBaseContentRequest>;
+}
+
+export interface ElevenLabsUpdateKnowledgeBaseDocumentMethod {
+  (
+    documentationId: string,
+    req: ElevenLabsUpdateKnowledgeBaseDocumentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateKnowledgeBaseDocumentResponse>;
+  schema: z.ZodType<ElevenLabsUpdateKnowledgeBaseDocumentRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDocumentContentMethod {
+  (
+    documentationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseDocumentContentResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsListKnowledgeBaseDocumentChunksMethod {
+  (
+    documentationId: string,
+    req: ElevenLabsListKnowledgeBaseDocumentChunksRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsListKnowledgeBaseDocumentChunksResponse>;
+  schema: z.ZodType<ElevenLabsListKnowledgeBaseDocumentChunksRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDocumentChunkMethod {
+  (
+    documentationId: string,
+    chunkId: string,
+    req?: ElevenLabsGetKnowledgeBaseDocumentChunkRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseDocumentChunkResponse>;
+  schema: z.ZodType<ElevenLabsGetKnowledgeBaseDocumentChunkRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDependentAgentsMethod {
+  (
+    documentationId: string,
+    req?: ElevenLabsGetKnowledgeBaseDependentAgentsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseDependentAgentsResponse>;
+  schema: z.ZodType<ElevenLabsGetKnowledgeBaseDependentAgentsRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseSourceFileUrlMethod {
+  (
+    documentationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseSourceFileUrlResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsRefreshKnowledgeBaseDocumentMethod {
+  (
+    documentationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRefreshKnowledgeBaseDocumentResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsUpdateKnowledgeBaseFileDocumentMethod {
+  (
+    documentationId: string,
+    req: ElevenLabsUpdateKnowledgeBaseFileDocumentRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUpdateKnowledgeBaseFileDocumentResponse>;
+  schema: z.ZodType<ElevenLabsUpdateKnowledgeBaseFileDocumentRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseRagIndexOverviewMethod {
+  (
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseRagIndexOverviewResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsComputeKnowledgeBaseRagIndexesMethod {
+  (
+    req: ElevenLabsComputeKnowledgeBaseRagIndexesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsComputeKnowledgeBaseRagIndexesResponse>;
+  schema: z.ZodType<ElevenLabsComputeKnowledgeBaseRagIndexesRequest>;
+}
+
+export interface ElevenLabsGetKnowledgeBaseDocumentRagIndexesMethod {
+  (
+    documentationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetKnowledgeBaseDocumentRagIndexesResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsComputeKnowledgeBaseDocumentRagIndexMethod {
+  (
+    documentationId: string,
+    req: ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsComputeKnowledgeBaseDocumentRagIndexResponse>;
+  schema: z.ZodType<ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest>;
+}
+
+export interface ElevenLabsDeleteKnowledgeBaseDocumentRagIndexMethod {
+  (
+    documentationId: string,
+    ragIndexId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteKnowledgeBaseDocumentRagIndexResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsCreateKnowledgeBaseFolderMethod {
+  (
+    req: ElevenLabsCreateKnowledgeBaseFolderRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsCreateKnowledgeBaseFolderResponse>;
+  schema: z.ZodType<ElevenLabsCreateKnowledgeBaseFolderRequest>;
+}
+
+export interface ElevenLabsBulkMoveKnowledgeBaseDocumentsMethod {
+  (
+    req: ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsBulkMoveKnowledgeBaseDocumentsResponse>;
+  schema: z.ZodType<ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest>;
+}
+
+export interface ElevenLabsMoveKnowledgeBaseEntityMethod {
+  (
+    documentId: string,
+    req?: ElevenLabsMoveKnowledgeBaseEntityRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsMoveKnowledgeBaseEntityResponse>;
+  schema: z.ZodType<ElevenLabsMoveKnowledgeBaseEntityRequest>;
+}
+
 export interface ElevenLabsListConversationsMethod {
   (
     req?: ElevenLabsListConversationsRequest,
@@ -4132,9 +4509,33 @@ export interface ElevenLabsConvaiKnowledgeBaseNamespace {
   url: ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod;
   text: ElevenLabsCreateKnowledgeBaseDocumentFromTextMethod;
   file: ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod;
+  folder: ElevenLabsCreateKnowledgeBaseFolderMethod;
   list: ElevenLabsListKnowledgeBaseDocumentsMethod;
   get: ElevenLabsGetKnowledgeBaseDocumentMethod;
+  update: ElevenLabsUpdateKnowledgeBaseDocumentMethod;
   delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
+  summaries: ElevenLabsGetKnowledgeBaseSummariesMethod;
+  search: ElevenLabsSearchKnowledgeBaseContentMethod;
+  content: ElevenLabsGetKnowledgeBaseDocumentContentMethod;
+  chunks: ElevenLabsConvaiKnowledgeBaseChunksNamespace;
+  dependentAgents: ElevenLabsGetKnowledgeBaseDependentAgentsMethod;
+  sourceFileUrl: ElevenLabsGetKnowledgeBaseSourceFileUrlMethod;
+  refresh: ElevenLabsRefreshKnowledgeBaseDocumentMethod;
+  updateFile: ElevenLabsUpdateKnowledgeBaseFileDocumentMethod;
+  ragIndex: ElevenLabsConvaiKnowledgeBaseRagIndexNamespace;
+  bulkMove: ElevenLabsBulkMoveKnowledgeBaseDocumentsMethod;
+  move: ElevenLabsMoveKnowledgeBaseEntityMethod;
+}
+
+export interface ElevenLabsConvaiKnowledgeBaseChunksNamespace extends ElevenLabsListKnowledgeBaseDocumentChunksMethod {
+  get: ElevenLabsGetKnowledgeBaseDocumentChunkMethod;
+}
+
+export interface ElevenLabsConvaiKnowledgeBaseRagIndexNamespace extends ElevenLabsGetKnowledgeBaseRagIndexOverviewMethod {
+  batch: ElevenLabsComputeKnowledgeBaseRagIndexesMethod;
+  get: ElevenLabsGetKnowledgeBaseDocumentRagIndexesMethod;
+  compute: ElevenLabsComputeKnowledgeBaseDocumentRagIndexMethod;
+  delete: ElevenLabsDeleteKnowledgeBaseDocumentRagIndexMethod;
 }
 
 export interface ElevenLabsConvaiConversationMessagesNamespace {
@@ -4477,6 +4878,14 @@ export interface ElevenLabsPostConvaiKnowledgeBaseNamespace {
   url: ElevenLabsCreateKnowledgeBaseDocumentFromUrlMethod;
   text: ElevenLabsCreateKnowledgeBaseDocumentFromTextMethod;
   file: ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod;
+  folder: ElevenLabsCreateKnowledgeBaseFolderMethod;
+  refresh: ElevenLabsRefreshKnowledgeBaseDocumentMethod;
+  ragIndex: {
+    batch: ElevenLabsComputeKnowledgeBaseRagIndexesMethod;
+    compute: ElevenLabsComputeKnowledgeBaseDocumentRagIndexMethod;
+  };
+  bulkMove: ElevenLabsBulkMoveKnowledgeBaseDocumentsMethod;
+  move: ElevenLabsMoveKnowledgeBaseEntityMethod;
 }
 
 export interface ElevenLabsPostConvaiConversationsNamespace {
@@ -4578,6 +4987,11 @@ export interface ElevenLabsPatchConvaiToolsNamespace {
   update: ElevenLabsUpdateToolMethod;
 }
 
+export interface ElevenLabsPatchConvaiKnowledgeBaseNamespace {
+  update: ElevenLabsUpdateKnowledgeBaseDocumentMethod;
+  updateFile: ElevenLabsUpdateKnowledgeBaseFileDocumentMethod;
+}
+
 export interface ElevenLabsPatchConvaiPhoneNumbersNamespace {
   update: ElevenLabsUpdatePhoneNumberMethod;
 }
@@ -4585,6 +4999,7 @@ export interface ElevenLabsPatchConvaiPhoneNumbersNamespace {
 export interface ElevenLabsPatchConvaiNamespace {
   agents: ElevenLabsPatchConvaiAgentsNamespace;
   tools: ElevenLabsPatchConvaiToolsNamespace;
+  knowledgeBase: ElevenLabsPatchConvaiKnowledgeBaseNamespace;
   phoneNumbers: ElevenLabsPatchConvaiPhoneNumbersNamespace;
 }
 
@@ -4624,6 +5039,16 @@ export interface ElevenLabsGetConvaiToolsNamespace {
 export interface ElevenLabsGetConvaiKnowledgeBaseNamespace {
   list: ElevenLabsListKnowledgeBaseDocumentsMethod;
   get: ElevenLabsGetKnowledgeBaseDocumentMethod;
+  summaries: ElevenLabsGetKnowledgeBaseSummariesMethod;
+  search: ElevenLabsSearchKnowledgeBaseContentMethod;
+  content: ElevenLabsGetKnowledgeBaseDocumentContentMethod;
+  chunks: ElevenLabsConvaiKnowledgeBaseChunksNamespace;
+  dependentAgents: ElevenLabsGetKnowledgeBaseDependentAgentsMethod;
+  sourceFileUrl: ElevenLabsGetKnowledgeBaseSourceFileUrlMethod;
+  ragIndex: {
+    overview: ElevenLabsGetKnowledgeBaseRagIndexOverviewMethod;
+    get: ElevenLabsGetKnowledgeBaseDocumentRagIndexesMethod;
+  };
 }
 
 export interface ElevenLabsGetConvaiConversationsNamespace {
@@ -4721,6 +5146,9 @@ export interface ElevenLabsDeleteConvaiToolsNamespace {
 
 export interface ElevenLabsDeleteConvaiKnowledgeBaseNamespace {
   delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
+  ragIndex: {
+    delete: ElevenLabsDeleteKnowledgeBaseDocumentRagIndexMethod;
+  };
 }
 
 export interface ElevenLabsDeleteConvaiConversationsNamespace {

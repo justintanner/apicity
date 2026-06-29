@@ -1533,6 +1533,24 @@ export type ElevenLabsUpdateToolParsedRequest = z.output<
 // Agents Platform — Knowledge Base
 // ---------------------------------------------------------------------------
 
+const ElevenLabsKnowledgeBaseDocumentTypeSchema = z.enum([
+  "file",
+  "url",
+  "text",
+  "folder",
+]);
+
+const ElevenLabsKnowledgeBaseEmbeddingModelSchema = z.enum([
+  "e5_mistral_7b_instruct",
+  "multilingual_e5_large_instruct",
+]);
+
+const ElevenLabsKnowledgeBaseDependentTypeSchema = z.enum([
+  "direct",
+  "transitive",
+  "all",
+]);
+
 // ---------------------------------------------------------------------------
 // POST /v1/convai/knowledge-base/url
 // ---------------------------------------------------------------------------
@@ -1604,7 +1622,7 @@ export const ElevenLabsListKnowledgeBaseDocumentsRequestSchema = z.object({
   show_only_owned_documents: z.boolean().optional(),
   created_by_user_id: z.string().nullable().optional(),
   types: z
-    .array(z.enum(["file", "url", "text", "folder"]))
+    .array(ElevenLabsKnowledgeBaseDocumentTypeSchema)
     .nullable()
     .optional(),
   parent_folder_id: z.string().nullable().optional(),
@@ -1659,6 +1677,232 @@ export type ElevenLabsDeleteKnowledgeBaseDocumentRequestInput =
   ElevenLabsDeleteKnowledgeBaseDocumentRequest;
 export type ElevenLabsDeleteKnowledgeBaseDocumentParsedRequest = z.output<
   typeof ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base/summaries
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetKnowledgeBaseSummariesRequestSchema = z.object({
+  document_ids: z.array(z.string()).min(1).max(100),
+});
+
+export type ElevenLabsGetKnowledgeBaseSummariesRequest = z.input<
+  typeof ElevenLabsGetKnowledgeBaseSummariesRequestSchema
+>;
+export type ElevenLabsGetKnowledgeBaseSummariesRequestInput =
+  ElevenLabsGetKnowledgeBaseSummariesRequest;
+export type ElevenLabsGetKnowledgeBaseSummariesParsedRequest = z.output<
+  typeof ElevenLabsGetKnowledgeBaseSummariesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base/search
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSearchKnowledgeBaseContentRequestSchema = z.object({
+  query: z.string(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  types: z
+    .array(ElevenLabsKnowledgeBaseDocumentTypeSchema)
+    .nullable()
+    .optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsSearchKnowledgeBaseContentRequest = z.input<
+  typeof ElevenLabsSearchKnowledgeBaseContentRequestSchema
+>;
+export type ElevenLabsSearchKnowledgeBaseContentRequestInput =
+  ElevenLabsSearchKnowledgeBaseContentRequest;
+export type ElevenLabsSearchKnowledgeBaseContentParsedRequest = z.output<
+  typeof ElevenLabsSearchKnowledgeBaseContentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/knowledge-base/:documentation_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateKnowledgeBaseDocumentRequestSchema = z.object({
+  name: z.string().nullable().optional(),
+  content: z.string().nullable().optional(),
+});
+
+export type ElevenLabsUpdateKnowledgeBaseDocumentRequest = z.input<
+  typeof ElevenLabsUpdateKnowledgeBaseDocumentRequestSchema
+>;
+export type ElevenLabsUpdateKnowledgeBaseDocumentRequestInput =
+  ElevenLabsUpdateKnowledgeBaseDocumentRequest;
+export type ElevenLabsUpdateKnowledgeBaseDocumentParsedRequest = z.output<
+  typeof ElevenLabsUpdateKnowledgeBaseDocumentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base/:documentation_id/chunks
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema = z.object({
+  embedding_model: ElevenLabsKnowledgeBaseEmbeddingModelSchema,
+  page_size: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsListKnowledgeBaseDocumentChunksRequest = z.input<
+  typeof ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema
+>;
+export type ElevenLabsListKnowledgeBaseDocumentChunksRequestInput =
+  ElevenLabsListKnowledgeBaseDocumentChunksRequest;
+export type ElevenLabsListKnowledgeBaseDocumentChunksParsedRequest = z.output<
+  typeof ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base/:documentation_id/chunk/:chunk_id
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetKnowledgeBaseDocumentChunkRequestSchema = z.object({
+  embedding_model:
+    ElevenLabsKnowledgeBaseEmbeddingModelSchema.nullable().optional(),
+});
+
+export type ElevenLabsGetKnowledgeBaseDocumentChunkRequest = z.input<
+  typeof ElevenLabsGetKnowledgeBaseDocumentChunkRequestSchema
+>;
+export type ElevenLabsGetKnowledgeBaseDocumentChunkRequestInput =
+  ElevenLabsGetKnowledgeBaseDocumentChunkRequest;
+export type ElevenLabsGetKnowledgeBaseDocumentChunkParsedRequest = z.output<
+  typeof ElevenLabsGetKnowledgeBaseDocumentChunkRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/knowledge-base/:documentation_id/dependent-agents
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetKnowledgeBaseDependentAgentsRequestSchema = z.object({
+  dependent_type: ElevenLabsKnowledgeBaseDependentTypeSchema.optional(),
+  page_size: z.number().int().min(1).max(100).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsGetKnowledgeBaseDependentAgentsRequest = z.input<
+  typeof ElevenLabsGetKnowledgeBaseDependentAgentsRequestSchema
+>;
+export type ElevenLabsGetKnowledgeBaseDependentAgentsRequestInput =
+  ElevenLabsGetKnowledgeBaseDependentAgentsRequest;
+export type ElevenLabsGetKnowledgeBaseDependentAgentsParsedRequest = z.output<
+  typeof ElevenLabsGetKnowledgeBaseDependentAgentsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// PATCH /v1/convai/knowledge-base/:documentation_id/update-file
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUpdateKnowledgeBaseFileDocumentRequestSchema = z.object({
+  file: z.custom<Blob>(),
+});
+
+export type ElevenLabsUpdateKnowledgeBaseFileDocumentRequest = z.input<
+  typeof ElevenLabsUpdateKnowledgeBaseFileDocumentRequestSchema
+>;
+export type ElevenLabsUpdateKnowledgeBaseFileDocumentRequestInput =
+  ElevenLabsUpdateKnowledgeBaseFileDocumentRequest;
+export type ElevenLabsUpdateKnowledgeBaseFileDocumentParsedRequest = z.output<
+  typeof ElevenLabsUpdateKnowledgeBaseFileDocumentRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/rag-index
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsComputeKnowledgeBaseRagIndexesRequestSchema = z.object({
+  items: z.array(
+    z.object({
+      document_id: z.string(),
+      create_if_missing: z.boolean(),
+      model: ElevenLabsKnowledgeBaseEmbeddingModelSchema,
+    })
+  ),
+});
+
+export type ElevenLabsComputeKnowledgeBaseRagIndexesRequest = z.input<
+  typeof ElevenLabsComputeKnowledgeBaseRagIndexesRequestSchema
+>;
+export type ElevenLabsComputeKnowledgeBaseRagIndexesRequestInput =
+  ElevenLabsComputeKnowledgeBaseRagIndexesRequest;
+export type ElevenLabsComputeKnowledgeBaseRagIndexesParsedRequest = z.output<
+  typeof ElevenLabsComputeKnowledgeBaseRagIndexesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/:documentation_id/rag-index
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestSchema =
+  z.object({
+    model: ElevenLabsKnowledgeBaseEmbeddingModelSchema,
+  });
+
+export type ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest = z.input<
+  typeof ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestSchema
+>;
+export type ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestInput =
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest;
+export type ElevenLabsComputeKnowledgeBaseDocumentRagIndexParsedRequest =
+  z.output<typeof ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestSchema>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/folder
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateKnowledgeBaseFolderRequestSchema = z.object({
+  name: z.string(),
+  parent_folder_id: z.string().nullable().optional(),
+  enable_auto_sync: z.boolean().optional(),
+  auto_remove: z.boolean().optional(),
+});
+
+export type ElevenLabsCreateKnowledgeBaseFolderRequest = z.input<
+  typeof ElevenLabsCreateKnowledgeBaseFolderRequestSchema
+>;
+export type ElevenLabsCreateKnowledgeBaseFolderRequestInput =
+  ElevenLabsCreateKnowledgeBaseFolderRequest;
+export type ElevenLabsCreateKnowledgeBaseFolderParsedRequest = z.output<
+  typeof ElevenLabsCreateKnowledgeBaseFolderRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/bulk-move
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestSchema = z.object({
+  document_ids: z.array(z.string()),
+  move_to: z.string().nullable().optional(),
+});
+
+export type ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest = z.input<
+  typeof ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestSchema
+>;
+export type ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestInput =
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest;
+export type ElevenLabsBulkMoveKnowledgeBaseDocumentsParsedRequest = z.output<
+  typeof ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/knowledge-base/:document_id/move
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsMoveKnowledgeBaseEntityRequestSchema = z.object({
+  move_to: z.string().nullable().optional(),
+});
+
+export type ElevenLabsMoveKnowledgeBaseEntityRequest = z.input<
+  typeof ElevenLabsMoveKnowledgeBaseEntityRequestSchema
+>;
+export type ElevenLabsMoveKnowledgeBaseEntityRequestInput =
+  ElevenLabsMoveKnowledgeBaseEntityRequest;
+export type ElevenLabsMoveKnowledgeBaseEntityParsedRequest = z.output<
+  typeof ElevenLabsMoveKnowledgeBaseEntityRequestSchema
 >;
 
 // ---------------------------------------------------------------------------

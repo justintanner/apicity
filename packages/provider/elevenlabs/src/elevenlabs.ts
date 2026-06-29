@@ -153,6 +153,36 @@ import {
   ElevenLabsGetKnowledgeBaseDocumentResponse,
   ElevenLabsDeleteKnowledgeBaseDocumentRequest,
   ElevenLabsDeleteKnowledgeBaseDocumentResponse,
+  ElevenLabsGetKnowledgeBaseSummariesRequest,
+  ElevenLabsGetKnowledgeBaseSummariesResponse,
+  ElevenLabsSearchKnowledgeBaseContentRequest,
+  ElevenLabsSearchKnowledgeBaseContentResponse,
+  ElevenLabsUpdateKnowledgeBaseDocumentRequest,
+  ElevenLabsUpdateKnowledgeBaseDocumentResponse,
+  ElevenLabsGetKnowledgeBaseDocumentContentResponse,
+  ElevenLabsListKnowledgeBaseDocumentChunksRequest,
+  ElevenLabsListKnowledgeBaseDocumentChunksResponse,
+  ElevenLabsGetKnowledgeBaseDocumentChunkRequest,
+  ElevenLabsGetKnowledgeBaseDocumentChunkResponse,
+  ElevenLabsGetKnowledgeBaseDependentAgentsRequest,
+  ElevenLabsGetKnowledgeBaseDependentAgentsResponse,
+  ElevenLabsGetKnowledgeBaseSourceFileUrlResponse,
+  ElevenLabsRefreshKnowledgeBaseDocumentResponse,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentRequest,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentResponse,
+  ElevenLabsComputeKnowledgeBaseRagIndexesRequest,
+  ElevenLabsComputeKnowledgeBaseRagIndexesResponse,
+  ElevenLabsGetKnowledgeBaseRagIndexOverviewResponse,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexResponse,
+  ElevenLabsGetKnowledgeBaseDocumentRagIndexesResponse,
+  ElevenLabsDeleteKnowledgeBaseDocumentRagIndexResponse,
+  ElevenLabsCreateKnowledgeBaseFolderRequest,
+  ElevenLabsCreateKnowledgeBaseFolderResponse,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsResponse,
+  ElevenLabsMoveKnowledgeBaseEntityRequest,
+  ElevenLabsMoveKnowledgeBaseEntityResponse,
   ElevenLabsListConversationsRequest,
   ElevenLabsListConversationsResponse,
   ElevenLabsGetConversationRequest,
@@ -335,6 +365,18 @@ import {
   ElevenLabsListKnowledgeBaseDocumentsRequestSchema,
   ElevenLabsGetKnowledgeBaseDocumentRequestSchema,
   ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema,
+  ElevenLabsGetKnowledgeBaseSummariesRequestSchema,
+  ElevenLabsSearchKnowledgeBaseContentRequestSchema,
+  ElevenLabsUpdateKnowledgeBaseDocumentRequestSchema,
+  ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema,
+  ElevenLabsGetKnowledgeBaseDocumentChunkRequestSchema,
+  ElevenLabsGetKnowledgeBaseDependentAgentsRequestSchema,
+  ElevenLabsUpdateKnowledgeBaseFileDocumentRequestSchema,
+  ElevenLabsComputeKnowledgeBaseRagIndexesRequestSchema,
+  ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestSchema,
+  ElevenLabsCreateKnowledgeBaseFolderRequestSchema,
+  ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestSchema,
+  ElevenLabsMoveKnowledgeBaseEntityRequestSchema,
   ElevenLabsListConversationsRequestSchema,
   ElevenLabsGetConversationRequestSchema,
   ElevenLabsGetSignedUrlRequestSchema,
@@ -544,6 +586,53 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     }
   }
 
+  async function makeTextRequest(
+    method: "GET",
+    path: string,
+    signal?: AbortSignal,
+    queryString = ""
+  ): Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}${queryString}`, {
+        method,
+        headers: {
+          "xi-api-key": opts.apiKey,
+        },
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let resBody: unknown = null;
+        try {
+          resBody = await res.json();
+        } catch {
+          // ignore parse errors
+        }
+        throw new ElevenLabsError(
+          formatErrorMessage(res.status, resBody),
+          res.status,
+          resBody,
+          extractErrorCode(resBody)
+        );
+      }
+
+      return await res.text();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof ElevenLabsError) throw error;
+      throw new ElevenLabsError(`ElevenLabs request failed: ${error}`, 500);
+    }
+  }
+
   async function makeJsonRequest<T>(
     method: "GET" | "POST" | "DELETE" | "PATCH",
     path: string,
@@ -666,6 +755,22 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     query: Record<string, string> | undefined,
     signal?: AbortSignal
   ): Promise<T> {
+    return makeMultipartJsonRequestWithMethod(
+      "POST",
+      path,
+      form,
+      query,
+      signal
+    );
+  }
+
+  async function makeMultipartJsonRequestWithMethod<T>(
+    method: "POST" | "PATCH",
+    path: string,
+    form: FormData,
+    query: Record<string, string> | undefined,
+    signal?: AbortSignal
+  ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -677,7 +782,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
 
     try {
       const res = await doFetch(`${baseURL}${path}${qs}`, {
-        method: "POST",
+        method,
         headers: {
           "xi-api-key": opts.apiKey,
         },
@@ -4673,13 +4778,364 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsDeleteKnowledgeBaseDocumentRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/summaries
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-summaries
+  const getKnowledgeBaseSummaries = Object.assign(
+    async (
+      req: ElevenLabsGetKnowledgeBaseSummariesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseSummariesResponse> => {
+      return makeJsonRequest<ElevenLabsGetKnowledgeBaseSummariesResponse>(
+        "GET",
+        "/v1/convai/knowledge-base/summaries",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetKnowledgeBaseSummariesRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/search
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/search
+  const searchKnowledgeBaseContent = Object.assign(
+    async (
+      req: ElevenLabsSearchKnowledgeBaseContentRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSearchKnowledgeBaseContentResponse> => {
+      return makeJsonRequest<ElevenLabsSearchKnowledgeBaseContentResponse>(
+        "GET",
+        "/v1/convai/knowledge-base/search",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsSearchKnowledgeBaseContentRequestSchema }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/update
+  const updateKnowledgeBaseDocument = Object.assign(
+    async (
+      documentationId: string,
+      req: ElevenLabsUpdateKnowledgeBaseDocumentRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateKnowledgeBaseDocumentResponse> => {
+      return makeJsonRequest<ElevenLabsUpdateKnowledgeBaseDocumentResponse>(
+        "PATCH",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateKnowledgeBaseDocumentRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/content
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-content
+  const getKnowledgeBaseDocumentContent = Object.assign(
+    async (
+      documentationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseDocumentContentResponse> => {
+      return makeTextRequest(
+        "GET",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/content`,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/chunks
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-chunks
+  const listKnowledgeBaseDocumentChunks = Object.assign(
+    async (
+      documentationId: string,
+      req: ElevenLabsListKnowledgeBaseDocumentChunksRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsListKnowledgeBaseDocumentChunksResponse> => {
+      return makeJsonRequest<ElevenLabsListKnowledgeBaseDocumentChunksResponse>(
+        "GET",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/chunks`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsListKnowledgeBaseDocumentChunksRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/chunk/{chunkId}
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-chunk
+  const getKnowledgeBaseDocumentChunk = Object.assign(
+    async (
+      documentationId: string,
+      chunkId: string,
+      req: ElevenLabsGetKnowledgeBaseDocumentChunkRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseDocumentChunkResponse> => {
+      return makeJsonRequest<ElevenLabsGetKnowledgeBaseDocumentChunkResponse>(
+        "GET",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/chunk/${encodeURIComponent(chunkId)}`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetKnowledgeBaseDocumentChunkRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/dependent-agents
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-agents
+  const getKnowledgeBaseDependentAgents = Object.assign(
+    async (
+      documentationId: string,
+      req: ElevenLabsGetKnowledgeBaseDependentAgentsRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseDependentAgentsResponse> => {
+      return makeJsonRequest<ElevenLabsGetKnowledgeBaseDependentAgentsResponse>(
+        "GET",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/dependent-agents`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetKnowledgeBaseDependentAgentsRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/source-file-url
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-source-file-url
+  const getKnowledgeBaseSourceFileUrl = Object.assign(
+    async (
+      documentationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseSourceFileUrlResponse> => {
+      return makeJsonRequest<ElevenLabsGetKnowledgeBaseSourceFileUrlResponse>(
+        "GET",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/source-file-url`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/refresh
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/refresh
+  const refreshKnowledgeBaseDocument = Object.assign(
+    async (
+      documentationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsRefreshKnowledgeBaseDocumentResponse> => {
+      return makeJsonRequest<ElevenLabsRefreshKnowledgeBaseDocumentResponse>(
+        "POST",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/refresh`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // PATCH https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/update-file
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/update-file
+  const updateKnowledgeBaseFileDocument = Object.assign(
+    async (
+      documentationId: string,
+      req: ElevenLabsUpdateKnowledgeBaseFileDocumentRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUpdateKnowledgeBaseFileDocumentResponse> => {
+      const form = new FormData();
+      appendFormField(form, "file", req.file);
+      return makeMultipartJsonRequestWithMethod<ElevenLabsUpdateKnowledgeBaseFileDocumentResponse>(
+        "PATCH",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/update-file`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsUpdateKnowledgeBaseFileDocumentRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/rag-index-overview
+  const getKnowledgeBaseRagIndexOverview = Object.assign(
+    async (
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseRagIndexOverviewResponse> => {
+      return makeJsonRequest<ElevenLabsGetKnowledgeBaseRagIndexOverviewResponse>(
+        "GET",
+        "/v1/convai/knowledge-base/rag-index",
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index-batch
+  const computeKnowledgeBaseRagIndexes = Object.assign(
+    async (
+      req: ElevenLabsComputeKnowledgeBaseRagIndexesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsComputeKnowledgeBaseRagIndexesResponse> => {
+      return makeJsonRequest<ElevenLabsComputeKnowledgeBaseRagIndexesResponse>(
+        "POST",
+        "/v1/convai/knowledge-base/rag-index",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsComputeKnowledgeBaseRagIndexesRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/get-rag-index
+  const getKnowledgeBaseDocumentRagIndexes = Object.assign(
+    async (
+      documentationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetKnowledgeBaseDocumentRagIndexesResponse> => {
+      return makeJsonRequest<ElevenLabsGetKnowledgeBaseDocumentRagIndexesResponse>(
+        "GET",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/rag-index`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index
+  const computeKnowledgeBaseDocumentRagIndex = Object.assign(
+    async (
+      documentationId: string,
+      req: ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsComputeKnowledgeBaseDocumentRagIndexResponse> => {
+      return makeJsonRequest<ElevenLabsComputeKnowledgeBaseDocumentRagIndexResponse>(
+        "POST",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/rag-index`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsComputeKnowledgeBaseDocumentRagIndexRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index/{ragIndexId}
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/delete-rag-index
+  const deleteKnowledgeBaseDocumentRagIndex = Object.assign(
+    async (
+      documentationId: string,
+      ragIndexId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteKnowledgeBaseDocumentRagIndexResponse> => {
+      return makeJsonRequest<ElevenLabsDeleteKnowledgeBaseDocumentRagIndexResponse>(
+        "DELETE",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentationId)}/rag-index/${encodeURIComponent(ragIndexId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/knowledge-base/folder
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/create-folder
+  const createKnowledgeBaseFolder = Object.assign(
+    async (
+      req: ElevenLabsCreateKnowledgeBaseFolderRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsCreateKnowledgeBaseFolderResponse> => {
+      return makeJsonRequest<ElevenLabsCreateKnowledgeBaseFolderResponse>(
+        "POST",
+        "/v1/convai/knowledge-base/folder",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsCreateKnowledgeBaseFolderRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/knowledge-base/bulk-move
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/bulk-move
+  const bulkMoveKnowledgeBaseDocuments = Object.assign(
+    async (
+      req: ElevenLabsBulkMoveKnowledgeBaseDocumentsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsBulkMoveKnowledgeBaseDocumentsResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsBulkMoveKnowledgeBaseDocumentsResponse>(
+        "POST",
+        "/v1/convai/knowledge-base/bulk-move",
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsBulkMoveKnowledgeBaseDocumentsRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentId}/move
+  // Docs: https://elevenlabs.io/docs/api-reference/knowledge-base/move-document
+  const moveKnowledgeBaseEntity = Object.assign(
+    async (
+      documentId: string,
+      req: ElevenLabsMoveKnowledgeBaseEntityRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsMoveKnowledgeBaseEntityResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsMoveKnowledgeBaseEntityResponse>(
+        "POST",
+        `/v1/convai/knowledge-base/${encodeURIComponent(documentId)}/move`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsMoveKnowledgeBaseEntityRequestSchema }
+  );
+
+  const convaiKnowledgeBaseChunks = Object.assign(
+    listKnowledgeBaseDocumentChunks,
+    {
+      get: getKnowledgeBaseDocumentChunk,
+    }
+  );
+
+  const convaiKnowledgeBaseRagIndex = Object.assign(
+    getKnowledgeBaseRagIndexOverview,
+    {
+      batch: computeKnowledgeBaseRagIndexes,
+      get: getKnowledgeBaseDocumentRagIndexes,
+      compute: computeKnowledgeBaseDocumentRagIndex,
+      delete: deleteKnowledgeBaseDocumentRagIndex,
+    }
+  );
+
   const convaiKnowledgeBase = {
     url: createKnowledgeBaseDocumentFromUrl,
     text: createKnowledgeBaseDocumentFromText,
     file: createKnowledgeBaseDocumentFromFile,
+    folder: createKnowledgeBaseFolder,
     list: listKnowledgeBaseDocuments,
     get: getKnowledgeBaseDocument,
+    update: updateKnowledgeBaseDocument,
     delete: deleteKnowledgeBaseDocument,
+    summaries: getKnowledgeBaseSummaries,
+    search: searchKnowledgeBaseContent,
+    content: getKnowledgeBaseDocumentContent,
+    chunks: convaiKnowledgeBaseChunks,
+    dependentAgents: getKnowledgeBaseDependentAgents,
+    sourceFileUrl: getKnowledgeBaseSourceFileUrl,
+    refresh: refreshKnowledgeBaseDocument,
+    updateFile: updateKnowledgeBaseFileDocument,
+    ragIndex: convaiKnowledgeBaseRagIndex,
+    bulkMove: bulkMoveKnowledgeBaseDocuments,
+    move: moveKnowledgeBaseEntity,
   };
   const convaiConversationMessages = {
     smartSearch: smartSearchConversationMessages,
@@ -4877,6 +5333,14 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         url: createKnowledgeBaseDocumentFromUrl,
         text: createKnowledgeBaseDocumentFromText,
         file: createKnowledgeBaseDocumentFromFile,
+        folder: createKnowledgeBaseFolder,
+        refresh: refreshKnowledgeBaseDocument,
+        ragIndex: {
+          batch: computeKnowledgeBaseRagIndexes,
+          compute: computeKnowledgeBaseDocumentRagIndex,
+        },
+        bulkMove: bulkMoveKnowledgeBaseDocuments,
+        move: moveKnowledgeBaseEntity,
       },
       conversations: {
         feedback: sendConversationFeedback,
@@ -4908,6 +5372,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         branches: { update: updateAgentBranch },
       },
       tools: { update: updateTool },
+      knowledgeBase: {
+        update: updateKnowledgeBaseDocument,
+        updateFile: updateKnowledgeBaseFileDocument,
+      },
       phoneNumbers: { update: updatePhoneNumber },
     },
   };
@@ -4942,7 +5410,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         drafts: { delete: deleteAgentDraft },
       },
       tools: { delete: deleteTool },
-      knowledgeBase: { delete: deleteKnowledgeBaseDocument },
+      knowledgeBase: {
+        delete: deleteKnowledgeBaseDocument,
+        ragIndex: { delete: deleteKnowledgeBaseDocumentRagIndex },
+      },
       conversations: {
         delete: deleteConversation,
         files: { delete: deleteConversationFile },
@@ -5052,6 +5523,16 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           knowledgeBase: {
             list: listKnowledgeBaseDocuments,
             get: getKnowledgeBaseDocument,
+            summaries: getKnowledgeBaseSummaries,
+            search: searchKnowledgeBaseContent,
+            content: getKnowledgeBaseDocumentContent,
+            chunks: convaiKnowledgeBaseChunks,
+            dependentAgents: getKnowledgeBaseDependentAgents,
+            sourceFileUrl: getKnowledgeBaseSourceFileUrl,
+            ragIndex: {
+              overview: getKnowledgeBaseRagIndexOverview,
+              get: getKnowledgeBaseDocumentRagIndexes,
+            },
           },
           conversations: {
             list: listConversations,

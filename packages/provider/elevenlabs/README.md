@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-190 endpoints across 25 groups. Each method mirrors an upstream URL path.
+208 endpoints across 25 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -931,6 +931,66 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.bulkMove</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/bulk-move</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/bulk-move)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.bulkMove({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.chunks</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/chunks</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-chunks)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.chunks({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.chunks.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/chunk/{chunkId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-chunk)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.chunks.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.content</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/content</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-content)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.content({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.knowledgeBase.delete</code></b></summary>
 
 <code>DELETE https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}</code>
@@ -946,6 +1006,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.dependentAgents</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/dependent-agents</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-agents)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.dependentAgents({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.file</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/file</code>
@@ -954,6 +1029,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.file({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.folder</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/folder</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/create-folder)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.folder({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -991,6 +1081,156 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.move</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentId}/move</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/move-document)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.move({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.ragIndex</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/rag-index-overview)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.ragIndex.batch</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/rag-index</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index-batch)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.batch({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.ragIndex.compute</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/compute-rag-index)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.compute({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.knowledgeBase.ragIndex.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index/{ragIndexId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/delete-rag-index)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.ragIndex.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/rag-index</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-rag-index)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.ragIndex.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.refresh</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/refresh</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/refresh)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.refresh({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.search</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/search</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/search)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.search({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.sourceFileUrl</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/source-file-url</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-source-file-url)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.sourceFileUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.knowledgeBase.summaries</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/knowledge-base/summaries</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/get-summaries)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.summaries({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.convai.knowledgeBase.text</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/convai/knowledge-base/text</code>
@@ -999,6 +1239,36 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.knowledgeBase.text({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.knowledgeBase.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.knowledgeBase.updateFile</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/knowledge-base/{documentationId}/update-file</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/knowledge-base/update-file)
+
+```typescript
+const res = await elevenlabs.v1.convai.knowledgeBase.updateFile({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

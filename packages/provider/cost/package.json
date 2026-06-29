@@ -21,9 +21,10 @@
     }
   },
   "bin": {
-    "apicity-paygate": "./dist/src/paygate-cli.js"
+    "apicity-paygate": "./bin/paygate-cli.js"
   },
   "files": [
+    "bin",
     "dist",
     "README.md",
     "LICENSE"

@@ -5,7 +5,7 @@
 // Keeping factory imports dynamic means a missing provider package doesn't
 // crash the server — that provider just gets skipped.
 
-import { PAID_ENDPOINTS } from "@apicity/cost";
+import { loadCostHelpers } from "./cost.js";
 
 export interface ProviderSpec {
   envVar: string;
@@ -47,10 +47,15 @@ function polymarketOptionsFromEnv(): Record<string, unknown> {
   };
 }
 
-/** Provider names that have at least one paid endpoint in the registry. */
-const PROVIDERS_WITH_PAID_ENDPOINTS = new Set(
-  PAID_ENDPOINTS.map((e) => e.key.provider)
-);
+let providersWithPaidEndpointsPromise: Promise<Set<string>> | undefined;
+
+async function providerHasPaidEndpoint(name: string): Promise<boolean> {
+  providersWithPaidEndpointsPromise ??= loadCostHelpers().then(
+    ({ PAID_ENDPOINTS }) =>
+      new Set(PAID_ENDPOINTS.map((entry) => entry.key.provider))
+  );
+  return (await providersWithPaidEndpointsPromise).has(name);
+}
 
 export const PROVIDERS: Record<string, ProviderSpec> = {
   openai: {
@@ -278,7 +283,7 @@ export async function instantiateProvider(
   // The MCP server is the code client: it holds the shared secret to *verify*
   // OTPs, but never mints them. A human mints an OTP out-of-band and the caller
   // passes it as the tool's `otp` argument, so the AI cannot self-approve.
-  if (paygateSecret && PROVIDERS_WITH_PAID_ENDPOINTS.has(name)) {
+  if (paygateSecret && (await providerHasPaidEndpoint(name))) {
     opts.paygate = { secret: paygateSecret };
   }
   return (factory as (opts: Record<string, unknown>) => InstantiatedProvider)(

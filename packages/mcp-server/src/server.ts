@@ -5,7 +5,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { isPaidEndpoint } from "@apicity/cost";
+import { loadCostHelpers, type CostHelpers } from "./cost.js";
 import { buildRegistry, type Endpoint } from "./registry.js";
 import { type JsonSchema } from "./schema.js";
 import {
@@ -27,6 +27,7 @@ export interface StartServerOptions {
 export async function startServer(
   opts: StartServerOptions = {}
 ): Promise<void> {
+  const cost = await loadCostHelpers();
   const endpoints = await buildRegistry({
     enabledProviders: opts.enabledProviders,
     paygateSecret: opts.paygateSecret,
@@ -45,8 +46,8 @@ export async function startServer(
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: endpoints.map((ep) => ({
       name: ep.toolName,
-      description: describe(ep, opts.outputDir),
-      inputSchema: buildInputSchema(ep),
+      description: describe(ep, opts.outputDir, cost),
+      inputSchema: buildInputSchema(ep, cost),
     })),
   }));
 
@@ -56,7 +57,7 @@ export async function startServer(
       return errorResult(`Unknown tool: ${req.params.name}`);
     }
     try {
-      const result = await invoke(ep, req.params.arguments ?? {});
+      const result = await invoke(ep, req.params.arguments ?? {}, cost);
       return await formatResult(ep, result, opts.outputDir);
     } catch (err) {
       return errorResult(
@@ -73,9 +74,13 @@ export async function startServer(
   );
 }
 
-function describe(ep: Endpoint, outputDir?: string): string {
+function describe(
+  ep: Endpoint,
+  outputDir: string | undefined,
+  cost: CostHelpers
+): string {
   const lines = [`${ep.method} ${ep.fullUrl}`, `Docs: ${ep.docsUrl}`];
-  if (isPaidEndpoint(ep.provider, ep.method, ep.dotPath)) {
+  if (cost.isPaidEndpoint(ep.provider, ep.method, ep.dotPath)) {
     lines.push(
       "PAID endpoint: requires an operator-minted `otp` (one-time approval). " +
         "The OTP is bound to this exact request and is single-use."
@@ -106,8 +111,8 @@ const OTP_SCHEMA: JsonSchema = {
     "Bound to this exact request and single-use; the AI cannot mint it.",
 };
 
-function buildInputSchema(ep: Endpoint): JsonSchema {
-  const paid = isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
+function buildInputSchema(ep: Endpoint, cost: CostHelpers): JsonSchema {
+  const paid = cost.isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
   const body = ep.jsonSchema;
   // If the endpoint takes path params (e.g., {taskId}), wrap them at the top
   // level alongside the body fields and mark them required.
@@ -152,9 +157,10 @@ function withOtp(objSchema: JsonSchema): JsonSchema {
 
 async function invoke(
   ep: Endpoint,
-  args: Record<string, unknown>
+  args: Record<string, unknown>,
+  cost: CostHelpers
 ): Promise<unknown> {
-  const paid = isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
+  const paid = cost.isPaidEndpoint(ep.provider, ep.method, ep.dotPath);
   // For paid endpoints, peel the `otp` approval off the arguments before the
   // rest is treated as the request body. The approval is forwarded as the final
   // argument so the provider's pay gate can verify it (or fail closed).

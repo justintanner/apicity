@@ -79,9 +79,7 @@ function printHelp(): void {
   );
 }
 
-async function main(): Promise<void> {
-  const argv = process.argv.slice(2);
-
+export async function main(argv = process.argv.slice(2)): Promise<void> {
   if (argv.length === 0 || argv[0] === "--help" || argv[0] === "-h") {
     printHelp();
     process.exit(0);

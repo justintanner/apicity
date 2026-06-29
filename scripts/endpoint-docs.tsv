@@ -548,6 +548,12 @@ elevenlabs	v1.voices.samples.delete	DELETE	https://api.elevenlabs.io/v1/voices/{
 elevenlabs	v1.voices.samples.audio	GET	https://api.elevenlabs.io/v1/voices/{voiceId}/samples/{sampleId}/audio	https://elevenlabs.io/docs/api-reference/samples/audio
 elevenlabs	v1.sharedVoices	GET	https://api.elevenlabs.io/v1/shared-voices	https://elevenlabs.io/docs/api-reference/voices/get-shared
 elevenlabs	v1.similarVoices	POST	https://api.elevenlabs.io/v1/similar-voices	https://elevenlabs.io/docs/api-reference/voices/find-similar-voices
+elevenlabs	v1.dubbing.list	GET	https://api.elevenlabs.io/v1/dubbing	https://elevenlabs.io/docs/api-reference/dubbing/list
+elevenlabs	v1.dubbing.create	POST	https://api.elevenlabs.io/v1/dubbing	https://elevenlabs.io/docs/api-reference/dubbing/create
+elevenlabs	v1.dubbing.get	GET	https://api.elevenlabs.io/v1/dubbing/{dubbingId}	https://elevenlabs.io/docs/api-reference/dubbing/get
+elevenlabs	v1.dubbing.delete	DELETE	https://api.elevenlabs.io/v1/dubbing/{dubbingId}	https://elevenlabs.io/docs/api-reference/dubbing/delete
+elevenlabs	v1.dubbing.audio.get	GET	https://api.elevenlabs.io/v1/dubbing/{dubbingId}/audio/{languageCode}	https://elevenlabs.io/docs/api-reference/dubbing/audio/get
+elevenlabs	v1.dubbing.transcripts.get	GET	https://api.elevenlabs.io/v1/dubbing/{dubbingId}/transcripts/{languageCode}/format/{formatType}	https://elevenlabs.io/docs/api-reference/dubbing/transcripts/get
 fal	bytedance.seedance2p0.fast.imageToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video	https://docs.fal.ai
 fal	bytedance.seedance2p0.fast.referenceToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
 fal	bytedance.seedance2p0.fast.textToVideo	POST	https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video	https://docs.fal.ai

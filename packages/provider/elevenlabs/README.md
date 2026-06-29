@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-87 endpoints across 15 groups. Each method mirrors an upstream URL path.
+93 endpoints across 16 groups. Each method mirrors an upstream URL path.
 
 ### convai
 
@@ -622,6 +622,98 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.docs();
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### dubbing
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.dubbing.audio.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}/audio/{languageCode}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/audio/get)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.audio.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.dubbing.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/dubbing</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/create)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.dubbing.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/dubbing/{dubbingId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/delete)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.dubbing.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/get)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.dubbing.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/dubbing</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/list)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.dubbing.transcripts.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}/transcripts/{languageCode}/format/{formatType}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/transcripts/get)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.transcripts.get({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

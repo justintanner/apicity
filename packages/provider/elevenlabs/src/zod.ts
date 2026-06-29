@@ -1385,3 +1385,73 @@ export type ElevenLabsHistoryDownloadRequestInput =
 export type ElevenLabsHistoryDownloadParsedRequest = z.output<
   typeof ElevenLabsHistoryDownloadRequestSchema
 >;
+
+// ---------------------------------------------------------------------------
+// GET /v1/dubbing
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsListDubbingRequestSchema = z.object({
+  cursor: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(200).optional(),
+  dubbing_status: z.enum(["dubbing", "dubbed", "failed"]).optional(),
+  dubbing_statuses: z
+    .array(z.enum(["queued", "preparing", "dubbing", "dubbed", "failed"]))
+    .nullable()
+    .optional(),
+  dubbing_models: z
+    .array(z.enum(["dubbing_v1", "dubbing_v2"]))
+    .nullable()
+    .optional(),
+  target_language_codes: z.array(z.string()).nullable().optional(),
+  creation_sources: z
+    .array(z.enum(["flow_node", "dubbing_ui", "dubbing_api"]))
+    .nullable()
+    .optional(),
+  filter_by_creator: z.enum(["personal", "others", "all"]).optional(),
+  order_by: z.enum(["created_at", "name"]).optional(),
+  order_direction: z.enum(["DESCENDING", "ASCENDING"]).optional(),
+});
+
+export type ElevenLabsListDubbingRequest = z.input<
+  typeof ElevenLabsListDubbingRequestSchema
+>;
+export type ElevenLabsListDubbingRequestInput = ElevenLabsListDubbingRequest;
+export type ElevenLabsListDubbingParsedRequest = z.output<
+  typeof ElevenLabsListDubbingRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/dubbing
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsCreateDubbingRequestSchema = z.object({
+  file: z.custom<Blob>().optional(),
+  csv_file: z.custom<Blob>().optional(),
+  foreground_audio_file: z.custom<Blob>().optional(),
+  background_audio_file: z.custom<Blob>().optional(),
+  name: z.string().nullable().optional(),
+  source_url: z.string().nullable().optional(),
+  source_lang: z.string().optional(),
+  target_lang: z.string().nullable().optional(),
+  target_accent: z.string().nullable().optional(),
+  num_speakers: z.number().int().optional(),
+  watermark: z.boolean().optional(),
+  start_time: z.number().int().nullable().optional(),
+  end_time: z.number().int().nullable().optional(),
+  highest_resolution: z.boolean().optional(),
+  drop_background_audio: z.boolean().optional(),
+  use_profanity_filter: z.boolean().nullable().optional(),
+  dubbing_studio: z.boolean().optional(),
+  disable_voice_cloning: z.boolean().optional(),
+  mode: z.string().optional(),
+  csv_fps: z.number().nullable().optional(),
+});
+
+export type ElevenLabsCreateDubbingRequest = z.input<
+  typeof ElevenLabsCreateDubbingRequestSchema
+>;
+export type ElevenLabsCreateDubbingRequestInput =
+  ElevenLabsCreateDubbingRequest;
+export type ElevenLabsCreateDubbingParsedRequest = z.output<
+  typeof ElevenLabsCreateDubbingRequestSchema
+>;

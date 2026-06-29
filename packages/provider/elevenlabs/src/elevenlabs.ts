@@ -734,7 +734,6 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     return serialized ? `?${serialized}` : "";
   }
 
-  
   // GET /v1/pronunciation-dictionaries
   const listPronunciationDictionaries = Object.assign(
     async (
@@ -761,8 +760,10 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       const form = new FormData();
       appendFormField(form, "name", req.name);
       if (req.file) appendFormField(form, "file", req.file);
-      if (req.description) appendFormField(form, "description", req.description);
-      if (req.workspace_access) appendFormField(form, "workspace_access", req.workspace_access);
+      if (req.description)
+        appendFormField(form, "description", req.description);
+      if (req.workspace_access)
+        appendFormField(form, "workspace_access", req.workspace_access);
 
       return makeMultipartJsonRequest<ElevenLabsAddPronunciationDictionaryResponse>(
         "/v1/pronunciation-dictionaries/add-from-file",
@@ -893,7 +894,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsDownloadPronunciationDictionaryRequestSchema }
   );
 
-// -- Endpoints -------------------------------------------------------------
+  // -- Endpoints -------------------------------------------------------------
 
   // GET https://api.elevenlabs.io/docs
   // Docs: https://elevenlabs.io/docs/api-reference/text-to-speech
@@ -3319,7 +3320,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     train: pvcTrain,
     verification: pvcManualVerification,
   });
-  
+
   const pronunciationDictionaries = {
     list: listPronunciationDictionaries,
     addFromFile: addPronunciationDictionaryFromFile,

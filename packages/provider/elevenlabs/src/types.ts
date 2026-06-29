@@ -2811,7 +2811,6 @@ export interface ElevenLabsPvcVoiceSamplesNamespace extends ElevenLabsUpdatePvcV
 
 export type ElevenLabsPvcVoicesNamespace = ElevenLabsPvcVoiceNamespace;
 
-
 // -- Pronunciation Dictionaries ----------------------------------------------
 
 export interface ElevenLabsPronunciationDictionaryMetadata {

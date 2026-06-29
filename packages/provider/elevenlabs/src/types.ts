@@ -71,6 +71,14 @@ import type {
   ElevenLabsListConversationsRequest,
   ElevenLabsGetConversationRequest,
   ElevenLabsGetSignedUrlRequest,
+  ElevenLabsGetConversationTokenRequest,
+  ElevenLabsSmartSearchConversationMessagesRequest,
+  ElevenLabsTextSearchConversationMessagesRequest,
+  ElevenLabsConversationFeedbackRequest,
+  ElevenLabsUploadConversationFileRequest,
+  ElevenLabsGetConversationSipMessagesRequest,
+  ElevenLabsAssignConversationTagsRequest,
+  ElevenLabsRunConversationEvaluationsRequest,
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsListPhoneNumbersRequest,
   ElevenLabsUpdatePhoneNumberRequest,
@@ -346,6 +354,30 @@ export type {
   ElevenLabsGetSignedUrlRequest,
   ElevenLabsGetSignedUrlRequestInput,
   ElevenLabsGetSignedUrlParsedRequest,
+  ElevenLabsGetConversationTokenRequest,
+  ElevenLabsGetConversationTokenRequestInput,
+  ElevenLabsGetConversationTokenParsedRequest,
+  ElevenLabsSmartSearchConversationMessagesRequest,
+  ElevenLabsSmartSearchConversationMessagesRequestInput,
+  ElevenLabsSmartSearchConversationMessagesParsedRequest,
+  ElevenLabsTextSearchConversationMessagesRequest,
+  ElevenLabsTextSearchConversationMessagesRequestInput,
+  ElevenLabsTextSearchConversationMessagesParsedRequest,
+  ElevenLabsConversationFeedbackRequest,
+  ElevenLabsConversationFeedbackRequestInput,
+  ElevenLabsConversationFeedbackParsedRequest,
+  ElevenLabsUploadConversationFileRequest,
+  ElevenLabsUploadConversationFileRequestInput,
+  ElevenLabsUploadConversationFileParsedRequest,
+  ElevenLabsGetConversationSipMessagesRequest,
+  ElevenLabsGetConversationSipMessagesRequestInput,
+  ElevenLabsGetConversationSipMessagesParsedRequest,
+  ElevenLabsAssignConversationTagsRequest,
+  ElevenLabsAssignConversationTagsRequestInput,
+  ElevenLabsAssignConversationTagsParsedRequest,
+  ElevenLabsRunConversationEvaluationsRequest,
+  ElevenLabsRunConversationEvaluationsRequestInput,
+  ElevenLabsRunConversationEvaluationsParsedRequest,
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsCreatePhoneNumberRequestInput,
   ElevenLabsCreatePhoneNumberParsedRequest,
@@ -2205,6 +2237,93 @@ export interface ElevenLabsGetSignedUrlResponse {
   [key: string]: unknown;
 }
 
+export interface ElevenLabsGetConversationTokenResponse {
+  token: string;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMessagesSearchListMeta {
+  total?: number | null;
+  page?: number | null;
+  page_size?: number | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMessagesSearchHighlightSegment {
+  value: string;
+  is_hit: boolean;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsMessagesSearchResult {
+  conversation_id: string;
+  agent_id: string;
+  transcript_index: number;
+  chunk_text: string;
+  score: number;
+  conversation_start_time_unix_secs: number;
+  agent_name?: string | null;
+  chunk_highlights?: ElevenLabsMessagesSearchHighlightSegment[] | null;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsConversationMessagesSearchResponse {
+  results: ElevenLabsMessagesSearchResult[];
+  has_more: boolean;
+  meta?: ElevenLabsMessagesSearchListMeta;
+  next_cursor?: string | null;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsSmartSearchConversationMessagesResponse =
+  ElevenLabsConversationMessagesSearchResponse;
+
+export type ElevenLabsTextSearchConversationMessagesResponse =
+  ElevenLabsConversationMessagesSearchResponse;
+
+export type ElevenLabsConversationFeedbackResponse = Record<string, unknown>;
+
+export interface ElevenLabsConversationFileResponse {
+  file_id: string;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsUploadConversationFileResponse =
+  ElevenLabsConversationFileResponse;
+
+export type ElevenLabsDeleteConversationFileResponse =
+  ElevenLabsConversationFileResponse;
+
+export interface ElevenLabsSipLogMessage {
+  call_id: string;
+  phone_numbers: string[];
+  local_address: string;
+  remote_address: string;
+  transport: string;
+  raw_message: string;
+  error_message: string;
+  direction: "in" | "out";
+  created_at_unix_micro: number;
+  [key: string]: unknown;
+}
+
+export interface ElevenLabsGetConversationSipMessagesResponse {
+  sip_messages: ElevenLabsSipLogMessage[];
+  next_cursor?: string | null;
+  has_more?: boolean;
+  [key: string]: unknown;
+}
+
+export type ElevenLabsAssignConversationTagsResponse = Record<string, unknown>;
+
+export type ElevenLabsUnassignConversationTagResponse = Record<string, unknown>;
+
+export type ElevenLabsRunConversationAnalysisResponse =
+  ElevenLabsGetConversationResponse;
+
+export type ElevenLabsRunConversationEvaluationsResponse =
+  ElevenLabsGetConversationResponse;
+
 // -- Phone numbers & outbound calls ------------------------------------------
 
 export type ElevenLabsPhoneNumberProviderType =
@@ -3765,6 +3884,101 @@ export interface ElevenLabsGetSignedUrlMethod {
   schema: z.ZodType<ElevenLabsGetSignedUrlRequest>;
 }
 
+export interface ElevenLabsGetConversationTokenMethod {
+  (
+    req: ElevenLabsGetConversationTokenRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetConversationTokenResponse>;
+  schema: z.ZodType<ElevenLabsGetConversationTokenRequest>;
+}
+
+export interface ElevenLabsSmartSearchConversationMessagesMethod {
+  (
+    req: ElevenLabsSmartSearchConversationMessagesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsSmartSearchConversationMessagesResponse>;
+  schema: z.ZodType<ElevenLabsSmartSearchConversationMessagesRequest>;
+}
+
+export interface ElevenLabsTextSearchConversationMessagesMethod {
+  (
+    req: ElevenLabsTextSearchConversationMessagesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsTextSearchConversationMessagesResponse>;
+  schema: z.ZodType<ElevenLabsTextSearchConversationMessagesRequest>;
+}
+
+export interface ElevenLabsConversationFeedbackMethod {
+  (
+    conversationId: string,
+    req: ElevenLabsConversationFeedbackRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsConversationFeedbackResponse>;
+  schema: z.ZodType<ElevenLabsConversationFeedbackRequest>;
+}
+
+export interface ElevenLabsUploadConversationFileMethod {
+  (
+    conversationId: string,
+    req: ElevenLabsUploadConversationFileRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUploadConversationFileResponse>;
+  schema: z.ZodType<ElevenLabsUploadConversationFileRequest>;
+}
+
+export interface ElevenLabsDeleteConversationFileMethod {
+  (
+    conversationId: string,
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDeleteConversationFileResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsGetConversationSipMessagesMethod {
+  (
+    conversationId: string,
+    req?: ElevenLabsGetConversationSipMessagesRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsGetConversationSipMessagesResponse>;
+  schema: z.ZodType<ElevenLabsGetConversationSipMessagesRequest>;
+}
+
+export interface ElevenLabsAssignConversationTagsMethod {
+  (
+    conversationId: string,
+    req: ElevenLabsAssignConversationTagsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsAssignConversationTagsResponse>;
+  schema: z.ZodType<ElevenLabsAssignConversationTagsRequest>;
+}
+
+export interface ElevenLabsUnassignConversationTagMethod {
+  (
+    conversationId: string,
+    tagId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUnassignConversationTagResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsRunConversationAnalysisMethod {
+  (
+    conversationId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRunConversationAnalysisResponse>;
+  schema: undefined;
+}
+
+export interface ElevenLabsRunConversationEvaluationsMethod {
+  (
+    conversationId: string,
+    req: ElevenLabsRunConversationEvaluationsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsRunConversationEvaluationsResponse>;
+  schema: z.ZodType<ElevenLabsRunConversationEvaluationsRequest>;
+}
+
 export interface ElevenLabsCreatePhoneNumberMethod {
   (
     req: ElevenLabsCreatePhoneNumberRequest,
@@ -3923,15 +4137,42 @@ export interface ElevenLabsConvaiKnowledgeBaseNamespace {
   delete: ElevenLabsDeleteKnowledgeBaseDocumentMethod;
 }
 
+export interface ElevenLabsConvaiConversationMessagesNamespace {
+  smartSearch: ElevenLabsSmartSearchConversationMessagesMethod;
+  textSearch: ElevenLabsTextSearchConversationMessagesMethod;
+}
+
+export interface ElevenLabsConvaiConversationFilesNamespace extends ElevenLabsUploadConversationFileMethod {
+  delete: ElevenLabsDeleteConversationFileMethod;
+}
+
+export interface ElevenLabsConvaiConversationTagsNamespace extends ElevenLabsAssignConversationTagsMethod {
+  unassign: ElevenLabsUnassignConversationTagMethod;
+}
+
+export type ElevenLabsConvaiConversationAnalysisEvaluationsNamespace =
+  ElevenLabsRunConversationEvaluationsMethod;
+
+export interface ElevenLabsConvaiConversationAnalysisNamespace extends ElevenLabsRunConversationAnalysisMethod {
+  evaluations: ElevenLabsConvaiConversationAnalysisEvaluationsNamespace;
+}
+
 export interface ElevenLabsConvaiConversationsNamespace {
   list: ElevenLabsListConversationsMethod;
   get: ElevenLabsGetConversationMethod;
   delete: ElevenLabsDeleteConversationMethod;
   audio: ElevenLabsGetConversationAudioMethod;
+  messages: ElevenLabsConvaiConversationMessagesNamespace;
+  feedback: ElevenLabsConversationFeedbackMethod;
+  files: ElevenLabsConvaiConversationFilesNamespace;
+  sipMessages: ElevenLabsGetConversationSipMessagesMethod;
+  tags: ElevenLabsConvaiConversationTagsNamespace;
+  analysis: ElevenLabsConvaiConversationAnalysisNamespace;
 }
 
 export interface ElevenLabsConvaiConversationNamespace {
   getSignedUrl: ElevenLabsGetSignedUrlMethod;
+  token: ElevenLabsGetConversationTokenMethod;
 }
 
 export interface ElevenLabsConvaiPhoneNumbersNamespace {
@@ -4238,6 +4479,13 @@ export interface ElevenLabsPostConvaiKnowledgeBaseNamespace {
   file: ElevenLabsCreateKnowledgeBaseDocumentFromFileMethod;
 }
 
+export interface ElevenLabsPostConvaiConversationsNamespace {
+  feedback: ElevenLabsConversationFeedbackMethod;
+  files: ElevenLabsUploadConversationFileMethod;
+  tags: ElevenLabsAssignConversationTagsMethod;
+  analysis: ElevenLabsConvaiConversationAnalysisNamespace;
+}
+
 export interface ElevenLabsPostConvaiPhoneNumbersNamespace {
   create: ElevenLabsCreatePhoneNumberMethod;
 }
@@ -4253,6 +4501,7 @@ export interface ElevenLabsPostConvaiNamespace {
   agent: ElevenLabsPostConvaiAgentNamespace;
   tools: ElevenLabsPostConvaiToolsNamespace;
   knowledgeBase: ElevenLabsPostConvaiKnowledgeBaseNamespace;
+  conversations: ElevenLabsPostConvaiConversationsNamespace;
   phoneNumbers: ElevenLabsPostConvaiPhoneNumbersNamespace;
   twilio: ElevenLabsConvaiTwilioNamespace;
   sipTrunk: ElevenLabsConvaiSipTrunkNamespace;
@@ -4381,10 +4630,13 @@ export interface ElevenLabsGetConvaiConversationsNamespace {
   list: ElevenLabsListConversationsMethod;
   get: ElevenLabsGetConversationMethod;
   audio: ElevenLabsGetConversationAudioMethod;
+  messages: ElevenLabsConvaiConversationMessagesNamespace;
+  sipMessages: ElevenLabsGetConversationSipMessagesMethod;
 }
 
 export interface ElevenLabsGetConvaiConversationNamespace {
   getSignedUrl: ElevenLabsGetSignedUrlMethod;
+  token: ElevenLabsGetConversationTokenMethod;
 }
 
 export interface ElevenLabsGetConvaiPhoneNumbersNamespace {
@@ -4473,6 +4725,12 @@ export interface ElevenLabsDeleteConvaiKnowledgeBaseNamespace {
 
 export interface ElevenLabsDeleteConvaiConversationsNamespace {
   delete: ElevenLabsDeleteConversationMethod;
+  files: {
+    delete: ElevenLabsDeleteConversationFileMethod;
+  };
+  tags: {
+    unassign: ElevenLabsUnassignConversationTagMethod;
+  };
 }
 
 export interface ElevenLabsDeleteConvaiPhoneNumbersNamespace {

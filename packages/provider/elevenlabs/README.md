@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-179 endpoints across 25 groups. Each method mirrors an upstream URL path.
+190 endpoints across 25 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -706,6 +706,51 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversation.token</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversation/token</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/get-webrtc-token)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversation.token({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.conversations.analysis</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/run</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/analysis/run-analysis)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.analysis({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.conversations.analysis.evaluations</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/evaluations/run</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/analysis/run-evaluation)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.analysis.evaluations({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.audio</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/audio</code>
@@ -736,6 +781,51 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.conversations.feedback</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/feedback</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.feedback({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.conversations.files</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/upload-file)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.files({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.conversations.files.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files/{fileId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/delete-file)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.files.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.get</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}</code>
@@ -759,6 +849,81 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.conversations.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.messages.smartSearch</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversations/messages/smart-search</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/messages/search)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.messages.smartSearch({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.messages.textSearch</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversations/messages/text-search</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/messages/text-search)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.messages.textSearch({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversations.sipMessages</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/sip-messages</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/get-sip-messages)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.sipMessages({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.conversations.tags</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/assign)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.tags({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.conversations.tags.unassign</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags/{tagId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/unassign)
+
+```typescript
+const res = await elevenlabs.v1.convai.conversations.tags.unassign({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

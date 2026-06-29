@@ -160,6 +160,25 @@ import {
   ElevenLabsDeleteConversationResponse,
   ElevenLabsGetSignedUrlRequest,
   ElevenLabsGetSignedUrlResponse,
+  ElevenLabsGetConversationTokenRequest,
+  ElevenLabsGetConversationTokenResponse,
+  ElevenLabsSmartSearchConversationMessagesRequest,
+  ElevenLabsSmartSearchConversationMessagesResponse,
+  ElevenLabsTextSearchConversationMessagesRequest,
+  ElevenLabsTextSearchConversationMessagesResponse,
+  ElevenLabsConversationFeedbackRequest,
+  ElevenLabsConversationFeedbackResponse,
+  ElevenLabsUploadConversationFileRequest,
+  ElevenLabsUploadConversationFileResponse,
+  ElevenLabsDeleteConversationFileResponse,
+  ElevenLabsGetConversationSipMessagesRequest,
+  ElevenLabsGetConversationSipMessagesResponse,
+  ElevenLabsAssignConversationTagsRequest,
+  ElevenLabsAssignConversationTagsResponse,
+  ElevenLabsUnassignConversationTagResponse,
+  ElevenLabsRunConversationAnalysisResponse,
+  ElevenLabsRunConversationEvaluationsRequest,
+  ElevenLabsRunConversationEvaluationsResponse,
   ElevenLabsCreatePhoneNumberRequest,
   ElevenLabsCreatePhoneNumberResponse,
   ElevenLabsListPhoneNumbersRequest,
@@ -319,6 +338,14 @@ import {
   ElevenLabsListConversationsRequestSchema,
   ElevenLabsGetConversationRequestSchema,
   ElevenLabsGetSignedUrlRequestSchema,
+  ElevenLabsGetConversationTokenRequestSchema,
+  ElevenLabsSmartSearchConversationMessagesRequestSchema,
+  ElevenLabsTextSearchConversationMessagesRequestSchema,
+  ElevenLabsConversationFeedbackRequestSchema,
+  ElevenLabsUploadConversationFileRequestSchema,
+  ElevenLabsGetConversationSipMessagesRequestSchema,
+  ElevenLabsAssignConversationTagsRequestSchema,
+  ElevenLabsRunConversationEvaluationsRequestSchema,
   ElevenLabsCreatePhoneNumberRequestSchema,
   ElevenLabsListPhoneNumbersRequestSchema,
   ElevenLabsUpdatePhoneNumberRequestSchema,
@@ -4327,6 +4354,206 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: ElevenLabsGetSignedUrlRequestSchema }
   );
 
+  // GET https://api.elevenlabs.io/v1/convai/conversation/token
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/get-webrtc-token
+  const getConversationToken = Object.assign(
+    async (
+      req: ElevenLabsGetConversationTokenRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetConversationTokenResponse> => {
+      return makeJsonRequest<ElevenLabsGetConversationTokenResponse>(
+        "GET",
+        "/v1/convai/conversation/token",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetConversationTokenRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/conversations/messages/smart-search
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/messages/search
+  const smartSearchConversationMessages = Object.assign(
+    async (
+      req: ElevenLabsSmartSearchConversationMessagesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsSmartSearchConversationMessagesResponse> => {
+      return makeJsonRequest<ElevenLabsSmartSearchConversationMessagesResponse>(
+        "GET",
+        "/v1/convai/conversations/messages/smart-search",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsSmartSearchConversationMessagesRequestSchema }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/conversations/messages/text-search
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/messages/text-search
+  const textSearchConversationMessages = Object.assign(
+    async (
+      req: ElevenLabsTextSearchConversationMessagesRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsTextSearchConversationMessagesResponse> => {
+      return makeJsonRequest<ElevenLabsTextSearchConversationMessagesResponse>(
+        "GET",
+        "/v1/convai/conversations/messages/text-search",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsTextSearchConversationMessagesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/feedback
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/create
+  const sendConversationFeedback = Object.assign(
+    async (
+      conversationId: string,
+      req: ElevenLabsConversationFeedbackRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsConversationFeedbackResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsConversationFeedbackResponse>(
+        "POST",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/feedback`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsConversationFeedbackRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/upload-file
+  const uploadConversationFile = Object.assign(
+    async (
+      conversationId: string,
+      req: ElevenLabsUploadConversationFileRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUploadConversationFileResponse> => {
+      const form = new FormData();
+      appendFormField(form, "file", req.file);
+      return makeMultipartJsonRequest<ElevenLabsUploadConversationFileResponse>(
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/files`,
+        form,
+        undefined,
+        signal
+      );
+    },
+    { schema: ElevenLabsUploadConversationFileRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files/{fileId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/delete-file
+  const deleteConversationFile = Object.assign(
+    async (
+      conversationId: string,
+      fileId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDeleteConversationFileResponse> => {
+      return makeJsonRequest<ElevenLabsDeleteConversationFileResponse>(
+        "DELETE",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/files/${encodeURIComponent(fileId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/sip-messages
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/get-sip-messages
+  const getConversationSipMessages = Object.assign(
+    async (
+      conversationId: string,
+      req: ElevenLabsGetConversationSipMessagesRequest = {},
+      signal?: AbortSignal
+    ): Promise<ElevenLabsGetConversationSipMessagesResponse> => {
+      return makeJsonRequest<ElevenLabsGetConversationSipMessagesResponse>(
+        "GET",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/sip-messages`,
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsGetConversationSipMessagesRequestSchema }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/assign
+  const assignConversationTags = Object.assign(
+    async (
+      conversationId: string,
+      req: ElevenLabsAssignConversationTagsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsAssignConversationTagsResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsAssignConversationTagsResponse>(
+        "POST",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/tags`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsAssignConversationTagsRequestSchema }
+  );
+
+  // DELETE https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags/{tagId}
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/tags/unassign
+  const unassignConversationTag = Object.assign(
+    async (
+      conversationId: string,
+      tagId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUnassignConversationTagResponse> => {
+      return makeJsonRequestAllowEmpty<ElevenLabsUnassignConversationTagResponse>(
+        "DELETE",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/tags/${encodeURIComponent(tagId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/run
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/analysis/run-analysis
+  const runConversationAnalysis = Object.assign(
+    async (
+      conversationId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsRunConversationAnalysisResponse> => {
+      return makeJsonRequest<ElevenLabsRunConversationAnalysisResponse>(
+        "POST",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/analysis/run`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
+  // POST https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/evaluations/run
+  // Docs: https://elevenlabs.io/docs/api-reference/conversations/analysis/run-evaluation
+  const runConversationEvaluations = Object.assign(
+    async (
+      conversationId: string,
+      req: ElevenLabsRunConversationEvaluationsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsRunConversationEvaluationsResponse> => {
+      return makeJsonRequest<ElevenLabsRunConversationEvaluationsResponse>(
+        "POST",
+        `/v1/convai/conversations/${encodeURIComponent(conversationId)}/analysis/evaluations/run`,
+        req,
+        signal
+      );
+    },
+    { schema: ElevenLabsRunConversationEvaluationsRequestSchema }
+  );
+
   const convaiTools = {
     create: createTool,
     list: listTools,
@@ -4454,14 +4681,34 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     get: getKnowledgeBaseDocument,
     delete: deleteKnowledgeBaseDocument,
   };
+  const convaiConversationMessages = {
+    smartSearch: smartSearchConversationMessages,
+    textSearch: textSearchConversationMessages,
+  };
+  const convaiConversationFiles = Object.assign(uploadConversationFile, {
+    delete: deleteConversationFile,
+  });
+  const convaiConversationTags = Object.assign(assignConversationTags, {
+    unassign: unassignConversationTag,
+  });
+  const convaiConversationAnalysis = Object.assign(runConversationAnalysis, {
+    evaluations: runConversationEvaluations,
+  });
   const convaiConversations = {
     list: listConversations,
     get: getConversation,
     delete: deleteConversation,
     audio: getConversationAudio,
+    messages: convaiConversationMessages,
+    feedback: sendConversationFeedback,
+    files: convaiConversationFiles,
+    sipMessages: getConversationSipMessages,
+    tags: convaiConversationTags,
+    analysis: convaiConversationAnalysis,
   };
   const convaiConversation = {
     getSignedUrl,
+    token: getConversationToken,
   };
   const convaiPhoneNumbers = {
     create: createPhoneNumber,
@@ -4631,6 +4878,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
         text: createKnowledgeBaseDocumentFromText,
         file: createKnowledgeBaseDocumentFromFile,
       },
+      conversations: {
+        feedback: sendConversationFeedback,
+        files: uploadConversationFile,
+        tags: assignConversationTags,
+        analysis: convaiConversationAnalysis,
+      },
       phoneNumbers: { create: createPhoneNumber },
       twilio: convaiTwilio,
       sipTrunk: convaiSipTrunk,
@@ -4690,7 +4943,11 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       },
       tools: { delete: deleteTool },
       knowledgeBase: { delete: deleteKnowledgeBaseDocument },
-      conversations: { delete: deleteConversation },
+      conversations: {
+        delete: deleteConversation,
+        files: { delete: deleteConversationFile },
+        tags: { unassign: unassignConversationTag },
+      },
       phoneNumbers: { delete: deletePhoneNumber },
     },
     history: {
@@ -4800,9 +5057,12 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
             list: listConversations,
             get: getConversation,
             audio: getConversationAudio,
+            messages: convaiConversationMessages,
+            sipMessages: getConversationSipMessages,
           },
           conversation: {
             getSignedUrl,
+            token: getConversationToken,
           },
           phoneNumbers: {
             list: listPhoneNumbers,

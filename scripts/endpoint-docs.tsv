@@ -605,6 +605,17 @@ elevenlabs	v1.convai.conversations.get	GET	https://api.elevenlabs.io/v1/convai/c
 elevenlabs	v1.convai.conversations.delete	DELETE	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}	https://elevenlabs.io/docs/api-reference/conversations/delete
 elevenlabs	v1.convai.conversations.audio	GET	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/audio	https://elevenlabs.io/docs/api-reference/conversations/get-audio
 elevenlabs	v1.convai.conversation.getSignedUrl	GET	https://api.elevenlabs.io/v1/convai/conversation/get-signed-url	https://elevenlabs.io/docs/api-reference/conversations/get-signed-url
+elevenlabs	v1.convai.conversation.token	GET	https://api.elevenlabs.io/v1/convai/conversation/token	https://elevenlabs.io/docs/api-reference/conversations/get-webrtc-token
+elevenlabs	v1.convai.conversations.messages.smartSearch	GET	https://api.elevenlabs.io/v1/convai/conversations/messages/smart-search	https://elevenlabs.io/docs/api-reference/conversations/messages/search
+elevenlabs	v1.convai.conversations.messages.textSearch	GET	https://api.elevenlabs.io/v1/convai/conversations/messages/text-search	https://elevenlabs.io/docs/api-reference/conversations/messages/text-search
+elevenlabs	v1.convai.conversations.feedback	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/feedback	https://elevenlabs.io/docs/api-reference/conversations/create
+elevenlabs	v1.convai.conversations.files	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files	https://elevenlabs.io/docs/api-reference/conversations/upload-file
+elevenlabs	v1.convai.conversations.files.delete	DELETE	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/files/{fileId}	https://elevenlabs.io/docs/api-reference/conversations/delete-file
+elevenlabs	v1.convai.conversations.sipMessages	GET	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/sip-messages	https://elevenlabs.io/docs/api-reference/conversations/get-sip-messages
+elevenlabs	v1.convai.conversations.tags	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags	https://elevenlabs.io/docs/api-reference/conversations/tags/assign
+elevenlabs	v1.convai.conversations.tags.unassign	DELETE	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/tags/{tagId}	https://elevenlabs.io/docs/api-reference/conversations/tags/unassign
+elevenlabs	v1.convai.conversations.analysis	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/run	https://elevenlabs.io/docs/api-reference/conversations/analysis/run-analysis
+elevenlabs	v1.convai.conversations.analysis.evaluations	POST	https://api.elevenlabs.io/v1/convai/conversations/{conversationId}/analysis/evaluations/run	https://elevenlabs.io/docs/api-reference/conversations/analysis/run-evaluation
 elevenlabs	v1.convai.phoneNumbers.create	POST	https://api.elevenlabs.io/v1/convai/phone-numbers	https://elevenlabs.io/docs/api-reference/phone-numbers/create
 elevenlabs	v1.convai.phoneNumbers.list	GET	https://api.elevenlabs.io/v1/convai/phone-numbers	https://elevenlabs.io/docs/api-reference/phone-numbers/list
 elevenlabs	v1.convai.phoneNumbers.get	GET	https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}	https://elevenlabs.io/docs/api-reference/phone-numbers/get

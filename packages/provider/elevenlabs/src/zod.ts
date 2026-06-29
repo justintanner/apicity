@@ -1750,6 +1750,208 @@ export type ElevenLabsGetSignedUrlParsedRequest = z.output<
 >;
 
 // ---------------------------------------------------------------------------
+// GET /v1/convai/conversation/token
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetConversationTokenRequestSchema = z.object({
+  agent_id: z.string(),
+  participant_name: z.string().nullable().optional(),
+  branch_id: z.string().nullable().optional(),
+  environment: z.string().nullable().optional(),
+});
+
+export type ElevenLabsGetConversationTokenRequest = z.input<
+  typeof ElevenLabsGetConversationTokenRequestSchema
+>;
+export type ElevenLabsGetConversationTokenRequestInput =
+  ElevenLabsGetConversationTokenRequest;
+export type ElevenLabsGetConversationTokenParsedRequest = z.output<
+  typeof ElevenLabsGetConversationTokenRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/conversations/messages/smart-search
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsSmartSearchConversationMessagesRequestSchema = z.object({
+  text_query: z.string(),
+  agent_id: z.string().nullable().optional(),
+  page_size: z.number().int().min(1).max(50).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsSmartSearchConversationMessagesRequest = z.input<
+  typeof ElevenLabsSmartSearchConversationMessagesRequestSchema
+>;
+export type ElevenLabsSmartSearchConversationMessagesRequestInput =
+  ElevenLabsSmartSearchConversationMessagesRequest;
+export type ElevenLabsSmartSearchConversationMessagesParsedRequest = z.output<
+  typeof ElevenLabsSmartSearchConversationMessagesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/conversations/messages/text-search
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsTextSearchConversationMessagesRequestSchema = z.object({
+  text_query: z.string(),
+  agent_id: z.string().nullable().optional(),
+  call_successful: z
+    .enum(["success", "failure", "unknown"])
+    .nullable()
+    .optional(),
+  call_start_before_unix: z.number().int().nullable().optional(),
+  call_start_after_unix: z.number().int().nullable().optional(),
+  call_duration_min_secs: z.number().int().nullable().optional(),
+  call_duration_max_secs: z.number().int().nullable().optional(),
+  rating_max: z.number().int().nullable().optional(),
+  rating_min: z.number().int().nullable().optional(),
+  has_feedback_comment: z.boolean().nullable().optional(),
+  user_id: z.string().nullable().optional(),
+  evaluation_params: z.array(z.string()).nullable().optional(),
+  data_collection_params: z.array(z.string()).nullable().optional(),
+  tool_names: z.array(z.string()).nullable().optional(),
+  tool_names_successful: z.array(z.string()).nullable().optional(),
+  tool_names_errored: z.array(z.string()).nullable().optional(),
+  main_languages: z.array(z.string()).nullable().optional(),
+  page_size: z.number().int().min(1).max(50).optional(),
+  summary_mode: z.enum(["exclude", "include"]).optional(),
+  conversation_initiation_source: z
+    .enum([
+      "unknown",
+      "android_sdk",
+      "node_js_sdk",
+      "react_native_sdk",
+      "react_sdk",
+      "js_sdk",
+      "python_sdk",
+      "widget",
+      "sip_trunk",
+      "twilio",
+      "exotel",
+      "genesys",
+      "swift_sdk",
+      "whatsapp",
+      "twilio_sms",
+      "flutter_sdk",
+      "zendesk_integration",
+      "slack_integration",
+      "telegram_integration",
+      "intercom_integration",
+      "freshdesk_integration",
+      "template_preview",
+      "genesys_bot_connector",
+    ])
+    .nullable()
+    .optional(),
+  text_only: z.boolean().nullable().optional(),
+  conversation_product_type: z
+    .enum(["agents", "speech_engine"])
+    .nullable()
+    .optional(),
+  branch_id: z.string().nullable().optional(),
+  topic_ids: z.array(z.string()).nullable().optional(),
+  sort_by: z.enum(["search_score", "created_at"]).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsTextSearchConversationMessagesRequest = z.input<
+  typeof ElevenLabsTextSearchConversationMessagesRequestSchema
+>;
+export type ElevenLabsTextSearchConversationMessagesRequestInput =
+  ElevenLabsTextSearchConversationMessagesRequest;
+export type ElevenLabsTextSearchConversationMessagesParsedRequest = z.output<
+  typeof ElevenLabsTextSearchConversationMessagesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/conversations/:conversation_id/feedback
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsConversationFeedbackRequestSchema = z.object({
+  feedback: z.enum(["like", "dislike"]).nullable().optional(),
+});
+
+export type ElevenLabsConversationFeedbackRequest = z.input<
+  typeof ElevenLabsConversationFeedbackRequestSchema
+>;
+export type ElevenLabsConversationFeedbackRequestInput =
+  ElevenLabsConversationFeedbackRequest;
+export type ElevenLabsConversationFeedbackParsedRequest = z.output<
+  typeof ElevenLabsConversationFeedbackRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/conversations/:conversation_id/files
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUploadConversationFileRequestSchema = z.object({
+  file: z.custom<Blob>((value) => value instanceof Blob),
+});
+
+export type ElevenLabsUploadConversationFileRequest = z.input<
+  typeof ElevenLabsUploadConversationFileRequestSchema
+>;
+export type ElevenLabsUploadConversationFileRequestInput =
+  ElevenLabsUploadConversationFileRequest;
+export type ElevenLabsUploadConversationFileParsedRequest = z.output<
+  typeof ElevenLabsUploadConversationFileRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// GET /v1/convai/conversations/:conversation_id/sip-messages
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsGetConversationSipMessagesRequestSchema = z.object({
+  page_size: z.number().int().min(1).max(20).optional(),
+  cursor: z.string().nullable().optional(),
+});
+
+export type ElevenLabsGetConversationSipMessagesRequest = z.input<
+  typeof ElevenLabsGetConversationSipMessagesRequestSchema
+>;
+export type ElevenLabsGetConversationSipMessagesRequestInput =
+  ElevenLabsGetConversationSipMessagesRequest;
+export type ElevenLabsGetConversationSipMessagesParsedRequest = z.output<
+  typeof ElevenLabsGetConversationSipMessagesRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/conversations/:conversation_id/tags
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsAssignConversationTagsRequestSchema = z.object({
+  tag_ids: z.array(z.string()).min(1).max(50),
+});
+
+export type ElevenLabsAssignConversationTagsRequest = z.input<
+  typeof ElevenLabsAssignConversationTagsRequestSchema
+>;
+export type ElevenLabsAssignConversationTagsRequestInput =
+  ElevenLabsAssignConversationTagsRequest;
+export type ElevenLabsAssignConversationTagsParsedRequest = z.output<
+  typeof ElevenLabsAssignConversationTagsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
+// POST /v1/convai/conversations/:conversation_id/analysis/evaluations/run
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsRunConversationEvaluationsRequestSchema = z.object({
+  evaluation_id: z.string(),
+  scope: z.enum(["conversation", "agent"]).optional(),
+});
+
+export type ElevenLabsRunConversationEvaluationsRequest = z.input<
+  typeof ElevenLabsRunConversationEvaluationsRequestSchema
+>;
+export type ElevenLabsRunConversationEvaluationsRequestInput =
+  ElevenLabsRunConversationEvaluationsRequest;
+export type ElevenLabsRunConversationEvaluationsParsedRequest = z.output<
+  typeof ElevenLabsRunConversationEvaluationsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // Agents Platform (Conversational AI) — phone numbers & outbound calls
 // ---------------------------------------------------------------------------
 

@@ -837,4 +837,250 @@ describe("ElevenLabs endpoint wiring", () => {
     const [, avatarInit] = mockFetch.mock.calls[2];
     expect(avatarInit.body).toBeInstanceOf(FormData);
   });
+
+  it("routes remaining ConvAI conversation endpoints", async () => {
+    const conversationResponse = {
+      agent_id: "agent/1",
+      conversation_id: "conv/1",
+      status: "done",
+      metadata: {},
+      has_audio: false,
+      has_user_audio: false,
+      has_response_audio: false,
+      transcript: [],
+    };
+    const mockFetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ token: "livekit-token" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            results: [],
+            has_more: false,
+            next_cursor: null,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            results: [],
+            has_more: false,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({}), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ file_id: "file/1" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ file_id: "file/1" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            sip_messages: [],
+            has_more: false,
+          }),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+      )
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(conversationResponse), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(conversationResponse), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        })
+      );
+    const provider = createElevenLabs({
+      apiKey: "el-test",
+      baseURL: "https://api.elevenlabs.io",
+      fetch: mockFetch,
+    });
+
+    expect(provider.get.v1.convai.conversation.token).toBe(
+      provider.v1.convai.conversation.token
+    );
+    expect(provider.get.v1.convai.conversations.messages.smartSearch).toBe(
+      provider.v1.convai.conversations.messages.smartSearch
+    );
+    expect(provider.get.v1.convai.conversations.messages.textSearch).toBe(
+      provider.v1.convai.conversations.messages.textSearch
+    );
+    expect(provider.post.v1.convai.conversations.feedback).toBe(
+      provider.v1.convai.conversations.feedback
+    );
+    expect(provider.post.v1.convai.conversations.files).toBe(
+      provider.v1.convai.conversations.files
+    );
+    expect(provider.delete.v1.convai.conversations.files.delete).toBe(
+      provider.v1.convai.conversations.files.delete
+    );
+    expect(provider.get.v1.convai.conversations.sipMessages).toBe(
+      provider.v1.convai.conversations.sipMessages
+    );
+    expect(provider.post.v1.convai.conversations.tags).toBe(
+      provider.v1.convai.conversations.tags
+    );
+    expect(provider.delete.v1.convai.conversations.tags.unassign).toBe(
+      provider.v1.convai.conversations.tags.unassign
+    );
+    expect(provider.post.v1.convai.conversations.analysis).toBe(
+      provider.v1.convai.conversations.analysis
+    );
+    expect(provider.post.v1.convai.conversations.analysis.evaluations).toBe(
+      provider.v1.convai.conversations.analysis.evaluations
+    );
+
+    expect(
+      provider.v1.convai.conversation.token.schema.safeParse({
+        agent_id: "agent/1",
+      }).success
+    ).toBe(true);
+    expect(
+      provider.v1.convai.conversations.tags.schema.safeParse({
+        tag_ids: [],
+      }).success
+    ).toBe(false);
+
+    await provider.v1.convai.conversation.token({
+      agent_id: "agent/1",
+      participant_name: "Test User",
+      branch_id: "branch/1",
+      environment: "staging",
+    });
+    await provider.v1.convai.conversations.messages.smartSearch({
+      text_query: "hello world",
+      agent_id: "agent/1",
+      page_size: 2,
+      cursor: "cursor/1",
+    });
+    await provider.v1.convai.conversations.messages.textSearch({
+      text_query: "hello",
+      call_successful: "success",
+      topic_ids: ["topic/1"],
+      sort_by: "created_at",
+    });
+    await provider.v1.convai.conversations.feedback("conv/1", {
+      feedback: "like",
+    });
+    await provider.v1.convai.conversations.files("conv/1", {
+      file: new Blob(["file"], { type: "application/pdf" }),
+    });
+    await provider.v1.convai.conversations.files.delete("conv/1", "file/1");
+    await provider.v1.convai.conversations.sipMessages("conv/1", {
+      page_size: 2,
+      cursor: "sip/cursor",
+    });
+    await provider.v1.convai.conversations.tags("conv/1", {
+      tag_ids: ["tag/1"],
+    });
+    await provider.v1.convai.conversations.tags.unassign("conv/1", "tag/1");
+    await provider.v1.convai.conversations.analysis("conv/1");
+    await provider.v1.convai.conversations.analysis.evaluations("conv/1", {
+      evaluation_id: "eval/1",
+      scope: "agent",
+    });
+
+    const calls = mockFetch.mock.calls.map(([url, init]) => ({
+      url,
+      method: init.method,
+    }));
+    expect(calls).toEqual([
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversation/token?agent_id=agent%2F1&participant_name=Test+User&branch_id=branch%2F1&environment=staging",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/messages/smart-search?text_query=hello+world&agent_id=agent%2F1&page_size=2&cursor=cursor%2F1",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/messages/text-search?text_query=hello&call_successful=success&topic_ids=topic%2F1&sort_by=created_at",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/feedback",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/files",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/files/file%2F1",
+        method: "DELETE",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/sip-messages?page_size=2&cursor=sip%2Fcursor",
+        method: "GET",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/tags",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/tags/tag%2F1",
+        method: "DELETE",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/analysis/run",
+        method: "POST",
+      },
+      {
+        url: "https://api.elevenlabs.io/v1/convai/conversations/conv%2F1/analysis/evaluations/run",
+        method: "POST",
+      },
+    ]);
+
+    const [, feedbackInit] = mockFetch.mock.calls[3];
+    expect(JSON.parse(feedbackInit.body as string)).toEqual({
+      feedback: "like",
+    });
+    const [, uploadInit] = mockFetch.mock.calls[4];
+    expect(uploadInit.body).toBeInstanceOf(FormData);
+    const [, tagsInit] = mockFetch.mock.calls[7];
+    expect(JSON.parse(tagsInit.body as string)).toEqual({
+      tag_ids: ["tag/1"],
+    });
+    const [, evaluationInit] = mockFetch.mock.calls[10];
+    expect(JSON.parse(evaluationInit.body as string)).toEqual({
+      evaluation_id: "eval/1",
+      scope: "agent",
+    });
+  });
 });

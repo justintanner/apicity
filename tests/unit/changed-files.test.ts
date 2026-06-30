@@ -30,6 +30,18 @@ describe("parseChangedArgs", () => {
     });
   });
 
+  it("uses APICITY_BASE_REF as the default base", () => {
+    process.env.APICITY_BASE_REF = "origin/stable";
+
+    expect(
+      parseChangedArgs(["-h", "tests/unit/changed-files.test.ts"])
+    ).toEqual({
+      base: "origin/stable",
+      help: true,
+      paths: ["tests/unit/changed-files.test.ts"],
+    });
+  });
+
   it("parses base forms, paths, and help flags", () => {
     process.env.APICITY_BASE_REF = "origin/stable";
 
@@ -50,6 +62,9 @@ describe("parseChangedArgs", () => {
 
   it("requires a value after --base", () => {
     expect(() => parseChangedArgs(["--base"])).toThrow(
+      "--base requires a git ref"
+    );
+    expect(() => parseChangedArgs(["--base="])).toThrow(
       "--base requires a git ref"
     );
   });
@@ -100,16 +115,21 @@ describe("filterEslintTargets", () => {
         "scripts/dev.cjs",
         "packages/provider/openai/src/openai.ts",
         "tests/unit/changed-files.test.ts",
+        "tests/unit/changed-files.test.mts",
+        "tests/unit/changed-files.test.cts",
         "tests/unit/view.jsx",
         "tests/unit/view.tsx",
         "README.md",
         "package.json",
+        "dist/output.js.map",
       ])
     ).toEqual([
       "scripts/lib/changed-files.mjs",
       "scripts/dev.cjs",
       "packages/provider/openai/src/openai.ts",
       "tests/unit/changed-files.test.ts",
+      "tests/unit/changed-files.test.mts",
+      "tests/unit/changed-files.test.cts",
       "tests/unit/view.jsx",
       "tests/unit/view.tsx",
     ]);
@@ -122,9 +142,18 @@ describe("changed-file target formatting", () => {
     expect(formatTargetList(["a.ts", "b.mjs"])).toBe("  a.ts\n  b.mjs");
   });
 
+  it("preserves target order while formatting", () => {
+    expect(formatTargetList(["z.ts", "a.ts"])).toBe("  z.ts\n  a.ts");
+  });
+
   it("formats command-specific usage", () => {
-    expect(formatUsage("pnpm run format:changed --")).toContain(
+    const usage = formatUsage("pnpm run format:changed --");
+
+    expect(usage).toContain(
       "Usage: pnpm run format:changed -- [--base <ref>] [path ...]"
+    );
+    expect(usage).toContain(
+      "The default base is APICITY_BASE_REF or origin/main."
     );
   });
 });

@@ -28,7 +28,11 @@ export function parseChangedArgs(rawArgs) {
     }
 
     if (arg.startsWith("--base=")) {
-      base = arg.slice("--base=".length);
+      const value = arg.slice("--base=".length);
+      if (!value) {
+        throw new Error("--base requires a git ref");
+      }
+      base = value;
       continue;
     }
 

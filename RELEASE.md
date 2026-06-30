@@ -35,8 +35,7 @@ step enforces this. Do not use suffix identifiers or alternate npm tags.
 Releases are driven by the compiler-v2 `mol-apicity-release` Gas City workflow.
 The workflow has one executable step that carries
 `gc.run_target=apicity/gastown.polecat` by default. The whole release stays in
-one polecat turn so it cannot strand itself between prepare and publish
-handoffs.
+one polecat turn so it cannot strand itself between release phases.
 
 Register the Apicity release pack with the city once per checkout/update:
 
@@ -79,7 +78,7 @@ The single executable formula step runs these release sub-steps in order:
    `apicity` 1Password vault
 8. `tag-push-and-github-release` — `git tag v<version>`, push `stable` + tag,
    and create or update the GitHub release page for
-   `v<version>` with a flat Summary list of closed bead work since the
+   `v<version>` with New and Updated sections from closed bead work since the
    previous release, excluding release workflow noise
 9. `sync-main-and-smoke-install` — fast-forward `main` to the release commit,
    push it, then `npm install @apicity/openai@latest` in `/tmp` and

@@ -91,7 +91,7 @@ the only in-progress `mol-apicity-release` run for this rig — and if it isn't,
 STOP without touching npm or the remote.
 
 ```bash
-# Identify our OWN workflow root. The running prepare step bead is assigned to
+# Identify our OWN workflow root. The running release step bead is assigned to
 # this session and carries gc.root_bead_id (the workflow root) + a step_ref.
 self_root=$(bd list --status in_progress --assignee "$GC_SESSION_NAME" --limit 0 --json 2>/dev/null \
   | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")][0].metadata."gc.root_bead_id" // empty')
@@ -132,7 +132,7 @@ if [ -n "$conflict" ]; then
   # further sub-step and do NOT reach the publish phase. A non-zero exit here
   # keeps npm and the remote untouched.
   [ -n "$self_root" ] && bd update "$self_root" --set-metadata superseded=true \
-    --notes "Superseded: a prior mol-apicity-release run ($conflict) is already in progress; this duplicate aborted by the prepare singleton guard." >/dev/null 2>&1 || true
+    --notes "Superseded: a prior mol-apicity-release run ($conflict) is already in progress; this duplicate aborted by the release singleton guard." >/dev/null 2>&1 || true
   gc runtime drain-ack
   exit 1
 fi
@@ -140,7 +140,7 @@ echo "Singleton guard: this is the only in-progress mol-apicity-release run (roo
 ```
 
 **If the block prints `ABORT`: STOP the entire release here.** Do not run the
-remaining prepare sub-steps and do not enter the publish phase — the conflicting
+remaining release sub-steps and do not enter the publish phase — the conflicting
 run is the canonical one and will publish. This run is a no-op.
 
 

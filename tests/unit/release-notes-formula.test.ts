@@ -72,7 +72,14 @@ function issue(overrides: Partial<Issue>): Issue {
 
 describe("mol-apicity-release workflow", () => {
   it("keeps the release graph consolidated into one executable step", () => {
+    const formula = readReleaseFormula();
+
     expect(readStepIds()).toEqual(["release"]);
+    expect(formula).toContain(
+      'metadata."gc.step_ref" == "mol-apicity-release.release"'
+    );
+    expect(formula).not.toContain("mol-apicity-release.prepare");
+    expect(formula).not.toMatch(/^\s*(needs|condition)\s*=/m);
   });
 });
 

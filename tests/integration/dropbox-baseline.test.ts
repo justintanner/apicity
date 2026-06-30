@@ -4,31 +4,108 @@ import { createDropbox, DropboxError } from "@apicity/dropbox";
 import {
   getPollyMode,
   recordingExists,
-  setupPolly,
+  setupPollyWithPersistScrubber,
   teardownPolly,
+  type PersistedHarRecording,
   type PollyContext,
 } from "../harness";
 
-const RECORDING_NAME = ["dropbox", "baseline"].join("/");
+const CURRENT_TOKEN_RECORDING_NAME = "dropbox/current-token-baseline";
+const FULL_BASELINE_RECORDING_NAME = ["dropbox", "full-baseline"].join("/");
 const TEST_ROOT = "/apicity-tests/dropbox-baseline-v1";
-const canRunLiveBaseline =
-  recordingExists(RECORDING_NAME) ||
+const canRunCurrentTokenBaseline =
+  recordingExists(CURRENT_TOKEN_RECORDING_NAME) ||
+  (getPollyMode() !== "replay" && Boolean(process.env.DROPBOX_OAUTH_TOKEN));
+const canRunFullBaseline =
+  recordingExists(FULL_BASELINE_RECORDING_NAME) ||
   (getPollyMode() !== "replay" &&
     process.env.DROPBOX_RECORD_FULL_BASELINE === "1");
+
+const currentTokenReachability = {
+  reachable: ["check.user", "users.getCurrentAccount"],
+  optional: [
+    {
+      dotPath: "files.listFolder",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.metadata.read",
+    },
+    {
+      dotPath: "files.listFolderContinue",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.metadata.read",
+    },
+    {
+      dotPath: "files.getMetadata",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.metadata.read",
+    },
+    {
+      dotPath: "files.createFolderV2",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.content.write",
+    },
+    {
+      dotPath: "files.deleteV2",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.content.write",
+    },
+    {
+      dotPath: "files.copyV2",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.content.write",
+    },
+    {
+      dotPath: "files.moveV2",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "files.content.write",
+    },
+    {
+      dotPath: "files.upload",
+      status: 401,
+      error_summary: "missing_scope/...",
+      required_scope: "files.content.write",
+    },
+    {
+      dotPath: "files.download",
+      status: 401,
+      error_summary: "other/...",
+      note: "Current token cannot set up or read a file for content download.",
+    },
+    {
+      dotPath: "sharing.createSharedLinkWithSettings",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "sharing.write",
+    },
+    {
+      dotPath: "sharing.listSharedLinks",
+      status: 401,
+      error_summary: "missing_scope/",
+      required_scope: "sharing.read",
+    },
+  ],
+} as const;
 
 interface FetchCall {
   url: string;
   init?: RequestInit;
 }
 
-function shouldUseLiveToken(ctx: PollyContext): boolean {
+function shouldUseLiveToken(ctx: PollyContext, recordingName: string): boolean {
   if (ctx.mode === "record" || ctx.mode === "passthrough") return true;
-  if (ctx.mode === "record-missing") return !recordingExists(RECORDING_NAME);
+  if (ctx.mode === "record-missing") return !recordingExists(recordingName);
   return false;
 }
 
-function tokenForMode(ctx: PollyContext): string {
-  if (!shouldUseLiveToken(ctx)) return "***";
+function tokenForMode(ctx: PollyContext, recordingName: string): string {
+  if (!shouldUseLiveToken(ctx, recordingName)) return "***";
   const token = process.env.DROPBOX_OAUTH_TOKEN;
   if (!token) {
     throw new Error("DROPBOX_OAUTH_TOKEN is required to record Dropbox HARs");
@@ -50,6 +127,49 @@ function dropboxApiArg(init: RequestInit | undefined): Record<string, unknown> {
   const raw = headersOf(init).get("Dropbox-API-Arg");
   expect(raw).toEqual(expect.any(String));
   return JSON.parse(raw ?? "{}") as Record<string, unknown>;
+}
+
+function rewriteJsonResponse(
+  recording: PersistedHarRecording,
+  rewrite: (body: Record<string, unknown>) => void
+): void {
+  const content = recording.response?.content;
+  if (typeof content?.text !== "string") return;
+  const parsed = JSON.parse(content.text) as unknown;
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    return;
+  }
+  rewrite(parsed as Record<string, unknown>);
+  content.text = JSON.stringify(parsed);
+  content.size = content.text.length;
+  if (recording.response) recording.response.bodySize = content.text.length;
+}
+
+function scrubDropboxRecording(recording: PersistedHarRecording): void {
+  if (!recording.request?.url?.endsWith("/users/get_current_account")) return;
+  rewriteJsonResponse(recording, (body) => {
+    body.account_id = "dbid:***";
+    body.country = "**";
+    body.email = "user@example.com";
+    body.referral_link = "https://www.dropbox.com/referrals/***";
+    body.name = {
+      abbreviated_name: "**",
+      display_name: "Example User",
+      familiar_name: "Example",
+      given_name: "Example",
+      surname: "User",
+    };
+
+    if (
+      body.root_info !== null &&
+      typeof body.root_info === "object" &&
+      !Array.isArray(body.root_info)
+    ) {
+      const rootInfo = body.root_info as Record<string, unknown>;
+      rootInfo.home_namespace_id = "***";
+      rootInfo.root_namespace_id = "***";
+    }
+  });
 }
 
 async function deleteIfExists(
@@ -74,12 +194,84 @@ describe("dropbox baseline integration", () => {
     }
   });
 
-  it.skipIf(!canRunLiveBaseline)(
-    "exercises users, files, content, and sharing endpoints",
+  it.skipIf(!canRunCurrentTokenBaseline)(
+    "exercises endpoints reachable by the current OAuth token",
     async () => {
-      ctx = setupPolly(RECORDING_NAME);
+      ctx = setupPollyWithPersistScrubber(
+        CURRENT_TOKEN_RECORDING_NAME,
+        scrubDropboxRecording
+      );
       const dropbox = createDropbox({
-        oauthToken: tokenForMode(ctx),
+        oauthToken: tokenForMode(ctx, CURRENT_TOKEN_RECORDING_NAME),
+        timeout: 60000,
+      });
+
+      const checked = await dropbox.check.user({ query: "justin" });
+      const account = await dropbox.users.getCurrentAccount();
+
+      expect(checked.result).toBe("justin");
+      expect(account.account_id).toEqual(expect.any(String));
+    }
+  );
+
+  it("documents current OAuth token scope boundaries", () => {
+    const implemented = [
+      "check.user",
+      "users.getCurrentAccount",
+      "files.listFolder",
+      "files.listFolderContinue",
+      "files.getMetadata",
+      "files.createFolderV2",
+      "files.deleteV2",
+      "files.copyV2",
+      "files.moveV2",
+      "files.upload",
+      "files.download",
+      "sharing.createSharedLinkWithSettings",
+      "sharing.listSharedLinks",
+    ];
+
+    const classified = [
+      ...currentTokenReachability.reachable,
+      ...currentTokenReachability.optional.map((entry) => entry.dotPath),
+    ];
+
+    expect([...classified].sort()).toEqual([...implemented].sort());
+    expect(currentTokenReachability.reachable).toEqual([
+      "check.user",
+      "users.getCurrentAccount",
+    ]);
+    expect(currentTokenReachability.optional).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dotPath: "files.listFolder",
+          required_scope: "files.metadata.read",
+        }),
+        expect.objectContaining({
+          dotPath: "files.upload",
+          required_scope: "files.content.write",
+        }),
+        expect.objectContaining({
+          dotPath: "sharing.createSharedLinkWithSettings",
+          required_scope: "sharing.write",
+        }),
+        expect.objectContaining({
+          dotPath: "sharing.listSharedLinks",
+          required_scope: "sharing.read",
+        }),
+      ])
+    );
+  });
+
+  it.skipIf(!canRunFullBaseline)(
+    "exercises users, files, content, and sharing endpoints with full scopes",
+    async () => {
+      ctx = setupPollyWithPersistScrubber(
+        FULL_BASELINE_RECORDING_NAME,
+        scrubDropboxRecording
+      );
+      const dropbox = createDropbox({
+        oauthToken: tokenForMode(ctx, FULL_BASELINE_RECORDING_NAME),
         timeout: 60000,
       });
 

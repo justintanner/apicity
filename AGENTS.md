@@ -64,10 +64,11 @@ pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run format:changed -- [paths...] # Prettier only changed or supplied files
-pnpm run dev:preflight           # format + typecheck + lint:after-format + test:run
-pnpm run dev:preflight:changed -- [paths...] # Scoped format/lint plus full checks
-pnpm run dev:preflight:provider -- <name-or-path> # Scoped format+lint+typecheck+test for one provider
-pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
+pnpm run dev:preflight:fast -- <name-or-path> # Fast provider gate: scoped format+lint+typecheck+test
+pnpm run dev:preflight:provider -- <name-or-path> # Explicit alias for the fast provider gate
+pnpm run dev:preflight:changed -- [paths...] # Changed-file format/lint plus full typecheck+test
+pnpm run dev:preflight           # Full local gate: format + typecheck + lint:after-format + test:run
+pnpm run ci:local                # Full CI-style gate: audit + gen:examples:check + build + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 
@@ -77,14 +78,19 @@ pnpm run harness                 # Local HAR viewer at localhost:3475
 
 Provider-scoped commands accept either `openai`-style names or paths such as
 `packages/provider/openai/src/openai.ts` and
-`tests/integration/openai-chat.test.ts`. From inside a provider package, run
-`pnpm -w run dev:preflight:provider` to infer the provider from pnpm's
-`INIT_CWD`. Changed-file commands infer from `origin/main...HEAD`,
+`tests/integration/openai-chat.test.ts`. For narrow provider work, use
+`pnpm run dev:preflight:fast -- <name-or-path>`; it prints the scoped
+format, lint, typecheck, and replay steps as it runs them. From inside a
+provider package, run `pnpm -w run dev:preflight:fast` to infer the provider
+from pnpm's `INIT_CWD`. Keep `pnpm run dev:preflight` and
+`pnpm run ci:local` for shared scripts/config, package metadata, docs, test
+harness changes, release prep, or any ambiguous diff that needs the full
+repository gate. Changed-file commands infer from `origin/main...HEAD`,
 staged/unstaged changes, and untracked files, or accept explicit paths after
 `--`. Use `pnpm run typecheck:provider -- <name-or-path>` for typecheck-only
 local iteration; it falls back to the full typecheck when the diff, including
 staged and unstaged files, touches another package or shared package/TypeScript
-config. Use `pnpm run ci:local` as the full repository safety gate.
+config.
 
 ## Adding a New Endpoint
 

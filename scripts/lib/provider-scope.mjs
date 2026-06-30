@@ -146,7 +146,7 @@ function formatUsage(providers) {
     "Examples:",
     "  pnpm run test:provider -- openai",
     "  pnpm run test:provider -- packages/provider/openai/src/openai.ts",
-    "  pnpm run dev:preflight:provider -- tests/integration/openai-chat.test.ts",
+    "  pnpm run dev:preflight:fast -- tests/integration/openai-chat.test.ts",
     "",
     `Known providers: ${providers.join(", ")}`,
   ].join("\n");

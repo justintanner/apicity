@@ -234,29 +234,32 @@ MCP server's `--paygate-secret-file` wiring.
 - **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
 - **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
   Integration tests record/replay via Polly.js (no keys needed for replay).
-- **Provider-scoped loop** — use `pnpm run test:provider -- <name-or-path>`
-  for one provider's typecheck + replay tests, and use
-  `pnpm run test:affected` to auto-select provider tests from the current git
-  diff when every changed file belongs to provider packages, provider
-  integration tests, or provider recordings. It falls back to the full
-  `pnpm run test:run` gate for shared scripts/config, unit or functional tests,
-  docs, package metadata, or other ambiguous changes. Use
-  `pnpm run typecheck:provider -- <name-or-path>` for provider-only compile
-  checks, `pnpm run lint:provider -- <name-or-path>` for provider-only lint,
-  and `pnpm run dev:preflight:provider -- <name-or-path>` for scoped
-  format/lint/typecheck/tests. `<name-or-path>` can be `openai`,
-  `packages/provider/openai/src/openai.ts`, or a matching
+- **Provider-scoped loop** — use
+  `pnpm run dev:preflight:fast -- <name-or-path>` as the fast pre-push
+  checklist for narrow provider work. It prints and runs the scoped steps:
+  Prettier on the provider package/tests, `lint:provider`, then
+  `test:provider` for provider typecheck + replay tests. `<name-or-path>` can
+  be `openai`, `packages/provider/openai/src/openai.ts`, or a matching
   `tests/integration/openai-*.test.ts` path. From a provider package,
-  `pnpm -w run dev:preflight:provider` infers the provider from `INIT_CWD`.
-  `pnpm run lint` and `pnpm run ci:local` remain the full repository gates.
+  `pnpm -w run dev:preflight:fast` infers the provider from `INIT_CWD`.
+  Use `pnpm run test:provider -- <name-or-path>` for test-only loops,
+  `pnpm run typecheck:provider -- <name-or-path>` for provider-only compile
+  checks, and `pnpm run lint:provider -- <name-or-path>` for provider-only
+  lint. `pnpm run test:affected` auto-selects provider tests from the current
+  git diff when every changed file belongs to provider packages, provider
+  integration tests, or provider recordings; it falls back to full
+  `pnpm run test:run` for shared scripts/config, unit or functional tests,
+  docs, package metadata, or other ambiguous changes. `pnpm run dev:preflight`
+  and `pnpm run ci:local` remain the full repository gates.
 - **Changed-file loop** — use `pnpm run format:changed` to run Prettier only
   on files changed from `origin/main`, staged/unstaged files, and untracked
   files. Use `pnpm run dev:preflight:changed` for that scoped format step plus
   full typecheck, scoped ESLint for changed JS/TS files, endpoint/recording
   checks, and the replay suite. Pass explicit paths when the changed surface is
-  known; for example, pass `package.json README.md` after `--`. The full
-  repository gates remain `pnpm run format`, `pnpm run dev:preflight`, and
-  `pnpm run ci:local`.
+  known; for example, pass `package.json README.md` after `--`. Prefer
+  `dev:preflight:fast` instead when the diff is cleanly provider-scoped. The
+  full repository gates remain `pnpm run format`, `pnpm run dev:preflight`,
+  and `pnpm run ci:local`.
 - **Typecheck-only fast path** — use
   `pnpm run typecheck:provider -- <name-or-path>` for provider-only diffs.
   It includes staged and unstaged files in its safety check, and falls back to

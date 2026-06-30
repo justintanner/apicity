@@ -57,10 +57,11 @@ pnpm run test                    # Run tests in watch mode
 # Dev workflow (discrete per-phase aliases)
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
-pnpm run dev:preflight           # format + typecheck + lint:after-format + test:run
-pnpm run dev:preflight:changed   # scoped format/lint plus typecheck + replay suite
-pnpm run dev:preflight:provider <name-or-path> # scoped format/lint/typecheck/tests
-pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
+pnpm run dev:preflight:fast -- <name-or-path> # fast provider gate: scoped format/lint/typecheck/tests
+pnpm run dev:preflight:provider <name-or-path> # explicit alias for the fast provider gate
+pnpm run dev:preflight:changed   # changed-file format/lint plus full typecheck + replay suite
+pnpm run dev:preflight           # full local gate: format + typecheck + lint:after-format + test:run
+pnpm run ci:local                # full CI-style gate: audit + gen:examples:check + build + lint + test:run
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
@@ -134,7 +135,7 @@ All tests use Polly.js HTTP record/replay (no mocks):
 - **Config**: `tests/vitest.integration.ts` — includes `tests/integration/**/*.test.ts`, 30s timeout
 - **Setup**: `tests/integration-setup.ts` — aliases `@apicity/*` to source directories so tests run against source (not dist)
 
-**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `tests/integration/<name>-*.test.ts` + `<name>.test.ts`). The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:provider` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm dev:preflight:provider <name-or-path>` does format + lint + that provider's tests.
+**Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `tests/integration/<name>-*.test.ts` + `<name>.test.ts`). The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:fast` infer the provider from pnpm's `INIT_CWD`. For committed, staged, unstaged, or untracked provider-only diffs, `pnpm run test:affected` auto-selects the touched provider tests. It falls back to full `pnpm run test:run` for shared scripts/config, package metadata, unit or functional tests, docs, and other ambiguous changes. Run full `pnpm run test:run` directly when you need an explicit complete local replay. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm run dev:preflight:fast -- <name-or-path>` prints and runs the fast provider checklist: scoped format, scoped lint, provider typecheck, and provider replay. Use `pnpm run dev:preflight` or `pnpm run ci:local` for shared tooling, package metadata, docs, test harness changes, release prep, or any ambiguous diff that needs the full repository gate.
 
 For typecheck-only local iteration, use
 `pnpm run typecheck:provider -- <name-or-path>`. It checks
@@ -243,7 +244,7 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 | 2 | Record fixtures   | `pnpm run dev:record -- tests/integration/<file>.test.ts`        |
 | 3 | Verify replay     | `pnpm run test:provider <name-or-path>` or `pnpm run test:affected` for provider-only diffs |
 | 4 | Telegram preview  | `pnpm run harness:telegram -- --dry-run`                         |
-| 5 | Pre-push          | `pnpm run dev:preflight:provider <name-or-path>` for provider work, `pnpm run dev:preflight:changed` for known changed-file work, or `dev:preflight` for full |
+| 5 | Pre-push          | `pnpm run dev:preflight:fast -- <name-or-path>` for provider work, `pnpm run dev:preflight:changed` for known changed-file work, or `dev:preflight` for full |
 | 6 | CI dry-run        | `pnpm run ci:local`                                              |
 | 7 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
 | 8 | CI                | _(automatic — replay suite on PR; Telegram per changed recording on push to main)_ |

@@ -1,15 +1,14 @@
 #!/usr/bin/env node
 /**
- * Provider-scoped preflight: format + lint + test ONLY the provider in question.
+ * Fast provider-scoped preflight: format + lint + test ONLY the provider in
+ * question.
  *
- * `dev:preflight` / `dev:preflight:provider` historically ran `prettier --write .`
- * and (via `lint`) `prettier --check .` over the ENTIRE monorepo — ~80s of
- * prettier on directories the change never touched. This scopes the expensive
- * prettier + eslint passes to just the provider package and its integration
- * tests (a couple seconds), and runs provider-filtered repository consistency
- * checks where the check supports scoping. The full mirror
- * (`pnpm run ci:local`) remains CI's job — run it only if you touched shared /
- * test-harness code.
+ * The full `dev:preflight` gate runs `prettier --write .` and full-repo
+ * checks. This scopes the expensive prettier + eslint passes to just the
+ * provider package and its integration tests, then runs the provider's
+ * typecheck/replay gate. Use `dev:preflight:fast` for narrow provider work;
+ * use `dev:preflight` or `ci:local` when the diff touches shared tooling,
+ * package metadata, docs, or test harness code.
  *
  * The provider scope can be a provider name, a path under
  * packages/provider/<provider>, or an integration test path. With no argument,
@@ -25,6 +24,7 @@
  * `test:provider` instead of repeating a standalone typecheck step.
  *
  * Usage: node scripts/preflight-provider.mjs <provider-or-path>
+ *        pnpm run dev:preflight:fast -- openai
  *        pnpm run dev:preflight:provider -- packages/provider/openai/src
  */
 
@@ -32,6 +32,12 @@ import { spawnSync } from "node:child_process";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
 
 const rawArgs = process.argv.slice(2).filter((arg) => arg !== "--");
+
+if (rawArgs.includes("-h") || rawArgs.includes("--help")) {
+  printUsage();
+  process.exit(0);
+}
+
 const scopeArg = rawArgs.find((arg) => !arg.startsWith("-"));
 const passthrough = rawArgs.filter((arg) => arg !== scopeArg);
 
@@ -39,7 +45,7 @@ let scope;
 try {
   scope = resolveProviderScope(scopeArg);
 } catch (error) {
-  console.error("Usage: pnpm run dev:preflight:provider <provider-or-path>");
+  printUsage();
   console.error("");
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
@@ -59,6 +65,12 @@ if (tests.length === 0) {
 // Only the provider package + its tests — NOT the whole root tree.
 const targets = [pkgDir, ...tests];
 
+console.error(`Fast provider preflight: ${provider}`);
+console.error("Steps:");
+console.error("  1. prettier --write (provider package + tests)");
+console.error("  2. lint:provider");
+console.error("  3. test:provider (provider typecheck + replay)");
+
 function run(title, cmd, args) {
   console.error(`\n▸ ${title}`);
   const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: "inherit" });
@@ -66,6 +78,15 @@ function run(title, cmd, args) {
     console.error(`\n✗ ${title} failed (exit ${result.status ?? 1})`);
     process.exit(result.status ?? 1);
   }
+}
+
+function printUsage() {
+  console.error(
+    "Usage: pnpm run dev:preflight:fast -- <provider-or-path> [-- test args]"
+  );
+  console.error(
+    "       pnpm run dev:preflight:provider -- <provider-or-path> [-- test args]"
+  );
 }
 
 // 1. Format the provider package + its tests only.

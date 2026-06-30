@@ -41,6 +41,7 @@ pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emi
 pnpm run lint                    # Lint: prettier --check + ESLint + endpoint checks (NO build)
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
+pnpm run format:changed          # Format only changed or supplied files
 pnpm run format:check            # Check formatting without writing (part of lint)
 
 # Test (replay-only; no network, no keys)
@@ -53,6 +54,7 @@ pnpm run test                    # Run tests in watch mode
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
 pnpm run dev:preflight           # format + typecheck + lint + test:run (run before `git push`)
+pnpm run dev:preflight:changed   # scoped format/lint plus typecheck + replay suite
 pnpm run dev:preflight:provider <name-or-path> # scoped format/lint/typecheck/tests
 pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
 
@@ -221,7 +223,7 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 | 2 | Record fixtures   | `pnpm run dev:record -- tests/integration/<file>.test.ts`        |
 | 3 | Verify replay     | `pnpm run test:provider <name-or-path>`  (just this provider; full suite is CI's job) |
 | 4 | Telegram preview  | `pnpm run harness:telegram -- --dry-run`                         |
-| 5 | Pre-push          | `pnpm run dev:preflight:provider <name-or-path>`  (or `dev:preflight` for full) |
+| 5 | Pre-push          | `pnpm run dev:preflight:provider <name-or-path>` for provider work, `pnpm run dev:preflight:changed` for known changed-file work, or `dev:preflight` for full |
 | 6 | CI dry-run        | `pnpm run ci:local`                                              |
 | 7 | Push + open PR    | `git push -u origin HEAD && gh pr create`                        |
 | 8 | CI                | _(automatic — replay suite on PR; Telegram per changed recording on push to main)_ |

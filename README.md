@@ -242,6 +242,14 @@ MCP server's `--paygate-secret-file` wiring.
   `tests/integration/openai-*.test.ts` path. From a provider package,
   `pnpm -w run dev:preflight:provider` infers the provider from `INIT_CWD`.
   `pnpm run ci:local` remains the full repository gate.
+- **Changed-file loop** — use `pnpm run format:changed` to run Prettier only
+  on files changed from `origin/main`, staged/unstaged files, and untracked
+  files. Use `pnpm run dev:preflight:changed` for that scoped format step plus
+  full typecheck, scoped ESLint for changed JS/TS files, endpoint/recording
+  checks, and the replay suite. Pass explicit paths when the changed surface is
+  known; for example, pass `package.json README.md` after `--`. The full
+  repository gates remain `pnpm run format`, `pnpm run dev:preflight`, and
+  `pnpm run ci:local`.
 - **Validate before sending** — every POST endpoint exposes a `.schema`:
   `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
   hallucinated call locally instead of at the API.

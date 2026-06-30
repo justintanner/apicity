@@ -59,7 +59,9 @@ pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
+pnpm run format:changed -- [paths...] # Prettier only changed or supplied files
 pnpm run dev:preflight           # format + lint + test:run (run before git push)
+pnpm run dev:preflight:changed -- [paths...] # Scoped format/lint plus full checks
 pnpm run dev:preflight:provider -- <name-or-path> # Scoped format+lint+test for one provider
 pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
@@ -73,7 +75,9 @@ Provider-scoped commands accept either `openai`-style names or paths such as
 `packages/provider/openai/src/openai.ts` and
 `tests/integration/openai-chat.test.ts`. From inside a provider package, run
 `pnpm -w run dev:preflight:provider` to infer the provider from pnpm's
-`INIT_CWD`. Use `pnpm run ci:local` as the full repository safety gate.
+`INIT_CWD`. Changed-file commands infer from `origin/main...HEAD`,
+staged/unstaged changes, and untracked files, or accept explicit paths after
+`--`. Use `pnpm run ci:local` as the full repository safety gate.
 
 ## Adding a New Endpoint
 

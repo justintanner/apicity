@@ -1,6 +1,6 @@
 {
   "name": "@apicity/zaicoding",
-  "version": "0.6.6",
+  "version": "0.6.7",
   "description": "Z.ai GLM Coding Plan provider for Apicity — standalone, OpenAI-compatible chat completions plus coding-plan usage/quota monitoring.",
   "license": "MIT",
   "repository": {

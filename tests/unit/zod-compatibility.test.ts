@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import {
@@ -16,17 +17,38 @@ interface ChildProcessError {
   stderr?: Buffer;
 }
 
+const BUILT_DECLARATION_PROVIDERS = [
+  {
+    packageName: "@apicity/kie",
+    declarationPath: "packages/provider/kie/dist/src/index.d.ts",
+  },
+  {
+    packageName: "@apicity/openai",
+    declarationPath: "packages/provider/openai/dist/src/index.d.ts",
+  },
+  {
+    packageName: "@apicity/xai",
+    declarationPath: "packages/provider/xai/dist/src/index.d.ts",
+  },
+];
+
 describe("Zod runtime compatibility", () => {
   beforeAll(() => {
+    const missingProviders = BUILT_DECLARATION_PROVIDERS.filter(
+      ({ declarationPath }) => !existsSync(resolve(declarationPath))
+    );
+
+    if (missingProviders.length === 0) {
+      return;
+    }
+
     runAndReport(
       pnpmCommand(),
       [
-        "--filter",
-        "@apicity/kie",
-        "--filter",
-        "@apicity/openai",
-        "--filter",
-        "@apicity/xai",
+        ...missingProviders.flatMap(({ packageName }) => [
+          "--filter",
+          packageName,
+        ]),
         "run",
         "build",
       ],

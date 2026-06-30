@@ -21,53 +21,44 @@
  */
 
 import { spawnSync } from "node:child_process";
-import { readdirSync, existsSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
-
-const INTEGRATION_DIR = "tests/integration";
+import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
 
 const red = (s) => `[31m${s}[0m`;
 const cyan = (s) => `[36m${s}[0m`;
 const dim = (s) => `[2m${s}[0m`;
 
 const rawArgs = process.argv.slice(2).filter((arg) => arg !== "--");
-const provider = rawArgs.find((arg) => !arg.startsWith("-"));
-const passthrough = rawArgs.filter((arg) => arg !== provider);
+const scopeArg = rawArgs.find((arg) => !arg.startsWith("-"));
+const passthrough = rawArgs.filter((arg) => arg !== scopeArg);
 
-if (!provider) {
+let scope;
+try {
+  scope = resolveProviderScope(scopeArg);
+} catch (error) {
   console.error(
     "\n" +
-      red("Usage: pnpm test:provider <provider> [-- <vitest args>]") +
+      red("Usage: pnpm test:provider <provider-or-path> [-- <vitest args>]") +
       "\n\n  e.g. " +
       cyan("pnpm test:provider simplefunctions") +
+      "\n       " +
+      cyan("pnpm test:provider packages/provider/openai/src/openai.ts") +
+      "\n\n" +
+      red(error instanceof Error ? error.message : String(error)) +
       "\n"
   );
   process.exit(1);
 }
 
-const allTests = readdirSync(INTEGRATION_DIR).filter((name) =>
-  name.endsWith(".test.ts")
-);
-// `startsWith(provider + "-")` keeps `x` distinct from `xai`; the exact match
-// catches single-file providers like `fal.test.ts`.
-const matches = allTests
-  .filter(
-    (name) => name === `${provider}.test.ts` || name.startsWith(`${provider}-`)
-  )
-  .map((name) => path.join(INTEGRATION_DIR, name));
+const provider = scope.provider;
+const matches = scope.tests;
 
 if (matches.length === 0) {
-  const providers = [
-    ...new Set(
-      allTests.map((name) => name.replace(/\.test\.ts$/, "").split("-")[0])
-    ),
-  ].sort();
   console.error(
     "\n" +
       red(`No integration tests found for provider "${provider}".`) +
-      `\n\n  Looked in ${INTEGRATION_DIR}/ for ${provider}.test.ts and ${provider}-*.test.ts\n` +
-      "  Known prefixes: " +
-      cyan(providers.join(", ")) +
+      `\n\n  Looked in tests/integration/ for ${provider}.test.ts and ${provider}-*.test.ts\n` +
       "\n"
   );
   process.exit(1);
@@ -78,15 +69,11 @@ if (matches.length === 0) {
 // without this, type errors only surface at `dev:preflight` / CI. As the
 // provider gate, `test:provider` should catch them locally. (Need a pure,
 // no-typecheck replay? Use `pnpm run test:run <file>`.)
-const pkgTsconfig = path.join(
-  "packages",
-  "provider",
-  provider,
-  "tsconfig.json"
-);
-if (existsSync(pkgTsconfig)) {
+const pkgTsconfig = path.join(scope.packageDir, "tsconfig.json");
+if (existsSync(path.join(repoRoot, pkgTsconfig))) {
   console.error(dim(`typecheck ${provider} — tsc --noEmit`));
   const tc = spawnSync("npx", ["tsc", "--noEmit", "-p", pkgTsconfig], {
+    cwd: repoRoot,
     stdio: "inherit",
   });
   if (tc.status !== 0) {
@@ -107,7 +94,7 @@ const result = spawnSync(
     ...matches,
     ...passthrough,
   ],
-  { stdio: "inherit" }
+  { cwd: repoRoot, stdio: "inherit" }
 );
 
 process.exit(result.status ?? 1);

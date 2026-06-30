@@ -55,11 +55,12 @@ pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
 pnpm run lint                    # Lint (runs build first via prelint)
 pnpm run test:run                # Run tests once (Polly.js replay; no network)
+pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run dev:preflight           # format + lint + test:run (run before git push)
-pnpm run dev:preflight:provider -- <name> # Scoped format+lint+test for ONE provider (fast; avoids whole-tree prettier)
+pnpm run dev:preflight:provider -- <name-or-path> # Scoped format+lint+test for one provider
 pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
@@ -67,6 +68,12 @@ pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording b
 pnpm run check:op                # Verify 1Password service account is working
 pnpm run harness                 # Local HAR viewer at localhost:3475
 ```
+
+Provider-scoped commands accept either `openai`-style names or paths such as
+`packages/provider/openai/src/openai.ts` and
+`tests/integration/openai-chat.test.ts`. From inside a provider package, run
+`pnpm -w run dev:preflight:provider` to infer the provider from pnpm's
+`INIT_CWD`. Use `pnpm run ci:local` as the full repository safety gate.
 
 ## Adding a New Endpoint
 

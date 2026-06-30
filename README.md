@@ -234,6 +234,14 @@ MCP server's `--paygate-secret-file` wiring.
 - **Runtime** — Node 18+, Cloudflare Workers, Deno, Bun. ESM only.
 - **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
   Integration tests record/replay via Polly.js (no keys needed for replay).
+- **Provider-scoped loop** — use `pnpm run test:provider -- <name-or-path>`
+  for one provider's typecheck + replay tests, and
+  `pnpm run dev:preflight:provider -- <name-or-path>` for scoped
+  format/lint/typecheck/tests. `<name-or-path>` can be `openai`,
+  `packages/provider/openai/src/openai.ts`, or a matching
+  `tests/integration/openai-*.test.ts` path. From a provider package,
+  `pnpm -w run dev:preflight:provider` infers the provider from `INIT_CWD`.
+  `pnpm run ci:local` remains the full repository gate.
 - **Validate before sending** — every POST endpoint exposes a `.schema`:
   `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
   hallucinated call locally instead of at the API.

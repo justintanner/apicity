@@ -10,50 +10,47 @@
  * whole-repo correctness gates. The full mirror (`pnpm run ci:local`) remains
  * CI's job — run it only if you touched shared / test-harness code.
  *
+ * The provider scope can be a provider name, a path under
+ * packages/provider/<provider>, or an integration test path. With no argument,
+ * the script tries APICITY_PROVIDER_PATH, pnpm's INIT_CWD, then process.cwd().
+ *
  * Steps:
  *   1. prettier --write  on the provider package dir + its integration tests
  *   2. eslint (cached)   on the same file set
  *   3. whole-repo gates: endpoint comments, orphan recordings, test timers
  *   4. test:provider     typecheck the package + replay its tests
  *
- * Usage: node scripts/preflight-provider.mjs <provider>
- *        pnpm run dev:preflight:provider <provider>
+ * Usage: node scripts/preflight-provider.mjs <provider-or-path>
+ *        pnpm run dev:preflight:provider -- packages/provider/openai/src
  */
 
 import { spawnSync } from "node:child_process";
-import { readdirSync, existsSync } from "node:fs";
+import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
 
-const INTEGRATION_DIR = "tests/integration";
 const ESLINT_BIN = "./node_modules/eslint/bin/eslint.js";
 const ESLINT_CACHE = "node_modules/.cache/eslint/";
 
 const rawArgs = process.argv.slice(2).filter((arg) => arg !== "--");
-const provider = rawArgs.find((arg) => !arg.startsWith("-"));
-const passthrough = rawArgs.filter((arg) => arg !== provider);
+const scopeArg = rawArgs.find((arg) => !arg.startsWith("-"));
+const passthrough = rawArgs.filter((arg) => arg !== scopeArg);
 
-if (!provider) {
-  console.error("Usage: pnpm run dev:preflight:provider <provider>");
+let scope;
+try {
+  scope = resolveProviderScope(scopeArg);
+} catch (error) {
+  console.error("Usage: pnpm run dev:preflight:provider <provider-or-path>");
+  console.error("");
+  console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
 }
 
-const pkgDir = `packages/provider/${provider}`;
-if (!existsSync(pkgDir)) {
-  console.error(`No provider package at ${pkgDir}`);
-  process.exit(1);
-}
-
-// This provider's integration tests. `startsWith(provider + "-")` keeps `x`
-// distinct from `xai`; the exact match catches single-file providers like `fal`.
-// Same predicate as scripts/test-provider.mjs — keep them in sync.
-const tests = readdirSync(INTEGRATION_DIR)
-  .filter(
-    (name) => name === `${provider}.test.ts` || name.startsWith(`${provider}-`)
-  )
-  .map((name) => `${INTEGRATION_DIR}/${name}`);
+const provider = scope.provider;
+const pkgDir = scope.packageDir;
+const tests = scope.tests;
 
 if (tests.length === 0) {
   console.error(
-    `No integration tests match "${provider}" in ${INTEGRATION_DIR}`
+    `No integration tests match "${provider}" in tests/integration`
   );
   process.exit(1);
 }
@@ -63,7 +60,7 @@ const targets = [pkgDir, ...tests];
 
 function run(title, cmd, args) {
   console.error(`\n▸ ${title}`);
-  const result = spawnSync(cmd, args, { stdio: "inherit" });
+  const result = spawnSync(cmd, args, { cwd: repoRoot, stdio: "inherit" });
   if (result.status !== 0) {
     console.error(`\n✗ ${title} failed (exit ${result.status ?? 1})`);
     process.exit(result.status ?? 1);

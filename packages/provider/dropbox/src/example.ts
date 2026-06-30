@@ -14,6 +14,11 @@ const EXAMPLES: Record<string, EndpointExample> = {};
 
 export default EXAMPLES;
 
+// Walks each "<METHOD> <dotPath>" key onto the provider's tree. Tries the
+// standard `provider.<method>.<dotPath>` shape first, then a few fallbacks
+// to cover providers with non-standard layouts (fal's `.run.` namespace,
+// kie's sub-providers, `free`'s flat root). Returns the same provider for
+// drop-in use as `return attachExamples({ ... });`.
 export function attachExamples<T>(provider: T): T {
   const root = provider as Record<string, unknown>;
   const HTTP_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
@@ -31,9 +36,7 @@ export function attachExamples<T>(provider: T): T {
       const sub = root[segs[0]];
       if (sub && typeof sub === "object") {
         const subMethod = (sub as Record<string, unknown>)[method];
-        if (subMethod) {
-          candidates.push({ __nested: subMethod, __segs: segs.slice(1) });
-        }
+        if (subMethod) candidates.push({ __nested: subMethod, __segs: segs.slice(1) });
       }
     }
     let attached = false;
@@ -63,11 +66,8 @@ export function attachExamples<T>(provider: T): T {
   return provider;
 }
 
-function walkToFn(
-  start: unknown,
-  segs: string[]
-): ((...args: unknown[]) => unknown) | null {
-  if (start && typeof start === "object" && "__nested" in start) {
+function walkToFn(start: unknown, segs: string[]): ((...args: unknown[]) => unknown) | null {
+  if (start && typeof start === "object" && "__nested" in (start as object)) {
     const wrapper = start as { __nested: unknown; __segs: string[] };
     return walkToFn(wrapper.__nested, wrapper.__segs);
   }

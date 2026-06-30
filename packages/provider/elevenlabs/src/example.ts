@@ -95,6 +95,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30
     }
   },
+  "GET v1.convai.users.list": {
+    "source": "elevenlabs/convai-misc",
+    "payload": {
+      "page_size": 1,
+      "sort_by": "last_contact_unix_secs"
+    }
+  },
   "GET v1.dubbing.list": {
     "source": "elevenlabs/dubbing",
     "payload": {
@@ -105,6 +112,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "elevenlabs/voice-library",
     "payload": {
       "page_size": 3
+    }
+  },
+  "GET v1.workspace.groups.search": {
+    "source": "elevenlabs/workspace-admin",
+    "payload": {
+      "name": "apicity"
+    }
+  },
+  "GET v1.workspace.webhooks.list": {
+    "source": "elevenlabs/workspace-admin",
+    "payload": {
+      "include_usages": false
     }
   },
   "GET v2.voices": {
@@ -184,6 +203,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "request": {
         "name": "Spanish Dubs"
       }
+    }
+  },
+  "PATCH v1.serviceAccounts.apiKeys.update": {
+    "source": "elevenlabs/service-accounts",
+    "payload": {
+      "is_enabled": "no_update",
+      "name": null,
+      "permissions": "no_update",
+      "character_limit": "no_update",
+      "allowed_ips": "clear",
+      "third_party_disable_allowed": "no_update"
     }
   },
   "PATCH v1.speechEngine.update": {
@@ -300,6 +330,14 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "name": "Apicity KB route test (url)",
       "url": "https://elevenlabs.io/docs/api-reference/introduction"
+    }
+  },
+  "POST v1.convai.llmUsage.calculate": {
+    "source": "elevenlabs/convai-misc",
+    "payload": {
+      "prompt_length": 1200,
+      "number_of_pages": 2,
+      "rag_enabled": true
     }
   },
   "POST v1.convai.phoneNumbers.create": {
@@ -466,6 +504,21 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "include_source_captions": false
         }
       }
+    }
+  },
+  "POST v1.serviceAccounts.apiKeys.create": {
+    "source": "elevenlabs/service-accounts",
+    "payload": {
+      "name": "apicity-route-test",
+      "permissions": [
+        "workspace_read",
+        "service_account_write"
+      ],
+      "character_limit": null,
+      "allowed_ips": [
+        "203.0.113.10"
+      ],
+      "third_party_disable_allowed": null
     }
   },
   "POST v1.soundGeneration": {

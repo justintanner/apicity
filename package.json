@@ -87,6 +87,7 @@
     "format:check": "prettier --check .",
     "test": "vitest --config tests/vitest.integration.ts",
     "test:run": "vitest run --config tests/vitest.integration.ts",
+    "test:affected": "node scripts/test-affected.mjs",
     "test:provider": "node scripts/test-provider.mjs",
     "test:ui": "vitest --ui --config tests/vitest.integration.ts",
     "test:integration": "vitest run --config tests/vitest.integration.ts",

@@ -55,6 +55,7 @@ pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
 pnpm run lint                    # Lint (runs build first via prelint)
 pnpm run test:run                # Run tests once (Polly.js replay; no network)
+pnpm run test:affected           # Provider tests for provider-only diffs; full fallback otherwise
 pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
@@ -108,6 +109,13 @@ pnpm run dev:record -- tests/integration/<file>.test.ts
 # Verify pure replay:
 pnpm run test:run tests/integration/<file>.test.ts
 ```
+
+For provider-only changes, `pnpm run test:affected` reads the current git diff
+(committed, staged, unstaged, and untracked files) and runs the matching
+`test:provider` subset. It falls back to full `pnpm run test:run` for shared
+scripts/config, package metadata, unit or functional tests, docs, and ambiguous
+paths. Run `pnpm run test:run` directly when you need an explicit full local
+replay.
 
 **Pitfall:** `pnpm run dev:rerecord` without a file filter will refuse to run (by design). Do not set `POLLY_FORCE_ALL=1` to force it — prefer deleting the specific recording directory and re-running `dev:record` on that one test.
 

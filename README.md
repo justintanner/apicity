@@ -253,12 +253,15 @@ MCP server's `--paygate-secret-file` wiring.
   and `pnpm run ci:local` remain the full repository gates.
 - **Changed-file loop** — use `pnpm run format:changed` to run Prettier only
   on files changed from `origin/main`, staged/unstaged files, and untracked
-  files. Use `pnpm run dev:preflight:changed` for that scoped format step plus
-  full typecheck, scoped ESLint for changed JS/TS files, endpoint/recording
-  checks, and the replay suite. Pass explicit paths when the changed surface is
-  known; for example, pass `package.json README.md` after `--`. Prefer
-  `dev:preflight:fast` instead when the diff is cleanly provider-scoped. The
-  full repository gates remain `pnpm run format`, `pnpm run dev:preflight`,
+  files. Use `pnpm run dev:preflight:changed` when you want that scoped
+  Prettier step followed by the repository checks that still run globally:
+  full typecheck, scoped ESLint for changed JS/TS files, endpoint comment
+  checks, orphan-recording checks, test-timer checks, and the replay suite.
+  Pass explicit paths when the changed surface is known; for example, pass
+  `package.json README.md` after `--`. Prefer `dev:preflight:fast` instead
+  when the diff is cleanly provider-scoped. The full repository gates remain
+  `pnpm run lint` for format check plus full linting/repo checks,
+  `pnpm run lint:after-format` after formatting, `pnpm run dev:preflight`,
   and `pnpm run ci:local`.
 - **Typecheck-only fast path** — use
   `pnpm run typecheck:provider -- <name-or-path>` for provider-only diffs.

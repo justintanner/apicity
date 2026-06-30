@@ -281,26 +281,34 @@ In native 1Password mode:
   not load.
 - With `--providers`, a missing requested provider secret is a startup error.
 
-### Repo .env Versus Native 1Password Mode
+### Repo .env Versus MCP Runtime Env Loading
 
-The tracked repository `.env` is a 1Password template used by repo scripts:
+The tracked repository `.env` is a 1Password reference template for this
+repo's development scripts, not a plain dotenv file for MCP runtime loading:
 
 ```dotenv
 OPENAI_API_KEY=op://Apicity/OPENAI_API_KEY/password
 FIREWORKS_API_KEY=op://Apicity/FIREWORKS_AI_API_KEY/password
 ```
 
-Run repo scripts with:
+Repo scripts that need those values must run under `op run --env-file=.env --`.
+The root `check:op` script already does that, so run it directly:
 
 ```bash
-op run --env-file=.env -- pnpm run check:op
+pnpm run check:op
+```
+
+For ad hoc repo commands, wrap the command yourself:
+
+```bash
 op run --env-file=.env -- node packages/mcp-server/scripts/demo.mjs
 ```
 
 Do not expect `apicity-mcp --env-file .env` alone to resolve those `op://`
-references. The MCP server intentionally skips `op://` values in `--env-file`
-mode. For an MCP client, use native `--op-vault` mode, a plain dotenv file
-with real values, or the direct-repo launcher after `pnpm run build:mcp-server`.
+references. MCP `--env-file` loading intentionally skips values that start
+with `op://` because they are references, not usable provider credentials. For
+an MCP client, use native `--op-vault` mode, a plain dotenv file with real
+values, or the direct-repo launcher after `pnpm run build:mcp-server`.
 
 ## Provider Environment Variables
 

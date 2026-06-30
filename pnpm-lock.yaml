@@ -112,6 +112,9 @@ importers:
       '@apicity/dolthub':
         specifier: workspace:*
         version: link:../provider/dolthub
+      '@apicity/dropbox':
+        specifier: workspace:*
+        version: link:../provider/dropbox
       '@apicity/elevenlabs':
         specifier: workspace:*
         version: link:../provider/elevenlabs

@@ -1,10 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
-
-import { createKie } from "../../packages/provider/kie/dist/src/index.js";
-import { createOpenAi } from "../../packages/provider/openai/dist/src/index.js";
-import { createXai } from "../../packages/provider/xai/dist/src/index.js";
+import { beforeAll, describe, expect, it } from "vitest";
 import {
   buildRegistry,
   type Endpoint,
@@ -21,7 +17,30 @@ interface ChildProcessError {
 }
 
 describe("Zod runtime compatibility", () => {
-  it("validates built provider schemas through the unified Zod 4 runtime", () => {
+  beforeAll(() => {
+    runAndReport(
+      pnpmCommand(),
+      [
+        "--filter",
+        "@apicity/kie",
+        "--filter",
+        "@apicity/openai",
+        "--filter",
+        "@apicity/xai",
+        "run",
+        "build",
+      ],
+      120000
+    );
+  }, 120000);
+
+  it("validates built provider schemas through the unified Zod 4 runtime", async () => {
+    const [{ createKie }, { createOpenAi }, { createXai }] = await Promise.all([
+      import("../../packages/provider/kie/dist/src/index.js"),
+      import("../../packages/provider/openai/dist/src/index.js"),
+      import("../../packages/provider/xai/dist/src/index.js"),
+    ]);
+
     const openai = createOpenAi({ apiKey: "sk-test" });
     expect(
       openai.post.v1.chat.completions.schema.safeParse({
@@ -51,36 +70,27 @@ describe("Zod runtime compatibility", () => {
   });
 
   it("compiles built declaration schema surfaces for consumers", () => {
-    try {
-      execFileSync(
-        process.execPath,
-        [
-          resolve("node_modules/typescript/bin/tsc"),
-          "--noEmit",
-          "--target",
-          "ES2022",
-          "--module",
-          "ESNext",
-          "--moduleResolution",
-          "Node",
-          "--lib",
-          "ES2022,DOM",
-          "--strict",
-          "--skipLibCheck",
-          "false",
-          "--esModuleInterop",
-          "tests/fixtures/zod-compat-consumer.ts",
-        ],
-        { cwd: resolve("."), stdio: "pipe" }
-      );
-    } catch (error) {
-      const child = error as ChildProcessError;
-      throw new Error(
-        [child.message, child.stdout?.toString(), child.stderr?.toString()]
-          .filter(Boolean)
-          .join("\n")
-      );
-    }
+    runAndReport(
+      process.execPath,
+      [
+        resolve("node_modules/typescript/bin/tsc"),
+        "--noEmit",
+        "--target",
+        "ES2022",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "Node",
+        "--lib",
+        "ES2022,DOM",
+        "--strict",
+        "--skipLibCheck",
+        "false",
+        "--esModuleInterop",
+        "tests/fixtures/zod-compat-consumer.ts",
+      ],
+      90000
+    );
   }, 90000);
 
   it("discovers and converts MCP schemas from unified Zod providers", async () => {
@@ -176,4 +186,25 @@ function requiredFields(schema: JsonSchema): string[] {
         (field): field is string => typeof field === "string"
       )
     : [];
+}
+
+function pnpmCommand(): string {
+  return process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+}
+
+function runAndReport(command: string, args: string[], timeout: number): void {
+  try {
+    execFileSync(command, args, {
+      cwd: resolve("."),
+      stdio: "pipe",
+      timeout,
+    });
+  } catch (error) {
+    const child = error as ChildProcessError;
+    throw new Error(
+      [child.message, child.stdout?.toString(), child.stderr?.toString()]
+        .filter(Boolean)
+        .join("\n")
+    );
+  }
 }

@@ -2,9 +2,21 @@ import { describe, expect, it } from "vitest";
 import {
   classifyChangedFiles,
   detectProviderForChangedFile,
+  normalizeProjectPath,
 } from "../../scripts/lib/affected-provider-tests.mjs";
 
 const providers = ["free-media-upload", "google", "openai", "x", "xai"];
+
+describe("normalizeProjectPath", () => {
+  it("normalizes dot-prefixed and Windows-style paths", () => {
+    expect(
+      normalizeProjectPath(".\\packages\\provider\\openai\\src\\openai.ts")
+    ).toBe("packages/provider/openai/src/openai.ts");
+    expect(
+      normalizeProjectPath(" ./tests\\integration\\xai-image.test.ts ")
+    ).toBe("tests/integration/xai-image.test.ts");
+  });
+});
 
 describe("detectProviderForChangedFile", () => {
   it("maps provider package paths", () => {
@@ -14,6 +26,18 @@ describe("detectProviderForChangedFile", () => {
         providers
       )
     ).toBe("openai");
+    expect(
+      detectProviderForChangedFile(
+        "packages/provider/xai/src/xai.ts",
+        providers
+      )
+    ).toBe("xai");
+    expect(
+      detectProviderForChangedFile("packages/provider/x-tools/src/index.ts", [
+        "x",
+        "xai",
+      ])
+    ).toBe("");
   });
 
   it("maps integration tests by longest provider prefix", () => {
@@ -50,11 +74,29 @@ describe("detectProviderForChangedFile", () => {
         providers
       )
     ).toBe("google");
+    expect(
+      detectProviderForChangedFile(
+        "tests/recordings/xai_3038927025/image/recording.har",
+        providers
+      )
+    ).toBe("xai");
+    expect(
+      detectProviderForChangedFile(
+        "tests/recordings/free-media-upload_3991279299/upload/recording.har",
+        providers
+      )
+    ).toBe("free-media-upload");
   });
 
   it("does not map shared files", () => {
     expect(
       detectProviderForChangedFile("tests/vitest.integration.ts", providers)
+    ).toBe("");
+    expect(
+      detectProviderForChangedFile(
+        "tests/integration/xylophone.test.ts",
+        providers
+      )
     ).toBe("");
   });
 });
@@ -101,6 +143,42 @@ describe("classifyChangedFiles", () => {
       mode: "full",
       providers: ["openai"],
       fullReasons: ["scripts/test-provider.mjs"],
+    });
+  });
+
+  it("normalizes changed files before provider classification", () => {
+    expect(
+      classifyChangedFiles(
+        [
+          "./packages/provider/xai/src/xai.ts",
+          ".\\tests\\recordings\\x_3038927025\\post\\recording.har",
+        ],
+        providers
+      )
+    ).toEqual({
+      mode: "providers",
+      providers: ["x", "xai"],
+      fullReasons: [],
+    });
+  });
+
+  it("preserves scoped providers when ambiguous files require full mode", () => {
+    expect(
+      classifyChangedFiles(
+        [
+          "packages/provider/openai/src/openai.ts",
+          "packages/provider/x-tools/src/index.ts",
+          "tests/integration/xylophone.test.ts",
+        ],
+        providers
+      )
+    ).toEqual({
+      mode: "full",
+      providers: ["openai"],
+      fullReasons: [
+        "packages/provider/x-tools/src/index.ts",
+        "tests/integration/xylophone.test.ts",
+      ],
     });
   });
 });

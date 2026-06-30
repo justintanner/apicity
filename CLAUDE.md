@@ -38,6 +38,7 @@ pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
 pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)
+pnpm run typecheck:provider -- <name-or-path> # Type-check one provider; falls back to full on shared/package diffs
 pnpm run lint                    # Lint: prettier --check + ESLint + endpoint checks (NO build)
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
@@ -131,6 +132,22 @@ All tests use Polly.js HTTP record/replay (no mocks):
 - **Setup**: `tests/integration-setup.ts` — aliases `@apicity/*` to source directories so tests run against source (not dist)
 
 **Scope the loop to one provider.** While working on a single provider, don't replay the whole suite — run only that provider's tests with `pnpm test:provider <name-or-path>` (resolves `tests/integration/<name>-*.test.ts` + `<name>.test.ts`). The argument can be a provider name, a path under `packages/provider/<name>`, or a matching integration test path. From inside a provider package, `pnpm -w run test:provider` and `pnpm -w run dev:preflight:provider` infer the provider from pnpm's `INIT_CWD`. The **full suite is GitHub CI's responsibility**; locally you only need the provider you're touching. `pnpm dev:preflight:provider <name-or-path>` does format + lint + that provider's tests.
+
+For typecheck-only local iteration, use
+`pnpm run typecheck:provider -- <name-or-path>`. It checks
+`origin/main...HEAD` plus staged and unstaged files: provider-only diffs run
+that provider's `tsconfig.json`; diffs that touch another package or shared
+package/TypeScript config fall back to the full `pnpm run typecheck` so
+shared-package errors are not missed. `dev:preflight:provider` does not run a
+separate root typecheck step because `test:provider` already runs the selected
+provider's `tsc --noEmit` check before replaying tests.
+
+Timing baseline recorded on 2026-06-30 in a fresh worktree:
+`pnpm run typecheck` completed in 105.61s real time, while
+`npx tsc --noEmit -p packages/provider/openai/tsconfig.json` completed in
+5.79s real time. After adding the guarded script,
+`pnpm run typecheck:provider -- openai --base=HEAD` completed in 10.33s real
+time on the clean fast path.
 
 Tests use `setupPolly(recordingName)` / `teardownPolly(ctx)` from `tests/harness.ts`. Recordings stored as HAR files in `tests/recordings/`. Auth headers are auto-redacted before persisting.
 

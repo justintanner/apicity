@@ -73,6 +73,7 @@
     "doc-gen:simplefunctions": "node scripts/doc-gen.mjs simplefunctions",
     "clean": "rm -rf packages/provider/*/dist",
     "typecheck": "pnpm -r --filter './packages/**' exec tsc --noEmit -p tsconfig.json",
+    "typecheck:provider": "node scripts/typecheck-provider.mjs",
     "lint": "pnpm run format:check && pnpm run lint:eslint && node scripts/check-endpoint-comments.mjs && node scripts/check-orphan-recordings.mjs && node scripts/check-test-timers.mjs",
     "lint:eslint": "node --max-old-space-size=4096 ./node_modules/eslint/bin/eslint.js . --cache --cache-location node_modules/.cache/eslint/",
     "lint:fix": "node --max-old-space-size=4096 ./node_modules/eslint/bin/eslint.js . --cache --cache-location node_modules/.cache/eslint/ --fix",

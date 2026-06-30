@@ -20,6 +20,10 @@
  *   3. whole-repo gates: endpoint comments, orphan recordings, test timers
  *   4. test:provider     typecheck the package + replay its tests
  *
+ * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
+ * This preflight intentionally reuses the provider `tsc` check already run by
+ * `test:provider` instead of repeating a standalone typecheck step.
+ *
  * Usage: node scripts/preflight-provider.mjs <provider-or-path>
  *        pnpm run dev:preflight:provider -- packages/provider/openai/src
  */

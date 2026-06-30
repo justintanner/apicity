@@ -250,6 +250,14 @@ MCP server's `--paygate-secret-file` wiring.
   known; for example, pass `package.json README.md` after `--`. The full
   repository gates remain `pnpm run format`, `pnpm run dev:preflight`, and
   `pnpm run ci:local`.
+- **Typecheck-only fast path** — use
+  `pnpm run typecheck:provider -- <name-or-path>` for provider-only diffs.
+  It includes staged and unstaged files in its safety check, and falls back to
+  the full `pnpm run typecheck` when the diff touches another package or shared
+  package/TypeScript config. Baseline timing on 2026-06-30: full typecheck
+  105.61s real, representative provider tsconfig 5.79s real; the guarded
+  fast path validated at 10.33s real with
+  `pnpm run typecheck:provider -- openai --base=HEAD`.
 - **Validate before sending** — every POST endpoint exposes a `.schema`:
   `createOpenAi(...).v1.chat.completions.schema.safeParse(payload)` catches a
   hallucinated call locally instead of at the API.

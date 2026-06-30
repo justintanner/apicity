@@ -172,4 +172,25 @@ describe("resolveProviderScope", () => {
       input: cwd,
     });
   });
+
+  it("throws a useful error for unknown provider scopes", () => {
+    let message = "";
+
+    try {
+      resolveProviderScope("packages/provider/not-a-provider/src/index.ts");
+    } catch (error) {
+      message = error instanceof Error ? error.message : String(error);
+    }
+
+    expect(message).toContain("Could not resolve a provider scope.");
+    expect(message).toContain(
+      "Pass a provider name or a path under packages/provider/<provider>."
+    );
+    expect(message).toContain(
+      "Integration test paths like tests/integration/openai-chat.test.ts work too."
+    );
+    expect(message).toContain("pnpm run test:provider -- openai");
+    expect(message).toContain("Known providers:");
+    expect(message).toContain("openai");
+  });
 });

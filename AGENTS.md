@@ -53,7 +53,9 @@ Method paths mirror upstream API URL paths segment-by-segment; kebab-case become
 ```bash
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
-pnpm run lint                    # Lint (runs build first via prelint)
+pnpm run lint                    # Full lint: format check + ESLint + repo checks
+pnpm run lint:after-format       # Full lint minus format check; safe after pnpm run format
+pnpm run lint:provider -- <name-or-path> # Scoped ESLint + provider-relevant checks
 pnpm run typecheck:provider -- <name-or-path> # Fast provider typecheck; falls back to full on shared/package diffs
 pnpm run test:run                # Run tests once (Polly.js replay; no network)
 pnpm run test:affected           # Provider tests for provider-only diffs; full fallback otherwise
@@ -62,7 +64,7 @@ pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run format:changed -- [paths...] # Prettier only changed or supplied files
-pnpm run dev:preflight           # format + typecheck + lint + test:run
+pnpm run dev:preflight           # format + typecheck + lint:after-format + test:run
 pnpm run dev:preflight:changed -- [paths...] # Scoped format/lint plus full checks
 pnpm run dev:preflight:provider -- <name-or-path> # Scoped format+lint+typecheck+test for one provider
 pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run

@@ -39,7 +39,9 @@ pnpm run build                   # Build all packages
 pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)
 pnpm run typecheck:provider -- <name-or-path> # Type-check one provider; falls back to full on shared/package diffs
-pnpm run lint                    # Lint: prettier --check + ESLint + endpoint checks (NO build)
+pnpm run lint                    # Full lint: prettier --check + ESLint + repo checks (NO build)
+pnpm run lint:after-format       # Full lint minus prettier --check; safe after pnpm run format
+pnpm run lint:provider <name-or-path> # Scoped ESLint + provider-relevant repo checks
 pnpm run lint:fix                # Auto-fix lint issues
 pnpm run format                  # Format with Prettier
 pnpm run format:changed          # Format only changed or supplied files
@@ -55,7 +57,7 @@ pnpm run test                    # Run tests in watch mode
 # Dev workflow (discrete per-phase aliases)
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
-pnpm run dev:preflight           # format + typecheck + lint + test:run (run before `git push`)
+pnpm run dev:preflight           # format + typecheck + lint:after-format + test:run
 pnpm run dev:preflight:changed   # scoped format/lint plus typecheck + replay suite
 pnpm run dev:preflight:provider <name-or-path> # scoped format/lint/typecheck/tests
 pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run

@@ -26,6 +26,7 @@
 //
 // Usage:
 //   node scripts/check-test-timers.mjs           # fail on any new violation
+//   node scripts/check-test-timers.mjs --provider xai
 //   node scripts/check-test-timers.mjs --list    # list scanned fal/xai files
 //   node scripts/check-test-timers.mjs --help
 import fs from "node:fs";
@@ -50,15 +51,19 @@ const ALLOWLIST = new Map([
 // A fal/xai test file: basename is `<p>.test.ts` / `<p>-*.test.ts`, or it lives
 // under a `fal/` or `xai/` subdirectory. Mirrors scripts/test-provider.mjs so
 // the guard's scope matches `pnpm test:provider fal|xai`.
-export function isFalXaiTestFile(relPath) {
+export function timerGuardProviderForFile(relPath) {
   if (!relPath.endsWith(".test.ts")) return false;
   const base = path.basename(relPath);
   const segments = relPath.split(path.sep);
   for (const p of ["fal", "xai"]) {
-    if (base === `${p}.test.ts` || base.startsWith(`${p}-`)) return true;
-    if (segments.includes(p)) return true;
+    if (base === `${p}.test.ts` || base.startsWith(`${p}-`)) return p;
+    if (segments.includes(p)) return p;
   }
-  return false;
+  return "";
+}
+
+export function isFalXaiTestFile(relPath) {
+  return Boolean(timerGuardProviderForFile(relPath));
 }
 
 // Pure detector: returns the real-timer violations in a single file's source.
@@ -109,6 +114,70 @@ export function findTimerViolations(source) {
   return violations;
 }
 
+function parseArgs(argv) {
+  const options = {
+    providers: new Set(),
+    list: false,
+    help: false,
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--help" || arg === "-h") {
+      options.help = true;
+      continue;
+    }
+    if (arg === "--list") {
+      options.list = true;
+      continue;
+    }
+    if (arg === "--provider" || arg === "--providers") {
+      if (i + 1 >= argv.length) {
+        throw new Error(`${arg} requires a comma-separated provider list`);
+      }
+      i++;
+      addProviders(options.providers, argv[i]);
+      continue;
+    }
+    if (arg.startsWith("--provider=") || arg.startsWith("--providers=")) {
+      addProviders(options.providers, arg.slice(arg.indexOf("=") + 1));
+      continue;
+    }
+    throw new Error(`Unknown argument: ${arg}`);
+  }
+
+  return options;
+}
+
+function addProviders(providers, value) {
+  for (const provider of value.split(",")) {
+    const normalized = provider.trim();
+    if (normalized) providers.add(normalized);
+  }
+}
+
+function usage() {
+  console.log(
+    "Flags fal/xai test files that use REAL timers instead of " +
+      "vi.useFakeTimers().\n\n" +
+      "  --provider <list>  comma-separated provider filter, e.g. fal,xai\n" +
+      "  --list             list the fal/xai test files the guard scans\n" +
+      "  --help             show this help"
+  );
+}
+
+function selectedTimerProviders(providers) {
+  const selected = new Set();
+  for (const provider of providers) {
+    if (provider === "fal" || provider === "xai") selected.add(provider);
+  }
+  return selected;
+}
+
+function scopeLabel(providers) {
+  return providers.size > 0 ? ` [providers: ${[...providers].join(", ")}]` : "";
+}
+
 function walk(dir) {
   const out = [];
   if (!fs.existsSync(dir)) return out;
@@ -120,34 +189,48 @@ function walk(dir) {
   return out;
 }
 
-function collectFalXaiFiles() {
+function collectFalXaiFiles(providers = new Set()) {
+  const selected = selectedTimerProviders(providers);
+  if (providers.size > 0 && selected.size === 0) return [];
+
   const files = [];
   for (const dir of TEST_DIRS) {
     for (const full of walk(path.join(root, dir))) {
       const rel = path.relative(root, full);
-      if (isFalXaiTestFile(rel)) files.push(rel);
+      const provider = timerGuardProviderForFile(rel);
+      if (provider && (selected.size === 0 || selected.has(provider))) {
+        files.push(rel);
+      }
     }
   }
   return files.sort();
 }
 
 function main() {
-  const argv = process.argv.slice(2);
-  if (argv.includes("--help") || argv.includes("-h")) {
-    console.log(
-      "Flags fal/xai test files that use REAL timers instead of " +
-        "vi.useFakeTimers().\n\n" +
-        "  --list   list the fal/xai test files the guard scans\n" +
-        "  --help   show this help"
-    );
+  let options;
+  try {
+    options = parseArgs(process.argv.slice(2));
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : String(error));
+    return 1;
+  }
+
+  if (options.help) {
+    usage();
     return 0;
   }
 
-  const files = collectFalXaiFiles();
+  const files = collectFalXaiFiles(options.providers);
+  const label = scopeLabel(options.providers);
 
-  if (argv.includes("--list")) {
+  if (options.list) {
     for (const rel of files) console.log(rel);
-    console.log(`\n${files.length} fal/xai test files in scope.`);
+    console.log(`\n${files.length} fal/xai test files in scope${label}.`);
+    return 0;
+  }
+
+  if (files.length === 0 && options.providers.size > 0) {
+    console.log(`✓ check-test-timers: no fal/xai test files in scope${label}.`);
     return 0;
   }
 
@@ -162,7 +245,7 @@ function main() {
   if (offenders.length === 0) {
     console.log(
       `✓ check-test-timers: ${files.length} fal/xai test files, no real-timer ` +
-        `regressions (${ALLOWLIST.size} allowlisted).`
+        `regressions (${ALLOWLIST.size} allowlisted)${label}.`
     );
     return 0;
   }

@@ -9,7 +9,7 @@
  * or has a docs URL whose hostname isn't on the per-provider allow-list.
  *
  * Usage:
- *   node scripts/check-endpoint-comments.mjs
+ *   node scripts/check-endpoint-comments.mjs [--provider openai]
  */
 import {
   loadProject,
@@ -67,6 +67,63 @@ const METHOD_LINE_RE =
   /^\s*\/\/\s+(GET|POST|PUT|DELETE|PATCH|HEAD)\s+(https?:\/\/\S+)\s*$/;
 const DOCS_LINE_RE = /^\s*\/\/\s+Docs:\s+(https?:\/\/\S+)\s*$/;
 
+function parseArgs(argv) {
+  const options = {
+    providers: new Set(),
+    help: false,
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--help" || arg === "-h") {
+      options.help = true;
+      continue;
+    }
+    if (arg === "--provider" || arg === "--providers") {
+      if (i + 1 >= argv.length) {
+        throw new Error(`${arg} requires a comma-separated provider list`);
+      }
+      i++;
+      addProviders(options.providers, argv[i]);
+      continue;
+    }
+    if (arg.startsWith("--provider=") || arg.startsWith("--providers=")) {
+      addProviders(options.providers, arg.slice(arg.indexOf("=") + 1));
+      continue;
+    }
+    throw new Error(`Unknown argument: ${arg}`);
+  }
+
+  validateProviders(options.providers);
+  return options;
+}
+
+function addProviders(providers, value) {
+  for (const provider of value.split(",")) {
+    const normalized = provider.trim();
+    if (normalized) providers.add(normalized);
+  }
+}
+
+function validateProviders(providers) {
+  const known = new Set(PROVIDERS.map((provider) => provider.name));
+  const unknown = [...providers].filter((provider) => !known.has(provider));
+  if (unknown.length) {
+    throw new Error(
+      `Unknown provider(s): ${unknown.join(", ")}. ` +
+        `Known providers: ${[...known].join(", ")}`
+    );
+  }
+}
+
+function usage() {
+  console.log(`Usage: node scripts/check-endpoint-comments.mjs [options]
+
+  --provider <list>    Comma-separated provider filter, e.g. "openai,xai"
+  --providers <list>   Alias for --provider
+  --help, -h           Show this help`);
+}
+
 function getLeadingCommentLines(node) {
   const sourceFile = node.getSourceFile();
   const fullText = sourceFile.getFullText();
@@ -97,12 +154,19 @@ function hostnameOf(urlStr) {
 }
 
 async function main() {
-  const project = loadProject();
+  const options = parseArgs(process.argv.slice(2));
+  if (options.help) {
+    usage();
+    return;
+  }
+
+  const providers = [...options.providers];
+  const project = loadProject(providers);
   const errors = [];
   let total = 0;
   const seen = new Set();
 
-  for await (const ep of walkAllEndpoints(project)) {
+  for await (const ep of walkAllEndpoints(project, { providers })) {
     // Dedup by the node we'd attach a comment to (definition anchor)
     const anchor = ep.commentNode ?? ep.propNode;
     const nodeKey = anchor
@@ -167,19 +231,24 @@ async function main() {
     }
   }
 
+  const providerLabel =
+    providers.length > 0
+      ? ` for ${providers.join(", ")}`
+      : ` across ${PROVIDERS.length} providers`;
+
   if (errors.length) {
     for (const e of errors) console.error(e);
     console.error(
-      `\n${errors.length} endpoint comment violation(s) across ${total} endpoints.`
+      `\n${errors.length} endpoint comment violation(s) across ${total} endpoints${providerLabel}.`
     );
     process.exit(1);
   }
   console.log(
-    `Checked ${total} endpoints across ${PROVIDERS.length} providers — all have valid URL comments.`
+    `Checked ${total} endpoints${providerLabel} — all have valid URL comments.`
   );
 }
 
 main().catch((e) => {
-  console.error(e);
+  console.error(e instanceof Error ? e.message : e);
   process.exit(1);
 });

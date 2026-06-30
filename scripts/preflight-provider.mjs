@@ -6,9 +6,10 @@
  * and (via `lint`) `prettier --check .` over the ENTIRE monorepo — ~80s of
  * prettier on directories the change never touched. This scopes the expensive
  * prettier + eslint passes to just the provider package and its integration
- * tests (a couple seconds), and keeps only the fast, state-dependent
- * whole-repo correctness gates. The full mirror (`pnpm run ci:local`) remains
- * CI's job — run it only if you touched shared / test-harness code.
+ * tests (a couple seconds), and runs provider-filtered repository consistency
+ * checks where the check supports scoping. The full mirror
+ * (`pnpm run ci:local`) remains CI's job — run it only if you touched shared /
+ * test-harness code.
  *
  * The provider scope can be a provider name, a path under
  * packages/provider/<provider>, or an integration test path. With no argument,
@@ -16,9 +17,8 @@
  *
  * Steps:
  *   1. prettier --write  on the provider package dir + its integration tests
- *   2. eslint (cached)   on the same file set
- *   3. whole-repo gates: endpoint comments, orphan recordings, test timers
- *   4. test:provider     typecheck the package + replay its tests
+ *   2. lint:provider     scoped ESLint + provider-relevant repo checks
+ *   3. test:provider     typecheck the package + replay its tests
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
  * This preflight intentionally reuses the provider `tsc` check already run by
@@ -30,9 +30,6 @@
 
 import { spawnSync } from "node:child_process";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
-
-const ESLINT_BIN = "./node_modules/eslint/bin/eslint.js";
-const ESLINT_CACHE = "node_modules/.cache/eslint/";
 
 const rawArgs = process.argv.slice(2).filter((arg) => arg !== "--");
 const scopeArg = rawArgs.find((arg) => !arg.startsWith("-"));
@@ -79,22 +76,15 @@ run("prettier --write (scoped)", "pnpm", [
   ...targets,
 ]);
 
-// 2. Lint the same scope with the shared cache.
-run("eslint (scoped)", "node", [
-  "--max-old-space-size=4096",
-  ESLINT_BIN,
-  ...targets,
-  "--cache",
-  "--cache-location",
-  ESLINT_CACHE,
+// 2. Lint the same scope and provider-relevant repository checks.
+run(`lint:provider ${provider}`, "pnpm", [
+  "run",
+  "lint:provider",
+  "--",
+  provider,
 ]);
 
-// 3. Fast, whole-repo correctness gates (state-dependent; not worth scoping).
-run("endpoint comments", "node", ["scripts/check-endpoint-comments.mjs"]);
-run("orphan recordings", "node", ["scripts/check-orphan-recordings.mjs"]);
-run("test timers", "node", ["scripts/check-test-timers.mjs"]);
-
-// 4. Typecheck the provider package, then replay its tests.
+// 3. Typecheck the provider package, then replay its tests.
 run(`test:provider ${provider}`, "pnpm", [
   "run",
   "test:provider",

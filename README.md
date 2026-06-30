@@ -235,19 +235,20 @@ MCP server's `--paygate-secret-file` wiring.
 - **Build & test** — `pnpm install && pnpm run build && pnpm run test:run`.
   Integration tests record/replay via Polly.js (no keys needed for replay).
 - **Provider-scoped loop** — use `pnpm run test:provider -- <name-or-path>`
-  for one provider's typecheck + replay tests, and
+  for one provider's typecheck + replay tests, and use
   `pnpm run test:affected` to auto-select provider tests from the current git
   diff when every changed file belongs to provider packages, provider
   integration tests, or provider recordings. It falls back to the full
   `pnpm run test:run` gate for shared scripts/config, unit or functional tests,
-  docs, package metadata, or other ambiguous changes. Run
-  `pnpm run test:run` directly when you need the explicit full replay suite.
-  `pnpm run dev:preflight:provider -- <name-or-path>` for scoped
+  docs, package metadata, or other ambiguous changes. Use
+  `pnpm run typecheck:provider -- <name-or-path>` for provider-only compile
+  checks, `pnpm run lint:provider -- <name-or-path>` for provider-only lint,
+  and `pnpm run dev:preflight:provider -- <name-or-path>` for scoped
   format/lint/typecheck/tests. `<name-or-path>` can be `openai`,
   `packages/provider/openai/src/openai.ts`, or a matching
   `tests/integration/openai-*.test.ts` path. From a provider package,
   `pnpm -w run dev:preflight:provider` infers the provider from `INIT_CWD`.
-  `pnpm run ci:local` remains the full repository gate.
+  `pnpm run lint` and `pnpm run ci:local` remain the full repository gates.
 - **Changed-file loop** — use `pnpm run format:changed` to run Prettier only
   on files changed from `origin/main`, staged/unstaged files, and untracked
   files. Use `pnpm run dev:preflight:changed` for that scoped format step plus

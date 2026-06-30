@@ -172,7 +172,14 @@ const METHOD_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
 
 const STREAM_KEYS = new Set(["stream", "ws", "run"]);
 
-function loadProject() {
+function selectProviders(providerNames = []) {
+  if (providerNames.length === 0) return PROVIDERS;
+
+  const requested = new Set(providerNames);
+  return PROVIDERS.filter((provider) => requested.has(provider.name));
+}
+
+function loadProject(providerNames = []) {
   const project = new Project({
     useInMemoryFileSystem: false,
     skipAddingFilesFromTsConfig: true,
@@ -186,7 +193,7 @@ function loadProject() {
       allowJs: false,
     },
   });
-  for (const p of PROVIDERS) {
+  for (const p of selectProviders(providerNames)) {
     for (const f of p.entryFiles) {
       project.addSourceFileAtPath(path.join(REPO_ROOT, f));
     }
@@ -1079,9 +1086,9 @@ function fullDotPath(pathStack) {
  * return tree (e.g., `postV1.messages` and `legacyV1.messages`); this collapses
  * them to a single record per definition site.
  */
-export async function* walkAllEndpoints(project) {
+export async function* walkAllEndpoints(project, options = {}) {
   const byAnchor = new Map();
-  for await (const ep of walkAllEndpointsRaw(project)) {
+  for await (const ep of walkAllEndpointsRaw(project, options)) {
     const anchor = ep.commentNode ?? ep.propNode;
     if (!anchor) {
       yield ep;
@@ -1101,8 +1108,9 @@ export async function* walkAllEndpoints(project) {
   for (const ep of byAnchor.values()) yield ep;
 }
 
-async function* walkAllEndpointsRaw(project) {
-  for (const provider of PROVIDERS) {
+async function* walkAllEndpointsRaw(project, options = {}) {
+  const providerNames = options.providers ?? [];
+  for (const provider of selectProviders(providerNames)) {
     const providerBaseURLs = new Map(); // factoryName → baseURL literal
     const providerBaseURLMaps = new Map(); // factoryName → local base var map
     // First pass: resolve baseURL per factory

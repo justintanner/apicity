@@ -16,10 +16,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { listProviderNames } from "./lib/provider-scope.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const recordingsDir = path.join(root, "tests", "recordings");
 const testsDir = path.join(root, "tests");
+const providerNames = listProviderNames();
 
 function parseArgs(argv) {
   const options = {
@@ -96,6 +98,25 @@ function filterByProvider(values, providers) {
   return new Set(
     [...values].filter((name) => hasProviderPrefix(name, providers))
   );
+}
+
+function providerFromIntegrationTestFile(file) {
+  const base = path.basename(file);
+  const longestFirst = [...providerNames].sort((a, b) => b.length - a.length);
+  return (
+    longestFirst.find(
+      (provider) =>
+        base === `${provider}.test.ts` || base.startsWith(`${provider}-`)
+    ) ?? ""
+  );
+}
+
+function unresolvedMatchesProvider(entry, providers) {
+  if (providers.size === 0) return true;
+
+  const relFile = entry.split(":")[0];
+  const provider = providerFromIntegrationTestFile(relFile);
+  return provider ? providers.has(provider) : true;
 }
 
 function diskRecordingEntries() {
@@ -245,7 +266,9 @@ function run() {
     .filter((name) => !disk.has(name))
     .sort();
 
-  for (const entry of unresolved) {
+  for (const entry of unresolved.filter((entry) =>
+    unresolvedMatchesProvider(entry, options.providers)
+  )) {
     console.warn(`warn: non-static setupPolly name, skipped -- ${entry}`);
   }
 

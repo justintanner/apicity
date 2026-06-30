@@ -33,10 +33,10 @@ step enforces this. Do not use suffix identifiers or alternate npm tags.
 ## How to release
 
 Releases are driven by the compiler-v2 `mol-apicity-release` Gas City workflow.
-The workflow root is handled by `apicity/core.control-dispatcher`; executable
-steps carry `gc.run_target=apicity/gastown.polecat` by default so closing one
-step lets the dispatcher route the next ready step without manual Mayor
-slinging.
+The workflow has one executable step that carries
+`gc.run_target=apicity/gastown.polecat` by default. The whole release stays in
+one polecat turn so it cannot strand itself between prepare and publish
+handoffs.
 
 Register the Apicity release pack with the city once per checkout/update:
 
@@ -60,32 +60,31 @@ gc sling apicity/core.control-dispatcher mol-apicity-release --formula \
   --var version=0.4.1
 ```
 
-Do not manually sling child steps. If the dispatcher needs manual attention,
-inspect or run the control path directly with `gc convoy control <control-bead>`
-or `gc convoy control --serve --follow apicity/core.control-dispatcher`.
+Do not manually sling child steps.
 
-The formula creates 9 workflow steps:
+The single executable formula step runs these release sub-steps in order:
 
-1. `load-context` — verify clean working tree, read the release bead
-2. `verify-main-gates` — on `main`, run `pnpm run test:run`,
+1. Singleton guard — refuse duplicate concurrent releases.
+2. `load-context` — verify clean working tree, read the release bead.
+3. `verify-main-gates` — on `main`, run `pnpm run test:run`,
    `pnpm run ci:local`, and verify GitHub CI is green for `origin/main`
-3. `sync-stable-and-preflight` — fast-forward `stable` from `origin/main`,
+4. `sync-stable-and-preflight` — fast-forward `stable` from `origin/main`,
    then run `pnpm run ci:local` (build + lint + tests)
-4. `prepare-release-commit` — verify every package has
+5. `prepare-release-commit` — verify every package has
    `publishConfig.access=public` + `LICENSE`, write `version` to all package
    manifests, and commit
-5. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs; when
+6. `publish-dry-run` — `pnpm publish --dry-run` and inspect tarballs; when
    `dry_run=true`, stop here without publishing
-6. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the
+7. **`publish`** — `pnpm publish --tag latest` with `NPM_TOKEN` from the
    `apicity` 1Password vault
-7. `tag-push-and-github-release` — `git tag v<version>`, push `stable` + tag,
+8. `tag-push-and-github-release` — `git tag v<version>`, push `stable` + tag,
    and create or update the GitHub release page for
    `v<version>` with a flat Summary list of closed bead work since the
    previous release, excluding release workflow noise
-8. `sync-main-and-smoke-install` — fast-forward `main` to the release commit,
+9. `sync-main-and-smoke-install` — fast-forward `main` to the release commit,
    push it, then `npm install @apicity/openai@latest` in `/tmp` and
    dynamic-import
-9. `close` — close the release bead, `bd remember` the version
+10. `close` — close the release bead, `bd remember` the version
 
 ## What the formula does NOT do automatically
 

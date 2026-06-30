@@ -62,15 +62,21 @@ description = "Gas City run target for release step execution."
 default = "apicity/gastown.polecat"
 
 [[steps]]
-id = "prepare"
-title = "Prepare release: gates, version bump, dry-run"
+id = "release"
+title = "Release Apicity: gates, publish, tag, sync, close"
 metadata = { "gc.run_target" = "{{run_target}}" }
 description = '''
-Everything reversible and local for the release: load context, verify the
-release commit on `main` is green, fast-forward `stable`, bump every package
-version, and inspect the publish tarballs with --dry-run. Nothing in this
-phase touches the npm registry or the remote. When `dry_run` = true, the
-release ends here (the short-circuit at the end of the dry-run sub-step).
+Run the full release in one executable formula step. The first half is
+reversible and local: load context, verify the release commit on `main` is
+green, fast-forward `stable`, bump every package version, and inspect the
+publish tarballs with --dry-run. The second half is irreversible and
+outward-facing: publish to npm, tag + push the release commit, create/update
+the public GitHub release page, sync `main` back up to `stable`, smoke install,
+and close the release tracking bead.
+
+Keeping this as one step avoids the dispatcher handoff that can strand the
+release between "prepare" and "release". When `dry_run` = true, the release
+ends at the dry-run short-circuit before any publish, tag, or push happens.
 
 Work the sub-steps in order. Each sub-step's STOP conditions and exit
 criteria still apply.
@@ -88,7 +94,7 @@ STOP without touching npm or the remote.
 # Identify our OWN workflow root. The running prepare step bead is assigned to
 # this session and carries gc.root_bead_id (the workflow root) + a step_ref.
 self_root=$(bd list --status in_progress --assignee "$GC_SESSION_NAME" --limit 0 --json 2>/dev/null \
-  | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.prepare")][0].metadata."gc.root_bead_id" // empty')
+  | jq -r '[.[] | select(.metadata."gc.step_ref" == "mol-apicity-release.release")][0].metadata."gc.root_bead_id" // empty')
 
 # All in-progress release WORKFLOW roots for this rig. The workflow root's title
 # is exactly "mol-apicity-release"; filter to gc.kind=workflow so fix/feature
@@ -123,8 +129,8 @@ if [ -n "$conflict" ]; then
   echo "ABORT: another mol-apicity-release run is already in progress: $conflict"
   echo "Refusing to start a duplicate concurrent release (see ac-c98tc)."
   # Leave a breadcrumb on our own workflow root, then halt. Do NOT proceed to any
-  # further sub-step and do NOT run the publish phase — release needs prepare, so
-  # a non-zero exit here keeps npm and the remote untouched.
+  # further sub-step and do NOT reach the publish phase. A non-zero exit here
+  # keeps npm and the remote untouched.
   [ -n "$self_root" ] && bd update "$self_root" --set-metadata superseded=true \
     --notes "Superseded: a prior mol-apicity-release run ($conflict) is already in progress; this duplicate aborted by the prepare singleton guard." >/dev/null 2>&1 || true
   gc runtime drain-ack
@@ -420,25 +426,9 @@ dry-run when {{dry_run}} = true.
 [ "{{dry_run}}" = "true" ] && { echo "dry_run=true → stopping after dry-run"; gc runtime drain-ack; exit 0; } || true
 ```
 
-**Exit criteria:** Dry-run exits 0, every tarball inspected, ready to publish for real.'''
+**Exit criteria:** Dry-run exits 0, every tarball inspected, ready to publish for real.
 
-[[steps]]
-id = "release"
-title = "Release: publish, tag, GitHub release, sync, close"
-needs = ["prepare"]
-condition = "{{dry_run}} != true"
-metadata = { "gc.run_target" = "{{run_target}}" }
-description = '''
-Everything irreversible and outward-facing: publish to npm, tag + push the
-release commit, create/update the public GitHub release page, sync `main`
-back up to `stable` with a smoke install, and close the release tracking
-bead. This phase only runs when `dry_run` != true.
-
-Work the sub-steps in order. Each sub-step's STOP conditions and exit
-criteria still apply.
-
-
-# Sub-step 1: Publish to npm
+# Sub-step 6: Publish to npm
 
 Publish with the npm token stored in 1Password. Do not write the token to the
 repo, shell history, or logs.
@@ -483,7 +473,7 @@ the whole filter.
 
 **Exit criteria:** Every public `@apicity/*` package is visible at `{{version}}` under `latest`.
 
-# Sub-step 2: Tag, push, and update the GitHub release
+# Sub-step 7: Tag, push, and update the GitHub release
 
 Annotate the release commit, propagate it to the remote, and create or update
 the public GitHub release page for the pushed `v{{version}}` tag.
@@ -860,7 +850,7 @@ gh release view "v{{version}}"
 and the GitHub release page exists with current bead-based notes marked as the
 latest release.
 
-# Sub-step 3: Fast-forward main and smoke install
+# Sub-step 8: Fast-forward main and smoke install
 
 Propagate the release version bump back to `main` so `main` and `stable` do
 not drift after publishing, then verify a fresh consumer install resolves the
@@ -896,7 +886,7 @@ version before the next release.
 commit, the working branch is back on `stable`, and the smoke install + import
 succeed.
 
-# Sub-step 4: Close the release bead
+# Sub-step 9: Close the release bead
 
 Record the release in beads memory and close the tracking bead.
 

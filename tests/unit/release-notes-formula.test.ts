@@ -71,8 +71,8 @@ function issue(overrides: Partial<Issue>): Issue {
 }
 
 describe("mol-apicity-release workflow", () => {
-  it("keeps the release graph consolidated into the expected steps", () => {
-    expect(readStepIds()).toEqual(["prepare", "release"]);
+  it("keeps the release graph consolidated into one executable step", () => {
+    expect(readStepIds()).toEqual(["release"]);
   });
 });
 

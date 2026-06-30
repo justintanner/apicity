@@ -54,6 +54,7 @@ Method paths mirror upstream API URL paths segment-by-segment; kebab-case become
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
 pnpm run lint                    # Lint (runs build first via prelint)
+pnpm run typecheck:provider -- <name-or-path> # Fast provider typecheck; falls back to full on shared/package diffs
 pnpm run test:run                # Run tests once (Polly.js replay; no network)
 pnpm run test:affected           # Provider tests for provider-only diffs; full fallback otherwise
 pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
@@ -61,9 +62,9 @@ pnpm run test:provider -- <name-or-path> # Typecheck + replay one provider
 pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 1Password)
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run format:changed -- [paths...] # Prettier only changed or supplied files
-pnpm run dev:preflight           # format + lint + test:run (run before git push)
+pnpm run dev:preflight           # format + typecheck + lint + test:run
 pnpm run dev:preflight:changed -- [paths...] # Scoped format/lint plus full checks
-pnpm run dev:preflight:provider -- <name-or-path> # Scoped format+lint+test for one provider
+pnpm run dev:preflight:provider -- <name-or-path> # Scoped format+lint+typecheck+test for one provider
 pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
@@ -78,7 +79,10 @@ Provider-scoped commands accept either `openai`-style names or paths such as
 `pnpm -w run dev:preflight:provider` to infer the provider from pnpm's
 `INIT_CWD`. Changed-file commands infer from `origin/main...HEAD`,
 staged/unstaged changes, and untracked files, or accept explicit paths after
-`--`. Use `pnpm run ci:local` as the full repository safety gate.
+`--`. Use `pnpm run typecheck:provider -- <name-or-path>` for typecheck-only
+local iteration; it falls back to the full typecheck when the diff, including
+staged and unstaged files, touches another package or shared package/TypeScript
+config. Use `pnpm run ci:local` as the full repository safety gate.
 
 ## Adding a New Endpoint
 

@@ -16,6 +16,10 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "query": "justin"
     }
+  },
+  "POST users.getCurrentAccount": {
+    "source": "dropbox/current-token-baseline",
+    "payload": null
   }
 };
 

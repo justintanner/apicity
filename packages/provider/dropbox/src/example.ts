@@ -10,7 +10,14 @@ export interface EndpointExample {
   payload: unknown;
 }
 
-const EXAMPLES: Record<string, EndpointExample> = {};
+const EXAMPLES: Record<string, EndpointExample> = {
+  "POST check.user": {
+    "source": "dropbox/check-user",
+    "payload": {
+      "query": "justin"
+    }
+  }
+};
 
 export default EXAMPLES;
 

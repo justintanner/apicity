@@ -2,6 +2,9 @@ export { createDropbox } from "./dropbox";
 export { DropboxError } from "./types";
 
 export type {
+  DropboxCheckNamespace,
+  DropboxCheckUserRequest,
+  DropboxCheckUserResponse,
   DropboxDeletedMetadata,
   DropboxFileMetadata,
   DropboxFilesCreateFolderV2Request,
@@ -43,6 +46,8 @@ export type {
 
 export {
   DropboxBodyInitSchema,
+  DropboxCheckUserRequestSchema,
+  DropboxCheckUserResponseSchema,
   DropboxDeletedMetadataSchema,
   DropboxFileMetadataSchema,
   DropboxFilesCreateFolderV2RequestSchema,

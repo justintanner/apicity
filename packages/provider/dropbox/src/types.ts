@@ -30,6 +30,15 @@ export interface DropboxOptions {
   fetch?: typeof fetch;
 }
 
+export interface DropboxCheckUserRequest {
+  query: string;
+}
+
+export interface DropboxCheckUserResponse {
+  result: string;
+  [key: string]: unknown;
+}
+
 export interface DropboxMethod<Req, Res> {
   (req: Req, signal?: AbortSignal): Promise<Res>;
   schema: z.ZodType<Req>;
@@ -262,6 +271,10 @@ export interface DropboxSharingListSharedLinksResponse {
   [key: string]: unknown;
 }
 
+export interface DropboxCheckNamespace {
+  user: DropboxMethod<DropboxCheckUserRequest, DropboxCheckUserResponse>;
+}
+
 export interface DropboxUsersNamespace {
   getCurrentAccount: DropboxNoRequestMethod<DropboxUsersGetCurrentAccountResponse>;
 }
@@ -311,6 +324,7 @@ export interface DropboxSharingNamespace {
 }
 
 export interface DropboxProvider {
+  check: DropboxCheckNamespace;
   users: DropboxUsersNamespace;
   files: DropboxFilesNamespace;
   sharing: DropboxSharingNamespace;

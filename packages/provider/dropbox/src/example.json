@@ -1,1 +1,8 @@
-{}
+{
+  "POST check.user": {
+    "source": "dropbox/check-user",
+    "payload": {
+      "query": "justin"
+    }
+  }
+}

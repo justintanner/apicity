@@ -14,6 +14,16 @@ export const DropboxOptionsSchema = z.object({
   fetch: z.custom<typeof fetch>().optional(),
 });
 
+export const DropboxCheckUserRequestSchema = z.object({
+  query: z.string(),
+});
+
+export const DropboxCheckUserResponseSchema = z
+  .object({
+    result: z.string(),
+  })
+  .passthrough();
+
 export const DropboxNameSchema = z
   .object({
     given_name: z.string(),

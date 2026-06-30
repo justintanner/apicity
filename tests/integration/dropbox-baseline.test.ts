@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { createDropbox, DropboxError } from "@apicity/dropbox";
 import {
+  getPollyMode,
   recordingExists,
   setupPolly,
   teardownPolly,
@@ -11,7 +12,9 @@ import {
 const RECORDING_NAME = ["dropbox", "baseline"].join("/");
 const TEST_ROOT = "/apicity-tests/dropbox-baseline-v1";
 const canRunLiveBaseline =
-  recordingExists(RECORDING_NAME) || Boolean(process.env.DROPBOX_OAUTH_TOKEN);
+  recordingExists(RECORDING_NAME) ||
+  (getPollyMode() !== "replay" &&
+    process.env.DROPBOX_RECORD_FULL_BASELINE === "1");
 
 interface FetchCall {
   url: string;

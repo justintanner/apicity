@@ -1,4 +1,5 @@
 provider	dotPath	method	fullUrl	docsUrl
+dropbox	check.user	POST	https://api.dropboxapi.com/2/check/user	https://www.dropbox.com/developers/documentation/http/documentation#check-user
 dropbox	users.getCurrentAccount	POST	https://api.dropboxapi.com/2/users/get_current_account	https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
 dropbox	files.listFolder	POST	https://api.dropboxapi.com/2/files/list_folder	https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder
 dropbox	files.listFolderContinue	POST	https://api.dropboxapi.com/2/files/list_folder/continue	https://www.dropbox.com/developers/documentation/http/documentation#files-list_folder-continue

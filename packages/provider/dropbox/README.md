@@ -32,7 +32,24 @@ Tokens are only sent in the `Authorization: Bearer ...` header.
 
 ## API Reference
 
-12 endpoints across 3 groups. Each method mirrors an upstream URL path.
+13 endpoints across 4 groups. Each method mirrors an upstream URL path.
+
+### check
+
+<details>
+<summary><code>POST</code> <b><code>dropbox.check.user</code></b></summary>
+
+<code>POST https://api.dropboxapi.com/2/check/user</code>
+
+[Upstream docs ↗](https://www.dropbox.com/developers/documentation/http/documentation#check-user)
+
+```typescript
+const res = await dropbox.check.user({ /* ... */ });
+```
+
+Source: [`packages/provider/dropbox/src/dropbox.ts`](src/dropbox.ts)
+
+</details>
 
 ### files
 

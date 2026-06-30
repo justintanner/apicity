@@ -1,6 +1,8 @@
 import { attachExamples } from "./example";
 import { DropboxError } from "./types";
 import type {
+  DropboxCheckUserRequest,
+  DropboxCheckUserResponse,
   DropboxFilesCreateFolderV2Request,
   DropboxFilesCreateFolderV2Response,
   DropboxFilesDeleteV2Request,
@@ -25,6 +27,7 @@ import type {
   DropboxUsersGetCurrentAccountResponse,
 } from "./types";
 import {
+  DropboxCheckUserRequestSchema,
   DropboxFilesCreateFolderV2RequestSchema,
   DropboxFilesDeleteV2RequestSchema,
   DropboxFilesDownloadRequestSchema,
@@ -252,6 +255,23 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
     }
   }
 
+  // POST https://api.dropboxapi.com/2/check/user
+  // Docs: https://www.dropbox.com/developers/documentation/http/documentation#check-user
+  const checkUser = Object.assign(
+    async (
+      req: DropboxCheckUserRequest,
+      signal?: AbortSignal
+    ): Promise<DropboxCheckUserResponse> => {
+      return makeJsonRequest<DropboxCheckUserResponse>(
+        "POST",
+        "/check/user",
+        req,
+        signal
+      );
+    },
+    { schema: DropboxCheckUserRequestSchema }
+  );
+
   // POST https://api.dropboxapi.com/2/users/get_current_account
   // Docs: https://www.dropbox.com/developers/documentation/http/documentation#users-get_current_account
   const getCurrentAccount = Object.assign(
@@ -453,6 +473,9 @@ export function createDropbox(opts: DropboxOptions = {}): DropboxProvider {
   );
 
   return attachExamples({
+    check: {
+      user: checkUser,
+    },
     users: {
       getCurrentAccount,
     },

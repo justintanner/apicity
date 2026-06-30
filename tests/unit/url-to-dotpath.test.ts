@@ -20,10 +20,18 @@ describe("urlToDotPath", () => {
     expect(
       urlToDotPath("/v1/batches/{batch_id}/cancel?limit=10#details")
     ).toEqual(["v1", "batches", "cancel"]);
+    expect(
+      urlToDotPath("https://queue.fal.run/v1/files?limit=10#details")
+    ).toEqual(["queue", "v1", "files"]);
     expect(urlToDotPath("/v1/files/{file_id}/content/{query}")).toEqual([
       "v1",
       "files",
       "content",
+    ]);
+    expect(urlToDotPath("/v1/models/{model}:predict")).toEqual([
+      "v1",
+      "models",
+      "predict",
     ]);
   });
 
@@ -52,6 +60,11 @@ describe("urlToDotPath", () => {
         keepFullHostname: true,
       })
     ).toEqual(["catbox", "moe", "user"]);
+    expect(
+      urlToDotPath("https://tmpfiles.org/upload", {
+        keepFullHostname: true,
+      })
+    ).toEqual(["tmpfiles", "org", "upload"]);
   });
 
   it("ignores configured provider-owned host labels", () => {
@@ -60,6 +73,11 @@ describe("urlToDotPath", () => {
         ignoredHostLabels: ["queue"],
       })
     ).toEqual(["requests"]);
+    expect(
+      urlToDotPath("https://kieai.erweima.ai/v1/jobs", {
+        ignoredHostLabels: ["kieai"],
+      })
+    ).toEqual(["v1", "jobs"]);
   });
 
   it("filters conventional server-script filenames from paths", () => {
@@ -68,6 +86,12 @@ describe("urlToDotPath", () => {
         keepFullHostname: true,
       })
     ).toEqual(["tmpfiles", "org", "upload"]);
+    expect(
+      urlToDotPath("https://catbox.moe/user/API.PHP", {
+        keepFullHostname: true,
+      })
+    ).toEqual(["catbox", "moe", "user"]);
+    expect(urlToDotPath("/v1/hooks/callback.cgi")).toEqual(["v1", "hooks"]);
   });
 
   it("returns null for invalid or empty URLs", () => {

@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-225 endpoints across 25 groups. Each method mirrors an upstream URL path.
+301 endpoints across 27 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -871,6 +871,96 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.batchCalling.cancel</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}/cancel</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/batch-calling/cancel)
+
+```typescript
+const res = await elevenlabs.v1.convai.batchCalling.cancel({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.batchCalling.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/batch-calling/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.batchCalling.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.batchCalling.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/batch-calling/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.batchCalling.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.batchCalling.retry</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/batch-calling/{batchId}/retry</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/batch-calling/retry)
+
+```typescript
+const res = await elevenlabs.v1.convai.batchCalling.retry({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.batchCalling.submit</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/batch-calling/submit</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/batch-calling/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.batchCalling.submit({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.batchCalling.workspace</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/batch-calling/workspace</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/batch-calling/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.batchCalling.workspace({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>elevenlabs.v1.convai.conversation.getSignedUrl</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/convai/conversation/get-signed-url</code>
@@ -1104,6 +1194,81 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.conversations.tags.unassign({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.environmentVariables.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/environment-variables</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/environment-variables/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.environmentVariables.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.environmentVariables.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/environment-variables/{envVarId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/environment-variables/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.environmentVariables.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.environmentVariables.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/environment-variables</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/environment-variables/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.environmentVariables.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.environmentVariables.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/environment-variables/{envVarId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/environment-variables/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.environmentVariables.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.exotel.outboundCall</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/exotel/outbound-call</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/exotel/outbound-call)
+
+```typescript
+const res = await elevenlabs.v1.convai.exotel.outboundCall({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1471,6 +1636,216 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.llm.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/llm/list</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/llm/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.llm.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.llmUsage.calculate</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/llm-usage/calculate</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/llm/calculate)
+
+```typescript
+const res = await elevenlabs.v1.convai.llmUsage.calculate({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.mcpServers.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/mcp-servers</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.mcpServers.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.mcpServers.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.mcpServers.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/mcp-servers</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.mcpServers.toolApprovals.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-approvals</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/approval-policies/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.toolApprovals.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.mcpServers.toolApprovals.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-approvals/{toolName}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/approval-policies/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.toolApprovals.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.mcpServers.toolConfigs.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.mcpServers.toolConfigs.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.mcpServers.toolConfigs.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.mcpServers.toolConfigs.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tool-configs/{toolName}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/tool-configuration/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.toolConfigs.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.mcpServers.tools</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}/tools</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/list-tools)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.tools({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.mcpServers.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/mcp-servers/{mcpServerId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/mcp/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.mcpServers.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.convai.phoneNumbers.create</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/convai/phone-numbers</code>
@@ -1531,6 +1906,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.phoneNumbers.sipMessages</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}/sip-messages</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/phone-numbers/get-sip-messages)
+
+```typescript
+const res = await elevenlabs.v1.convai.phoneNumbers.sipMessages({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.phoneNumbers.update</code></b></summary>
 
 <code>PATCH https://api.elevenlabs.io/v1/convai/phone-numbers/{phoneNumberId}</code>
@@ -1546,6 +1936,156 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.secrets.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/secrets</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/secrets/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.secrets.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.secrets.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/secrets/{secretId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/secrets/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.secrets.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.secrets.dependencies</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/secrets/{secretId}/dependencies/{resourceType}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/secrets/get-dependencies)
+
+```typescript
+const res = await elevenlabs.v1.convai.secrets.dependencies({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.secrets.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/secrets/{secretId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/secrets/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.secrets.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.secrets.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/secrets</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/secrets/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.secrets.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.secrets.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/secrets/{secretId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/secrets/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.secrets.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.settings</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/settings</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.settings({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.settings.dashboard</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/settings/dashboard</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/dashboard/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.settings.dashboard({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.settings.dashboard.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/settings/dashboard</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/dashboard/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.settings.dashboard.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.settings.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/settings</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.settings.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>elevenlabs.v1.convai.sipTrunk.outboundCall</code></b></summary>
 
 <code>POST https://api.elevenlabs.io/v1/convai/sip-trunk/outbound-call</code>
@@ -1554,6 +2094,81 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.sipTrunk.outboundCall({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.tags.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/tags</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/create)
+
+```typescript
+const res = await elevenlabs.v1.convai.tags.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.tags.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/tags/{tagId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.tags.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.tags.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/tags/{tagId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.tags.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.tags.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/tags</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.tags.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.tags.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/tags/{tagId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/conversations/tags/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.tags.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -1719,6 +2334,126 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.convai.twilio.outboundCall({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.twilio.registerCall</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/twilio/register-call</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/twilio/register-call)
+
+```typescript
+const res = await elevenlabs.v1.convai.twilio.registerCall({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.users.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/users</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/users/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.users.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.whatsapp.outboundCall</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/whatsapp/outbound-call</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/whats-app/outbound-call)
+
+```typescript
+const res = await elevenlabs.v1.convai.whatsapp.outboundCall({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.convai.whatsapp.outboundMessage</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/convai/whatsapp/outbound-message</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/whats-app/outbound-message)
+
+```typescript
+const res = await elevenlabs.v1.convai.whatsapp.outboundMessage({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.convai.whatsappAccounts.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/whats-app/accounts/delete)
+
+```typescript
+const res = await elevenlabs.v1.convai.whatsappAccounts.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.whatsappAccounts.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/whats-app/accounts/get)
+
+```typescript
+const res = await elevenlabs.v1.convai.whatsappAccounts.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.convai.whatsappAccounts.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/convai/whatsapp-accounts</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/whats-app/accounts/list)
+
+```typescript
+const res = await elevenlabs.v1.convai.whatsappAccounts.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.convai.whatsappAccounts.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/convai/whatsapp-accounts/{phoneNumberId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/whats-app/accounts/update)
+
+```typescript
+const res = await elevenlabs.v1.convai.whatsappAccounts.update({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -2340,6 +3075,83 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.pronunciationDictionaries.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### serviceAccounts
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.serviceAccounts.apiKeys.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/create)
+
+```typescript
+const res = await elevenlabs.v1.serviceAccounts.apiKeys.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.serviceAccounts.apiKeys.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys/{apiKeyId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/delete)
+
+```typescript
+const res = await elevenlabs.v1.serviceAccounts.apiKeys.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.serviceAccounts.apiKeys.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/list)
+
+```typescript
+const res = await elevenlabs.v1.serviceAccounts.apiKeys.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.serviceAccounts.apiKeys.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/service-accounts/{serviceAccountUserId}/api-keys/{apiKeyId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/service-accounts/api-keys/update)
+
+```typescript
+const res = await elevenlabs.v1.serviceAccounts.apiKeys.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.serviceAccounts.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/service-accounts</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/service-accounts/list)
+
+```typescript
+const res = await elevenlabs.v1.serviceAccounts.list({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
@@ -3541,6 +4353,338 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.workspace.analytics.requests({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.workspace.auditLogs</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/workspace/audit-logs</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/audit-logs/list)
+
+```typescript
+const res = await elevenlabs.v1.workspace.auditLogs({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.authConnections.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/auth-connections</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/auth-connections/create)
+
+```typescript
+const res = await elevenlabs.v1.workspace.authConnections.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.workspace.authConnections.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/workspace/auth-connections/{authConnectionId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/auth-connections/delete)
+
+```typescript
+const res = await elevenlabs.v1.workspace.authConnections.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.workspace.authConnections.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/workspace/auth-connections</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/auth-connections/list)
+
+```typescript
+const res = await elevenlabs.v1.workspace.authConnections.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.workspace.authConnections.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/workspace/auth-connections/{authConnectionId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/auth-connections/update)
+
+```typescript
+const res = await elevenlabs.v1.workspace.authConnections.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.workspace.groups.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/workspace/groups</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/groups/list)
+
+```typescript
+const res = await elevenlabs.v1.workspace.groups.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.groups.members.add</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/groups/{groupId}/members</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/groups/members/add)
+
+```typescript
+const res = await elevenlabs.v1.workspace.groups.members.add({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.groups.members.remove</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/groups/{groupId}/members/remove</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/groups/members/remove)
+
+```typescript
+const res = await elevenlabs.v1.workspace.groups.members.remove({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.workspace.groups.search</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/workspace/groups/search</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/groups/search)
+
+```typescript
+const res = await elevenlabs.v1.workspace.groups.search({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.invites.add</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/invites/add</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/invites/create)
+
+```typescript
+const res = await elevenlabs.v1.workspace.invites.add({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.invites.addBulk</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/invites/add-bulk</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/invites/create-batch)
+
+```typescript
+const res = await elevenlabs.v1.workspace.invites.addBulk({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.workspace.invites.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/workspace/invites</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/invites/delete)
+
+```typescript
+const res = await elevenlabs.v1.workspace.invites.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.members.update</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/members</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/members/update)
+
+```typescript
+const res = await elevenlabs.v1.workspace.members.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.workspace.resources.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/workspace/resources/{resourceId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/resources/get)
+
+```typescript
+const res = await elevenlabs.v1.workspace.resources.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.resources.share</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/resources/{resourceId}/share</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/resources/share)
+
+```typescript
+const res = await elevenlabs.v1.workspace.resources.share({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.resources.unshare</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/resources/{resourceId}/unshare</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspace/resources/unshare)
+
+```typescript
+const res = await elevenlabs.v1.workspace.resources.unshare({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspace.webhooks.create</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspace/webhooks</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/webhooks/create)
+
+```typescript
+const res = await elevenlabs.v1.workspace.webhooks.create({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>DELETE</code> <b><code>elevenlabs.v1.workspace.webhooks.delete</code></b></summary>
+
+<code>DELETE https://api.elevenlabs.io/v1/workspace/webhooks/{webhookId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/webhooks/delete)
+
+```typescript
+const res = await elevenlabs.v1.workspace.webhooks.delete({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.workspace.webhooks.list</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/workspace/webhooks</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/webhooks/list)
+
+```typescript
+const res = await elevenlabs.v1.workspace.webhooks.list({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>elevenlabs.v1.workspace.webhooks.update</code></b></summary>
+
+<code>PATCH https://api.elevenlabs.io/v1/workspace/webhooks/{webhookId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/webhooks/update)
+
+```typescript
+const res = await elevenlabs.v1.workspace.webhooks.update({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### workspaces
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspaces.apiKeys.disable</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspaces/api-keys/disable</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspaces/api-keys/disable)
+
+```typescript
+const res = await elevenlabs.v1.workspaces.apiKeys.disable({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>elevenlabs.v1.workspaces.apiKeys.thirdPartyDisabling</code></b></summary>
+
+<code>POST https://api.elevenlabs.io/v1/workspaces/api-keys/third-party-disabling</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/workspaces/api-keys/third-party-disabling)
+
+```typescript
+const res = await elevenlabs.v1.workspaces.apiKeys.thirdPartyDisabling({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

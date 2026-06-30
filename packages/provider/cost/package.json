@@ -1,6 +1,6 @@
 {
   "name": "@apicity/cost",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "description": "Pure-table cost & token estimation across @apicity providers — zero network calls, all rates bundled.",
   "license": "MIT",
   "repository": {

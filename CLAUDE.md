@@ -54,7 +54,7 @@ pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 
 pnpm run dev:rerecord -- <file>  # Destructive re-record (guarded by tests/record.mjs)
 pnpm run dev:preflight           # format + typecheck + lint + test:run (run before `git push`)
 pnpm run dev:preflight:provider <name> # format + lint + ONE provider's typecheck&tests (fast loop; full suite is CI's job)
-pnpm run ci:local                # build + lint + test:run (exact CI mirror)
+pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
 
 # Harness viewer + screenshots
 pnpm run harness                 # HAR viewer at localhost:3475 (all recordings)
@@ -243,8 +243,9 @@ wired into `dev:preflight`, so you don't need a separate hook step.
 ### CI jobs
 
 - **test** (push + PR) — guards against cassette re-recording
-  (`POLLY_MODE` must be `replay`), then audit + build + verify artifacts + lint +
-  integration tests via Polly.js replay. Equivalent to `ci:local`.
+  (`POLLY_MODE` must be `replay`), then audit + generated-example drift check +
+  build + verify artifacts + lint + integration tests via Polly.js replay.
+  Equivalent to `ci:local`.
 - **endpoint-telegram** (push only) — diffs recordings since the previous push
   and sends one Telegram message per changed recording (full headers, payloads,
   response, inline media). Skips cleanly when nothing changed.

@@ -60,7 +60,7 @@ pnpm run dev:record -- <file>    # Safe record for a NEW test (record-missing + 
 pnpm run dev:rerecord -- <file>  # Destructive re-record (file filter required)
 pnpm run dev:preflight           # format + lint + test:run (run before git push)
 pnpm run dev:preflight:provider -- <name> # Scoped format+lint+test for ONE provider (fast; avoids whole-tree prettier)
-pnpm run ci:local                # build + lint + test:run (exact CI mirror)
+pnpm run ci:local                # audit + gen:examples:check + build + lint + test:run
 pnpm run harness:telegram -- --dry-run # Preview per-endpoint Telegram messages (changed recordings)
 pnpm run harness:telegram -- --all <pattern> --dry-run # Preview ANY recording by name/path substring
 

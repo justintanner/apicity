@@ -236,6 +236,12 @@ MCP server's `--paygate-secret-file` wiring.
   Integration tests record/replay via Polly.js (no keys needed for replay).
 - **Provider-scoped loop** — use `pnpm run test:provider -- <name-or-path>`
   for one provider's typecheck + replay tests, and
+  `pnpm run test:affected` to auto-select provider tests from the current git
+  diff when every changed file belongs to provider packages, provider
+  integration tests, or provider recordings. It falls back to the full
+  `pnpm run test:run` gate for shared scripts/config, unit or functional tests,
+  docs, package metadata, or other ambiguous changes. Run
+  `pnpm run test:run` directly when you need the explicit full replay suite.
   `pnpm run dev:preflight:provider -- <name-or-path>` for scoped
   format/lint/typecheck/tests. `<name-or-path>` can be `openai`,
   `packages/provider/openai/src/openai.ts`, or a matching

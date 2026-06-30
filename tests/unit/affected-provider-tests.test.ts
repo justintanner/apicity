@@ -16,6 +16,11 @@ describe("normalizeProjectPath", () => {
       normalizeProjectPath(" ./tests\\integration\\xai-image.test.ts ")
     ).toBe("tests/integration/xai-image.test.ts");
   });
+
+  it("trims blank changed paths to empty strings", () => {
+    expect(normalizeProjectPath("")).toBe("");
+    expect(normalizeProjectPath("   \t  ")).toBe("");
+  });
 });
 
 describe("detectProviderForChangedFile", () => {
@@ -99,6 +104,21 @@ describe("detectProviderForChangedFile", () => {
       )
     ).toBe("");
   });
+
+  it("normalizes changed paths before direct detection", () => {
+    expect(
+      detectProviderForChangedFile(
+        ".\\packages\\provider\\openai\\src\\openai.ts",
+        providers
+      )
+    ).toBe("openai");
+    expect(
+      detectProviderForChangedFile(
+        "./tests\\recordings\\free-media-upload_3991279299\\upload\\recording.har",
+        providers
+      )
+    ).toBe("free-media-upload");
+  });
 });
 
 describe("classifyChangedFiles", () => {
@@ -178,6 +198,39 @@ describe("classifyChangedFiles", () => {
       fullReasons: [
         "packages/provider/x-tools/src/index.ts",
         "tests/integration/xylophone.test.ts",
+      ],
+    });
+  });
+
+  it("ignores blank changed paths", () => {
+    expect(
+      classifyChangedFiles(
+        ["", "   ", "\t", "./packages/provider/openai/src/openai.ts"],
+        providers
+      )
+    ).toEqual({
+      mode: "providers",
+      providers: ["openai"],
+      fullReasons: [],
+    });
+  });
+
+  it("keeps detected providers when unknown test slugs require full mode", () => {
+    expect(
+      classifyChangedFiles(
+        [
+          "./packages/provider/openai/src/openai.ts",
+          ".\\tests\\integration\\unknown-media.test.ts",
+          "tests/recordings/not-a-provider_3991279299/upload/recording.har",
+        ],
+        providers
+      )
+    ).toEqual({
+      mode: "full",
+      providers: ["openai"],
+      fullReasons: [
+        "tests/integration/unknown-media.test.ts",
+        "tests/recordings/not-a-provider_3991279299/upload/recording.har",
       ],
     });
   });

@@ -133,6 +133,29 @@ describe("matchHarEntryLenient", () => {
     ).toBe(true);
   });
 
+  it("matches version-normalized paths with concrete placeholder segments", () => {
+    expect(
+      matchHarEntryLenient(
+        harEntry("https://runtime.example.com/files/file-abc/content"),
+        endpointRow({
+          fullUrl: "https://api.openai.com/v1/files/{file_id}/content",
+        })
+      )
+    ).toBe(true);
+  });
+
+  it("matches list paths when an overloaded placeholder segment is omitted", () => {
+    expect(
+      matchHarEntryLenient(
+        harEntry("https://api.openai.com/v1/batches?limit=2"),
+        endpointRow({
+          dotPath: "v1.batches",
+          fullUrl: "https://api.openai.com/v1/batches/{idOrOpts}",
+        })
+      )
+    ).toBe(true);
+  });
+
   it("strips query markers before path comparison", () => {
     expect(
       matchHarEntryLenient(
@@ -145,6 +168,19 @@ describe("matchHarEntryLenient", () => {
         })
       )
     ).toBe(true);
+  });
+
+  it("rejects method mismatches before lenient path comparison", () => {
+    expect(
+      matchHarEntryLenient(
+        harEntry("https://fal.run/fal-ai/fast-sdxl", "POST"),
+        endpointRow({
+          provider: "fal",
+          dotPath: "v1.falAi.fastSdxl",
+          fullUrl: "https://api.fal.ai/v1/fal-ai/fast-sdxl",
+        })
+      )
+    ).toBe(false);
   });
 });
 
@@ -216,6 +252,12 @@ describe("findMatchingRow", () => {
   });
 
   it("returns null when neither strict nor lenient matching finds a row", () => {
+    expect(
+      findMatchingRow(harEntry("https://api.openai.com/v1/models"), [], {
+        provider: "openai",
+      })
+    ).toBeNull();
+
     expect(
       findMatchingRow(
         harEntry("https://api.openai.com/v1/models"),

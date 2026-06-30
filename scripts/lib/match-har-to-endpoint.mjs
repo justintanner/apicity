@@ -11,10 +11,11 @@
  *      Some providers route the same factory function through multiple host
  *      shapes (fal: `api.fal.ai/v1/<model>` in the TSV vs `fal.run/<model>`
  *      at runtime). The lenient rule: drop a leading API version segment and
- *      `{paramName}` placeholders from the TSV path; pass if the resulting
- *      TSV segments form a contiguous subsequence of the HAR path's segments.
- *      When several provider rows match leniently, the row with the longest
- *      placeholder-stripped path wins (most specific).
+ *      treat `{paramName}` placeholders in the TSV path as optional
+ *      single-segment wildcards; pass if the resulting TSV pattern matches a
+ *      contiguous window of the HAR path's segments. When several provider
+ *      rows match leniently, the row with the longest placeholder-stripped
+ *      path wins (most specific).
  */
 
 export function compileTsvUrlPattern(fullUrl) {
@@ -39,11 +40,9 @@ export function matchHarEntryLenient(entry, tsvRow) {
     return false;
   }
   const harSegs = comparablePathSegments(entry.request.url);
-  const tsvSegs = comparablePathSegments(tsvRow.fullUrl).filter(
-    (s) => !isPlaceholder(s)
-  );
-  if (tsvSegs.length === 0) return harSegs.length === 0;
-  return isContiguousSubsequence(tsvSegs, harSegs);
+  const tsvSegs = comparablePathSegments(tsvRow.fullUrl);
+  if (!tsvSegs.some((s) => !isPlaceholder(s))) return harSegs.length === 0;
+  return matchesContiguousSegmentPattern(tsvSegs, harSegs);
 }
 
 /**
@@ -87,18 +86,26 @@ function isPlaceholder(seg) {
   return seg.startsWith("{") && seg.endsWith("}");
 }
 
-function isContiguousSubsequence(needle, haystack) {
-  if (needle.length === 0) return true;
-  if (needle.length > haystack.length) return false;
-  outer: for (
-    let start = 0;
-    start <= haystack.length - needle.length;
-    start++
-  ) {
-    for (let i = 0; i < needle.length; i++) {
-      if (haystack[start + i] !== needle[i]) continue outer;
+function matchesContiguousSegmentPattern(pattern, haystack) {
+  if (pattern.length === 0) return true;
+  const literalCount = pattern.filter((s) => !isPlaceholder(s)).length;
+  if (literalCount > haystack.length) return false;
+  for (let start = 0; start <= haystack.length; start++) {
+    let indexes = new Set([start]);
+    for (const segment of pattern) {
+      const nextIndexes = new Set();
+      for (const index of indexes) {
+        if (isPlaceholder(segment)) {
+          nextIndexes.add(index);
+          if (index < haystack.length) nextIndexes.add(index + 1);
+        } else if (haystack[index] === segment) {
+          nextIndexes.add(index + 1);
+        }
+      }
+      indexes = nextIndexes;
+      if (indexes.size === 0) break;
     }
-    return true;
+    if (indexes.size > 0) return true;
   }
   return false;
 }

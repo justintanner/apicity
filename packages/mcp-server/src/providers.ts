@@ -9,7 +9,13 @@ import { loadCostHelpers } from "./cost.js";
 
 export interface ProviderSpec {
   envVar: string;
-  optionKey: "apiKey" | "apiToken" | "accessKeyId" | "accessToken" | "botToken";
+  optionKey:
+    | "apiKey"
+    | "apiToken"
+    | "accessKeyId"
+    | "accessToken"
+    | "botToken"
+    | "oauthToken";
   importPath: string;
   factoryName: string;
   // Extra env vars (beyond `envVar`) this provider needs resolved from the
@@ -99,6 +105,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     optionKey: "apiToken",
     importPath: "@apicity/dolthub",
     factoryName: "createDoltHub",
+  },
+  dropbox: {
+    envVar: "DROPBOX_OAUTH_TOKEN",
+    optionKey: "oauthToken",
+    importPath: "@apicity/dropbox",
+    factoryName: "createDropbox",
   },
   simplefunctions: {
     envVar: "SIMPLEFUNCTIONS_API_KEY",

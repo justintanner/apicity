@@ -6,14 +6,14 @@ import {
 } from "../harness";
 import { createKie } from "@apicity/kie";
 
-describe("kie file uploads", () => {
+describe("kie upload endpoints", () => {
   let ctx: PollyContext;
 
   afterEach(async () => {
     await teardownPolly(ctx);
   });
 
-  it("should upload file stream and return download URL", async () => {
+  it("uploads a file stream through post.api.fileStreamUpload", async () => {
     ctx = setupPollyForFileUploads("kie/file-uploads/stream");
     const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
@@ -40,7 +40,7 @@ describe("kie file uploads", () => {
     expect(result.data?.downloadUrl).toMatch(/^https:\/\//);
   });
 
-  it("should upload base64 encoded file", async () => {
+  it("uploads base64 content through post.api.fileBase64Upload", async () => {
     ctx = setupPollyForFileUploads("kie/file-uploads/base64");
     const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "test-key",
@@ -60,24 +60,60 @@ describe("kie file uploads", () => {
     expect(result.data?.downloadUrl).toBeTruthy();
   });
 
-  it("should validate payload schema for file uploads", async () => {
+  it("validates upload endpoint schemas", async () => {
     const provider = createKie({
       apiKey: "test-key",
     });
 
-    // Valid payload
-    const validResult = provider.post.api.fileStreamUpload.schema.safeParse({
+    const validStream = provider.post.api.fileStreamUpload.schema.safeParse({
       file: new Blob(["test"]),
       filename: "test.bin",
       uploadPath: "uploads",
     });
-    expect(validResult.success).toBe(true);
+    expect(validStream.success).toBe(true);
 
-    // Invalid payload (missing required fields)
-    const invalidResult = provider.post.api.fileStreamUpload.schema.safeParse(
+    const invalidStream = provider.post.api.fileStreamUpload.schema.safeParse(
       {}
     );
-    expect(invalidResult.success).toBe(false);
-    expect(invalidResult.error?.issues.length).toBeGreaterThan(0);
+    expect(invalidStream.success).toBe(false);
+    expect(invalidStream.error?.issues.length).toBeGreaterThan(0);
+
+    const validUrl = provider.post.api.fileUrlUpload.schema.safeParse({
+      fileUrl: "https://example.com/image.png",
+      uploadPath: "images",
+      fileName: "image.png",
+    });
+    expect(validUrl.success).toBe(true);
+
+    const invalidUrl = provider.post.api.fileUrlUpload.schema.safeParse({
+      uploadPath: "images",
+    });
+    expect(invalidUrl.success).toBe(false);
+    expect(
+      invalidUrl.error?.issues.some((issue) => issue.path.includes("fileUrl"))
+    ).toBe(true);
+
+    const validBase64 = provider.post.api.fileBase64Upload.schema.safeParse({
+      base64Data: "SGVsbG8=",
+      uploadPath: "uploads",
+      fileName: "hello.txt",
+      mimeType: "text/plain",
+    });
+    expect(validBase64.success).toBe(true);
+
+    const invalidBase64 = provider.post.api.fileBase64Upload.schema.safeParse(
+      {}
+    );
+    expect(invalidBase64.success).toBe(false);
+    expect(
+      invalidBase64.error?.issues.some((issue) =>
+        issue.path.includes("base64Data")
+      )
+    ).toBe(true);
+    expect(
+      invalidBase64.error?.issues.some((issue) =>
+        issue.path.includes("uploadPath")
+      )
+    ).toBe(true);
   });
 });

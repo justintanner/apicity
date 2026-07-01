@@ -42,11 +42,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST api.fileBase64Upload": {
-    "source": "kie/file-base64-upload",
+    "source": "kie/file-uploads/base64",
     "payload": {
-      "base64Data": "SGVsbG8gV29ybGQ=",
-      "uploadPath": "documents/test-uploads",
-      "fileName": "test.txt"
+      "base64Data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFCcSAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      "uploadPath": "images/test-uploads",
+      "fileName": "test-base64.png",
+      "mimeType": "image/png"
     }
   },
   "POST api.v1.common.downloadUrl": {

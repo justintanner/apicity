@@ -143,22 +143,24 @@ console.log(result.usage);
 
 ## Imagine Files API integration
 
-xAI Imagine image and video endpoints can reference private Files API assets
-directly and can persist generated assets back to Files storage.
+xAI Imagine image and video endpoints can reference private Files API
+assets directly and can persist generated assets back to Files storage.
 
-- Inputs: anywhere Imagine accepts a public URL or base64 image/video, pass a
-  stored `file_id` instead. Apicity accepts the raw REST shape
+- Inputs: anywhere Imagine accepts a public URL or base64 image/video,
+  pass a stored `file_id` instead. Apicity accepts the raw REST shape
   (`image: { file_id }`, `images: [{ file_id }]`,
-  `video: { file_id }`, `reference_images: [{ file_id }]`) plus convenience
-  aliases (`image_file_id`, `image_file_ids`, `video_file_id`, and
-  `reference_image_file_ids`) that are normalized before the HTTP request.
-- Outputs: pass `storage_options` with a required `filename` to persist the
-  generated image or video. Omit `public_url` or set it to `false` for a
-  private file; set `public_url: true` or
+  `video: { file_id }`, `reference_images: [{ file_id }]`) plus
+  convenience aliases (`image_file_id`, `image_file_ids`,
+  `video_file_id`, and `reference_image_file_ids`) that are normalized
+  before the HTTP request.
+- Outputs: pass `storage_options` with a required `filename` to persist
+  the generated image or video. Omit `public_url` or set it to `false`
+  for a private file; set `public_url: true` or
   `public_url: { expires_after: 86400 }` to create a shareable URL.
-- Responses still include the default ephemeral `imgen.x.ai` or `vidgen.x.ai`
-  generation URL. When storage is requested, the persistent Files metadata is
-  returned as `file_output` on the generated image or completed video.
+- Responses still include the default ephemeral `imgen.x.ai` or
+  `vidgen.x.ai` generation URL. When storage is requested, the
+  persistent Files metadata is returned as `file_output` on the
+  generated image or completed video.
 
 ```typescript
 const gen = await xai.post.v1.images.generations({

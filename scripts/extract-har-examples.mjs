@@ -37,6 +37,20 @@ const MODE = args.has("--check")
 const STRING_TRUNCATE_LIMIT = 256;
 
 const STATIC_EXAMPLES_BY_PROVIDER = {
+  xai: {
+    "GET v1.files": {
+      source: "static:xai-files-public-url-filter",
+      payload: { filter: "public_url != null", limit: 10 },
+    },
+    "POST v1.files.publicUrl": {
+      source: "static:xai-files-public-url-create",
+      payload: { expires_after: 86400 },
+    },
+    "POST v1.files.publicUrl.revoke": {
+      source: "static:xai-files-public-url-revoke",
+      payload: {},
+    },
+  },
   openligadb: {
     "GET getavailablegroups": {
       source: "static:openligadb-public-catalog",

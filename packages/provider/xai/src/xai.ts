@@ -17,7 +17,11 @@ import {
   XaiVideoAsyncResponse,
   XaiVideoResult,
   XaiFileObject,
+  XaiFileListParams,
   XaiFileListResponse,
+  XaiFilePublicUrlRequest,
+  XaiFilePublicUrlResponse,
+  XaiFilePublicUrlRevokeResponse,
   XaiModel,
   XaiModelListResponse,
   XaiLanguageModel,
@@ -83,6 +87,7 @@ import {
   XaiChatRequestSchema,
   XaiImageGenerateRequestSchema,
   XaiImageEditRequestSchema,
+  XaiFilePublicUrlRequestSchema,
   XaiVideoGenerateRequestSchema,
   XaiGrokImagineVideo15ImageToVideoRequestSchema,
   XaiVideoEditRequestSchema,
@@ -855,41 +860,58 @@ export function createXai(opts: XaiOptions): XaiProvider {
     }
   );
 
-  // GET https://api.x.ai/v1/files/{fileIdOrSignal}
+  // GET https://api.x.ai/v1/files/{paramsOrFileIdOrSignal}
   // Docs: https://docs.x.ai/docs/api-reference
   async function getFiles(
-    fileIdOrSignal?: string | AbortSignal,
+    paramsOrFileIdOrSignal?: XaiFileListParams | string | AbortSignal,
     signal?: AbortSignal
   ): Promise<XaiFileListResponse | XaiFileObject> {
-    if (typeof fileIdOrSignal === "string") {
+    if (typeof paramsOrFileIdOrSignal === "string") {
       return makeRequest<XaiFileObject>(
         "GET",
-        `/files/${fileIdOrSignal}`,
+        `/files/${encodeURIComponent(paramsOrFileIdOrSignal)}`,
         undefined,
         signal
       );
     }
+    const queryParams = isAbortSignal(paramsOrFileIdOrSignal)
+      ? {}
+      : (paramsOrFileIdOrSignal ?? {});
+    const requestSignal = isAbortSignal(paramsOrFileIdOrSignal)
+      ? paramsOrFileIdOrSignal
+      : signal;
+    const query = buildQuery(queryParams);
     return makeRequest<XaiFileListResponse>(
       "GET",
-      "/files",
+      `/files${query}`,
       undefined,
-      fileIdOrSignal
+      requestSignal
     );
   }
 
-  const getFilesNamespace = Object.assign(getFiles, {
-    // GET https://api.x.ai/v1/files/{fileId}/content
-    // Docs: https://docs.x.ai/docs/api-reference
-    content: async function content(
-      fileId: string,
-      signal?: AbortSignal
-    ): Promise<string> {
-      return await makeGetTextRequest(
-        `/files/${encodeURIComponent(fileId)}/content`,
-        signal
-      );
+  const getFilesNamespace = Object.assign(
+    getFiles as {
+      (
+        params?: XaiFileListParams,
+        signal?: AbortSignal
+      ): Promise<XaiFileListResponse>;
+      (fileId: string, signal?: AbortSignal): Promise<XaiFileObject>;
+      (signal: AbortSignal): Promise<XaiFileListResponse>;
     },
-  });
+    {
+      // GET https://api.x.ai/v1/files/{fileId}/content
+      // Docs: https://docs.x.ai/docs/api-reference
+      content: async function content(
+        fileId: string,
+        signal?: AbortSignal
+      ): Promise<string> {
+        return await makeGetTextRequest(
+          `/files/${encodeURIComponent(fileId)}/content`,
+          signal
+        );
+      },
+    }
+  );
 
   // GET https://api.x.ai/v1/models/{modelIdOrSignal}
   // Docs: https://docs.x.ai/docs/api-reference
@@ -1427,61 +1449,104 @@ export function createXai(opts: XaiOptions): XaiProvider {
             },
             // POST https://api.x.ai/v1/files
             // Docs: https://docs.x.ai/docs/api-reference
-            files: Object.assign(async function postFiles(
-              file: Blob,
-              filename: string,
-              purpose?: string,
-              signal?: AbortSignal
-            ): Promise<XaiFileObject> {
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), timeout);
-              if (signal) {
-                attachAbortHandler(signal, controller);
-              }
-
-              try {
-                const formData = new FormData();
-                formData.append("file", file, filename);
-                if (purpose !== undefined) formData.append("purpose", purpose);
-
-                const res = await doFetch(`${baseURL}/files`, {
-                  method: "POST",
-                  headers: { Authorization: `Bearer ${opts.apiKey}` },
-                  body: formData,
-                  signal: controller.signal,
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!res.ok) {
-                  let message = `XAI API error: ${res.status}`;
-                  let body: unknown = null;
-                  try {
-                    body = await res.json();
-                    if (
-                      typeof body === "object" &&
-                      body !== null &&
-                      "error" in body
-                    ) {
-                      const err = (body as { error: { message?: string } })
-                        .error;
-                      if (err?.message) {
-                        message = `XAI API error ${res.status}: ${err.message}`;
-                      }
-                    }
-                  } catch {
-                    // ignore parse errors
-                  }
-                  throw new XaiError(message, res.status, body);
+            files: Object.assign(
+              async function postFiles(
+                file: Blob,
+                filename: string,
+                purpose?: string,
+                signal?: AbortSignal
+              ): Promise<XaiFileObject> {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                if (signal) {
+                  attachAbortHandler(signal, controller);
                 }
 
-                return (await res.json()) as XaiFileObject;
-              } catch (error) {
-                clearTimeout(timeoutId);
-                if (error instanceof XaiError) throw error;
-                throw new XaiError(`XAI request failed: ${error}`, 500);
+                try {
+                  const formData = new FormData();
+                  formData.append("file", file, filename);
+                  if (purpose !== undefined)
+                    formData.append("purpose", purpose);
+
+                  const res = await doFetch(`${baseURL}/files`, {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${opts.apiKey}` },
+                    body: formData,
+                    signal: controller.signal,
+                  });
+
+                  clearTimeout(timeoutId);
+
+                  if (!res.ok) {
+                    let message = `XAI API error: ${res.status}`;
+                    let body: unknown = null;
+                    try {
+                      body = await res.json();
+                      if (
+                        typeof body === "object" &&
+                        body !== null &&
+                        "error" in body
+                      ) {
+                        const err = (body as { error: { message?: string } })
+                          .error;
+                        if (err?.message) {
+                          message = `XAI API error ${res.status}: ${err.message}`;
+                        }
+                      }
+                    } catch {
+                      // ignore parse errors
+                    }
+                    throw new XaiError(message, res.status, body);
+                  }
+
+                  return (await res.json()) as XaiFileObject;
+                } catch (error) {
+                  clearTimeout(timeoutId);
+                  if (error instanceof XaiError) throw error;
+                  throw new XaiError(`XAI request failed: ${error}`, 500);
+                }
+              },
+              {
+                // POST https://api.x.ai/v1/files/{fileId}/public-url
+                // Docs: https://docs.x.ai/developers/files/public-urls
+                publicUrl: Object.assign(
+                  async function createFilePublicUrl(
+                    fileId: string,
+                    reqOrSignal?: XaiFilePublicUrlRequest | AbortSignal,
+                    signal?: AbortSignal
+                  ): Promise<XaiFilePublicUrlResponse> {
+                    const req = isAbortSignal(reqOrSignal)
+                      ? {}
+                      : (reqOrSignal ?? {});
+                    const requestSignal = isAbortSignal(reqOrSignal)
+                      ? reqOrSignal
+                      : signal;
+                    return await makeRequest(
+                      "POST",
+                      `/files/${encodeURIComponent(fileId)}/public-url`,
+                      req,
+                      requestSignal
+                    );
+                  },
+                  {
+                    schema: XaiFilePublicUrlRequestSchema,
+                    // POST https://api.x.ai/v1/files/{fileId}/public-url/revoke
+                    // Docs: https://docs.x.ai/developers/files/public-urls
+                    revoke: async function revokeFilePublicUrl(
+                      fileId: string,
+                      signal?: AbortSignal
+                    ): Promise<XaiFilePublicUrlRevokeResponse> {
+                      return await makeRequest(
+                        "POST",
+                        `/files/${encodeURIComponent(fileId)}/public-url/revoke`,
+                        {},
+                        signal
+                      );
+                    },
+                  }
+                ),
               }
-            }, {}),
+            ),
             batches: postBatches,
             documents: {
               // POST https://api.x.ai/v1/documents/search

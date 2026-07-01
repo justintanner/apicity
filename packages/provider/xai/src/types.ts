@@ -33,6 +33,9 @@ export type {
   XaiVideoReference,
   XaiVideoReferenceInput,
   XaiImagineStorageOptions,
+  XaiFilePublicUrlRequest,
+  XaiFilePublicUrlRequestInput,
+  XaiFilePublicUrlParsedRequest,
   XaiChunkConfiguration,
   XaiFieldDefinition,
   XaiChatRequest,
@@ -205,14 +208,37 @@ export interface XaiFileObject {
   object: string;
   bytes: number;
   created_at: number;
+  expires_at?: number | null;
   filename: string;
+  public_url?: string | null;
+  public_url_expires_at?: number | null;
   purpose: string;
+}
+
+export interface XaiFileListParams {
+  limit?: number;
+  order?: "asc" | "desc";
+  sort_by?: "created_at" | "filename" | "size";
+  pagination_token?: string;
+  filter?: string;
 }
 
 // File list response
 export interface XaiFileListResponse {
   data: XaiFileObject[];
   object: string;
+  pagination_token?: string;
+}
+
+export interface XaiFilePublicUrlResponse {
+  public_url: string;
+  expires_at?: number;
+}
+
+export interface XaiFilePublicUrlRevokeResponse {
+  id: string;
+  revoked: boolean;
+  public_url?: string;
 }
 
 // Video async response (returned from generate/edit)
@@ -1139,6 +1165,7 @@ import type {
   XaiChatRequest,
   XaiImageGenerateRequest,
   XaiImageEditRequest,
+  XaiFilePublicUrlRequest,
   XaiVideoGenerateRequest,
   XaiVideoEditRequest,
   XaiVideoExtendRequest,
@@ -1230,6 +1257,20 @@ interface XaiPostFilesMethod {
     purpose?: string,
     signal?: AbortSignal
   ): Promise<XaiFileObject>;
+  publicUrl: XaiPostFilesPublicUrlMethod;
+}
+
+interface XaiPostFilesPublicUrlMethod {
+  (
+    fileId: string,
+    reqOrSignal?: XaiFilePublicUrlRequest | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiFilePublicUrlResponse>;
+  schema: ApicitySchema<XaiFilePublicUrlRequest>;
+  revoke(
+    fileId: string,
+    signal?: AbortSignal
+  ): Promise<XaiFilePublicUrlRevokeResponse>;
 }
 
 interface XaiPostBatchesMethod {
@@ -1350,9 +1391,11 @@ interface XaiManagementPostV1 {
 // GET v1 namespace
 interface XaiGetFilesMethod {
   (
-    fileIdOrSignal?: string | AbortSignal,
+    params?: XaiFileListParams,
     signal?: AbortSignal
-  ): Promise<XaiFileListResponse | XaiFileObject>;
+  ): Promise<XaiFileListResponse>;
+  (fileId: string, signal?: AbortSignal): Promise<XaiFileObject>;
+  (signal: AbortSignal): Promise<XaiFileListResponse>;
   content(fileId: string, signal?: AbortSignal): Promise<string>;
 }
 

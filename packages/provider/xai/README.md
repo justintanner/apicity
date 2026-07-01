@@ -225,9 +225,59 @@ See xAI's
 and [Files Public URLs](https://docs.x.ai/developers/files/public-urls)
 docs for uploads, expiration, and public URL lifecycle details.
 
+## Files Public URLs
+
+Files uploaded to xAI storage are private by default. Use
+`xai.post.v1.files.publicUrl(fileId)` to create a shareable
+xAI CDN URL for an existing file, then revoke that URL independently
+with `xai.post.v1.files.publicUrl.revoke(fileId)` when sharing
+should stop. Revoking the public URL leaves the private file intact.
+
+```typescript
+const file = await xai.post.v1.files(
+  new Blob(["diagram"], { type: "image/png" }),
+  "diagram.png",
+  "assistants"
+);
+
+const created = await xai.post.v1.files.publicUrl(file.id, {
+  expires_after: 86400,
+});
+console.log(created.public_url);
+console.log(created.expires_at);
+
+const withPublicUrls = await xai.get.v1.files({
+  filter: "public_url != null",
+});
+console.log(withPublicUrls.data[0]?.public_url);
+
+await xai.post.v1.files.publicUrl.revoke(file.id);
+```
+
+**Public URL lifecycle**
+
+- Empty create bodies use xAI defaults. Pass `expires_after` in seconds
+  to auto-revoke the URL after 1 hour to 30 days.
+- A public URL cannot outlive its file. If the file has its own
+  `expires_at`, an omitted public URL expiry inherits the file expiry;
+  an explicit `expires_after` must fit inside the file's remaining
+  lifetime.
+- Create is idempotent while a file already has an active public URL:
+  repeated calls return the same URL token and can update its expiry.
+- `get.v1.files(fileId)` and `get.v1.files({ filter })` preserve
+  `public_url` and `public_url_expires_at` metadata so callers can
+  audit which files are currently public.
+
+See xAI's
+[Files Public URLs](https://docs.x.ai/developers/files/public-urls),
+[Managing Files](https://docs.x.ai/developers/files/managing-files),
+and [Imagine Files API integration](https://docs.x.ai/developers/model-capabilities/imagine/files)
+docs for supported content types, size limits, and the
+`storage_options.public_url` generation path.
+
 ## API Reference
 
-52 endpoints across 18 groups. Each method mirrors an upstream URL path.
+54 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### apiKey
 
@@ -484,7 +534,7 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 <details>
 <summary><code>GET</code> <b><code>xai.v1.files</code></b></summary>
 
-<code>GET https://api.x.ai/v1/files/{fileIdOrSignal}</code>
+<code>GET https://api.x.ai/v1/files/{paramsOrFileIdOrSignal}</code>
 
 [Upstream docs ↗](https://docs.x.ai/docs/api-reference)
 
@@ -520,6 +570,36 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 
 ```typescript
 const res = await xai.v1.files({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.files.publicUrl</code></b></summary>
+
+<code>POST https://api.x.ai/v1/files/{fileId}/public-url</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/files/public-urls)
+
+```typescript
+const res = await xai.v1.files.publicUrl({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>xai.v1.files.publicUrl.revoke</code></b></summary>
+
+<code>POST https://api.x.ai/v1/files/{fileId}/public-url/revoke</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/files/public-urls)
+
+```typescript
+const res = await xai.v1.files.publicUrl.revoke({ /* ... */ });
 ```
 
 Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)

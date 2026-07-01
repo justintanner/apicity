@@ -106,6 +106,25 @@ describe("HAR-derived examples on endpoints", () => {
     expect(result.success).toBe(true);
   });
 
+  test("xai files public URL examples cover create, revoke, and list filters", () => {
+    const client = createXai({ apiKey: "test-key" });
+    const createFn = client.post.v1.files.publicUrl;
+    const createEx = createFn.example;
+    const revokeEx = client.post.v1.files.publicUrl.revoke.example;
+    const listEx = client.get.v1.files.example;
+
+    expect(createEx?.source).toBe("static:xai-files-public-url-create");
+    expect(createFn.schema.safeParse(createEx?.payload).success).toBe(true);
+    expect(revokeEx).toMatchObject({
+      source: "static:xai-files-public-url-revoke",
+      payload: {},
+    });
+    expect(listEx).toMatchObject({
+      source: "static:xai-files-public-url-filter",
+      payload: { filter: "public_url != null", limit: 10 },
+    });
+  });
+
   test("fal veo3.1 image-to-video keeps its image payload", () => {
     const client = createFal({ apiKey: "test-key" });
     const ex = client.run.veo3p1.imageToVideo.example;

@@ -1,4 +1,11 @@
 {
+  "GET v1.files": {
+    "source": "static:xai-files-public-url-filter",
+    "payload": {
+      "filter": "public_url != null",
+      "limit": 10
+    }
+  },
   "POST managementApi.v1.collections": {
     "source": "xai/collections-documents-add",
     "payload": {
@@ -64,6 +71,16 @@
       },
       "limit": 5
     }
+  },
+  "POST v1.files.publicUrl": {
+    "source": "static:xai-files-public-url-create",
+    "payload": {
+      "expires_after": 86400
+    }
+  },
+  "POST v1.files.publicUrl.revoke": {
+    "source": "static:xai-files-public-url-revoke",
+    "payload": {}
   },
   "POST v1.images.edits": {
     "source": "xai/image-edit-single",

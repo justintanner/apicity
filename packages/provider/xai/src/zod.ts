@@ -59,6 +59,10 @@ const XaiImagineStoragePublicUrlOptionsSchema = z.object({
   expires_after: z.number().int().min(3600).max(2592000).optional(),
 });
 
+export const XaiFilePublicUrlRequestSchema = z.object({
+  expires_after: z.number().int().min(3600).max(2592000).optional(),
+});
+
 export const XaiImagineStorageOptionsSchema = z.object({
   filename: z.string().min(1),
   expires_after: z.number().int().min(3600).max(2592000).optional(),
@@ -781,6 +785,13 @@ export type XaiVideoReferenceInput = z.infer<
 >;
 export type XaiImagineStorageOptions = z.infer<
   typeof XaiImagineStorageOptionsSchema
+>;
+export type XaiFilePublicUrlRequest = z.infer<
+  typeof XaiFilePublicUrlRequestSchema
+>;
+export type XaiFilePublicUrlRequestInput = XaiFilePublicUrlRequest;
+export type XaiFilePublicUrlParsedRequest = z.output<
+  typeof XaiFilePublicUrlRequestSchema
 >;
 export type XaiChunkConfiguration = z.infer<typeof XaiChunkConfigurationSchema>;
 export type XaiFieldDefinition = z.infer<typeof XaiFieldDefinitionSchema>;

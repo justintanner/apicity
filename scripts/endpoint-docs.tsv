@@ -1473,9 +1473,11 @@ xai	v1.customVoices	POST	https://api.x.ai/v1/custom-voices	https://docs.x.ai/dev
 xai	v1.customVoices.audio	GET	https://api.x.ai/v1/custom-voices/{voiceId}/audio	https://docs.x.ai/developers/model-capabilities/audio/custom-voices
 xai	v1.documents.search	POST	https://api.x.ai/v1/documents/search	https://docs.x.ai/docs/api-reference
 xai	v1.files	DELETE	https://api.x.ai/v1/files/{fileId}	https://docs.x.ai/docs/api-reference
-xai	v1.files	GET	https://api.x.ai/v1/files/{fileIdOrSignal}	https://docs.x.ai/docs/api-reference
+xai	v1.files	GET	https://api.x.ai/v1/files/{paramsOrFileIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.files	POST	https://api.x.ai/v1/files	https://docs.x.ai/docs/api-reference
 xai	v1.files.content	GET	https://api.x.ai/v1/files/{fileId}/content	https://docs.x.ai/docs/api-reference
+xai	v1.files.publicUrl	POST	https://api.x.ai/v1/files/{fileId}/public-url	https://docs.x.ai/developers/files/public-urls
+xai	v1.files.publicUrl.revoke	POST	https://api.x.ai/v1/files/{fileId}/public-url/revoke	https://docs.x.ai/developers/files/public-urls
 xai	v1.imageGenerationModels	GET	https://api.x.ai/v1/image-generation-models/{modelIdOrSignal}	https://docs.x.ai/docs/api-reference
 xai	v1.images.edits	POST	https://api.x.ai/v1/images/edits	https://docs.x.ai/developers/rest-api-reference/inference/images
 xai	v1.images.generations	POST	https://api.x.ai/v1/images/generations	https://docs.x.ai/developers/rest-api-reference/inference/images

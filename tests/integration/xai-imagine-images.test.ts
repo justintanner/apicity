@@ -230,6 +230,44 @@ describe("xai Grok Imagine image generation and edits", () => {
     expect(result.data).toHaveLength(2);
   });
 
+  it("normalizes stored file IDs for multi-image edits", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      {
+        data: [{ url: "https://imgen.x.ai/file-id-blend.jpeg" }],
+      },
+    ]);
+    const provider = createXai({
+      apiKey: "sk-test",
+      fetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const req = {
+      model: MODEL,
+      prompt: "Blend these private stored references into one scene",
+      image_file_ids: ["file_subject", "file_background"],
+      response_format: "url",
+    } satisfies XaiImageEditRequest;
+
+    const result = await provider.post.v1.images.edits(
+      req,
+      mintXaiOtp(EDITS_DOT_PATH, req)
+    );
+
+    expect(calls).toEqual([
+      {
+        url: "https://api.x.ai/v1/images/edits",
+        method: "POST",
+        body: {
+          model: MODEL,
+          prompt: "Blend these private stored references into one scene",
+          images: [{ file_id: "file_subject" }, { file_id: "file_background" }],
+          response_format: "url",
+        },
+      },
+    ]);
+    expect(result.data[0].url).toBe("https://imgen.x.ai/file-id-blend.jpeg");
+  });
+
   it("normalizes stored file IDs for iterative image edits", async () => {
     const fileOutput = {
       file_id: "file_city_neon",
@@ -310,6 +348,13 @@ describe("xai Grok Imagine image generation and edits", () => {
         response_format: "jpeg",
       }).success
     ).toBe(false);
+    expect(
+      provider.post.v1.images.edits.schema.safeParse({
+        model: MODEL,
+        prompt: "Add a hat",
+        image_file_ids: ["file_subject", "file_style"],
+      }).success
+    ).toBe(true);
     expect(
       provider.post.v1.images.edits.schema.safeParse({
         model: MODEL,

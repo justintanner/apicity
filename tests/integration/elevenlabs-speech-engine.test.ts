@@ -1,40 +1,94 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import { describe, it, expect } from "vitest";
 import {
   createElevenLabs,
-  ElevenLabsError,
   type ElevenLabsCreateSpeechEngineRequest,
 } from "@apicity/elevenlabs";
 
+interface FetchCall {
+  url: string;
+  init?: RequestInit;
+}
+
 const SPEECH_ENGINE_ID = "seng_3701k3ttaq12ewp8b7qv5rfyszkz";
 
+function inputUrl(input: string | URL | Request): string {
+  if (typeof input === "string") return input;
+  if (input instanceof URL) return input.toString();
+  return input.url;
+}
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
+}
+
+function speechEngineResponse() {
+  return {
+    speech_engine_id: SPEECH_ENGINE_ID,
+    name: "Apicity Speech Engine route test",
+    speech_engine: {
+      ws_url: "wss://example.com/transcript",
+      request_headers: {
+        authorization: { variable_name: "transcript_auth" },
+      },
+    },
+    asr: {},
+    tts: {},
+    turn: {},
+    conversation: {},
+    privacy: {},
+    call_limits: {},
+    language: "en",
+    tags: ["apicity"],
+    overrides: {},
+    metadata: {},
+  };
+}
+
+function requestBody(init: RequestInit | undefined): Record<string, unknown> {
+  return JSON.parse(String(init?.body)) as Record<string, unknown>;
+}
+
 describe("elevenlabs v1.speechEngine", () => {
-  let ctx: PollyContext;
+  it("routes every speech engine endpoint without replaying auth failures", async () => {
+    const calls: FetchCall[] = [];
+    const provider = createElevenLabs({
+      apiKey: "elevenlabs-test-key",
+      fetch: async (input, init) => {
+        const url = inputUrl(input);
+        const pathname = new URL(url).pathname;
+        calls.push({ url, init });
 
-  beforeEach(() => {
-    ctx = setupPolly("elevenlabs/speech-engine");
-  });
+        if (pathname === "/v1/speech-engine" && init?.method === "GET") {
+          return jsonResponse({
+            speech_engines: [
+              {
+                speech_engine_id: SPEECH_ENGINE_ID,
+                name: "Apicity Speech Engine route test",
+                created_at_unix_secs: 1_788_000_000,
+                tags: ["apicity"],
+                access_info: { is_creator: true, creator_name: "Apicity" },
+              },
+            ],
+            has_more: false,
+          });
+        }
 
-  afterEach(async () => {
-    await teardownPolly(ctx);
-  });
+        if (pathname === "/v1/speech-engine" && init?.method === "POST") {
+          return jsonResponse(speechEngineResponse());
+        }
 
-  function makeProvider() {
-    return createElevenLabs({ apiKey: "elevenlabs-invalid-key" });
-  }
+        if (pathname === `/v1/speech-engine/${SPEECH_ENGINE_ID}`) {
+          if (init?.method === "DELETE")
+            return new Response(null, { status: 204 });
+          return jsonResponse(speechEngineResponse());
+        }
 
-  async function expectAuthError(promise: Promise<unknown>): Promise<void> {
-    try {
-      await promise;
-      throw new Error("Expected the speech engine request to fail");
-    } catch (error) {
-      expect(error).toBeInstanceOf(ElevenLabsError);
-      expect([401, 403]).toContain((error as ElevenLabsError).status);
-    }
-  }
-
-  it("routes every speech engine endpoint", { timeout: 60000 }, async () => {
-    const provider = makeProvider();
+        return jsonResponse({ detail: "unexpected request" }, 500);
+      },
+    });
     const createRequest: ElevenLabsCreateSpeechEngineRequest = {
       name: "Apicity Speech Engine route test",
       speech_engine: {
@@ -68,21 +122,50 @@ describe("elevenlabs v1.speechEngine", () => {
         .success
     ).toBe(true);
 
-    await expectAuthError(
-      provider.v1.speechEngine.list({
-        page_size: 1,
-        search: "apicity",
-        sort_direction: "desc",
-        sort_by: "created_at",
-      })
-    );
-    await expectAuthError(provider.v1.speechEngine.create(createRequest));
-    await expectAuthError(provider.v1.speechEngine.get(SPEECH_ENGINE_ID));
-    await expectAuthError(
-      provider.v1.speechEngine.update(SPEECH_ENGINE_ID, {
-        name: "Updated Speech Engine",
-      })
-    );
-    await expectAuthError(provider.v1.speechEngine.delete(SPEECH_ENGINE_ID));
+    await provider.v1.speechEngine.list({
+      page_size: 1,
+      search: "apicity",
+      sort_direction: "desc",
+      sort_by: "created_at",
+    });
+    await provider.v1.speechEngine.create(createRequest);
+    await provider.v1.speechEngine.get(SPEECH_ENGINE_ID);
+    await provider.v1.speechEngine.update(SPEECH_ENGINE_ID, {
+      name: "Updated Speech Engine",
+    });
+    await provider.v1.speechEngine.delete(SPEECH_ENGINE_ID);
+
+    expect(calls.map((call) => new URL(call.url).pathname)).toEqual([
+      "/v1/speech-engine",
+      "/v1/speech-engine",
+      `/v1/speech-engine/${SPEECH_ENGINE_ID}`,
+      `/v1/speech-engine/${SPEECH_ENGINE_ID}`,
+      `/v1/speech-engine/${SPEECH_ENGINE_ID}`,
+    ]);
+    expect(calls.map((call) => call.init?.method)).toEqual([
+      "GET",
+      "POST",
+      "GET",
+      "PATCH",
+      "DELETE",
+    ]);
+    expect(
+      calls.every(
+        (call) =>
+          new Headers(call.init?.headers).get("xi-api-key") ===
+          "elevenlabs-test-key"
+      )
+    ).toBe(true);
+
+    const listUrl = new URL(calls[0].url);
+    expect(listUrl.searchParams.get("page_size")).toBe("1");
+    expect(listUrl.searchParams.get("search")).toBe("apicity");
+    expect(listUrl.searchParams.get("sort_direction")).toBe("desc");
+    expect(listUrl.searchParams.get("sort_by")).toBe("created_at");
+    expect(requestBody(calls[1].init)).toMatchObject(createRequest);
+    expect(requestBody(calls[3].init)).toEqual({
+      name: "Updated Speech Engine",
+    });
+    expect(calls[4].init?.body).toBeUndefined();
   });
 });

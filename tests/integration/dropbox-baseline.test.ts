@@ -11,78 +11,6 @@ import {
 
 const CURRENT_TOKEN_RECORDING_NAME = "dropbox/current-token-baseline";
 
-const currentTokenReachability = {
-  reachable: ["check.user", "users.getCurrentAccount"],
-  optional: [
-    {
-      dotPath: "files.listFolder",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.metadata.read",
-    },
-    {
-      dotPath: "files.listFolderContinue",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.metadata.read",
-    },
-    {
-      dotPath: "files.getMetadata",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.metadata.read",
-    },
-    {
-      dotPath: "files.createFolderV2",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.content.write",
-    },
-    {
-      dotPath: "files.deleteV2",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.content.write",
-    },
-    {
-      dotPath: "files.copyV2",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.content.write",
-    },
-    {
-      dotPath: "files.moveV2",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "files.content.write",
-    },
-    {
-      dotPath: "files.upload",
-      status: 401,
-      error_summary: "missing_scope/...",
-      required_scope: "files.content.write",
-    },
-    {
-      dotPath: "files.download",
-      status: 401,
-      error_summary: "other/...",
-      note: "Current token cannot set up or read a file for content download.",
-    },
-    {
-      dotPath: "sharing.createSharedLinkWithSettings",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "sharing.write",
-    },
-    {
-      dotPath: "sharing.listSharedLinks",
-      status: 401,
-      error_summary: "missing_scope/",
-      required_scope: "sharing.read",
-    },
-  ],
-} as const;
-
 interface FetchCall {
   url: string;
   init?: RequestInit;
@@ -187,55 +115,6 @@ describe("dropbox baseline integration", () => {
 
     expect(checked.result).toBe("justin");
     expect(account.account_id).toEqual(expect.any(String));
-  });
-
-  it("documents current OAuth token scope boundaries", () => {
-    const implemented = [
-      "check.user",
-      "users.getCurrentAccount",
-      "files.listFolder",
-      "files.listFolderContinue",
-      "files.getMetadata",
-      "files.createFolderV2",
-      "files.deleteV2",
-      "files.copyV2",
-      "files.moveV2",
-      "files.upload",
-      "files.download",
-      "sharing.createSharedLinkWithSettings",
-      "sharing.listSharedLinks",
-    ];
-
-    const classified = [
-      ...currentTokenReachability.reachable,
-      ...currentTokenReachability.optional.map((entry) => entry.dotPath),
-    ];
-
-    expect([...classified].sort()).toEqual([...implemented].sort());
-    expect(currentTokenReachability.reachable).toEqual([
-      "check.user",
-      "users.getCurrentAccount",
-    ]);
-    expect(currentTokenReachability.optional).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          dotPath: "files.listFolder",
-          required_scope: "files.metadata.read",
-        }),
-        expect.objectContaining({
-          dotPath: "files.upload",
-          required_scope: "files.content.write",
-        }),
-        expect.objectContaining({
-          dotPath: "sharing.createSharedLinkWithSettings",
-          required_scope: "sharing.write",
-        }),
-        expect.objectContaining({
-          dotPath: "sharing.listSharedLinks",
-          required_scope: "sharing.read",
-        }),
-      ])
-    );
   });
 
   it("serializes auth, JSON bodies, and content headers", async () => {

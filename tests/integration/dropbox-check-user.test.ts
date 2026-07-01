@@ -2,17 +2,13 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { createDropbox } from "@apicity/dropbox";
 import {
-  getPollyMode,
   recordingExists,
   setupPolly,
   teardownPolly,
   type PollyContext,
 } from "../harness";
 
-const RECORDING_NAME = ["dropbox", "check-user"].join("/");
-const canRunLiveCheck =
-  recordingExists(RECORDING_NAME) ||
-  (getPollyMode() !== "replay" && Boolean(process.env.DROPBOX_OAUTH_TOKEN));
+const RECORDING_NAME = "dropbox/check-user";
 
 function shouldUseLiveToken(ctx: PollyContext): boolean {
   if (ctx.mode === "record" || ctx.mode === "passthrough") return true;
@@ -45,19 +41,16 @@ describe("dropbox check user integration", () => {
     }
   });
 
-  it.skipIf(!canRunLiveCheck)(
-    "checks a query with the OAuth token",
-    async () => {
-      ctx = setupPolly(RECORDING_NAME);
-      const dropbox = createDropbox({
-        oauthToken: tokenForMode(ctx),
-      });
+  it("checks a query with the OAuth token", async () => {
+    ctx = setupPolly(RECORDING_NAME);
+    const dropbox = createDropbox({
+      oauthToken: tokenForMode(ctx),
+    });
 
-      const checked = await dropbox.check.user({ query: "justin" });
+    const checked = await dropbox.check.user({ query: "justin" });
 
-      expect(checked.result).toBe("justin");
-    }
-  );
+    expect(checked.result).toBe("justin");
+  });
 
   it("serializes the check user request", async () => {
     const calls: Array<{ url: string; init?: RequestInit }> = [];

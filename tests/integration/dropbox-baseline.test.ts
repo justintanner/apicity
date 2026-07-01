@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { createDropbox, DropboxError } from "@apicity/dropbox";
 import {
-  getPollyMode,
   recordingExists,
   setupPollyWithPersistScrubber,
   teardownPolly,
@@ -11,15 +10,6 @@ import {
 } from "../harness";
 
 const CURRENT_TOKEN_RECORDING_NAME = "dropbox/current-token-baseline";
-const FULL_BASELINE_RECORDING_NAME = ["dropbox", "full-baseline"].join("/");
-const TEST_ROOT = "/apicity-tests/dropbox-baseline-v1";
-const canRunCurrentTokenBaseline =
-  recordingExists(CURRENT_TOKEN_RECORDING_NAME) ||
-  (getPollyMode() !== "replay" && Boolean(process.env.DROPBOX_OAUTH_TOKEN));
-const canRunFullBaseline =
-  recordingExists(FULL_BASELINE_RECORDING_NAME) ||
-  (getPollyMode() !== "replay" &&
-    process.env.DROPBOX_RECORD_FULL_BASELINE === "1");
 
 const currentTokenReachability = {
   reachable: ["check.user", "users.getCurrentAccount"],
@@ -172,18 +162,6 @@ function scrubDropboxRecording(recording: PersistedHarRecording): void {
   });
 }
 
-async function deleteIfExists(
-  dropbox: ReturnType<typeof createDropbox>,
-  path: string
-): Promise<void> {
-  try {
-    await dropbox.files.deleteV2({ path });
-  } catch (error) {
-    if (error instanceof DropboxError && error.status === 409) return;
-    throw error;
-  }
-}
-
 describe("dropbox baseline integration", () => {
   let ctx: PollyContext | undefined;
 
@@ -194,25 +172,22 @@ describe("dropbox baseline integration", () => {
     }
   });
 
-  it.skipIf(!canRunCurrentTokenBaseline)(
-    "exercises endpoints reachable by the current OAuth token",
-    async () => {
-      ctx = setupPollyWithPersistScrubber(
-        CURRENT_TOKEN_RECORDING_NAME,
-        scrubDropboxRecording
-      );
-      const dropbox = createDropbox({
-        oauthToken: tokenForMode(ctx, CURRENT_TOKEN_RECORDING_NAME),
-        timeout: 60000,
-      });
+  it("exercises endpoints reachable by the current OAuth token", async () => {
+    ctx = setupPollyWithPersistScrubber(
+      CURRENT_TOKEN_RECORDING_NAME,
+      scrubDropboxRecording
+    );
+    const dropbox = createDropbox({
+      oauthToken: tokenForMode(ctx, CURRENT_TOKEN_RECORDING_NAME),
+      timeout: 60000,
+    });
 
-      const checked = await dropbox.check.user({ query: "justin" });
-      const account = await dropbox.users.getCurrentAccount();
+    const checked = await dropbox.check.user({ query: "justin" });
+    const account = await dropbox.users.getCurrentAccount();
 
-      expect(checked.result).toBe("justin");
-      expect(account.account_id).toEqual(expect.any(String));
-    }
-  );
+    expect(checked.result).toBe("justin");
+    expect(account.account_id).toEqual(expect.any(String));
+  });
 
   it("documents current OAuth token scope boundaries", () => {
     const implemented = [
@@ -263,168 +238,168 @@ describe("dropbox baseline integration", () => {
     );
   });
 
-  it.skipIf(!canRunFullBaseline)(
-    "exercises users, files, content, and sharing endpoints with full scopes",
-    async () => {
-      ctx = setupPollyWithPersistScrubber(
-        FULL_BASELINE_RECORDING_NAME,
-        scrubDropboxRecording
-      );
-      const dropbox = createDropbox({
-        oauthToken: tokenForMode(ctx, FULL_BASELINE_RECORDING_NAME),
-        timeout: 60000,
-      });
-
-      const sourcePath = `${TEST_ROOT}/source.txt`;
-      const secondPath = `${TEST_ROOT}/second.txt`;
-      const copiedPath = `${TEST_ROOT}/copy.txt`;
-      const movedPath = `${TEST_ROOT}/moved.txt`;
-      const sourceBody = "hello from @apicity/dropbox baseline\n";
-
-      await deleteIfExists(dropbox, TEST_ROOT);
-
-      try {
-        const account = await dropbox.users.getCurrentAccount();
-        expect(account.account_id).toEqual(expect.any(String));
-
-        const folder = await dropbox.files.createFolderV2({ path: TEST_ROOT });
-        expect(folder.metadata[".tag"]).toBe("folder");
-
-        const uploaded = await dropbox.files.upload({
-          path: sourcePath,
-          mode: { ".tag": "overwrite" },
-          mute: true,
-          contents: sourceBody,
-        });
-        expect(uploaded[".tag"]).toBe("file");
-        expect(uploaded.name).toBe("source.txt");
-
-        await dropbox.files.upload({
-          path: secondPath,
-          mode: { ".tag": "overwrite" },
-          mute: true,
-          contents: "second file for list_folder pagination\n",
-        });
-
-        const metadata = await dropbox.files.getMetadata({ path: sourcePath });
-        expect(metadata[".tag"]).toBe("file");
-
-        const copied = await dropbox.files.copyV2({
-          from_path: sourcePath,
-          to_path: copiedPath,
-        });
-        expect(copied.metadata.name).toBe("copy.txt");
-
-        const moved = await dropbox.files.moveV2({
-          from_path: copiedPath,
-          to_path: movedPath,
-        });
-        expect(moved.metadata.name).toBe("moved.txt");
-
-        const listed = await dropbox.files.listFolder({
-          path: TEST_ROOT,
-          limit: 1,
-        });
-        const continued = await dropbox.files.listFolderContinue({
-          cursor: listed.cursor,
-        });
-        const names = [...listed.entries, ...continued.entries].map(
-          (entry) => entry.name
-        );
-        expect(names).toContain("source.txt");
-        expect(names).toContain("second.txt");
-
-        const downloaded = await dropbox.files.download({ path: movedPath });
-        expect(downloaded.metadata.name).toBe("moved.txt");
-        expect(downloaded.text()).toBe(sourceBody);
-
-        const shared = await dropbox.sharing.createSharedLinkWithSettings({
-          path: movedPath,
-        });
-        expect(shared.url).toMatch(/^https:\/\/www\.dropbox\.com\//);
-
-        const links = await dropbox.sharing.listSharedLinks({
-          path: movedPath,
-          direct_only: true,
-        });
-        expect(links.links.some((link) => link.url === shared.url)).toBe(true);
-      } finally {
-        await deleteIfExists(dropbox, TEST_ROOT);
-      }
-    }
-  );
-
   it("serializes auth, JSON bodies, and content headers", async () => {
     const calls: FetchCall[] = [];
+    const fileMetadata = {
+      ".tag": "file",
+      name: "demo.txt",
+      path_lower: "/demo.txt",
+      path_display: "/demo.txt",
+      id: "id:demo",
+      client_modified: "2026-06-29T00:00:00Z",
+      server_modified: "2026-06-29T00:00:00Z",
+      rev: "rev",
+      size: 5,
+    };
+    const folderMetadata = {
+      ".tag": "folder",
+      name: "demo",
+      path_lower: "/demo",
+      path_display: "/demo",
+      id: "id:folder",
+    };
+    const sharedLink = {
+      url: "https://www.dropbox.com/s/demo",
+      name: "demo.txt",
+      path_lower: "/demo.txt",
+    };
     const dropbox = createDropbox({
       oauthToken: "dbx-test-token",
       fetch: async (input, init) => {
-        calls.push({ url: inputUrl(input), init });
-        if (inputUrl(input).endsWith("/files/download")) {
+        const url = inputUrl(input);
+        calls.push({ url, init });
+        if (url.endsWith("/files/download")) {
           return new Response("hello", {
             headers: {
               "Content-Type": "text/plain",
-              "Dropbox-API-Result": JSON.stringify({
-                ".tag": "file",
-                name: "demo.txt",
-                path_lower: "/demo.txt",
-                path_display: "/demo.txt",
-                id: "id:demo",
-                client_modified: "2026-06-29T00:00:00Z",
-                server_modified: "2026-06-29T00:00:00Z",
-                rev: "rev",
-                size: 5,
-              }),
+              "Dropbox-API-Result": JSON.stringify(fileMetadata),
             },
           });
         }
-        return new Response(
-          JSON.stringify({
-            ".tag": "file",
-            name: "demo.txt",
-            path_lower: "/demo.txt",
-            path_display: "/demo.txt",
-            id: "id:demo",
-            client_modified: "2026-06-29T00:00:00Z",
-            server_modified: "2026-06-29T00:00:00Z",
-            rev: "rev",
-            size: 5,
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
+        if (url.endsWith("/files/create_folder_v2")) {
+          return Response.json({ metadata: folderMetadata });
+        }
+        if (url.endsWith("/files/list_folder")) {
+          return Response.json({
+            entries: [fileMetadata],
+            cursor: "cursor-1",
+            has_more: true,
+          });
+        }
+        if (url.endsWith("/files/list_folder/continue")) {
+          return Response.json({
+            entries: [{ ...fileMetadata, name: "second.txt" }],
+            cursor: "cursor-2",
+            has_more: false,
+          });
+        }
+        if (
+          url.endsWith("/files/delete_v2") ||
+          url.endsWith("/files/copy_v2") ||
+          url.endsWith("/files/move_v2")
+        ) {
+          return Response.json({ metadata: fileMetadata });
+        }
+        if (url.endsWith("/sharing/create_shared_link_with_settings")) {
+          return Response.json(sharedLink);
+        }
+        if (url.endsWith("/sharing/list_shared_links")) {
+          return Response.json({ links: [sharedLink], has_more: false });
+        }
+        return Response.json(fileMetadata);
       },
     });
 
+    const folder = await dropbox.files.createFolderV2({ path: "/demo" });
     await dropbox.files.upload({
       path: "/demo.txt",
       mode: { ".tag": "overwrite" },
       mute: true,
       contents: "hello",
     });
+    const metadata = await dropbox.files.getMetadata({ path: "/demo.txt" });
+    const copied = await dropbox.files.copyV2({
+      from_path: "/demo.txt",
+      to_path: "/copy.txt",
+    });
+    const moved = await dropbox.files.moveV2({
+      from_path: "/copy.txt",
+      to_path: "/moved.txt",
+    });
+    const listed = await dropbox.files.listFolder({
+      path: "/demo",
+      limit: 1,
+    });
+    const continued = await dropbox.files.listFolderContinue({
+      cursor: listed.cursor,
+    });
     const downloaded = await dropbox.files.download({ path: "/demo.txt" });
+    const createdLink = await dropbox.sharing.createSharedLinkWithSettings({
+      path: "/demo.txt",
+    });
+    const links = await dropbox.sharing.listSharedLinks({
+      path: "/demo.txt",
+      direct_only: true,
+    });
+    const deleted = await dropbox.files.deleteV2({ path: "/demo.txt" });
 
+    expect(folder.metadata[".tag"]).toBe("folder");
+    expect(metadata[".tag"]).toBe("file");
+    expect(copied.metadata[".tag"]).toBe("file");
+    expect(moved.metadata[".tag"]).toBe("file");
+    expect(listed.entries).toHaveLength(1);
+    expect(continued.entries[0].name).toBe("second.txt");
     expect(downloaded.text()).toBe("hello");
-    expect(calls).toHaveLength(2);
+    expect(createdLink.url).toBe(sharedLink.url);
+    expect(links.links[0].url).toBe(sharedLink.url);
+    expect(deleted.metadata[".tag"]).toBe("file");
+    expect(calls.map((call) => new URL(call.url).pathname)).toEqual([
+      "/2/files/create_folder_v2",
+      "/2/files/upload",
+      "/2/files/get_metadata",
+      "/2/files/copy_v2",
+      "/2/files/move_v2",
+      "/2/files/list_folder",
+      "/2/files/list_folder/continue",
+      "/2/files/download",
+      "/2/sharing/create_shared_link_with_settings",
+      "/2/sharing/list_shared_links",
+      "/2/files/delete_v2",
+    ]);
+    expect(
+      calls.every(
+        (call) =>
+          headersOf(call.init).get("Authorization") === "Bearer dbx-test-token"
+      )
+    ).toBe(true);
 
-    expect(calls[0].url).toBe("https://content.dropboxapi.com/2/files/upload");
-    expect(headersOf(calls[0].init).get("Authorization")).toBe(
+    expect(JSON.parse(String(calls[0].init?.body))).toEqual({ path: "/demo" });
+    expect(calls[1].url).toBe("https://content.dropboxapi.com/2/files/upload");
+    expect(headersOf(calls[1].init).get("Authorization")).toBe(
       "Bearer dbx-test-token"
     );
-    expect(headersOf(calls[0].init).get("Content-Type")).toBe(
+    expect(headersOf(calls[1].init).get("Content-Type")).toBe(
       "application/octet-stream"
     );
-    expect(dropboxApiArg(calls[0].init)).toEqual({
+    expect(dropboxApiArg(calls[1].init)).toEqual({
       path: "/demo.txt",
       mode: { ".tag": "overwrite" },
       mute: true,
     });
-    expect(calls[0].init?.body).toBe("hello");
+    expect(calls[1].init?.body).toBe("hello");
 
-    expect(calls[1].url).toBe(
+    expect(calls[7].url).toBe(
       "https://content.dropboxapi.com/2/files/download"
     );
-    expect(dropboxApiArg(calls[1].init)).toEqual({ path: "/demo.txt" });
-    expect(calls[1].init?.body).toBeUndefined();
+    expect(dropboxApiArg(calls[7].init)).toEqual({ path: "/demo.txt" });
+    expect(calls[7].init?.body).toBeUndefined();
+    expect(JSON.parse(String(calls[8].init?.body))).toEqual({
+      path: "/demo.txt",
+    });
+    expect(JSON.parse(String(calls[9].init?.body))).toEqual({
+      path: "/demo.txt",
+      direct_only: true,
+    });
   });
 
   it("preserves Dropbox error fields", async () => {

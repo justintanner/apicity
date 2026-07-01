@@ -421,12 +421,11 @@ describe("RetryOptions type", () => {
 
 describe("FallbackOptions type", () => {
   it("accepts onFallback callback", () => {
+    const onFallback = (_error: unknown, _index: number) => {};
     const opts: FallbackOptions = {
-      onFallback: (error, index) => {
-        console.log(`Fallback ${index}: ${error}`);
-      },
+      onFallback,
     };
-    expect(opts.onFallback).toBeDefined();
+    expect(opts.onFallback).toBe(onFallback);
   });
 
   it("accepts empty fallback options", () => {

@@ -505,9 +505,7 @@ describe("RetryOptions and FallbackOptions interfaces", () => {
   });
 
   it("should accept FallbackOptions with onFallback", () => {
-    const onFallback = (error: unknown, index: number) => {
-      console.log(`Fallback ${index}: ${error}`);
-    };
+    const onFallback = (_error: unknown, _index: number) => {};
     const opts: FallbackOptions = { onFallback };
 
     expect(opts.onFallback).toBe(onFallback);

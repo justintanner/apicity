@@ -32,6 +32,7 @@ export type {
   XaiImageReference,
   XaiVideoReference,
   XaiVideoReferenceInput,
+  XaiImagineStorageOptions,
   XaiChunkConfiguration,
   XaiFieldDefinition,
   XaiChatRequest,
@@ -220,6 +221,8 @@ export interface XaiVideoData {
   url: string;
   duration: number;
   respect_moderation: boolean;
+  file_output?: XaiImageFileOutput;
+  storage_error?: unknown;
 }
 
 export interface XaiVideoUsage {

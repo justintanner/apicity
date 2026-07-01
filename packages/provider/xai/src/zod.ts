@@ -55,6 +55,18 @@ export const XaiVideoReferenceInputSchema = z.union([
   XaiVideoReferenceSchema,
 ]);
 
+const XaiImagineStoragePublicUrlOptionsSchema = z.object({
+  expires_after: z.number().int().min(3600).max(2592000).optional(),
+});
+
+export const XaiImagineStorageOptionsSchema = z.object({
+  filename: z.string().min(1),
+  expires_after: z.number().int().min(3600).max(2592000).optional(),
+  public_url: z
+    .union([z.boolean(), XaiImagineStoragePublicUrlOptionsSchema])
+    .optional(),
+});
+
 export const XaiChunkConfigurationSchema = z.object({
   chars_configuration: z
     .object({
@@ -169,7 +181,7 @@ export const XaiImageGenerateRequestSchema = z.object({
   response_format: z.enum(["url", "b64_json"]).optional(),
   aspect_ratio: XaiImageAspectRatioSchema.optional(),
   resolution: z.enum(["1k", "2k"]).optional(),
-  storage_options: z.record(z.string(), z.unknown()).optional(),
+  storage_options: XaiImagineStorageOptionsSchema.optional(),
   user: z.string().optional(),
 });
 
@@ -178,17 +190,27 @@ export const XaiImageEditRequestSchema = z
     prompt: z.string().min(1),
     model: z.string().optional(),
     image: XaiImageReferenceSchema.optional(),
+    image_file_id: z.string().min(1).optional(),
     images: z.array(XaiImageReferenceSchema).min(1).max(3).optional(),
+    image_file_ids: z.array(z.string().min(1)).min(1).max(3).optional(),
     n: z.number().int().min(1).max(10).optional(),
     response_format: z.enum(["url", "b64_json"]).optional(),
     aspect_ratio: XaiImageAspectRatioSchema.optional(),
     resolution: z.enum(["1k", "2k"]).optional(),
-    storage_options: z.record(z.string(), z.unknown()).optional(),
+    storage_options: XaiImagineStorageOptionsSchema.optional(),
     user: z.string().optional(),
   })
-  .refine((value) => value.image !== undefined || value.images !== undefined, {
-    message: "Either image or images is required",
-  });
+  .refine(
+    (value) =>
+      value.image !== undefined ||
+      value.image_file_id !== undefined ||
+      value.images !== undefined ||
+      value.image_file_ids !== undefined,
+    {
+      message:
+        "Either image, image_file_id, images, or image_file_ids is required",
+    }
+  );
 
 // ---------------------------------------------------------------------------
 // Videos
@@ -245,35 +267,66 @@ export const XaiVideoGenerateRequestSchema = z.object({
   aspect_ratio: XaiVideoAspectRatioSchema.optional(),
   resolution: XaiVideoResolutionSchema.optional(),
   image: XaiVideoReferenceSchema.optional(),
+  image_file_id: z.string().min(1).optional(),
   video: XaiVideoReferenceSchema.optional(),
+  video_file_id: z.string().min(1).optional(),
   reference_images: z.array(XaiVideoReferenceSchema).optional(),
+  reference_image_file_ids: z.array(z.string().min(1)).optional(),
+  storage_options: XaiImagineStorageOptionsSchema.optional(),
 });
 
-export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z.object({
-  prompt: z.string().min(1),
-  model: z.literal(XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW).optional(),
-  image: XaiVideoReferenceInputSchema,
-  duration: XaiVideoGenerateDurationSchema.optional(),
-  aspect_ratio: XaiVideoAspectRatioSchema.optional(),
-  resolution: XaiVideoResolutionSchema.optional(),
-  pollIntervalMs: z.number().int().min(0).optional(),
-  maxPolls: z.number().int().positive().optional(),
-});
+export const XaiGrokImagineVideo15ImageToVideoRequestSchema = z
+  .object({
+    prompt: z.string().min(1),
+    model: z.literal(XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW).optional(),
+    image: XaiVideoReferenceInputSchema.optional(),
+    image_file_id: z.string().min(1).optional(),
+    duration: XaiVideoGenerateDurationSchema.optional(),
+    aspect_ratio: XaiVideoAspectRatioSchema.optional(),
+    resolution: XaiVideoResolutionSchema.optional(),
+    storage_options: XaiImagineStorageOptionsSchema.optional(),
+    pollIntervalMs: z.number().int().min(0).optional(),
+    maxPolls: z.number().int().positive().optional(),
+  })
+  .refine(
+    (value) => value.image !== undefined || value.image_file_id !== undefined,
+    {
+      message: "Either image or image_file_id is required",
+    }
+  );
 
-export const XaiVideoEditRequestSchema = z.object({
-  prompt: z.string().min(1),
-  model: z.string().optional(),
-  video: XaiVideoReferenceSchema,
-  output: z.object({ upload_url: z.string() }).optional(),
-  user: z.string().optional(),
-});
+export const XaiVideoEditRequestSchema = z
+  .object({
+    prompt: z.string().min(1),
+    model: z.string().optional(),
+    video: XaiVideoReferenceSchema.optional(),
+    video_file_id: z.string().min(1).optional(),
+    output: z.object({ upload_url: z.string() }).optional(),
+    storage_options: XaiImagineStorageOptionsSchema.optional(),
+    user: z.string().optional(),
+  })
+  .refine(
+    (value) => value.video !== undefined || value.video_file_id !== undefined,
+    {
+      message: "Either video or video_file_id is required",
+    }
+  );
 
-export const XaiVideoExtendRequestSchema = z.object({
-  prompt: z.string().min(1),
-  model: z.string().optional(),
-  duration: XaiVideoExtendDurationSchema.optional(),
-  video: XaiVideoReferenceSchema,
-});
+export const XaiVideoExtendRequestSchema = z
+  .object({
+    prompt: z.string().min(1),
+    model: z.string().optional(),
+    duration: XaiVideoExtendDurationSchema.optional(),
+    video: XaiVideoReferenceSchema.optional(),
+    video_file_id: z.string().min(1).optional(),
+    storage_options: XaiImagineStorageOptionsSchema.optional(),
+  })
+  .refine(
+    (value) => value.video !== undefined || value.video_file_id !== undefined,
+    {
+      message: "Either video or video_file_id is required",
+    }
+  );
 
 // ---------------------------------------------------------------------------
 // Batches
@@ -661,6 +714,9 @@ export type XaiImageReference = z.infer<typeof XaiImageReferenceSchema>;
 export type XaiVideoReference = z.infer<typeof XaiVideoReferenceSchema>;
 export type XaiVideoReferenceInput = z.infer<
   typeof XaiVideoReferenceInputSchema
+>;
+export type XaiImagineStorageOptions = z.infer<
+  typeof XaiImagineStorageOptionsSchema
 >;
 export type XaiChunkConfiguration = z.infer<typeof XaiChunkConfigurationSchema>;
 export type XaiFieldDefinition = z.infer<typeof XaiFieldDefinitionSchema>;

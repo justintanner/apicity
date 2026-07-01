@@ -133,6 +133,15 @@ describe("xAI Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
+    it("accepts stored file IDs for image edits", () => {
+      const result = XaiImageEditRequestSchema.safeParse({
+        prompt: "Add neon signs",
+        image_file_id: "file_city",
+        storage_options: { filename: "city-neon.jpg" },
+      });
+      expect(result.success).toBe(true);
+    });
+
     it("rejects missing required prompt", () => {
       const result = XaiImageEditRequestSchema.safeParse({});
       expect(result.success).toBe(false);
@@ -152,6 +161,17 @@ describe("xAI Zod schema validation", () => {
         resolution: "720p",
         image: { url: "https://example.com/image.jpg" },
         reference_images: [{ url: "https://example.com/ref1.jpg" }],
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("accepts stored file IDs for video generation", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "Animate this image",
+        model: "grok-imagine-video",
+        image_file_id: "file_city",
+        reference_image_file_ids: ["file_subject", "file_outfit"],
+        storage_options: { filename: "city.mp4", public_url: true },
       });
       expect(result.success).toBe(true);
     });
@@ -195,12 +215,24 @@ describe("xAI Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
+    it("accepts stored file IDs for video edits", () => {
+      const result = XaiVideoEditRequestSchema.safeParse({
+        prompt: "Add rain",
+        model: "grok-imagine-video",
+        video_file_id: "file_source_video",
+        storage_options: { filename: "rainy-city.mp4" },
+      });
+      expect(result.success).toBe(true);
+    });
+
     it("rejects missing required video field", () => {
       const result = XaiVideoEditRequestSchema.safeParse({ prompt: "test" });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("video"))).toBe(
-        true
-      );
+      expect(
+        result.error?.issues.some((i) =>
+          i.message.includes("Either video or video_file_id")
+        )
+      ).toBe(true);
     });
 
     it("rejects missing required url in video object", () => {
@@ -224,12 +256,25 @@ describe("xAI Zod schema validation", () => {
       expect(result.success).toBe(true);
     });
 
+    it("accepts stored file IDs for video extensions", () => {
+      const result = XaiVideoExtendRequestSchema.safeParse({
+        prompt: "Continue the scene",
+        model: "grok-imagine-video",
+        duration: 5,
+        video_file_id: "file_source_video",
+        storage_options: { filename: "extended.mp4" },
+      });
+      expect(result.success).toBe(true);
+    });
+
     it("rejects missing required video field", () => {
       const result = XaiVideoExtendRequestSchema.safeParse({ prompt: "test" });
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("video"))).toBe(
-        true
-      );
+      expect(
+        result.error?.issues.some((i) =>
+          i.message.includes("Either video or video_file_id")
+        )
+      ).toBe(true);
     });
   });
 

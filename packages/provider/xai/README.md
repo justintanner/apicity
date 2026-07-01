@@ -141,6 +141,64 @@ console.log(result.usage);
   so `try { ... } catch (e) { if (e instanceof XaiError) ... }` gives you
   the upstream error directly.
 
+## Imagine Files API integration
+
+xAI Imagine image and video endpoints can reference private Files API assets
+directly and can persist generated assets back to Files storage.
+
+- Inputs: anywhere Imagine accepts a public URL or base64 image/video, pass a
+  stored `file_id` instead. Apicity accepts the raw REST shape
+  (`image: { file_id }`, `images: [{ file_id }]`,
+  `video: { file_id }`, `reference_images: [{ file_id }]`) plus convenience
+  aliases (`image_file_id`, `image_file_ids`, `video_file_id`, and
+  `reference_image_file_ids`) that are normalized before the HTTP request.
+- Outputs: pass `storage_options` with a required `filename` to persist the
+  generated image or video. Omit `public_url` or set it to `false` for a
+  private file; set `public_url: true` or
+  `public_url: { expires_after: 86400 }` to create a shareable URL.
+- Responses still include the default ephemeral `imgen.x.ai` or `vidgen.x.ai`
+  generation URL. When storage is requested, the persistent Files metadata is
+  returned as `file_output` on the generated image or completed video.
+
+```typescript
+const gen = await xai.post.v1.images.generations({
+  prompt: "A futuristic city skyline at night",
+  model: "grok-imagine-image-quality",
+  storage_options: { filename: "city.jpg" },
+});
+const city = gen.data[0].file_output!.file_id!;
+
+const edit = await xai.post.v1.images.edits({
+  prompt: "Add neon signs to the buildings",
+  model: "grok-imagine-image-quality",
+  image_file_id: city,
+  storage_options: { filename: "city-neon.jpg" },
+});
+const neonCity = edit.data[0].file_output!.file_id!;
+
+const video = await xai.post.v1.videos.generations({
+  prompt: "A camera pulls back through the city",
+  model: "grok-imagine-video",
+  duration: 5,
+  image_file_id: neonCity,
+  storage_options: {
+    filename: "city-loop.mp4",
+    public_url: true,
+  },
+});
+
+const done = await xai.get.v1.videos(video.request_id);
+console.log(done.video?.url);
+console.log(done.video?.file_output?.public_url);
+```
+
+See xAI's
+[Imagine Files API integration](https://docs.x.ai/developers/model-capabilities/imagine/files),
+[Referencing Files as Input](https://docs.x.ai/developers/model-capabilities/imagine/files/inputs),
+[Persisting Generated Output](https://docs.x.ai/developers/model-capabilities/imagine/files/outputs),
+and [Files Public URLs](https://docs.x.ai/developers/files/public-urls)
+docs for expiration and public URL lifecycle details.
+
 ## API Reference
 
 48 endpoints across 18 groups. Each method mirrors an upstream URL path.

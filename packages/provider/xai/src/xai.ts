@@ -130,11 +130,23 @@ function normalizeImageReference(image: XaiImageReference): XaiImageReference {
 function normalizeImageEditRequest(
   req: XaiImageEditRequest
 ): XaiImageEditRequest {
+  const { image_file_id, image_file_ids, ...rest } = req;
+  const normalized: XaiImageEditRequest = {
+    ...rest,
+  };
+  if (normalized.image === undefined && image_file_id !== undefined) {
+    normalized.image = { file_id: image_file_id };
+  }
+  if (normalized.images === undefined && image_file_ids !== undefined) {
+    normalized.images = image_file_ids.map((file_id) => ({ file_id }));
+  }
   return {
-    ...req,
+    ...normalized,
     image:
-      req.image === undefined ? undefined : normalizeImageReference(req.image),
-    images: req.images?.map(normalizeImageReference),
+      normalized.image === undefined
+        ? undefined
+        : normalizeImageReference(normalized.image),
+    images: normalized.images?.map(normalizeImageReference),
   };
 }
 
@@ -145,12 +157,64 @@ function normalizeVideoReference(
   return image;
 }
 
+function normalizeVideoGenerateRequest(
+  req: XaiVideoGenerateRequest
+): XaiVideoGenerateRequest {
+  const { image_file_id, video_file_id, reference_image_file_ids, ...rest } =
+    req;
+  const normalized: XaiVideoGenerateRequest = {
+    ...rest,
+  };
+  if (normalized.image === undefined && image_file_id !== undefined) {
+    normalized.image = { file_id: image_file_id };
+  }
+  if (normalized.video === undefined && video_file_id !== undefined) {
+    normalized.video = { file_id: video_file_id };
+  }
+  if (
+    normalized.reference_images === undefined &&
+    reference_image_file_ids !== undefined
+  ) {
+    normalized.reference_images = reference_image_file_ids.map((file_id) => ({
+      file_id,
+    }));
+  }
+  return normalized;
+}
+
+function normalizeVideoEditRequest(
+  req: XaiVideoEditRequest
+): XaiVideoEditRequest {
+  const { video_file_id, ...rest } = req;
+  const normalized: XaiVideoEditRequest = {
+    ...rest,
+  };
+  if (normalized.video === undefined && video_file_id !== undefined) {
+    normalized.video = { file_id: video_file_id };
+  }
+  return normalized;
+}
+
+function normalizeVideoExtendRequest(
+  req: XaiVideoExtendRequest
+): XaiVideoExtendRequest {
+  const { video_file_id, ...rest } = req;
+  const normalized: XaiVideoExtendRequest = {
+    ...rest,
+  };
+  if (normalized.video === undefined && video_file_id !== undefined) {
+    normalized.video = { file_id: video_file_id };
+  }
+  return normalized;
+}
+
 function applyVideoGenerationDefaults(
   req: XaiVideoGenerateRequest
 ): XaiVideoGenerateRequest {
-  if (req.model !== undefined) return req;
+  const normalized = normalizeVideoGenerateRequest(req);
+  if (normalized.model !== undefined) return normalized;
   return {
-    ...req,
+    ...normalized,
     model: XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
   };
 }
@@ -321,11 +385,24 @@ export function createXai(opts: XaiOptions): XaiProvider {
       pollIntervalMs = DEFAULT_VIDEO_POLL_INTERVAL_MS,
       maxPolls = DEFAULT_VIDEO_MAX_POLLS,
       image,
+      image_file_id,
     } = req;
+    const imageReference =
+      image !== undefined
+        ? normalizeVideoReference(image)
+        : image_file_id !== undefined
+          ? { file_id: image_file_id }
+          : undefined;
+    if (imageReference === undefined) {
+      throw new XaiError(
+        "XAI image-to-video requires image or image_file_id",
+        400
+      );
+    }
     const generationRequest: XaiVideoGenerateRequest = {
       prompt: req.prompt,
       model: XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
-      image: normalizeVideoReference(image),
+      image: imageReference,
     };
     if (req.duration !== undefined) generationRequest.duration = req.duration;
     if (req.aspect_ratio !== undefined) {
@@ -333,6 +410,9 @@ export function createXai(opts: XaiOptions): XaiProvider {
     }
     if (req.resolution !== undefined) {
       generationRequest.resolution = req.resolution;
+    }
+    if (req.storage_options !== undefined) {
+      generationRequest.storage_options = req.storage_options;
     }
     const start = await makeRequest<XaiVideoAsyncResponse>(
       "POST",
@@ -1138,7 +1218,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                   return await makeRequest(
                     "POST",
                     "/videos/edits",
-                    req,
+                    normalizeVideoEditRequest(req),
                     signal
                   );
                 },
@@ -1156,7 +1236,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                   return await makeRequest(
                     "POST",
                     "/videos/extensions",
-                    req,
+                    normalizeVideoExtendRequest(req),
                     signal
                   );
                 },

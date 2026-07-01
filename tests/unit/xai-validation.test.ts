@@ -278,6 +278,17 @@ describe("Zod schema validation edge cases", () => {
       expect(result.error?.issues.length).toBeGreaterThan(0);
     });
 
+    it("should accept stored file IDs in video generations", () => {
+      const result = XaiVideoGenerateRequestSchema.safeParse({
+        prompt: "Generate video",
+        image_file_id: "file_start",
+        reference_image_file_ids: ["file_ref_1", "file_ref_2"],
+        storage_options: { filename: "generated.mp4" },
+      });
+
+      expect(result.success).toBe(true);
+    });
+
     it("should validate video URL in video edits", () => {
       const result = XaiVideoEditRequestSchema.safeParse({
         prompt: "Edit video",
@@ -285,9 +296,11 @@ describe("Zod schema validation edge cases", () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("video"))).toBe(
-        true
-      );
+      expect(
+        result.error?.issues.some((i) =>
+          i.message.includes("Either video or video_file_id")
+        )
+      ).toBe(true);
     });
 
     it("should validate video URL structure in video edits", () => {
@@ -669,15 +682,28 @@ describe("Zod schema validation edge cases", () => {
       expect(result.success).toBe(true);
     });
 
+    it("should validate video extensions with stored file IDs", () => {
+      const result = XaiVideoExtendRequestSchema.safeParse({
+        prompt: "Extend this video",
+        video_file_id: "file_source_video",
+        duration: 5,
+        storage_options: { filename: "extended.mp4", public_url: false },
+      });
+
+      expect(result.success).toBe(true);
+    });
+
     it("should reject video extensions missing video", () => {
       const result = XaiVideoExtendRequestSchema.safeParse({
         prompt: "Extend this video",
       });
 
       expect(result.success).toBe(false);
-      expect(result.error?.issues.some((i) => i.path.includes("video"))).toBe(
-        true
-      );
+      expect(
+        result.error?.issues.some((i) =>
+          i.message.includes("Either video or video_file_id")
+        )
+      ).toBe(true);
     });
 
     it("should reject video extensions with missing video.url", () => {

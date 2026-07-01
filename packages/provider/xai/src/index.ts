@@ -41,6 +41,7 @@ export type {
   XaiImageEditRequestInput,
   XaiImageEditParsedRequest,
   XaiImageReference,
+  XaiImagineStorageOptions,
   XaiImageFileOutput,
   XaiGeneratedImage,
   XaiImageUsage,

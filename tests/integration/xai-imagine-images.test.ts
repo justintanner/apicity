@@ -91,7 +91,7 @@ describe("xai Grok Imagine image generation and edits", () => {
       aspect_ratio: "16:9",
       resolution: "2k",
       response_format: "url",
-      storage_options: { public_url: true },
+      storage_options: { filename: "apple.jpeg", public_url: true },
       user: "user-123",
     } satisfies XaiImageGenerateRequest;
 
@@ -146,7 +146,7 @@ describe("xai Grok Imagine image generation and edits", () => {
       },
       resolution: "1k",
       response_format: "b64_json",
-      storage_options: { public_url: false },
+      storage_options: { filename: "sketch.png", public_url: false },
       user: "user-456",
     } satisfies XaiImageEditRequest;
 
@@ -230,6 +230,53 @@ describe("xai Grok Imagine image generation and edits", () => {
     expect(result.data).toHaveLength(2);
   });
 
+  it("normalizes stored file IDs for iterative image edits", async () => {
+    const fileOutput = {
+      file_id: "file_city_neon",
+      filename: "city-neon.jpg",
+    };
+    const { calls, fetch } = createQueuedFetch([
+      {
+        data: [
+          {
+            url: "https://imgen.x.ai/city-neon.jpg",
+            file_output: fileOutput,
+          },
+        ],
+      },
+    ]);
+    const provider = createXai({
+      apiKey: "sk-test",
+      fetch,
+      paygate: { secret: TEST_PAYGATE_SECRET },
+    });
+    const req = {
+      model: MODEL,
+      prompt: "Add neon signs to the buildings",
+      image_file_id: "file_city",
+      storage_options: { filename: "city-neon.jpg" },
+    } satisfies XaiImageEditRequest;
+
+    const result = await provider.post.v1.images.edits(
+      req,
+      mintXaiOtp(EDITS_DOT_PATH, req)
+    );
+
+    expect(calls).toEqual([
+      {
+        url: "https://api.x.ai/v1/images/edits",
+        method: "POST",
+        body: {
+          model: MODEL,
+          prompt: "Add neon signs to the buildings",
+          image: { file_id: "file_city" },
+          storage_options: { filename: "city-neon.jpg" },
+        },
+      },
+    ]);
+    expect(result.data[0].file_output?.file_id).toBe("file_city_neon");
+  });
+
   it("validates image request enums and edit image requirements", () => {
     const provider = createXai({ apiKey: "sk-test" });
 
@@ -240,7 +287,7 @@ describe("xai Grok Imagine image generation and edits", () => {
         aspect_ratio: "auto",
         resolution: "2k",
         response_format: "b64_json",
-        storage_options: { public_url: true },
+        storage_options: { filename: "city.jpg", public_url: true },
         user: "user-789",
       }).success
     ).toBe(true);

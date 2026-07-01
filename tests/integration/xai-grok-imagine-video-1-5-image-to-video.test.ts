@@ -5,6 +5,8 @@ import { TEST_PAYGATE_SECRET, mintXaiOtp } from "../harness";
 
 const MODEL = "grok-imagine-video-1.5-preview";
 const VIDEO_GENERATIONS_DOT_PATH = "v1.videos.generations";
+const VIDEO_EDITS_DOT_PATH = "v1.videos.edits";
+const VIDEO_EXTENSIONS_DOT_PATH = "v1.videos.extensions";
 const DOT_PATH = "v1.videos.generations.imageToVideo";
 
 interface FetchCall {
@@ -115,6 +117,114 @@ describe("xai video generations default model", () => {
       body: req,
     });
   });
+
+  it("normalizes stored file IDs for video generation", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_files" },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "A camera pulls back through a neon city",
+      model: "grok-imagine-video",
+      duration: 5,
+      image_file_id: "file_city_neon",
+      reference_image_file_ids: ["file_sign", "file_street"],
+      storage_options: {
+        filename: "city-loop.mp4",
+        public_url: { expires_after: 86400 },
+      },
+    };
+
+    const result = await provider.post.v1.videos.generations(
+      req,
+      mintXaiOtp(VIDEO_GENERATIONS_DOT_PATH, req)
+    );
+
+    expect(result.request_id).toBe("vid_req_files");
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({
+      url: "https://api.x.ai/v1/videos/generations",
+      method: "POST",
+      body: {
+        prompt: req.prompt,
+        model: "grok-imagine-video",
+        duration: 5,
+        image: { file_id: "file_city_neon" },
+        reference_images: [
+          { file_id: "file_sign" },
+          { file_id: "file_street" },
+        ],
+        storage_options: {
+          filename: "city-loop.mp4",
+          public_url: { expires_after: 86400 },
+        },
+      },
+    });
+  });
+});
+
+describe("xai video stored file inputs", () => {
+  it("normalizes stored video IDs for edits and extensions", async () => {
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_edit_file" },
+      { request_id: "vid_extend_file" },
+    ]);
+    const provider = createProvider(fetch);
+    const editReq = {
+      model: "grok-imagine-video",
+      prompt: "Add rain and a moody atmosphere",
+      video_file_id: "file_source_video",
+      storage_options: { filename: "rainy-city.mp4" },
+    };
+    const extendReq = {
+      model: "grok-imagine-video",
+      prompt: "Continue through the city",
+      video_file_id: "file_rainy_city",
+      duration: 5,
+      storage_options: {
+        filename: "rainy-city-extended.mp4",
+        public_url: false,
+      },
+    };
+
+    const edit = await provider.post.v1.videos.edits(
+      editReq,
+      mintXaiOtp(VIDEO_EDITS_DOT_PATH, editReq)
+    );
+    const extension = await provider.post.v1.videos.extensions(
+      extendReq,
+      mintXaiOtp(VIDEO_EXTENSIONS_DOT_PATH, extendReq)
+    );
+
+    expect(edit.request_id).toBe("vid_edit_file");
+    expect(extension.request_id).toBe("vid_extend_file");
+    expect(calls).toEqual([
+      {
+        url: "https://api.x.ai/v1/videos/edits",
+        method: "POST",
+        body: {
+          model: "grok-imagine-video",
+          prompt: "Add rain and a moody atmosphere",
+          video: { file_id: "file_source_video" },
+          storage_options: { filename: "rainy-city.mp4" },
+        },
+      },
+      {
+        url: "https://api.x.ai/v1/videos/extensions",
+        method: "POST",
+        body: {
+          model: "grok-imagine-video",
+          prompt: "Continue through the city",
+          video: { file_id: "file_rainy_city" },
+          duration: 5,
+          storage_options: {
+            filename: "rainy-city-extended.mp4",
+            public_url: false,
+          },
+        },
+      },
+    ]);
+  });
 });
 
 describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
@@ -177,6 +287,61 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
     });
   });
 
+  it("chains stored image input into a persisted video output", async () => {
+    const fileOutput = {
+      file_id: "file_video_123",
+      filename: "city-loop.mp4",
+      public_url: "https://files-cdn.x.ai/city-loop.mp4",
+    };
+    const { calls, fetch } = createQueuedFetch([
+      { request_id: "vid_req_file_chain" },
+      {
+        status: "done",
+        progress: 100,
+        video: {
+          url: "https://vidgen.x.ai/city-loop.mp4",
+          duration: 5,
+          respect_moderation: true,
+          file_output: fileOutput,
+        },
+      },
+    ]);
+    const provider = createProvider(fetch);
+    const req = {
+      prompt: "A camera pulls back through the city",
+      image_file_id: "file_city_neon",
+      duration: 5,
+      storage_options: {
+        filename: "city-loop.mp4",
+        public_url: true,
+      },
+      pollIntervalMs: 0,
+      maxPolls: 1,
+    };
+
+    const result = await provider.post.v1.videos.generations.imageToVideo(
+      req,
+      mintXaiOtp(DOT_PATH, req)
+    );
+
+    expect(result.video.file_output?.file_id).toBe("file_video_123");
+    expect(calls).toHaveLength(2);
+    expect(calls[0]).toMatchObject({
+      url: "https://api.x.ai/v1/videos/generations",
+      method: "POST",
+      body: {
+        prompt: req.prompt,
+        model: MODEL,
+        image: { file_id: "file_city_neon" },
+        duration: 5,
+        storage_options: {
+          filename: "city-loop.mp4",
+          public_url: true,
+        },
+      },
+    });
+  });
+
   it("validates URL, data URI, and file_id image inputs", () => {
     const provider = createXai({ apiKey: "sk-test" });
     const schema = provider.post.v1.videos.generations.imageToVideo.schema;
@@ -197,6 +362,13 @@ describe("xai Grok Imagine Video 1.5 image-to-video helper", () => {
       schema.safeParse({
         prompt: "Animate it",
         image: { file_id: "file_abc123" },
+      }).success
+    ).toBe(true);
+    expect(
+      schema.safeParse({
+        prompt: "Animate it",
+        image_file_id: "file_abc123",
+        storage_options: { filename: "animated.mp4" },
       }).success
     ).toBe(true);
     expect(

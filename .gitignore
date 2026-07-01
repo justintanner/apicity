@@ -186,3 +186,8 @@ harness-telegram-messages.json
 
 # bv (beads viewer) local config and caches
 .bv/
+
+# mise machine-local config (holds an absolute path to ~/.config/gc/dolt.env,
+# which carries the central Dolt credential). Never commit.
+mise.local.toml
+.mise.local.toml

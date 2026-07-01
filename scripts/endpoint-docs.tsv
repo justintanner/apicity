@@ -1466,7 +1466,11 @@ xai	managementApi.v1.collections.documents	GET	https://management-api.x.ai/v1/co
 xai	managementApi.v1.collections.documents	PATCH	https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}	https://docs.x.ai/docs/api-reference
 xai	managementApi.v1.collections.documents	POST	https://management-api.x.ai/v1/collections/{collectionId}/documents/{fileId}	https://docs.x.ai/docs/api-reference
 xai	managementApi.v1.collections.documents.batchGet	GET	https://management-api.x.ai/v1/collections/{collectionId}/documents:batchGet{query}	https://docs.x.ai/docs/api-reference
-xai	v1.customVoices	POST	https://api.x.ai/v1/custom-voices	https://docs.x.ai/docs/api-reference
+xai	v1.customVoices	DELETE	https://api.x.ai/v1/custom-voices/{voiceId}	https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+xai	v1.customVoices	GET	https://api.x.ai/v1/custom-voices/{paramsOrVoiceIdOrSignal}	https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+xai	v1.customVoices	PATCH	https://api.x.ai/v1/custom-voices/{voiceId}	https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+xai	v1.customVoices	POST	https://api.x.ai/v1/custom-voices	https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+xai	v1.customVoices.audio	GET	https://api.x.ai/v1/custom-voices/{voiceId}/audio	https://docs.x.ai/developers/model-capabilities/audio/custom-voices
 xai	v1.documents.search	POST	https://api.x.ai/v1/documents/search	https://docs.x.ai/docs/api-reference
 xai	v1.files	DELETE	https://api.x.ai/v1/files/{fileId}	https://docs.x.ai/docs/api-reference
 xai	v1.files	GET	https://api.x.ai/v1/files/{fileIdOrSignal}	https://docs.x.ai/docs/api-reference

@@ -619,9 +619,73 @@ export const XaiSttRequestSchema = z.object({
 
 export const XaiCustomVoiceCreateRequestSchema = z.object({
   file: z.instanceof(Blob),
-  name: z.string().min(1),
-  language: z.string(),
+  name: z.string().min(1).optional(),
+  language: z.string().optional(),
+  description: z.string().optional(),
+  gender: z.enum(["male", "female", "neutral"]).optional(),
+  accent: z.string().optional(),
+  age: z.enum(["young", "middle-aged", "old"]).optional(),
+  use_case: z
+    .enum([
+      "conversational",
+      "narration",
+      "characters",
+      "educational",
+      "advertisement",
+      "social_media",
+      "entertainment",
+    ])
+    .optional(),
+  tone: z
+    .enum([
+      "warm",
+      "casual",
+      "professional",
+      "friendly",
+      "authoritative",
+      "expressive",
+      "calm",
+    ])
+    .optional(),
   filename: z.string().optional(),
+});
+
+export const XaiCustomVoiceListParamsSchema = z.object({
+  limit: z.number().int().min(1).max(1000).optional(),
+  pagination_token: z.string().optional(),
+});
+
+export const XaiCustomVoiceUpdateRequestSchema = z.object({
+  name: z.string().min(1).nullable().optional(),
+  description: z.string().min(1).nullable().optional(),
+  gender: z.enum(["male", "female", "neutral"]).nullable().optional(),
+  accent: z.string().min(1).nullable().optional(),
+  age: z.enum(["young", "middle-aged", "old"]).nullable().optional(),
+  language: z.string().min(1).nullable().optional(),
+  use_case: z
+    .enum([
+      "conversational",
+      "narration",
+      "characters",
+      "educational",
+      "advertisement",
+      "social_media",
+      "entertainment",
+    ])
+    .nullable()
+    .optional(),
+  tone: z
+    .enum([
+      "warm",
+      "casual",
+      "professional",
+      "friendly",
+      "authoritative",
+      "expressive",
+      "calm",
+    ])
+    .nullable()
+    .optional(),
 });
 
 export const XaiRealtimeClientSecretRequestSchema = z.object({
@@ -870,6 +934,16 @@ export type XaiCustomVoiceCreateRequest = z.input<
 export type XaiCustomVoiceCreateRequestInput = XaiCustomVoiceCreateRequest;
 export type XaiCustomVoiceCreateParsedRequest = z.output<
   typeof XaiCustomVoiceCreateRequestSchema
+>;
+export type XaiCustomVoiceListParams = z.input<
+  typeof XaiCustomVoiceListParamsSchema
+>;
+export type XaiCustomVoiceUpdateRequest = z.input<
+  typeof XaiCustomVoiceUpdateRequestSchema
+>;
+export type XaiCustomVoiceUpdateRequestInput = XaiCustomVoiceUpdateRequest;
+export type XaiCustomVoiceUpdateParsedRequest = z.output<
+  typeof XaiCustomVoiceUpdateRequestSchema
 >;
 export type XaiBillingUsageRequest = z.input<
   typeof XaiBillingUsageRequestSchema

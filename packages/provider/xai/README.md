@@ -227,7 +227,7 @@ docs for uploads, expiration, and public URL lifecycle details.
 
 ## API Reference
 
-48 endpoints across 18 groups. Each method mirrors an upstream URL path.
+52 endpoints across 18 groups. Each method mirrors an upstream URL path.
 
 ### apiKey
 
@@ -373,11 +373,71 @@ Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
 ### customVoices
 
 <details>
+<summary><code>DELETE</code> <b><code>xai.v1.customVoices</code></b></summary>
+
+<code>DELETE https://api.x.ai/v1/custom-voices/{voiceId}</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
+
+```typescript
+const res = await xai.v1.customVoices({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.customVoices</code></b></summary>
+
+<code>GET https://api.x.ai/v1/custom-voices/{paramsOrVoiceIdOrSignal}</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
+
+```typescript
+const res = await xai.v1.customVoices({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>xai.v1.customVoices.audio</code></b></summary>
+
+<code>GET https://api.x.ai/v1/custom-voices/{voiceId}/audio</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
+
+```typescript
+const res = await xai.v1.customVoices.audio({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
+<summary><code>PATCH</code> <b><code>xai.v1.customVoices</code></b></summary>
+
+<code>PATCH https://api.x.ai/v1/custom-voices/{voiceId}</code>
+
+[Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
+
+```typescript
+const res = await xai.v1.customVoices({ /* ... */ });
+```
+
+Source: [`packages/provider/xai/src/xai.ts`](src/xai.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>xai.v1.customVoices</code></b></summary>
 
 <code>POST https://api.x.ai/v1/custom-voices</code>
 
-[Upstream docs ↗](https://docs.x.ai/docs/api-reference)
+[Upstream docs ↗](https://docs.x.ai/developers/model-capabilities/audio/custom-voices)
 
 ```typescript
 const res = await xai.v1.customVoices({ /* ... */ });

@@ -107,6 +107,10 @@ export type {
   XaiCustomVoiceCreateRequest,
   XaiCustomVoiceCreateRequestInput,
   XaiCustomVoiceCreateParsedRequest,
+  XaiCustomVoiceListParams,
+  XaiCustomVoiceUpdateRequest,
+  XaiCustomVoiceUpdateRequestInput,
+  XaiCustomVoiceUpdateParsedRequest,
   XaiBillingUsageRequest,
   XaiBillingUsageRequestInput,
   XaiBillingUsageParsedRequest,
@@ -940,8 +944,24 @@ export interface XaiSttResponse {
 // Custom voice creation response
 export interface XaiCustomVoice {
   voice_id: string;
-  name?: string;
-  language?: string;
+  name?: string | null;
+  description?: string | null;
+  gender?: string | null;
+  accent?: string | null;
+  age?: string | null;
+  language?: string | null;
+  use_case?: string | null;
+  tone?: string | null;
+  created_at?: string;
+}
+
+export interface XaiCustomVoiceListResponse {
+  voices: XaiCustomVoice[];
+  pagination_token?: string | null;
+}
+
+export interface XaiCustomVoiceDeleteResponse {
+  deleted: boolean;
 }
 
 // Realtime WebSocket connection options
@@ -1133,6 +1153,8 @@ import type {
   XaiTtsRequest,
   XaiSttRequest,
   XaiCustomVoiceCreateRequest,
+  XaiCustomVoiceListParams,
+  XaiCustomVoiceUpdateRequest,
   XaiBillingUsageRequest,
 } from "./zod";
 
@@ -1275,6 +1297,14 @@ interface XaiCustomVoicesMethod {
     signal?: AbortSignal
   ): Promise<XaiCustomVoice>;
   schema: ApicitySchema<XaiCustomVoiceCreateRequest>;
+}
+
+interface XaiGetCustomVoicesMethod {
+  (
+    paramsOrVoiceIdOrSignal?: XaiCustomVoiceListParams | string | AbortSignal,
+    signal?: AbortSignal
+  ): Promise<XaiCustomVoiceListResponse | XaiCustomVoice>;
+  audio(voiceId: string, signal?: AbortSignal): Promise<ArrayBuffer>;
 }
 
 // Generic list/get method type for models
@@ -1422,6 +1452,7 @@ interface XaiGetV1 {
     XaiVideoGenerationModel
   >;
   batches: XaiGetBatchesMethod;
+  customVoices: XaiGetCustomVoicesMethod;
 }
 
 interface XaiManagementGetV1 {
@@ -1457,6 +1488,10 @@ interface XaiDeleteV1 {
     fileId: string,
     signal?: AbortSignal
   ): Promise<{ id: string; deleted: boolean }>;
+  customVoices(
+    voiceId: string,
+    signal?: AbortSignal
+  ): Promise<XaiCustomVoiceDeleteResponse>;
 }
 
 interface XaiManagementDeleteV1 {
@@ -1493,6 +1528,19 @@ interface XaiManagementPatchV1 {
   };
 }
 
+interface XaiPatchCustomVoicesMethod {
+  (
+    voiceId: string,
+    req: XaiCustomVoiceUpdateRequest,
+    signal?: AbortSignal
+  ): Promise<XaiCustomVoice>;
+  schema: ApicitySchema<XaiCustomVoiceUpdateRequest>;
+}
+
+interface XaiPatchV1 {
+  customVoices: XaiPatchCustomVoicesMethod;
+}
+
 // WebSocket v1 namespace
 interface XaiWsV1 {
   realtime(opts?: XaiRealtimeConnectOptions): XaiRealtimeConnection;
@@ -1507,7 +1555,7 @@ export interface XaiProvider {
   };
   delete: { v1: XaiDeleteV1; managementApi: { v1: XaiManagementDeleteV1 } };
   put: { managementApi: { v1: XaiManagementPutV1 } };
-  patch: { managementApi: { v1: XaiManagementPatchV1 } };
+  patch: { v1: XaiPatchV1; managementApi: { v1: XaiManagementPatchV1 } };
   ws: { v1: XaiWsV1 };
 }
 

@@ -63,6 +63,10 @@ import {
   XaiSttRequest,
   XaiSttResponse,
   XaiCustomVoiceCreateRequest,
+  XaiCustomVoiceListParams,
+  XaiCustomVoiceListResponse,
+  XaiCustomVoiceUpdateRequest,
+  XaiCustomVoiceDeleteResponse,
   XaiCustomVoice,
   XaiApiKeyInfo,
   XaiManagementApiKeyListParams,
@@ -94,6 +98,7 @@ import {
   XaiTtsRequestSchema,
   XaiSttRequestSchema,
   XaiCustomVoiceCreateRequestSchema,
+  XaiCustomVoiceUpdateRequestSchema,
   XaiBillingUsageRequestSchema,
   XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
 } from "./zod";
@@ -113,6 +118,25 @@ function attachAbortHandler(
   } else if (signal.aborted) {
     // Already aborted, abort our controller too
     controller.abort();
+  }
+}
+
+function isAbortSignal(value: unknown): value is AbortSignal {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "aborted" in value &&
+    "addEventListener" in value
+  );
+}
+
+function appendOptionalFormField(
+  form: FormData,
+  name: string,
+  value: string | undefined
+): void {
+  if (value !== undefined) {
+    form.append(name, value);
   }
 }
 
@@ -248,7 +272,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
   const timeout = opts.timeout ?? 30000;
 
   async function makeRequest<T>(
-    method: "GET" | "POST" | "DELETE",
+    method: "GET" | "POST" | "PATCH" | "DELETE",
     path: string,
     body?: unknown,
     signal?: AbortSignal
@@ -632,6 +656,56 @@ export function createXai(opts: XaiOptions): XaiProvider {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        let message = `XAI API error: ${res.status}`;
+        let errBody: unknown = null;
+        try {
+          errBody = await res.json();
+          if (
+            typeof errBody === "object" &&
+            errBody !== null &&
+            "error" in errBody
+          ) {
+            const err = (errBody as { error: { message?: string } }).error;
+            if (err?.message) {
+              message = `XAI API error ${res.status}: ${err.message}`;
+            }
+          }
+        } catch {
+          // ignore parse errors
+        }
+        throw new XaiError(message, res.status, errBody);
+      }
+
+      return await res.arrayBuffer();
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof XaiError) throw error;
+      throw new XaiError(`XAI request failed: ${error}`, 500);
+    }
+  }
+
+  async function makeGetBinaryRequest(
+    path: string,
+    signal?: AbortSignal
+  ): Promise<ArrayBuffer> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    if (signal) {
+      attachAbortHandler(signal, controller);
+    }
+
+    try {
+      const res = await doFetch(`${baseURL}${path}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${opts.apiKey}`,
+        },
         signal: controller.signal,
       });
 
@@ -1086,6 +1160,112 @@ export function createXai(opts: XaiOptions): XaiProvider {
     }
   );
 
+  // POST https://api.x.ai/v1/custom-voices
+  // Docs: https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+  const postCustomVoices = Object.assign(
+    async function customVoices(
+      req: XaiCustomVoiceCreateRequest,
+      signal?: AbortSignal
+    ): Promise<XaiCustomVoice> {
+      const form = new FormData();
+      form.append("file", req.file, req.filename ?? "reference");
+      appendOptionalFormField(form, "name", req.name);
+      appendOptionalFormField(form, "description", req.description);
+      appendOptionalFormField(form, "gender", req.gender);
+      appendOptionalFormField(form, "accent", req.accent);
+      appendOptionalFormField(form, "age", req.age);
+      appendOptionalFormField(form, "language", req.language);
+      appendOptionalFormField(form, "use_case", req.use_case);
+      appendOptionalFormField(form, "tone", req.tone);
+      return await makeMultipartRequest<XaiCustomVoice>(
+        "/custom-voices",
+        form,
+        signal
+      );
+    },
+    {
+      schema: XaiCustomVoiceCreateRequestSchema,
+    }
+  );
+
+  // GET https://api.x.ai/v1/custom-voices/{paramsOrVoiceIdOrSignal}
+  // Docs: https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+  const getCustomVoices = Object.assign(
+    async function listCustomVoices(
+      paramsOrVoiceIdOrSignal?: XaiCustomVoiceListParams | string | AbortSignal,
+      signal?: AbortSignal
+    ): Promise<XaiCustomVoiceListResponse | XaiCustomVoice> {
+      if (typeof paramsOrVoiceIdOrSignal === "string") {
+        return await makeRequest<XaiCustomVoice>(
+          "GET",
+          `/custom-voices/${encodeURIComponent(paramsOrVoiceIdOrSignal)}`,
+          undefined,
+          signal
+        );
+      }
+      const queryParams = isAbortSignal(paramsOrVoiceIdOrSignal)
+        ? {}
+        : (paramsOrVoiceIdOrSignal ?? {});
+      const requestSignal = isAbortSignal(paramsOrVoiceIdOrSignal)
+        ? paramsOrVoiceIdOrSignal
+        : signal;
+      const query = buildQuery(queryParams);
+      return await makeRequest<XaiCustomVoiceListResponse>(
+        "GET",
+        `/custom-voices${query}`,
+        undefined,
+        requestSignal
+      );
+    },
+    {
+      // GET https://api.x.ai/v1/custom-voices/{voiceId}/audio
+      // Docs: https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+      audio: async function customVoiceAudio(
+        voiceId: string,
+        signal?: AbortSignal
+      ): Promise<ArrayBuffer> {
+        return await makeGetBinaryRequest(
+          `/custom-voices/${encodeURIComponent(voiceId)}/audio`,
+          signal
+        );
+      },
+    }
+  );
+
+  // PATCH https://api.x.ai/v1/custom-voices/{voiceId}
+  // Docs: https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+  const patchCustomVoices = Object.assign(
+    async function updateCustomVoice(
+      voiceId: string,
+      req: XaiCustomVoiceUpdateRequest,
+      signal?: AbortSignal
+    ): Promise<XaiCustomVoice> {
+      return await makeRequest<XaiCustomVoice>(
+        "PATCH",
+        `/custom-voices/${encodeURIComponent(voiceId)}`,
+        req,
+        signal
+      );
+    },
+    {
+      schema: XaiCustomVoiceUpdateRequestSchema,
+    }
+  );
+
+  // DELETE https://api.x.ai/v1/custom-voices/{voiceId}
+  // Docs: https://docs.x.ai/developers/model-capabilities/audio/custom-voices
+  async function deleteCustomVoices(
+    voiceId: string,
+    signal?: AbortSignal
+  ): Promise<XaiCustomVoiceDeleteResponse> {
+    return await makeRequest<XaiCustomVoiceDeleteResponse>(
+      "DELETE",
+      `/custom-voices/${encodeURIComponent(voiceId)}`,
+      undefined,
+      signal
+    );
+  }
+
   return attachExamples(
     withPaidGate(
       "xai",
@@ -1396,27 +1576,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 schema: XaiSttRequestSchema,
               }
             ),
-            // POST https://api.x.ai/v1/custom-voices
-            // Docs: https://docs.x.ai/docs/api-reference
-            customVoices: Object.assign(
-              async function customVoices(
-                req: XaiCustomVoiceCreateRequest,
-                signal?: AbortSignal
-              ): Promise<XaiCustomVoice> {
-                const form = new FormData();
-                form.append("file", req.file, req.filename ?? "reference");
-                form.append("name", req.name);
-                form.append("language", req.language);
-                return await makeMultipartRequest<XaiCustomVoice>(
-                  "/custom-voices",
-                  form,
-                  signal
-                );
-              },
-              {
-                schema: XaiCustomVoiceCreateRequestSchema,
-              }
-            ),
+            customVoices: postCustomVoices,
           },
           managementApi: {
             v1: {
@@ -1554,6 +1714,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
             imageGenerationModels: getImageGenerationModels,
             videoGenerationModels: getVideoGenerationModels,
             batches: getBatchesNamespace,
+            customVoices: getCustomVoices,
           },
           managementApi: {
             v1: {
@@ -1686,6 +1847,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 throw new XaiError(`XAI request failed: ${error}`, 500);
               }
             },
+            customVoices: deleteCustomVoices,
           },
           managementApi: {
             v1: {
@@ -1701,6 +1863,9 @@ export function createXai(opts: XaiOptions): XaiProvider {
           },
         },
         patch: {
+          v1: {
+            customVoices: patchCustomVoices,
+          },
           managementApi: {
             v1: {
               collections: {

@@ -47,20 +47,27 @@ describe("xAI custom voices integration", () => {
       file: new Blob([new Uint8Array([0])], { type: "audio/mpeg" }),
       name: "Test",
       language: "en",
+      gender: "neutral",
+      tone: "friendly",
     });
     expect(valid.success).toBe(true);
 
-    const missingName = provider.post.v1.customVoices.schema.safeParse({
+    const fileOnly = provider.post.v1.customVoices.schema.safeParse({
       file: new Blob([new Uint8Array([0])], { type: "audio/mpeg" }),
-      language: "en",
     });
-    expect(missingName.success).toBe(false);
+    expect(fileOnly.success).toBe(true);
 
     const missingFile = provider.post.v1.customVoices.schema.safeParse({
       name: "Test",
       language: "en",
     });
     expect(missingFile.success).toBe(false);
+
+    const invalidGender = provider.post.v1.customVoices.schema.safeParse({
+      file: new Blob([new Uint8Array([0])], { type: "audio/mpeg" }),
+      gender: "robot",
+    });
+    expect(invalidGender.success).toBe(false);
   });
 
   it("should expose customVoices schema", () => {

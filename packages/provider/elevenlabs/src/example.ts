@@ -216,12 +216,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "third_party_disable_allowed": "no_update"
     }
   },
-  "PATCH v1.speechEngine.update": {
-    "source": "elevenlabs/speech-engine",
-    "payload": {
-      "name": "Updated Speech Engine"
-    }
-  },
   "POST v1.audioNative.content.fromUrl": {
     "source": "elevenlabs/audio-native-content-url",
     "payload": {
@@ -527,24 +521,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "text": "soft ui click",
       "duration_seconds": 0.5,
       "prompt_influence": 0.3
-    }
-  },
-  "POST v1.speechEngine.create": {
-    "source": "elevenlabs/speech-engine",
-    "payload": {
-      "name": "Apicity Speech Engine route test",
-      "speech_engine": {
-        "ws_url": "wss://example.com/transcript",
-        "request_headers": {
-          "authorization": {
-            "variable_name": "transcript_auth"
-          }
-        }
-      },
-      "language": "en",
-      "tags": [
-        "apicity"
-      ]
     }
   },
   "POST v1.studio.podcasts.create": {

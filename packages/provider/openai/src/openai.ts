@@ -2,6 +2,8 @@ import {
   OpenAiOptions,
   OpenAiChatRequest,
   OpenAiChatResponse,
+  OpenAiCompletionRequest,
+  OpenAiCompletionResponse,
   OpenAiSpeechRequest,
   OpenAiTranscribeRequest,
   OpenAiTranscribeResponse,
@@ -80,6 +82,7 @@ import {
 } from "./types";
 import {
   OpenAiChatRequestSchema,
+  OpenAiCompletionRequestSchema,
   OpenAiEmbeddingRequestSchema,
   OpenAiFileUploadRequestSchema,
   OpenAiUploadCreateRequestSchema,
@@ -298,6 +301,23 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
 
   // POST v1 namespace
   const postV1 = {
+    // POST https://api.openai.com/v1/completions
+    // Docs: https://platform.openai.com/docs/api-reference/completions/create
+    completions: Object.assign(
+      async (
+        req: OpenAiCompletionRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiCompletionResponse> => {
+        return makeRequest<OpenAiCompletionResponse>(
+          "/completions",
+          jsonRequest(req),
+          signal
+        );
+      },
+      {
+        schema: OpenAiCompletionRequestSchema,
+      }
+    ),
     chat: {
       // POST https://api.openai.com/v1/chat/completions/{id}
       // Docs: https://platform.openai.com/docs/api-reference

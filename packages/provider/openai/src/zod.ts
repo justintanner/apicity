@@ -57,6 +57,43 @@ export const OpenAiStoredCompletionUpdateRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Completions
+// ---------------------------------------------------------------------------
+
+export const OpenAiCompletionPromptSchema = z.union([
+  z.string(),
+  z.array(z.string()),
+  z.array(z.number()),
+  z.array(z.array(z.number())),
+]);
+
+export const OpenAiCompletionStreamOptionsSchema = z.object({
+  include_obfuscation: z.boolean().optional(),
+  include_usage: z.boolean().optional(),
+});
+
+export const OpenAiCompletionRequestSchema = z.object({
+  model: z.string(),
+  prompt: OpenAiCompletionPromptSchema,
+  best_of: z.number().int().min(0).max(20).optional(),
+  echo: z.boolean().optional(),
+  frequency_penalty: z.number().min(-2).max(2).optional(),
+  logit_bias: z.record(z.string(), z.number().min(-100).max(100)).optional(),
+  logprobs: z.number().int().min(0).max(5).optional(),
+  max_tokens: z.number().int().min(0).optional(),
+  n: z.number().int().min(1).max(128).optional(),
+  presence_penalty: z.number().min(-2).max(2).optional(),
+  seed: z.number().int().optional(),
+  stop: z.union([z.string(), z.array(z.string()).max(4)]).optional(),
+  stream: z.boolean().optional(),
+  stream_options: OpenAiCompletionStreamOptionsSchema.optional(),
+  suffix: z.string().optional(),
+  temperature: z.number().min(0).max(2).optional(),
+  top_p: z.number().min(0).max(1).optional(),
+  user: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Embeddings
 // ---------------------------------------------------------------------------
 
@@ -696,6 +733,13 @@ export type OpenAiStoredCompletionUpdateRequestInput =
   OpenAiStoredCompletionUpdateRequest;
 export type OpenAiStoredCompletionUpdateParsedRequest = z.output<
   typeof OpenAiStoredCompletionUpdateRequestSchema
+>;
+export type OpenAiCompletionRequest = z.input<
+  typeof OpenAiCompletionRequestSchema
+>;
+export type OpenAiCompletionRequestInput = OpenAiCompletionRequest;
+export type OpenAiCompletionParsedRequest = z.output<
+  typeof OpenAiCompletionRequestSchema
 >;
 export type OpenAiEmbeddingRequest = z.input<
   typeof OpenAiEmbeddingRequestSchema

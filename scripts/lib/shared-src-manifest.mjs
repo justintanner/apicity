@@ -99,4 +99,10 @@ export const sharedSrcEntries = [
       "packages/provider/openai/src/chat-fragments-types.ts",
     ],
   },
+  {
+    id: "provider-transport",
+    class: "helper",
+    source: "shared/provider-src/transport.ts",
+    targets: ["packages/provider/kimicoding/src/transport.ts"],
+  },
 ];

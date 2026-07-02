@@ -50,4 +50,34 @@ export const sharedSrcEntries = [
       "packages/provider/xai/src/with-paid-gate.ts",
     ],
   },
+  {
+    id: "s3-b2-factory",
+    class: "helper",
+    source: "packages/provider/s3/src/s3.ts",
+    targets: ["packages/provider/b2/src/s3.ts"],
+    transforms: [
+      { find: '"./types"', replace: '"./s3-types"' },
+      { find: '"./zod"', replace: '"./s3-zod"' },
+    ],
+  },
+  {
+    id: "s3-b2-types",
+    class: "helper",
+    source: "packages/provider/s3/src/types.ts",
+    targets: ["packages/provider/b2/src/s3-types.ts"],
+    transforms: [
+      { find: '"./types"', replace: '"./s3-types"' },
+      { find: '"./zod"', replace: '"./s3-zod"' },
+    ],
+  },
+  {
+    id: "s3-b2-zod",
+    class: "helper",
+    source: "packages/provider/s3/src/zod.ts",
+    targets: ["packages/provider/b2/src/s3-zod.ts"],
+    transforms: [
+      { find: '"./types"', replace: '"./s3-types"' },
+      { find: '"./zod"', replace: '"./s3-zod"' },
+    ],
+  },
 ];

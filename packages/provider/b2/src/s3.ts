@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/s3/src/s3.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 import { createHash, createHmac } from "node:crypto";
 
 import { S3Error } from "./s3-types";

@@ -1,5 +1,5 @@
-import type { AnthropicStreamEvent } from "./types";
-
+// AUTO-GENERATED from shared/provider-src/sse.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 export interface SSEEvent {
   event: string;
   data: string;
@@ -61,15 +61,40 @@ export async function* sseToIterable(res: Response): AsyncIterable<SSEEvent> {
   }
 }
 
-export async function* parseAnthropicStream(
-  res: Response
-): AsyncIterable<AnthropicStreamEvent> {
-  for await (const sse of sseToIterable(res)) {
-    if (sse.data === "[DONE]") return;
-    try {
-      yield JSON.parse(sse.data) as AnthropicStreamEvent;
-    } catch {
-      // skip malformed events
+export async function* sseDataToIterable(res: Response): AsyncIterable<string> {
+  if (!res.body) return;
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    const parts = buffer.split(/\r?\n\r?\n/);
+    for (let i = 0; i < parts.length - 1; i++) {
+      const chunk = parts[i];
+      const lines = chunk.split(/\r?\n/);
+      for (const line of lines) {
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith("data:")) {
+          yield trimmed.slice(5).trim();
+        }
+      }
+    }
+    buffer = parts[parts.length - 1];
+  }
+
+  const trailing = buffer.trim();
+  if (trailing.length) {
+    const lines = trailing.split(/\r?\n/);
+    for (const line of lines) {
+      const trimmed = line.trimStart();
+      if (trimmed.startsWith("data:")) {
+        yield trimmed.slice(5).trim();
+      }
     }
   }
 }

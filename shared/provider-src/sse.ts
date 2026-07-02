@@ -1,5 +1,3 @@
-// AUTO-GENERATED from shared/provider-src/sse.ts; do not edit.
-// Edit the canonical file and run `pnpm run gen:shared`.
 export interface SSEEvent {
   event: string;
   data: string;

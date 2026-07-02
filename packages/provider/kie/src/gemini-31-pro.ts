@@ -1,4 +1,4 @@
-import { sseToIterable } from "./sse";
+import { sseDataToIterable } from "./sse";
 import { KieError } from "./types";
 import { KieGemini31ProChatCompletionsRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
@@ -170,7 +170,7 @@ async function parseErrorResponse(res: Response): Promise<KieError> {
 async function* parseChatCompletionsStream(
   res: Response
 ): AsyncIterable<KieGemini31ProChatCompletionChunk> {
-  for await (const data of sseToIterable(res)) {
+  for await (const data of sseDataToIterable(res)) {
     if (data === "[DONE]") {
       break;
     }

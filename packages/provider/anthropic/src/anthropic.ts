@@ -36,7 +36,7 @@ import {
   AnthropicSkillsCreateRequestSchema,
   AnthropicSkillVersionsCreateRequestSchema,
 } from "./zod";
-import { parseAnthropicStream } from "./sse";
+import { parseAnthropicStream } from "./anthropic-stream";
 import { attachExamples } from "./example";
 
 // Helper function to safely handle AbortSignal across different environments

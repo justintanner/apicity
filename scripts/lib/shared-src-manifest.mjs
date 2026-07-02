@@ -19,4 +19,17 @@ export const sharedSrcEntries = [
       "packages/provider/zaicoding/src/middleware.ts",
     ],
   },
+  {
+    id: "provider-sse",
+    class: "helper",
+    source: "shared/provider-src/sse.ts",
+    targets: [
+      "packages/provider/alibaba/src/sse.ts",
+      "packages/provider/anthropic/src/sse.ts",
+      "packages/provider/fireworks/src/sse.ts",
+      "packages/provider/free-media-upload/src/sse.ts",
+      "packages/provider/kie/src/sse.ts",
+      "packages/provider/kimicoding/src/sse.ts",
+    ],
+  },
 ];

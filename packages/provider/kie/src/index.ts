@@ -121,7 +121,7 @@ export { createResponsesProvider } from "./responses";
 export { createGemini31ProProvider } from "./gemini-31-pro";
 
 // Export SSE utility
-export { sseToIterable } from "./sse";
+export { sseDataToIterable as sseToIterable } from "./sse";
 
 // Export all types
 export type {

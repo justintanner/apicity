@@ -1,7 +1,7 @@
 import { KieError } from "./types";
 import { KieResponsesRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
-import { sseToIterable } from "./sse";
+import { sseDataToIterable } from "./sse";
 
 function attachAbortHandler(
   signal: AbortSignal | undefined,
@@ -190,7 +190,7 @@ export interface KieResponsesProvider {
 async function* parseResponsesStream(
   res: Response
 ): AsyncIterable<KieResponsesStreamEvent> {
-  for await (const payload of sseToIterable(res)) {
+  for await (const payload of sseDataToIterable(res)) {
     if (payload === "[DONE]") {
       yield { type: "done" };
       continue;

@@ -1,4 +1,4 @@
-import { sseToIterable } from "./sse";
+import { sseDataToIterable } from "./sse";
 import { KieError } from "./types";
 import { KieGemini35FlashStreamGenerateContentRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
@@ -148,7 +148,7 @@ async function parseErrorResponse(res: Response): Promise<KieError> {
 async function* parseGeminiStream(
   res: Response
 ): AsyncIterable<KieGemini35FlashStreamGenerateContentChunk> {
-  for await (const data of sseToIterable(res)) {
+  for await (const data of sseDataToIterable(res)) {
     if (data === "[DONE]") {
       break;
     }

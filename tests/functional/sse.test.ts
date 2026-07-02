@@ -1,11 +1,9 @@
 // Tests for SSE parsers — pure stream parsing, no API calls
 import { describe, it, expect } from "vitest";
 import { sseToIterable as kimiSse } from "../../packages/provider/kimicoding/src/sse";
-import { sseToIterable as kieSse } from "../../packages/provider/kie/src/sse";
-import {
-  sseToIterable as anthropicSse,
-  parseAnthropicStream,
-} from "../../packages/provider/anthropic/src/sse";
+import { sseDataToIterable as kieSse } from "../../packages/provider/kie/src/sse";
+import { parseAnthropicStream } from "../../packages/provider/anthropic/src/anthropic-stream";
+import { sseToIterable as anthropicSse } from "../../packages/provider/anthropic/src/sse";
 import { sseToIterable as fireworksSse } from "../../packages/provider/fireworks/src/sse";
 
 function makeResponse(chunks: string[]): Response {

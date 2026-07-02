@@ -86,6 +86,8 @@ import {
   ElevenLabsUserSubscriptionResponse,
   ElevenLabsSingleUseTokenType,
   ElevenLabsSingleUseTokenResponse,
+  ElevenLabsUsageCharacterStatsRequest,
+  ElevenLabsUsageCharacterStatsResponse,
   ElevenLabsVoice,
   ElevenLabsVoiceSettings,
   ElevenLabsWorkspaceAnalyticsQueryResponse,
@@ -477,6 +479,7 @@ import {
   ElevenLabsSpeechToTextRequestSchema,
   ElevenLabsSpeechToSpeechRequestSchema,
   ElevenLabsUpdatePvcVoiceSampleRequestSchema,
+  ElevenLabsUsageCharacterStatsRequestSchema,
   ElevenLabsWorkspaceAnalyticsRequestsRequestSchema,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequestSchema,
   ElevenLabsListWorkspaceAuditLogsRequestSchema,
@@ -1429,6 +1432,24 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       );
     },
     { schema: undefined }
+  );
+
+  // GET https://api.elevenlabs.io/v1/usage/character-stats
+  // Docs: https://elevenlabs.io/docs/api-reference/usage/get
+  const characterStats = Object.assign(
+    async (
+      req: ElevenLabsUsageCharacterStatsRequest,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsUsageCharacterStatsResponse> => {
+      return makeJsonRequest<ElevenLabsUsageCharacterStatsResponse>(
+        "GET",
+        "/v1/usage/character-stats",
+        undefined,
+        signal,
+        buildQueryString(req)
+      );
+    },
+    { schema: ElevenLabsUsageCharacterStatsRequestSchema }
   );
 
   // GET https://api.elevenlabs.io/v1/voices/{voiceId}
@@ -7290,6 +7311,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
       thirdPartyDisabling: setWorkspaceApiKeyThirdPartyDisabling,
     },
   };
+  const usage = {
+    characterStats,
+  };
   const serviceAccountApiKeys = {
     list: listServiceAccountApiKeys,
     create: createServiceAccountApiKey,
@@ -7624,6 +7648,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     pronunciationDictionaries,
 
     models,
+    usage,
     voices: v1Voices,
     sharedVoices: getSharedVoices,
     similarVoices: getSimilarVoices,
@@ -7669,6 +7694,7 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
           download: downloadPronunciationDictionary,
         },
         models,
+        usage,
         voices: v1Voices,
         sharedVoices: getSharedVoices,
         user,

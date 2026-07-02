@@ -37,6 +37,7 @@ import type {
   ElevenLabsUpsertOrderItemRequest,
   ElevenLabsRegisterOrderMediaRequest,
   ElevenLabsUpdatePvcVoiceSampleRequest,
+  ElevenLabsUsageCharacterStatsRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeRequest,
   ElevenLabsListWorkspaceAuditLogsRequest,
@@ -325,6 +326,9 @@ export type {
   ElevenLabsUpdatePvcVoiceSampleRequest,
   ElevenLabsUpdatePvcVoiceSampleRequestInput,
   ElevenLabsUpdatePvcVoiceSampleParsedRequest,
+  ElevenLabsUsageCharacterStatsRequest,
+  ElevenLabsUsageCharacterStatsRequestInput,
+  ElevenLabsUsageCharacterStatsParsedRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequest,
   ElevenLabsWorkspaceAnalyticsRequestsRequestInput,
   ElevenLabsWorkspaceAnalyticsRequestsParsedRequest,
@@ -2030,6 +2034,14 @@ export interface ElevenLabsSingleUseTokenResponse {
 export interface ElevenLabsDocsRedirectResponse {
   status: number;
   location: string | null;
+}
+
+// -- Usage response shapes ---------------------------------------------------
+
+export interface ElevenLabsUsageCharacterStatsResponse {
+  time: number[];
+  usage: Record<string, number[]>;
+  [key: string]: unknown;
 }
 
 // -- Workspace analytics response shapes ------------------------------------
@@ -5318,6 +5330,14 @@ export interface ElevenLabsListModelsMethod {
   (signal?: AbortSignal): Promise<ElevenLabsListModelsResponse>;
 }
 
+export interface ElevenLabsUsageCharacterStatsMethod {
+  (
+    req: ElevenLabsUsageCharacterStatsRequest,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsUsageCharacterStatsResponse>;
+  schema: z.ZodType<ElevenLabsUsageCharacterStatsRequest>;
+}
+
 export interface ElevenLabsWorkspaceAnalyticsRequestsMethod {
   (
     req: ElevenLabsWorkspaceAnalyticsRequestsRequest,
@@ -7109,6 +7129,10 @@ export interface ElevenLabsUserNamespace extends ElevenLabsGetUserMethod {
   subscription: ElevenLabsUserSubscriptionMethod;
 }
 
+export interface ElevenLabsUsageNamespace {
+  characterStats: ElevenLabsUsageCharacterStatsMethod;
+}
+
 export interface ElevenLabsWorkspaceAnalyticsQueryNamespace {
   usageByProductOverTime: ElevenLabsWorkspaceAnalyticsUsageByProductOverTimeMethod;
 }
@@ -7470,6 +7494,7 @@ export interface ElevenLabsV1Namespace {
   dubbing: ElevenLabsDubbingNamespace;
   studio: ElevenLabsStudioNamespace;
   user: ElevenLabsUserNamespace;
+  usage: ElevenLabsUsageNamespace;
   workspace: ElevenLabsWorkspaceNamespace;
   workspaces: ElevenLabsWorkspacesNamespace;
   serviceAccounts: ElevenLabsServiceAccountsNamespace;
@@ -7929,6 +7954,7 @@ export interface ElevenLabsGetV1Namespace {
   voices: ElevenLabsGetVoiceMethod;
   sharedVoices: ElevenLabsSharedVoicesMethod;
   user: ElevenLabsUserNamespace;
+  usage: ElevenLabsUsageNamespace;
   textToVoice: ElevenLabsGetV1TextToVoiceNamespace;
   audioIsolation: {
     history: {

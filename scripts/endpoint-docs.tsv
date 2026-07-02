@@ -488,6 +488,7 @@ dolthub	v1alpha1.sql.writePoll	GET	https://www.dolthub.com/api/v1alpha1/{owner}/
 dolthub	v1alpha1.user	GET	https://www.dolthub.com/api/v1alpha1/user
 elevenlabs	docs	GET	https://api.elevenlabs.io/docs	https://elevenlabs.io/docs/api-reference/text-to-speech
 elevenlabs	v1.models	GET	https://api.elevenlabs.io/v1/models	https://elevenlabs.io/docs/api-reference/models/list
+elevenlabs	v1.usage.characterStats	GET	https://api.elevenlabs.io/v1/usage/character-stats	https://elevenlabs.io/docs/api-reference/usage/get
 elevenlabs	v1.pronunciationDictionaries.list	GET	https://api.elevenlabs.io/v1/pronunciation-dictionaries	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/list
 elevenlabs	v1.pronunciationDictionaries.addFromFile	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-file	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-file
 elevenlabs	v1.pronunciationDictionaries.addFromRules	POST	https://api.elevenlabs.io/v1/pronunciation-dictionaries/add-from-rules	https://elevenlabs.io/docs/api-reference/pronunciation-dictionaries/create-from-rules

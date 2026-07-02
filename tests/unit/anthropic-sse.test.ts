@@ -2,9 +2,9 @@ import { describe, it, expect } from "vitest";
 
 import {
   sseToIterable,
-  parseAnthropicStream,
   type SSEEvent,
 } from "../../packages/provider/anthropic/src/sse";
+import { parseAnthropicStream } from "../../packages/provider/anthropic/src/anthropic-stream";
 import type { AnthropicStreamEvent } from "../../packages/provider/anthropic/src/types";
 
 // Helper to create a mock Response with a ReadableStream

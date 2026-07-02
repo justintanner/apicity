@@ -4,7 +4,10 @@ import { describe, it, expect, vi } from "vitest";
 import { FireworksChatRequestSchema } from "../../packages/provider/fireworks/src/zod";
 
 // Fireworks SSE
-import { sseToIterable } from "../../packages/provider/fireworks/src/sse";
+import {
+  sseDataToIterable,
+  sseToIterable,
+} from "../../packages/provider/fireworks/src/sse";
 
 // Helper to create a mock Response with a ReadableStream
 function createMockResponse(chunks: string[]): Response {
@@ -219,9 +222,35 @@ describe("Fireworks Zod schema .schema property coverage", () => {
 });
 
 describe("Fireworks SSE line 55 coverage", () => {
+  it("should ignore comments in complete event chunks", async () => {
+    const response = createMockResponse([
+      ': comment\nevent: custom_event\ndata: {"key":"value"}\n\n',
+    ]);
+    const events: { event: string; data: string }[] = [];
+    for await (const event of sseToIterable(response)) {
+      events.push(event);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].event).toBe("custom_event");
+    expect(events[0].data).toBe('{"key":"value"}');
+  });
+
   it("should parse trailing event with event: prefix (covers sse.ts line 55)", async () => {
     const response = createMockResponse([
       'event: custom_event\ndata: {"key":"value"}',
+    ]);
+    const events: { event: string; data: string }[] = [];
+    for await (const event of sseToIterable(response)) {
+      events.push(event);
+    }
+    expect(events).toHaveLength(1);
+    expect(events[0].event).toBe("custom_event");
+    expect(events[0].data).toBe('{"key":"value"}');
+  });
+
+  it("should ignore comments in trailing event chunks", async () => {
+    const response = createMockResponse([
+      ': comment\nevent: custom_event\ndata: {"key":"value"}',
     ]);
     const events: { event: string; data: string }[] = [];
     for await (const event of sseToIterable(response)) {
@@ -276,6 +305,46 @@ describe("Fireworks SSE line 55 coverage", () => {
     expect(events).toHaveLength(1);
     expect(events[0].event).toBe("spaced_event");
     expect(events[0].data).toBe("spaced_data");
+  });
+});
+
+describe("Fireworks SSE data helper coverage", () => {
+  it("should yield data lines and ignore non-data lines", async () => {
+    const response = createMockResponse([
+      ": comment\nevent: update\ndata: first\ndata: second\n\n",
+    ]);
+    const items: string[] = [];
+    for await (const item of sseDataToIterable(response)) {
+      items.push(item);
+    }
+    expect(items).toEqual(["first", "second"]);
+  });
+
+  it("should handle split trailing data", async () => {
+    const response = createMockResponse(["da", "ta: split"]);
+    const items: string[] = [];
+    for await (const item of sseDataToIterable(response)) {
+      items.push(item);
+    }
+    expect(items).toEqual(["split"]);
+  });
+
+  it("should ignore trailing non-data lines", async () => {
+    const response = createMockResponse(["event: no_data"]);
+    const items: string[] = [];
+    for await (const item of sseDataToIterable(response)) {
+      items.push(item);
+    }
+    expect(items).toHaveLength(0);
+  });
+
+  it("should handle empty response body", async () => {
+    const response = new Response(null);
+    const items: string[] = [];
+    for await (const item of sseDataToIterable(response)) {
+      items.push(item);
+    }
+    expect(items).toHaveLength(0);
   });
 });
 

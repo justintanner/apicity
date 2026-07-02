@@ -20,7 +20,8 @@ export type {
 } from "./middleware";
 
 // Export SSE utilities
-export { sseToIterable, parseAnthropicStream } from "./sse";
+export { parseAnthropicStream } from "./anthropic-stream";
+export { sseToIterable } from "./sse";
 export type { SSEEvent } from "./sse";
 
 // Export all types (request types now flow from zod.ts via types.ts)

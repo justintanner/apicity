@@ -3,9 +3,9 @@ import { describe, it, expect } from "vitest";
 // SSE utilities
 import {
   sseToIterable,
-  parseAnthropicStream,
   type SSEEvent,
 } from "../../packages/provider/anthropic/src/sse";
+import { parseAnthropicStream } from "../../packages/provider/anthropic/src/anthropic-stream";
 import { sseToIterable as kimiSseToIterable } from "../../packages/provider/kimicoding/src/sse";
 import type { AnthropicStreamEvent } from "../../packages/provider/anthropic/src/types";
 

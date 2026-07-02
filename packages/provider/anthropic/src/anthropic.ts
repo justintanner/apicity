@@ -38,28 +38,68 @@ import {
 } from "./zod";
 import { parseAnthropicStream } from "./anthropic-stream";
 import { attachExamples } from "./example";
+import { createTransport } from "./transport";
 
-// Helper function to safely handle AbortSignal across different environments
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
+interface AnthropicErrorBody {
+  error?: {
+    message?: string;
+    type?: string;
+  };
+}
 
-  // Handle both standard AbortSignal and node-fetch's AbortSignal
-  if (typeof signal.addEventListener === "function") {
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  } else if (signal.aborted) {
-    // Already aborted, abort our controller too
-    controller.abort();
+function isAnthropicErrorBody(x: unknown): x is AnthropicErrorBody {
+  return (
+    typeof x === "object" &&
+    x !== null &&
+    "error" in x &&
+    typeof (x as { error?: unknown }).error === "object"
+  );
+}
+
+function parseAnthropicErrorBody(
+  status: number,
+  body: unknown
+): { message: string; code?: string } {
+  let message = `Anthropic API error: ${status}`;
+  let code: string | undefined;
+
+  if (
+    isAnthropicErrorBody(body) &&
+    typeof body.error?.message === "string" &&
+    body.error.message.length > 0
+  ) {
+    message = `Anthropic API error ${status}: ${body.error.message}`;
+    code = typeof body.error.type === "string" ? body.error.type : undefined;
   }
+
+  return code ? { message, code } : { message };
+}
+
+function queryString(
+  query?: Record<string, string | string[] | boolean | undefined>
+): string {
+  const params = new URLSearchParams();
+  if (query) {
+    for (const [key, value] of Object.entries(query)) {
+      if (value === undefined) continue;
+      if (Array.isArray(value)) {
+        for (const v of value) {
+          params.append(`${key}[]`, v);
+        }
+      } else {
+        params.append(key, String(value));
+      }
+    }
+  }
+
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
 }
 
 export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
   const baseURL = (opts.baseURL ?? "https://api.anthropic.com") + "/v1";
   // Root host (no /v1 suffix) for non-versioned surfaces like /api/oauth/usage.
   const apiBase = opts.baseURL ?? "https://api.anthropic.com";
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
   const version = opts.defaultVersion ?? "2023-06-01";
   const defaultBeta = opts.defaultBeta;
@@ -81,37 +121,36 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     return headers;
   }
 
-  function makeController(signal?: AbortSignal): {
-    controller: AbortController;
-    timeoutId: ReturnType<typeof setTimeout>;
-  } {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-    return { controller, timeoutId };
+  function overrideHeaders(
+    apiKey?: string,
+    beta?: string[]
+  ): Record<string, string> | undefined {
+    return apiKey !== undefined || beta !== undefined
+      ? commonHeaders(apiKey ?? opts.apiKey, undefined, beta)
+      : undefined;
   }
 
-  async function handleError(res: Response): Promise<never> {
-    let message = `Anthropic API error: ${res.status}`;
-    let body: unknown = null;
-    let errorType: string | undefined;
-    try {
-      body = await res.json();
-      if (typeof body === "object" && body !== null && "error" in body) {
-        const err = (body as { error: { message?: string; type?: string } })
-          .error;
-        if (err?.message) {
-          message = `Anthropic API error ${res.status}: ${err.message}`;
-        }
-        errorType = err?.type;
-      }
-    } catch {
-      // ignore parse errors
-    }
-    throw new AnthropicError(message, res.status, body, errorType);
-  }
+  const transport = createTransport({
+    baseUrl: baseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => commonHeaders(opts.apiKey),
+    parseErrorBody: parseAnthropicErrorBody,
+    errorClass: AnthropicError,
+  });
+
+  const oauthTransport = createTransport({
+    baseUrl: apiBase,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({
+      Authorization: `Bearer ${opts.oauthToken ?? opts.apiKey}`,
+      "anthropic-version": version,
+      "anthropic-beta": "oauth-2025-04-20",
+    }),
+    parseErrorBody: parseAnthropicErrorBody,
+    errorClass: AnthropicError,
+  });
 
   // --- Core request methods ---
 
@@ -121,24 +160,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     signal?: AbortSignal,
     apiKey?: string
   ): Promise<T> {
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: commonHeaders(apiKey ?? opts.apiKey, {
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.postJson<T>(path, body, {
+      signal,
+      headers: overrideHeaders(apiKey),
+    });
   }
 
   async function makeStreamRequest(
@@ -146,27 +171,15 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     body: unknown,
     signal?: AbortSignal
   ): Promise<Response> {
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: commonHeaders(opts.apiKey, {
-          "Content-Type": "application/json",
-        }),
-        body: JSON.stringify({
-          ...(body as Record<string, unknown>),
-          stream: true,
-        }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return res;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.raw(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...(body as Record<string, unknown>),
+        stream: true,
+      }),
+      signal,
+    });
   }
 
   async function makeGetRequest<T>(
@@ -176,38 +189,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     apiKey?: string,
     beta?: string[]
   ): Promise<T> {
-    const { controller, timeoutId } = makeController(signal);
-
-    const params = new URLSearchParams();
-    if (query) {
-      for (const [key, value] of Object.entries(query)) {
-        if (value === undefined) continue;
-        if (Array.isArray(value)) {
-          for (const v of value) {
-            params.append(`${key}[]`, v);
-          }
-        } else {
-          params.append(key, String(value));
-        }
-      }
-    }
-    const qs = params.toString();
-    const url = `${baseURL}${path}${qs ? `?${qs}` : ""}`;
-
-    try {
-      const res = await doFetch(url, {
-        method: "GET",
-        headers: commonHeaders(apiKey ?? opts.apiKey, undefined, beta),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.getJson<T>(`${path}${queryString(query)}`, {
+      signal,
+      headers: overrideHeaders(apiKey, beta),
+    });
   }
 
   async function makeGetBinaryRequest(
@@ -216,21 +201,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     apiKey?: string,
     beta?: string[]
   ): Promise<ArrayBuffer> {
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "GET",
-        headers: commonHeaders(apiKey ?? opts.apiKey, undefined, beta),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return await res.arrayBuffer();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.getBinary(path, {
+      signal,
+      headers: overrideHeaders(apiKey, beta),
+    });
   }
 
   async function makeGetTextRequest(
@@ -238,21 +212,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     signal?: AbortSignal,
     apiKey?: string
   ): Promise<string> {
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "GET",
-        headers: commonHeaders(apiKey ?? opts.apiKey),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return await res.text();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.getText(path, {
+      signal,
+      headers: overrideHeaders(apiKey),
+    });
   }
 
   async function makeDeleteRequest<T>(
@@ -261,21 +224,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     apiKey?: string,
     beta?: string[]
   ): Promise<T> {
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "DELETE",
-        headers: commonHeaders(apiKey ?? opts.apiKey, undefined, beta),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.del<T>(path, {
+      signal,
+      headers: overrideHeaders(apiKey, beta),
+    });
   }
 
   async function makeEmptyPostRequest<T>(
@@ -283,18 +235,14 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     signal?: AbortSignal,
     apiKey?: string
   ): Promise<T> {
-    const { controller, timeoutId } = makeController(signal);
     try {
-      const res = await doFetch(`${baseURL}${path}`, {
+      const res = await transport.raw(path, {
         method: "POST",
-        headers: commonHeaders(apiKey ?? opts.apiKey),
-        signal: controller.signal,
+        signal,
+        headers: overrideHeaders(apiKey),
       });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
       return (await res.json()) as T;
     } catch (error) {
-      clearTimeout(timeoutId);
       if (error instanceof AnthropicError) throw error;
       throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
     }
@@ -307,22 +255,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     apiKey?: string,
     beta?: string[]
   ): Promise<T> {
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: commonHeaders(apiKey ?? opts.apiKey, undefined, beta),
-        body: form,
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await transport.postForm<T>(path, form, {
+      signal,
+      headers: overrideHeaders(apiKey, beta),
+    });
   }
 
   // --- Helper for pagination query params ---
@@ -722,25 +658,10 @@ export function createAnthropic(opts: AnthropicOptions): AnthropicProvider {
     // Subscription usage lives off the un-versioned root and authenticates with
     // an OAuth bearer token (the same call Claude's usage/limits UI makes),
     // not the x-api-key header the rest of the factory uses.
-    const { controller, timeoutId } = makeController(signal);
-    try {
-      const res = await doFetch(`${apiBase}/api/oauth/usage`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${opts.oauthToken ?? opts.apiKey}`,
-          "anthropic-version": version,
-          "anthropic-beta": "oauth-2025-04-20",
-        },
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-      if (!res.ok) return await handleError(res);
-      return (await res.json()) as AnthropicOauthUsageResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AnthropicError) throw error;
-      throw new AnthropicError(`Anthropic request failed: ${error}`, 500);
-    }
+    return await oauthTransport.getJson<AnthropicOauthUsageResponse>(
+      "/api/oauth/usage",
+      { signal }
+    );
   }
 
   // --- Build namespaces ---

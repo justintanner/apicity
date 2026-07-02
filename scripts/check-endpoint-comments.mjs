@@ -15,6 +15,7 @@ import {
   loadProject,
   walkAllEndpoints,
   PROVIDERS,
+  TSV_ONLY_PROVIDERS,
 } from "./lib/endpoint-walk.mjs";
 import path from "node:path";
 
@@ -106,7 +107,10 @@ function addProviders(providers, value) {
 }
 
 function validateProviders(providers) {
-  const known = new Set(PROVIDERS.map((provider) => provider.name));
+  const known = new Set([
+    ...PROVIDERS.map((provider) => provider.name),
+    ...TSV_ONLY_PROVIDERS,
+  ]);
   const unknown = [...providers].filter((provider) => !known.has(provider));
   if (unknown.length) {
     throw new Error(

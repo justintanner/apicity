@@ -14,13 +14,13 @@ import {
   loadProject,
   walkAllEndpoints,
   PROVIDERS,
+  TSV_ONLY_PROVIDERS,
 } from "./lib/endpoint-walk.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, "..");
 const TSV_PATH = path.join(__dirname, "endpoint-docs.tsv");
-const TSV_ONLY_PROVIDERS = ["b2"];
 
 function loadEndpointDocsRows() {
   const rows = [];

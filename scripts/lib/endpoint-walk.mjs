@@ -168,6 +168,8 @@ const PROVIDERS = [
   },
 ];
 
+const TSV_ONLY_PROVIDERS = ["b2"];
+
 const METHOD_KEYS = new Set(["post", "get", "put", "delete", "patch", "head"]);
 
 const STREAM_KEYS = new Set(["stream", "ws", "run"]);
@@ -1216,4 +1218,4 @@ async function* walkAllEndpointsRaw(project, options = {}) {
   }
 }
 
-export { loadProject, PROVIDERS };
+export { loadProject, PROVIDERS, TSV_ONLY_PROVIDERS };

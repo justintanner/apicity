@@ -915,32 +915,31 @@ export const Seedance2MiniRequestSchema = z.object({
 
 export const NanoBanana2RequestSchema = z.object({
   model: z.literal("nano-banana-2"),
-  callBackUrl: z.string().optional(),
+  callBackUrl: z.string().url().optional(),
   input: z.object({
-    prompt: z.string().min(1),
-    image_input: z.array(z.string()).optional(),
+    prompt: z.string().min(1).max(20000),
+    image_input: z.array(z.string().url()).max(14).optional(),
     aspect_ratio: z
       .enum([
         "1:1",
+        "1:4",
+        "1:8",
         "2:3",
         "3:2",
         "3:4",
+        "4:1",
         "4:3",
         "4:5",
         "5:4",
+        "8:1",
         "9:16",
         "16:9",
         "21:9",
-        "1:4",
-        "1:8",
-        "4:1",
-        "8:1",
         "auto",
       ])
-      .default("16:9"),
-    resolution: NanoBananaResolutionSchema.default("2K"),
-    output_format: NanoBananaOutputFormatSchema.optional(),
-    google_search: z.boolean().optional(),
+      .default("auto"),
+    resolution: NanoBananaResolutionSchema.default("1K"),
+    output_format: NanoBananaOutputFormatSchema.default("jpg"),
   }),
 });
 

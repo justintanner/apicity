@@ -10,8 +10,8 @@ export {
   withFallback,
   withRateLimit,
   createRateLimiter,
-  XAI_RATE_LIMITS,
 } from "./middleware";
+export { XAI_RATE_LIMITS } from "./rate-limits";
 export type {
   RetryOptions,
   FallbackOptions,

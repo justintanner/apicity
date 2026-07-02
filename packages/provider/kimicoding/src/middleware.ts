@@ -1,3 +1,5 @@
+// AUTO-GENERATED from shared/provider-src/middleware.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 export interface RetryOptions {
   retries?: number;
   baseMs?: number;
@@ -29,7 +31,8 @@ function isTransientError(e: unknown): boolean {
     null;
 
   if (typeof status === "number") {
-    return status === 429 || status >= 500;
+    // Preserve the prior provider-specific retry cases while sharing one helper.
+    return status === 408 || status === 418 || status === 429 || status >= 500;
   }
   return true;
 }

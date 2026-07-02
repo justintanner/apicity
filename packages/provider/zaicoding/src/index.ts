@@ -6,8 +6,8 @@ export {
   withFallback,
   withRateLimit,
   createRateLimiter,
-  ZAICODING_RATE_LIMITS,
 } from "./middleware";
+export { ZAICODING_RATE_LIMITS } from "./rate-limits";
 
 export type {
   RetryOptions,

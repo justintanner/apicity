@@ -1,3 +1,5 @@
+// AUTO-GENERATED from shared/provider-src/middleware.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 export interface RetryOptions {
   retries?: number;
   baseMs?: number;
@@ -29,7 +31,8 @@ function isTransientError(e: unknown): boolean {
     null;
 
   if (typeof status === "number") {
-    return status === 429 || status >= 500;
+    // Preserve the prior provider-specific retry cases while sharing one helper.
+    return status === 408 || status === 418 || status === 429 || status >= 500;
   }
   return true;
 }
@@ -90,6 +93,107 @@ export function withFallback<TReq, TRes>(
     }
     throw lastError;
   };
+}
+
+export function withStreamRetry<TReq, TChunk>(
+  fn: (req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk>,
+  opts: RetryOptions = {}
+): (req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk> {
+  const retries = opts.retries ?? 2;
+  const baseMs = opts.baseMs ?? 300;
+  const factor = opts.factor ?? 2;
+  const jitter = opts.jitter ?? true;
+
+  return (req: TReq, signal?: AbortSignal): AsyncIterable<TChunk> => ({
+    [Symbol.asyncIterator]() {
+      let attempt = 0;
+      let iterator: AsyncIterator<TChunk> | null = null;
+      let done = false;
+
+      return {
+        async next(): Promise<IteratorResult<TChunk>> {
+          while (true) {
+            if (done) return { value: undefined, done: true };
+
+            if (!iterator) {
+              iterator = fn(req, signal)[Symbol.asyncIterator]();
+            }
+
+            try {
+              const result = await iterator.next();
+              if (result.done) {
+                done = true;
+              }
+              return result;
+            } catch (e) {
+              attempt += 1;
+              iterator = null;
+
+              if (
+                attempt > retries ||
+                !isTransientError(e) ||
+                signal?.aborted
+              ) {
+                throw e;
+              }
+
+              const delay = baseMs * Math.pow(factor, attempt - 1);
+              const wait = jitter
+                ? Math.floor(delay * (0.8 + Math.random() * 0.4))
+                : delay;
+
+              await sleep(wait);
+            }
+          }
+        },
+      };
+    },
+  });
+}
+
+export function withStreamFallback<TReq, TChunk>(
+  fns: Array<(req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk>>,
+  opts: FallbackOptions = {}
+): (req: TReq, signal?: AbortSignal) => AsyncIterable<TChunk> {
+  if (fns.length === 0) {
+    throw new Error("withStreamFallback requires at least one function");
+  }
+
+  return (req: TReq, signal?: AbortSignal): AsyncIterable<TChunk> => ({
+    [Symbol.asyncIterator]() {
+      let fnIndex = 0;
+      let iterator: AsyncIterator<TChunk> | null = null;
+      let done = false;
+
+      return {
+        async next(): Promise<IteratorResult<TChunk>> {
+          while (true) {
+            if (done) return { value: undefined, done: true };
+
+            if (!iterator) {
+              iterator = fns[fnIndex](req, signal)[Symbol.asyncIterator]();
+            }
+
+            try {
+              const result = await iterator.next();
+              if (result.done) {
+                done = true;
+              }
+              return result;
+            } catch (e) {
+              opts.onFallback?.(e, fnIndex);
+              fnIndex += 1;
+              iterator = null;
+
+              if (fnIndex >= fns.length) {
+                throw e;
+              }
+            }
+          }
+        },
+      };
+    },
+  });
 }
 
 export interface RateLimiterOptions {
@@ -317,11 +421,3 @@ export function withRateLimit<TReq, TRes>(
     }
   };
 }
-
-export const ZAICODING_RATE_LIMITS = {
-  free: { rpm: 5, concurrent: 2 },
-  tier1: { rpm: 60, concurrent: 10 },
-  tier2: { rpm: 200, concurrent: 25 },
-  tier3: { rpm: 500, concurrent: 50 },
-  tier4: { rpm: 1000, concurrent: 100 },
-} as const satisfies Record<string, RateLimiterOptions>;

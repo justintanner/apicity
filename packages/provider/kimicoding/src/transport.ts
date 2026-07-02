@@ -21,6 +21,7 @@ export interface TransportConfig<E extends Error> {
     text: string
   ) => ParsedErrorBody;
   errorClass: TransportErrorClass<E>;
+  requestFailedPrefix?: string;
 }
 
 export interface TransportCallOptions {
@@ -106,9 +107,9 @@ export function createTransport<E extends Error>(
   cfg: TransportConfig<E>
 ): Transport {
   const doFetch = cfg.fetchImpl ?? fetch;
-  const requestFailedPrefix = `${providerName(
-    cfg.errorClass.name
-  )} request failed`;
+  const requestFailedPrefix =
+    cfg.requestFailedPrefix ??
+    `${providerName(cfg.errorClass.name)} request failed`;
 
   async function parseError(res: Response): Promise<E> {
     const text = await res.text();

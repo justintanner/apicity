@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createTransport as createAlibabaTransport } from "../../packages/provider/alibaba/src/transport";
 import { createTransport as createKimiCodingTransport } from "../../packages/provider/kimicoding/src/transport";
+import { createTransport as createXaiTransport } from "../../packages/provider/xai/src/transport";
 
 type CreateTransport = typeof createKimiCodingTransport;
 
@@ -58,6 +59,7 @@ function createTestTransport(
       return code ? { message, code } : { message };
     },
     errorClass: TestTransportError,
+    requestFailedPrefix: "Test transport failed",
   });
 }
 
@@ -98,6 +100,7 @@ function pendingAbortFetch(): typeof fetch {
 const transportCopies = [
   { name: "kimicoding", createTransport: createKimiCodingTransport },
   { name: "alibaba", createTransport: createAlibabaTransport },
+  { name: "xai", createTransport: createXaiTransport },
 ];
 
 describe.each(transportCopies)(
@@ -162,7 +165,7 @@ describe.each(transportCopies)(
 
       await expect(transport.getJson("v1/models")).rejects.toMatchObject({
         name: "TestTransportError",
-        message: "TestTransport request failed: Error: offline",
+        message: "Test transport failed: Error: offline",
         status: 500,
         body: null,
       });
@@ -199,7 +202,7 @@ describe.each(transportCopies)(
 
       await expect(transport.getJson("slow")).rejects.toMatchObject({
         name: "TestTransportError",
-        message: "TestTransport request failed: AbortError: aborted",
+        message: "Test transport failed: AbortError: aborted",
         status: 500,
       });
     });
@@ -216,7 +219,7 @@ describe.each(transportCopies)(
 
       await expect(promise).rejects.toMatchObject({
         name: "TestTransportError",
-        message: "TestTransport request failed: AbortError: aborted",
+        message: "Test transport failed: AbortError: aborted",
         status: 500,
       });
     });
@@ -236,7 +239,7 @@ describe.each(transportCopies)(
         transport.getJson("slow", { signal: controller.signal })
       ).rejects.toMatchObject({
         name: "TestTransportError",
-        message: "TestTransport request failed: AbortError: aborted",
+        message: "Test transport failed: AbortError: aborted",
         status: 500,
       });
     });

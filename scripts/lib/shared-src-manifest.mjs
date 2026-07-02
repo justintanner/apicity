@@ -106,6 +106,7 @@ export const sharedSrcEntries = [
     targets: [
       "packages/provider/kimicoding/src/transport.ts",
       "packages/provider/alibaba/src/transport.ts",
+      "packages/provider/xai/src/transport.ts",
     ],
   },
 ];

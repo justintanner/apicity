@@ -1,4 +1,9 @@
 import type { z } from "zod";
+import type {
+  ChatChoice,
+  ChatToolCall,
+  ChatUsage,
+} from "./chat-fragments-types";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -204,33 +209,19 @@ export interface FireworksTool {
   function: FireworksToolFunction;
 }
 
+// Empty extensions preserve provider-specific public interface names.
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
 // Tool call in response
-export interface FireworksToolCall {
-  id: string;
-  type: "function";
-  function: {
-    name: string;
-    arguments: string;
-  };
-}
+export interface FireworksToolCall extends ChatToolCall {}
 
 // Usage info
-export interface FireworksUsage {
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
-}
+export interface FireworksUsage extends ChatUsage {}
 
 // Chat request
-export interface FireworksChatChoice {
-  index: number;
-  message: {
-    role: string;
-    content: string | null;
-    tool_calls?: FireworksToolCall[];
-  };
-  finish_reason: string;
-}
+export interface FireworksChatChoice extends ChatChoice {}
+
+/* eslint-enable @typescript-eslint/no-empty-object-type */
 
 export interface FireworksChatResponse {
   id: string;

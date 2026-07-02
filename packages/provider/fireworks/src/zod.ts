@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { ChatToolFunctionSchema, ChatToolSchema } from "./chat-fragments-zod";
+
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
@@ -23,16 +25,9 @@ export const FireworksMessageSchema = z.object({
   name: z.string().optional(),
 });
 
-export const FireworksToolFunctionSchema = z.object({
-  name: z.string(),
-  description: z.string().optional(),
-  parameters: z.record(z.string(), z.unknown()).optional(),
-});
+export const FireworksToolFunctionSchema = ChatToolFunctionSchema;
 
-export const FireworksToolSchema = z.object({
-  type: z.literal("function"),
-  function: FireworksToolFunctionSchema,
-});
+export const FireworksToolSchema = ChatToolSchema;
 
 export const FireworksResponseFormatSchema = z.object({
   type: z.enum(["text", "json_object", "json_schema", "grammar"]),

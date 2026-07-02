@@ -98,6 +98,7 @@ import {
   OpenAiOrganizationProjectRateLimitListQuerySchema,
 } from "./zod";
 import { attachExamples } from "./example";
+import { createTransport } from "./transport";
 
 export function textPart(text: string): OpenAiTextPart {
   return { type: "text", text };
@@ -121,6 +122,37 @@ export function imageBase64Part(
   return imageUrlPart(`data:${mediaType};base64,${base64}`, detail);
 }
 
+function parseOpenAiErrorBody(
+  status: number,
+  body: unknown
+): { message: string } {
+  if (typeof body === "object" && body !== null && "error" in body) {
+    const err = (body as { error: { message?: unknown } }).error;
+    if (err?.message) {
+      return { message: `OpenAI API error ${status}: ${err.message}` };
+    }
+  }
+
+  return { message: `OpenAI API error: ${status}` };
+}
+
+async function wrapOpenAiTransportFailure<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (error instanceof OpenAiError) throw error;
+    throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
+  }
+}
+
+async function readJsonResponse<T>(res: Response): Promise<T> {
+  return await wrapOpenAiTransportFailure(async () => (await res.json()) as T);
+}
+
+async function readArrayBufferResponse(res: Response): Promise<ArrayBuffer> {
+  return await wrapOpenAiTransportFailure(async () => await res.arrayBuffer());
+}
+
 export function firstContent(response: OpenAiChatResponse): string {
   return response.choices[0]?.message?.content ?? "";
 }
@@ -131,57 +163,49 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
   const codexBaseURL = (
     opts.codexBaseURL ?? "https://chatgpt.com/backend-api"
   ).replace(/\/$/, "");
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+
+  const transport = createTransport({
+    baseUrl: baseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${opts.apiKey}` }),
+    parseErrorBody: parseOpenAiErrorBody,
+    errorClass: OpenAiError,
+    requestFailedPrefix: "OpenAI request failed",
+  });
+
+  const codexTransport = createTransport({
+    baseUrl: codexBaseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => {
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${opts.apiKey}`,
+        "User-Agent": "codex-cli",
+      };
+      if (opts.chatgptAccountId) {
+        headers["ChatGPT-Account-Id"] = opts.chatgptAccountId;
+      }
+      return headers;
+    },
+    parseErrorBody: parseOpenAiErrorBody,
+    errorClass: OpenAiError,
+    requestFailedPrefix: "OpenAI request failed",
+  });
 
   async function makeRequest<T>(
     path: string,
     init: { headers: Record<string, string>; body: BodyInit },
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          ...init.headers,
-        },
-        body: init.body,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    const res = await transport.raw(path, {
+      method: "POST",
+      headers: init.headers,
+      body: init.body,
+      signal,
+    });
+    return await readJsonResponse<T>(res);
   }
 
   function jsonRequest(body: unknown): {
@@ -199,49 +223,13 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
     init: { headers: Record<string, string>; body: BodyInit },
     signal?: AbortSignal
   ): Promise<ArrayBuffer> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          ...init.headers,
-        },
-        body: init.body,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return await res.arrayBuffer();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    const res = await transport.raw(path, {
+      method: "POST",
+      headers: init.headers,
+      body: init.body,
+      signal,
+    });
+    return await readArrayBufferResponse(res);
   }
 
   async function makeGetRequest<T>(
@@ -249,13 +237,6 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
     query?: Record<string, string | string[] | boolean | number | undefined>,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
     const params = new URLSearchParams();
     if (query) {
       for (const [key, value] of Object.entries(query)) {
@@ -270,42 +251,9 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       }
     }
     const qs = params.toString();
-    const url = `${baseURL}${path}${qs ? `?${qs}` : ""}`;
-
-    try {
-      const res = await doFetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    return await transport.getJson<T>(`${path}${qs ? `?${qs}` : ""}`, {
+      signal,
+    });
   }
 
   // GET against the Codex/ChatGPT backend (codexBaseURL) rather than the API
@@ -314,196 +262,29 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
     path: string,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    const headers: Record<string, string> = {
-      Authorization: `Bearer ${opts.apiKey}`,
-      "User-Agent": "codex-cli",
-    };
-    if (opts.chatgptAccountId) {
-      headers["ChatGPT-Account-Id"] = opts.chatgptAccountId;
-    }
-
-    try {
-      const res = await doFetch(`${codexBaseURL}${path}`, {
-        method: "GET",
-        headers,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    return await codexTransport.getJson<T>(path, { signal });
   }
 
   async function makeEmptyPostRequest<T>(
     path: string,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    const res = await transport.raw(path, { method: "POST", signal });
+    return await readJsonResponse<T>(res);
   }
 
   async function makeDeleteRequest<T>(
     path: string,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    return await transport.del<T>(path, { signal });
   }
 
   async function makeGetTextRequest(
     path: string,
     signal?: AbortSignal
   ): Promise<string> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      signal.addEventListener("abort", () => controller.abort());
-    }
-
-    const url = `${baseURL}${path}`;
-
-    try {
-      const res = await doFetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `OpenAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `OpenAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new OpenAiError(message, res.status, body);
-      }
-
-      return await res.text();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof OpenAiError) throw error;
-      throw new OpenAiError(`OpenAI request failed: ${error}`, 500);
-    }
+    return await transport.getText(path, { signal });
   }
 
   // POST v1 namespace

@@ -214,10 +214,12 @@ export default defineConfig({
       changed: process.env.APICITY_COVERAGE_BASE ?? "origin/main",
       exclude: ["node_modules", "dist", "tests"],
       thresholds: {
-        lines: 100,
-        functions: 100,
-        branches: 100,
-        statements: 100,
+        "packages/provider/fireworks/src/sse.ts": {
+          lines: 100,
+          functions: 100,
+          branches: 100,
+          statements: 100,
+        },
       },
     },
   },

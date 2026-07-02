@@ -456,6 +456,15 @@ describe("fireworks sseToIterable", () => {
     expect(events[0].data).toBe("real");
   });
 
+  it("ignores non-SSE lines in complete events", async () => {
+    const res = makeResponse([": keep-alive\nretry: 1000\ndata: real\n\n"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toEqual([{ event: "message", data: "real" }]);
+  });
+
   it("flushes trailing event without final delimiter", async () => {
     const res = makeResponse(["data: trailing"]);
     const events = [];
@@ -464,6 +473,33 @@ describe("fireworks sseToIterable", () => {
     }
     expect(events).toHaveLength(1);
     expect(events[0].data).toBe("trailing");
+  });
+
+  it("flushes trailing event types without final delimiter", async () => {
+    const res = makeResponse(["event: completion\ndata: trailing"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toEqual([{ event: "completion", data: "trailing" }]);
+  });
+
+  it("ignores non-SSE lines in trailing events", async () => {
+    const res = makeResponse([": keep-alive\nretry: 1000\ndata: trailing"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toEqual([{ event: "message", data: "trailing" }]);
+  });
+
+  it("skips trailing events without data", async () => {
+    const res = makeResponse(["event: ping"]);
+    const events = [];
+    for await (const ev of fireworksSse(res)) {
+      events.push(ev);
+    }
+    expect(events).toHaveLength(0);
   });
 
   it("returns nothing for null body", async () => {

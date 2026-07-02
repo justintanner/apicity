@@ -1,22 +1,8 @@
 import { KieError } from "./types";
 import { KieClaudeRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
-
-// Helper function to safely handle AbortSignal across different environments
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
-
-  // Handle both standard AbortSignal and node-fetch's AbortSignal
-  if (typeof signal.addEventListener === "function") {
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  } else if (signal.aborted) {
-    // Already aborted, abort our controller too
-    controller.abort();
-  }
-}
+import { parseKieAnthropicErrorBody } from "./request";
+import { createTransport } from "./transport";
 
 // ---------------------------------------------------------------------------
 // Request types
@@ -126,6 +112,19 @@ export function createClaudeProvider(
   doFetch: typeof fetch,
   timeout: number
 ): KieClaudeProvider {
+  const transport = createTransport({
+    baseUrl: baseURL.replace(/\/$/, ""),
+    timeoutMs: timeout,
+    fetchImpl: doFetch,
+    defaultHeaders: () => ({
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    }),
+    parseErrorBody: parseKieAnthropicErrorBody("Kie Claude API error"),
+    errorClass: KieError,
+    requestFailedPrefix: "Claude request failed",
+  });
+
   return {
     claude: {
       post: {
@@ -137,54 +136,13 @@ export function createClaudeProvider(
               req: KieClaudeRequest,
               signal?: AbortSignal
             ): Promise<KieClaudeResponse> {
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-              if (signal) {
-                attachAbortHandler(signal, controller);
-              }
-
               try {
-                const res = await doFetch(`${baseURL}/claude/v1/messages`, {
-                  method: "POST",
-                  headers: {
-                    Authorization: `Bearer ${apiKey}`,
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(req),
-                  signal: controller.signal,
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!res.ok) {
-                  let message = `Kie Claude API error: ${res.status}`;
-                  let body: unknown = null;
-                  let code: string | undefined;
-                  try {
-                    body = await res.json();
-                    if (
-                      typeof body === "object" &&
-                      body !== null &&
-                      "error" in body
-                    ) {
-                      const err = (
-                        body as { error: { message?: string; type?: string } }
-                      ).error;
-                      if (typeof err.message === "string") {
-                        message = `Kie Claude API error ${res.status}: ${err.message}`;
-                      }
-                      code = err.type;
-                    }
-                  } catch {
-                    // ignore parse errors
-                  }
-                  throw new KieError(message, res.status, body, code);
-                }
-
-                return (await res.json()) as KieClaudeResponse;
+                return await transport.postJson<KieClaudeResponse>(
+                  "/claude/v1/messages",
+                  req,
+                  { signal }
+                );
               } catch (error) {
-                clearTimeout(timeoutId);
                 if (error instanceof KieError) throw error;
                 if (error instanceof SyntaxError) {
                   throw new KieError("Failed to parse Claude response", 500);

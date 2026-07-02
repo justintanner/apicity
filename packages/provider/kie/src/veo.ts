@@ -1,4 +1,4 @@
-import { kieRequest } from "./request";
+import { createKieTransport, kieRequest } from "./request";
 import { VeoGenerateRequestSchema, VeoExtendRequestSchema } from "./zod";
 import type { PayGateApproval } from "./paygate";
 import type { ApicitySchema } from "./types";
@@ -75,17 +75,23 @@ export function createVeoProvider(
   doFetch: typeof fetch,
   timeout: number
 ): VeoProvider {
-  const requestOpts = { apiKey, doFetch, timeout };
+  const transport = createKieTransport({
+    baseURL,
+    apiKey,
+    doFetch,
+    timeout,
+    requestFailedPrefix: "Kie request failed",
+  });
 
   // POST https://api.kie.ai/api/v1/veo/generate
   // Docs: https://docs.kie.ai/veo3-api/generate-veo-3-video
   async function submitGenerate(
     req: VeoGenerateRequest
   ): Promise<VeoSubmitResponse> {
-    return kieRequest<VeoSubmitResponse>(`${baseURL}/api/v1/veo/generate`, {
+    return kieRequest<VeoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/veo/generate",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -94,10 +100,10 @@ export function createVeoProvider(
   async function submitExtend(
     req: VeoExtendRequest
   ): Promise<VeoSubmitResponse> {
-    return kieRequest<VeoSubmitResponse>(`${baseURL}/api/v1/veo/extend`, {
+    return kieRequest<VeoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/veo/extend",
       body: req,
-      ...requestOpts,
     });
   }
 

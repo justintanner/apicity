@@ -3,20 +3,7 @@ import { KieError } from "./types";
 import { KieGemini31ProChatCompletionsRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
 import type { KieGemini31ProChatCompletionsRequest } from "./zod";
-
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
-
-  if (signal.aborted) {
-    controller.abort();
-    return;
-  }
-
-  signal.addEventListener("abort", () => controller.abort(), { once: true });
-}
+import { createTransport } from "./transport";
 
 export interface KieGemini31ProChatMessage {
   role?: string;
@@ -155,18 +142,6 @@ function formatGemini31ProError(
   return { message: `Kie Gemini 3.1 Pro API error: ${status}` };
 }
 
-async function parseErrorResponse(res: Response): Promise<KieError> {
-  let body: unknown = null;
-  try {
-    body = await res.json();
-  } catch {
-    // ignore parse errors
-  }
-
-  const formatted = formatGemini31ProError(res.status, body);
-  return new KieError(formatted.message, res.status, body, formatted.code);
-}
-
 async function* parseChatCompletionsStream(
   res: Response
 ): AsyncIterable<KieGemini31ProChatCompletionChunk> {
@@ -198,6 +173,19 @@ export function createGemini31ProProvider(
   doFetch: typeof fetch,
   timeout: number
 ): KieGemini31ProProvider {
+  const transport = createTransport({
+    baseUrl: baseURL.replace(/\/$/, ""),
+    timeoutMs: timeout,
+    fetchImpl: doFetch,
+    defaultHeaders: () => ({
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    }),
+    parseErrorBody: formatGemini31ProError,
+    errorClass: KieError,
+    requestFailedPrefix: "Gemini 3.1 Pro chat request failed",
+  });
+
   return {
     gemini31Pro: {
       post: {
@@ -211,30 +199,15 @@ export function createGemini31ProProvider(
                 req: KieGemini31ProChatCompletionsRequest,
                 signal?: AbortSignal
               ): Promise<KieGemini31ProChatCompletionsResult> {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-                attachAbortHandler(signal, controller);
-
                 try {
-                  const res = await doFetch(
-                    `${baseURL}/gemini-3.1-pro/v1/chat/completions`,
+                  const res = await transport.raw(
+                    "/gemini-3.1-pro/v1/chat/completions",
                     {
                       method: "POST",
-                      headers: {
-                        Authorization: `Bearer ${apiKey}`,
-                        "Content-Type": "application/json",
-                      },
                       body: JSON.stringify(req),
-                      signal: controller.signal,
+                      signal,
                     }
                   );
-
-                  clearTimeout(timeoutId);
-
-                  if (!res.ok) {
-                    throw await parseErrorResponse(res);
-                  }
 
                   if (isEventStream(res)) {
                     return parseChatCompletionsStream(res);
@@ -242,7 +215,6 @@ export function createGemini31ProProvider(
 
                   return (await res.json()) as KieGemini31ProChatCompletionResponse;
                 } catch (error) {
-                  clearTimeout(timeoutId);
                   if (error instanceof KieError) throw error;
                   if (error instanceof SyntaxError) {
                     throw new KieError(

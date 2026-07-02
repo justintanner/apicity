@@ -2,22 +2,7 @@ import { KieError } from "./types";
 import { KieResponsesRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
 import { sseDataToIterable } from "./sse";
-
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
-
-  if (signal.aborted) {
-    controller.abort();
-    return;
-  }
-
-  if (typeof signal.addEventListener === "function") {
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  }
-}
+import { createTransport } from "./transport";
 
 export type KieResponsesModel = "gpt-5-5";
 export type KieResponsesReasoningEffort = "low" | "medium" | "high" | "xhigh";
@@ -204,30 +189,22 @@ async function* parseResponsesStream(
   }
 }
 
-async function readError(
-  res: Response
-): Promise<{ message: string; body: unknown; code?: string }> {
-  let message = `Kie Responses API error: ${res.status}`;
-  let body: unknown = null;
-  let code: string | undefined;
-
-  try {
-    body = await res.json();
-    if (typeof body === "object" && body !== null && "error" in body) {
-      const err = (body as { error?: { message?: string; type?: string } })
-        .error;
-      if (typeof err?.message === "string") {
-        message = `Kie Responses API error ${res.status}: ${err.message}`;
-      }
-      if (typeof err?.type === "string") {
-        code = err.type;
-      }
+function formatResponsesError(
+  status: number,
+  body: unknown
+): { message: string; code?: string } {
+  if (typeof body === "object" && body !== null && "error" in body) {
+    const err = (body as { error?: { message?: unknown; type?: unknown } })
+      .error;
+    if (typeof err?.message === "string") {
+      return {
+        message: `Kie Responses API error ${status}: ${err.message}`,
+        code: typeof err.type === "string" ? err.type : undefined,
+      };
     }
-  } catch {
-    // Keep the default status-only error if the body is not JSON.
   }
 
-  return { message, body, code };
+  return { message: `Kie Responses API error: ${status}` };
 }
 
 export function createResponsesProvider(
@@ -236,6 +213,19 @@ export function createResponsesProvider(
   doFetch: typeof fetch,
   timeout: number
 ): KieResponsesProvider {
+  const transport = createTransport({
+    baseUrl: baseURL.replace(/\/$/, ""),
+    timeoutMs: timeout,
+    fetchImpl: doFetch,
+    defaultHeaders: () => ({
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    }),
+    parseErrorBody: formatResponsesError,
+    errorClass: KieError,
+    requestFailedPrefix: "Responses request failed",
+  });
+
   // POST https://api.kie.ai/codex/v1/responses
   // Docs: https://docs.kie.ai/market/chat/gpt-5-5
   const responses = Object.assign(
@@ -243,35 +233,16 @@ export function createResponsesProvider(
       req: KieResponsesRequest,
       signal?: AbortSignal
     ): Promise<KieResponsesResponse | AsyncIterable<KieResponsesStreamEvent>> {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-      if (signal) {
-        attachAbortHandler(signal, controller);
-      }
-
       try {
-        const headers: Record<string, string> = {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        };
-        if (req.stream) {
-          headers.Accept = "text/event-stream";
-        }
-
-        const res = await doFetch(`${baseURL}/codex/v1/responses`, {
+        const headers = req.stream
+          ? { Accept: "text/event-stream" }
+          : undefined;
+        const res = await transport.raw("/codex/v1/responses", {
           method: "POST",
           headers,
           body: JSON.stringify(req),
-          signal: controller.signal,
+          signal,
         });
-
-        clearTimeout(timeoutId);
-
-        if (!res.ok) {
-          const { message, body, code } = await readError(res);
-          throw new KieError(message, res.status, body, code);
-        }
 
         if (req.stream) {
           return parseResponsesStream(res);
@@ -279,7 +250,6 @@ export function createResponsesProvider(
 
         return (await res.json()) as KieResponsesResponse;
       } catch (error) {
-        clearTimeout(timeoutId);
         if (error instanceof KieError) throw error;
         if (error instanceof SyntaxError) {
           throw new KieError("Failed to parse responses response", 500);

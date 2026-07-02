@@ -596,6 +596,26 @@ export const OpenAiOrganizationProjectRateLimitListQuerySchema = z.object({
   limit: z.number().int().positive().optional(),
 });
 
+export const OpenAiOrganizationAuditLogsQuerySchema = z.object({
+  actor_emails: z.array(z.string()).optional(),
+  actor_ids: z.array(z.string()).optional(),
+  after: z.string().optional(),
+  before: z.string().optional(),
+  effective_at: z
+    .object({
+      gt: z.number().optional(),
+      gte: z.number().optional(),
+      lt: z.number().optional(),
+      lte: z.number().optional(),
+    })
+    .optional(),
+  event_types: z.array(z.string()).optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+  project_ids: z.array(z.string()).optional(),
+  resource_ids: z.array(z.string()).optional(),
+  tenant_only: z.boolean().optional(),
+});
+
 // ---------------------------------------------------------------------------
 // Options
 // ---------------------------------------------------------------------------
@@ -847,5 +867,8 @@ export type OpenAiOrganizationProjectListQuery = z.infer<
 >;
 export type OpenAiOrganizationProjectRateLimitListQuery = z.infer<
   typeof OpenAiOrganizationProjectRateLimitListQuerySchema
+>;
+export type OpenAiOrganizationAuditLogsQuery = z.infer<
+  typeof OpenAiOrganizationAuditLogsQuerySchema
 >;
 export type OpenAiOptions = z.infer<typeof OpenAiOptionsSchema>;

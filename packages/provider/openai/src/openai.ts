@@ -62,6 +62,8 @@ import {
   OpenAiOrganizationProject,
   OpenAiOrganizationProjectRateLimitListQuery,
   OpenAiProjectRateLimitListResponse,
+  OpenAiOrganizationAuditLogsQuery,
+  OpenAiOrganizationAuditLogsResponse,
   OpenAiStoredCompletionListOptions,
   OpenAiStoredCompletionListResponse,
   OpenAiStoredCompletionDeleteResponse,
@@ -96,9 +98,43 @@ import {
   OpenAiOrganizationCostsQuerySchema,
   OpenAiOrganizationProjectListQuerySchema,
   OpenAiOrganizationProjectRateLimitListQuerySchema,
+  OpenAiOrganizationAuditLogsQuerySchema,
 } from "./zod";
 import { attachExamples } from "./example";
 import { createTransport } from "./transport";
+
+type OpenAiQueryValue = string | string[] | boolean | number | undefined;
+
+function buildOrganizationAuditLogsQuery(
+  opts?: OpenAiOrganizationAuditLogsQuery
+): Record<string, OpenAiQueryValue> {
+  const query: Record<string, OpenAiQueryValue> = {
+    actor_emails: opts?.actor_emails,
+    actor_ids: opts?.actor_ids,
+    after: opts?.after,
+    before: opts?.before,
+    event_types: opts?.event_types,
+    limit: opts?.limit,
+    project_ids: opts?.project_ids,
+    resource_ids: opts?.resource_ids,
+    tenant_only: opts?.tenant_only,
+  };
+
+  if (opts?.effective_at?.gt !== undefined) {
+    query["effective_at[gt]"] = opts.effective_at.gt;
+  }
+  if (opts?.effective_at?.gte !== undefined) {
+    query["effective_at[gte]"] = opts.effective_at.gte;
+  }
+  if (opts?.effective_at?.lt !== undefined) {
+    query["effective_at[lt]"] = opts.effective_at.lt;
+  }
+  if (opts?.effective_at?.lte !== undefined) {
+    query["effective_at[lte]"] = opts.effective_at.lte;
+  }
+
+  return query;
+}
 
 export function textPart(text: string): OpenAiTextPart {
   return { type: "text", text };
@@ -1106,6 +1142,23 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
           ),
         }
       ) as import("./types").OpenAiGetV1OrganizationProjects,
+      // GET https://api.openai.com/v1/organization/audit_logs
+      // Docs: https://platform.openai.com/docs/api-reference/audit-logs/list
+      auditLogs: Object.assign(
+        async (
+          opts?: OpenAiOrganizationAuditLogsQuery,
+          signal?: AbortSignal
+        ): Promise<OpenAiOrganizationAuditLogsResponse> => {
+          return makeGetRequest<OpenAiOrganizationAuditLogsResponse>(
+            "/organization/audit_logs",
+            buildOrganizationAuditLogsQuery(opts),
+            signal
+          );
+        },
+        {
+          schema: OpenAiOrganizationAuditLogsQuerySchema,
+        }
+      ),
     },
     fineTuning: {
       // GET https://api.openai.com/v1/fine_tuning/jobs/{idOrOpts}

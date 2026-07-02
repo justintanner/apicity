@@ -103,6 +103,7 @@ export type {
   OpenAiOrganizationCostsQuery,
   OpenAiOrganizationProjectListQuery,
   OpenAiOrganizationProjectRateLimitListQuery,
+  OpenAiOrganizationAuditLogsQuery,
 } from "./zod";
 
 // ---------------------------------------------------------------------------
@@ -915,6 +916,53 @@ export interface OpenAiProjectRateLimitListResponse {
   has_more: boolean;
 }
 
+export interface OpenAiOrganizationAuditLogUser {
+  id?: string;
+  email?: string;
+}
+
+export interface OpenAiOrganizationAuditLogServiceAccount {
+  id?: string;
+}
+
+export interface OpenAiOrganizationAuditLogApiKeyActor {
+  id?: string;
+  type?: "user" | "service_account";
+  user?: OpenAiOrganizationAuditLogUser;
+  service_account?: OpenAiOrganizationAuditLogServiceAccount;
+}
+
+export interface OpenAiOrganizationAuditLogSessionActor {
+  user?: OpenAiOrganizationAuditLogUser;
+  ip_address?: string;
+  user_agent?: string;
+  ja3?: string;
+  ja4?: string;
+  ip_address_details?: Record<string, unknown>;
+}
+
+export interface OpenAiOrganizationAuditLogActor {
+  type?: "session" | "api_key";
+  api_key?: OpenAiOrganizationAuditLogApiKeyActor;
+  session?: OpenAiOrganizationAuditLogSessionActor;
+}
+
+export interface OpenAiOrganizationAuditLog {
+  id: string;
+  effective_at: number;
+  type: string;
+  actor?: OpenAiOrganizationAuditLogActor;
+  [eventDetails: string]: unknown;
+}
+
+export interface OpenAiOrganizationAuditLogsResponse {
+  object: "list";
+  data: OpenAiOrganizationAuditLog[];
+  has_more: boolean;
+  first_id?: string | null;
+  last_id?: string | null;
+}
+
 // Conversations — durable, replayable threads for multi-step agents.
 export interface OpenAiConversation {
   id: string;
@@ -952,6 +1000,7 @@ import type {
   OpenAiOrganizationCostsQuery,
   OpenAiOrganizationProjectListQuery,
   OpenAiOrganizationProjectRateLimitListQuery,
+  OpenAiOrganizationAuditLogsQuery,
 } from "./zod";
 
 interface OpenAiPostV1ChatCompletionsBase {
@@ -1338,6 +1387,14 @@ export interface OpenAiGetV1OrganizationProjectRateLimits {
   schema: z.ZodType<OpenAiOrganizationProjectRateLimitListQuery>;
 }
 
+export interface OpenAiGetV1OrganizationAuditLogs {
+  (
+    opts?: OpenAiOrganizationAuditLogsQuery,
+    signal?: AbortSignal
+  ): Promise<OpenAiOrganizationAuditLogsResponse>;
+  schema: z.ZodType<OpenAiOrganizationAuditLogsQuery>;
+}
+
 export interface OpenAiGetV1OrganizationNamespace {
   usage: {
     completions: OpenAiGetV1OrganizationUsageEndpoint;
@@ -1351,6 +1408,7 @@ export interface OpenAiGetV1OrganizationNamespace {
   };
   costs: OpenAiGetV1OrganizationCosts;
   projects: OpenAiGetV1OrganizationProjects;
+  auditLogs: OpenAiGetV1OrganizationAuditLogs;
 }
 
 export interface OpenAiGetV1Namespace {

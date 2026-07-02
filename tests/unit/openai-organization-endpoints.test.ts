@@ -65,4 +65,54 @@ describe("OpenAI organization endpoint wiring", () => {
     expect(parsed.searchParams.get("limit")).toBe("20");
     expect(init.method).toBe("GET");
   });
+
+  it("sends audit log list requests with filters", async () => {
+    const responseBody = {
+      object: "list",
+      data: [],
+      has_more: false,
+    };
+    const mockFetch = vi.fn().mockResolvedValue(jsonResponse(responseBody));
+    const openai = createOpenAi({ apiKey: "sk-admin-test", fetch: mockFetch });
+
+    const result = await openai.get.v1.organization.auditLogs({
+      actor_emails: ["ops@example.com"],
+      actor_ids: ["user_123"],
+      effective_at: {
+        gte: 1700000000,
+        lt: 1700003600,
+      },
+      event_types: ["project.created"],
+      limit: 1,
+      project_ids: ["proj_123"],
+      resource_ids: ["proj_123"],
+      tenant_only: true,
+    });
+
+    expect(result).toEqual(responseBody);
+    const [url, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+    const parsed = new URL(url);
+    expect(parsed.origin + parsed.pathname).toBe(
+      "https://api.openai.com/v1/organization/audit_logs"
+    );
+    expect(parsed.searchParams.getAll("actor_emails[]")).toEqual([
+      "ops@example.com",
+    ]);
+    expect(parsed.searchParams.getAll("actor_ids[]")).toEqual(["user_123"]);
+    expect(parsed.searchParams.get("effective_at[gte]")).toBe("1700000000");
+    expect(parsed.searchParams.get("effective_at[lt]")).toBe("1700003600");
+    expect(parsed.searchParams.getAll("event_types[]")).toEqual([
+      "project.created",
+    ]);
+    expect(parsed.searchParams.get("limit")).toBe("1");
+    expect(parsed.searchParams.getAll("project_ids[]")).toEqual(["proj_123"]);
+    expect(parsed.searchParams.getAll("resource_ids[]")).toEqual(["proj_123"]);
+    expect(parsed.searchParams.get("tenant_only")).toBe("true");
+    expect(init.method).toBe("GET");
+    expect(
+      openai.get.v1.organization.auditLogs.schema.safeParse({
+        limit: 100,
+      }).success
+    ).toBe(true);
+  });
 });

@@ -28,7 +28,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-51 endpoints across 13 groups. Each method mirrors an upstream URL path.
+52 endpoints across 13 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -548,6 +548,21 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 </details>
 
 ### organization
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.organization.auditLogs</code></b></summary>
+
+<code>GET https://api.openai.com/v1/organization/audit_logs</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/audit-logs/list)
+
+```typescript
+const res = await openai.v1.organization.auditLogs({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
 
 <details>
 <summary><code>GET</code> <b><code>openai.v1.organization.costs</code></b></summary>

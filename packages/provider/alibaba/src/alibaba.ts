@@ -24,6 +24,7 @@ import {
 } from "./zod";
 import { sseToIterable } from "./sse";
 import { attachExamples } from "./example";
+import { createTransport } from "./transport";
 
 export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
   const baseURL =
@@ -32,41 +33,56 @@ export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
     const u = new URL(baseURL);
     return `${u.origin}/api/v1`;
   })();
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
-  function attachAbortHandler(
-    signal: AbortSignal,
-    controller: AbortController
-  ): void {
-    if (signal.aborted) {
-      controller.abort();
-    } else {
-      signal.addEventListener("abort", () => controller.abort(), {
-        once: true,
-      });
-    }
+  function buildHeaders(): Record<string, string> {
+    return { Authorization: `Bearer ${opts.apiKey}` };
   }
 
   // DashScope returns either OpenAI-compat `{error: {message}}` (compatible-mode
   // endpoints) or the native shape `{code, message, request_id}` (aigc/*
   // endpoints). Surface whichever the server actually returned so callers see
   // the real reason (e.g. `DataInspectionFailed`) instead of a bare status.
-  function formatErrorMessage(status: number, body: unknown): string {
+  function parseErrorBody(
+    status: number,
+    body: unknown
+  ): { message: string; code?: string } {
     if (typeof body === "object" && body !== null) {
       if ("error" in body) {
-        const err = (body as { error: { message?: string } }).error;
-        if (err?.message) return `Alibaba API error ${status}: ${err.message}`;
+        const err = (body as { error?: { message?: unknown; code?: unknown } })
+          .error;
+        if (typeof err?.message === "string") {
+          const message = `Alibaba API error ${status}: ${err.message}`;
+          return typeof err.code === "string"
+            ? { message, code: err.code }
+            : { message };
+        }
       }
-      const native = body as { code?: string; message?: string };
-      if (native.code && native.message) {
-        return `Alibaba API error ${status}: ${native.code}: ${native.message}`;
+      const native = body as { code?: unknown; message?: unknown };
+      if (
+        typeof native.code === "string" &&
+        typeof native.message === "string"
+      ) {
+        return {
+          message: `Alibaba API error ${status}: ${native.code}: ${native.message}`,
+          code: native.code,
+        };
       }
-      if (native.message)
-        return `Alibaba API error ${status}: ${native.message}`;
+      if (typeof native.message === "string") {
+        return { message: `Alibaba API error ${status}: ${native.message}` };
+      }
     }
-    return `Alibaba API error: ${status}`;
+    return { message: `Alibaba API error: ${status}` };
   }
+
+  const transport = createTransport({
+    baseUrl: baseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: buildHeaders,
+    parseErrorBody,
+    errorClass: AlibabaError,
+  });
 
   async function makeRequest<T>(
     path: string,
@@ -77,47 +93,11 @@ export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
       extraHeaders?: Record<string, string>;
     } = {}
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${options.baseOverride ?? baseURL}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-          ...(options.extraHeaders ?? {}),
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        throw new AlibabaError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody
-        );
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AlibabaError) throw error;
-      throw new AlibabaError(`Alibaba request failed: ${error}`, 500);
-    }
+    return await transport.postJson<T>(path, body, {
+      signal,
+      baseUrl: options.baseOverride,
+      headers: options.extraHeaders,
+    });
   }
 
   async function* makeStreamRequest<T>(
@@ -125,53 +105,23 @@ export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
     body: unknown,
     signal?: AbortSignal
   ): AsyncIterable<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const res = await transport.raw(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    });
 
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        throw new AlibabaError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody
-        );
+    for await (const { data } of sseToIterable(res)) {
+      if (data === "[DONE]") {
+        break;
       }
 
-      for await (const { data } of sseToIterable(res)) {
-        if (data === "[DONE]") {
-          break;
-        }
-
-        try {
-          yield JSON.parse(data) as T;
-        } catch {
-          // ignore non-JSON lines
-        }
+      try {
+        yield JSON.parse(data) as T;
+      } catch {
+        // ignore non-JSON lines
       }
-    } finally {
-      clearTimeout(timeoutId);
     }
   }
 
@@ -183,51 +133,14 @@ export function createAlibaba(opts: AlibabaOptions): AlibabaProvider {
       query?: Record<string, string>;
     } = {}
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
     const qs = options.query
       ? `?${new URLSearchParams(options.query).toString()}`
       : "";
 
-    try {
-      const res = await doFetch(
-        `${options.baseOverride ?? baseURL}${path}${qs}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${opts.apiKey}`,
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        throw new AlibabaError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody
-        );
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof AlibabaError) throw error;
-      throw new AlibabaError(`Alibaba request failed: ${error}`, 500);
-    }
+    return await transport.getJson<T>(`${path}${qs}`, {
+      signal,
+      baseUrl: options.baseOverride,
+    });
   }
 
   // -- Namespace construction -----------------------------------------------

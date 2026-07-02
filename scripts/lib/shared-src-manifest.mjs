@@ -103,6 +103,9 @@ export const sharedSrcEntries = [
     id: "provider-transport",
     class: "helper",
     source: "shared/provider-src/transport.ts",
-    targets: ["packages/provider/kimicoding/src/transport.ts"],
+    targets: [
+      "packages/provider/kimicoding/src/transport.ts",
+      "packages/provider/alibaba/src/transport.ts",
+    ],
   },
 ];

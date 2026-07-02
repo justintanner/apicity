@@ -97,6 +97,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "omni-moderation-latest"
     }
   },
+  "POST v1.realtime.clientSecrets": {
+    "source": "openai/realtime-client-secrets",
+    "payload": {
+      "expires_after": {
+        "anchor": "created_at",
+        "seconds": 600
+      },
+      "session": {
+        "type": "realtime",
+        "model": "gpt-realtime",
+        "instructions": "You are a concise test assistant."
+      }
+    }
+  },
   "POST v1.responses": {
     "source": "openai/responses-hello",
     "payload": {

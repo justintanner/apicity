@@ -90,6 +90,31 @@ export type {
   OpenAiConversationCreateRequest,
   OpenAiConversationCreateRequestInput,
   OpenAiConversationCreateParsedRequest,
+  OpenAiRealtimeAudioFormat,
+  OpenAiRealtimeNoiseReduction,
+  OpenAiRealtimeAudioTranscription,
+  OpenAiRealtimeServerVad,
+  OpenAiRealtimeSemanticVad,
+  OpenAiRealtimeTurnDetection,
+  OpenAiRealtimeAudioInput,
+  OpenAiRealtimeVoice,
+  OpenAiRealtimeAudioOutput,
+  OpenAiRealtimeAudioConfig,
+  OpenAiRealtimePrompt,
+  OpenAiRealtimeReasoning,
+  OpenAiRealtimeToolChoice,
+  OpenAiRealtimeFunctionTool,
+  OpenAiRealtimeMcpTool,
+  OpenAiRealtimeTool,
+  OpenAiRealtimeTracing,
+  OpenAiRealtimeTruncation,
+  OpenAiRealtimeSessionCreateRequest,
+  OpenAiRealtimeSessionCreateParsedRequest,
+  OpenAiRealtimeTranscriptionSessionCreateRequest,
+  OpenAiRealtimeTranscriptionSessionCreateParsedRequest,
+  OpenAiRealtimeClientSecretRequest,
+  OpenAiRealtimeClientSecretRequestInput,
+  OpenAiRealtimeClientSecretParsedRequest,
   OpenAiVectorStoreExpirationPolicy,
   OpenAiVectorStoreAutoChunkingStrategy,
   OpenAiVectorStoreStaticChunkingStrategy,
@@ -1019,6 +1044,40 @@ export interface OpenAiConversation {
   metadata: Record<string, string> | null;
 }
 
+export interface OpenAiRealtimeSessionResponse {
+  id: string;
+  object: "realtime.session";
+  type: "realtime";
+  audio?: Record<string, unknown> | null;
+  client_secret?: Record<string, unknown> | null;
+  expires_at?: number;
+  include?: string[] | null;
+  instructions?: string;
+  max_output_tokens?: number | "inf";
+  model?: string;
+  output_modalities?: string[];
+  prompt?: Record<string, unknown> | null;
+  tracing?: "auto" | Record<string, unknown> | null;
+  truncation?: string | Record<string, unknown>;
+}
+
+export interface OpenAiRealtimeTranscriptionSessionResponse {
+  id: string;
+  object: "realtime.transcription_session";
+  type: "transcription";
+  audio?: Record<string, unknown> | null;
+  expires_at?: number;
+  include?: string[] | null;
+}
+
+export interface OpenAiRealtimeClientSecretResponse {
+  value: string;
+  expires_at: number;
+  session:
+    | OpenAiRealtimeSessionResponse
+    | OpenAiRealtimeTranscriptionSessionResponse;
+}
+
 // ---------------------------------------------------------------------------
 // Method interface types (endpoint shapes with .schema)
 // ---------------------------------------------------------------------------
@@ -1043,6 +1102,7 @@ import type {
   OpenAiResponseCompactRequest,
   OpenAiResponseInputTokensRequest,
   OpenAiConversationCreateRequest,
+  OpenAiRealtimeClientSecretRequest,
   OpenAiVectorStoreExpirationPolicy,
   OpenAiVectorStoreCreateRequest,
   OpenAiFineTuningJobCreateRequest,
@@ -1189,6 +1249,14 @@ export interface OpenAiPostV1VectorStores {
   schema: z.ZodType<OpenAiVectorStoreCreateRequest>;
 }
 
+export interface OpenAiPostV1RealtimeClientSecrets {
+  (
+    req: OpenAiRealtimeClientSecretRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiRealtimeClientSecretResponse>;
+  schema: z.ZodType<OpenAiRealtimeClientSecretRequest>;
+}
+
 export interface OpenAiPostV1Batches {
   (req: OpenAiBatchCreateRequest, signal?: AbortSignal): Promise<OpenAiBatch>;
   schema: z.ZodType<OpenAiBatchCreateRequest>;
@@ -1270,6 +1338,11 @@ export interface OpenAiPostV1FineTuningNamespace {
   };
 }
 
+// Realtime namespace for POST v1
+export interface OpenAiPostV1RealtimeNamespace {
+  clientSecrets: OpenAiPostV1RealtimeClientSecrets;
+}
+
 // POST v1 namespace
 export interface OpenAiPostV1Namespace {
   completions: OpenAiPostV1Completions;
@@ -1282,6 +1355,7 @@ export interface OpenAiPostV1Namespace {
   moderations: OpenAiPostV1Moderations;
   responses: OpenAiPostV1ResponsesNamespace;
   conversations: OpenAiPostV1Conversations;
+  realtime: OpenAiPostV1RealtimeNamespace;
   vectorStores: OpenAiPostV1VectorStores;
   batches: OpenAiPostV1Batches & {
     cancel: OpenAiPostV1BatchesCancel;

@@ -453,6 +453,8 @@ export type {
   VeoGenerationType,
   VeoGenerateRequest,
   VeoExtendRequest,
+  VeoGet1080pVideoRequest,
+  VeoGet1080pVideoResponse,
   VeoRecordInfoData,
   VeoRecordInfoRequest,
   VeoRecordInfoResponse,
@@ -526,6 +528,7 @@ export type {
 export type {
   VeoGenerateRequestInput,
   VeoExtendRequestInput,
+  VeoGet1080pVideoRequestInput,
   VeoRecordInfoRequestInput,
   VeoRecordInfoParsedRequest,
   VeoSuccessFlag,

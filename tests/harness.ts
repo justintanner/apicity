@@ -979,7 +979,10 @@ export function mintKieCreateTaskOtp(request: Record<string, unknown>): {
 }
 
 export function mintKieVeoOtp(
-  dotPath: "api.v1.veo.generate" | "api.v1.veo.extend",
+  dotPath:
+    | "api.v1.veo.generate"
+    | "api.v1.veo.extend"
+    | "api.v1.veo.get1080pVideo",
   request: Record<string, unknown>
 ): { otp: string } {
   return {

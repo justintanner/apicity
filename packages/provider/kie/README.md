@@ -476,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-40 endpoints across 23 groups. Each method mirrors an upstream URL path.
+41 endpoints across 23 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -1043,6 +1043,21 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 ### veo
+
+<details>
+<summary><code>GET</code> <b><code>kie.veo.get.api.v1.veo.get1080pVideo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/veo/get-1080p-video?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/veo3-api/get-veo-3-1080-p-video)
+
+```typescript
+const res = await kie.veo.get.api.v1.veo.get1080pVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>kie.veo.post.api.v1.veo.extend</code></b></summary>

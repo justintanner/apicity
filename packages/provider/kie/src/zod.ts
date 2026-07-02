@@ -1708,6 +1708,22 @@ export const VeoExtendRequestSchema = z.object({
   watermark: z.string().optional(),
 });
 
+export const VeoGet1080pVideoRequestSchema = z.object({
+  taskId: z.string().min(1),
+  index: z.number().int().min(0).optional(),
+});
+
+export const VeoGet1080pVideoResponseSchema = z.object({
+  code: z.number(),
+  msg: z.string().optional(),
+  data: z
+    .object({
+      resultUrl: z.string().url(),
+    })
+    .nullable()
+    .optional(),
+});
+
 export const VeoRecordInfoRequestSchema = z.object({
   taskId: z.string().min(1),
 });
@@ -1757,6 +1773,16 @@ export type VeoGenerateParsedRequest = z.output<
 export type VeoExtendRequest = z.input<typeof VeoExtendRequestSchema>;
 export type VeoExtendRequestInput = VeoExtendRequest;
 export type VeoExtendParsedRequest = z.output<typeof VeoExtendRequestSchema>;
+export type VeoGet1080pVideoRequest = z.input<
+  typeof VeoGet1080pVideoRequestSchema
+>;
+export type VeoGet1080pVideoRequestInput = VeoGet1080pVideoRequest;
+export type VeoGet1080pVideoParsedRequest = z.output<
+  typeof VeoGet1080pVideoRequestSchema
+>;
+export type VeoGet1080pVideoResponse = z.output<
+  typeof VeoGet1080pVideoResponseSchema
+>;
 export type VeoRecordInfoRequest = z.input<typeof VeoRecordInfoRequestSchema>;
 export type VeoRecordInfoRequestInput = VeoRecordInfoRequest;
 export type VeoRecordInfoParsedRequest = z.output<

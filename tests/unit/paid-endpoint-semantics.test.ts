@@ -41,6 +41,10 @@ describe("paid endpoint semantics — regression", () => {
     prompt: "Continue the camera move",
     model: "quality",
   } as const;
+  const VEO_GET_1080P_VIDEO_REQUEST = {
+    taskId: "veo-task-1",
+    index: 0,
+  } as const;
   const ELEVENLABS_TTS_REQUEST = {
     model: "elevenlabs/text-to-speech-turbo-2-5",
     input: {
@@ -144,6 +148,28 @@ describe("paid endpoint semantics — regression", () => {
       expect(caught!.dotPath).toBe("api.v1.veo.extend");
       expect(mockFetch).not.toHaveBeenCalled();
     });
+
+    it("veo.get1080pVideo throws PayGateError before network dispatch", async () => {
+      const mockFetch = vi.fn();
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+      let caught: PayGateError | undefined;
+      try {
+        await provider.veo.get.api.v1.veo.get1080pVideo(
+          VEO_GET_1080P_VIDEO_REQUEST
+        );
+      } catch (error) {
+        caught = error as PayGateError;
+      }
+      expect(caught).toBeInstanceOf(PayGateError);
+      expect(caught!.code).toBe("otp-missing");
+      expect(caught!.dotPath).toBe("api.v1.veo.get1080pVideo");
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
   });
 
   describe("KIE ElevenLabs createTask requests block when OTP is missing", () => {
@@ -235,6 +261,37 @@ describe("paid endpoint semantics — regression", () => {
       expect(init.method).toBe("POST");
       expect(JSON.parse(init.body as string)).toEqual(VEO_EXTEND_REQUEST);
     });
+
+    it("veo.get1080pVideo passes the gate and dispatches", async () => {
+      const mockFetch = vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            code: 200,
+            msg: "success",
+            data: { resultUrl: "https://example.com/video.mp4" },
+          }),
+          { status: 200 }
+        )
+      );
+      const provider = createKie({
+        apiKey: "test-key",
+        baseURL: "https://api.kie.ai",
+        fetch: mockFetch,
+        paygate: { secret: TEST_PAYGATE_SECRET },
+      });
+
+      await provider.veo.get.api.v1.veo.get1080pVideo(
+        VEO_GET_1080P_VIDEO_REQUEST,
+        mintKieVeoOtp("api.v1.veo.get1080pVideo", VEO_GET_1080P_VIDEO_REQUEST)
+      );
+
+      const [url, init] = mockFetch.mock.calls[0];
+      expect(url).toBe(
+        "https://api.kie.ai/api/v1/veo/get-1080p-video?taskId=veo-task-1&index=0"
+      );
+      expect(init.method).toBe("GET");
+      expect(init.body).toBeUndefined();
+    });
   });
 
   describe("KIE free upload, status, and helper endpoints stay ungated", () => {
@@ -300,6 +357,9 @@ describe("paid endpoint semantics — regression", () => {
         "function"
       );
       expect(
+        provider.veo.get.api.v1.veo.get1080pVideo.schema.safeParse
+      ).toBeTypeOf("function");
+      expect(
         provider.veo.post.api.v1.veo.generate.schema.safeParse(
           VEO_GENERATE_REQUEST
         ).success
@@ -307,6 +367,11 @@ describe("paid endpoint semantics — regression", () => {
       expect(
         provider.veo.post.api.v1.veo.extend.schema.safeParse(VEO_EXTEND_REQUEST)
           .success
+      ).toBe(true);
+      expect(
+        provider.veo.get.api.v1.veo.get1080pVideo.schema.safeParse(
+          VEO_GET_1080P_VIDEO_REQUEST
+        ).success
       ).toBe(true);
     });
   });

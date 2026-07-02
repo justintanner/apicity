@@ -8,15 +8,16 @@ import {
 describe("paid-endpoint registry", () => {
   it("has the expected paid entries for KIE media generation", () => {
     const entries = [
-      "api.v1.jobs.createTask",
-      "api.v1.veo.generate",
-      "api.v1.veo.extend",
+      { method: "POST", dotPath: "api.v1.jobs.createTask" },
+      { method: "POST", dotPath: "api.v1.veo.generate" },
+      { method: "POST", dotPath: "api.v1.veo.extend" },
+      { method: "GET", dotPath: "api.v1.veo.get1080pVideo" },
     ];
-    for (const dotPath of entries) {
+    for (const { method, dotPath } of entries) {
       const entry = PAID_ENDPOINTS.find(
         (e) =>
           e.key.provider === "kie" &&
-          e.key.method === "POST" &&
+          e.key.method === method &&
           e.key.dotPath === dotPath
       );
       expect(entry).toBeDefined();
@@ -46,6 +47,9 @@ describe("paid-endpoint registry", () => {
     ).toBeDefined();
     expect(
       lookupPaidEndpoint("kie", "POST", "api.v1.veo.extend")
+    ).toBeDefined();
+    expect(
+      lookupPaidEndpoint("kie", "GET", "api.v1.veo.get1080pVideo")
     ).toBeDefined();
     expect(
       lookupPaidEndpoint("xai", "POST", "v1.videos.generations.imageToVideo")
@@ -95,6 +99,7 @@ describe("paid-endpoint registry", () => {
     ).toBe(false);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.generate")).toBe(true);
     expect(isPaidEndpoint("kie", "POST", "api.v1.veo.extend")).toBe(true);
+    expect(isPaidEndpoint("kie", "GET", "api.v1.veo.get1080pVideo")).toBe(true);
     expect(
       isPaidEndpoint("xai", "POST", "v1.videos.generations.imageToVideo")
     ).toBe(true);

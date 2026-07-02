@@ -677,6 +677,7 @@ export class KieError extends Error {
 export type {
   VeoGenerateRequestInput,
   VeoExtendRequestInput,
+  VeoGet1080pVideoRequestInput,
   VeoRecordInfoRequestInput,
   VeoRecordInfoParsedRequest,
   VeoSuccessFlag,

@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/cost/src/paygate.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 import {
   createHash,
   createHmac,
@@ -69,6 +71,18 @@ export class PayGateError extends Error {
     | "otp-expired"
     | "otp-mismatched-request"
     | "otp-replayed";
+
+  static [Symbol.hasInstance](value: unknown): boolean {
+    if (typeof value !== "object" || value === null) return false;
+    const record = value as Record<string, unknown>;
+    return (
+      record.name === "PayGateError" &&
+      typeof record.provider === "string" &&
+      typeof record.method === "string" &&
+      typeof record.dotPath === "string" &&
+      typeof record.code === "string"
+    );
+  }
 
   constructor(
     provider: string,

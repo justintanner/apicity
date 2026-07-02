@@ -32,4 +32,22 @@ export const sharedSrcEntries = [
       "packages/provider/kimicoding/src/sse.ts",
     ],
   },
+  {
+    id: "paygate",
+    class: "helper",
+    source: "packages/provider/cost/src/paygate.ts",
+    targets: [
+      "packages/provider/kie/src/paygate.ts",
+      "packages/provider/xai/src/paygate.ts",
+    ],
+  },
+  {
+    id: "with-paid-gate",
+    class: "helper",
+    source: "packages/provider/cost/src/with-paid-gate.ts",
+    targets: [
+      "packages/provider/kie/src/with-paid-gate.ts",
+      "packages/provider/xai/src/with-paid-gate.ts",
+    ],
+  },
 ];

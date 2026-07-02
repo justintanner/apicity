@@ -1,3 +1,5 @@
+// AUTO-GENERATED from packages/provider/cost/src/with-paid-gate.ts; do not edit.
+// Edit the canonical file and run `pnpm run gen:shared`.
 import {
   dispatchWithPaidGate,
   createReplayStore,

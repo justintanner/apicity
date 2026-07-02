@@ -250,6 +250,78 @@ export const OpenAiFileUploadRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Containers
+// ---------------------------------------------------------------------------
+
+export const OpenAiContainerMemoryLimitSchema = z.enum([
+  "1g",
+  "4g",
+  "16g",
+  "64g",
+]);
+
+export const OpenAiContainerNetworkPolicyDomainSecretSchema = z.object({
+  domain: z.string().min(1),
+  name: z.string().min(1),
+  value: z.string().min(1).max(10485760),
+});
+
+export const OpenAiContainerNetworkPolicyDisabledSchema = z.object({
+  type: z.literal("disabled"),
+});
+
+export const OpenAiContainerNetworkPolicyAllowlistSchema = z.object({
+  allowed_domains: z.array(z.string()),
+  type: z.literal("allowlist"),
+  domain_secrets: z
+    .array(OpenAiContainerNetworkPolicyDomainSecretSchema)
+    .optional(),
+});
+
+export const OpenAiContainerNetworkPolicySchema = z.discriminatedUnion("type", [
+  OpenAiContainerNetworkPolicyDisabledSchema,
+  OpenAiContainerNetworkPolicyAllowlistSchema,
+]);
+
+export const OpenAiContainerSkillReferenceSchema = z.object({
+  skill_id: z.string().min(1).max(64),
+  type: z.literal("skill_reference"),
+  version: z.string().optional(),
+});
+
+export const OpenAiContainerInlineSkillSourceSchema = z.object({
+  data: z.string().min(1).max(70254592),
+  media_type: z.literal("application/zip"),
+  type: z.literal("base64"),
+});
+
+export const OpenAiContainerInlineSkillSchema = z.object({
+  description: z.string(),
+  name: z.string(),
+  source: OpenAiContainerInlineSkillSourceSchema,
+  type: z.literal("inline"),
+});
+
+export const OpenAiContainerSkillSchema = z.discriminatedUnion("type", [
+  OpenAiContainerSkillReferenceSchema,
+  OpenAiContainerInlineSkillSchema,
+]);
+
+export const OpenAiContainerCreateRequestSchema = z.object({
+  name: z.string(),
+  expires_after: z
+    .object({
+      anchor: z.literal("last_active_at"),
+      minutes: z.number(),
+    })
+    .optional(),
+  file_ids: z.array(z.string()).optional(),
+  memory_limit: OpenAiContainerMemoryLimitSchema.optional(),
+  network_policy: OpenAiContainerNetworkPolicySchema.optional(),
+  skills: z.array(OpenAiContainerSkillSchema).optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Uploads
 // ---------------------------------------------------------------------------
 
@@ -1021,6 +1093,38 @@ export type OpenAiFileUploadRequest = z.input<
 export type OpenAiFileUploadRequestInput = OpenAiFileUploadRequest;
 export type OpenAiFileUploadParsedRequest = z.output<
   typeof OpenAiFileUploadRequestSchema
+>;
+export type OpenAiContainerMemoryLimit = z.infer<
+  typeof OpenAiContainerMemoryLimitSchema
+>;
+export type OpenAiContainerNetworkPolicyDomainSecret = z.infer<
+  typeof OpenAiContainerNetworkPolicyDomainSecretSchema
+>;
+export type OpenAiContainerNetworkPolicyDisabled = z.infer<
+  typeof OpenAiContainerNetworkPolicyDisabledSchema
+>;
+export type OpenAiContainerNetworkPolicyAllowlist = z.infer<
+  typeof OpenAiContainerNetworkPolicyAllowlistSchema
+>;
+export type OpenAiContainerNetworkPolicy = z.infer<
+  typeof OpenAiContainerNetworkPolicySchema
+>;
+export type OpenAiContainerSkillReference = z.infer<
+  typeof OpenAiContainerSkillReferenceSchema
+>;
+export type OpenAiContainerInlineSkillSource = z.infer<
+  typeof OpenAiContainerInlineSkillSourceSchema
+>;
+export type OpenAiContainerInlineSkill = z.infer<
+  typeof OpenAiContainerInlineSkillSchema
+>;
+export type OpenAiContainerSkill = z.infer<typeof OpenAiContainerSkillSchema>;
+export type OpenAiContainerCreateRequest = z.input<
+  typeof OpenAiContainerCreateRequestSchema
+>;
+export type OpenAiContainerCreateRequestInput = OpenAiContainerCreateRequest;
+export type OpenAiContainerCreateParsedRequest = z.output<
+  typeof OpenAiContainerCreateRequestSchema
 >;
 export type OpenAiUploadCreateRequest = z.input<
   typeof OpenAiUploadCreateRequestSchema

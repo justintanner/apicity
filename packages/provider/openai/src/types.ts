@@ -57,6 +57,18 @@ export type {
   OpenAiFileUploadRequest,
   OpenAiFileUploadRequestInput,
   OpenAiFileUploadParsedRequest,
+  OpenAiContainerMemoryLimit,
+  OpenAiContainerNetworkPolicyDomainSecret,
+  OpenAiContainerNetworkPolicyDisabled,
+  OpenAiContainerNetworkPolicyAllowlist,
+  OpenAiContainerNetworkPolicy,
+  OpenAiContainerSkillReference,
+  OpenAiContainerInlineSkillSource,
+  OpenAiContainerInlineSkill,
+  OpenAiContainerSkill,
+  OpenAiContainerCreateRequest,
+  OpenAiContainerCreateRequestInput,
+  OpenAiContainerCreateParsedRequest,
   OpenAiUploadCreateRequest,
   OpenAiUploadCreateRequestInput,
   OpenAiUploadCreateParsedRequest,
@@ -827,6 +839,28 @@ export interface OpenAiFileDeleteResponse {
   deleted: boolean;
 }
 
+export interface OpenAiContainerExpiresAfter {
+  anchor?: "last_active_at";
+  minutes?: number;
+}
+
+export interface OpenAiContainerResponseNetworkPolicy {
+  type: "allowlist" | "disabled";
+  allowed_domains?: string[];
+}
+
+export interface OpenAiContainer {
+  id: string;
+  created_at: number;
+  name: string;
+  object: "container";
+  status: string;
+  expires_after?: OpenAiContainerExpiresAfter;
+  last_active_at?: number;
+  memory_limit?: OpenAiContainerMemoryLimit;
+  network_policy?: OpenAiContainerResponseNetworkPolicy;
+}
+
 // --- Vector Stores API response types ---
 
 export interface OpenAiVectorStoreFileCounts {
@@ -1097,6 +1131,8 @@ import type {
   OpenAiImageVariationRequest,
   OpenAiModerationRequest,
   OpenAiFileUploadRequest,
+  OpenAiContainerMemoryLimit,
+  OpenAiContainerCreateRequest,
   OpenAiBatchCreateRequest,
   OpenAiResponseRequest,
   OpenAiResponseCompactRequest,
@@ -1190,6 +1226,14 @@ export interface OpenAiPostV1ImagesVariations {
 export interface OpenAiPostV1Files {
   (req: OpenAiFileUploadRequest, signal?: AbortSignal): Promise<OpenAiFile>;
   schema: z.ZodType<OpenAiFileUploadRequest>;
+}
+
+export interface OpenAiPostV1Containers {
+  (
+    req: OpenAiContainerCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiContainer>;
+  schema: z.ZodType<OpenAiContainerCreateRequest>;
 }
 
 export interface OpenAiPostV1Uploads {
@@ -1350,6 +1394,7 @@ export interface OpenAiPostV1Namespace {
   audio: OpenAiPostV1AudioNamespace;
   embeddings: OpenAiPostV1Embeddings;
   files: OpenAiPostV1Files;
+  containers: OpenAiPostV1Containers;
   uploads: OpenAiPostV1Uploads;
   images: OpenAiPostV1ImagesNamespace;
   moderations: OpenAiPostV1Moderations;

@@ -21,6 +21,8 @@ import {
   OpenAiFile,
   OpenAiFileUploadRequest,
   OpenAiFileDeleteResponse,
+  OpenAiContainer,
+  OpenAiContainerCreateRequest,
   OpenAiUploadCreateRequest,
   OpenAiUpload,
   OpenAiModelListResponse,
@@ -87,6 +89,7 @@ import {
   OpenAiCompletionRequestSchema,
   OpenAiEmbeddingRequestSchema,
   OpenAiFileUploadRequestSchema,
+  OpenAiContainerCreateRequestSchema,
   OpenAiUploadCreateRequestSchema,
   OpenAiImageEditRequestSchema,
   OpenAiImageGenerationRequestSchema,
@@ -548,6 +551,23 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiFileUploadRequestSchema,
+      }
+    ),
+    // POST https://api.openai.com/v1/containers
+    // Docs: https://platform.openai.com/docs/api-reference/containers/createContainers
+    containers: Object.assign(
+      async (
+        req: OpenAiContainerCreateRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiContainer> => {
+        return makeRequest<OpenAiContainer>(
+          "/containers",
+          jsonRequest(req),
+          signal
+        );
+      },
+      {
+        schema: OpenAiContainerCreateRequestSchema,
       }
     ),
     // POST https://api.openai.com/v1/uploads

@@ -20,22 +20,7 @@ import {
   CountTokensRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
-
-// Helper function to safely handle AbortSignal across different environments
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
-
-  // Handle both standard AbortSignal and node-fetch's AbortSignal
-  if (typeof signal.addEventListener === "function") {
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  } else if (signal.aborted) {
-    // Already aborted, abort our controller too
-    controller.abort();
-  }
-}
+import { createTransport } from "./transport";
 
 interface AnthropicErrorBody {
   error?: { message?: string; type?: string };
@@ -70,63 +55,38 @@ export function imageUrl(url: string): ImageContentBlock {
 
 export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
   const baseURL = opts.baseURL ?? "https://api.kimi.com/coding/";
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
 
   function buildHeaders(): Record<string, string> {
     return {
       Authorization: `Bearer ${opts.apiKey}`,
       "x-api-key": opts.apiKey,
-      "Content-Type": "application/json",
     };
   }
+
+  const transport = createTransport({
+    baseUrl: baseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: buildHeaders,
+    parseErrorBody: (status, body) => {
+      let message = `KimiCoding error: ${status}`;
+      if (
+        isAnthropicErrorBody(body) &&
+        typeof body.error?.message === "string"
+      ) {
+        message = `KimiCoding error ${status}: ${body.error.message}`;
+      }
+      return { message };
+    },
+    errorClass: KimiCodingError,
+  });
 
   async function makeGetRequest<T>(
     path: string,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "x-api-key": opts.apiKey,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `KimiCoding error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            isAnthropicErrorBody(body) &&
-            typeof body.error?.message === "string"
-          ) {
-            message = `KimiCoding error ${res.status}: ${body.error.message}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KimiCodingError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KimiCodingError) throw error;
-      throw new KimiCodingError(`KimiCoding request failed: ${error}`, 500);
-    }
+    return await transport.getJson<T>(path, { signal });
   }
 
   // POST https://api.kimi.com/coding/v1/messages
@@ -135,50 +95,24 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: ChatRequest,
     signal?: AbortSignal
   ): AsyncIterable<AnthropicStreamEvent> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    const res = await transport.raw("v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req),
+      signal,
+    });
 
-    try {
-      const res = await doFetch(`${baseURL}v1/messages`, {
-        method: "POST",
-        headers: buildHeaders(),
-        body: JSON.stringify(req),
-        signal: signal || controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `KimiCoding error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            isAnthropicErrorBody(body) &&
-            typeof body.error?.message === "string"
-          ) {
-            message = `KimiCoding error ${res.status}: ${body.error.message}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KimiCodingError(message, res.status, body);
+    for await (const { event, data } of sseToIterable(res)) {
+      if (event === "message_stop") {
+        break;
       }
 
-      for await (const { event, data } of sseToIterable(res)) {
-        if (event === "message_stop") {
-          break;
-        }
-
-        try {
-          const parsed: AnthropicStreamEvent = JSON.parse(data);
-          yield parsed;
-        } catch {
-          // ignore non-JSON lines
-        }
+      try {
+        const parsed: AnthropicStreamEvent = JSON.parse(data);
+        yield parsed;
+      } catch {
+        // ignore non-JSON lines
       }
-    } finally {
-      clearTimeout(timeoutId);
     }
   }
 
@@ -188,40 +122,9 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: ChatRequest,
     signal?: AbortSignal
   ): Promise<AnthropicMessage> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${baseURL}v1/messages`, {
-        method: "POST",
-        headers: buildHeaders(),
-        body: JSON.stringify(req),
-        signal: signal || controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `KimiCoding error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            isAnthropicErrorBody(body) &&
-            typeof body.error?.message === "string"
-          ) {
-            message = `KimiCoding error ${res.status}: ${body.error.message}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KimiCodingError(message, res.status, body);
-      }
-
-      return (await res.json()) as AnthropicMessage;
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    return await transport.postJson<AnthropicMessage>("v1/messages", req, {
+      signal,
+    });
   }
 
   // POST https://api.kimi.com/coding/v1/embeddings
@@ -230,40 +133,9 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: EmbeddingRequest,
     signal?: AbortSignal
   ): Promise<EmbeddingResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${baseURL}v1/embeddings`, {
-        method: "POST",
-        headers: buildHeaders(),
-        body: JSON.stringify(req),
-        signal: signal || controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `KimiCoding error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            isAnthropicErrorBody(body) &&
-            typeof body.error?.message === "string"
-          ) {
-            message = `KimiCoding error ${res.status}: ${body.error.message}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KimiCodingError(message, res.status, body);
-      }
-
-      return (await res.json()) as EmbeddingResponse;
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    return await transport.postJson<EmbeddingResponse>("v1/embeddings", req, {
+      signal,
+    });
   }
 
   // sig-ok: ergonomic name (URL is /tokens/count)
@@ -273,40 +145,11 @@ export function createKimiCoding(opts: KimiCodingOptions): KimiCodingProvider {
     req: CountTokensRequest,
     signal?: AbortSignal
   ): Promise<CountTokensResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${baseURL}v1/tokens/count`, {
-        method: "POST",
-        headers: buildHeaders(),
-        body: JSON.stringify(req),
-        signal: signal || controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `KimiCoding error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            isAnthropicErrorBody(body) &&
-            typeof body.error?.message === "string"
-          ) {
-            message = `KimiCoding error ${res.status}: ${body.error.message}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KimiCodingError(message, res.status, body);
-      }
-
-      return (await res.json()) as CountTokensResponse;
-    } finally {
-      clearTimeout(timeoutId);
-    }
+    return await transport.postJson<CountTokensResponse>(
+      "v1/tokens/count",
+      req,
+      { signal }
+    );
   }
 
   const messages = Object.assign(chatImpl, {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createTransport as createAlibabaTransport } from "../../packages/provider/alibaba/src/transport";
+import { createTransport as createFireworksTransport } from "../../packages/provider/fireworks/src/transport";
 import { createTransport as createKimiCodingTransport } from "../../packages/provider/kimicoding/src/transport";
 import { createTransport as createOpenAiTransport } from "../../packages/provider/openai/src/transport";
 import { createTransport as createXaiTransport } from "../../packages/provider/xai/src/transport";
@@ -103,6 +104,7 @@ const transportCopies = [
   { name: "alibaba", createTransport: createAlibabaTransport },
   { name: "xai", createTransport: createXaiTransport },
   { name: "openai", createTransport: createOpenAiTransport },
+  { name: "fireworks", createTransport: createFireworksTransport },
 ];
 
 describe.each(transportCopies)(

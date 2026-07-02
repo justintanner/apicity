@@ -59,12 +59,14 @@ export function attachAbortHandler(
 ): void {
   if (!signal) return;
 
+  if (signal.aborted) {
+    controller.abort();
+    return;
+  }
+
   // Handle both standard AbortSignal and node-fetch's AbortSignal
   if (typeof signal.addEventListener === "function") {
     signal.addEventListener("abort", () => controller.abort(), { once: true });
-  } else if (signal.aborted) {
-    // Already aborted, abort our controller too
-    controller.abort();
   }
 }
 

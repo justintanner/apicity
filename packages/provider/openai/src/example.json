@@ -83,6 +83,43 @@
       "input": "Hello world"
     }
   },
+  "POST v1.evals": {
+    "source": "openai/evals-create",
+    "payload": {
+      "name": "Apicity support ticket fixture",
+      "data_source_config": {
+        "type": "custom",
+        "item_schema": {
+          "type": "object",
+          "properties": {
+            "ticket": {
+              "type": "string"
+            },
+            "category": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "ticket",
+            "category"
+          ]
+        },
+        "include_sample_schema": true
+      },
+      "testing_criteria": [
+        {
+          "type": "string_check",
+          "name": "Category string match",
+          "input": "{{ sample.output_text }}",
+          "operation": "eq",
+          "reference": "{{ item.category }}"
+        }
+      ],
+      "metadata": {
+        "source": "apicity"
+      }
+    }
+  },
   "POST v1.images.generations": {
     "source": "openai/images-generations",
     "payload": {

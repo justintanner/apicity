@@ -99,6 +99,27 @@ export type {
   OpenAiResponseInputTokensRequest,
   OpenAiResponseInputTokensRequestInput,
   OpenAiResponseInputTokensParsedRequest,
+  OpenAiEvalCustomDataSourceConfig,
+  OpenAiEvalLogsDataSourceConfig,
+  OpenAiEvalStoredCompletionsDataSourceConfig,
+  OpenAiEvalDataSourceConfig,
+  OpenAiEvalOutputTextContent,
+  OpenAiEvalInputImageContent,
+  OpenAiEvalInputAudioContent,
+  OpenAiEvalMessageContentPart,
+  OpenAiEvalMessageContent,
+  OpenAiEvalSimpleInputMessage,
+  OpenAiEvalMessageObject,
+  OpenAiEvalInputMessage,
+  OpenAiEvalLabelModelGrader,
+  OpenAiEvalStringCheckGrader,
+  OpenAiEvalTextSimilarityGrader,
+  OpenAiEvalPythonGrader,
+  OpenAiEvalScoreModelGrader,
+  OpenAiEvalGrader,
+  OpenAiEvalCreateRequest,
+  OpenAiEvalCreateRequestInput,
+  OpenAiEvalCreateParsedRequest,
   OpenAiConversationCreateRequest,
   OpenAiConversationCreateRequestInput,
   OpenAiConversationCreateParsedRequest,
@@ -493,7 +514,7 @@ export interface OpenAiResponseInputItemsOptions {
 }
 
 // Responses API input_items list response
-import type { OpenAiResponseInputItem } from "./zod";
+import type { OpenAiEvalGrader, OpenAiResponseInputItem } from "./zod";
 
 export interface OpenAiResponseInputItemsResponse {
   object: "list";
@@ -516,6 +537,44 @@ export interface OpenAiResponseCompactResponse {
 export interface OpenAiResponseInputTokensResponse {
   object: "response.input_tokens";
   input_tokens: number;
+}
+
+// --- Evals API response types ---
+
+export interface OpenAiEvalResolvedCustomDataSourceConfig {
+  type: "custom";
+  schema: Record<string, unknown>;
+}
+
+export interface OpenAiEvalResolvedLogsDataSourceConfig {
+  type: "logs";
+  schema: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+export interface OpenAiEvalResolvedStoredCompletionsDataSourceConfig {
+  type: "stored_completions";
+  schema: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
+export type OpenAiEvalResolvedDataSourceConfig =
+  | OpenAiEvalResolvedCustomDataSourceConfig
+  | OpenAiEvalResolvedLogsDataSourceConfig
+  | OpenAiEvalResolvedStoredCompletionsDataSourceConfig;
+
+export type OpenAiEvalTestingCriterion = OpenAiEvalGrader & {
+  id?: string;
+};
+
+export interface OpenAiEval {
+  id: string;
+  object: "eval";
+  created_at: number;
+  data_source_config: OpenAiEvalResolvedDataSourceConfig;
+  testing_criteria: OpenAiEvalTestingCriterion[];
+  metadata: Record<string, string>;
+  name: string;
 }
 
 // --- Fine-Tuning API response types ---
@@ -1143,6 +1202,7 @@ import type {
   OpenAiResponseRequest,
   OpenAiResponseCompactRequest,
   OpenAiResponseInputTokensRequest,
+  OpenAiEvalCreateRequest,
   OpenAiConversationCreateRequest,
   OpenAiRealtimeClientSecretRequest,
   OpenAiVectorStoreExpirationPolicy,
@@ -1283,6 +1343,11 @@ export interface OpenAiPostV1ResponsesCancel {
   (id: string, signal?: AbortSignal): Promise<OpenAiResponseResponse>;
 }
 
+export interface OpenAiPostV1Evals {
+  (req: OpenAiEvalCreateRequest, signal?: AbortSignal): Promise<OpenAiEval>;
+  schema: z.ZodType<OpenAiEvalCreateRequest>;
+}
+
 export interface OpenAiPostV1Conversations {
   (
     req: OpenAiConversationCreateRequest,
@@ -1405,6 +1470,7 @@ export interface OpenAiPostV1Namespace {
   images: OpenAiPostV1ImagesNamespace;
   moderations: OpenAiPostV1Moderations;
   responses: OpenAiPostV1ResponsesNamespace;
+  evals: OpenAiPostV1Evals;
   conversations: OpenAiPostV1Conversations;
   realtime: OpenAiPostV1RealtimeNamespace;
   vectorStores: OpenAiPostV1VectorStores;

@@ -108,22 +108,64 @@ import {
   XAI_GROK_IMAGINE_VIDEO_1_5_PREVIEW,
 } from "./zod";
 import { attachExamples } from "./example";
+import { createTransport, type Transport } from "./transport";
 import { withPaidGate } from "./with-paid-gate";
 
-// Helper function to safely handle AbortSignal across different environments
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
+interface XaiErrorEnvelope {
+  error?: {
+    message?: unknown;
+  };
+}
 
-  // Handle both standard AbortSignal and node-fetch's AbortSignal
-  if (typeof signal.addEventListener === "function") {
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  } else if (signal.aborted) {
-    // Already aborted, abort our controller too
-    controller.abort();
+function isXaiErrorEnvelope(body: unknown): body is XaiErrorEnvelope {
+  return (
+    typeof body === "object" &&
+    body !== null &&
+    "error" in body &&
+    typeof (body as { error?: unknown }).error === "object"
+  );
+}
+
+function parseXaiErrorBody(status: number, body: unknown): { message: string } {
+  if (isXaiErrorEnvelope(body) && typeof body.error?.message === "string") {
+    return { message: `XAI API error ${status}: ${body.error.message}` };
   }
+
+  return { message: `XAI API error: ${status}` };
+}
+
+async function wrapXaiTransportFailure<T>(fn: () => Promise<T>): Promise<T> {
+  try {
+    return await fn();
+  } catch (error) {
+    if (error instanceof XaiError) throw error;
+    throw new XaiError(`XAI request failed: ${error}`, 500);
+  }
+}
+
+async function readJsonResponse<T>(res: Response): Promise<T> {
+  return await wrapXaiTransportFailure(async () => (await res.json()) as T);
+}
+
+async function readArrayBufferResponse(res: Response): Promise<ArrayBuffer> {
+  return await wrapXaiTransportFailure(async () => await res.arrayBuffer());
+}
+
+async function jsonRequest<T>(
+  transport: Transport,
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
+  path: string,
+  body?: unknown,
+  signal?: AbortSignal
+): Promise<T> {
+  const res = await transport.raw(path, {
+    method,
+    headers:
+      body === undefined ? undefined : { "Content-Type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+    signal,
+  });
+  return await readJsonResponse<T>(res);
 }
 
 function isAbortSignal(value: unknown): value is AbortSignal {
@@ -273,8 +315,34 @@ export function createXai(opts: XaiOptions): XaiProvider {
     opts.managementBaseURL ?? "https://management-api.x.ai/v1";
   const managementRootURL = managementBaseURL.replace(/\/v1\/?$/, "");
   const managementApiKey = opts.managementApiKey ?? opts.apiKey;
-  const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+  const transport = createTransport({
+    baseUrl: baseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${opts.apiKey}` }),
+    parseErrorBody: parseXaiErrorBody,
+    errorClass: XaiError,
+    requestFailedPrefix: "XAI request failed",
+  });
+  const managementTransport = createTransport({
+    baseUrl: managementBaseURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${managementApiKey}` }),
+    parseErrorBody: parseXaiErrorBody,
+    errorClass: XaiError,
+    requestFailedPrefix: "XAI request failed",
+  });
+  const managementRootTransport = createTransport({
+    baseUrl: managementRootURL,
+    timeoutMs: timeout,
+    fetchImpl: opts.fetch,
+    defaultHeaders: () => ({ Authorization: `Bearer ${managementApiKey}` }),
+    parseErrorBody: parseXaiErrorBody,
+    errorClass: XaiError,
+    requestFailedPrefix: "XAI request failed",
+  });
 
   async function makeRequest<T>(
     method: "GET" | "POST" | "PATCH" | "DELETE",
@@ -282,102 +350,14 @@ export function createXai(opts: XaiOptions): XaiProvider {
     body?: unknown,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${opts.apiKey}`,
-      };
-      const init: RequestInit = {
-        method,
-        headers,
-        signal: controller.signal,
-      };
-
-      if (body !== undefined) {
-        headers["Content-Type"] = "application/json";
-        init.body = JSON.stringify(body);
-      }
-
-      const res = await doFetch(`${baseURL}${path}`, init);
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, body);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    return await jsonRequest<T>(transport, method, path, body, signal);
   }
 
   async function makeGetTextRequest(
     path: string,
     signal?: AbortSignal
   ): Promise<string> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (typeof body === "object" && body !== null && "error" in body) {
-            const err = (body as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, body);
-      }
-
-      return await res.text();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    return await transport.getText(path, { signal });
   }
 
   function buildQuery(params: object): string {
@@ -506,59 +486,13 @@ export function createXai(opts: XaiOptions): XaiProvider {
     body?: unknown,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${managementApiKey}`,
-      };
-      const init: RequestInit = {
-        method,
-        headers,
-        signal: controller.signal,
-      };
-
-      if (body !== undefined) {
-        headers["Content-Type"] = "application/json";
-        init.body = JSON.stringify(body);
-      }
-
-      const res = await doFetch(`${managementBaseURL}${path}`, init);
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let errBody: unknown = null;
-        try {
-          errBody = await res.json();
-          if (
-            typeof errBody === "object" &&
-            errBody !== null &&
-            "error" in errBody
-          ) {
-            const err = (errBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, errBody);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    return await jsonRequest<T>(
+      managementTransport,
+      method,
+      path,
+      body,
+      signal
+    );
   }
 
   async function makeManagementRootRequest<T>(
@@ -567,59 +501,13 @@ export function createXai(opts: XaiOptions): XaiProvider {
     body?: unknown,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${managementApiKey}`,
-      };
-      const init: RequestInit = {
-        method,
-        headers,
-        signal: controller.signal,
-      };
-
-      if (body !== undefined) {
-        headers["Content-Type"] = "application/json";
-        init.body = JSON.stringify(body);
-      }
-
-      const res = await doFetch(`${managementRootURL}${path}`, init);
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let errBody: unknown = null;
-        try {
-          errBody = await res.json();
-          if (
-            typeof errBody === "object" &&
-            errBody !== null &&
-            "error" in errBody
-          ) {
-            const err = (errBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, errBody);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    return await jsonRequest<T>(
+      managementRootTransport,
+      method,
+      path,
+      body,
+      signal
+    );
   }
 
   function buildManagementQuery(params: object): string {
@@ -647,102 +535,20 @@ export function createXai(opts: XaiOptions): XaiProvider {
     body: unknown,
     signal?: AbortSignal
   ): Promise<ArrayBuffer> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let errBody: unknown = null;
-        try {
-          errBody = await res.json();
-          if (
-            typeof errBody === "object" &&
-            errBody !== null &&
-            "error" in errBody
-          ) {
-            const err = (errBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, errBody);
-      }
-
-      return await res.arrayBuffer();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    const res = await transport.raw(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+      signal,
+    });
+    return await readArrayBufferResponse(res);
   }
 
   async function makeGetBinaryRequest(
     path: string,
     signal?: AbortSignal
   ): Promise<ArrayBuffer> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let errBody: unknown = null;
-        try {
-          errBody = await res.json();
-          if (
-            typeof errBody === "object" &&
-            errBody !== null &&
-            "error" in errBody
-          ) {
-            const err = (errBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, errBody);
-      }
-
-      return await res.arrayBuffer();
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    return await transport.getBinary(path, { signal });
   }
 
   async function makeMultipartRequest<T>(
@@ -750,49 +556,7 @@ export function createXai(opts: XaiOptions): XaiProvider {
     form: FormData,
     signal?: AbortSignal
   ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const res = await doFetch(`${baseURL}${path}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${opts.apiKey}` },
-        body: form,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `XAI API error: ${res.status}`;
-        let errBody: unknown = null;
-        try {
-          errBody = await res.json();
-          if (
-            typeof errBody === "object" &&
-            errBody !== null &&
-            "error" in errBody
-          ) {
-            const err = (errBody as { error: { message?: string } }).error;
-            if (err?.message) {
-              message = `XAI API error ${res.status}: ${err.message}`;
-            }
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new XaiError(message, res.status, errBody);
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof XaiError) throw error;
-      throw new XaiError(`XAI request failed: ${error}`, 500);
-    }
+    return await transport.postForm<T>(path, form, { signal });
   }
 
   // POST https://api.x.ai/v1/batches
@@ -1456,55 +1220,15 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 purpose?: string,
                 signal?: AbortSignal
               ): Promise<XaiFileObject> {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeout);
-                if (signal) {
-                  attachAbortHandler(signal, controller);
-                }
+                const formData = new FormData();
+                formData.append("file", file, filename);
+                if (purpose !== undefined) formData.append("purpose", purpose);
 
-                try {
-                  const formData = new FormData();
-                  formData.append("file", file, filename);
-                  if (purpose !== undefined)
-                    formData.append("purpose", purpose);
-
-                  const res = await doFetch(`${baseURL}/files`, {
-                    method: "POST",
-                    headers: { Authorization: `Bearer ${opts.apiKey}` },
-                    body: formData,
-                    signal: controller.signal,
-                  });
-
-                  clearTimeout(timeoutId);
-
-                  if (!res.ok) {
-                    let message = `XAI API error: ${res.status}`;
-                    let body: unknown = null;
-                    try {
-                      body = await res.json();
-                      if (
-                        typeof body === "object" &&
-                        body !== null &&
-                        "error" in body
-                      ) {
-                        const err = (body as { error: { message?: string } })
-                          .error;
-                        if (err?.message) {
-                          message = `XAI API error ${res.status}: ${err.message}`;
-                        }
-                      }
-                    } catch {
-                      // ignore parse errors
-                    }
-                    throw new XaiError(message, res.status, body);
-                  }
-
-                  return (await res.json()) as XaiFileObject;
-                } catch (error) {
-                  clearTimeout(timeoutId);
-                  if (error instanceof XaiError) throw error;
-                  throw new XaiError(`XAI request failed: ${error}`, 500);
-                }
+                return await makeMultipartRequest<XaiFileObject>(
+                  "/files",
+                  formData,
+                  signal
+                );
               },
               {
                 // POST https://api.x.ai/v1/files/{fileId}/public-url
@@ -1706,58 +1430,17 @@ export function createXai(opts: XaiOptions): XaiProvider {
                 requestId: string,
                 signal?: AbortSignal
               ): Promise<XaiDeferredChatCompletionResult> {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                const res = await transport.raw(
+                  `/chat/deferred-completion/${encodeURIComponent(requestId)}`,
+                  { signal }
+                );
 
-                if (signal) {
-                  attachAbortHandler(signal, controller);
+                if (res.status === 202) {
+                  return { ready: false, data: null };
                 }
 
-                try {
-                  const res = await doFetch(
-                    `${baseURL}/chat/deferred-completion/${encodeURIComponent(requestId)}`,
-                    {
-                      method: "GET",
-                      headers: { Authorization: `Bearer ${opts.apiKey}` },
-                      signal: controller.signal,
-                    }
-                  );
-
-                  clearTimeout(timeoutId);
-
-                  if (res.status === 202) {
-                    return { ready: false, data: null };
-                  }
-
-                  if (!res.ok) {
-                    let message = `XAI API error: ${res.status}`;
-                    let body: unknown = null;
-                    try {
-                      body = await res.json();
-                      if (
-                        typeof body === "object" &&
-                        body !== null &&
-                        "error" in body
-                      ) {
-                        const err = (body as { error: { message?: string } })
-                          .error;
-                        if (err?.message) {
-                          message = `XAI API error ${res.status}: ${err.message}`;
-                        }
-                      }
-                    } catch {
-                      // ignore parse errors
-                    }
-                    throw new XaiError(message, res.status, body);
-                  }
-
-                  const data = (await res.json()) as XaiChatResponse;
-                  return { ready: true, data };
-                } catch (error) {
-                  clearTimeout(timeoutId);
-                  if (error instanceof XaiError) throw error;
-                  throw new XaiError(`XAI request failed: ${error}`, 500);
-                }
+                const data = await readJsonResponse<XaiChatResponse>(res);
+                return { ready: true, data };
               },
             },
             // GET https://api.x.ai/v1/videos/{requestId}
@@ -1876,41 +1559,12 @@ export function createXai(opts: XaiOptions): XaiProvider {
               fileId: string,
               signal?: AbortSignal
             ): Promise<{ id: string; deleted: boolean }> {
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => controller.abort(), timeout);
-              if (signal) {
-                attachAbortHandler(signal, controller);
-              }
-
-              try {
-                const res = await doFetch(`${baseURL}/files/${fileId}`, {
-                  method: "DELETE",
-                  headers: { Authorization: `Bearer ${opts.apiKey}` },
-                  signal: controller.signal,
-                });
-
-                clearTimeout(timeoutId);
-
-                if (!res.ok) {
-                  let deleteBody: unknown = null;
-                  try {
-                    deleteBody = await res.json();
-                  } catch {
-                    // ignore parse errors
-                  }
-                  throw new XaiError(
-                    `XAI API error: ${res.status}`,
-                    res.status,
-                    deleteBody
-                  );
-                }
-
-                return (await res.json()) as { id: string; deleted: boolean };
-              } catch (error) {
-                clearTimeout(timeoutId);
-                if (error instanceof XaiError) throw error;
-                throw new XaiError(`XAI request failed: ${error}`, 500);
-              }
+              return await makeRequest(
+                "DELETE",
+                `/files/${fileId}`,
+                undefined,
+                signal
+              );
             },
             customVoices: deleteCustomVoices,
           },

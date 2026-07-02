@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createTransport as createAlibabaTransport } from "../../packages/provider/alibaba/src/transport";
 import { createTransport as createKimiCodingTransport } from "../../packages/provider/kimicoding/src/transport";
+import { createTransport as createOpenAiTransport } from "../../packages/provider/openai/src/transport";
 import { createTransport as createXaiTransport } from "../../packages/provider/xai/src/transport";
 
 type CreateTransport = typeof createKimiCodingTransport;
@@ -101,6 +102,7 @@ const transportCopies = [
   { name: "kimicoding", createTransport: createKimiCodingTransport },
   { name: "alibaba", createTransport: createAlibabaTransport },
   { name: "xai", createTransport: createXaiTransport },
+  { name: "openai", createTransport: createOpenAiTransport },
 ];
 
 describe.each(transportCopies)(

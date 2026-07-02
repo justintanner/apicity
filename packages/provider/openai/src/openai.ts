@@ -19,6 +19,8 @@ import {
   OpenAiFile,
   OpenAiFileUploadRequest,
   OpenAiFileDeleteResponse,
+  OpenAiUploadCreateRequest,
+  OpenAiUpload,
   OpenAiModelListResponse,
   OpenAiModel,
   OpenAiModelDeleteResponse,
@@ -80,6 +82,7 @@ import {
   OpenAiChatRequestSchema,
   OpenAiEmbeddingRequestSchema,
   OpenAiFileUploadRequestSchema,
+  OpenAiUploadCreateRequestSchema,
   OpenAiImageEditRequestSchema,
   OpenAiImageGenerationRequestSchema,
   OpenAiImageVariationRequestSchema,
@@ -522,6 +525,19 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiFileUploadRequestSchema,
+      }
+    ),
+    // POST https://api.openai.com/v1/uploads
+    // Docs: https://platform.openai.com/docs/api-reference/uploads/create
+    uploads: Object.assign(
+      async (
+        req: OpenAiUploadCreateRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiUpload> => {
+        return makeRequest<OpenAiUpload>("/uploads", jsonRequest(req), signal);
+      },
+      {
+        schema: OpenAiUploadCreateRequestSchema,
       }
     ),
     // POST https://api.openai.com/v1/moderations

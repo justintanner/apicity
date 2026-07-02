@@ -1,19 +1,21 @@
 import { z } from "zod";
 
+import {
+  ChatContentPartSchema,
+  ChatImageUrlPartSchema,
+  ChatTextPartSchema,
+  ChatToolChoiceSchema,
+  ChatToolFunctionSchema,
+  ChatToolSchema,
+} from "./chat-fragments-zod";
+
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
 
-export const AlibabaFunctionDefinitionSchema = z.object({
-  name: z.string(),
-  description: z.string().optional(),
-  parameters: z.record(z.string(), z.unknown()).optional(),
-});
+export const AlibabaFunctionDefinitionSchema = ChatToolFunctionSchema;
 
-export const AlibabaToolSchema = z.object({
-  type: z.literal("function"),
-  function: AlibabaFunctionDefinitionSchema,
-});
+export const AlibabaToolSchema = ChatToolSchema;
 
 export const AlibabaToolCallFunctionSchema = z.object({
   name: z.string(),
@@ -26,23 +28,11 @@ export const AlibabaToolCallSchema = z.object({
   function: AlibabaToolCallFunctionSchema,
 });
 
-export const AlibabaTextPartSchema = z.object({
-  type: z.literal("text"),
-  text: z.string(),
-});
+export const AlibabaTextPartSchema = ChatTextPartSchema;
 
-export const AlibabaImageUrlPartSchema = z.object({
-  type: z.literal("image_url"),
-  image_url: z.object({
-    url: z.string(),
-    detail: z.enum(["auto", "low", "high"]).optional(),
-  }),
-});
+export const AlibabaImageUrlPartSchema = ChatImageUrlPartSchema;
 
-export const AlibabaContentPartSchema = z.discriminatedUnion("type", [
-  AlibabaTextPartSchema,
-  AlibabaImageUrlPartSchema,
-]);
+export const AlibabaContentPartSchema = ChatContentPartSchema;
 
 export const AlibabaMessageSchema = z.object({
   role: z.enum(["system", "user", "assistant", "tool"]),
@@ -76,15 +66,7 @@ export const AlibabaChatRequestSchema = z.object({
   seed: z.number().optional(),
   presence_penalty: z.number().optional(),
   tools: z.array(AlibabaToolSchema).optional(),
-  tool_choice: z
-    .union([
-      z.enum(["auto", "none"]),
-      z.object({
-        type: z.literal("function"),
-        function: z.object({ name: z.string() }),
-      }),
-    ])
-    .optional(),
+  tool_choice: ChatToolChoiceSchema.optional(),
   stream_options: AlibabaStreamOptionsSchema.optional(),
   response_format: AlibabaResponseFormatSchema.optional(),
   enable_search: z.boolean().optional(),

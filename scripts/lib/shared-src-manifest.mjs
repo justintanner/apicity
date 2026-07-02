@@ -80,4 +80,23 @@ export const sharedSrcEntries = [
       { find: '"./zod"', replace: '"./s3-zod"' },
     ],
   },
+  {
+    id: "chat-fragments-zod",
+    class: "schema-fragment",
+    source: "shared/provider-src/chat-fragments-zod.ts",
+    targets: [
+      "packages/provider/alibaba/src/chat-fragments-zod.ts",
+      "packages/provider/fireworks/src/chat-fragments-zod.ts",
+      "packages/provider/openai/src/chat-fragments-zod.ts",
+    ],
+  },
+  {
+    id: "chat-fragments-types",
+    class: "schema-fragment",
+    source: "shared/provider-src/chat-fragments-types.ts",
+    targets: [
+      "packages/provider/fireworks/src/chat-fragments-types.ts",
+      "packages/provider/openai/src/chat-fragments-types.ts",
+    ],
+  },
 ];

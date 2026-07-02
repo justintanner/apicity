@@ -92,6 +92,14 @@ import {
   FireworksCreateEvaluatorRequestSchema,
   FireworksCreateEvaluationJobRequestSchema,
 } from "../../packages/provider/fireworks/src/zod";
+import {
+  ChatContentPartSchema as FireworksChatContentPartSchema,
+  ChatImageUrlPartSchema as FireworksChatImageUrlPartSchema,
+  ChatTextPartSchema as FireworksChatTextPartSchema,
+  ChatToolChoiceSchema as FireworksChatToolChoiceSchema,
+  ChatToolFunctionSchema as FireworksChatToolFunctionSchema,
+  ChatToolSchema as FireworksChatToolSchema,
+} from "../../packages/provider/fireworks/src/chat-fragments-zod";
 
 describe("schema structure", () => {
   // All providers now use Zod schemas — verify they expose safeParse
@@ -241,6 +249,48 @@ describe("schema structure", () => {
       expect(typeof schema.parse).toBe("function");
     });
   }
+});
+
+describe("fireworks shared chat fragments", () => {
+  it("safeParses each vendored chat fragment", () => {
+    expect(
+      FireworksChatTextPartSchema.safeParse({
+        type: "text",
+        text: "hello",
+      }).success
+    ).toBe(true);
+    expect(
+      FireworksChatImageUrlPartSchema.safeParse({
+        type: "image_url",
+        image_url: { url: "https://example.com/image.png", detail: "auto" },
+      }).success
+    ).toBe(true);
+    expect(
+      FireworksChatContentPartSchema.safeParse({
+        type: "text",
+        text: "hello",
+      }).success
+    ).toBe(true);
+    expect(
+      FireworksChatToolFunctionSchema.safeParse({
+        name: "lookup",
+        parameters: { type: "object" },
+      }).success
+    ).toBe(true);
+    expect(
+      FireworksChatToolSchema.safeParse({
+        type: "function",
+        function: { name: "lookup" },
+      }).success
+    ).toBe(true);
+    expect(FireworksChatToolChoiceSchema.safeParse("auto").success).toBe(true);
+    expect(
+      FireworksChatToolChoiceSchema.safeParse({
+        type: "function",
+        function: { name: "lookup" },
+      }).success
+    ).toBe(true);
+  });
 });
 
 describe("schema + validatePayload integration", () => {

@@ -1,44 +1,34 @@
 import { z } from "zod";
 
+import {
+  ChatContentPartSchema,
+  ChatImageUrlPartSchema,
+  ChatTextPartSchema,
+  ChatToolChoiceSchema,
+  ChatToolFunctionSchema,
+  ChatToolSchema,
+} from "./chat-fragments-zod";
+
 export { z };
 
 // ---------------------------------------------------------------------------
 // Sub-schemas (composable building blocks)
 // ---------------------------------------------------------------------------
 
-export const OpenAiTextPartSchema = z.object({
-  type: z.literal("text"),
-  text: z.string(),
-});
+export const OpenAiTextPartSchema = ChatTextPartSchema;
 
-export const OpenAiImageUrlPartSchema = z.object({
-  type: z.literal("image_url"),
-  image_url: z.object({
-    url: z.string(),
-    detail: z.enum(["auto", "low", "high"]).optional(),
-  }),
-});
+export const OpenAiImageUrlPartSchema = ChatImageUrlPartSchema;
 
-export const OpenAiContentPartSchema = z.discriminatedUnion("type", [
-  OpenAiTextPartSchema,
-  OpenAiImageUrlPartSchema,
-]);
+export const OpenAiContentPartSchema = ChatContentPartSchema;
 
 export const OpenAiMessageSchema = z.object({
   role: z.enum(["user", "assistant", "system"]),
   content: z.union([z.string(), z.array(OpenAiContentPartSchema)]),
 });
 
-export const OpenAiToolFunctionSchema = z.object({
-  name: z.string(),
-  description: z.string().optional(),
-  parameters: z.record(z.string(), z.unknown()).optional(),
-});
+export const OpenAiToolFunctionSchema = ChatToolFunctionSchema;
 
-export const OpenAiToolSchema = z.object({
-  type: z.literal("function"),
-  function: OpenAiToolFunctionSchema,
-});
+export const OpenAiToolSchema = ChatToolSchema;
 
 // ---------------------------------------------------------------------------
 // Chat completions
@@ -51,15 +41,7 @@ export const OpenAiChatRequestSchema = z.object({
   max_tokens: z.number().int().positive().optional(),
   max_completion_tokens: z.number().int().positive().optional(),
   tools: z.array(OpenAiToolSchema).optional(),
-  tool_choice: z
-    .union([
-      z.enum(["auto", "none"]),
-      z.object({
-        type: z.literal("function"),
-        function: z.object({ name: z.string() }),
-      }),
-    ])
-    .optional(),
+  tool_choice: ChatToolChoiceSchema.optional(),
   response_format: z
     .object({
       type: z.enum(["text", "json_object", "json_schema"]),

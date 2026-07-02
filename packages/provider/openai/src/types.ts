@@ -1,4 +1,9 @@
 import type { z } from "zod";
+import type {
+  ChatChoice,
+  ChatToolCall,
+  ChatUsage,
+} from "./chat-fragments-types";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -104,22 +109,14 @@ export type {
 // Response types (hand-written — not schema-ified yet)
 // ---------------------------------------------------------------------------
 
+// Empty extensions preserve provider-specific public interface names.
+/* eslint-disable @typescript-eslint/no-empty-object-type */
+
 // Tool call in response
-export interface OpenAiToolCall {
-  id: string;
-  type: "function";
-  function: {
-    name: string;
-    arguments: string;
-  };
-}
+export interface OpenAiToolCall extends ChatToolCall {}
 
 // Usage info (raw API shape)
-export interface OpenAiUsage {
-  prompt_tokens: number;
-  completion_tokens: number;
-  total_tokens: number;
-}
+export interface OpenAiUsage extends ChatUsage {}
 
 // Transcription response
 export interface OpenAiTranscribeResponse {
@@ -132,15 +129,9 @@ export interface OpenAiTranslateResponse {
 }
 
 // Chat response (raw API shape)
-export interface OpenAiChatChoice {
-  index: number;
-  message: {
-    role: string;
-    content: string | null;
-    tool_calls?: OpenAiToolCall[];
-  };
-  finish_reason: string;
-}
+export interface OpenAiChatChoice extends ChatChoice {}
+
+/* eslint-enable @typescript-eslint/no-empty-object-type */
 
 export interface OpenAiChatResponse {
   id: string;

@@ -1,5 +1,10 @@
 import { createKieTransport, kieRequest } from "./request";
-import { VeoGenerateRequestSchema, VeoExtendRequestSchema } from "./zod";
+import {
+  VeoGenerateRequestSchema,
+  VeoExtendRequestSchema,
+  VeoRecordInfoRequestSchema,
+  VeoRecordInfoResponseSchema,
+} from "./zod";
 import type { PayGateApproval } from "./paygate";
 import type { ApicitySchema } from "./types";
 
@@ -29,11 +34,43 @@ export interface VeoExtendRequest {
   watermark?: string;
 }
 
+export interface VeoRecordInfoRequest {
+  taskId: string;
+}
+
+export interface VeoRecordInfoResult {
+  taskId?: string;
+  resultUrls?: string[];
+  originUrls?: string[];
+  fullResultUrls?: string[];
+  resolution?: string;
+  mediaIds?: string[];
+  [key: string]: unknown;
+}
+
+export interface VeoRecordInfoData {
+  taskId: string;
+  paramJson?: string;
+  completeTime?: string | null;
+  response?: VeoRecordInfoResult | null;
+  successFlag: 0 | 1 | 2 | 3;
+  errorCode?: number | string | null;
+  errorMessage?: string | null;
+  createTime?: string;
+  fallbackFlag?: boolean;
+}
+
 interface VeoSubmitResponse {
   code: number;
   data?: {
     taskId?: string;
   };
+}
+
+export interface VeoRecordInfoResponse {
+  code: number;
+  msg: string;
+  data?: VeoRecordInfoData | null;
 }
 
 interface VeoGenerateMethod {
@@ -52,9 +89,19 @@ interface VeoExtendMethod {
   schema: ApicitySchema<VeoExtendRequest>;
 }
 
+interface VeoRecordInfoMethod {
+  (taskId: string): Promise<VeoRecordInfoResponse>;
+  schema: ApicitySchema<VeoRecordInfoRequest>;
+  responseSchema: ApicitySchema<VeoRecordInfoResponse>;
+}
+
 interface VeoVeoNamespace {
   generate: VeoGenerateMethod;
   extend: VeoExtendMethod;
+}
+
+interface VeoGetVeoNamespace {
+  recordInfo: VeoRecordInfoMethod;
 }
 
 interface VeoV1Namespace {
@@ -65,8 +112,17 @@ interface VeoPostApiNamespace {
   v1: VeoV1Namespace;
 }
 
+interface VeoGetV1Namespace {
+  veo: VeoGetVeoNamespace;
+}
+
+interface VeoGetApiNamespace {
+  v1: VeoGetV1Namespace;
+}
+
 export interface VeoProvider {
   post: { api: VeoPostApiNamespace };
+  get: { api: VeoGetApiNamespace };
 }
 
 export function createVeoProvider(
@@ -107,6 +163,15 @@ export function createVeoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/veo/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/veo3-api/get-veo-3-video-details
+  async function recordInfo(taskId: string): Promise<VeoRecordInfoResponse> {
+    return kieRequest<VeoRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/veo/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   return {
     post: {
       api: {
@@ -117,6 +182,18 @@ export function createVeoProvider(
             }),
             extend: Object.assign(submitExtend, {
               schema: VeoExtendRequestSchema,
+            }),
+          },
+        },
+      },
+    },
+    get: {
+      api: {
+        v1: {
+          veo: {
+            recordInfo: Object.assign(recordInfo, {
+              schema: VeoRecordInfoRequestSchema,
+              responseSchema: VeoRecordInfoResponseSchema,
             }),
           },
         },

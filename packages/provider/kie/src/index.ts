@@ -12,6 +12,11 @@ export {
   FluxKontextGenerateRequestSchema,
   FluxKontextAspectRatioSchema,
   FluxKontextModelSchema,
+  VeoRecordInfoDataSchema,
+  VeoRecordInfoRequestSchema,
+  VeoRecordInfoResponseSchema,
+  VeoRecordInfoResultSchema,
+  VeoSuccessFlagSchema,
   Gpt4oImageGenerateRequestSchema,
   Gpt4oImageSizeSchema,
   Gpt4oImageFallbackModelSchema,
@@ -448,6 +453,10 @@ export type {
   VeoGenerationType,
   VeoGenerateRequest,
   VeoExtendRequest,
+  VeoRecordInfoData,
+  VeoRecordInfoRequest,
+  VeoRecordInfoResponse,
+  VeoRecordInfoResult,
   VeoProvider,
 } from "./veo";
 
@@ -517,6 +526,9 @@ export type {
 export type {
   VeoGenerateRequestInput,
   VeoExtendRequestInput,
+  VeoRecordInfoRequestInput,
+  VeoRecordInfoParsedRequest,
+  VeoSuccessFlag,
   SunoGenerateRequestInput,
   KieChatRequestInput,
   KieClaudeRequestInput,

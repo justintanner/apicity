@@ -83,6 +83,13 @@ export type {
   OpenAiConversationCreateRequest,
   OpenAiConversationCreateRequestInput,
   OpenAiConversationCreateParsedRequest,
+  OpenAiVectorStoreExpirationPolicy,
+  OpenAiVectorStoreAutoChunkingStrategy,
+  OpenAiVectorStoreStaticChunkingStrategy,
+  OpenAiVectorStoreChunkingStrategy,
+  OpenAiVectorStoreCreateRequest,
+  OpenAiVectorStoreCreateRequestInput,
+  OpenAiVectorStoreCreateParsedRequest,
   OpenAiFineTuningHyperparameters,
   OpenAiFineTuningSupervisedHyperparameters,
   OpenAiFineTuningSupervisedMethod,
@@ -732,6 +739,32 @@ export interface OpenAiFileDeleteResponse {
   deleted: boolean;
 }
 
+// --- Vector Stores API response types ---
+
+export interface OpenAiVectorStoreFileCounts {
+  cancelled: number;
+  completed: number;
+  failed: number;
+  in_progress: number;
+  total: number;
+}
+
+export interface OpenAiVectorStore {
+  id: string;
+  object: "vector_store";
+  created_at: number;
+  name: string | null;
+  description?: string | null;
+  file_counts: OpenAiVectorStoreFileCounts;
+  status: "expired" | "in_progress" | "completed";
+  usage_bytes: number;
+  bytes?: number;
+  last_active_at?: number | null;
+  metadata: Record<string, string>;
+  expires_after?: OpenAiVectorStoreExpirationPolicy | null;
+  expires_at?: number | null;
+}
+
 // --- Models API types ---
 
 export interface OpenAiModel {
@@ -946,6 +979,8 @@ import type {
   OpenAiResponseCompactRequest,
   OpenAiResponseInputTokensRequest,
   OpenAiConversationCreateRequest,
+  OpenAiVectorStoreExpirationPolicy,
+  OpenAiVectorStoreCreateRequest,
   OpenAiFineTuningJobCreateRequest,
   OpenAiCheckpointPermissionCreateRequest,
   OpenAiOrganizationUsageQuery,
@@ -1069,6 +1104,14 @@ export interface OpenAiPostV1Conversations {
   schema: z.ZodType<OpenAiConversationCreateRequest>;
 }
 
+export interface OpenAiPostV1VectorStores {
+  (
+    req: OpenAiVectorStoreCreateRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiVectorStore>;
+  schema: z.ZodType<OpenAiVectorStoreCreateRequest>;
+}
+
 export interface OpenAiPostV1Batches {
   (req: OpenAiBatchCreateRequest, signal?: AbortSignal): Promise<OpenAiBatch>;
   schema: z.ZodType<OpenAiBatchCreateRequest>;
@@ -1160,6 +1203,7 @@ export interface OpenAiPostV1Namespace {
   moderations: OpenAiPostV1Moderations;
   responses: OpenAiPostV1ResponsesNamespace;
   conversations: OpenAiPostV1Conversations;
+  vectorStores: OpenAiPostV1VectorStores;
   batches: OpenAiPostV1Batches & {
     cancel: OpenAiPostV1BatchesCancel;
   };

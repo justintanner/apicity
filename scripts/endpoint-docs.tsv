@@ -1074,6 +1074,7 @@ openai	v1.responses.cancel	POST	https://api.openai.com/v1/responses/{id}/cancel	
 openai	v1.responses.compact	POST	https://api.openai.com/v1/responses/compact	https://platform.openai.com/docs/api-reference
 openai	v1.responses.inputItems	GET	https://api.openai.com/v1/responses/{id}/input_items	https://platform.openai.com/docs/api-reference
 openai	v1.responses.inputTokens	POST	https://api.openai.com/v1/responses/input_tokens	https://platform.openai.com/docs/api-reference
+openai	v1.vectorStores	POST	https://api.openai.com/v1/vector_stores	https://platform.openai.com/docs/api-reference/vector-stores/create
 openai	codex.usage	GET	https://chatgpt.com/backend-api/wham/usage	https://developers.openai.com/codex/pricing
 polymarket	clob.auth.apiKey	DELETE	https://clob.polymarket.com/auth/api-key	https://docs.polymarket.com/api-reference/authentication.md
 polymarket	clob.auth.apiKey	POST	https://clob.polymarket.com/auth/api-key	https://docs.polymarket.com/api-reference/authentication.md

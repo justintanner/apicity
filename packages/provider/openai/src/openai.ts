@@ -38,6 +38,8 @@ import {
   OpenAiResponseInputTokensResponse,
   OpenAiConversationCreateRequest,
   OpenAiConversation,
+  OpenAiVectorStoreCreateRequest,
+  OpenAiVectorStore,
   OpenAiModerationRequest,
   OpenAiModerationResponse,
   OpenAiFineTuningJobCreateRequest,
@@ -90,6 +92,7 @@ import {
   OpenAiResponseCompactRequestSchema,
   OpenAiResponseInputTokensRequestSchema,
   OpenAiConversationCreateRequestSchema,
+  OpenAiVectorStoreCreateRequestSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
   OpenAiOrganizationUsageQuerySchema,
@@ -208,12 +211,15 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
     return await readJsonResponse<T>(res);
   }
 
-  function jsonRequest(body: unknown): {
+  function jsonRequest(
+    body: unknown,
+    extraHeaders?: Record<string, string>
+  ): {
     headers: Record<string, string>;
     body: string;
   } {
     return {
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(extraHeaders ?? {}) },
       body: JSON.stringify(body),
     };
   }
@@ -615,6 +621,23 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
       },
       {
         schema: OpenAiConversationCreateRequestSchema,
+      }
+    ),
+    // POST https://api.openai.com/v1/vector_stores
+    // Docs: https://platform.openai.com/docs/api-reference/vector-stores/create
+    vectorStores: Object.assign(
+      async (
+        req: OpenAiVectorStoreCreateRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiVectorStore> => {
+        return makeRequest<OpenAiVectorStore>(
+          "/vector_stores",
+          jsonRequest(req, { "OpenAI-Beta": "assistants=v2" }),
+          signal
+        );
+      },
+      {
+        schema: OpenAiVectorStoreCreateRequestSchema,
       }
     ),
     // POST https://api.openai.com/v1/batches

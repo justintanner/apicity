@@ -14,6 +14,7 @@ import {
   FileBase64UploadRequest,
   KieTaskInfo,
   Gpt4oImageRecordInfo,
+  MjRecordInfoResponse,
   GeminiOmniAudioCreateRequest,
   GeminiOmniAudioCreateResponse,
   GeminiOmniCharacterCreateRequest,
@@ -39,6 +40,8 @@ import {
   FluxKontextGenerateRequestSchema,
   Gpt4oImageGenerateRequestSchema,
   MjGenerateRequestSchema,
+  MjRecordInfoRequestSchema,
+  MjRecordInfoResponseSchema,
   RunwayGenerateRequestSchema,
   RunwayExtendRequestSchema,
   RunwayRecordDetailResponseSchema,
@@ -627,6 +630,20 @@ export function createKie(opts: KieOptions): KieProvider {
     });
   }
 
+  // GET https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/mj-api/get-mj-task-details
+  async function mjRecordInfo(taskId: string): Promise<MjRecordInfoResponse> {
+    return kieRequest<MjRecordInfoResponse>(
+      `${baseURL}/api/v1/mj/record-info?taskId=${encodeURIComponent(taskId)}`,
+      {
+        method: "GET",
+        apiKey: opts.apiKey,
+        doFetch,
+        timeout,
+      }
+    );
+  }
+
   // POST https://api.kie.ai/api/v1/runway/generate
   // Docs: https://docs.kie.ai/runway-api/generate-ai-video
   async function runwayGenerate(
@@ -874,6 +891,12 @@ export function createKie(opts: KieOptions): KieProvider {
                 recordInfo: Object.assign(gpt4oImageRecordInfo, {
                   schema: RecordInfoRequestSchema,
                   responseSchema: Gpt4oImageRecordInfoResponseSchema,
+                }),
+              },
+              mj: {
+                recordInfo: Object.assign(mjRecordInfo, {
+                  schema: MjRecordInfoRequestSchema,
+                  responseSchema: MjRecordInfoResponseSchema,
                 }),
               },
               runway: {

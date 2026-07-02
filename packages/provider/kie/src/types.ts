@@ -263,6 +263,12 @@ export type {
   MjVersion,
   MjAspectRatio,
   MjMotion,
+  MjRecordInfoRequest,
+  MjRecordInfoRequestInput,
+  MjRecordInfoSuccessFlag,
+  MjRecordInfoResultInfo,
+  MjRecordInfoData,
+  MjRecordInfoResponse,
   RunwayGenerateRequest,
   RunwayGenerateRequestInput,
   RunwayGenerateParsedRequest,
@@ -476,6 +482,8 @@ import type {
   FluxKontextGenerateRequest,
   Gpt4oImageGenerateRequest,
   MjGenerateRequest,
+  MjRecordInfoRequest,
+  MjRecordInfoResponse,
   RunwayGenerateRequest,
   RunwayExtendRequest,
   FluxKontextRecordInfoRequest,
@@ -544,6 +552,12 @@ interface KieGpt4oImageGenerateMethod {
 interface KieMjGenerateMethod {
   (req: MjGenerateRequest, approval?: KieApproval): Promise<TaskResponse>;
   schema: ApicitySchema<MjGenerateRequest>;
+}
+
+interface KieMjRecordInfoMethod {
+  (taskId: string): Promise<MjRecordInfoResponse>;
+  schema: ApicitySchema<MjRecordInfoRequest>;
+  responseSchema: ApicitySchema<MjRecordInfoResponse>;
 }
 
 interface KieRecordInfoMethod {
@@ -619,6 +633,7 @@ interface KieGetApiNamespace {
   v1: {
     jobs: { recordInfo: KieRecordInfoMethod };
     gpt4oImage: { recordInfo: KieGpt4oImageRecordInfoMethod };
+    mj: { recordInfo: KieMjRecordInfoMethod };
     runway: { recordDetail: KieRunwayRecordDetailMethod };
     flux: {
       kontext: {

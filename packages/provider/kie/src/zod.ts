@@ -1927,6 +1927,62 @@ export type MjVersion = z.infer<typeof MjVersionSchema>;
 export type MjAspectRatio = z.infer<typeof MjAspectRatioSchema>;
 export type MjMotion = z.infer<typeof MjMotionSchema>;
 
+export const MjRecordInfoSuccessFlagSchema = z.union([
+  z.literal(0),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+]);
+
+export const MjRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+export const MjRecordInfoResultInfoSchema = z
+  .object({
+    resultUrls: z
+      .array(
+        z
+          .object({
+            resultUrl: z.string(),
+          })
+          .passthrough()
+      )
+      .optional(),
+  })
+  .passthrough();
+
+export const MjRecordInfoDataSchema = z
+  .object({
+    taskId: z.string().optional(),
+    taskType: MjTaskTypeSchema.optional(),
+    paramJson: z.string().optional(),
+    completeTime: z.string().nullable().optional(),
+    resultInfoJson: MjRecordInfoResultInfoSchema.nullable().optional(),
+    successFlag: MjRecordInfoSuccessFlagSchema.optional(),
+    createTime: z.string().nullable().optional(),
+    errorCode: z.number().int().nullable().optional(),
+    errorMessage: z.string().nullable().optional(),
+  })
+  .passthrough();
+
+export const MjRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: MjRecordInfoDataSchema.nullable().optional(),
+});
+
+export type MjRecordInfoSuccessFlag = z.infer<
+  typeof MjRecordInfoSuccessFlagSchema
+>;
+export type MjRecordInfoRequest = z.input<typeof MjRecordInfoRequestSchema>;
+export type MjRecordInfoRequestInput = MjRecordInfoRequest;
+export type MjRecordInfoResultInfo = z.infer<
+  typeof MjRecordInfoResultInfoSchema
+>;
+export type MjRecordInfoData = z.infer<typeof MjRecordInfoDataSchema>;
+export type MjRecordInfoResponse = z.infer<typeof MjRecordInfoResponseSchema>;
+
 // ---------------------------------------------------------------------------
 // Runway schemas
 // ---------------------------------------------------------------------------

@@ -476,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-39 endpoints across 23 groups. Each method mirrors an upstream URL path.
+40 endpoints across 23 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -902,6 +902,21 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 </details>
 
 ### mj
+
+<details>
+<summary><code>GET</code> <b><code>kie.get.api.v1.mj.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/mj-api/get-mj-task-details)
+
+```typescript
+const res = await kie.get.api.v1.mj.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>kie.post.api.v1.mj.generate</code></b></summary>

@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/openligadb`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and a few carry one more — `viem` in polymarket (EIP-712 order signing), `@apicity/s3` in b2 (the S3 core it wraps), and `@apicity/cost` in kie and xai (pay-gate). Based on [TetherAI](https://github.com/nbursa/TetherAI).
+Apicity is a TypeScript monorepo of standalone API provider packages (`@apicity/openai`, `@apicity/xai`, `@apicity/fal`, `@apicity/google`, `@apicity/kimicoding`, `@apicity/kie`, `@apicity/anthropic`, `@apicity/fireworks`, `@apicity/alibaba`, `@apicity/binance`, `@apicity/openligadb`, `@apicity/elevenlabs`, `@apicity/s3`, `@apicity/b2`, `@apicity/dolthub`, `@apicity/polymarket`, `@apicity/meta`, `@apicity/telegram`, `@apicity/x`, `@apicity/youtube`, `@apicity/free-media-upload`). Each package is self-contained with a minimal dependency footprint: every provider depends on `zod` (endpoint `.schema` definitions), and polymarket also depends on `viem` for EIP-712 order signing. Shared provider helpers are copied into packages as synced local source rather than consumed through workspace package dependencies. Based on [TetherAI](https://github.com/nbursa/TetherAI).
 
-`@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the OTP pay-gate (`withPaidGate`) that kie and xai use to gate paid endpoints.
+`@apicity/cost` is a dependency-free cross-provider helper: pure local USD cost/token estimation (`createCost`, `computeEstimate`, bundled rate tables) plus the canonical OTP pay-gate (`withPaidGate`) source vendored into kie and xai.
 
 `@apicity/mcp-server` (under `packages/mcp-server`, not `packages/provider/`) is an optional MCP server that exposes every provider endpoint as an MCP tool.
 
@@ -37,6 +37,8 @@ over raw `vitest` / `op run` invocations.
 pnpm install                     # Install dependencies
 pnpm run build                   # Build all packages
 pnpm run build:kimicoding        # Build single package (also: build:google, build:kie, build:xai, build:openai, build:fal, build:anthropic, build:fireworks, build:alibaba, build:binance, build:openligadb, build:elevenlabs, build:s3, build:b2, build:dolthub, build:polymarket, build:meta, build:telegram, build:x, build:youtube, build:free-media-upload, build:cost, build:mcp-server)
+pnpm run gen:shared              # Sync canonical shared/provider-src files into provider copies
+pnpm run gen:shared:check        # Check shared provider copies for drift
 pnpm run typecheck               # Type-check all packages (tsc --noEmit; no emit, no docs)
 pnpm run typecheck:provider -- <name-or-path> # Type-check one provider; falls back to full on shared/package diffs
 pnpm run lint                    # Full lint: prettier --check + ESLint + repo checks (NO build)
@@ -99,8 +101,8 @@ packages/provider/<name>/
     index.ts       # Public exports (types + factory)
     types.ts       # All type definitions + error class
     <name>.ts      # Factory function + core implementation
-    sse.ts         # SSE stream parsing (kimicoding, kie, fireworks, anthropic)
-    middleware.ts  # withRetry, withFallback (all providers)
+    sse.ts         # SSE stream parsing (alibaba, anthropic, fireworks, free-media-upload, kie, kimicoding)
+    middleware.ts  # retry/fallback/rate-limit helpers; synced into 11 recipients
     zod.ts         # Zod request schemas, attached to endpoints as .schema (all providers)
 ```
 
@@ -117,7 +119,7 @@ packages/provider/<name>/
 **openligadb** — Public soccer match data, standings, and scorers
 **elevenlabs** — Sound effect generation, text-to-speech, voices, user/subscription
 **s3** — S3-compatible object storage (signing, buckets, objects)
-**b2** — Backblaze B2 S3-compatible storage; thin wrapper delegating signing/transport/schemas to `@apicity/s3` (docs-only in `endpoint-docs.tsv`, excluded from the endpoint-walk lint)
+**b2** — Backblaze B2 S3-compatible storage; S3-compatible signing/transport/schemas vendored from the s3 provider source (docs-only in `endpoint-docs.tsv`, excluded from the endpoint-walk lint)
 **dolthub** — DoltHub API: SQL execution and Dolt database management
 **polymarket** — Gamma, Data, and CLOB market-data/trading endpoints
 **meta** — Instagram Graph API: posting reels via the public-URL flow (graph.instagram.com)
@@ -125,7 +127,7 @@ packages/provider/<name>/
 **x** — X (Twitter) social API for posting content (api.x.com)
 **youtube** — YouTube Data API v3 for posting content
 **free** — Free file hosting (tmpfiles.org, uguu.se, catbox.moe, litterbox, gofile.io, filebin.net, temp.sh, tmpfile.link)
-**cost** — Cross-provider USD cost/token estimation (depends on the other workspace packages)
+**cost** — Dependency-free cross-provider USD cost/token estimation and canonical pay-gate source
 **mcp-server** — MCP server exposing every provider endpoint as an MCP tool (`packages/mcp-server`)
 
 ### Testing
@@ -237,6 +239,10 @@ Two invariants worth knowing:
 
 Every phase of the dev loop is one `pnpm` command. Format/lint gates are also
 wired into `dev:preflight`, so you don't need a separate hook step.
+
+When editing files under `shared/provider-src/` or another canonical vendoring
+source, run `pnpm run gen:shared` before linting so generated provider copies
+stay in sync. `pnpm run lint` includes `gen:shared:check` and fails on drift.
 
 | # | Phase             | Command                                                          |
 | - | ----------------- | ---------------------------------------------------------------- |

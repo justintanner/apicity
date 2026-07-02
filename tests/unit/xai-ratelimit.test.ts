@@ -4,8 +4,8 @@ import {
   createRateLimiter,
   withRateLimit,
   withRetry,
-  XAI_RATE_LIMITS,
 } from "../../packages/provider/xai/src/middleware";
+import { XAI_RATE_LIMITS } from "../../packages/provider/xai/src/rate-limits";
 
 beforeEach(() => {
   vi.useFakeTimers();

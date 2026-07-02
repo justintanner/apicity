@@ -340,6 +340,63 @@ export const FalNanoBanana2EditRequestSchema = z.object({
   thinking_level: z.enum(["minimal", "high"]).optional(),
 });
 
+const FalNanoBanana2LiteAspectRatioSchema = z.enum([
+  "auto",
+  "21:9",
+  "16:9",
+  "3:2",
+  "4:3",
+  "5:4",
+  "1:1",
+  "4:5",
+  "3:4",
+  "2:3",
+  "9:16",
+  "4:1",
+  "1:4",
+  "8:1",
+  "1:8",
+]);
+
+const FalNanoBanana2LiteOutputFormatSchema = z.enum(["jpeg", "png", "webp"]);
+
+const FalNanoBanana2LiteSafetyToleranceSchema = z.enum([
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+]);
+
+const FalNanoBanana2LiteThinkingLevelSchema = z.enum(["minimal", "high"]);
+
+// ---------------------------------------------------------------------------
+// Nano Banana 2 Lite text-to-image
+// ---------------------------------------------------------------------------
+
+export const FalNanoBanana2LiteTextToImageRequestSchema = z.object({
+  prompt: z.string(),
+  num_images: z.number().int().min(1).max(4).optional(),
+  seed: z.number().int().optional(),
+  aspect_ratio: FalNanoBanana2LiteAspectRatioSchema.optional(),
+  output_format: FalNanoBanana2LiteOutputFormatSchema.optional(),
+  safety_tolerance: FalNanoBanana2LiteSafetyToleranceSchema.optional(),
+  sync_mode: z.boolean().optional(),
+  system_prompt: z.string().optional(),
+  limit_generations: z.boolean().optional(),
+  thinking_level: FalNanoBanana2LiteThinkingLevelSchema.optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Nano Banana 2 Lite edit
+// ---------------------------------------------------------------------------
+
+export const FalNanoBanana2LiteEditRequestSchema =
+  FalNanoBanana2LiteTextToImageRequestSchema.extend({
+    image_urls: z.array(z.string()).optional(),
+  });
+
 // ---------------------------------------------------------------------------
 // Nano Banana text-to-image
 // ---------------------------------------------------------------------------
@@ -1264,6 +1321,12 @@ export type FalNanoBanana2TextToImageParams = z.infer<
 >;
 export type FalNanoBanana2EditParams = z.infer<
   typeof FalNanoBanana2EditRequestSchema
+>;
+export type FalNanoBanana2LiteTextToImageParams = z.infer<
+  typeof FalNanoBanana2LiteTextToImageRequestSchema
+>;
+export type FalNanoBanana2LiteEditParams = z.infer<
+  typeof FalNanoBanana2LiteEditRequestSchema
 >;
 export type FalSeedreamV5LiteEditParams = z.infer<
   typeof FalSeedreamV5LiteEditRequestSchema

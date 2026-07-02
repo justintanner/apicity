@@ -269,6 +269,31 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "resolution": "1K"
     }
   },
+  "POST nanoBanana2Lite.edit": {
+    "source": "fal/nano-banana-2-lite-edit",
+    "payload": {
+      "prompt": "Turn this portrait into a polished studio editorial image with a muted teal backdrop, preserving the person.",
+      "image_urls": [
+        "<inline image/jpeg data URL — replace with a real URL or upload>"
+      ],
+      "num_images": 1,
+      "aspect_ratio": "1:1",
+      "output_format": "png",
+      "safety_tolerance": "4",
+      "limit_generations": true
+    }
+  },
+  "POST nanoBanana2Lite.textToImage": {
+    "source": "fal/nano-banana-2-lite",
+    "payload": {
+      "prompt": "A clean editorial product photo of a small brass desk lamp on a walnut table, soft morning window light, no text.",
+      "num_images": 1,
+      "aspect_ratio": "1:1",
+      "output_format": "png",
+      "safety_tolerance": "4",
+      "limit_generations": true
+    }
+  },
   "POST nanoBananaPro.edit": {
     "source": "fal/nano-banana-pro-edit",
     "payload": {

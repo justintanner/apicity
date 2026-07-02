@@ -42,6 +42,8 @@ export type {
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
   FalNanoBanana2EditParams,
+  FalNanoBanana2LiteTextToImageParams,
+  FalNanoBanana2LiteEditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
@@ -99,6 +101,8 @@ import type {
   FalNanoBananaProEditParams,
   FalNanoBanana2TextToImageParams,
   FalNanoBanana2EditParams,
+  FalNanoBanana2LiteTextToImageParams,
+  FalNanoBanana2LiteEditParams,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteTextToImageParams,
   FalSeedSpeechTtsV2Params,
@@ -609,6 +613,31 @@ export interface FalNanoBanana2TextToImageResponse {
 }
 
 export interface FalNanoBanana2EditResponse {
+  images: FalFile[];
+  description: string;
+}
+
+// Nano Banana 2 Lite image generation and editing
+export type FalNanoBanana2LiteAspectRatio = FalNanoBanana2AspectRatio;
+
+export type FalNanoBanana2LiteOutputFormat = "jpeg" | "png" | "webp";
+
+export type FalNanoBanana2LiteSafetyTolerance =
+  | "1"
+  | "2"
+  | "3"
+  | "4"
+  | "5"
+  | "6";
+
+export type FalNanoBanana2LiteThinkingLevel = "minimal" | "high";
+
+export interface FalNanoBanana2LiteTextToImageResponse {
+  images: FalFile[];
+  description: string;
+}
+
+export interface FalNanoBanana2LiteEditResponse {
   images: FalFile[];
   description: string;
 }
@@ -1401,6 +1430,25 @@ export interface FalRunNanoBanana2Namespace {
   edit: FalNanoBanana2EditFn;
 }
 
+type FalNanoBanana2LiteTextToImageFn = ((
+  params: FalNanoBanana2LiteTextToImageParams,
+  signal?: AbortSignal
+) => Promise<FalNanoBanana2LiteTextToImageResponse>) & {
+  schema: ApicitySchema<FalNanoBanana2LiteTextToImageParams>;
+};
+
+type FalNanoBanana2LiteEditFn = ((
+  params: FalNanoBanana2LiteEditParams,
+  signal?: AbortSignal
+) => Promise<FalNanoBanana2LiteEditResponse>) & {
+  schema: ApicitySchema<FalNanoBanana2LiteEditParams>;
+};
+
+export interface FalRunNanoBanana2LiteNamespace {
+  textToImage: FalNanoBanana2LiteTextToImageFn;
+  edit: FalNanoBanana2LiteEditFn;
+}
+
 type FalSeedreamV5LiteEditFn = ((
   params: FalSeedreamV5LiteEditParams,
   signal?: AbortSignal
@@ -1715,6 +1763,7 @@ export interface FalRunNamespace {
   nanoBanana: FalRunNanoBananaNamespace;
   nanoBananaPro: FalRunNanoBananaProNamespace;
   nanoBanana2: FalRunNanoBanana2Namespace;
+  nanoBanana2Lite: FalRunNanoBanana2LiteNamespace;
   qwenImage: FalQwenImageFn;
   gptImage1p5: FalGptImage1p5Fn;
   sora2: FalRunSora2Namespace;

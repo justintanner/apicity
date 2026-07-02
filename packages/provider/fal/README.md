@@ -121,7 +121,7 @@ console.log(result.spritesheet?.url);
 
 ## API Reference
 
-70 endpoints across 18 groups. Each method mirrors an upstream URL path.
+72 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### bytedance
 
@@ -654,6 +654,38 @@ Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
 
 ```typescript
 const res = await fal.nanoBanana2.textToImage({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+### nanoBanana2Lite
+
+<details>
+<summary><code>POST</code> <b><code>fal.nanoBanana2Lite.edit</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/google/nano-banana-lite/edit</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/nano-banana-lite/edit/api)
+
+```typescript
+const res = await fal.nanoBanana2Lite.edit({ /* ... */ });
+```
+
+Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fal.nanoBanana2Lite.textToImage</code></b></summary>
+
+<code>POST https://api.fal.ai/v1/google/nano-banana-2-lite</code>
+
+[Upstream docs ↗](https://fal.ai/models/google/nano-banana-2-lite/api)
+
+```typescript
+const res = await fal.nanoBanana2Lite.textToImage({ /* ... */ });
 ```
 
 Source: [`packages/provider/fal/src/fal.ts`](src/fal.ts)

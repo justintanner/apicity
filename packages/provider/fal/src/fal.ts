@@ -56,6 +56,10 @@ import {
   FalNanoBanana2TextToImageResponse,
   FalNanoBanana2EditParams,
   FalNanoBanana2EditResponse,
+  FalNanoBanana2LiteTextToImageParams,
+  FalNanoBanana2LiteTextToImageResponse,
+  FalNanoBanana2LiteEditParams,
+  FalNanoBanana2LiteEditResponse,
   FalSeedreamV5LiteEditParams,
   FalSeedreamV5LiteEditResponse,
   FalSeedreamV5LiteTextToImageParams,
@@ -149,6 +153,8 @@ import {
   FalNanoBananaProEditRequestSchema,
   FalNanoBanana2TextToImageRequestSchema,
   FalNanoBanana2EditRequestSchema,
+  FalNanoBanana2LiteTextToImageRequestSchema,
+  FalNanoBanana2LiteEditRequestSchema,
   FalSeedreamV5LiteEditRequestSchema,
   FalSeedreamV5LiteTextToImageRequestSchema,
   FalSeedSpeechTtsV2RequestSchema,
@@ -906,6 +912,48 @@ export function createFal(opts: FalOptions): FalProvider {
     },
     {
       schema: FalNanoBanana2EditRequestSchema,
+    }
+  );
+
+  // POST https://api.fal.ai/v1/google/nano-banana-2-lite
+  // Docs: https://fal.ai/models/google/nano-banana-2-lite/api
+  const nanoBanana2LiteTextToImage = Object.assign(
+    async function textToImage(
+      params: FalNanoBanana2LiteTextToImageParams,
+      signal?: AbortSignal
+    ): Promise<FalNanoBanana2LiteTextToImageResponse> {
+      return makeRequest<FalNanoBanana2LiteTextToImageResponse>(
+        "POST",
+        "/google/nano-banana-2-lite",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalNanoBanana2LiteTextToImageRequestSchema,
+    }
+  );
+
+  // POST https://api.fal.ai/v1/google/nano-banana-lite/edit
+  // Docs: https://fal.ai/models/google/nano-banana-lite/edit/api
+  const nanoBanana2LiteEdit = Object.assign(
+    async function edit(
+      params: FalNanoBanana2LiteEditParams,
+      signal?: AbortSignal
+    ): Promise<FalNanoBanana2LiteEditResponse> {
+      return makeRequest<FalNanoBanana2LiteEditResponse>(
+        "POST",
+        "/google/nano-banana-lite/edit",
+        params as unknown as Record<string, unknown>,
+        signal,
+        undefined,
+        runBaseURL
+      );
+    },
+    {
+      schema: FalNanoBanana2LiteEditRequestSchema,
     }
   );
 
@@ -1804,6 +1852,10 @@ export function createFal(opts: FalOptions): FalProvider {
     nanoBanana2: {
       textToImage: nanoBanana2TextToImage,
       edit: nanoBanana2Edit,
+    },
+    nanoBanana2Lite: {
+      textToImage: nanoBanana2LiteTextToImage,
+      edit: nanoBanana2LiteEdit,
     },
     qwenImage,
     klingVideo: {

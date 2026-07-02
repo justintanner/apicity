@@ -799,6 +799,8 @@ fal	nanoBanana.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana/edit	https://d
 fal	nanoBanana.textToImage	POST	https://api.fal.ai/v1/fal-ai/nano-banana	https://docs.fal.ai
 fal	nanoBanana2.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana-2/edit	https://docs.fal.ai
 fal	nanoBanana2.textToImage	POST	https://api.fal.ai/v1/fal-ai/nano-banana-2	https://docs.fal.ai
+fal	nanoBanana2Lite.edit	POST	https://api.fal.ai/v1/google/nano-banana-lite/edit	https://fal.ai/models/google/nano-banana-lite/edit/api
+fal	nanoBanana2Lite.textToImage	POST	https://api.fal.ai/v1/google/nano-banana-2-lite	https://fal.ai/models/google/nano-banana-2-lite/api
 fal	nanoBananaPro.edit	POST	https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit	https://docs.fal.ai
 fal	nanoBananaPro.textToImage	POST	https://api.fal.ai/v1/fal-ai/nano-banana-pro	https://docs.fal.ai
 fal	qwenImage	POST	https://api.fal.ai/v1/fal-ai/qwen-image	https://docs.fal.ai

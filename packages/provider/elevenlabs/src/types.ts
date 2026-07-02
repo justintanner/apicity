@@ -895,6 +895,29 @@ export interface ElevenLabsDeleteDubbingResponse {
   status: string;
 }
 
+export interface ElevenLabsDubbingResourceMedia {
+  src: string;
+  content_type: string;
+  bucket_name: string;
+  random_path_slug: string;
+  duration_secs: number;
+  is_audio: boolean;
+  url: string;
+}
+
+export interface ElevenLabsDubbingResourceResponse {
+  id: string;
+  version: number;
+  source_language: string;
+  target_languages: string[];
+  input: ElevenLabsDubbingResourceMedia;
+  background: ElevenLabsDubbingResourceMedia | null;
+  foreground: ElevenLabsDubbingResourceMedia | null;
+  speaker_tracks: Record<string, Record<string, unknown>>;
+  speaker_segments: Record<string, Record<string, unknown>>;
+  renders: Record<string, Record<string, unknown>>;
+}
+
 export interface ElevenLabsDubbingTranscriptUtterance {
   text: string;
   speaker_id: string;
@@ -4692,6 +4715,14 @@ export interface ElevenLabsDeleteDubbingMethod {
   schema: undefined;
 }
 
+export interface ElevenLabsGetDubbingResourceMethod {
+  (
+    dubbingId: string,
+    signal?: AbortSignal
+  ): Promise<ElevenLabsDubbingResourceResponse>;
+  schema: undefined;
+}
+
 export interface ElevenLabsGetDubbingAudioMethod {
   (
     dubbingId: string,
@@ -4715,6 +4746,10 @@ export interface ElevenLabsDubbingAudioNamespace {
   get: ElevenLabsGetDubbingAudioMethod;
 }
 
+export interface ElevenLabsDubbingResourceNamespace {
+  get: ElevenLabsGetDubbingResourceMethod;
+}
+
 export interface ElevenLabsDubbingTranscriptsNamespace {
   get: ElevenLabsGetDubbingTranscriptMethod;
 }
@@ -4725,6 +4760,7 @@ export interface ElevenLabsDubbingNamespace {
   get: ElevenLabsGetDubbingMethod;
   delete: ElevenLabsDeleteDubbingMethod;
   audio: ElevenLabsDubbingAudioNamespace;
+  resource: ElevenLabsDubbingResourceNamespace;
   transcripts: ElevenLabsDubbingTranscriptsNamespace;
 }
 

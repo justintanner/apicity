@@ -395,6 +395,7 @@ import {
   ElevenLabsCreateDubbingResponse,
   ElevenLabsDubbingMetadata,
   ElevenLabsDeleteDubbingResponse,
+  ElevenLabsDubbingResourceResponse,
   ElevenLabsDubbingTranscriptsResponse,
   ElevenLabsStudioCreatePodcastRequest,
   ElevenLabsStudioCreatePodcastResponse,
@@ -3074,6 +3075,23 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     { schema: undefined }
   );
 
+  // GET https://api.elevenlabs.io/v1/dubbing/resource/{dubbingId}
+  // Docs: https://elevenlabs.io/docs/api-reference/dubbing/resources/get-resource
+  const getDubbingResource = Object.assign(
+    async (
+      dubbingId: string,
+      signal?: AbortSignal
+    ): Promise<ElevenLabsDubbingResourceResponse> => {
+      return makeJsonRequest<ElevenLabsDubbingResourceResponse>(
+        "GET",
+        `/v1/dubbing/resource/${encodeURIComponent(dubbingId)}`,
+        undefined,
+        signal
+      );
+    },
+    { schema: undefined }
+  );
+
   // GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}/audio/{languageCode}
   // Docs: https://elevenlabs.io/docs/api-reference/dubbing/audio/get
   const getDubbingAudio = Object.assign(
@@ -3121,6 +3139,9 @@ export function createElevenLabs(opts: ElevenLabsOptions): ElevenLabsProvider {
     delete: deleteDubbing,
     audio: {
       get: getDubbingAudio,
+    },
+    resource: {
+      get: getDubbingResource,
     },
     transcripts: {
       get: getDubbingTranscript,

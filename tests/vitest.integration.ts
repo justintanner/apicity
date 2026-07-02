@@ -208,7 +208,10 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      include: ["packages/provider/fireworks/src/**/*"],
+      // Scope the shared coverage gate to branch changes so stale provider
+      // baselines do not block unrelated implementation work.
+      include: ["packages/provider/*/src/**/*"],
+      changed: process.env.APICITY_COVERAGE_BASE ?? "origin/main",
       exclude: ["node_modules", "dist", "tests"],
       thresholds: {
         lines: 100,

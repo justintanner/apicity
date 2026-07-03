@@ -751,6 +751,7 @@ elevenlabs	v1.dubbing.list	GET	https://api.elevenlabs.io/v1/dubbing	https://elev
 elevenlabs	v1.dubbing.create	POST	https://api.elevenlabs.io/v1/dubbing	https://elevenlabs.io/docs/api-reference/dubbing/create
 elevenlabs	v1.dubbing.get	GET	https://api.elevenlabs.io/v1/dubbing/{dubbingId}	https://elevenlabs.io/docs/api-reference/dubbing/get
 elevenlabs	v1.dubbing.delete	DELETE	https://api.elevenlabs.io/v1/dubbing/{dubbingId}	https://elevenlabs.io/docs/api-reference/dubbing/delete
+elevenlabs	v1.dubbing.resource.get	GET	https://api.elevenlabs.io/v1/dubbing/resource/{dubbingId}	https://elevenlabs.io/docs/api-reference/dubbing/resources/get-resource
 elevenlabs	v1.dubbing.audio.get	GET	https://api.elevenlabs.io/v1/dubbing/{dubbingId}/audio/{languageCode}	https://elevenlabs.io/docs/api-reference/dubbing/audio/get
 elevenlabs	v1.dubbing.transcripts.get	GET	https://api.elevenlabs.io/v1/dubbing/{dubbingId}/transcripts/{languageCode}/format/{formatType}	https://elevenlabs.io/docs/api-reference/dubbing/transcripts/get
 elevenlabs	v1.studio.podcasts.create	POST	https://api.elevenlabs.io/v1/studio/podcasts	https://elevenlabs.io/docs/api-reference/studio/create-podcast

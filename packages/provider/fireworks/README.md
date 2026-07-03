@@ -1584,21 +1584,6 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 </details>
 
 <details>
-<summary><code>POST</code> <b><code>fireworks.inference.v1.messages</code></b></summary>
-
-<code>POST https://api.fireworks.ai/inference/v1/messages</code>
-
-[Upstream docs ↗](https://docs.fireworks.ai/api-reference)
-
-```typescript
-const res = await fireworks.inference.v1.messages({ /* ... */ });
-```
-
-Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
-
-</details>
-
-<details>
 <summary><code>POST</code> <b><code>fireworks.inference.v1.rerank</code></b></summary>
 
 <code>POST https://api.fireworks.ai/inference/v1/rerank</code>
@@ -1622,6 +1607,21 @@ Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
 
 ```typescript
 const res = await fireworks.inference.v1.accounts.users.update({ /* ... */ });
+```
+
+Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)
+
+</details>
+
+<details>
+<summary><code>POST</code> <b><code>fireworks.inference.v1.messages</code></b></summary>
+
+<code>POST https://api.fireworks.ai/inference/v1/messages</code>
+
+[Upstream docs ↗](https://docs.fireworks.ai/api-reference)
+
+```typescript
+const res = await fireworks.inference.v1.messages({ /* ... */ });
 ```
 
 Source: [`packages/provider/fireworks/src/fireworks.ts`](src/fireworks.ts)

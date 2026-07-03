@@ -28,7 +28,7 @@ const openai = createOpenAi({ apiKey: process.env.OPENAI_API_KEY! });
 
 ## API Reference
 
-52 endpoints across 14 groups. Each method mirrors an upstream URL path.
+58 endpoints across 19 groups. Each method mirrors an upstream URL path.
 
 ### audio
 
@@ -203,7 +203,56 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 </details>
 
+### completions
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.completions</code></b></summary>
+
+<code>POST https://api.openai.com/v1/completions</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/completions/create)
+
+```typescript
+const res = await openai.v1.completions({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+### containers
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.containers</code></b></summary>
+
+<code>POST https://api.openai.com/v1/containers</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/containers/createContainers)
+
+```typescript
+const res = await openai.v1.containers({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
 ### conversations
+
+<details>
+<summary><code>GET</code> <b><code>openai.v1.conversations.retrieve</code></b></summary>
+
+<code>GET https://api.openai.com/v1/conversations/{conversationId}</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/conversations/retrieve)
+
+```typescript
+const res = await openai.v1.conversations.retrieve({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
 
 <details>
 <summary><code>POST</code> <b><code>openai.v1.conversations</code></b></summary>
@@ -231,6 +280,23 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 ```typescript
 const res = await openai.v1.embeddings({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+### evals
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.evals</code></b></summary>
+
+<code>POST https://api.openai.com/v1/evals</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/evals/create)
+
+```typescript
+const res = await openai.v1.evals({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
@@ -714,6 +780,23 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 </details>
 
+### realtime
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.realtime.clientSecrets</code></b></summary>
+
+<code>POST https://api.openai.com/v1/realtime/client_secrets</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/realtime-sessions/create-client-secret)
+
+```typescript
+const res = await openai.v1.realtime.clientSecrets({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
 ### responses
 
 <details>
@@ -832,6 +915,23 @@ Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
 
 ```typescript
 const res = await openai.v1.uploads({ /* ... */ });
+```
+
+Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)
+
+</details>
+
+### vectorStores
+
+<details>
+<summary><code>POST</code> <b><code>openai.v1.vectorStores</code></b></summary>
+
+<code>POST https://api.openai.com/v1/vector_stores</code>
+
+[Upstream docs ↗](https://platform.openai.com/docs/api-reference/vector-stores/create)
+
+```typescript
+const res = await openai.v1.vectorStores({ /* ... */ });
 ```
 
 Source: [`packages/provider/openai/src/openai.ts`](src/openai.ts)

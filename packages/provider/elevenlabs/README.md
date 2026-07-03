@@ -142,7 +142,7 @@ for (const w of result.words) {
 
 ## API Reference
 
-301 endpoints across 27 groups. Each method mirrors an upstream URL path.
+303 endpoints across 28 groups. Each method mirrors an upstream URL path.
 
 ### audioIsolation
 
@@ -2555,6 +2555,21 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 </details>
 
 <details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.dubbing.resource.get</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/dubbing/resource/{dubbingId}</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/dubbing/resources/get-resource)
+
+```typescript
+const res = await elevenlabs.v1.dubbing.resource.get({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+<details>
 <summary><code>GET</code> <b><code>elevenlabs.v1.dubbing.transcripts.get</code></b></summary>
 
 <code>GET https://api.elevenlabs.io/v1/dubbing/{dubbingId}/transcripts/{languageCode}/format/{formatType}</code>
@@ -3905,6 +3920,23 @@ Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
 
 ```typescript
 const res = await elevenlabs.v1.textToVoice.stream({ /* ... */ });
+```
+
+Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)
+
+</details>
+
+### usage
+
+<details>
+<summary><code>GET</code> <b><code>elevenlabs.v1.usage.characterStats</code></b></summary>
+
+<code>GET https://api.elevenlabs.io/v1/usage/character-stats</code>
+
+[Upstream docs ↗](https://elevenlabs.io/docs/api-reference/usage/get)
+
+```typescript
+const res = await elevenlabs.v1.usage.characterStats({ /* ... */ });
 ```
 
 Source: [`packages/provider/elevenlabs/src/elevenlabs.ts`](src/elevenlabs.ts)

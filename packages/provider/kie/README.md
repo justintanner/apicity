@@ -476,7 +476,7 @@ defaults to `false`.
 
 ## API Reference
 
-41 endpoints across 23 groups. Each method mirrors an upstream URL path.
+43 endpoints across 23 groups. Each method mirrors an upstream URL path.
 
 ### chat
 
@@ -874,6 +874,21 @@ Source: [`packages/provider/kie/src/kie.ts`](src/kie.ts)
 ### lyrics
 
 <details>
+<summary><code>GET</code> <b><code>kie.suno.get.api.v1.lyrics.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/lyrics/record-info?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/suno-api/get-lyrics-details)
+
+```typescript
+const res = await kie.suno.get.api.v1.lyrics.recordInfo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
+
+</details>
+
+<details>
 <summary><code>POST</code> <b><code>kie.suno.post.api.v1.lyrics</code></b></summary>
 
 <code>POST https://api.kie.ai/api/v1/lyrics</code>
@@ -1053,6 +1068,21 @@ Source: [`packages/provider/kie/src/suno.ts`](src/suno.ts)
 
 ```typescript
 const res = await kie.veo.get.api.v1.veo.get1080pVideo({ /* ... */ });
+```
+
+Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)
+
+</details>
+
+<details>
+<summary><code>GET</code> <b><code>kie.veo.get.api.v1.veo.recordInfo</code></b></summary>
+
+<code>GET https://api.kie.ai/api/v1/veo/record-info?taskId={taskId}</code>
+
+[Upstream docs ↗](https://docs.kie.ai/veo3-api/get-veo-3-video-details)
+
+```typescript
+const res = await kie.veo.get.api.v1.veo.recordInfo({ /* ... */ });
 ```
 
 Source: [`packages/provider/kie/src/veo.ts`](src/veo.ts)

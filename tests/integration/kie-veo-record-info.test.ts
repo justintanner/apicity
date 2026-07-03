@@ -2,11 +2,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import { createKie } from "@apicity/kie";
 import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
-const RECORDING_NAME = "kie/mj/record-info-not-found";
+const RECORDING_NAME = "kie/veo/record-info-not-found";
 const MISSING_TASK_ID =
-  "apicity-test-nonexistent-mj-task-id-do-not-record-real";
+  "apicity-test-nonexistent-veo-task-id-do-not-record-real";
 
-describe("kie mj record-info", () => {
+describe("kie veo record-info", () => {
   let ctx: PollyContext | undefined;
 
   afterEach(async () => {
@@ -16,13 +16,13 @@ describe("kie mj record-info", () => {
     }
   });
 
-  it("returns a live response envelope for a missing Midjourney task", async () => {
+  it("returns a live response envelope for a missing Veo task", async () => {
     ctx = setupPolly(RECORDING_NAME);
 
     const provider = createKie({
       apiKey: process.env.KIE_API_KEY ?? "kie-test-key",
     });
-    const recordInfo = provider.get.api.v1.mj.recordInfo;
+    const recordInfo = provider.veo.get.api.v1.veo.recordInfo;
 
     const result = await recordInfo(MISSING_TASK_ID);
 
@@ -34,7 +34,7 @@ describe("kie mj record-info", () => {
   it("validates the request taskId via schema", () => {
     const recordInfo = createKie({
       apiKey: "kie-test-key",
-    }).get.api.v1.mj.recordInfo;
+    }).veo.get.api.v1.veo.recordInfo;
 
     expect(recordInfo.schema.safeParse({ taskId: "abc123" }).success).toBe(
       true

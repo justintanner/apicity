@@ -35,10 +35,22 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "taskId": "49265b81be9607661c0246b892144776"
     }
   },
+  "GET api.v1.mj.recordInfo": {
+    "source": "kie/mj/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-mj-task-id-do-not-record-real"
+    }
+  },
   "GET api.v1.runway.recordDetail": {
     "source": "kie/runway/record-detail-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
+    }
+  },
+  "GET api.v1.veo.recordInfo": {
+    "source": "kie/veo/record-info-not-found",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-veo-task-id-do-not-record-real"
     }
   },
   "POST api.fileBase64Upload": {

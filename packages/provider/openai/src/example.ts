@@ -51,6 +51,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "temperature": 0
     }
   },
+  "POST v1.completions": {
+    "source": "openai/completions-hello",
+    "payload": {
+      "model": "gpt-3.5-turbo-instruct",
+      "prompt": "Say this is a test",
+      "max_tokens": 7,
+      "temperature": 0
+    }
+  },
   "POST v1.conversations": {
     "source": "openai/conversations-create",
     "payload": {

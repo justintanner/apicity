@@ -24,6 +24,9 @@ export type {
   OpenAiStoredCompletionUpdateRequest,
   OpenAiStoredCompletionUpdateRequestInput,
   OpenAiStoredCompletionUpdateParsedRequest,
+  OpenAiCompletionRequest,
+  OpenAiCompletionRequestInput,
+  OpenAiCompletionParsedRequest,
   OpenAiSpeechRequest,
   OpenAiSpeechRequestInput,
   OpenAiSpeechParsedRequest,
@@ -153,6 +156,50 @@ export interface OpenAiChatResponse {
   usage?: OpenAiUsage;
   metadata?: Record<string, string>;
   error?: { message?: string; type?: string };
+}
+
+export interface OpenAiCompletionLogprobs {
+  text_offset?: number[];
+  token_logprobs?: Array<number | null>;
+  tokens?: string[];
+  top_logprobs?: Array<Record<string, number> | null>;
+}
+
+export interface OpenAiCompletionChoice {
+  finish_reason: "stop" | "length" | "content_filter" | null;
+  index: number;
+  logprobs: OpenAiCompletionLogprobs | null;
+  text: string;
+}
+
+export interface OpenAiCompletionTokensDetails {
+  accepted_prediction_tokens?: number;
+  audio_tokens?: number;
+  reasoning_tokens?: number;
+  rejected_prediction_tokens?: number;
+}
+
+export interface OpenAiCompletionPromptTokensDetails {
+  audio_tokens?: number;
+  cached_tokens?: number;
+}
+
+export interface OpenAiCompletionUsage {
+  completion_tokens: number;
+  prompt_tokens: number;
+  total_tokens: number;
+  completion_tokens_details?: OpenAiCompletionTokensDetails;
+  prompt_tokens_details?: OpenAiCompletionPromptTokensDetails;
+}
+
+export interface OpenAiCompletionResponse {
+  id: string;
+  object: "text_completion";
+  created: number;
+  model: string;
+  choices: OpenAiCompletionChoice[];
+  system_fingerprint?: string;
+  usage?: OpenAiCompletionUsage;
 }
 
 // --- Stored Chat Completions API types ---
@@ -981,6 +1028,7 @@ export interface OpenAiConversation {
 import type {
   OpenAiChatRequest,
   OpenAiStoredCompletionUpdateRequest,
+  OpenAiCompletionRequest,
   OpenAiSpeechRequest,
   OpenAiTranscribeRequest,
   OpenAiTranslateRequest,
@@ -1016,6 +1064,14 @@ export interface OpenAiPostV1ChatCompletions extends OpenAiPostV1ChatCompletions
     req: OpenAiStoredCompletionUpdateRequest,
     signal?: AbortSignal
   ): Promise<OpenAiChatResponse>;
+}
+
+export interface OpenAiPostV1Completions {
+  (
+    req: OpenAiCompletionRequest,
+    signal?: AbortSignal
+  ): Promise<OpenAiCompletionResponse>;
+  schema: z.ZodType<OpenAiCompletionRequest>;
 }
 
 export interface OpenAiPostV1Embeddings {
@@ -1216,6 +1272,7 @@ export interface OpenAiPostV1FineTuningNamespace {
 
 // POST v1 namespace
 export interface OpenAiPostV1Namespace {
+  completions: OpenAiPostV1Completions;
   chat: OpenAiPostV1ChatNamespace;
   audio: OpenAiPostV1AudioNamespace;
   embeddings: OpenAiPostV1Embeddings;

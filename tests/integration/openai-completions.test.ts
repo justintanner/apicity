@@ -1,15 +1,8 @@
 import { describe, it, expect, afterEach } from "vitest";
-import {
-  setupPolly,
-  teardownPolly,
-  getPollyMode,
-  recordingExists,
-  type PollyContext,
-} from "../harness";
+import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 import { createOpenAi } from "@apicity/openai";
 
-// Fixture is intentionally pending until city OpenAI credentials can record it.
-const recordingName = ["openai", "completions-hello"].join("/");
+const recordingName = "openai/completions-hello";
 
 describe("openai completions integration", () => {
   let ctx: PollyContext | undefined;
@@ -22,10 +15,6 @@ describe("openai completions integration", () => {
   });
 
   it("should create a text completion", async () => {
-    if (getPollyMode() === "replay" && !recordingExists(recordingName)) {
-      return;
-    }
-
     ctx = setupPolly(recordingName);
 
     const provider = createOpenAi({

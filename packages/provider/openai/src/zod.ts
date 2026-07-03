@@ -509,6 +509,217 @@ export const OpenAiConversationCreateRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Realtime
+// ---------------------------------------------------------------------------
+
+export const OpenAiRealtimeAudioFormatSchema = z.union([
+  z.object({
+    type: z.literal("audio/pcm").optional(),
+    rate: z.literal(24000).optional(),
+  }),
+  z.object({ type: z.literal("audio/pcmu").optional() }),
+  z.object({ type: z.literal("audio/pcma").optional() }),
+]);
+
+export const OpenAiRealtimeNoiseReductionSchema = z
+  .object({
+    type: z.enum(["near_field", "far_field"]).optional(),
+  })
+  .nullable();
+
+export const OpenAiRealtimeAudioTranscriptionSchema = z
+  .object({
+    delay: z.enum(["minimal", "low", "medium", "high", "xhigh"]).optional(),
+    language: z.string().optional(),
+    model: z.string().optional(),
+    prompt: z.string().optional(),
+  })
+  .nullable();
+
+export const OpenAiRealtimeServerVadSchema = z.object({
+  type: z.literal("server_vad"),
+  create_response: z.boolean().optional(),
+  idle_timeout_ms: z.number().int().min(5000).max(30000).optional(),
+  interrupt_response: z.boolean().optional(),
+  prefix_padding_ms: z.number().optional(),
+  silence_duration_ms: z.number().optional(),
+  threshold: z.number().min(0).max(1).optional(),
+});
+
+export const OpenAiRealtimeSemanticVadSchema = z.object({
+  type: z.literal("semantic_vad"),
+  create_response: z.boolean().optional(),
+  eagerness: z.enum(["low", "medium", "high", "auto"]).optional(),
+  interrupt_response: z.boolean().optional(),
+});
+
+export const OpenAiRealtimeTurnDetectionSchema = z
+  .discriminatedUnion("type", [
+    OpenAiRealtimeServerVadSchema,
+    OpenAiRealtimeSemanticVadSchema,
+  ])
+  .nullable();
+
+export const OpenAiRealtimeAudioInputSchema = z.object({
+  format: OpenAiRealtimeAudioFormatSchema.optional(),
+  noise_reduction: OpenAiRealtimeNoiseReductionSchema.optional(),
+  transcription: OpenAiRealtimeAudioTranscriptionSchema.optional(),
+  turn_detection: OpenAiRealtimeTurnDetectionSchema.optional(),
+});
+
+export const OpenAiRealtimeVoiceSchema = z.union([
+  z.string(),
+  z.object({ id: z.string() }),
+]);
+
+export const OpenAiRealtimeAudioOutputSchema = z.object({
+  format: OpenAiRealtimeAudioFormatSchema.optional(),
+  speed: z.number().min(0.25).max(1.5).optional(),
+  voice: OpenAiRealtimeVoiceSchema.optional(),
+});
+
+export const OpenAiRealtimeAudioConfigSchema = z.object({
+  input: OpenAiRealtimeAudioInputSchema.optional(),
+  output: OpenAiRealtimeAudioOutputSchema.optional(),
+});
+
+export const OpenAiRealtimePromptSchema = z.object({
+  id: z.string(),
+  variables: z.record(z.string(), z.unknown()).optional(),
+  version: z.string().optional(),
+});
+
+export const OpenAiRealtimeReasoningSchema = z.object({
+  effort: z.enum(["minimal", "low", "medium", "high", "xhigh"]).optional(),
+});
+
+export const OpenAiRealtimeToolChoiceSchema = z.union([
+  z.enum(["none", "auto", "required"]),
+  z.object({
+    type: z.literal("function"),
+    name: z.string(),
+  }),
+  z.object({
+    type: z.literal("mcp"),
+    server_label: z.string(),
+    name: z.string().optional(),
+  }),
+]);
+
+export const OpenAiRealtimeFunctionToolSchema = z.object({
+  type: z.literal("function").optional(),
+  name: z.string().optional(),
+  description: z.string().optional(),
+  parameters: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const OpenAiRealtimeMcpToolFilterSchema = z.object({
+  read_only: z.boolean().optional(),
+  tool_names: z.array(z.string()).optional(),
+});
+
+export const OpenAiRealtimeMcpApprovalSchema = z.union([
+  z.enum(["always", "never"]),
+  z.object({
+    always: OpenAiRealtimeMcpToolFilterSchema.optional(),
+    never: OpenAiRealtimeMcpToolFilterSchema.optional(),
+  }),
+]);
+
+export const OpenAiRealtimeMcpToolSchema = z.object({
+  type: z.literal("mcp"),
+  server_label: z.string(),
+  allowed_tools: z
+    .union([z.array(z.string()), OpenAiRealtimeMcpToolFilterSchema])
+    .optional(),
+  authorization: z.string().optional(),
+  connector_id: z.string().optional(),
+  defer_loading: z.boolean().optional(),
+  headers: z.record(z.string(), z.string()).optional(),
+  require_approval: OpenAiRealtimeMcpApprovalSchema.optional(),
+  server_description: z.string().optional(),
+  server_url: z.string().url().optional(),
+  tunnel_id: z.string().optional(),
+});
+
+export const OpenAiRealtimeToolSchema = z.union([
+  OpenAiRealtimeFunctionToolSchema,
+  OpenAiRealtimeMcpToolSchema,
+]);
+
+export const OpenAiRealtimeTracingSchema = z
+  .union([
+    z.literal("auto"),
+    z.object({
+      group_id: z.string().optional(),
+      metadata: z.unknown().optional(),
+      workflow_name: z.string().optional(),
+    }),
+  ])
+  .nullable();
+
+export const OpenAiRealtimeTruncationSchema = z.union([
+  z.enum(["auto", "disabled"]),
+  z.object({
+    type: z.literal("retention_ratio"),
+    retention_ratio: z.number().min(0).max(1),
+    token_limits: z
+      .object({
+        post_instructions: z.number().min(0).optional(),
+      })
+      .optional(),
+  }),
+]);
+
+export const OpenAiRealtimeSessionCreateRequestSchema = z.object({
+  type: z.literal("realtime"),
+  audio: OpenAiRealtimeAudioConfigSchema.optional(),
+  include: z
+    .array(z.literal("item.input_audio_transcription.logprobs"))
+    .optional(),
+  instructions: z.string().optional(),
+  max_output_tokens: z
+    .union([z.number().int().min(1).max(4096), z.literal("inf")])
+    .optional(),
+  model: z.string().optional(),
+  output_modalities: z.array(z.enum(["text", "audio"])).optional(),
+  parallel_tool_calls: z.boolean().optional(),
+  prompt: OpenAiRealtimePromptSchema.optional(),
+  reasoning: OpenAiRealtimeReasoningSchema.optional(),
+  tool_choice: OpenAiRealtimeToolChoiceSchema.optional(),
+  tools: z.array(OpenAiRealtimeToolSchema).optional(),
+  tracing: OpenAiRealtimeTracingSchema.optional(),
+  truncation: OpenAiRealtimeTruncationSchema.optional(),
+});
+
+export const OpenAiRealtimeTranscriptionSessionCreateRequestSchema = z.object({
+  type: z.literal("transcription"),
+  audio: z
+    .object({
+      input: OpenAiRealtimeAudioInputSchema.optional(),
+    })
+    .optional(),
+  include: z
+    .array(z.literal("item.input_audio_transcription.logprobs"))
+    .optional(),
+});
+
+export const OpenAiRealtimeClientSecretRequestSchema = z.object({
+  expires_after: z
+    .object({
+      anchor: z.literal("created_at").optional(),
+      seconds: z.number().int().min(10).max(7200).optional(),
+    })
+    .optional(),
+  session: z
+    .discriminatedUnion("type", [
+      OpenAiRealtimeSessionCreateRequestSchema,
+      OpenAiRealtimeTranscriptionSessionCreateRequestSchema,
+    ])
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Vector stores
 // ---------------------------------------------------------------------------
 
@@ -895,6 +1106,70 @@ export type OpenAiConversationCreateRequestInput =
   OpenAiConversationCreateRequest;
 export type OpenAiConversationCreateParsedRequest = z.output<
   typeof OpenAiConversationCreateRequestSchema
+>;
+export type OpenAiRealtimeAudioFormat = z.infer<
+  typeof OpenAiRealtimeAudioFormatSchema
+>;
+export type OpenAiRealtimeNoiseReduction = z.infer<
+  typeof OpenAiRealtimeNoiseReductionSchema
+>;
+export type OpenAiRealtimeAudioTranscription = z.infer<
+  typeof OpenAiRealtimeAudioTranscriptionSchema
+>;
+export type OpenAiRealtimeServerVad = z.infer<
+  typeof OpenAiRealtimeServerVadSchema
+>;
+export type OpenAiRealtimeSemanticVad = z.infer<
+  typeof OpenAiRealtimeSemanticVadSchema
+>;
+export type OpenAiRealtimeTurnDetection = z.infer<
+  typeof OpenAiRealtimeTurnDetectionSchema
+>;
+export type OpenAiRealtimeAudioInput = z.infer<
+  typeof OpenAiRealtimeAudioInputSchema
+>;
+export type OpenAiRealtimeVoice = z.infer<typeof OpenAiRealtimeVoiceSchema>;
+export type OpenAiRealtimeAudioOutput = z.infer<
+  typeof OpenAiRealtimeAudioOutputSchema
+>;
+export type OpenAiRealtimeAudioConfig = z.infer<
+  typeof OpenAiRealtimeAudioConfigSchema
+>;
+export type OpenAiRealtimePrompt = z.infer<typeof OpenAiRealtimePromptSchema>;
+export type OpenAiRealtimeReasoning = z.infer<
+  typeof OpenAiRealtimeReasoningSchema
+>;
+export type OpenAiRealtimeToolChoice = z.infer<
+  typeof OpenAiRealtimeToolChoiceSchema
+>;
+export type OpenAiRealtimeFunctionTool = z.infer<
+  typeof OpenAiRealtimeFunctionToolSchema
+>;
+export type OpenAiRealtimeMcpTool = z.infer<typeof OpenAiRealtimeMcpToolSchema>;
+export type OpenAiRealtimeTool = z.infer<typeof OpenAiRealtimeToolSchema>;
+export type OpenAiRealtimeTracing = z.infer<typeof OpenAiRealtimeTracingSchema>;
+export type OpenAiRealtimeTruncation = z.infer<
+  typeof OpenAiRealtimeTruncationSchema
+>;
+export type OpenAiRealtimeSessionCreateRequest = z.input<
+  typeof OpenAiRealtimeSessionCreateRequestSchema
+>;
+export type OpenAiRealtimeSessionCreateParsedRequest = z.output<
+  typeof OpenAiRealtimeSessionCreateRequestSchema
+>;
+export type OpenAiRealtimeTranscriptionSessionCreateRequest = z.input<
+  typeof OpenAiRealtimeTranscriptionSessionCreateRequestSchema
+>;
+export type OpenAiRealtimeTranscriptionSessionCreateParsedRequest = z.output<
+  typeof OpenAiRealtimeTranscriptionSessionCreateRequestSchema
+>;
+export type OpenAiRealtimeClientSecretRequest = z.input<
+  typeof OpenAiRealtimeClientSecretRequestSchema
+>;
+export type OpenAiRealtimeClientSecretRequestInput =
+  OpenAiRealtimeClientSecretRequest;
+export type OpenAiRealtimeClientSecretParsedRequest = z.output<
+  typeof OpenAiRealtimeClientSecretRequestSchema
 >;
 export type OpenAiVectorStoreExpirationPolicy = z.infer<
   typeof OpenAiVectorStoreExpirationPolicySchema

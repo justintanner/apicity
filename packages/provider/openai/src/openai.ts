@@ -42,6 +42,8 @@ import {
   OpenAiResponseInputTokensResponse,
   OpenAiConversationCreateRequest,
   OpenAiConversation,
+  OpenAiRealtimeClientSecretRequest,
+  OpenAiRealtimeClientSecretResponse,
   OpenAiVectorStoreCreateRequest,
   OpenAiVectorStore,
   OpenAiModerationRequest,
@@ -98,6 +100,7 @@ import {
   OpenAiResponseCompactRequestSchema,
   OpenAiResponseInputTokensRequestSchema,
   OpenAiConversationCreateRequestSchema,
+  OpenAiRealtimeClientSecretRequestSchema,
   OpenAiVectorStoreCreateRequestSchema,
   OpenAiFineTuningJobCreateRequestSchema,
   OpenAiCheckpointPermissionCreateRequestSchema,
@@ -659,6 +662,25 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
         schema: OpenAiConversationCreateRequestSchema,
       }
     ),
+    realtime: {
+      // POST https://api.openai.com/v1/realtime/client_secrets
+      // Docs: https://platform.openai.com/docs/api-reference/realtime-sessions/create-client-secret
+      clientSecrets: Object.assign(
+        async (
+          req: OpenAiRealtimeClientSecretRequest,
+          signal?: AbortSignal
+        ): Promise<OpenAiRealtimeClientSecretResponse> => {
+          return makeRequest<OpenAiRealtimeClientSecretResponse>(
+            "/realtime/client_secrets",
+            jsonRequest(req),
+            signal
+          );
+        },
+        {
+          schema: OpenAiRealtimeClientSecretRequestSchema,
+        }
+      ),
+    },
     // POST https://api.openai.com/v1/vector_stores
     // Docs: https://platform.openai.com/docs/api-reference/vector-stores/create
     vectorStores: Object.assign(

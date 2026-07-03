@@ -60,6 +60,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "temperature": 0
     }
   },
+  "POST v1.containers": {
+    "source": "openai/containers-create",
+    "payload": {
+      "name": "apicity-container-create-test",
+      "expires_after": {
+        "anchor": "last_active_at",
+        "minutes": 20
+      },
+      "memory_limit": "1g",
+      "network_policy": {
+        "type": "disabled"
+      }
+    }
+  },
   "POST v1.conversations": {
     "source": "openai/conversations-create",
     "payload": {

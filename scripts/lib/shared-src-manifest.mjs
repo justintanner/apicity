@@ -110,6 +110,7 @@ export const sharedSrcEntries = [
       "packages/provider/openai/src/transport.ts",
       "packages/provider/fireworks/src/transport.ts",
       "packages/provider/kie/src/transport.ts",
+      "packages/provider/anthropic/src/transport.ts",
     ],
   },
 ];

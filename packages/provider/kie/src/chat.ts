@@ -2,22 +2,8 @@ import { KieError } from "./types";
 import { KieChatRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
 import { withFallback } from "./middleware";
-
-// Helper function to safely handle AbortSignal across different environments
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
-
-  // Handle both standard AbortSignal and node-fetch's AbortSignal
-  if (typeof signal.addEventListener === "function") {
-    signal.addEventListener("abort", () => controller.abort(), { once: true });
-  } else if (signal.aborted) {
-    // Already aborted, abort our controller too
-    controller.abort();
-  }
-}
+import { createKieTransport } from "./request";
+import type { Transport } from "./transport";
 
 export interface KieChatContentPart {
   type: "text" | "image_url";
@@ -81,61 +67,20 @@ export interface KieChatProvider {
 const PATH_PREFIXES = ["gpt-5.5", "gpt-5-2"];
 
 function buildEndpoint(
-  baseURL: string,
-  apiKey: string,
-  doFetch: typeof fetch,
-  timeout: number,
+  transport: Transport,
   pathPrefix: string
 ): (req: KieChatRequest, signal?: AbortSignal) => Promise<KieChatResponse> {
   return async function completions(
     req: KieChatRequest,
     signal?: AbortSignal
   ): Promise<KieChatResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
     try {
-      const res = await doFetch(
-        `${baseURL}/${pathPrefix}/v1/chat/completions`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${apiKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(req),
-          signal: controller.signal,
-        }
+      return await transport.postJson<KieChatResponse>(
+        `/${pathPrefix}/v1/chat/completions`,
+        req,
+        { signal }
       );
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie Chat API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie Chat API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as KieChatResponse;
     } catch (error) {
-      clearTimeout(timeoutId);
       if (error instanceof KieError) throw error;
       if (error instanceof SyntaxError) {
         throw new KieError("Failed to parse chat response", 500);
@@ -151,8 +96,16 @@ export function createChatProvider(
   doFetch: typeof fetch,
   timeout: number
 ): KieChatProvider {
+  const transport = createKieTransport({
+    baseURL,
+    apiKey,
+    doFetch,
+    timeout,
+    errorPrefix: "Kie Chat API error",
+    requestFailedPrefix: "Chat request failed",
+  });
   const endpoints = PATH_PREFIXES.map((prefix) =>
-    buildEndpoint(baseURL, apiKey, doFetch, timeout, prefix)
+    buildEndpoint(transport, prefix)
   );
 
   const fallback = withFallback<KieChatRequest, KieChatResponse>(endpoints);

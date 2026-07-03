@@ -874,13 +874,13 @@ describe("KIE request utilities", () => {
       expect(result).toEqual({ code: 200, data: { balance: 12 } });
       expect(mockFetch).toHaveBeenCalledWith(
         "https://api.kie.ai/api/v1/chat/credit",
-        {
+        expect.objectContaining({
           method: "GET",
           headers: {
             Authorization: "Bearer test-key",
             "Content-Type": "application/json",
           },
-        }
+        })
       );
     });
 

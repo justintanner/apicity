@@ -1,4 +1,4 @@
-import { kieRequest } from "./request";
+import { createKieTransport, kieRequest } from "./request";
 import { SunoGenerateRequestSchema } from "./zod";
 import { z } from "zod";
 import type { ApicitySchema } from "./types";
@@ -594,17 +594,23 @@ export function createSunoProvider(
   doFetch: typeof fetch,
   timeout: number
 ): SunoProvider {
-  const requestOpts = { apiKey, doFetch, timeout };
+  const transport = createKieTransport({
+    baseURL,
+    apiKey,
+    doFetch,
+    timeout,
+    requestFailedPrefix: "Kie request failed",
+  });
 
   // POST https://api.kie.ai/api/v1/generate
   // Docs: https://docs.kie.ai/suno-api/generate-music
   async function createTask(
     req: SunoGenerateRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/generate`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/generate",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -613,32 +619,29 @@ export function createSunoProvider(
   async function extendTask(
     req: SunoExtendRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/generate/extend`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/generate/extend",
       body: req,
-      ...requestOpts,
     });
   }
 
   // GET https://api.kie.ai/api/v1/generate/record-info?taskId={taskId}
   // Docs: https://docs.kie.ai/suno-api/get-music-details
   async function recordInfo(taskId: string): Promise<SunoRecordInfoResponse> {
-    return kieRequest<SunoRecordInfoResponse>(
-      `${baseURL}/api/v1/generate/record-info?taskId=${encodeURIComponent(taskId)}`,
-      {
-        method: "GET",
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/generate/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/wav/generate
   // Docs: https://docs.kie.ai/suno-api/convert-to-wav
   async function wavGenerate(req: SunoWavRequest): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/wav/generate`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/wav/generate",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -647,23 +650,20 @@ export function createSunoProvider(
   async function vocalRemovalGenerate(
     req: SunoVocalRemovalRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/vocal-removal/generate`,
-      {
-        method: "POST",
-        body: req,
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/vocal-removal/generate",
+      body: req,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/mp4/generate
   // Docs: https://docs.kie.ai/suno-api/create-music-video
   async function mp4Generate(req: SunoMp4Request): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/mp4/generate`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/mp4/generate",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -672,10 +672,10 @@ export function createSunoProvider(
   async function lyricsGenerate(
     req: SunoLyricsRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/lyrics`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/lyrics",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -684,10 +684,10 @@ export function createSunoProvider(
   async function boostStyle(
     req: SunoBoostStyleRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/style/generate`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/style/generate",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -696,14 +696,11 @@ export function createSunoProvider(
   async function uploadCover(
     req: SunoUploadCoverRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/generate/upload-cover`,
-      {
-        method: "POST",
-        body: req,
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/upload-cover",
+      body: req,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/generate/upload-extend
@@ -711,14 +708,11 @@ export function createSunoProvider(
   async function uploadExtend(
     req: SunoUploadExtendRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/generate/upload-extend`,
-      {
-        method: "POST",
-        body: req,
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/upload-extend",
+      body: req,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/midi/generate
@@ -726,10 +720,10 @@ export function createSunoProvider(
   async function midiGenerate(
     req: SunoMidiRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/midi/generate`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/midi/generate",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -738,10 +732,10 @@ export function createSunoProvider(
   async function mashupGenerate(
     req: SunoMashupRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/generate/mashup`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/generate/mashup",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -750,14 +744,11 @@ export function createSunoProvider(
   async function replaceSectionGenerate(
     req: SunoReplaceSectionRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/generate/replace-section`,
-      {
-        method: "POST",
-        body: req,
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/replace-section",
+      body: req,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/generate/sounds
@@ -765,10 +756,10 @@ export function createSunoProvider(
   async function soundsGenerate(
     req: SunoSoundsRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(`${baseURL}/api/v1/generate/sounds`, {
+    return kieRequest<SunoSubmitResponse>(transport, {
       method: "POST",
+      path: "/api/v1/generate/sounds",
       body: req,
-      ...requestOpts,
     });
   }
 
@@ -777,14 +768,11 @@ export function createSunoProvider(
   async function addInstrumentalGenerate(
     req: SunoAddInstrumentalRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/generate/add-instrumental`,
-      {
-        method: "POST",
-        body: req,
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/add-instrumental",
+      body: req,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/generate/add-vocals
@@ -792,14 +780,11 @@ export function createSunoProvider(
   async function addVocalsGenerate(
     req: SunoAddVocalsRequest
   ): Promise<SunoSubmitResponse> {
-    return kieRequest<SunoSubmitResponse>(
-      `${baseURL}/api/v1/generate/add-vocals`,
-      {
-        method: "POST",
-        body: req,
-        ...requestOpts,
-      }
-    );
+    return kieRequest<SunoSubmitResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/generate/add-vocals",
+      body: req,
+    });
   }
 
   const extendMethod = Object.assign(extendTask, {

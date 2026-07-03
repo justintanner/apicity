@@ -64,7 +64,7 @@ import { createGemini31ProProvider } from "./gemini-31-pro";
 import { attachExamples } from "./example";
 import { createReplayStore } from "./paygate";
 import { withPaidGate } from "./with-paid-gate";
-import { kieRequest } from "./request";
+import { createKieTransport, kieRequest } from "./request";
 
 const MIME_TYPES: Record<string, string> = {
   jpg: "image/jpeg",
@@ -162,6 +162,22 @@ export function createKie(opts: KieOptions): KieProvider {
   const uploadBaseURL = opts.uploadBaseURL ?? "https://kieai.redpandaai.co";
   const doFetch = opts.fetch ?? fetch;
   const timeout = opts.timeout ?? 30000;
+  const transport = createKieTransport({
+    baseURL,
+    apiKey: opts.apiKey,
+    doFetch,
+    timeout,
+    requestFailedPrefix: "Kie request failed",
+  });
+  const uploadTransport = createKieTransport({
+    baseURL: uploadBaseURL,
+    apiKey: opts.apiKey,
+    doFetch,
+    timeout,
+    errorPrefix: "Kie upload error",
+    requestFailedPrefix: "Kie upload failed",
+    jsonContentType: false,
+  });
   const paygate = opts.paygate
     ? {
         ...opts.paygate,
@@ -177,95 +193,18 @@ export function createKie(opts: KieOptions): KieProvider {
     validateSeedance2MiniRequest(req);
     validateGeminiOmniVideoRequest(req);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${baseURL}/api/v1/jobs/createTask`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(req),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as TaskResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to create task: ${error}`, 500);
-    }
+    return await transport.postJson<TaskResponse>(
+      "/api/v1/jobs/createTask",
+      req
+    );
   }
 
   // GET https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}
   // Docs: https://docs.kie.ai/market/common/get-task-detail
   async function recordInfo(taskId: string): Promise<KieTaskInfo> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(
-        `${baseURL}/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${opts.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as KieTaskInfo;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to get task: ${error}`, 500);
-    }
+    return await transport.getJson<KieTaskInfo>(
+      `/api/v1/jobs/recordInfo?taskId=${encodeURIComponent(taskId)}`
+    );
   }
 
   // GET https://api.kie.ai/api/v1/gpt4o-image/record-info?taskId={taskId}
@@ -273,49 +212,9 @@ export function createKie(opts: KieOptions): KieProvider {
   async function gpt4oImageRecordInfo(
     taskId: string
   ): Promise<Gpt4oImageRecordInfo> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(
-        `${baseURL}/api/v1/gpt4o-image/record-info?taskId=${encodeURIComponent(taskId)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${opts.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as Gpt4oImageRecordInfo;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to get 4o image task: ${error}`, 500);
-    }
+    return await transport.getJson<Gpt4oImageRecordInfo>(
+      `/api/v1/gpt4o-image/record-info?taskId=${encodeURIComponent(taskId)}`
+    );
   }
 
   // POST https://kieai.redpandaai.co/api/file-stream-upload
@@ -323,62 +222,26 @@ export function createKie(opts: KieOptions): KieProvider {
   async function fileStreamUpload(
     req: UploadMediaRequest
   ): Promise<UploadMediaResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const mimeType = req.mimeType ?? inferMimeType(req.filename);
-      if (!mimeType) {
-        throw new KieError(
-          `Cannot determine MIME type for: ${req.filename}`,
-          400
-        );
-      }
-
-      const formData = new FormData();
-      const file = new File([req.file], req.filename, { type: mimeType });
-      formData.append("file", file);
-      formData.append("uploadPath", req.uploadPath);
-      if (req.fileName) {
-        formData.append("fileName", req.fileName);
-      }
-
-      const res = await doFetch(`${uploadBaseURL}/api/file-stream-upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-        },
-        body: formData,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie upload error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie upload error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as UploadMediaResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to upload media: ${error}`, 500);
+    const mimeType = req.mimeType ?? inferMimeType(req.filename);
+    if (!mimeType) {
+      throw new KieError(
+        `Cannot determine MIME type for: ${req.filename}`,
+        400
+      );
     }
+
+    const formData = new FormData();
+    const file = new File([req.file], req.filename, { type: mimeType });
+    formData.append("file", file);
+    formData.append("uploadPath", req.uploadPath);
+    if (req.fileName) {
+      formData.append("fileName", req.fileName);
+    }
+
+    return await uploadTransport.postForm<UploadMediaResponse>(
+      "/api/file-stream-upload",
+      formData
+    );
   }
 
   // POST https://kieai.redpandaai.co/api/file-url-upload
@@ -386,51 +249,14 @@ export function createKie(opts: KieOptions): KieProvider {
   async function fileUrlUpload(
     req: FileUrlUploadRequest
   ): Promise<UploadMediaResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${uploadBaseURL}/api/file-url-upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fileUrl: req.fileUrl,
-          uploadPath: req.uploadPath,
-          ...(req.fileName ? { fileName: req.fileName } : {}),
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie upload error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie upload error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
+    return await uploadTransport.postJson<UploadMediaResponse>(
+      "/api/file-url-upload",
+      {
+        fileUrl: req.fileUrl,
+        uploadPath: req.uploadPath,
+        ...(req.fileName ? { fileName: req.fileName } : {}),
       }
-
-      return (await res.json()) as UploadMediaResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to upload from URL: ${error}`, 500);
-    }
+    );
   }
 
   // POST https://kieai.redpandaai.co/api/file-base64-upload
@@ -438,52 +264,15 @@ export function createKie(opts: KieOptions): KieProvider {
   async function fileBase64Upload(
     req: FileBase64UploadRequest
   ): Promise<UploadMediaResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${uploadBaseURL}/api/file-base64-upload`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          base64Data: req.base64Data,
-          uploadPath: req.uploadPath,
-          ...(req.fileName ? { fileName: req.fileName } : {}),
-          ...(req.mimeType ? { mimeType: req.mimeType } : {}),
-        }),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie upload error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie upload error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
+    return await uploadTransport.postJson<UploadMediaResponse>(
+      "/api/file-base64-upload",
+      {
+        base64Data: req.base64Data,
+        uploadPath: req.uploadPath,
+        ...(req.fileName ? { fileName: req.fileName } : {}),
+        ...(req.mimeType ? { mimeType: req.mimeType } : {}),
       }
-
-      return (await res.json()) as UploadMediaResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to upload base64 file: ${error}`, 500);
-    }
+    );
   }
 
   // POST https://api.kie.ai/api/v1/common/download-url
@@ -491,47 +280,10 @@ export function createKie(opts: KieOptions): KieProvider {
   async function downloadUrl(
     req: DownloadUrlRequest
   ): Promise<DownloadUrlResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(`${baseURL}/api/v1/common/download-url`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${opts.apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(req),
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as DownloadUrlResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to get download URL: ${error}`, 500);
-    }
+    return await transport.postJson<DownloadUrlResponse>(
+      "/api/v1/common/download-url",
+      req
+    );
   }
 
   // POST https://api.kie.ai/api/v1/omni/audio/create
@@ -545,12 +297,10 @@ export function createKie(opts: KieOptions): KieProvider {
         kieAudioId?: string;
         name: string;
       }>
-    >(`${baseURL}/api/v1/omni/audio/create`, {
+    >(transport, {
       method: "POST",
+      path: "/api/v1/omni/audio/create",
       body: req,
-      apiKey: opts.apiKey,
-      doFetch,
-      timeout,
     });
 
     if (!response.data) {
@@ -578,16 +328,11 @@ export function createKie(opts: KieOptions): KieProvider {
   async function omniCharacterCreate(
     req: GeminiOmniCharacterCreateRequest
   ): Promise<GeminiOmniCharacterCreateResponse> {
-    return kieRequest<GeminiOmniCharacterCreateResponse>(
-      `${baseURL}/api/v1/omni/character/create`,
-      {
-        method: "POST",
-        body: req,
-        apiKey: opts.apiKey,
-        doFetch,
-        timeout,
-      }
-    );
+    return kieRequest<GeminiOmniCharacterCreateResponse>(transport, {
+      method: "POST",
+      path: "/api/v1/omni/character/create",
+      body: req,
+    });
   }
 
   // POST https://api.kie.ai/api/v1/flux/kontext/generate
@@ -595,12 +340,10 @@ export function createKie(opts: KieOptions): KieProvider {
   async function fluxKontextGenerate(
     req: FluxKontextGenerateRequest
   ): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(`${baseURL}/api/v1/flux/kontext/generate`, {
+    return kieRequest<TaskResponse>(transport, {
       method: "POST",
+      path: "/api/v1/flux/kontext/generate",
       body: req,
-      apiKey: opts.apiKey,
-      doFetch,
-      timeout,
     });
   }
 
@@ -609,24 +352,20 @@ export function createKie(opts: KieOptions): KieProvider {
   async function gpt4oImageGenerate(
     req: Gpt4oImageGenerateRequest
   ): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(`${baseURL}/api/v1/gpt4o-image/generate`, {
+    return kieRequest<TaskResponse>(transport, {
       method: "POST",
+      path: "/api/v1/gpt4o-image/generate",
       body: req,
-      apiKey: opts.apiKey,
-      doFetch,
-      timeout,
     });
   }
 
   // POST https://api.kie.ai/api/v1/mj/generate
   // Docs: https://docs.kie.ai/mj-api/generate-mj-image
   async function mjGenerate(req: MjGenerateRequest): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(`${baseURL}/api/v1/mj/generate`, {
+    return kieRequest<TaskResponse>(transport, {
       method: "POST",
+      path: "/api/v1/mj/generate",
       body: req,
-      apiKey: opts.apiKey,
-      doFetch,
-      timeout,
     });
   }
 
@@ -649,24 +388,20 @@ export function createKie(opts: KieOptions): KieProvider {
   async function runwayGenerate(
     req: RunwayGenerateRequest
   ): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(`${baseURL}/api/v1/runway/generate`, {
+    return kieRequest<TaskResponse>(transport, {
       method: "POST",
+      path: "/api/v1/runway/generate",
       body: req,
-      apiKey: opts.apiKey,
-      doFetch,
-      timeout,
     });
   }
 
   // POST https://api.kie.ai/api/v1/runway/extend
   // Docs: https://docs.kie.ai/runway-api/extend-ai-video
   async function runwayExtend(req: RunwayExtendRequest): Promise<TaskResponse> {
-    return kieRequest<TaskResponse>(`${baseURL}/api/v1/runway/extend`, {
+    return kieRequest<TaskResponse>(transport, {
       method: "POST",
+      path: "/api/v1/runway/extend",
       body: req,
-      apiKey: opts.apiKey,
-      doFetch,
-      timeout,
     });
   }
 
@@ -675,49 +410,9 @@ export function createKie(opts: KieOptions): KieProvider {
   async function runwayRecordDetail(
     taskId: string
   ): Promise<RunwayRecordDetail> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(
-        `${baseURL}/api/v1/runway/record-detail?taskId=${encodeURIComponent(taskId)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${opts.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as RunwayRecordDetail;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to get Runway task: ${error}`, 500);
-    }
+    return await transport.getJson<RunwayRecordDetail>(
+      `/api/v1/runway/record-detail?taskId=${encodeURIComponent(taskId)}`
+    );
   }
 
   // GET https://api.kie.ai/api/v1/flux/kontext/record-info?taskId={taskId}
@@ -725,77 +420,27 @@ export function createKie(opts: KieOptions): KieProvider {
   async function fluxKontextRecordInfo(
     taskId: string
   ): Promise<FluxKontextRecordInfoResponse> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const res = await doFetch(
-        `${baseURL}/api/v1/flux/kontext/record-info?taskId=${encodeURIComponent(taskId)}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${opts.apiKey}`,
-            "Content-Type": "application/json",
-          },
-          signal: controller.signal,
-        }
-      );
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let message = `Kie API error: ${res.status}`;
-        let body: unknown = null;
-        try {
-          body = await res.json();
-          if (
-            typeof body === "object" &&
-            body !== null &&
-            "msg" in body &&
-            typeof (body as { msg?: string }).msg === "string"
-          ) {
-            message = `Kie API error ${res.status}: ${(body as { msg: string }).msg}`;
-          }
-        } catch {
-          // ignore parse errors
-        }
-        throw new KieError(message, res.status, body);
-      }
-
-      return (await res.json()) as FluxKontextRecordInfoResponse;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof KieError) throw error;
-      throw new KieError(`Failed to get Flux Kontext task: ${error}`, 500);
-    }
+    return await transport.getJson<FluxKontextRecordInfoResponse>(
+      `/api/v1/flux/kontext/record-info?taskId=${encodeURIComponent(taskId)}`
+    );
   }
 
   // GET https://api.kie.ai/api/v1/chat/credit
   // Docs: https://docs.kie.ai/common-api/get-account-credits
   async function credit(): Promise<KieCreditsResponse> {
-    const res = await doFetch(`${baseURL}/api/v1/chat/credit`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${opts.apiKey}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!res.ok) {
-      let body: unknown = null;
-      try {
-        body = await res.json();
-      } catch {
-        // ignore parse errors
+    try {
+      return await transport.getJson<KieCreditsResponse>("/api/v1/chat/credit");
+    } catch (error) {
+      if (error instanceof KieError) {
+        throw new KieError(
+          `Failed to get credits: ${error.status}`,
+          error.status,
+          error.body,
+          error.code
+        );
       }
-      throw new KieError(
-        `Failed to get credits: ${res.status}`,
-        res.status,
-        body
-      );
+      throw error;
     }
-
-    return (await res.json()) as KieCreditsResponse;
   }
 
   return attachExamples(

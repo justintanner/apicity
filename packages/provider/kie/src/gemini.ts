@@ -3,20 +3,7 @@ import { KieError } from "./types";
 import { KieGemini35FlashStreamGenerateContentRequestSchema } from "./zod";
 import type { ApicitySchema } from "./types";
 import type { KieGemini35FlashStreamGenerateContentRequest } from "./zod";
-
-function attachAbortHandler(
-  signal: AbortSignal | undefined,
-  controller: AbortController
-): void {
-  if (!signal) return;
-
-  if (signal.aborted) {
-    controller.abort();
-    return;
-  }
-
-  signal.addEventListener("abort", () => controller.abort(), { once: true });
-}
+import { createTransport } from "./transport";
 
 export interface KieGeminiFunctionCall {
   args?: Record<string, unknown>;
@@ -133,18 +120,6 @@ function formatGeminiError(
   return { message: `Kie Gemini API error: ${status}` };
 }
 
-async function parseErrorResponse(res: Response): Promise<KieError> {
-  let body: unknown = null;
-  try {
-    body = await res.json();
-  } catch {
-    // ignore parse errors
-  }
-
-  const formatted = formatGeminiError(res.status, body);
-  return new KieError(formatted.message, res.status, body, formatted.code);
-}
-
 async function* parseGeminiStream(
   res: Response
 ): AsyncIterable<KieGemini35FlashStreamGenerateContentChunk> {
@@ -176,6 +151,19 @@ export function createGeminiProvider(
   doFetch: typeof fetch,
   timeout: number
 ): KieGeminiProvider {
+  const transport = createTransport({
+    baseUrl: baseURL.replace(/\/$/, ""),
+    timeoutMs: timeout,
+    fetchImpl: doFetch,
+    defaultHeaders: () => ({
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": apiKey,
+    }),
+    parseErrorBody: formatGeminiError,
+    errorClass: KieError,
+    requestFailedPrefix: "Gemini request failed",
+  });
+
   return {
     gemini: {
       post: {
@@ -189,33 +177,15 @@ export function createGeminiProvider(
                   req: KieGemini35FlashStreamGenerateContentRequest,
                   signal?: AbortSignal
                 ): Promise<KieGemini35FlashStreamGenerateContentResult> {
-                  const controller = new AbortController();
-                  const timeoutId = setTimeout(
-                    () => controller.abort(),
-                    timeout
-                  );
-
-                  attachAbortHandler(signal, controller);
-
                   try {
-                    const res = await doFetch(
-                      `${baseURL}/gemini/v1/models/gemini-3-5-flash:streamGenerateContent`,
+                    const res = await transport.raw(
+                      "/gemini/v1/models/gemini-3-5-flash:streamGenerateContent",
                       {
                         method: "POST",
-                        headers: {
-                          "Content-Type": "application/json",
-                          "X-Goog-Api-Key": apiKey,
-                        },
                         body: JSON.stringify(req),
-                        signal: controller.signal,
+                        signal,
                       }
                     );
-
-                    clearTimeout(timeoutId);
-
-                    if (!res.ok) {
-                      throw await parseErrorResponse(res);
-                    }
 
                     if (isEventStream(res)) {
                       return parseGeminiStream(res);
@@ -223,7 +193,6 @@ export function createGeminiProvider(
 
                     return (await res.json()) as KieGemini35FlashGenerateContentResponse;
                   } catch (error) {
-                    clearTimeout(timeoutId);
                     if (error instanceof KieError) throw error;
                     if (error instanceof SyntaxError) {
                       throw new KieError(

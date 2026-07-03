@@ -1630,6 +1630,24 @@ export const ElevenLabsWorkspaceAnalyticsColumnFilterSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// GET /v1/usage/character-stats
+// ---------------------------------------------------------------------------
+
+export const ElevenLabsUsageCharacterStatsRequestSchema = z.object({
+  start_unix: z.number().int(),
+  end_unix: z.number().int(),
+});
+
+export type ElevenLabsUsageCharacterStatsRequest = z.input<
+  typeof ElevenLabsUsageCharacterStatsRequestSchema
+>;
+export type ElevenLabsUsageCharacterStatsRequestInput =
+  ElevenLabsUsageCharacterStatsRequest;
+export type ElevenLabsUsageCharacterStatsParsedRequest = z.output<
+  typeof ElevenLabsUsageCharacterStatsRequestSchema
+>;
+
+// ---------------------------------------------------------------------------
 // POST /v1/workspace/analytics/requests
 // ---------------------------------------------------------------------------
 

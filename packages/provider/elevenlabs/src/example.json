@@ -102,6 +102,13 @@
       "page_size": 3
     }
   },
+  "GET v1.usage.characterStats": {
+    "source": "elevenlabs/usage-character-stats",
+    "payload": {
+      "start_unix": 1685574000,
+      "end_unix": 1688165999
+    }
+  },
   "GET v1.workspace.groups.search": {
     "source": "elevenlabs/workspace-admin",
     "payload": {

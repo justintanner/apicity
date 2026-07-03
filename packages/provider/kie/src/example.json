@@ -23,6 +23,12 @@
       "taskId": "49265b81be9607661c0246b892144776"
     }
   },
+  "GET api.v1.lyrics.recordInfo": {
+    "source": "kie/suno/lyrics-record-info",
+    "payload": {
+      "taskId": "apicity-test-nonexistent-lyrics-task-id-do-not-record-real"
+    }
+  },
   "GET api.v1.mj.recordInfo": {
     "source": "kie/mj/record-info-not-found",
     "payload": {

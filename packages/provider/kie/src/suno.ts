@@ -120,6 +120,41 @@ export interface SunoLyricsRequest {
   callBackUrl: string;
 }
 
+export interface SunoLyricsRecordInfoRequest {
+  taskId: string;
+}
+
+export type SunoLyricsTaskStatus =
+  | "PENDING"
+  | "SUCCESS"
+  | "CREATE_TASK_FAILED"
+  | "GENERATE_LYRICS_FAILED"
+  | "CALLBACK_EXCEPTION"
+  | "SENSITIVE_WORD_ERROR";
+
+export interface SunoLyricsVariation {
+  text: string;
+  title: string;
+  status?: string;
+  errorMessage?: string;
+}
+
+export interface SunoLyricsRecordInfoResponse {
+  code: number;
+  msg?: string;
+  data?: {
+    taskId: string;
+    param?: string;
+    response?: {
+      taskId?: string;
+      data?: SunoLyricsVariation[];
+    } | null;
+    status?: SunoLyricsTaskStatus;
+    errorCode?: number | null;
+    errorMessage?: string | null;
+  } | null;
+}
+
 export interface SunoBoostStyleRequest {
   content: string;
 }
@@ -313,6 +348,12 @@ interface SunoLyricsMethod {
   schema: ApicitySchema<SunoLyricsRequest>;
 }
 
+interface SunoLyricsRecordInfoMethod {
+  (taskId: string): Promise<SunoLyricsRecordInfoResponse>;
+  schema: ApicitySchema<SunoLyricsRecordInfoRequest>;
+  responseSchema: ApicitySchema<SunoLyricsRecordInfoResponse>;
+}
+
 interface SunoBoostStyleMethod {
   (req: SunoBoostStyleRequest): Promise<SunoSubmitResponse>;
   schema: ApicitySchema<SunoBoostStyleRequest>;
@@ -392,6 +433,9 @@ interface SunoV1GetNamespace {
   generate: {
     recordInfo: (taskId: string) => Promise<SunoRecordInfoResponse>;
   };
+  lyrics: {
+    recordInfo: SunoLyricsRecordInfoMethod;
+  };
 }
 
 interface SunoPostApiNamespace {
@@ -449,6 +493,52 @@ const SunoMp4RequestSchema = z.object({
 const SunoLyricsRequestSchema = z.object({
   prompt: z.string().min(1).max(200),
   callBackUrl: z.string().min(1),
+});
+
+const SunoLyricsRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+const SunoLyricsTaskStatusSchema = z.enum([
+  "PENDING",
+  "SUCCESS",
+  "CREATE_TASK_FAILED",
+  "GENERATE_LYRICS_FAILED",
+  "CALLBACK_EXCEPTION",
+  "SENSITIVE_WORD_ERROR",
+]);
+
+const SunoLyricsVariationSchema = z
+  .object({
+    text: z.string(),
+    title: z.string(),
+    status: z.string().optional(),
+    errorMessage: z.string().optional(),
+  })
+  .passthrough();
+
+const SunoLyricsRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string().optional(),
+  data: z
+    .object({
+      taskId: z.string(),
+      param: z.string().optional(),
+      response: z
+        .object({
+          taskId: z.string().optional(),
+          data: z.array(SunoLyricsVariationSchema).optional(),
+        })
+        .passthrough()
+        .nullable()
+        .optional(),
+      status: SunoLyricsTaskStatusSchema.optional(),
+      errorCode: z.number().int().nullable().optional(),
+      errorMessage: z.string().nullable().optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
 });
 
 const SunoBoostStyleRequestSchema = z.object({
@@ -679,6 +769,17 @@ export function createSunoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/lyrics/record-info?taskId={taskId}
+  // Docs: https://docs.kie.ai/suno-api/get-lyrics-details
+  async function lyricsRecordInfo(
+    taskId: string
+  ): Promise<SunoLyricsRecordInfoResponse> {
+    return kieRequest<SunoLyricsRecordInfoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/lyrics/record-info?taskId=${encodeURIComponent(taskId)}`,
+    });
+  }
+
   // POST https://api.kie.ai/api/v1/style/generate
   // Docs: https://docs.kie.ai/suno-api/boost-music-style
   async function boostStyle(
@@ -858,6 +959,12 @@ export function createSunoProvider(
         v1: {
           generate: {
             recordInfo,
+          },
+          lyrics: {
+            recordInfo: Object.assign(lyricsRecordInfo, {
+              schema: SunoLyricsRecordInfoRequestSchema,
+              responseSchema: SunoLyricsRecordInfoResponseSchema,
+            }),
           },
         },
       },

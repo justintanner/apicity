@@ -1001,6 +1001,7 @@ kie	api.v1.gpt4oImage.recordInfo	GET	https://api.kie.ai/api/v1/gpt4o-image/recor
 kie	api.v1.jobs.createTask	POST	https://api.kie.ai/api/v1/jobs/createTask	https://docs.kie.ai/market/quickstart
 kie	api.v1.jobs.recordInfo	GET	https://api.kie.ai/api/v1/jobs/recordInfo?taskId={taskId}	https://docs.kie.ai/market/common/get-task-detail
 kie	api.v1.lyrics	POST	https://api.kie.ai/api/v1/lyrics
+kie	api.v1.lyrics.recordInfo	GET	https://api.kie.ai/api/v1/lyrics/record-info?taskId={taskId}	https://docs.kie.ai/suno-api/get-lyrics-details
 kie	api.v1.midi.generate	POST	https://api.kie.ai/api/v1/midi/generate
 kie	api.v1.mj.generate	POST	https://api.kie.ai/api/v1/mj/generate	https://docs.kie.ai/mj-api/generate-mj-image
 kie	api.v1.mj.recordInfo	GET	https://api.kie.ai/api/v1/mj/record-info?taskId={taskId}	https://docs.kie.ai/mj-api/get-mj-task-details

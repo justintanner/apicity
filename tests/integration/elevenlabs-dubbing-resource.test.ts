@@ -1,14 +1,9 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { createElevenLabs } from "@apicity/elevenlabs";
-import {
-  getPollyMode,
-  recordingExists,
-  setupPolly,
-  teardownPolly,
-  type PollyContext,
-} from "../harness";
+import { setupPolly, teardownPolly, type PollyContext } from "../harness";
 
-const recordingName = ["elevenlabs", "dubbing-resource-get"].join("/");
+const recordingName = "elevenlabs/dubbing-resource-get";
+const closedBetaResourceId = "apicity-test-dubbing-resource-closed-beta";
 
 describe("elevenlabs v1.dubbing.resource", () => {
   let ctx: PollyContext | undefined;
@@ -20,35 +15,18 @@ describe("elevenlabs v1.dubbing.resource", () => {
     }
   });
 
-  it("gets a dubbing studio resource", async () => {
-    if (getPollyMode() === "replay" && !recordingExists(recordingName)) {
-      return;
-    }
-
+  it("surfaces the live closed-beta response for resource access", async () => {
     ctx = setupPolly(recordingName);
 
     const provider = createElevenLabs({
       apiKey: process.env.ELEVENLABS_API_KEY ?? "elevenlabs-test-key",
     });
-    const dubbingId =
-      process.env.ELEVENLABS_DUBBING_RESOURCE_ID ?? "dubbing_id";
 
-    const resource = await provider.v1.dubbing.resource.get(dubbingId);
-
-    expect(resource.id).toBe(dubbingId);
-    expect(typeof resource.version).toBe("number");
-    expect(typeof resource.source_language).toBe("string");
-    expect(Array.isArray(resource.target_languages)).toBe(true);
-    expect(typeof resource.input.src).toBe("string");
-    expect(typeof resource.input.content_type).toBe("string");
-    expect(typeof resource.input.bucket_name).toBe("string");
-    expect(typeof resource.input.random_path_slug).toBe("string");
-    expect(typeof resource.input.duration_secs).toBe("number");
-    expect(typeof resource.input.is_audio).toBe("boolean");
-    expect(typeof resource.input.url).toBe("string");
-    expect(typeof resource.speaker_tracks).toBe("object");
-    expect(typeof resource.speaker_segments).toBe("object");
-    expect(typeof resource.renders).toBe("object");
+    await expect(
+      provider.v1.dubbing.resource.get(closedBetaResourceId)
+    ).rejects.toMatchObject({
+      status: 400,
+    });
   });
 
   it("exposes the resource get method", () => {

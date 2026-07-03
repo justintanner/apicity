@@ -569,6 +569,139 @@ export const OpenAiResponseInputTokensRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Evals
+// ---------------------------------------------------------------------------
+
+export const OpenAiEvalCustomDataSourceConfigSchema = z.object({
+  type: z.literal("custom"),
+  item_schema: z.record(z.string(), z.unknown()),
+  include_sample_schema: z.boolean().optional(),
+});
+
+export const OpenAiEvalLogsDataSourceConfigSchema = z.object({
+  type: z.literal("logs"),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const OpenAiEvalStoredCompletionsDataSourceConfigSchema = z.object({
+  type: z.literal("stored_completions"),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const OpenAiEvalDataSourceConfigSchema = z.discriminatedUnion("type", [
+  OpenAiEvalCustomDataSourceConfigSchema,
+  OpenAiEvalLogsDataSourceConfigSchema,
+  OpenAiEvalStoredCompletionsDataSourceConfigSchema,
+]);
+
+export const OpenAiEvalOutputTextContentSchema = z.object({
+  type: z.literal("output_text"),
+  text: z.string(),
+});
+
+export const OpenAiEvalInputImageContentSchema = z.object({
+  type: z.literal("input_image"),
+  image_url: z.string(),
+  detail: z.enum(["auto", "low", "high"]).optional(),
+});
+
+export const OpenAiEvalInputAudioContentSchema = z.object({
+  type: z.literal("input_audio"),
+  input_audio: z.object({
+    data: z.string(),
+    format: z.enum(["mp3", "wav"]),
+  }),
+});
+
+export const OpenAiEvalMessageContentPartSchema = z.discriminatedUnion("type", [
+  OpenAiResponseInputTextContentSchema,
+  OpenAiEvalOutputTextContentSchema,
+  OpenAiEvalInputImageContentSchema,
+  OpenAiEvalInputAudioContentSchema,
+]);
+
+export const OpenAiEvalMessageContentSchema = z.union([
+  z.string(),
+  OpenAiEvalMessageContentPartSchema,
+  z.array(OpenAiEvalMessageContentPartSchema),
+]);
+
+export const OpenAiEvalSimpleInputMessageSchema = z.object({
+  role: z.string(),
+  content: z.string(),
+});
+
+export const OpenAiEvalMessageObjectSchema = z.object({
+  role: z.enum(["user", "assistant", "system", "developer"]),
+  content: OpenAiEvalMessageContentSchema,
+  type: z.literal("message").optional(),
+});
+
+export const OpenAiEvalInputMessageSchema = z.union([
+  OpenAiEvalSimpleInputMessageSchema,
+  OpenAiEvalMessageObjectSchema,
+]);
+
+export const OpenAiEvalLabelModelGraderSchema = z.object({
+  type: z.literal("label_model"),
+  name: z.string(),
+  model: z.string(),
+  input: z.array(OpenAiEvalInputMessageSchema),
+  labels: z.array(z.string()),
+  passing_labels: z.array(z.string()),
+});
+
+export const OpenAiEvalStringCheckGraderSchema = z.object({
+  type: z.literal("string_check"),
+  name: z.string(),
+  input: z.string(),
+  operation: z.enum(["eq", "ne", "like", "ilike"]),
+  reference: z.string(),
+});
+
+export const OpenAiEvalTextSimilarityGraderSchema = z.object({
+  type: z.literal("text_similarity"),
+  name: z.string(),
+  input: z.string(),
+  reference: z.string(),
+  evaluation_metric: z.string(),
+  pass_threshold: z.number(),
+});
+
+export const OpenAiEvalPythonGraderSchema = z.object({
+  type: z.literal("python"),
+  name: z.string(),
+  source: z.string(),
+  image_tag: z.string().optional(),
+  pass_threshold: z.number().optional(),
+});
+
+export const OpenAiEvalScoreModelGraderSchema = z.object({
+  type: z.literal("score_model"),
+  name: z.string(),
+  model: z.string(),
+  input: z.array(OpenAiEvalInputMessageSchema),
+  pass_threshold: z.number().optional(),
+  range: z.array(z.number()).optional(),
+  sampling_params: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const OpenAiEvalGraderSchema = z.discriminatedUnion("type", [
+  OpenAiEvalLabelModelGraderSchema,
+  OpenAiEvalStringCheckGraderSchema,
+  OpenAiEvalTextSimilarityGraderSchema,
+  OpenAiEvalPythonGraderSchema,
+  OpenAiEvalScoreModelGraderSchema,
+]);
+
+export const OpenAiEvalCreateRequestSchema = z.object({
+  data_source_config: OpenAiEvalDataSourceConfigSchema,
+  testing_criteria: z.array(OpenAiEvalGraderSchema),
+  metadata: z.record(z.string(), z.string()).optional(),
+  name: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Conversations
 // ---------------------------------------------------------------------------
 
@@ -1202,6 +1335,65 @@ export type OpenAiResponseInputTokensRequestInput =
   OpenAiResponseInputTokensRequest;
 export type OpenAiResponseInputTokensParsedRequest = z.output<
   typeof OpenAiResponseInputTokensRequestSchema
+>;
+export type OpenAiEvalCustomDataSourceConfig = z.infer<
+  typeof OpenAiEvalCustomDataSourceConfigSchema
+>;
+export type OpenAiEvalLogsDataSourceConfig = z.infer<
+  typeof OpenAiEvalLogsDataSourceConfigSchema
+>;
+export type OpenAiEvalStoredCompletionsDataSourceConfig = z.infer<
+  typeof OpenAiEvalStoredCompletionsDataSourceConfigSchema
+>;
+export type OpenAiEvalDataSourceConfig = z.infer<
+  typeof OpenAiEvalDataSourceConfigSchema
+>;
+export type OpenAiEvalOutputTextContent = z.infer<
+  typeof OpenAiEvalOutputTextContentSchema
+>;
+export type OpenAiEvalInputImageContent = z.infer<
+  typeof OpenAiEvalInputImageContentSchema
+>;
+export type OpenAiEvalInputAudioContent = z.infer<
+  typeof OpenAiEvalInputAudioContentSchema
+>;
+export type OpenAiEvalMessageContentPart = z.infer<
+  typeof OpenAiEvalMessageContentPartSchema
+>;
+export type OpenAiEvalMessageContent = z.infer<
+  typeof OpenAiEvalMessageContentSchema
+>;
+export type OpenAiEvalSimpleInputMessage = z.infer<
+  typeof OpenAiEvalSimpleInputMessageSchema
+>;
+export type OpenAiEvalMessageObject = z.infer<
+  typeof OpenAiEvalMessageObjectSchema
+>;
+export type OpenAiEvalInputMessage = z.infer<
+  typeof OpenAiEvalInputMessageSchema
+>;
+export type OpenAiEvalLabelModelGrader = z.infer<
+  typeof OpenAiEvalLabelModelGraderSchema
+>;
+export type OpenAiEvalStringCheckGrader = z.infer<
+  typeof OpenAiEvalStringCheckGraderSchema
+>;
+export type OpenAiEvalTextSimilarityGrader = z.infer<
+  typeof OpenAiEvalTextSimilarityGraderSchema
+>;
+export type OpenAiEvalPythonGrader = z.infer<
+  typeof OpenAiEvalPythonGraderSchema
+>;
+export type OpenAiEvalScoreModelGrader = z.infer<
+  typeof OpenAiEvalScoreModelGraderSchema
+>;
+export type OpenAiEvalGrader = z.infer<typeof OpenAiEvalGraderSchema>;
+export type OpenAiEvalCreateRequest = z.input<
+  typeof OpenAiEvalCreateRequestSchema
+>;
+export type OpenAiEvalCreateRequestInput = OpenAiEvalCreateRequest;
+export type OpenAiEvalCreateParsedRequest = z.output<
+  typeof OpenAiEvalCreateRequestSchema
 >;
 export type OpenAiConversationCreateRequest = z.input<
   typeof OpenAiConversationCreateRequestSchema

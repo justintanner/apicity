@@ -42,6 +42,8 @@ import {
   OpenAiResponseCompactResponse,
   OpenAiResponseInputTokensRequest,
   OpenAiResponseInputTokensResponse,
+  OpenAiEvalCreateRequest,
+  OpenAiEval,
   OpenAiConversationCreateRequest,
   OpenAiConversation,
   OpenAiConversationRetrieveResponse,
@@ -103,6 +105,7 @@ import {
   OpenAiResponseRequestSchema,
   OpenAiResponseCompactRequestSchema,
   OpenAiResponseInputTokensRequestSchema,
+  OpenAiEvalCreateRequestSchema,
   OpenAiConversationCreateRequestSchema,
   OpenAiRealtimeClientSecretRequestSchema,
   OpenAiVectorStoreCreateRequestSchema,
@@ -664,6 +667,19 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
           },
           {}
         ),
+      }
+    ),
+    // POST https://api.openai.com/v1/evals
+    // Docs: https://platform.openai.com/docs/api-reference/evals/create
+    evals: Object.assign(
+      async (
+        req: OpenAiEvalCreateRequest,
+        signal?: AbortSignal
+      ): Promise<OpenAiEval> => {
+        return makeRequest<OpenAiEval>("/evals", jsonRequest(req), signal);
+      },
+      {
+        schema: OpenAiEvalCreateRequestSchema,
       }
     ),
     // POST https://api.openai.com/v1/conversations

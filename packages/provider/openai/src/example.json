@@ -92,6 +92,19 @@
       "input": "Say hello in one sentence."
     }
   },
+  "POST v1.uploads": {
+    "source": "openai/uploads-create",
+    "payload": {
+      "purpose": "fine-tune",
+      "filename": "apicity-upload-create.jsonl",
+      "bytes": 18,
+      "mime_type": "application/jsonl",
+      "expires_after": {
+        "anchor": "created_at",
+        "seconds": 3600
+      }
+    }
+  },
   "POST v1.vectorStores": {
     "source": "openai/vector-stores-create",
     "payload": {

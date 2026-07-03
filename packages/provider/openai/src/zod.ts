@@ -213,6 +213,23 @@ export const OpenAiFileUploadRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Uploads
+// ---------------------------------------------------------------------------
+
+export const OpenAiUploadCreateRequestSchema = z.object({
+  bytes: z.number().int().nonnegative(),
+  filename: z.string().min(1),
+  mime_type: z.string().min(1),
+  purpose: z.enum(["assistants", "batch", "fine-tune", "vision"]),
+  expires_after: z
+    .object({
+      anchor: z.literal("created_at"),
+      seconds: z.number().int().min(3600).max(2592000),
+    })
+    .optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Batches
 // ---------------------------------------------------------------------------
 
@@ -749,6 +766,13 @@ export type OpenAiFileUploadRequest = z.input<
 export type OpenAiFileUploadRequestInput = OpenAiFileUploadRequest;
 export type OpenAiFileUploadParsedRequest = z.output<
   typeof OpenAiFileUploadRequestSchema
+>;
+export type OpenAiUploadCreateRequest = z.input<
+  typeof OpenAiUploadCreateRequestSchema
+>;
+export type OpenAiUploadCreateRequestInput = OpenAiUploadCreateRequest;
+export type OpenAiUploadCreateParsedRequest = z.output<
+  typeof OpenAiUploadCreateRequestSchema
 >;
 export type OpenAiBatchCreateRequest = z.input<
   typeof OpenAiBatchCreateRequestSchema

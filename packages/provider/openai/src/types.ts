@@ -4,6 +4,7 @@ import type {
   ChatToolCall,
   ChatUsage,
 } from "./chat-fragments-types";
+import type { OpenAiUploadCreateRequest } from "./zod";
 
 // ---------------------------------------------------------------------------
 // Request types — derived from Zod schemas (source of truth in zod.ts)
@@ -53,6 +54,9 @@ export type {
   OpenAiFileUploadRequest,
   OpenAiFileUploadRequestInput,
   OpenAiFileUploadParsedRequest,
+  OpenAiUploadCreateRequest,
+  OpenAiUploadCreateRequestInput,
+  OpenAiUploadCreateParsedRequest,
   OpenAiBatchCreateRequest,
   OpenAiBatchCreateRequestInput,
   OpenAiBatchCreateParsedRequest,
@@ -718,6 +722,18 @@ export interface OpenAiFile {
   status_details?: string;
 }
 
+export interface OpenAiUpload {
+  id: string;
+  object?: "upload";
+  bytes: number;
+  created_at: number;
+  expires_at: number;
+  filename: string;
+  purpose: string;
+  status: "pending" | "completed" | "cancelled" | "expired";
+  file?: OpenAiFile;
+}
+
 export interface OpenAiFileListRequest {
   purpose?: string;
   limit?: number;
@@ -1060,6 +1076,11 @@ export interface OpenAiPostV1Files {
   schema: z.ZodType<OpenAiFileUploadRequest>;
 }
 
+export interface OpenAiPostV1Uploads {
+  (req: OpenAiUploadCreateRequest, signal?: AbortSignal): Promise<OpenAiUpload>;
+  schema: z.ZodType<OpenAiUploadCreateRequest>;
+}
+
 export interface OpenAiPostV1Moderations {
   (
     req: OpenAiModerationRequest,
@@ -1199,6 +1220,7 @@ export interface OpenAiPostV1Namespace {
   audio: OpenAiPostV1AudioNamespace;
   embeddings: OpenAiPostV1Embeddings;
   files: OpenAiPostV1Files;
+  uploads: OpenAiPostV1Uploads;
   images: OpenAiPostV1ImagesNamespace;
   moderations: OpenAiPostV1Moderations;
   responses: OpenAiPostV1ResponsesNamespace;

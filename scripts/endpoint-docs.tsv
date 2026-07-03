@@ -1042,6 +1042,7 @@ openai	v1.files	DELETE	https://api.openai.com/v1/files/{id}	https://platform.ope
 openai	v1.files	GET	https://api.openai.com/v1/files/{idOrOpts}	https://platform.openai.com/docs/api-reference
 openai	v1.files	POST	https://api.openai.com/v1/files	https://platform.openai.com/docs/api-reference
 openai	v1.files.content	GET	https://api.openai.com/v1/files/{id}/content	https://platform.openai.com/docs/api-reference
+openai	v1.uploads	POST	https://api.openai.com/v1/uploads	https://platform.openai.com/docs/api-reference/uploads/create
 openai	v1.fineTuning.checkpoints.permissions	DELETE	https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions/{permissionId}	https://platform.openai.com/docs/api-reference
 openai	v1.fineTuning.checkpoints.permissions	GET	https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions	https://platform.openai.com/docs/api-reference
 openai	v1.fineTuning.checkpoints.permissions	POST	https://api.openai.com/v1/fine_tuning/checkpoints/{checkpoint}/permissions	https://platform.openai.com/docs/api-reference

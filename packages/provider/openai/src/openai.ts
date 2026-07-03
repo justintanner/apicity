@@ -44,6 +44,7 @@ import {
   OpenAiResponseInputTokensResponse,
   OpenAiConversationCreateRequest,
   OpenAiConversation,
+  OpenAiConversationRetrieveResponse,
   OpenAiRealtimeClientSecretRequest,
   OpenAiRealtimeClientSecretResponse,
   OpenAiVectorStoreCreateRequest,
@@ -977,6 +978,20 @@ export function createOpenAi(opts: OpenAiOptions): OpenAiProvider {
         },
       }
     ),
+    conversations: {
+      // GET https://api.openai.com/v1/conversations/{conversationId}
+      // Docs: https://platform.openai.com/docs/api-reference/conversations/retrieve
+      retrieve: async (
+        conversationId: string,
+        signal?: AbortSignal
+      ): Promise<OpenAiConversationRetrieveResponse> => {
+        return makeGetRequest<OpenAiConversationRetrieveResponse>(
+          `/conversations/${encodeURIComponent(conversationId)}`,
+          undefined,
+          signal
+        );
+      },
+    },
     // GET https://api.openai.com/v1/batches/{idOrOpts}
     // Docs: https://platform.openai.com/docs/api-reference
     batches: Object.assign(

@@ -177,6 +177,8 @@ export type {
   OpenAiConversationCreateRequestInput,
   OpenAiConversationCreateParsedRequest,
   OpenAiConversation,
+  OpenAiConversationRetrieveRequest,
+  OpenAiConversationRetrieveResponse,
   OpenAiRealtimeAudioFormat,
   OpenAiRealtimeNoiseReduction,
   OpenAiRealtimeAudioTranscription,

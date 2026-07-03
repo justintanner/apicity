@@ -1078,6 +1078,12 @@ export interface OpenAiConversation {
   metadata: Record<string, string> | null;
 }
 
+export interface OpenAiConversationRetrieveRequest {
+  conversationId: string;
+}
+
+export type OpenAiConversationRetrieveResponse = OpenAiConversation;
+
 export interface OpenAiRealtimeSessionResponse {
   id: string;
   object: "realtime.session";
@@ -1527,6 +1533,17 @@ export interface OpenAiGetV1ResponsesNamespace {
   inputItems: OpenAiGetV1ResponsesInputItems;
 }
 
+export interface OpenAiGetV1ConversationsRetrieve {
+  (
+    conversationId: OpenAiConversationRetrieveRequest["conversationId"],
+    signal?: AbortSignal
+  ): Promise<OpenAiConversationRetrieveResponse>;
+}
+
+export interface OpenAiGetV1ConversationsNamespace {
+  retrieve: OpenAiGetV1ConversationsRetrieve;
+}
+
 export interface OpenAiGetV1BatchesNamespace {
   (
     opts?: OpenAiBatchListParams,
@@ -1600,6 +1617,7 @@ export interface OpenAiGetV1Namespace {
   files: OpenAiGetV1FilesNamespace;
   models: OpenAiGetV1ModelsNamespace;
   responses: OpenAiGetV1ResponsesNamespace;
+  conversations: OpenAiGetV1ConversationsNamespace;
   batches: OpenAiGetV1BatchesNamespace;
   fineTuning: OpenAiGetV1FineTuningNamespace;
   organization: OpenAiGetV1OrganizationNamespace;

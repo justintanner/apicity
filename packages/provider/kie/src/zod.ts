@@ -1708,6 +1708,47 @@ export const VeoExtendRequestSchema = z.object({
   watermark: z.string().optional(),
 });
 
+export const VeoRecordInfoRequestSchema = z.object({
+  taskId: z.string().min(1),
+});
+
+// successFlag: 0 GENERATING, 1 SUCCESS, 2 CREATE_TASK_FAILED, 3 GENERATE_FAILED
+export const VeoSuccessFlagSchema = z.union([
+  z.literal(0),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+]);
+
+export const VeoRecordInfoResultSchema = z
+  .object({
+    taskId: z.string().optional(),
+    resultUrls: z.array(z.string()).optional(),
+    originUrls: z.array(z.string()).optional(),
+    fullResultUrls: z.array(z.string()).optional(),
+    resolution: z.string().optional(),
+    mediaIds: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+export const VeoRecordInfoDataSchema = z.object({
+  taskId: z.string(),
+  paramJson: z.string().optional(),
+  completeTime: z.string().nullable().optional(),
+  response: VeoRecordInfoResultSchema.nullable().optional(),
+  successFlag: VeoSuccessFlagSchema,
+  errorCode: z.union([z.number().int(), z.string()]).nullable().optional(),
+  errorMessage: z.string().nullable().optional(),
+  createTime: z.string().optional(),
+  fallbackFlag: z.boolean().optional(),
+});
+
+export const VeoRecordInfoResponseSchema = z.object({
+  code: z.number().int(),
+  msg: z.string(),
+  data: VeoRecordInfoDataSchema.nullable().optional(),
+});
+
 export type VeoGenerateRequest = z.input<typeof VeoGenerateRequestSchema>;
 export type VeoGenerateRequestInput = VeoGenerateRequest;
 export type VeoGenerateParsedRequest = z.output<
@@ -1716,6 +1757,15 @@ export type VeoGenerateParsedRequest = z.output<
 export type VeoExtendRequest = z.input<typeof VeoExtendRequestSchema>;
 export type VeoExtendRequestInput = VeoExtendRequest;
 export type VeoExtendParsedRequest = z.output<typeof VeoExtendRequestSchema>;
+export type VeoRecordInfoRequest = z.input<typeof VeoRecordInfoRequestSchema>;
+export type VeoRecordInfoRequestInput = VeoRecordInfoRequest;
+export type VeoRecordInfoParsedRequest = z.output<
+  typeof VeoRecordInfoRequestSchema
+>;
+export type VeoSuccessFlag = z.infer<typeof VeoSuccessFlagSchema>;
+export type VeoRecordInfoResult = z.infer<typeof VeoRecordInfoResultSchema>;
+export type VeoRecordInfoData = z.infer<typeof VeoRecordInfoDataSchema>;
+export type VeoRecordInfoResponse = z.infer<typeof VeoRecordInfoResponseSchema>;
 export type VeoModel = "veo3" | "veo3_fast";
 export type VeoGenerationType =
   | "TEXT_2_VIDEO"

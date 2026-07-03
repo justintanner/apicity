@@ -455,6 +455,44 @@ export const OpenAiConversationCreateRequestSchema = z.object({
 });
 
 // ---------------------------------------------------------------------------
+// Vector stores
+// ---------------------------------------------------------------------------
+
+export const OpenAiVectorStoreExpirationPolicySchema = z.object({
+  anchor: z.literal("last_active_at"),
+  days: z.number().int().min(1).max(365),
+});
+
+export const OpenAiVectorStoreAutoChunkingStrategySchema = z.object({
+  type: z.literal("auto"),
+});
+
+export const OpenAiVectorStoreStaticChunkingStrategySchema = z.object({
+  static: z.object({
+    chunk_overlap_tokens: z.number().int().min(0),
+    max_chunk_size_tokens: z.number().int().min(100).max(4096),
+  }),
+  type: z.literal("static"),
+});
+
+export const OpenAiVectorStoreChunkingStrategySchema = z.discriminatedUnion(
+  "type",
+  [
+    OpenAiVectorStoreAutoChunkingStrategySchema,
+    OpenAiVectorStoreStaticChunkingStrategySchema,
+  ]
+);
+
+export const OpenAiVectorStoreCreateRequestSchema = z.object({
+  chunking_strategy: OpenAiVectorStoreChunkingStrategySchema.optional(),
+  description: z.string().optional(),
+  expires_after: OpenAiVectorStoreExpirationPolicySchema.optional(),
+  file_ids: z.array(z.string()).optional(),
+  metadata: z.record(z.string().max(64), z.string().max(512)).optional(),
+  name: z.string().optional(),
+});
+
+// ---------------------------------------------------------------------------
 // Fine-tuning
 // ---------------------------------------------------------------------------
 
@@ -789,6 +827,26 @@ export type OpenAiConversationCreateRequestInput =
   OpenAiConversationCreateRequest;
 export type OpenAiConversationCreateParsedRequest = z.output<
   typeof OpenAiConversationCreateRequestSchema
+>;
+export type OpenAiVectorStoreExpirationPolicy = z.infer<
+  typeof OpenAiVectorStoreExpirationPolicySchema
+>;
+export type OpenAiVectorStoreAutoChunkingStrategy = z.infer<
+  typeof OpenAiVectorStoreAutoChunkingStrategySchema
+>;
+export type OpenAiVectorStoreStaticChunkingStrategy = z.infer<
+  typeof OpenAiVectorStoreStaticChunkingStrategySchema
+>;
+export type OpenAiVectorStoreChunkingStrategy = z.infer<
+  typeof OpenAiVectorStoreChunkingStrategySchema
+>;
+export type OpenAiVectorStoreCreateRequest = z.input<
+  typeof OpenAiVectorStoreCreateRequestSchema
+>;
+export type OpenAiVectorStoreCreateRequestInput =
+  OpenAiVectorStoreCreateRequest;
+export type OpenAiVectorStoreCreateParsedRequest = z.output<
+  typeof OpenAiVectorStoreCreateRequestSchema
 >;
 export type OpenAiFineTuningHyperparameters = z.infer<
   typeof OpenAiFineTuningHyperparametersSchema

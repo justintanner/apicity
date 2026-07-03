@@ -103,6 +103,20 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "gpt-4o-mini",
       "input": "Say hello in one sentence."
     }
+  },
+  "POST v1.vectorStores": {
+    "source": "openai/vector-stores-create",
+    "payload": {
+      "name": "Apicity vector store create test",
+      "description": "Created by the Apicity OpenAI integration test.",
+      "expires_after": {
+        "anchor": "last_active_at",
+        "days": 1
+      },
+      "metadata": {
+        "purpose": "integration-test"
+      }
+    }
   }
 };
 

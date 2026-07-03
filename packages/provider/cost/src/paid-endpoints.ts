@@ -75,6 +75,19 @@ export const PAID_ENDPOINTS: readonly PaidEndpointEntry[] = [
   },
   {
     key: {
+      provider: "kie",
+      method: "GET",
+      dotPath: "api.v1.veo.get1080pVideo",
+    },
+    info: {
+      reason:
+        "Direct VEO 1080p render request that can incur direct marginal compute cost",
+      estimatorId: "kie-per-unit",
+      costNotes: "Billed per 1080p render request when processing is required",
+    },
+  },
+  {
+    key: {
       provider: "xai",
       method: "POST",
       dotPath: "v1.images.generations",

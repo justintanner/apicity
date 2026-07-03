@@ -4,6 +4,8 @@ import { createVeoProvider } from "../../packages/provider/kie/src/veo";
 import {
   VeoGenerateRequestSchema,
   VeoExtendRequestSchema,
+  VeoGet1080pVideoRequestSchema,
+  VeoGet1080pVideoResponseSchema,
 } from "../../packages/provider/kie/src/zod";
 
 describe("KIE Veo provider", () => {
@@ -21,6 +23,11 @@ describe("KIE Veo provider", () => {
       expect(provider.post.api.v1.veo).toBeDefined();
       expect(provider.post.api.v1.veo.generate).toBeDefined();
       expect(provider.post.api.v1.veo.extend).toBeDefined();
+      expect(provider.get).toBeDefined();
+      expect(provider.get.api).toBeDefined();
+      expect(provider.get.api.v1).toBeDefined();
+      expect(provider.get.api.v1.veo).toBeDefined();
+      expect(provider.get.api.v1.veo.get1080pVideo).toBeDefined();
     });
 
     it("should have callable generate method", () => {
@@ -31,6 +38,11 @@ describe("KIE Veo provider", () => {
     it("should have callable extend method", () => {
       const provider = createProvider();
       expect(typeof provider.post.api.v1.veo.extend).toBe("function");
+    });
+
+    it("should have callable get1080pVideo method", () => {
+      const provider = createProvider();
+      expect(typeof provider.get.api.v1.veo.get1080pVideo).toBe("function");
     });
   });
 
@@ -51,6 +63,13 @@ describe("KIE Veo provider", () => {
 
     it("should expose parse", () => {
       expect(typeof VeoExtendRequestSchema.parse).toBe("function");
+    });
+  });
+
+  describe("VeoGet1080pVideo schemas", () => {
+    it("should expose request and response safeParse", () => {
+      expect(typeof VeoGet1080pVideoRequestSchema.safeParse).toBe("function");
+      expect(typeof VeoGet1080pVideoResponseSchema.safeParse).toBe("function");
     });
   });
 
@@ -204,6 +223,46 @@ describe("KIE Veo provider", () => {
     });
   });
 
+  describe("get1080pVideo payload validation", () => {
+    it("should validate valid request payload", () => {
+      const result = VeoGet1080pVideoRequestSchema.safeParse({
+        taskId: "veo-task-123",
+        index: 0,
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it("should reject missing taskId", () => {
+      const result = VeoGet1080pVideoRequestSchema.safeParse({ index: 0 });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("taskId"))).toBe(
+        true
+      );
+    });
+
+    it("should reject negative index", () => {
+      const result = VeoGet1080pVideoRequestSchema.safeParse({
+        taskId: "veo-task-123",
+        index: -1,
+      });
+      expect(result.success).toBe(false);
+      expect(result.error?.issues.some((i) => i.path.includes("index"))).toBe(
+        true
+      );
+    });
+
+    it("should validate response payload", () => {
+      const result = VeoGet1080pVideoResponseSchema.safeParse({
+        code: 200,
+        msg: "success",
+        data: {
+          resultUrl: "https://example.com/video.mp4",
+        },
+      });
+      expect(result.success).toBe(true);
+    });
+  });
+
   describe("provider method validation", () => {
     it("generate should have schema attached", () => {
       const provider = createProvider();
@@ -242,6 +301,61 @@ describe("KIE Veo provider", () => {
         prompt: "Extend",
       });
       expect(result.success).toBe(true);
+    });
+
+    it("get1080pVideo should have request and response schemas attached", () => {
+      const provider = createProvider();
+      expect(provider.get.api.v1.veo.get1080pVideo.schema).toBeDefined();
+      expect(
+        provider.get.api.v1.veo.get1080pVideo.responseSchema
+      ).toBeDefined();
+      expect(
+        provider.get.api.v1.veo.get1080pVideo.schema.safeParse({
+          taskId: "task-123",
+        }).success
+      ).toBe(true);
+    });
+  });
+
+  describe("get1080pVideo request dispatch", () => {
+    it("serializes taskId and index as query params", async () => {
+      const calls: Array<{ input: RequestInfo | URL; init?: RequestInit }> = [];
+      const provider = createVeoProvider(
+        "https://api.kie.ai",
+        "test-api-key",
+        async (input, init) => {
+          calls.push({ input, init });
+
+          return new Response(
+            JSON.stringify({
+              code: 200,
+              msg: "success",
+              data: { resultUrl: "https://example.com/video.mp4" },
+            }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            }
+          );
+        },
+        30000
+      );
+
+      const result = await provider.get.api.v1.veo.get1080pVideo({
+        taskId: "task id/with spaces",
+        index: 0,
+      });
+
+      expect(result.data?.resultUrl).toBe("https://example.com/video.mp4");
+      expect(calls).toHaveLength(1);
+      expect(String(calls[0].input)).toBe(
+        "https://api.kie.ai/api/v1/veo/get-1080p-video?taskId=task%20id%2Fwith%20spaces&index=0"
+      );
+      expect(calls[0].init?.method).toBe("GET");
+      expect(calls[0].init?.headers).toMatchObject({
+        Authorization: "Bearer test-api-key",
+        "Content-Type": "application/json",
+      });
     });
   });
 

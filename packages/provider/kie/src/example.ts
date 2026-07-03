@@ -47,6 +47,13 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
     }
   },
+  "GET api.v1.veo.get1080pVideo": {
+    "source": "kie/veo/get-1080p-video",
+    "payload": {
+      "taskId": "apicity-test-veo-1080p-not-found",
+      "index": 0
+    }
+  },
   "GET api.v1.veo.recordInfo": {
     "source": "kie/veo/record-info-not-found",
     "payload": {

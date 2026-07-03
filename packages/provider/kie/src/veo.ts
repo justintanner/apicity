@@ -2,6 +2,8 @@ import { createKieTransport, kieRequest } from "./request";
 import {
   VeoGenerateRequestSchema,
   VeoExtendRequestSchema,
+  VeoGet1080pVideoRequestSchema,
+  VeoGet1080pVideoResponseSchema,
   VeoRecordInfoRequestSchema,
   VeoRecordInfoResponseSchema,
 } from "./zod";
@@ -32,6 +34,11 @@ export interface VeoExtendRequest {
   model?: "fast" | "quality";
   seeds?: number;
   watermark?: string;
+}
+
+export interface VeoGet1080pVideoRequest {
+  taskId: string;
+  index?: number;
 }
 
 export interface VeoRecordInfoRequest {
@@ -73,6 +80,14 @@ export interface VeoRecordInfoResponse {
   data?: VeoRecordInfoData | null;
 }
 
+export interface VeoGet1080pVideoResponse {
+  code: number;
+  msg?: string;
+  data?: {
+    resultUrl: string;
+  } | null;
+}
+
 interface VeoGenerateMethod {
   (
     req: VeoGenerateRequest,
@@ -95,6 +110,15 @@ interface VeoRecordInfoMethod {
   responseSchema: ApicitySchema<VeoRecordInfoResponse>;
 }
 
+interface VeoGet1080pVideoMethod {
+  (
+    req: VeoGet1080pVideoRequest,
+    approval?: PayGateApproval
+  ): Promise<VeoGet1080pVideoResponse>;
+  schema: ApicitySchema<VeoGet1080pVideoRequest>;
+  responseSchema: ApicitySchema<VeoGet1080pVideoResponse>;
+}
+
 interface VeoVeoNamespace {
   generate: VeoGenerateMethod;
   extend: VeoExtendMethod;
@@ -102,6 +126,7 @@ interface VeoVeoNamespace {
 
 interface VeoGetVeoNamespace {
   recordInfo: VeoRecordInfoMethod;
+  get1080pVideo: VeoGet1080pVideoMethod;
 }
 
 interface VeoV1Namespace {
@@ -172,6 +197,20 @@ export function createVeoProvider(
     });
   }
 
+  // GET https://api.kie.ai/api/v1/veo/get-1080p-video?taskId={taskId}
+  // Docs: https://docs.kie.ai/veo3-api/get-veo-3-1080-p-video
+  async function get1080pVideo(
+    req: VeoGet1080pVideoRequest
+  ): Promise<VeoGet1080pVideoResponse> {
+    const taskId = encodeURIComponent(req.taskId);
+    const index =
+      req.index === undefined ? "" : `&index=${encodeURIComponent(req.index)}`;
+    return kieRequest<VeoGet1080pVideoResponse>(transport, {
+      method: "GET",
+      path: `/api/v1/veo/get-1080p-video?taskId=${taskId}${index}`,
+    });
+  }
+
   return {
     post: {
       api: {
@@ -194,6 +233,10 @@ export function createVeoProvider(
             recordInfo: Object.assign(recordInfo, {
               schema: VeoRecordInfoRequestSchema,
               responseSchema: VeoRecordInfoResponseSchema,
+            }),
+            get1080pVideo: Object.assign(get1080pVideo, {
+              schema: VeoGet1080pVideoRequestSchema,
+              responseSchema: VeoGet1080pVideoResponseSchema,
             }),
           },
         },

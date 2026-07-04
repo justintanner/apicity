@@ -1,5 +1,10 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { setupPolly, teardownPolly, type PollyContext } from "../harness";
+import {
+  recordingExists,
+  setupPolly,
+  teardownPolly,
+  type PollyContext,
+} from "../harness";
 import { createOpenAi } from "@apicity/openai";
 import type {
   OpenAiStoredCompletionListResponse,
@@ -8,6 +13,7 @@ import type {
 
 describe("openai stored completions integration", () => {
   let ctx: PollyContext;
+  const messagesRecordingName = "openai/stored-completions-messages";
 
   afterEach(async () => {
     await teardownPolly(ctx);
@@ -41,7 +47,8 @@ describe("openai stored completions integration", () => {
   });
 
   it("should list messages of a stored completion", async () => {
-    ctx = setupPolly("openai/stored-completions-messages");
+    const hadRecording = recordingExists(messagesRecordingName);
+    ctx = setupPolly(messagesRecordingName);
     const provider = createOpenAi({
       apiKey: process.env.OPENAI_API_KEY ?? "sk-test-key",
     });
@@ -57,8 +64,13 @@ describe("openai stored completions integration", () => {
     });
     expect(created.id).toBeTruthy();
 
-    // Brief delay for stored completion indexing
-    await new Promise((r) => setTimeout(r, 5000));
+    if (
+      ctx.mode === "record" ||
+      (ctx.mode === "record-missing" && !hadRecording)
+    ) {
+      // Brief delay for stored completion indexing when recording live.
+      await new Promise((r) => setTimeout(r, 5000));
+    }
 
     // List messages
     const messages: OpenAiStoredCompletionMessageListResponse =

@@ -65,37 +65,6 @@ function formatErrorMessage(status: number, body: unknown): string {
   return `Google API error: ${status}`;
 }
 
-function bodyFromRequest<TReq extends Record<string, unknown>>(
-  req: TReq,
-  omitKeys: readonly string[] = []
-): Record<string, unknown> | undefined {
-  const omit = new Set(omitKeys);
-  const body: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(req)) {
-    if (omit.has(key) || value === undefined) continue;
-    body[key] = value;
-  }
-  return Object.keys(body).length > 0 ? body : undefined;
-}
-
-function queryFromRequest<TReq extends Record<string, unknown>>(
-  req: TReq
-): string {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries(req)) {
-    if (value === undefined) continue;
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        if (item !== undefined) params.append(key, String(item));
-      }
-      continue;
-    }
-    params.set(key, String(value));
-  }
-  const query = params.toString();
-  return query ? `?${query}` : "";
-}
-
 function parseWithSchema<TReq>(schema: z.ZodType<TReq>, req: TReq): TReq {
   const result = schema.safeParse(req);
   if (result.success) return result.data;
@@ -322,21 +291,11 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     ),
   };
 
-  const getV1 = {};
-
-  const deleteV1 = {};
-
   return attachExamples({
     v1: postV1,
     v1internal,
     post: {
       v1: postV1,
-    },
-    get: {
-      v1: getV1,
-    },
-    delete: {
-      v1: deleteV1,
     },
   });
 }

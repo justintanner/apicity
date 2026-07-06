@@ -130,18 +130,6 @@ export interface GooglePostNamespace {
   v1: GooglePostV1Namespace;
 }
 
-export interface GoogleGetV1Namespace {}
-
-export interface GoogleGetNamespace {
-  v1: GoogleGetV1Namespace;
-}
-
-export interface GoogleDeleteV1Namespace {}
-
-export interface GoogleDeleteNamespace {
-  v1: GoogleDeleteV1Namespace;
-}
-
 // ---------- Antigravity / Cloud Code usage (rate-limit utilization) ----------
 
 // A single quota bucket. `remainingFraction` is the share of the window's
@@ -216,6 +204,4 @@ export interface GoogleProvider {
   v1: GooglePostV1Namespace;
   v1internal: GoogleV1InternalNamespace;
   post: GooglePostNamespace;
-  get: GoogleGetNamespace;
-  delete: GoogleDeleteNamespace;
 }

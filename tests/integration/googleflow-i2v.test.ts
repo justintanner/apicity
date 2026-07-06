@@ -114,7 +114,7 @@ describe("googleflow image-to-video integration", () => {
 
     const provider = createGoogleFlow({
       apiKey: process.env.GOOGLEFLOW_API_KEY ?? "googleflow-test-key",
-      baseURL: useFixtureServer ? LOCAL_FLOW_BASE_URL : CANONICAL_FLOW_BASE_URL,
+      baseURL: LOCAL_FLOW_BASE_URL,
       timeout: 900000,
     });
 

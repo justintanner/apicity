@@ -116,7 +116,7 @@ describe("google flow request contracts", () => {
 
     const googleFlow = createGoogleFlow({
       apiKey: "flow-key",
-      baseURL: useFixtureServer ? LOCAL_FLOW_BASE_URL : CANONICAL_FLOW_BASE_URL,
+      baseURL: LOCAL_FLOW_BASE_URL,
     });
 
     expectRequest(

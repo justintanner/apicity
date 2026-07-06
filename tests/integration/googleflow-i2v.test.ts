@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import fs from "fs";
 import path from "path";
-import { createServer, type IncomingMessage, type Server } from "node:http";
+import { createServer, type Server } from "node:http";
 import {
   recordingExists,
   setupPollyIgnoringBody,
@@ -20,20 +20,10 @@ function shouldStartServer(ctx: PollyContext): boolean {
   return false;
 }
 
-function readBody(req: IncomingMessage): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const chunks: Buffer[] = [];
-    req.on("data", (chunk: Buffer) => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
-    req.on("error", reject);
-  });
-}
 
 async function startFixtureServer(): Promise<Server> {
   const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", `http://127.0.0.1:${PORT}`);
-    const rawBody = await readBody(req);
-    const contentType = req.headers["content-type"];
 
     if (url.pathname.includes("/assets")) {
       res.writeHead(200, { "Content-Type": "application/json" });

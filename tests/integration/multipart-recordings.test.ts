@@ -179,6 +179,10 @@ const summaryLessUploadExceptionRules: SummaryLessExceptionRule[] = [
         .toLowerCase()
         .startsWith("multipart/related"),
   },
+  {
+    reason: "Google Flow assets send raw binary body without form data.",
+    matches: (relativePath) => relativePath.startsWith("google-flow_"),
+  },
 ];
 
 function fileSummary(

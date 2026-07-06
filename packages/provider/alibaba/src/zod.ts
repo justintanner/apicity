@@ -114,7 +114,7 @@ export const AlibabaVideoSynthesisInputSchema = z.object({
 export const AlibabaVideoSynthesisParametersSchema = z.object({
   resolution: z.enum(["720P", "1080P"]).optional(),
   ratio: z.enum(["16:9", "9:16", "1:1", "4:3", "3:4"]).optional(),
-  duration: z.number().int().min(2).max(15).optional(),
+  duration: z.union([z.literal(0), z.number().int().min(2).max(10)]).optional(),
   audio_setting: z.enum(["auto", "origin"]).optional(),
   prompt_extend: z.boolean().optional(),
   watermark: z.boolean().optional(),
@@ -224,17 +224,7 @@ export const AlibabaVideoSynthesisRequestSchema = VideoSynthesisRequest.refine(
       path: ["input", "media"],
     }
   )
-  .refine(
-    (v) => {
-      if (v.model !== "wan2.7-videoedit") return true;
-      const d = v.parameters?.duration;
-      return d === undefined || d <= 10;
-    },
-    {
-      message: "wan2.7-videoedit duration must be at most 10 seconds",
-      path: ["parameters", "duration"],
-    }
-  )
+
   .refine(
     (v) => v.model === "wan2.7-videoedit" || v.parameters?.ratio === undefined,
     {
@@ -335,6 +325,11 @@ const QWEN_IMAGE_GENERATION_MODELS = [
   "qwen-image-2.0-2026-03-03",
 ] as const;
 
+const QWEN_IMAGE_GENERATION_STABLE_MODELS = [
+  "qwen-image-2.0-pro",
+  "qwen-image-2.0",
+] as const;
+
 const QWEN_IMAGE_EDIT_MODELS = [
   "qwen-image-edit-max",
   "qwen-image-edit-max-2026-01-16",
@@ -344,17 +339,36 @@ const QWEN_IMAGE_EDIT_MODELS = [
   "qwen-image-edit",
 ] as const;
 
+const QWEN_IMAGE_EDIT_STABLE_MODELS = [
+  "qwen-image-edit-max",
+  "qwen-image-edit-plus",
+  "qwen-image-edit",
+] as const;
+
 const QWEN_IMAGE_EDIT_MODEL_SET = new Set<string>(QWEN_IMAGE_EDIT_MODELS);
 
 export const AlibabaQwenImageGenerationModelSchema = z.enum(
   QWEN_IMAGE_GENERATION_MODELS
 );
 
+export const AlibabaQwenImageGenerationStableModelSchema = z.enum(
+  QWEN_IMAGE_GENERATION_STABLE_MODELS
+);
+
 export const AlibabaQwenImageEditModelSchema = z.enum(QWEN_IMAGE_EDIT_MODELS);
+
+export const AlibabaQwenImageEditStableModelSchema = z.enum(
+  QWEN_IMAGE_EDIT_STABLE_MODELS
+);
 
 export const AlibabaQwenImageModelSchema = z.union([
   AlibabaQwenImageGenerationModelSchema,
   AlibabaQwenImageEditModelSchema,
+]);
+
+export const AlibabaQwenImageStableModelSchema = z.union([
+  AlibabaQwenImageGenerationStableModelSchema,
+  AlibabaQwenImageEditStableModelSchema,
 ]);
 
 export const AlibabaQwenImageTextSlotsSchema = z
@@ -578,10 +592,19 @@ export type AlibabaImageReferenceSlots = z.infer<
 export type AlibabaQwenImageGenerationModel = z.infer<
   typeof AlibabaQwenImageGenerationModelSchema
 >;
+export type AlibabaQwenImageGenerationStableModel = z.infer<
+  typeof AlibabaQwenImageGenerationStableModelSchema
+>;
 export type AlibabaQwenImageEditModel = z.infer<
   typeof AlibabaQwenImageEditModelSchema
 >;
+export type AlibabaQwenImageEditStableModel = z.infer<
+  typeof AlibabaQwenImageEditStableModelSchema
+>;
 export type AlibabaQwenImageModel = z.infer<typeof AlibabaQwenImageModelSchema>;
+export type AlibabaQwenImageStableModel = z.infer<
+  typeof AlibabaQwenImageStableModelSchema
+>;
 export type AlibabaQwenImageTextSlots = z.infer<
   typeof AlibabaQwenImageTextSlotsSchema
 >;

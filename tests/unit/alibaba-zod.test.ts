@@ -247,7 +247,7 @@ describe("Alibaba Zod schema validation", () => {
         AlibabaVideoSynthesisRequestObjectSchema.safeParse(
           invalidVideoEditDuration
         ).success
-      ).toBe(true);
+      ).toBe(false);
       expect(
         AlibabaVideoSynthesisRequestSchema.safeParse(invalidVideoEditDuration)
           .success

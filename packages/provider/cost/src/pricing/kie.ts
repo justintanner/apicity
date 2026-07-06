@@ -27,6 +27,11 @@ const hasReferenceVideoInput = (p: Record<string, unknown>): boolean => {
   return Array.isArray(referenceVideoUrls) && referenceVideoUrls.length > 0;
 };
 
+const hasVideoListInput = (p: Record<string, unknown>): boolean => {
+  const videoList = asObject(p.input)?.video_list;
+  return Array.isArray(videoList) && videoList.length > 0;
+};
+
 // Image models price per image; units = input.n when present (only
 // wan/2-7-image* uses batch generation today), otherwise 1.
 const imageCount = (p: Record<string, unknown>): number =>
@@ -446,4 +451,45 @@ export const kie: Record<string, ModelPricing> = {
   "suno/sounds-generate": flatGen(0.0125, "suno/suno"),
   "suno/add-instrumental-generate": flatGen(0.06, "suno/suno"),
   "suno/add-vocals-generate": flatGen(0.06, "suno/suno"),
+
+  "gemini-omni-video": {
+    kind: "perUnit",
+    unit: "generations",
+    units: () => 1,
+    select: [
+      {
+        name: "mode",
+        pick: (p) => (hasVideoListInput(p) ? "v2v" : "t2v"),
+      },
+      {
+        name: "duration",
+        pick: (p) =>
+          String(asNumber(asObject(p.input)?.duration) ?? p.duration ?? 4),
+      },
+      {
+        name: "resolution",
+        pick: (p) =>
+          hasVideoListInput(p)
+            ? ""
+            : (asString(asObject(p.input)?.resolution) ?? "720p"),
+      },
+    ],
+    rates: {
+      "t2v|4|720p": 0.315,
+      "t2v|6|720p": 0.4725,
+      "t2v|8|720p": 0.63,
+      "t2v|10|720p": 0.7875,
+      "t2v|4|1080p": 0.42,
+      "t2v|6|1080p": 0.63,
+      "t2v|8|1080p": 0.84,
+      "t2v|10|1080p": 1.05,
+      "t2v|4|4k": 0.42,
+      "t2v|6|4k": 0.63,
+      "t2v|8|4k": 0.84,
+      "t2v|10|4k": 1.05,
+      "v2v|4|": 0.84,
+      "v2v|6|": 1.26,
+    },
+    source: src("google/gemini-omni"),
+  },
 };

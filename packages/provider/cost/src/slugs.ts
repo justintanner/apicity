@@ -53,6 +53,9 @@ export const MODEL_SLUGS = {
     veo3: "veo3",
     veo3_fast: "veo3f",
 
+    // Video — Gemini Omni
+    "gemini-omni-video": "geminiomni",
+
     // Image — Grok Imagine
     "grok-imagine/text-to-image": "grok",
     "grok-imagine/image-to-image": "grok",
@@ -235,6 +238,8 @@ export const MODEL_DISPLAY = {
 
     veo3: "Veo 3",
     veo3_fast: "Veo 3 Fast",
+
+    "gemini-omni-video": "Gemini Omni",
 
     "grok-imagine/text-to-image": "Grok Imagine",
     "grok-imagine/image-to-image": "Grok Imagine",

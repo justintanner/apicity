@@ -786,7 +786,7 @@ export type XaiVideoReferenceInput = z.infer<
 export type XaiImagineStorageOptions = z.infer<
   typeof XaiImagineStorageOptionsSchema
 >;
-export type XaiFilePublicUrlRequest = z.infer<
+export type XaiFilePublicUrlRequest = z.input<
   typeof XaiFilePublicUrlRequestSchema
 >;
 export type XaiFilePublicUrlRequestInput = XaiFilePublicUrlRequest;

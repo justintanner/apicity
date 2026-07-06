@@ -4711,7 +4711,7 @@ export const ElevenLabsDownloadPronunciationDictionaryRequestSchema = z.object(
   {}
 );
 
-export type ElevenLabsListPronunciationDictionariesRequest = z.infer<
+export type ElevenLabsListPronunciationDictionariesRequest = z.input<
   typeof ElevenLabsListPronunciationDictionariesRequestSchema
 >;
 export type ElevenLabsListPronunciationDictionariesRequestInput = z.input<
@@ -4721,7 +4721,7 @@ export type ElevenLabsListPronunciationDictionariesParsedRequest = z.output<
   typeof ElevenLabsListPronunciationDictionariesRequestSchema
 >;
 
-export type ElevenLabsAddPronunciationDictionaryFromFileRequest = z.infer<
+export type ElevenLabsAddPronunciationDictionaryFromFileRequest = z.input<
   typeof ElevenLabsAddPronunciationDictionaryFromFileRequestSchema
 >;
 export type ElevenLabsAddPronunciationDictionaryFromFileRequestInput = z.input<
@@ -4730,7 +4730,7 @@ export type ElevenLabsAddPronunciationDictionaryFromFileRequestInput = z.input<
 export type ElevenLabsAddPronunciationDictionaryFromFileParsedRequest =
   z.output<typeof ElevenLabsAddPronunciationDictionaryFromFileRequestSchema>;
 
-export type ElevenLabsAddPronunciationDictionaryFromRulesRequest = z.infer<
+export type ElevenLabsAddPronunciationDictionaryFromRulesRequest = z.input<
   typeof ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema
 >;
 export type ElevenLabsAddPronunciationDictionaryFromRulesRequestInput = z.input<
@@ -4739,7 +4739,7 @@ export type ElevenLabsAddPronunciationDictionaryFromRulesRequestInput = z.input<
 export type ElevenLabsAddPronunciationDictionaryFromRulesParsedRequest =
   z.output<typeof ElevenLabsAddPronunciationDictionaryFromRulesRequestSchema>;
 
-export type ElevenLabsGetPronunciationDictionaryRequest = z.infer<
+export type ElevenLabsGetPronunciationDictionaryRequest = z.input<
   typeof ElevenLabsGetPronunciationDictionaryRequestSchema
 >;
 export type ElevenLabsGetPronunciationDictionaryRequestInput = z.input<
@@ -4749,7 +4749,7 @@ export type ElevenLabsGetPronunciationDictionaryParsedRequest = z.output<
   typeof ElevenLabsGetPronunciationDictionaryRequestSchema
 >;
 
-export type ElevenLabsUpdatePronunciationDictionaryRequest = z.infer<
+export type ElevenLabsUpdatePronunciationDictionaryRequest = z.input<
   typeof ElevenLabsUpdatePronunciationDictionaryRequestSchema
 >;
 export type ElevenLabsUpdatePronunciationDictionaryRequestInput = z.input<
@@ -4759,7 +4759,7 @@ export type ElevenLabsUpdatePronunciationDictionaryParsedRequest = z.output<
   typeof ElevenLabsUpdatePronunciationDictionaryRequestSchema
 >;
 
-export type ElevenLabsAddPronunciationDictionaryRulesRequest = z.infer<
+export type ElevenLabsAddPronunciationDictionaryRulesRequest = z.input<
   typeof ElevenLabsAddPronunciationDictionaryRulesRequestSchema
 >;
 export type ElevenLabsAddPronunciationDictionaryRulesRequestInput = z.input<
@@ -4769,7 +4769,7 @@ export type ElevenLabsAddPronunciationDictionaryRulesParsedRequest = z.output<
   typeof ElevenLabsAddPronunciationDictionaryRulesRequestSchema
 >;
 
-export type ElevenLabsRemovePronunciationDictionaryRulesRequest = z.infer<
+export type ElevenLabsRemovePronunciationDictionaryRulesRequest = z.input<
   typeof ElevenLabsRemovePronunciationDictionaryRulesRequestSchema
 >;
 export type ElevenLabsRemovePronunciationDictionaryRulesRequestInput = z.input<
@@ -4778,7 +4778,7 @@ export type ElevenLabsRemovePronunciationDictionaryRulesRequestInput = z.input<
 export type ElevenLabsRemovePronunciationDictionaryRulesParsedRequest =
   z.output<typeof ElevenLabsRemovePronunciationDictionaryRulesRequestSchema>;
 
-export type ElevenLabsSetPronunciationDictionaryRulesRequest = z.infer<
+export type ElevenLabsSetPronunciationDictionaryRulesRequest = z.input<
   typeof ElevenLabsSetPronunciationDictionaryRulesRequestSchema
 >;
 export type ElevenLabsSetPronunciationDictionaryRulesRequestInput = z.input<
@@ -4788,7 +4788,7 @@ export type ElevenLabsSetPronunciationDictionaryRulesParsedRequest = z.output<
   typeof ElevenLabsSetPronunciationDictionaryRulesRequestSchema
 >;
 
-export type ElevenLabsDownloadPronunciationDictionaryRequest = z.infer<
+export type ElevenLabsDownloadPronunciationDictionaryRequest = z.input<
   typeof ElevenLabsDownloadPronunciationDictionaryRequestSchema
 >;
 export type ElevenLabsDownloadPronunciationDictionaryRequestInput = z.input<
@@ -4798,7 +4798,7 @@ export type ElevenLabsDownloadPronunciationDictionaryParsedRequest = z.output<
   typeof ElevenLabsDownloadPronunciationDictionaryRequestSchema
 >;
 
-export type ElevenLabsPronunciationDictionaryAliasRuleRequest = z.infer<
+export type ElevenLabsPronunciationDictionaryAliasRuleRequest = z.input<
   typeof ElevenLabsPronunciationDictionaryAliasRuleRequestSchema
 >;
 export type ElevenLabsPronunciationDictionaryAliasRuleRequestInput = z.input<
@@ -4808,7 +4808,7 @@ export type ElevenLabsPronunciationDictionaryAliasRuleParsedRequest = z.output<
   typeof ElevenLabsPronunciationDictionaryAliasRuleRequestSchema
 >;
 
-export type ElevenLabsPronunciationDictionaryPhonemeRuleRequest = z.infer<
+export type ElevenLabsPronunciationDictionaryPhonemeRuleRequest = z.input<
   typeof ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema
 >;
 export type ElevenLabsPronunciationDictionaryPhonemeRuleRequestInput = z.input<
@@ -4817,7 +4817,7 @@ export type ElevenLabsPronunciationDictionaryPhonemeRuleRequestInput = z.input<
 export type ElevenLabsPronunciationDictionaryPhonemeRuleParsedRequest =
   z.output<typeof ElevenLabsPronunciationDictionaryPhonemeRuleRequestSchema>;
 
-export type ElevenLabsPronunciationDictionaryRuleRequest = z.infer<
+export type ElevenLabsPronunciationDictionaryRuleRequest = z.input<
   typeof ElevenLabsPronunciationDictionaryRuleRequestSchema
 >;
 export type ElevenLabsPronunciationDictionaryRuleRequestInput = z.input<

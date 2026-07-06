@@ -13,7 +13,6 @@ import { createGoogleFlow } from "@apicity/googleflow";
 const RECORDING_NAME = "google-flow/i2v";
 const PORT = 18182;
 const LOCAL_FLOW_BASE_URL = `http://127.0.0.1:${PORT}/v1/google-flow`;
-const CANONICAL_FLOW_BASE_URL = "https://api.useapi.net/v1/google-flow";
 
 function shouldStartServer(ctx: PollyContext): boolean {
   if (ctx.mode === "record" || ctx.mode === "passthrough") return true;
@@ -35,11 +34,6 @@ async function startFixtureServer(): Promise<Server> {
     const url = new URL(req.url ?? "/", `http://127.0.0.1:${PORT}`);
     const rawBody = await readBody(req);
     const contentType = req.headers["content-type"];
-
-    let body: unknown;
-    if (rawBody.length > 0 && contentType === "application/json") {
-      body = JSON.parse(rawBody.toString("utf8"));
-    }
 
     if (url.pathname.includes("/assets")) {
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -133,6 +127,7 @@ describe("googleflow image-to-video integration", () => {
     });
 
     expect(uploadResult).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const uploadData = uploadResult as any;
     expect(uploadData.media).toBeDefined();
     const startImageId =
@@ -143,9 +138,11 @@ describe("googleflow image-to-video integration", () => {
       model: "veo-3.1-quality",
       startImage: startImageId,
       aspectRatio: "16:9",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);
 
     expect(videoResult).toBeDefined();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const videoData = videoResult as any;
     expect(videoData.media).toBeDefined();
     expect(videoData.media.length).toBeGreaterThan(0);

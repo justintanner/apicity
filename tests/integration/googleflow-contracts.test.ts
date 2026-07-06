@@ -11,7 +11,6 @@ import { createGoogleFlow } from "@apicity/googleflow";
 const RECORDING_NAME = "google-flow/contracts";
 const PORT = 18181;
 const LOCAL_FLOW_BASE_URL = `http://127.0.0.1:${PORT}/v1/google-flow`;
-const CANONICAL_FLOW_BASE_URL = "https://api.useapi.net/v1/google-flow";
 
 interface FixtureResponse {
   ok: true;

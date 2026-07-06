@@ -3,28 +3,6 @@ import type { z } from "zod";
 import type {
   GoogleCountTokensRequest,
   GoogleCountTokensResponse,
-  GoogleFlowAccountsCreateRequest,
-  GoogleFlowAssetUploadRequest,
-  GoogleFlowCaptchaProvidersRequest,
-  GoogleFlowCaptchaStatsRequest,
-  GoogleFlowCharactersCreateRequest,
-  GoogleFlowCharactersListRequest,
-  GoogleFlowEmailRequest,
-  GoogleFlowImagesRequest,
-  GoogleFlowImagesUpscaleRequest,
-  GoogleFlowJobIdRequest,
-  GoogleFlowJobsRequest,
-  GoogleFlowMediaGenerationIdRequest,
-  GoogleFlowNoRequest,
-  GoogleFlowRefRequest,
-  GoogleFlowResponse,
-  GoogleFlowVideosConcatenateRequest,
-  GoogleFlowVideosExtendRequest,
-  GoogleFlowVideosGifRequest,
-  GoogleFlowVideosRequest,
-  GoogleFlowVideosUpscaleRequest,
-  GoogleFlowVoicesCreateRequest,
-  GoogleFlowVoicesListRequest,
   GoogleGenerateContentRequest,
   GoogleGenerateContentResponse,
   GoogleOptions,
@@ -38,32 +16,9 @@ import {
   GoogleCountTokensRequestSchema,
   GoogleRetrieveUserQuotaRequestSchema,
   GoogleRetrieveUserQuotaSummaryRequestSchema,
-  GoogleFlowAccountsCreateRequestSchema,
-  GoogleFlowAssetUploadRequestSchema,
-  GoogleFlowCaptchaProvidersRequestSchema,
-  GoogleFlowCaptchaStatsRequestSchema,
-  GoogleFlowCharactersCreateRequestSchema,
-  GoogleFlowCharactersListRequestSchema,
-  GoogleFlowEmailRequestSchema,
-  GoogleFlowImagesRequestSchema,
-  GoogleFlowImagesUpscaleRequestSchema,
-  GoogleFlowJobIdRequestSchema,
-  GoogleFlowJobsRequestSchema,
-  GoogleFlowMediaGenerationIdRequestSchema,
-  GoogleFlowNoRequestSchema,
-  GoogleFlowRefRequestSchema,
-  GoogleFlowVideosConcatenateRequestSchema,
-  GoogleFlowVideosExtendRequestSchema,
-  GoogleFlowVideosGifRequestSchema,
-  GoogleFlowVideosRequestSchema,
-  GoogleFlowVideosUpscaleRequestSchema,
-  GoogleFlowVoicesCreateRequestSchema,
-  GoogleFlowVoicesListRequestSchema,
   GoogleGenerateContentRequestSchema,
 } from "./zod";
 import { attachExamples } from "./example";
-
-const GOOGLE_FLOW_API_URL = "https://api.useapi.net/v1/google-flow";
 
 interface GoogleErrorBody {
   error?:
@@ -158,9 +113,6 @@ function parseWithSchema<TReq>(schema: z.ZodType<TReq>, req: TReq): TReq {
 export function createGoogle(opts: GoogleOptions): GoogleProvider {
   const baseURL = opts.baseURL ?? "https://aiplatform.googleapis.com/v1";
   const normalizedBaseURL = baseURL.replace(/\/+$/, "");
-  const flowBaseURL = opts.flowBaseURL ?? GOOGLE_FLOW_API_URL;
-  const normalizedFlowBaseURL = flowBaseURL.replace(/\/+$/, "");
-  const flowApiKey = opts.flowApiKey ?? opts.apiKey;
   // Antigravity / Cloud Code usage surface (un-versioned, OAuth-authed).
   const cloudCodeBaseURL = (
     opts.cloudCodeBaseURL ?? "https://cloudcode-pa.googleapis.com"
@@ -280,130 +232,7 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     }
   }
 
-  async function makeFlowRequest<T>(
-    method: "GET" | "POST" | "DELETE",
-    path: string,
-    body: unknown,
-    signal?: AbortSignal,
-    options?: {
-      baseOverride?: string;
-      contentType?: string;
-      pathOverride?: string;
-    }
-  ): Promise<T> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    if (signal) {
-      attachAbortHandler(signal, controller);
-    }
-
-    try {
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${flowApiKey}`,
-      };
-      const requestPath = options?.pathOverride ?? path;
-      const requestBody =
-        body === undefined
-          ? undefined
-          : typeof body === "string" ||
-              (typeof FormData !== "undefined" && body instanceof FormData)
-            ? body
-            : (typeof Blob !== "undefined" && body instanceof Blob) ||
-                body instanceof ArrayBuffer ||
-                ArrayBuffer.isView(body)
-              ? body
-              : JSON.stringify(body);
-
-      if (body !== undefined) {
-        headers["Content-Type"] = options?.contentType ?? "application/json";
-      }
-
-      void options?.baseOverride;
-      const requestBaseURL = normalizedFlowBaseURL.replace(/\/+$/, "");
-      const res = await doFetch(`${requestBaseURL}${requestPath}`, {
-        method,
-        headers,
-        body: requestBody as BodyInit | undefined,
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        let resBody: unknown = null;
-        try {
-          resBody = await res.json();
-        } catch {
-          // ignore parse errors
-        }
-        const code =
-          isGoogleErrorBody(resBody) &&
-          typeof resBody.error === "object" &&
-          resBody.error !== null
-            ? resBody.error.status
-            : undefined;
-        throw new GoogleError(
-          formatErrorMessage(res.status, resBody),
-          res.status,
-          resBody,
-          code
-        );
-      }
-
-      return (await res.json()) as T;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof GoogleError) throw error;
-      throw new GoogleError(`Google Flow request failed: ${error}`, 500);
-    }
-  }
-
-  function jsonGet<TReq extends Record<string, unknown>>(
-    schema: z.ZodType<TReq>,
-    path: (req: TReq) => string,
-    endpoint: string
-  ) {
-    return Object.assign(
-      async (
-        req: TReq = {} as TReq,
-        signal?: AbortSignal
-      ): Promise<GoogleFlowResponse> => {
-        void endpoint;
-        const parsed = parseWithSchema(schema, req ?? ({} as TReq));
-        return makeFlowRequest<GoogleFlowResponse>(
-          "GET",
-          path(parsed),
-          undefined,
-          signal,
-          { baseOverride: GOOGLE_FLOW_API_URL }
-        );
-      },
-      { schema }
-    );
-  }
-
-  function jsonBody<TReq extends Record<string, unknown>>(
-    method: "POST" | "DELETE",
-    schema: z.ZodType<TReq>,
-    path: (req: TReq) => string,
-    endpoint: string,
-    omitKeys: readonly string[] = []
-  ) {
-    return Object.assign(
-      async (req: TReq, signal?: AbortSignal): Promise<GoogleFlowResponse> => {
-        const parsed = parseWithSchema(schema, req ?? ({} as TReq));
-        return makeFlowRequest<GoogleFlowResponse>(
-          method,
-          path(parsed),
-          bodyFromRequest(parsed, omitKeys),
-          signal,
-          { baseOverride: GOOGLE_FLOW_API_URL }
-        );
-      },
-      { schema }
-    );
-  }
 
   const postV1 = {
     publishers: {
@@ -450,136 +279,6 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
         },
       },
     },
-    googleFlow: {
-      // POST https://api.useapi.net/v1/google-flow/accounts
-      // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts
-      accounts: Object.assign(
-        jsonBody<GoogleFlowAccountsCreateRequest>(
-          "POST",
-          GoogleFlowAccountsCreateRequestSchema,
-          () => "/accounts",
-          "https://api.useapi.net/v1/google-flow/accounts"
-        ),
-        {
-          // POST https://api.useapi.net/v1/google-flow/accounts/captcha-providers
-          // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-accounts-captcha-providers
-          captchaProviders: jsonBody<GoogleFlowCaptchaProvidersRequest>(
-            "POST",
-            GoogleFlowCaptchaProvidersRequestSchema,
-            () => "/accounts/captcha-providers",
-            "https://api.useapi.net/v1/google-flow/accounts/captcha-providers"
-          ),
-        }
-      ),
-      // POST https://api.useapi.net/v1/google-flow/assets
-      // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-assets-email
-      assets: Object.assign(
-        async (
-          req: GoogleFlowAssetUploadRequest,
-          signal?: AbortSignal
-        ): Promise<GoogleFlowResponse> => {
-          const parsed = parseWithSchema(
-            GoogleFlowAssetUploadRequestSchema,
-            req
-          );
-          const path = parsed.email
-            ? `/assets/${encodeURIComponent(parsed.email)}`
-            : "/assets";
-          return makeFlowRequest<GoogleFlowResponse>(
-            "POST",
-            "/assets",
-            parsed.body,
-            signal,
-            {
-              baseOverride: "https://api.useapi.net/v1/google-flow",
-              contentType: parsed.contentType,
-              pathOverride: path,
-            }
-          );
-        },
-        { schema: GoogleFlowAssetUploadRequestSchema }
-      ),
-      // POST https://api.useapi.net/v1/google-flow/characters
-      // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-characters
-      characters: jsonBody<GoogleFlowCharactersCreateRequest>(
-        "POST",
-        GoogleFlowCharactersCreateRequestSchema,
-        () => "/characters",
-        "https://api.useapi.net/v1/google-flow/characters"
-      ),
-      // POST https://api.useapi.net/v1/google-flow/voices
-      // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices
-      voices: jsonBody<GoogleFlowVoicesCreateRequest>(
-        "POST",
-        GoogleFlowVoicesCreateRequestSchema,
-        () => "/voices",
-        "https://api.useapi.net/v1/google-flow/voices"
-      ),
-      // POST https://api.useapi.net/v1/google-flow/images
-      // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-images
-      images: Object.assign(
-        jsonBody<GoogleFlowImagesRequest>(
-          "POST",
-          GoogleFlowImagesRequestSchema,
-          () => "/images",
-          "https://api.useapi.net/v1/google-flow/images"
-        ),
-        {
-          // POST https://api.useapi.net/v1/google-flow/images/upscale
-          // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-images-upscale
-          upscale: jsonBody<GoogleFlowImagesUpscaleRequest>(
-            "POST",
-            GoogleFlowImagesUpscaleRequestSchema,
-            () => "/images/upscale",
-            "https://api.useapi.net/v1/google-flow/images/upscale"
-          ),
-        }
-      ),
-      // POST https://api.useapi.net/v1/google-flow/videos
-      // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos
-      videos: Object.assign(
-        jsonBody<GoogleFlowVideosRequest>(
-          "POST",
-          GoogleFlowVideosRequestSchema,
-          () => "/videos",
-          "https://api.useapi.net/v1/google-flow/videos"
-        ),
-        {
-          // POST https://api.useapi.net/v1/google-flow/videos/upscale
-          // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-upscale
-          upscale: jsonBody<GoogleFlowVideosUpscaleRequest>(
-            "POST",
-            GoogleFlowVideosUpscaleRequestSchema,
-            () => "/videos/upscale",
-            "https://api.useapi.net/v1/google-flow/videos/upscale"
-          ),
-          // POST https://api.useapi.net/v1/google-flow/videos/gif
-          // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif
-          gif: jsonBody<GoogleFlowVideosGifRequest>(
-            "POST",
-            GoogleFlowVideosGifRequestSchema,
-            () => "/videos/gif",
-            "https://api.useapi.net/v1/google-flow/videos/gif"
-          ),
-          // POST https://api.useapi.net/v1/google-flow/videos/extend
-          // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend
-          extend: jsonBody<GoogleFlowVideosExtendRequest>(
-            "POST",
-            GoogleFlowVideosExtendRequestSchema,
-            () => "/videos/extend",
-            "https://api.useapi.net/v1/google-flow/videos/extend"
-          ),
-          // POST https://api.useapi.net/v1/google-flow/videos/concatenate
-          // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate
-          concatenate: jsonBody<GoogleFlowVideosConcatenateRequest>(
-            "POST",
-            GoogleFlowVideosConcatenateRequestSchema,
-            () => "/videos/concatenate",
-            "https://api.useapi.net/v1/google-flow/videos/concatenate"
-          ),
-        }
-      ),
-    },
   };
 
   const v1internal = {
@@ -625,137 +324,9 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     ),
   };
 
-  const getV1 = {
-    googleFlow: {
-      // GET https://api.useapi.net/v1/google-flow/accounts
-      // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts
-      accounts: Object.assign(
-        jsonGet<GoogleFlowNoRequest>(
-          GoogleFlowNoRequestSchema,
-          () => "/accounts",
-          "https://api.useapi.net/v1/google-flow/accounts"
-        ),
-        {
-          // GET https://api.useapi.net/v1/google-flow/accounts/{email}
-          // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email
-          retrieve: jsonGet<GoogleFlowEmailRequest>(
-            GoogleFlowEmailRequestSchema,
-            (req) => `/accounts/${encodeURIComponent(req.email)}`,
-            "https://api.useapi.net/v1/google-flow/accounts/{email}"
-          ),
-          // GET https://api.useapi.net/v1/google-flow/accounts/captcha-providers
-          // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers
-          captchaProviders: jsonGet<GoogleFlowNoRequest>(
-            GoogleFlowNoRequestSchema,
-            () => "/accounts/captcha-providers",
-            "https://api.useapi.net/v1/google-flow/accounts/captcha-providers"
-          ),
-          // GET https://api.useapi.net/v1/google-flow/accounts/captcha-stats{query}
-          // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats
-          captchaStats: jsonGet<GoogleFlowCaptchaStatsRequest>(
-            GoogleFlowCaptchaStatsRequestSchema,
-            (req) => `/accounts/captcha-stats${queryFromRequest(req)}`,
-            "https://api.useapi.net/v1/google-flow/accounts/captcha-stats"
-          ),
-        }
-      ),
-      assets: {
-        // GET https://api.useapi.net/v1/google-flow/assets/{mediaGenerationId}
-        // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid
-        retrieve: jsonGet<GoogleFlowMediaGenerationIdRequest>(
-          GoogleFlowMediaGenerationIdRequestSchema,
-          (req) => `/assets/${encodeURIComponent(req.mediaGenerationId)}`,
-          "https://api.useapi.net/v1/google-flow/assets/{mediaGenerationId}"
-        ),
-      },
-      // GET https://api.useapi.net/v1/google-flow/characters{query}
-      // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters
-      characters: Object.assign(
-        jsonGet<GoogleFlowCharactersListRequest>(
-          GoogleFlowCharactersListRequestSchema,
-          (req) => `/characters${queryFromRequest(req)}`,
-          "https://api.useapi.net/v1/google-flow/characters"
-        ),
-        {
-          // GET https://api.useapi.net/v1/google-flow/characters/{ref}
-          // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref
-          retrieve: jsonGet<GoogleFlowRefRequest>(
-            GoogleFlowRefRequestSchema,
-            (req) => `/characters/${encodeURIComponent(req.ref)}`,
-            "https://api.useapi.net/v1/google-flow/characters/{ref}"
-          ),
-        }
-      ),
-      // GET https://api.useapi.net/v1/google-flow/voices{query}
-      // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices
-      voices: Object.assign(
-        jsonGet<GoogleFlowVoicesListRequest>(
-          GoogleFlowVoicesListRequestSchema,
-          (req) => `/voices${queryFromRequest(req)}`,
-          "https://api.useapi.net/v1/google-flow/voices"
-        ),
-        {
-          // GET https://api.useapi.net/v1/google-flow/voices/{ref}
-          // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref
-          retrieve: jsonGet<GoogleFlowRefRequest>(
-            GoogleFlowRefRequestSchema,
-            (req) => `/voices/${encodeURIComponent(req.ref)}`,
-            "https://api.useapi.net/v1/google-flow/voices/{ref}"
-          ),
-        }
-      ),
-      // GET https://api.useapi.net/v1/google-flow/jobs{query}
-      // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs
-      jobs: Object.assign(
-        jsonGet<GoogleFlowJobsRequest>(
-          GoogleFlowJobsRequestSchema,
-          (req) => `/jobs${queryFromRequest(req)}`,
-          "https://api.useapi.net/v1/google-flow/jobs"
-        ),
-        {
-          // GET https://api.useapi.net/v1/google-flow/jobs/{jobId}
-          // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid
-          retrieve: jsonGet<GoogleFlowJobIdRequest>(
-            GoogleFlowJobIdRequestSchema,
-            (req) => `/jobs/${encodeURIComponent(req.jobId)}`,
-            "https://api.useapi.net/v1/google-flow/jobs/{jobId}"
-          ),
-        }
-      ),
-    },
-  };
+  const getV1 = {};
 
-  const deleteV1 = {
-    googleFlow: {
-      // DELETE https://api.useapi.net/v1/google-flow/accounts/{email}
-      // Docs: https://useapi.net/docs/api-google-flow-v1/delete-google-flow-accounts-email
-      accounts: jsonBody<GoogleFlowEmailRequest>(
-        "DELETE",
-        GoogleFlowEmailRequestSchema,
-        (req) => `/accounts/${encodeURIComponent(req.email)}`,
-        "https://api.useapi.net/v1/google-flow/accounts/{email}",
-        ["email"]
-      ),
-      // DELETE https://api.useapi.net/v1/google-flow/characters/{ref}
-      // Docs: https://useapi.net/docs/api-google-flow-v1/delete-google-flow-characters-ref
-      characters: jsonBody<GoogleFlowRefRequest>(
-        "DELETE",
-        GoogleFlowRefRequestSchema,
-        (req) => `/characters/${encodeURIComponent(req.ref)}`,
-        "https://api.useapi.net/v1/google-flow/characters/{ref}",
-        ["ref"]
-      ),
-      // DELETE https://api.useapi.net/v1/google-flow/voices/{ref}
-      // Docs: https://useapi.net/docs/api-google-flow-v1/delete-google-flow-voices-ref
-      voices: jsonBody<GoogleFlowRefRequest>(
-        "DELETE",
-        GoogleFlowRefRequestSchema,
-        (req) => `/voices/${encodeURIComponent(req.ref)}`,
-        "https://api.useapi.net/v1/google-flow/voices/{ref}",
-        ["ref"]
-      ),
-    },
-  };
+  const deleteV1 = {};
 
   return attachExamples({
     v1: postV1,

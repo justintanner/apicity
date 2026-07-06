@@ -1,27 +1,6 @@
 import type { z } from "zod";
 import type {
   GoogleCountTokensRequest,
-  GoogleFlowAccountsCreateRequest,
-  GoogleFlowAssetUploadRequest,
-  GoogleFlowCaptchaProvidersRequest,
-  GoogleFlowCaptchaStatsRequest,
-  GoogleFlowCharactersCreateRequest,
-  GoogleFlowCharactersListRequest,
-  GoogleFlowEmailRequest,
-  GoogleFlowImagesRequest,
-  GoogleFlowImagesUpscaleRequest,
-  GoogleFlowJobIdRequest,
-  GoogleFlowJobsRequest,
-  GoogleFlowMediaGenerationIdRequest,
-  GoogleFlowNoRequest,
-  GoogleFlowRefRequest,
-  GoogleFlowVideosConcatenateRequest,
-  GoogleFlowVideosExtendRequest,
-  GoogleFlowVideosGifRequest,
-  GoogleFlowVideosRequest,
-  GoogleFlowVideosUpscaleRequest,
-  GoogleFlowVoicesCreateRequest,
-  GoogleFlowVoicesListRequest,
   GoogleGenerateContentRequest,
   GoogleRetrieveUserQuotaRequest,
   GoogleRetrieveUserQuotaSummaryRequest,
@@ -48,27 +27,6 @@ export type {
   GoogleCountTokensRequest,
   GoogleCountTokensRequestInput,
   GoogleCountTokensParsedRequest,
-  GoogleFlowNoRequest,
-  GoogleFlowEmailRequest,
-  GoogleFlowMediaGenerationIdRequest,
-  GoogleFlowRefRequest,
-  GoogleFlowJobIdRequest,
-  GoogleFlowAccountsCreateRequest,
-  GoogleFlowCaptchaProvidersRequest,
-  GoogleFlowCaptchaStatsRequest,
-  GoogleFlowAssetUploadRequest,
-  GoogleFlowCharactersCreateRequest,
-  GoogleFlowCharactersListRequest,
-  GoogleFlowVoicesCreateRequest,
-  GoogleFlowVoicesListRequest,
-  GoogleFlowImagesRequest,
-  GoogleFlowImagesUpscaleRequest,
-  GoogleFlowVideosRequest,
-  GoogleFlowVideosUpscaleRequest,
-  GoogleFlowVideosGifRequest,
-  GoogleFlowVideosExtendRequest,
-  GoogleFlowVideosConcatenateRequest,
-  GoogleFlowJobsRequest,
 } from "./zod";
 
 export class GoogleError extends Error {
@@ -133,10 +91,6 @@ export interface GoogleCountTokensResponse {
   [key: string]: unknown;
 }
 
-export interface GoogleFlowResponse {
-  [key: string]: unknown;
-}
-
 export interface GoogleGenerateContentMethod {
   (
     model: string,
@@ -155,71 +109,6 @@ export interface GoogleCountTokensMethod {
   schema: z.ZodType<GoogleCountTokensRequest>;
 }
 
-export interface GoogleFlowMethod<TRequest extends Record<string, unknown>> {
-  (req: TRequest, signal?: AbortSignal): Promise<GoogleFlowResponse>;
-  schema: z.ZodType<TRequest>;
-}
-
-export interface GoogleFlowPostAccountsMethod extends GoogleFlowMethod<GoogleFlowAccountsCreateRequest> {
-  captchaProviders: GoogleFlowMethod<GoogleFlowCaptchaProvidersRequest>;
-}
-
-export interface GoogleFlowPostImagesMethod extends GoogleFlowMethod<GoogleFlowImagesRequest> {
-  upscale: GoogleFlowMethod<GoogleFlowImagesUpscaleRequest>;
-}
-
-export interface GoogleFlowPostVideosMethod extends GoogleFlowMethod<GoogleFlowVideosRequest> {
-  upscale: GoogleFlowMethod<GoogleFlowVideosUpscaleRequest>;
-  gif: GoogleFlowMethod<GoogleFlowVideosGifRequest>;
-  extend: GoogleFlowMethod<GoogleFlowVideosExtendRequest>;
-  concatenate: GoogleFlowMethod<GoogleFlowVideosConcatenateRequest>;
-}
-
-export interface GoogleFlowPostV1Namespace {
-  accounts: GoogleFlowPostAccountsMethod;
-  assets: GoogleFlowMethod<GoogleFlowAssetUploadRequest>;
-  characters: GoogleFlowMethod<GoogleFlowCharactersCreateRequest>;
-  voices: GoogleFlowMethod<GoogleFlowVoicesCreateRequest>;
-  images: GoogleFlowPostImagesMethod;
-  videos: GoogleFlowPostVideosMethod;
-}
-
-export interface GoogleFlowGetAccountsMethod extends GoogleFlowMethod<GoogleFlowNoRequest> {
-  retrieve: GoogleFlowMethod<GoogleFlowEmailRequest>;
-  captchaProviders: GoogleFlowMethod<GoogleFlowNoRequest>;
-  captchaStats: GoogleFlowMethod<GoogleFlowCaptchaStatsRequest>;
-}
-
-export interface GoogleFlowGetAssetsNamespace {
-  retrieve: GoogleFlowMethod<GoogleFlowMediaGenerationIdRequest>;
-}
-
-export interface GoogleFlowGetCharactersMethod extends GoogleFlowMethod<GoogleFlowCharactersListRequest> {
-  retrieve: GoogleFlowMethod<GoogleFlowRefRequest>;
-}
-
-export interface GoogleFlowGetVoicesMethod extends GoogleFlowMethod<GoogleFlowVoicesListRequest> {
-  retrieve: GoogleFlowMethod<GoogleFlowRefRequest>;
-}
-
-export interface GoogleFlowGetJobsMethod extends GoogleFlowMethod<GoogleFlowJobsRequest> {
-  retrieve: GoogleFlowMethod<GoogleFlowJobIdRequest>;
-}
-
-export interface GoogleFlowGetV1Namespace {
-  accounts: GoogleFlowGetAccountsMethod;
-  assets: GoogleFlowGetAssetsNamespace;
-  characters: GoogleFlowGetCharactersMethod;
-  voices: GoogleFlowGetVoicesMethod;
-  jobs: GoogleFlowGetJobsMethod;
-}
-
-export interface GoogleFlowDeleteV1Namespace {
-  accounts: GoogleFlowMethod<GoogleFlowEmailRequest>;
-  characters: GoogleFlowMethod<GoogleFlowRefRequest>;
-  voices: GoogleFlowMethod<GoogleFlowRefRequest>;
-}
-
 export interface GooglePostV1PublishersGoogleModelsNamespace {
   countTokens: GoogleCountTokensMethod;
   generateContent: GoogleGenerateContentMethod;
@@ -235,7 +124,6 @@ export interface GooglePostV1PublishersNamespace {
 
 export interface GooglePostV1Namespace {
   publishers: GooglePostV1PublishersNamespace;
-  googleFlow: GoogleFlowPostV1Namespace;
 }
 
 export interface GooglePostNamespace {
@@ -243,7 +131,6 @@ export interface GooglePostNamespace {
 }
 
 export interface GoogleGetV1Namespace {
-  googleFlow: GoogleFlowGetV1Namespace;
 }
 
 export interface GoogleGetNamespace {
@@ -251,7 +138,6 @@ export interface GoogleGetNamespace {
 }
 
 export interface GoogleDeleteV1Namespace {
-  googleFlow: GoogleFlowDeleteV1Namespace;
 }
 
 export interface GoogleDeleteNamespace {

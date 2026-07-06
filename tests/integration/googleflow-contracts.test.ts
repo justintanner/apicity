@@ -6,7 +6,7 @@ import {
   teardownPolly,
   type PollyContext,
 } from "../harness";
-import { createGoogle } from "@apicity/google";
+import { createGoogleFlow } from "@apicity/googleflow";
 
 const RECORDING_NAME = "google-flow/contracts";
 const PORT = 18181;
@@ -114,52 +114,51 @@ describe("google flow request contracts", () => {
       server = await startFixtureServer();
     }
 
-    const google = createGoogle({
-      apiKey: "vertex-key",
-      flowApiKey: "flow-key",
-      flowBaseURL: useFixtureServer
+    const googleFlow = createGoogleFlow({
+      apiKey: "flow-key",
+      baseURL: useFixtureServer
         ? LOCAL_FLOW_BASE_URL
         : CANONICAL_FLOW_BASE_URL,
     });
 
     expectRequest(
-      await google.v1.googleFlow.accounts({ cookies: "SID=fixture;" }),
+      await googleFlow.v1.accounts({ cookies: "SID=fixture;" }),
       "POST",
       "/accounts"
     );
     expectRequest(
-      await google.get.v1.googleFlow.accounts({}),
+      await googleFlow.get.v1.accounts({}),
       "GET",
       "/accounts"
     );
     expectRequest(
-      await google.get.v1.googleFlow.accounts.retrieve({
+      await googleFlow.get.v1.accounts.retrieve({
         email: "user@example.com",
       }),
       "GET",
       "/accounts/user%40example.com"
     );
     expectRequest(
-      await google.delete.v1.googleFlow.accounts({
+      await googleFlow.delete.v1.accounts({
         email: "user@example.com",
       }),
       "DELETE",
       "/accounts/user%40example.com"
     );
     expectRequest(
-      await google.post.v1.googleFlow.accounts.captchaProviders({
+      await googleFlow.post.v1.accounts.captchaProviders({
         CapSolver: "provider-key",
       }),
       "POST",
       "/accounts/captcha-providers"
     );
     expectRequest(
-      await google.get.v1.googleFlow.accounts.captchaProviders({}),
+      await googleFlow.get.v1.accounts.captchaProviders({}),
       "GET",
       "/accounts/captcha-providers"
     );
     expectRequest(
-      await google.get.v1.googleFlow.accounts.captchaStats({
+      await googleFlow.get.v1.accounts.captchaStats({
         date: "2026-06-25",
         limit: 10,
         anonymized: true,
@@ -169,7 +168,7 @@ describe("google flow request contracts", () => {
       { date: "2026-06-25", limit: "10", anonymized: "true" }
     );
     expectRequest(
-      await google.post.v1.googleFlow.assets({
+      await googleFlow.post.v1.assets({
         body: "fixture-image-bytes",
         contentType: "image/png",
         email: "user@example.com",
@@ -178,14 +177,14 @@ describe("google flow request contracts", () => {
       "/assets/user%40example.com"
     );
     expectRequest(
-      await google.get.v1.googleFlow.assets.retrieve({
+      await googleFlow.get.v1.assets.retrieve({
         mediaGenerationId: "media-1",
       }),
       "GET",
       "/assets/media-1"
     );
     expectRequest(
-      await google.post.v1.googleFlow.characters({
+      await googleFlow.post.v1.characters({
         displayName: "Ari",
         imageReference_1: "media-1",
       }),
@@ -193,7 +192,7 @@ describe("google flow request contracts", () => {
       "/characters"
     );
     expectRequest(
-      await google.get.v1.googleFlow.characters({
+      await googleFlow.get.v1.characters({
         email: "user@example.com",
       }),
       "GET",
@@ -201,17 +200,17 @@ describe("google flow request contracts", () => {
       { email: "user@example.com" }
     );
     expectRequest(
-      await google.get.v1.googleFlow.characters.retrieve({ ref: "char/ref" }),
+      await googleFlow.get.v1.characters.retrieve({ ref: "char/ref" }),
       "GET",
       "/characters/char%2Fref"
     );
     expectRequest(
-      await google.delete.v1.googleFlow.characters({ ref: "char/ref" }),
+      await googleFlow.delete.v1.characters({ ref: "char/ref" }),
       "DELETE",
       "/characters/char%2Fref"
     );
     expectRequest(
-      await google.post.v1.googleFlow.voices({
+      await googleFlow.post.v1.voices({
         email: "user@example.com",
         voice: "Aoede",
         displayName: "Narrator",
@@ -222,7 +221,7 @@ describe("google flow request contracts", () => {
       "/voices"
     );
     expectRequest(
-      await google.get.v1.googleFlow.voices({
+      await googleFlow.get.v1.voices({
         email: "user@example.com",
         source: "user",
       }),
@@ -231,17 +230,17 @@ describe("google flow request contracts", () => {
       { email: "user@example.com", source: "user" }
     );
     expectRequest(
-      await google.get.v1.googleFlow.voices.retrieve({ ref: "voice/ref" }),
+      await googleFlow.get.v1.voices.retrieve({ ref: "voice/ref" }),
       "GET",
       "/voices/voice%2Fref"
     );
     expectRequest(
-      await google.delete.v1.googleFlow.voices({ ref: "voice/ref" }),
+      await googleFlow.delete.v1.voices({ ref: "voice/ref" }),
       "DELETE",
       "/voices/voice%2Fref"
     );
     expectRequest(
-      await google.post.v1.googleFlow.images({
+      await googleFlow.post.v1.images({
         prompt: "A clean product photo",
         count: 1,
       }),
@@ -249,7 +248,7 @@ describe("google flow request contracts", () => {
       "/images"
     );
     expectRequest(
-      await google.post.v1.googleFlow.images.upscale({
+      await googleFlow.post.v1.images.upscale({
         mediaGenerationId: "image-1",
         resolution: "2k",
       }),
@@ -257,7 +256,7 @@ describe("google flow request contracts", () => {
       "/images/upscale"
     );
     expectRequest(
-      await google.post.v1.googleFlow.videos({
+      await googleFlow.post.v1.videos({
         prompt: "A slow camera push through a studio",
         count: 1,
       }),
@@ -265,7 +264,7 @@ describe("google flow request contracts", () => {
       "/videos"
     );
     expectRequest(
-      await google.post.v1.googleFlow.videos.upscale({
+      await googleFlow.post.v1.videos.upscale({
         mediaGenerationId: "video-1",
         resolution: "1080p",
       }),
@@ -273,14 +272,14 @@ describe("google flow request contracts", () => {
       "/videos/upscale"
     );
     expectRequest(
-      await google.post.v1.googleFlow.videos.gif({
+      await googleFlow.post.v1.videos.gif({
         mediaGenerationId: "video-1",
       }),
       "POST",
       "/videos/gif"
     );
     expectRequest(
-      await google.post.v1.googleFlow.videos.extend({
+      await googleFlow.post.v1.videos.extend({
         mediaGenerationId: "video-1",
         prompt: "Continue the motion",
       }),
@@ -288,7 +287,7 @@ describe("google flow request contracts", () => {
       "/videos/extend"
     );
     expectRequest(
-      await google.post.v1.googleFlow.videos.concatenate({
+      await googleFlow.post.v1.videos.concatenate({
         media: [
           { mediaGenerationId: "video-1", trimStart: 1 },
           { mediaGenerationId: "video-2", trimEnd: 1 },
@@ -298,13 +297,13 @@ describe("google flow request contracts", () => {
       "/videos/concatenate"
     );
     expectRequest(
-      await google.get.v1.googleFlow.jobs({ options: "history" }),
+      await googleFlow.get.v1.jobs({ options: "history" }),
       "GET",
       "/jobs",
       { options: "history" }
     );
     expectRequest(
-      await google.get.v1.googleFlow.jobs.retrieve({ jobId: "job-1" }),
+      await googleFlow.get.v1.jobs.retrieve({ jobId: "job-1" }),
       "GET",
       "/jobs/job-1"
     );

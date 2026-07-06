@@ -247,6 +247,12 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
+  packages/provider/googleflow:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
   packages/provider/kie:
     dependencies:
       zod:

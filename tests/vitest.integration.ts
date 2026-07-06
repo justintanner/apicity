@@ -129,6 +129,14 @@ export default defineConfig({
         __dirname,
         "../packages/provider/google/src"
       ),
+      "@apicity/googleflow/zod": path.resolve(
+        __dirname,
+        "../packages/provider/googleflow/src/zod"
+      ),
+      "@apicity/googleflow": path.resolve(
+        __dirname,
+        "../packages/provider/googleflow/src"
+      ),
       "@apicity/free-media-upload/zod": path.resolve(
         __dirname,
         "../packages/provider/free-media-upload/src/zod"

@@ -130,15 +130,13 @@ export interface GooglePostNamespace {
   v1: GooglePostV1Namespace;
 }
 
-export interface GoogleGetV1Namespace {
-}
+export interface GoogleGetV1Namespace {}
 
 export interface GoogleGetNamespace {
   v1: GoogleGetV1Namespace;
 }
 
-export interface GoogleDeleteV1Namespace {
-}
+export interface GoogleDeleteV1Namespace {}
 
 export interface GoogleDeleteNamespace {
   v1: GoogleDeleteV1Namespace;

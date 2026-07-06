@@ -116,9 +116,7 @@ describe("google flow request contracts", () => {
 
     const googleFlow = createGoogleFlow({
       apiKey: "flow-key",
-      baseURL: useFixtureServer
-        ? LOCAL_FLOW_BASE_URL
-        : CANONICAL_FLOW_BASE_URL,
+      baseURL: useFixtureServer ? LOCAL_FLOW_BASE_URL : CANONICAL_FLOW_BASE_URL,
     });
 
     expectRequest(
@@ -126,11 +124,7 @@ describe("google flow request contracts", () => {
       "POST",
       "/accounts"
     );
-    expectRequest(
-      await googleFlow.get.v1.accounts({}),
-      "GET",
-      "/accounts"
-    );
+    expectRequest(await googleFlow.get.v1.accounts({}), "GET", "/accounts");
     expectRequest(
       await googleFlow.get.v1.accounts.retrieve({
         email: "user@example.com",

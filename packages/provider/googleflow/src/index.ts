@@ -5,9 +5,7 @@ export { GoogleFlowError } from "./types";
 export type {
   GoogleFlowProvider,
   GoogleFlowPostNamespace,
-  
   GoogleFlowDeleteNamespace,
-  
   GoogleFlowDeleteV1Namespace,
   GoogleFlowGetAccountsMethod,
   GoogleFlowGetAssetsNamespace,
@@ -22,7 +20,6 @@ export type {
   GoogleFlowPostVideosMethod,
   GoogleFlowResponse,
   GoogleFlowGetNamespace,
-  
 } from "./types";
 
 export type {

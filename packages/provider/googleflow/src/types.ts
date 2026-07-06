@@ -25,7 +25,6 @@ import type {
 
 export type {
   GoogleFlowOptions,
-
   GoogleFlowNoRequest,
   GoogleFlowEmailRequest,
   GoogleFlowMediaGenerationIdRequest,
@@ -66,7 +65,6 @@ export class GoogleFlowError extends Error {
     this.code = code;
   }
 }
-
 
 export interface GoogleFlowMethod<TRequest extends Record<string, unknown>> {
   (req: TRequest, signal?: AbortSignal): Promise<GoogleFlowResponse>;
@@ -137,19 +135,13 @@ export interface GoogleFlowPostNamespace {
   v1: GoogleFlowPostV1Namespace;
 }
 
-
-
 export interface GoogleFlowGetNamespace {
   v1: GoogleFlowGetV1Namespace;
 }
 
-
-
 export interface GoogleFlowDeleteNamespace {
   v1: GoogleFlowDeleteV1Namespace;
 }
-
-
 
 export interface GoogleFlowProvider {
   v1: GoogleFlowPostV1Namespace;

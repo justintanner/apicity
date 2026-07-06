@@ -232,8 +232,6 @@ export function createGoogle(opts: GoogleOptions): GoogleProvider {
     }
   }
 
-
-
   const postV1 = {
     publishers: {
       google: {

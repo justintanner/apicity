@@ -20,7 +20,6 @@ function shouldStartServer(ctx: PollyContext): boolean {
   return false;
 }
 
-
 async function startFixtureServer(): Promise<Server> {
   const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "/", `http://127.0.0.1:${PORT}`);

@@ -127,8 +127,7 @@ describe("googleflow image-to-video integration", () => {
       model: "veo-3.1-quality",
       startImage: startImageId,
       aspectRatio: "16:9",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any);
+    });
 
     expect(videoResult).toBeDefined();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

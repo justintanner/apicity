@@ -5,7 +5,14 @@ import {
   normalizeProjectPath,
 } from "../../scripts/lib/affected-provider-tests.mjs";
 
-const providers = ["free-media-upload", "google", "googleflow", "openai", "x", "xai"];
+const providers = [
+  "free-media-upload",
+  "google",
+  "googleflow",
+  "openai",
+  "x",
+  "xai",
+];
 
 describe("normalizeProjectPath", () => {
   it("normalizes dot-prefixed and Windows-style paths", () => {

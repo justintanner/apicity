@@ -101,7 +101,7 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     factoryName: "createGoogle",
   },
   googleflow: {
-    envVar: "GOOGLEFLOW_API_KEY",
+    envVar: "GOOGLE_FLOW_API_KEY",
     optionKey: "apiKey",
     importPath: "@apicity/googleflow",
     factoryName: "createGoogleFlow",

@@ -116,11 +116,9 @@ describe("googleflow image-to-video integration", () => {
     });
 
     expect(uploadResult).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const uploadData = uploadResult as any;
-    expect(uploadData.media).toBeDefined();
+    expect(uploadResult.media).toBeDefined();
     const startImageId =
-      uploadData.media[0].mediaGenerationId.mediaGenerationId;
+      uploadResult.media[0].mediaGenerationId.mediaGenerationId;
 
     const videoResult = await provider.post.v1.videos({
       prompt: "The cat gently swats at a floating dust particle",
@@ -130,10 +128,8 @@ describe("googleflow image-to-video integration", () => {
     });
 
     expect(videoResult).toBeDefined();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const videoData = videoResult as any;
-    expect(videoData.media).toBeDefined();
-    expect(videoData.media.length).toBeGreaterThan(0);
-    expect(typeof videoData.media[0].url).toBe("string");
+    expect(videoResult.media).toBeDefined();
+    expect(videoResult.media.length).toBeGreaterThan(0);
+    expect(typeof videoResult.media[0].url).toBe("string");
   }, 900000);
 });

@@ -11,74 +11,74 @@ export interface EndpointExample {
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
-  "GET v1.googleFlow.accounts.captchaStats": {
+  "GET v1.accounts.captchaStats": {
     "source": "google-flow/contracts",
     "payload": {
-      "anonymized": true,
       "date": "2026-06-25",
-      "limit": 10
+      "limit": 10,
+      "anonymized": true
     }
   },
-  "GET v1.googleFlow.characters": {
+  "GET v1.characters": {
     "source": "google-flow/contracts",
     "payload": {
       "email": "user@example.com"
     }
   },
-  "GET v1.googleFlow.jobs": {
+  "GET v1.jobs": {
     "source": "google-flow/contracts",
     "payload": {
       "options": "history"
     }
   },
-  "GET v1.googleFlow.voices": {
+  "GET v1.voices": {
     "source": "google-flow/contracts",
     "payload": {
       "email": "user@example.com",
       "source": "user"
     }
   },
-  "POST v1.googleFlow.accounts": {
+  "POST v1.accounts": {
     "source": "google-flow/contracts",
     "payload": {
       "cookies": "SID=fixture;"
     }
   },
-  "POST v1.googleFlow.accounts.captchaProviders": {
+  "POST v1.accounts.captchaProviders": {
     "source": "google-flow/contracts",
     "payload": {
       "CapSolver": "provider-key"
     }
   },
-  "POST v1.googleFlow.characters": {
+  "POST v1.characters": {
     "source": "google-flow/contracts",
     "payload": {
       "displayName": "Ari",
       "imageReference_1": "media-1"
     }
   },
-  "POST v1.googleFlow.images": {
+  "POST v1.images": {
     "source": "google-flow/contracts",
     "payload": {
       "prompt": "A clean product photo",
       "count": 1
     }
   },
-  "POST v1.googleFlow.images.upscale": {
+  "POST v1.images.upscale": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "image-1",
       "resolution": "2k"
     }
   },
-  "POST v1.googleFlow.videos": {
+  "POST v1.videos": {
     "source": "google-flow/contracts",
     "payload": {
       "prompt": "A slow camera push through a studio",
       "count": 1
     }
   },
-  "POST v1.googleFlow.videos.concatenate": {
+  "POST v1.videos.concatenate": {
     "source": "google-flow/contracts",
     "payload": {
       "media": [
@@ -93,27 +93,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ]
     }
   },
-  "POST v1.googleFlow.videos.extend": {
+  "POST v1.videos.extend": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "video-1",
       "prompt": "Continue the motion"
     }
   },
-  "POST v1.googleFlow.videos.gif": {
+  "POST v1.videos.gif": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "video-1"
     }
   },
-  "POST v1.googleFlow.videos.upscale": {
+  "POST v1.videos.upscale": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "video-1",
       "resolution": "1080p"
     }
   },
-  "POST v1.googleFlow.voices": {
+  "POST v1.voices": {
     "source": "google-flow/contracts",
     "payload": {
       "email": "user@example.com",
@@ -122,51 +122,6 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "dialog": "Hello there",
       "voicePerformance": "Warm and clear"
     }
-  },
-  "POST v1.publishers.google.models.countTokens": {
-    "source": "google/count-tokens",
-    "payload": {
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "Count the tokens in this short prompt."
-            }
-          ]
-        }
-      ]
-    }
-  },
-  "POST v1.publishers.google.models.generateContent": {
-    "source": "google/generate-content",
-    "payload": {
-      "contents": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "text": "Say hello in one short sentence."
-            }
-          ]
-        }
-      ],
-      "generationConfig": {
-        "temperature": 0,
-        "thinkingConfig": {
-          "thinkingBudget": 0
-        },
-        "maxOutputTokens": 32
-      }
-    }
-  },
-  "POST v1internal.retrieveUserQuota": {
-    "source": "google/antigravity-usage",
-    "payload": {}
-  },
-  "POST v1internal.retrieveUserQuotaSummary": {
-    "source": "google/antigravity-quota-summary",
-    "payload": {}
   }
 };
 

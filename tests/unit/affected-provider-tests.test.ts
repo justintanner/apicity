@@ -5,7 +5,7 @@ import {
   normalizeProjectPath,
 } from "../../scripts/lib/affected-provider-tests.mjs";
 
-const providers = ["free-media-upload", "google", "openai", "x", "xai"];
+const providers = ["free-media-upload", "google", "googleflow", "openai", "x", "xai"];
 
 describe("normalizeProjectPath", () => {
   it("normalizes dot-prefixed and Windows-style paths", () => {
@@ -78,7 +78,7 @@ describe("detectProviderForChangedFile", () => {
         "tests/recordings/google-flow_3038927025/contracts/recording.har",
         providers
       )
-    ).toBe("google");
+    ).toBe("googleflow");
     expect(
       detectProviderForChangedFile(
         "tests/recordings/xai_3038927025/image/recording.har",

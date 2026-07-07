@@ -87,7 +87,8 @@ function usage() {
 
 function hasProviderPrefix(name, providers) {
   if (providers.size === 0) return true;
-  const provider = name.split("/")[0];
+  let provider = name.split("/")[0];
+  if (provider === "google-flow") provider = "googleflow";
   return providers.has(provider);
 }
 

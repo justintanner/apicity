@@ -65,6 +65,9 @@ function stripRecordingHash(dirName) {
 }
 
 function providerFromSlug(slug, providers) {
+  if (slug === "google-flow" || slug.startsWith("google-flow-")) {
+    return "googleflow";
+  }
   const longestFirst = [...providers].sort((a, b) => b.length - a.length);
 
   return (

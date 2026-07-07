@@ -520,7 +520,9 @@ function providerFromHarPath(harPath) {
   if (!firstSeg) return null;
   // Strip trailing _<digits> hash suffix Polly adds (e.g. "openai_3991279299").
   const m = firstSeg.match(/^(.+)_\d+$/);
-  return m ? m[1] : firstSeg;
+  let provider = m ? m[1] : firstSeg;
+  if (provider === "google-flow") provider = "googleflow";
+  return provider;
 }
 
 function renderExamplesTs(examples, provider) {

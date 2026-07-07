@@ -100,6 +100,12 @@ export const PROVIDERS: Record<string, ProviderSpec> = {
     importPath: "@apicity/google",
     factoryName: "createGoogle",
   },
+  googleflow: {
+    envVar: "GOOGLEFLOW_API_KEY",
+    optionKey: "apiKey",
+    importPath: "@apicity/googleflow",
+    factoryName: "createGoogleFlow",
+  },
   dolthub: {
     envVar: "DOLTHUB_API_KEY",
     optionKey: "apiToken",

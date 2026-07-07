@@ -130,6 +130,9 @@ importers:
       '@apicity/google':
         specifier: workspace:*
         version: link:../provider/google
+      '@apicity/googleflow':
+        specifier: workspace:*
+        version: link:../provider/googleflow
       '@apicity/kie':
         specifier: workspace:*
         version: link:../provider/kie

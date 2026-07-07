@@ -56,6 +56,11 @@ const PROVIDERS = [
     factoryNames: ["createGoogle"],
   },
   {
+    name: "googleflow",
+    entryFiles: ["packages/provider/googleflow/src/google.ts"],
+    factoryNames: ["createGoogleFlow"],
+  },
+  {
     name: "alibaba",
     entryFiles: ["packages/provider/alibaba/src/alibaba.ts"],
     factoryNames: ["createAlibaba"],

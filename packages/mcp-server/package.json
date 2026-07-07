@@ -62,6 +62,7 @@
     "@apicity/fireworks": "workspace:*",
     "@apicity/free-media-upload": "workspace:*",
     "@apicity/google": "workspace:*",
+    "@apicity/googleflow": "workspace:*",
     "@apicity/meta": "workspace:*",
     "@apicity/kie": "workspace:*",
     "@apicity/kimicoding": "workspace:*",

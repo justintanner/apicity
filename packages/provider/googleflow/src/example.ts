@@ -16,6 +16,7 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "date": "2026-06-25",
       "limit": 10,
+      "provider": "CapSolver",
       "anonymized": true
     }
   },
@@ -61,7 +62,10 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "google-flow/contracts",
     "payload": {
       "prompt": "A clean product photo",
-      "count": 1
+      "model": "nano-banana-pro",
+      "aspectRatio": "1:1",
+      "count": 1,
+      "captchaRetry": 5
     }
   },
   "POST v1.images.upscale": {
@@ -72,10 +76,12 @@ const EXAMPLES: Record<string, EndpointExample> = {
     }
   },
   "POST v1.videos": {
-    "source": "google-flow/contracts",
+    "source": "google-flow/i2v",
     "payload": {
-      "prompt": "A slow camera push through a studio",
-      "count": 1
+      "prompt": "The cat gently swats at a floating dust particle",
+      "model": "veo-3.1-quality",
+      "aspectRatio": "16:9",
+      "startImage": "test-asset-123"
     }
   },
   "POST v1.videos.concatenate": {
@@ -97,7 +103,8 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "video-1",
-      "prompt": "Continue the motion"
+      "prompt": "Continue the motion",
+      "captchaOrder": "AntiCaptcha,CapSolver"
     }
   },
   "POST v1.videos.gif": {

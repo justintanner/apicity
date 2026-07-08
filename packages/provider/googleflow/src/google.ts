@@ -51,8 +51,6 @@ import {
 } from "./zod";
 import { attachExamples } from "./example";
 
-const GOOGLE_FLOW_API_URL = "https://api.useapi.net/v1/google-flow";
-
 interface GoogleFlowErrorBody {
   error?:
     | {
@@ -144,7 +142,7 @@ function parseWithSchema<TReq>(schema: z.ZodType<TReq>, req: TReq): TReq {
 }
 
 export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
-  const baseURL = opts.baseURL ?? GOOGLE_FLOW_API_URL;
+  const baseURL = opts.baseURL ?? "https://api.useapi.net/v1/google-flow";
   const normalizedFlowBaseURL = baseURL.replace(/\/+$/, "");
   const flowApiKey = opts.apiKey;
   const doFetch = opts.fetch ?? fetch;
@@ -156,7 +154,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
     body: unknown,
     signal?: AbortSignal,
     options?: {
-      baseOverride?: string;
       contentType?: string;
       pathOverride?: string;
     }
@@ -189,7 +186,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         headers["Content-Type"] = options?.contentType ?? "application/json";
       }
 
-      void options?.baseOverride;
       const requestBaseURL = normalizedFlowBaseURL.replace(/\/+$/, "");
       const res = await doFetch(`${requestBaseURL}${requestPath}`, {
         method,
@@ -231,22 +227,19 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
 
   function jsonGet<TReq extends Record<string, unknown>>(
     schema: z.ZodType<TReq>,
-    path: (req: TReq) => string,
-    endpoint: string
+    path: (req: TReq) => string
   ) {
     return Object.assign(
       async (
         req: TReq = {} as TReq,
         signal?: AbortSignal
       ): Promise<GoogleFlowResponse> => {
-        void endpoint;
         const parsed = parseWithSchema(schema, req ?? ({} as TReq));
         return makeFlowRequest<GoogleFlowResponse>(
           "GET",
           path(parsed),
           undefined,
-          signal,
-          { baseOverride: GOOGLE_FLOW_API_URL }
+          signal
         );
       },
       { schema }
@@ -257,7 +250,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
     method: "POST" | "DELETE",
     schema: z.ZodType<TReq>,
     path: (req: TReq) => string,
-    endpoint: string,
     omitKeys: readonly string[] = []
   ) {
     return Object.assign(
@@ -267,8 +259,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           method,
           path(parsed),
           bodyFromRequest(parsed, omitKeys),
-          signal,
-          { baseOverride: GOOGLE_FLOW_API_URL }
+          signal
         );
       },
       { schema }
@@ -283,8 +274,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         jsonBody<GoogleFlowAccountsCreateRequest>(
           "POST",
           GoogleFlowAccountsCreateRequestSchema,
-          () => "/accounts",
-          "https://api.useapi.net/v1/google-flow/accounts"
+          () => "/accounts"
         ),
         {
           // POST https://api.useapi.net/v1/google-flow/accounts/captcha-providers
@@ -292,8 +282,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           captchaProviders: jsonBody<GoogleFlowCaptchaProvidersRequest>(
             "POST",
             GoogleFlowCaptchaProvidersRequestSchema,
-            () => "/accounts/captcha-providers",
-            "https://api.useapi.net/v1/google-flow/accounts/captcha-providers"
+            () => "/accounts/captcha-providers"
           ),
         }
       ),
@@ -317,7 +306,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
             parsed.body,
             signal,
             {
-              baseOverride: "https://api.useapi.net/v1/google-flow",
               contentType: parsed.contentType,
               pathOverride: path,
             }
@@ -330,16 +318,14 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       characters: jsonBody<GoogleFlowCharactersCreateRequest>(
         "POST",
         GoogleFlowCharactersCreateRequestSchema,
-        () => "/characters",
-        "https://api.useapi.net/v1/google-flow/characters"
+        () => "/characters"
       ),
       // POST https://api.useapi.net/v1/google-flow/voices
       // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-voices
       voices: jsonBody<GoogleFlowVoicesCreateRequest>(
         "POST",
         GoogleFlowVoicesCreateRequestSchema,
-        () => "/voices",
-        "https://api.useapi.net/v1/google-flow/voices"
+        () => "/voices"
       ),
       // POST https://api.useapi.net/v1/google-flow/images
       // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-images
@@ -347,8 +333,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         jsonBody<GoogleFlowImagesRequest>(
           "POST",
           GoogleFlowImagesRequestSchema,
-          () => "/images",
-          "https://api.useapi.net/v1/google-flow/images"
+          () => "/images"
         ),
         {
           // POST https://api.useapi.net/v1/google-flow/images/upscale
@@ -356,8 +341,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           upscale: jsonBody<GoogleFlowImagesUpscaleRequest>(
             "POST",
             GoogleFlowImagesUpscaleRequestSchema,
-            () => "/images/upscale",
-            "https://api.useapi.net/v1/google-flow/images/upscale"
+            () => "/images/upscale"
           ),
         }
       ),
@@ -367,8 +351,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         jsonBody<GoogleFlowVideosRequest>(
           "POST",
           GoogleFlowVideosRequestSchema,
-          () => "/videos",
-          "https://api.useapi.net/v1/google-flow/videos"
+          () => "/videos"
         ),
         {
           // POST https://api.useapi.net/v1/google-flow/videos/upscale
@@ -376,32 +359,28 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
           upscale: jsonBody<GoogleFlowVideosUpscaleRequest>(
             "POST",
             GoogleFlowVideosUpscaleRequestSchema,
-            () => "/videos/upscale",
-            "https://api.useapi.net/v1/google-flow/videos/upscale"
+            () => "/videos/upscale"
           ),
           // POST https://api.useapi.net/v1/google-flow/videos/gif
           // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-gif
           gif: jsonBody<GoogleFlowVideosGifRequest>(
             "POST",
             GoogleFlowVideosGifRequestSchema,
-            () => "/videos/gif",
-            "https://api.useapi.net/v1/google-flow/videos/gif"
+            () => "/videos/gif"
           ),
           // POST https://api.useapi.net/v1/google-flow/videos/extend
           // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-extend
           extend: jsonBody<GoogleFlowVideosExtendRequest>(
             "POST",
             GoogleFlowVideosExtendRequestSchema,
-            () => "/videos/extend",
-            "https://api.useapi.net/v1/google-flow/videos/extend"
+            () => "/videos/extend"
           ),
           // POST https://api.useapi.net/v1/google-flow/videos/concatenate
           // Docs: https://useapi.net/docs/api-google-flow-v1/post-google-flow-videos-concatenate
           concatenate: jsonBody<GoogleFlowVideosConcatenateRequest>(
             "POST",
             GoogleFlowVideosConcatenateRequestSchema,
-            () => "/videos/concatenate",
-            "https://api.useapi.net/v1/google-flow/videos/concatenate"
+            () => "/videos/concatenate"
           ),
         }
       ),
@@ -415,30 +394,26 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       accounts: Object.assign(
         jsonGet<GoogleFlowNoRequest>(
           GoogleFlowNoRequestSchema,
-          () => "/accounts",
-          "https://api.useapi.net/v1/google-flow/accounts"
+          () => "/accounts"
         ),
         {
           // GET https://api.useapi.net/v1/google-flow/accounts/{email}
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-email
           retrieve: jsonGet<GoogleFlowEmailRequest>(
             GoogleFlowEmailRequestSchema,
-            (req) => `/accounts/${encodeURIComponent(req.email)}`,
-            "https://api.useapi.net/v1/google-flow/accounts/{email}"
+            (req) => `/accounts/${encodeURIComponent(req.email)}`
           ),
           // GET https://api.useapi.net/v1/google-flow/accounts/captcha-providers
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-providers
           captchaProviders: jsonGet<GoogleFlowNoRequest>(
             GoogleFlowNoRequestSchema,
-            () => "/accounts/captcha-providers",
-            "https://api.useapi.net/v1/google-flow/accounts/captcha-providers"
+            () => "/accounts/captcha-providers"
           ),
           // GET https://api.useapi.net/v1/google-flow/accounts/captcha-stats{query}
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-accounts-captcha-stats
           captchaStats: jsonGet<GoogleFlowCaptchaStatsRequest>(
             GoogleFlowCaptchaStatsRequestSchema,
-            (req) => `/accounts/captcha-stats${queryFromRequest(req)}`,
-            "https://api.useapi.net/v1/google-flow/accounts/captcha-stats"
+            (req) => `/accounts/captcha-stats${queryFromRequest(req)}`
           ),
         }
       ),
@@ -447,8 +422,7 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-assets-mediagenerationid
         retrieve: jsonGet<GoogleFlowMediaGenerationIdRequest>(
           GoogleFlowMediaGenerationIdRequestSchema,
-          (req) => `/assets/${encodeURIComponent(req.mediaGenerationId)}`,
-          "https://api.useapi.net/v1/google-flow/assets/{mediaGenerationId}"
+          (req) => `/assets/${encodeURIComponent(req.mediaGenerationId)}`
         ),
       },
       // GET https://api.useapi.net/v1/google-flow/characters{query}
@@ -456,16 +430,14 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       characters: Object.assign(
         jsonGet<GoogleFlowCharactersListRequest>(
           GoogleFlowCharactersListRequestSchema,
-          (req) => `/characters${queryFromRequest(req)}`,
-          "https://api.useapi.net/v1/google-flow/characters"
+          (req) => `/characters${queryFromRequest(req)}`
         ),
         {
           // GET https://api.useapi.net/v1/google-flow/characters/{ref}
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-characters-ref
           retrieve: jsonGet<GoogleFlowRefRequest>(
             GoogleFlowRefRequestSchema,
-            (req) => `/characters/${encodeURIComponent(req.ref)}`,
-            "https://api.useapi.net/v1/google-flow/characters/{ref}"
+            (req) => `/characters/${encodeURIComponent(req.ref)}`
           ),
         }
       ),
@@ -474,16 +446,14 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       voices: Object.assign(
         jsonGet<GoogleFlowVoicesListRequest>(
           GoogleFlowVoicesListRequestSchema,
-          (req) => `/voices${queryFromRequest(req)}`,
-          "https://api.useapi.net/v1/google-flow/voices"
+          (req) => `/voices${queryFromRequest(req)}`
         ),
         {
           // GET https://api.useapi.net/v1/google-flow/voices/{ref}
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-voices-ref
           retrieve: jsonGet<GoogleFlowRefRequest>(
             GoogleFlowRefRequestSchema,
-            (req) => `/voices/${encodeURIComponent(req.ref)}`,
-            "https://api.useapi.net/v1/google-flow/voices/{ref}"
+            (req) => `/voices/${encodeURIComponent(req.ref)}`
           ),
         }
       ),
@@ -492,16 +462,14 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
       jobs: Object.assign(
         jsonGet<GoogleFlowJobsRequest>(
           GoogleFlowJobsRequestSchema,
-          (req) => `/jobs${queryFromRequest(req)}`,
-          "https://api.useapi.net/v1/google-flow/jobs"
+          (req) => `/jobs${queryFromRequest(req)}`
         ),
         {
           // GET https://api.useapi.net/v1/google-flow/jobs/{jobId}
           // Docs: https://useapi.net/docs/api-google-flow-v1/get-google-flow-jobs-jobid
           retrieve: jsonGet<GoogleFlowJobIdRequest>(
             GoogleFlowJobIdRequestSchema,
-            (req) => `/jobs/${encodeURIComponent(req.jobId)}`,
-            "https://api.useapi.net/v1/google-flow/jobs/{jobId}"
+            (req) => `/jobs/${encodeURIComponent(req.jobId)}`
           ),
         }
       ),
@@ -516,7 +484,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         "DELETE",
         GoogleFlowEmailRequestSchema,
         (req) => `/accounts/${encodeURIComponent(req.email)}`,
-        "https://api.useapi.net/v1/google-flow/accounts/{email}",
         ["email"]
       ),
       // DELETE https://api.useapi.net/v1/google-flow/characters/{ref}
@@ -525,7 +492,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         "DELETE",
         GoogleFlowRefRequestSchema,
         (req) => `/characters/${encodeURIComponent(req.ref)}`,
-        "https://api.useapi.net/v1/google-flow/characters/{ref}",
         ["ref"]
       ),
       // DELETE https://api.useapi.net/v1/google-flow/voices/{ref}
@@ -534,7 +500,6 @@ export function createGoogleFlow(opts: GoogleFlowOptions): GoogleFlowProvider {
         "DELETE",
         GoogleFlowRefRequestSchema,
         (req) => `/voices/${encodeURIComponent(req.ref)}`,
-        "https://api.useapi.net/v1/google-flow/voices/{ref}",
         ["ref"]
       ),
     },

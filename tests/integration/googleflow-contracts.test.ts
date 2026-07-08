@@ -123,6 +123,11 @@ describe("google flow request contracts", () => {
       "POST",
       "/accounts"
     );
+    expectRequest(
+      await googleFlow.v1.accounts({ cookies: "SID=fixture;", dryRun: true }),
+      "POST",
+      "/accounts"
+    );
     expectRequest(await googleFlow.get.v1.accounts({}), "GET", "/accounts");
     expectRequest(
       await googleFlow.get.v1.accounts.retrieve({
@@ -154,11 +159,17 @@ describe("google flow request contracts", () => {
       await googleFlow.get.v1.accounts.captchaStats({
         date: "2026-06-25",
         limit: 10,
+        provider: "CapSolver",
         anonymized: true,
       }),
       "GET",
       "/accounts/captcha-stats",
-      { date: "2026-06-25", limit: "10", anonymized: "true" }
+      {
+        date: "2026-06-25",
+        limit: "10",
+        provider: "CapSolver",
+        anonymized: "true",
+      }
     );
     expectRequest(
       await googleFlow.post.v1.assets({
@@ -168,6 +179,14 @@ describe("google flow request contracts", () => {
       }),
       "POST",
       "/assets/user%40example.com"
+    );
+    expectRequest(
+      await googleFlow.post.v1.assets({
+        body: "fixture-image-bytes",
+        contentType: "image/png",
+      }),
+      "POST",
+      "/assets"
     );
     expectRequest(
       await googleFlow.get.v1.assets.retrieve({
@@ -235,7 +254,10 @@ describe("google flow request contracts", () => {
     expectRequest(
       await googleFlow.post.v1.images({
         prompt: "A clean product photo",
+        model: "nano-banana-pro",
+        aspectRatio: "1:1",
         count: 1,
+        captchaRetry: 5,
       }),
       "POST",
       "/images"
@@ -251,7 +273,11 @@ describe("google flow request contracts", () => {
     expectRequest(
       await googleFlow.post.v1.videos({
         prompt: "A slow camera push through a studio",
+        model: "veo-3.1-fast",
+        aspectRatio: "landscape",
+        duration: 8,
         count: 1,
+        captchaToken: "recaptcha-fixture-token-1234",
       }),
       "POST",
       "/videos"
@@ -275,6 +301,7 @@ describe("google flow request contracts", () => {
       await googleFlow.post.v1.videos.extend({
         mediaGenerationId: "video-1",
         prompt: "Continue the motion",
+        captchaOrder: "AntiCaptcha,CapSolver",
       }),
       "POST",
       "/videos/extend"
@@ -300,5 +327,19 @@ describe("google flow request contracts", () => {
       "GET",
       "/jobs/job-1"
     );
+
+    // Client-side schema rejections — these never reach the network.
+    await expect(
+      googleFlow.post.v1.images({ prompt: "p", captchaRetry: 0 })
+    ).rejects.toThrow(/Invalid Google request/);
+    await expect(
+      googleFlow.post.v1.images({ prompt: "p", captchaRetry: 11 })
+    ).rejects.toThrow(/Invalid Google request/);
+    await expect(
+      googleFlow.post.v1.videos({ prompt: "p", captchaToken: "too-short" })
+    ).rejects.toThrow(/Invalid Google request/);
+    await expect(
+      googleFlow.post.v1.videos({ prompt: "p", duration: 5 as never })
+    ).rejects.toThrow(/Invalid Google request/);
   });
 });

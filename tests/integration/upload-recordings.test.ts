@@ -261,6 +261,11 @@ const intentionalSummarylessFixtures: SummarylessFixture[] = [
     entryIndex: 0,
     reason: "raw Google Flow asset upload body",
   },
+  {
+    path: "../recordings/google-flow_3038927025/omni-i2v_568603646/recording.har",
+    entryIndex: 0,
+    reason: "raw Google Flow asset upload body",
+  },
 ];
 
 function collectHarFiles(dir: string): string[] {

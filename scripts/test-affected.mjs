@@ -9,6 +9,7 @@
 
 import { spawnSync } from "node:child_process";
 import { classifyChangedFiles } from "./lib/affected-provider-tests.mjs";
+import { listCrossCuttingTests } from "./lib/cross-cutting-tests.mjs";
 import { repoRoot } from "./lib/provider-scope.mjs";
 
 const DEFAULT_BASE = process.env.APICITY_TEST_BASE || "origin/main";
@@ -43,6 +44,15 @@ if (decision.mode === "providers") {
   for (const provider of decision.providers) {
     run("pnpm", ["run", "test:provider", provider, ...options.passthrough]);
   }
+
+  // Cross-cutting recording-enumeration tests are not provider-scoped, so the
+  // per-provider runs above skip them — yet a recording added/removed under one
+  // provider can break their whole-corpus allowlist. Run them so a provider-only
+  // diff cannot pass this gate with a broken allowlist (ac-05hrc). The full
+  // test:run path already includes them, so this is only needed here.
+  const crossCutting = listCrossCuttingTests();
+  console.error(`Cross-cutting recording tests: ${crossCutting.join(", ")}`);
+  run("pnpm", ["run", "test:run", ...crossCutting, ...options.passthrough]);
 
   process.exit(0);
 }

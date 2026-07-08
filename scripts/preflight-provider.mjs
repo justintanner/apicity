@@ -18,6 +18,14 @@
  *   1. prettier --write  on the provider package dir + its integration tests
  *   2. lint:provider     scoped ESLint + provider-relevant repo checks
  *   3. test:provider     typecheck the package + replay its tests
+ *   4. cross-cutting     whole-corpus recording-enumeration tests
+ *
+ * Step 4 runs the cross-cutting integration tests (see
+ * scripts/lib/cross-cutting-tests.mjs) that enumerate ALL recordings and assert
+ * against a hardcoded allowlist. They are not provider-scoped, so `test:provider`
+ * alone skips them and a recording added under one provider can break the
+ * allowlist without failing this gate — the gap that let a broken allowlist
+ * reach main and go red in full CI (ac-05hrc). They are filesystem-only (~1s).
  *
  * For typecheck-only loops, use `pnpm run typecheck:provider -- <provider>`.
  * This preflight intentionally reuses the provider `tsc` check already run by
@@ -29,6 +37,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { listCrossCuttingTests } from "./lib/cross-cutting-tests.mjs";
 import { repoRoot, resolveProviderScope } from "./lib/provider-scope.mjs";
 
 const rawArgs = process.argv.slice(2).filter((arg) => arg !== "--");
@@ -65,11 +74,14 @@ if (tests.length === 0) {
 // Only the provider package + its tests — NOT the whole root tree.
 const targets = [pkgDir, ...tests];
 
+const crossCuttingTests = listCrossCuttingTests();
+
 console.error(`Fast provider preflight: ${provider}`);
 console.error("Steps:");
 console.error("  1. prettier --write (provider package + tests)");
 console.error("  2. lint:provider");
 console.error("  3. test:provider (provider typecheck + replay)");
+console.error("  4. cross-cutting recording-enumeration tests");
 
 function run(title, cmd, args) {
   console.error(`\n▸ ${title}`);
@@ -110,6 +122,17 @@ run(`test:provider ${provider}`, "pnpm", [
   "run",
   "test:provider",
   provider,
+  ...passthrough,
+]);
+
+// 4. Cross-cutting recording-enumeration tests. Not provider-scoped, so
+// test:provider skips them — but a recording added under this provider can
+// break their whole-corpus allowlist. Run them here so the fast gate cannot
+// pass a broken allowlist (ac-05hrc). Filesystem-only, no network/replay.
+run("cross-cutting recording tests", "pnpm", [
+  "run",
+  "test:run",
+  ...crossCuttingTests,
   ...passthrough,
 ]);
 

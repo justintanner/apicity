@@ -3354,6 +3354,9 @@ const PROVIDER_AUTH = {
   google: {
     showMiddleware: false,
   },
+  googleflow: {
+    env: "GOOGLE_FLOW_API_KEY",
+  },
   zaicoding: {
     env: "ZAI_CODING_PLAN_API_KEY",
     showMiddleware: false,

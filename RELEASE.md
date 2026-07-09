@@ -34,8 +34,8 @@ step enforces this. Do not use suffix identifiers or alternate npm tags.
 
 Releases are driven by the compiler-v2 `mol-apicity-release` Gas City workflow.
 The workflow has one executable step that carries
-`gc.run_target=apicity/gastown.polecat` by default. The whole release stays in
-one polecat turn so it cannot strand itself between release phases.
+`gc.run_target=apicity/gc.run-operator` by default. The whole release stays in
+one run-operator turn so it cannot strand itself between release phases.
 
 Register the Apicity release pack with the city once per checkout/update:
 

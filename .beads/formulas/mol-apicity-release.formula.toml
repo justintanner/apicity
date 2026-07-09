@@ -59,7 +59,7 @@ default = ""
 
 [vars.run_target]
 description = "Gas City run target for release step execution."
-default = "apicity/gastown.polecat"
+default = "apicity/gc.run-operator"
 
 [[steps]]
 id = "release"
@@ -84,8 +84,8 @@ criteria still apply.
 
 # Sub-step 0: Singleton guard — refuse a duplicate concurrent release
 
-This release is a singleton. Two polecats once launched the same version's
-release in parallel (a near double-publish the witness had to catch and
+This release is a singleton. Two agents once launched the same version's
+release in parallel (a near double-publish another agent had to catch and
 escalate). Nothing coordinated them. Before doing anything else, prove this is
 the only in-progress `mol-apicity-release` run for this rig — and if it isn't,
 STOP without touching npm or the remote.

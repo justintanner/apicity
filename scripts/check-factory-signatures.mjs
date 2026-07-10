@@ -21,7 +21,11 @@
 import { SyntaxKind } from "ts-morph";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { PROVIDERS, TSV_ONLY_PROVIDERS, loadProject } from "./lib/endpoint-walk.mjs";
+import {
+  PROVIDERS,
+  TSV_ONLY_PROVIDERS,
+  loadProject,
+} from "./lib/endpoint-walk.mjs";
 import { hasAckComment } from "./lib/endpoint-convention.mjs";
 
 const REPO_ROOT = path.resolve(
@@ -42,7 +46,8 @@ function parseArgs(argv) {
       if (i + 1 >= argv.length) {
         throw new Error(`${arg} requires a comma-separated provider list`);
       }
-      for (const p of argv[++i].split(",")) if (p.trim()) providers.add(p.trim());
+      for (const p of argv[++i].split(","))
+        if (p.trim()) providers.add(p.trim());
       continue;
     }
     if (arg.startsWith("--provider=") || arg.startsWith("--providers=")) {
@@ -52,7 +57,10 @@ function parseArgs(argv) {
     }
     throw new Error(`Unknown argument: ${arg}`);
   }
-  const known = new Set([...PROVIDERS.map((p) => p.name), ...TSV_ONLY_PROVIDERS]);
+  const known = new Set([
+    ...PROVIDERS.map((p) => p.name),
+    ...TSV_ONLY_PROVIDERS,
+  ]);
   const unknown = [...providers].filter((p) => !known.has(p));
   if (unknown.length) {
     throw new Error(
@@ -116,7 +124,9 @@ function checkFactory(provider, project, errors) {
   const params = fn.getParameters();
   if (params.length !== 1) {
     errors.push(
-      at(`must take exactly one options-object parameter (has ${params.length})`)
+      at(
+        `must take exactly one options-object parameter (has ${params.length})`
+      )
     );
     return;
   }
@@ -134,7 +144,9 @@ function checkFactory(provider, project, errors) {
   // (3) Declared named provider return type.
   const retNode = fn.getReturnTypeNode?.();
   if (!retNode || retNode.getKind() !== SyntaxKind.TypeReference) {
-    errors.push(at("must declare a named provider return type (the provider tree)"));
+    errors.push(
+      at("must declare a named provider return type (the provider tree)")
+    );
   }
 
   // (4)/(5) Transport-hook shape on the resolved options type.

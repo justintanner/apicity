@@ -40,7 +40,9 @@ function sigOkReason(provider) {
 
 function schemaOkReason(dotPath) {
   const tail = dotPath.split(".").pop() ?? "";
-  if (/^(cancel|pause|resume|undelete|revoke|finalize|delete|del)$/.test(tail)) {
+  if (
+    /^(cancel|pause|resume|undelete|revoke|finalize|delete|del)$/.test(tail)
+  ) {
     return "body-less POST (no request payload)";
   }
   if (/file|upload|add|import/i.test(dotPath)) {

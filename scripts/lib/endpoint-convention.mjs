@@ -320,7 +320,10 @@ export function typeHasSchema(ep) {
     if (prop && prop.getKind() === SyntaxKind.PropertyAssignment) {
       const init = prop.getInitializer();
       if (init) t = init.getType();
-    } else if (prop && prop.getKind() === SyntaxKind.ShorthandPropertyAssignment) {
+    } else if (
+      prop &&
+      prop.getKind() === SyntaxKind.ShorthandPropertyAssignment
+    ) {
       t = prop.getType();
     }
     if (!t) t = ep.leafNode.getType();

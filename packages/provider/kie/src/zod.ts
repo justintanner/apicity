@@ -23,6 +23,7 @@ export const KieMediaModelSchema = z.enum([
   "seedream/5-lite-image-to-image",
   "seedream/5-lite-text-to-image",
   "seedream/5-pro-image-to-image",
+  "seedream/5-pro-text-to-image",
   "grok-imagine/extend",
   "grok-imagine/upscale",
   "qwen2/text-to-image",
@@ -1056,6 +1057,26 @@ export const SeedreamProImageToImageRequestSchema = z.object({
   callBackUrl: z.string().optional(),
   input: z.object({
     image_urls: z.array(z.string()).min(1).max(10),
+    prompt: z.string().min(3).max(3000),
+    aspect_ratio: z
+      .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"])
+      .default("1:1"),
+    quality: z.enum(["basic", "high"]),
+    output_format: z.enum(["png", "jpeg"]).default("png"),
+    nsfw_checker: z.boolean().default(false),
+  }),
+});
+
+// seedream/5-pro-text-to-image is the text-only sibling of the pro
+// image-to-image model: same aspect ratios, quality tiers, and png/jpeg
+// output_format, but no image_urls input. Like the other seedream models,
+// Kie rejects createTask with `"This field is required"` when `quality` is
+// missing despite the docs listing a default, so treat it as required at the
+// SDK boundary.
+export const SeedreamProTextToImageRequestSchema = z.object({
+  model: z.literal("seedream/5-pro-text-to-image"),
+  callBackUrl: z.string().optional(),
+  input: z.object({
     prompt: z.string().min(3).max(3000),
     aspect_ratio: z
       .enum(["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"])
@@ -2439,6 +2460,7 @@ export const MediaGenerationRequestSchema = z.union([
   SeedreamImageToImageRequestSchema,
   SeedreamTextToImageRequestSchema,
   SeedreamProImageToImageRequestSchema,
+  SeedreamProTextToImageRequestSchema,
   Qwen2TextToImageRequestSchema,
   Qwen2ImageEditRequestSchema,
   Seedance2FastRequestSchema,
@@ -2735,6 +2757,13 @@ export type SeedreamProImageToImageRequestInput =
   SeedreamProImageToImageRequest;
 export type SeedreamProImageToImageParsedRequest = z.output<
   typeof SeedreamProImageToImageRequestSchema
+>;
+export type SeedreamProTextToImageRequest = z.input<
+  typeof SeedreamProTextToImageRequestSchema
+>;
+export type SeedreamProTextToImageRequestInput = SeedreamProTextToImageRequest;
+export type SeedreamProTextToImageParsedRequest = z.output<
+  typeof SeedreamProTextToImageRequestSchema
 >;
 export type SoraWatermarkRequest = z.input<typeof SoraWatermarkRequestSchema>;
 export type SoraWatermarkRequestInput = SoraWatermarkRequest;

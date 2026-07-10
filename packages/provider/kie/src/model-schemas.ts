@@ -957,6 +957,38 @@ export const modelInputSchemas: Record<KieMediaModel, ModelInputSchema> = {
     },
   },
 
+  "seedream/5-pro-text-to-image": {
+    type: "image",
+    fields: {
+      prompt: {
+        type: "string",
+        required: true,
+        description: "Text description of the image to generate (3-3000 chars)",
+      },
+      aspect_ratio: {
+        type: "string",
+        enum: ["1:1", "4:3", "3:4", "16:9", "9:16", "2:3", "3:2"],
+        description: "Output aspect ratio (default 1:1)",
+      },
+      quality: {
+        type: "string",
+        required: true,
+        enum: ["basic", "high"],
+        description:
+          "Output quality (basic=1K, high=2K). Required — Kie rejects createTask without it.",
+      },
+      output_format: {
+        type: "string",
+        enum: ["png", "jpeg"],
+        description: "Output image format (default png)",
+      },
+      nsfw_checker: {
+        type: "boolean",
+        description: "Content safety filter",
+      },
+    },
+  },
+
   "qwen2/text-to-image": {
     type: "image",
     fields: {

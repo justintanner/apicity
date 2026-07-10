@@ -1,4 +1,5 @@
 import {
+  ApicitySchema,
   FalOptions,
   FalProvider,
   FalError,
@@ -303,7 +304,9 @@ export function createFal(opts: FalOptions): FalProvider {
   async function makeRequest<T>(
     method: "GET" | "POST" | "DELETE" | "PUT",
     path: string,
-    paramsOrBody?: Record<string, unknown>,
+    // Accept any typed request/params object directly — callers no longer
+    // launder their interface through `as unknown as Record<string, unknown>`.
+    paramsOrBody?: object,
     signal?: AbortSignal,
     headers?: Record<string, string>,
     customBaseURL?: string
@@ -318,7 +321,7 @@ export function createFal(opts: FalOptions): FalProvider {
     const base = customBaseURL ?? baseURL;
     const url =
       method === "GET" && paramsOrBody
-        ? `${base}${path}${buildQueryString(paramsOrBody)}`
+        ? `${base}${path}${buildQueryString(paramsOrBody as Record<string, unknown>)}`
         : `${base}${path}`;
 
     const requestInit: RequestInit = {
@@ -516,6 +519,35 @@ export function createFal(opts: FalOptions): FalProvider {
     }
   }
 
+  // Schema-attached endpoint builder. Collapses the repeated
+  // `Object.assign(async fn, { schema })` run wrappers: each endpoint declares
+  // only its HTTP method, path, request/response types, and zod `.schema`. The
+  // typed request object flows straight into makeRequest (no
+  // `Record<string, unknown>` laundering); `opts.defaults` are merged under the
+  // request and `opts.base` routes to an alternate host (e.g. fal.run).
+  function jsonBody<TReq extends object, TResp>(
+    method: "POST" | "DELETE" | "PUT",
+    path: string,
+    schema: ApicitySchema<TReq>,
+    opts?: { base?: string; defaults?: Partial<TReq> }
+  ): {
+    (params: TReq, signal?: AbortSignal): Promise<TResp>;
+    schema: ApicitySchema<TReq>;
+  } {
+    return Object.assign(
+      (params: TReq, signal?: AbortSignal): Promise<TResp> =>
+        makeRequest<TResp>(
+          method,
+          path,
+          opts?.defaults ? { ...opts.defaults, ...params } : params,
+          signal,
+          undefined,
+          opts?.base
+        ),
+      { schema }
+    );
+  }
+
   // GET https://api.fal.ai/v1/models/pricing
   // Docs: https://docs.fal.ai
   const pricing = Object.assign(
@@ -526,7 +558,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalPricingResponse>(
         "GET",
         "/models/pricing",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -541,7 +573,7 @@ export function createFal(opts: FalOptions): FalProvider {
           return makeRequest<FalEstimateResponse>(
             "POST",
             "/models/pricing/estimate",
-            req as unknown as Record<string, unknown>,
+            req,
             signal
           );
         },
@@ -562,7 +594,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalRequestsResponse>(
         "GET",
         "/models/requests/by-endpoint",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -602,7 +634,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalModelSearchResponse>(
         "GET",
         "/models",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -618,7 +650,7 @@ export function createFal(opts: FalOptions): FalProvider {
         return makeRequest<FalUsageResponse>(
           "GET",
           "/models/usage",
-          params as unknown as Record<string, unknown>,
+          params,
           signal
         );
       },
@@ -632,7 +664,7 @@ export function createFal(opts: FalOptions): FalProvider {
         return makeRequest<FalAnalyticsResponse>(
           "GET",
           "/models/analytics",
-          params as unknown as Record<string, unknown>,
+          params,
           signal
         );
       },
@@ -648,978 +680,542 @@ export function createFal(opts: FalOptions): FalProvider {
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/image-to-video
   // Docs: https://docs.fal.ai
-  const bytedanceSeedance2p0ImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalSeedance2p0ImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedance2p0ImageToVideoResponse> {
-      return makeRequest<FalSeedance2p0ImageToVideoResponse>(
-        "POST",
-        "/bytedance/seedance-2.0/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedance2p0ImageToVideoRequestSchema,
-    }
+  const bytedanceSeedance2p0ImageToVideo = jsonBody<
+    FalSeedance2p0ImageToVideoParams,
+    FalSeedance2p0ImageToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/image-to-video",
+    FalSeedance2p0ImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/text-to-video
   // Docs: https://docs.fal.ai
-  const bytedanceSeedance2p0TextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalSeedance2p0TextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedance2p0TextToVideoResponse> {
-      return makeRequest<FalSeedance2p0TextToVideoResponse>(
-        "POST",
-        "/bytedance/seedance-2.0/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedance2p0TextToVideoRequestSchema,
-    }
+  const bytedanceSeedance2p0TextToVideo = jsonBody<
+    FalSeedance2p0TextToVideoParams,
+    FalSeedance2p0TextToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/text-to-video",
+    FalSeedance2p0TextToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/image-to-video
   // Docs: https://docs.fal.ai
-  const bytedanceSeedance2p0FastImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalSeedance2p0FastImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedance2p0FastImageToVideoResponse> {
-      return makeRequest<FalSeedance2p0FastImageToVideoResponse>(
-        "POST",
-        "/bytedance/seedance-2.0/fast/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedance2p0FastImageToVideoRequestSchema,
-    }
+  const bytedanceSeedance2p0FastImageToVideo = jsonBody<
+    FalSeedance2p0FastImageToVideoParams,
+    FalSeedance2p0FastImageToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/fast/image-to-video",
+    FalSeedance2p0FastImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/text-to-video
   // Docs: https://docs.fal.ai
-  const bytedanceSeedance2p0FastTextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalSeedance2p0FastTextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedance2p0FastTextToVideoResponse> {
-      return makeRequest<FalSeedance2p0FastTextToVideoResponse>(
-        "POST",
-        "/bytedance/seedance-2.0/fast/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedance2p0FastTextToVideoRequestSchema,
-    }
+  const bytedanceSeedance2p0FastTextToVideo = jsonBody<
+    FalSeedance2p0FastTextToVideoParams,
+    FalSeedance2p0FastTextToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/fast/text-to-video",
+    FalSeedance2p0FastTextToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/reference-to-video
   // Docs: https://docs.fal.ai
-  const bytedanceSeedance2p0ReferenceToVideo = Object.assign(
-    async function referenceToVideo(
-      params: FalSeedance2p0ReferenceToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedance2p0ReferenceToVideoResponse> {
-      return makeRequest<FalSeedance2p0ReferenceToVideoResponse>(
-        "POST",
-        "/bytedance/seedance-2.0/reference-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedance2p0ReferenceToVideoRequestSchema,
-    }
+  const bytedanceSeedance2p0ReferenceToVideo = jsonBody<
+    FalSeedance2p0ReferenceToVideoParams,
+    FalSeedance2p0ReferenceToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/reference-to-video",
+    FalSeedance2p0ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/bytedance/seedance-2.0/fast/reference-to-video
   // Docs: https://docs.fal.ai
-  const bytedanceSeedance2p0FastReferenceToVideo = Object.assign(
-    async function referenceToVideo(
-      params: FalSeedance2p0FastReferenceToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedance2p0FastReferenceToVideoResponse> {
-      return makeRequest<FalSeedance2p0FastReferenceToVideoResponse>(
-        "POST",
-        "/bytedance/seedance-2.0/fast/reference-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedance2p0FastReferenceToVideoRequestSchema,
-    }
+  const bytedanceSeedance2p0FastReferenceToVideo = jsonBody<
+    FalSeedance2p0FastReferenceToVideoParams,
+    FalSeedance2p0FastReferenceToVideoResponse
+  >(
+    "POST",
+    "/bytedance/seedance-2.0/fast/reference-to-video",
+    FalSeedance2p0FastReferenceToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro/edit
   // Docs: https://docs.fal.ai
-  const nanoBananaProEdit = Object.assign(
-    async function edit(
-      params: FalNanoBananaProEditParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBananaProEditResponse> {
-      return makeRequest<FalNanoBananaProEditResponse>(
-        "POST",
-        "/fal-ai/nano-banana-pro/edit",
-        { safety_tolerance: "6", ...params } as unknown as Record<
-          string,
-          unknown
-        >,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBananaProEditRequestSchema,
-    }
-  );
+  const nanoBananaProEdit = jsonBody<
+    FalNanoBananaProEditParams,
+    FalNanoBananaProEditResponse
+  >("POST", "/fal-ai/nano-banana-pro/edit", FalNanoBananaProEditRequestSchema, {
+    base: runBaseURL,
+    defaults: { safety_tolerance: "6" },
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-pro
   // Docs: https://docs.fal.ai
-  const nanoBananaProTextToImage = Object.assign(
-    async function textToImage(
-      params: FalNanoBananaProTextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBananaProTextToImageResponse> {
-      return makeRequest<FalNanoBananaProTextToImageResponse>(
-        "POST",
-        "/fal-ai/nano-banana-pro",
-        { safety_tolerance: "6", ...params } as unknown as Record<
-          string,
-          unknown
-        >,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBananaProTextToImageRequestSchema,
-    }
+  const nanoBananaProTextToImage = jsonBody<
+    FalNanoBananaProTextToImageParams,
+    FalNanoBananaProTextToImageResponse
+  >(
+    "POST",
+    "/fal-ai/nano-banana-pro",
+    FalNanoBananaProTextToImageRequestSchema,
+    { base: runBaseURL, defaults: { safety_tolerance: "6" } }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana
   // Docs: https://docs.fal.ai
-  const nanoBananaTextToImage = Object.assign(
-    async function textToImage(
-      params: FalNanoBananaTextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBananaTextToImageResponse> {
-      return makeRequest<FalNanoBananaTextToImageResponse>(
-        "POST",
-        "/fal-ai/nano-banana",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBananaTextToImageRequestSchema,
-    }
-  );
+  const nanoBananaTextToImage = jsonBody<
+    FalNanoBananaTextToImageParams,
+    FalNanoBananaTextToImageResponse
+  >("POST", "/fal-ai/nano-banana", FalNanoBananaTextToImageRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana/edit
   // Docs: https://docs.fal.ai
-  const nanoBananaEdit = Object.assign(
-    async function edit(
-      params: FalNanoBananaEditParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBananaEditResponse> {
-      return makeRequest<FalNanoBananaEditResponse>(
-        "POST",
-        "/fal-ai/nano-banana/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBananaEditRequestSchema,
-    }
-  );
+  const nanoBananaEdit = jsonBody<
+    FalNanoBananaEditParams,
+    FalNanoBananaEditResponse
+  >("POST", "/fal-ai/nano-banana/edit", FalNanoBananaEditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-2
   // Docs: https://docs.fal.ai
-  const nanoBanana2TextToImage = Object.assign(
-    async function textToImage(
-      params: FalNanoBanana2TextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBanana2TextToImageResponse> {
-      return makeRequest<FalNanoBanana2TextToImageResponse>(
-        "POST",
-        "/fal-ai/nano-banana-2",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBanana2TextToImageRequestSchema,
-    }
-  );
+  const nanoBanana2TextToImage = jsonBody<
+    FalNanoBanana2TextToImageParams,
+    FalNanoBanana2TextToImageResponse
+  >("POST", "/fal-ai/nano-banana-2", FalNanoBanana2TextToImageRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/nano-banana-2/edit
   // Docs: https://docs.fal.ai
-  const nanoBanana2Edit = Object.assign(
-    async function edit(
-      params: FalNanoBanana2EditParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBanana2EditResponse> {
-      return makeRequest<FalNanoBanana2EditResponse>(
-        "POST",
-        "/fal-ai/nano-banana-2/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBanana2EditRequestSchema,
-    }
-  );
+  const nanoBanana2Edit = jsonBody<
+    FalNanoBanana2EditParams,
+    FalNanoBanana2EditResponse
+  >("POST", "/fal-ai/nano-banana-2/edit", FalNanoBanana2EditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // POST https://api.fal.ai/v1/google/nano-banana-2-lite
   // Docs: https://fal.ai/models/google/nano-banana-2-lite/api
-  const nanoBanana2LiteTextToImage = Object.assign(
-    async function textToImage(
-      params: FalNanoBanana2LiteTextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBanana2LiteTextToImageResponse> {
-      return makeRequest<FalNanoBanana2LiteTextToImageResponse>(
-        "POST",
-        "/google/nano-banana-2-lite",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBanana2LiteTextToImageRequestSchema,
-    }
+  const nanoBanana2LiteTextToImage = jsonBody<
+    FalNanoBanana2LiteTextToImageParams,
+    FalNanoBanana2LiteTextToImageResponse
+  >(
+    "POST",
+    "/google/nano-banana-2-lite",
+    FalNanoBanana2LiteTextToImageRequestSchema,
+    { base: runBaseURL }
   );
 
   // POST https://api.fal.ai/v1/google/nano-banana-lite/edit
   // Docs: https://fal.ai/models/google/nano-banana-lite/edit/api
-  const nanoBanana2LiteEdit = Object.assign(
-    async function edit(
-      params: FalNanoBanana2LiteEditParams,
-      signal?: AbortSignal
-    ): Promise<FalNanoBanana2LiteEditResponse> {
-      return makeRequest<FalNanoBanana2LiteEditResponse>(
-        "POST",
-        "/google/nano-banana-lite/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalNanoBanana2LiteEditRequestSchema,
-    }
+  const nanoBanana2LiteEdit = jsonBody<
+    FalNanoBanana2LiteEditParams,
+    FalNanoBanana2LiteEditResponse
+  >(
+    "POST",
+    "/google/nano-banana-lite/edit",
+    FalNanoBanana2LiteEditRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/edit
   // Docs: https://docs.fal.ai
-  const seedreamV5LiteEdit = Object.assign(
-    async function edit(
-      params: FalSeedreamV5LiteEditParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedreamV5LiteEditResponse> {
-      return makeRequest<FalSeedreamV5LiteEditResponse>(
-        "POST",
-        "/fal-ai/bytedance/seedream/v5/lite/edit",
-        { enable_safety_checker: false, ...params } as unknown as Record<
-          string,
-          unknown
-        >,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedreamV5LiteEditRequestSchema,
-    }
+  const seedreamV5LiteEdit = jsonBody<
+    FalSeedreamV5LiteEditParams,
+    FalSeedreamV5LiteEditResponse
+  >(
+    "POST",
+    "/fal-ai/bytedance/seedream/v5/lite/edit",
+    FalSeedreamV5LiteEditRequestSchema,
+    { base: runBaseURL, defaults: { enable_safety_checker: false } }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seedream/v5/lite/text-to-image
   // Docs: https://docs.fal.ai
-  const seedreamV5LiteTextToImage = Object.assign(
-    async function textToImage(
-      params: FalSeedreamV5LiteTextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalSeedreamV5LiteTextToImageResponse> {
-      return makeRequest<FalSeedreamV5LiteTextToImageResponse>(
-        "POST",
-        "/fal-ai/bytedance/seedream/v5/lite/text-to-image",
-        { enable_safety_checker: false, ...params } as unknown as Record<
-          string,
-          unknown
-        >,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedreamV5LiteTextToImageRequestSchema,
-    }
+  const seedreamV5LiteTextToImage = jsonBody<
+    FalSeedreamV5LiteTextToImageParams,
+    FalSeedreamV5LiteTextToImageResponse
+  >(
+    "POST",
+    "/fal-ai/bytedance/seedream/v5/lite/text-to-image",
+    FalSeedreamV5LiteTextToImageRequestSchema,
+    { base: runBaseURL, defaults: { enable_safety_checker: false } }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/bytedance/seed-speech/tts/v2
   // Docs: https://fal.ai/models/fal-ai/bytedance/seed-speech/tts/v2/api
-  const seedSpeechTtsV2 = Object.assign(
-    async function v2(
-      params: FalSeedSpeechTtsV2Params,
-      signal?: AbortSignal
-    ): Promise<FalSeedSpeechTtsV2Response> {
-      return makeRequest<FalSeedSpeechTtsV2Response>(
-        "POST",
-        "/fal-ai/bytedance/seed-speech/tts/v2",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSeedSpeechTtsV2RequestSchema,
-    }
+  const seedSpeechTtsV2 = jsonBody<
+    FalSeedSpeechTtsV2Params,
+    FalSeedSpeechTtsV2Response
+  >(
+    "POST",
+    "/fal-ai/bytedance/seed-speech/tts/v2",
+    FalSeedSpeechTtsV2RequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/elevenlabs/speech-to-text/scribe-v2
   // Docs: https://docs.fal.ai
-  const elevenlabsSpeechToTextScribeV2 = Object.assign(
-    async function scribeV2(
-      params: FalElevenlabsSpeechToTextScribeV2Params,
-      signal?: AbortSignal
-    ): Promise<FalElevenlabsSpeechToTextScribeV2Response> {
-      return makeRequest<FalElevenlabsSpeechToTextScribeV2Response>(
-        "POST",
-        "/fal-ai/elevenlabs/speech-to-text/scribe-v2",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalElevenlabsSpeechToTextScribeV2RequestSchema,
-    }
+  const elevenlabsSpeechToTextScribeV2 = jsonBody<
+    FalElevenlabsSpeechToTextScribeV2Params,
+    FalElevenlabsSpeechToTextScribeV2Response
+  >(
+    "POST",
+    "/fal-ai/elevenlabs/speech-to-text/scribe-v2",
+    FalElevenlabsSpeechToTextScribeV2RequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-image
   // Docs: https://docs.fal.ai
-  const wanV2p7TextToImage = Object.assign(
-    async function textToImage(
-      params: FalWanV2p7TextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7TextToImageResponse> {
-      return makeRequest<FalWanV2p7TextToImageResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/text-to-image",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7TextToImageRequestSchema,
-    }
+  const wanV2p7TextToImage = jsonBody<
+    FalWanV2p7TextToImageParams,
+    FalWanV2p7TextToImageResponse
+  >(
+    "POST",
+    "/fal-ai/wan/v2.7/text-to-image",
+    FalWanV2p7TextToImageRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit
   // Docs: https://docs.fal.ai
-  const wanV2p7Edit = Object.assign(
-    async function edit(
-      params: FalWanV2p7EditParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7EditResponse> {
-      return makeRequest<FalWanV2p7EditResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7EditRequestSchema,
-    }
+  const wanV2p7Edit = jsonBody<FalWanV2p7EditParams, FalWanV2p7EditResponse>(
+    "POST",
+    "/fal-ai/wan/v2.7/edit",
+    FalWanV2p7EditRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/text-to-image
   // Docs: https://docs.fal.ai
-  const wanV2p7ProTextToImage = Object.assign(
-    async function textToImage(
-      params: FalWanV2p7TextToImageParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7TextToImageResponse> {
-      return makeRequest<FalWanV2p7TextToImageResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/pro/text-to-image",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7TextToImageRequestSchema,
-    }
+  const wanV2p7ProTextToImage = jsonBody<
+    FalWanV2p7TextToImageParams,
+    FalWanV2p7TextToImageResponse
+  >(
+    "POST",
+    "/fal-ai/wan/v2.7/pro/text-to-image",
+    FalWanV2p7TextToImageRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/pro/edit
   // Docs: https://docs.fal.ai
-  const wanV2p7ProEdit = Object.assign(
-    async function edit(
-      params: FalWanV2p7EditParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7EditResponse> {
-      return makeRequest<FalWanV2p7EditResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/pro/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7EditRequestSchema,
-    }
+  const wanV2p7ProEdit = jsonBody<FalWanV2p7EditParams, FalWanV2p7EditResponse>(
+    "POST",
+    "/fal-ai/wan/v2.7/pro/edit",
+    FalWanV2p7EditRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/text-to-video
   // Docs: https://docs.fal.ai
-  const wanV2p7TextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalWanV2p7TextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7TextToVideoResponse> {
-      return makeRequest<FalWanV2p7TextToVideoResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7TextToVideoRequestSchema,
-    }
+  const wanV2p7TextToVideo = jsonBody<
+    FalWanV2p7TextToVideoParams,
+    FalWanV2p7TextToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/wan/v2.7/text-to-video",
+    FalWanV2p7TextToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/image-to-video
   // Docs: https://docs.fal.ai
-  const wanV2p7ImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalWanV2p7ImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7ImageToVideoResponse> {
-      return makeRequest<FalWanV2p7ImageToVideoResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7ImageToVideoRequestSchema,
-    }
+  const wanV2p7ImageToVideo = jsonBody<
+    FalWanV2p7ImageToVideoParams,
+    FalWanV2p7ImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/wan/v2.7/image-to-video",
+    FalWanV2p7ImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/reference-to-video
   // Docs: https://docs.fal.ai
-  const wanV2p7ReferenceToVideo = Object.assign(
-    async function referenceToVideo(
-      params: FalWanV2p7ReferenceToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7ReferenceToVideoResponse> {
-      return makeRequest<FalWanV2p7ReferenceToVideoResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/reference-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7ReferenceToVideoRequestSchema,
-    }
+  const wanV2p7ReferenceToVideo = jsonBody<
+    FalWanV2p7ReferenceToVideoParams,
+    FalWanV2p7ReferenceToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/wan/v2.7/reference-to-video",
+    FalWanV2p7ReferenceToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/wan/v2.7/edit-video
   // Docs: https://docs.fal.ai
-  const wanV2p7EditVideo = Object.assign(
-    async function editVideo(
-      params: FalWanV2p7EditVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalWanV2p7EditVideoResponse> {
-      return makeRequest<FalWanV2p7EditVideoResponse>(
-        "POST",
-        "/fal-ai/wan/v2.7/edit-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalWanV2p7EditVideoRequestSchema,
-    }
-  );
+  const wanV2p7EditVideo = jsonBody<
+    FalWanV2p7EditVideoParams,
+    FalWanV2p7EditVideoResponse
+  >("POST", "/fal-ai/wan/v2.7/edit-video", FalWanV2p7EditVideoRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-image/edit
   // Docs: https://docs.fal.ai
-  const xaiGrokImagineImageEdit = Object.assign(
-    async function edit(
-      params: FalXaiGrokImagineImageEditParams,
-      signal?: AbortSignal
-    ): Promise<FalXaiGrokImagineImageEditResponse> {
-      return makeRequest<FalXaiGrokImagineImageEditResponse>(
-        "POST",
-        "/xai/grok-imagine-image/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalXaiGrokImagineImageEditRequestSchema,
-    }
+  const xaiGrokImagineImageEdit = jsonBody<
+    FalXaiGrokImagineImageEditParams,
+    FalXaiGrokImagineImageEditResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-image/edit",
+    FalXaiGrokImagineImageEditRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/sora-2/text-to-video
   // Docs: https://docs.fal.ai
-  const sora2TextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalSora2TextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSora2TextToVideoResponse> {
-      return makeRequest<FalSora2TextToVideoResponse>(
-        "POST",
-        "/fal-ai/sora-2/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSora2TextToVideoRequestSchema,
-    }
-  );
+  const sora2TextToVideo = jsonBody<
+    FalSora2TextToVideoParams,
+    FalSora2TextToVideoResponse
+  >("POST", "/fal-ai/sora-2/text-to-video", FalSora2TextToVideoRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/sora-2/image-to-video
   // Docs: https://docs.fal.ai
-  const sora2ImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalSora2ImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalSora2ImageToVideoResponse> {
-      return makeRequest<FalSora2ImageToVideoResponse>(
-        "POST",
-        "/fal-ai/sora-2/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalSora2ImageToVideoRequestSchema,
-    }
+  const sora2ImageToVideo = jsonBody<
+    FalSora2ImageToVideoParams,
+    FalSora2ImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/sora-2/image-to-video",
+    FalSora2ImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/hunyuan-image/v3/instruct/edit
   // Docs: https://docs.fal.ai
-  const hunyuanImageV3InstructEdit = Object.assign(
-    async function v3InstructEdit(
-      params: FalHunyuanImageV3InstructEditParams,
-      signal?: AbortSignal
-    ): Promise<FalHunyuanImageV3InstructEditResponse> {
-      return makeRequest<FalHunyuanImageV3InstructEditResponse>(
-        "POST",
-        "/fal-ai/hunyuan-image/v3/instruct/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalHunyuanImageV3InstructEditRequestSchema,
-    }
+  const hunyuanImageV3InstructEdit = jsonBody<
+    FalHunyuanImageV3InstructEditParams,
+    FalHunyuanImageV3InstructEditResponse
+  >(
+    "POST",
+    "/fal-ai/hunyuan-image/v3/instruct/edit",
+    FalHunyuanImageV3InstructEditRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/image-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoV3ProImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalKlingVideoV3ProImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoV3ProImageToVideoResponse> {
-      return makeRequest<FalKlingVideoV3ProImageToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/v3/pro/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoV3ProImageToVideoRequestSchema,
-    }
+  const klingVideoV3ProImageToVideo = jsonBody<
+    FalKlingVideoV3ProImageToVideoParams,
+    FalKlingVideoV3ProImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/pro/image-to-video",
+    FalKlingVideoV3ProImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/pro/text-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoV3ProTextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalKlingVideoV3ProTextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoV3ProTextToVideoResponse> {
-      return makeRequest<FalKlingVideoV3ProTextToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/v3/pro/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoV3ProTextToVideoRequestSchema,
-    }
+  const klingVideoV3ProTextToVideo = jsonBody<
+    FalKlingVideoV3ProTextToVideoParams,
+    FalKlingVideoV3ProTextToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/pro/text-to-video",
+    FalKlingVideoV3ProTextToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/image-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoV3StandardImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalKlingVideoV3StandardImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoV3StandardImageToVideoResponse> {
-      return makeRequest<FalKlingVideoV3StandardImageToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/v3/standard/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoV3StandardImageToVideoRequestSchema,
-    }
+  const klingVideoV3StandardImageToVideo = jsonBody<
+    FalKlingVideoV3StandardImageToVideoParams,
+    FalKlingVideoV3StandardImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/standard/image-to-video",
+    FalKlingVideoV3StandardImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/v3/standard/text-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoV3StandardTextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalKlingVideoV3StandardTextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoV3StandardTextToVideoResponse> {
-      return makeRequest<FalKlingVideoV3StandardTextToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/v3/standard/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoV3StandardTextToVideoRequestSchema,
-    }
+  const klingVideoV3StandardTextToVideo = jsonBody<
+    FalKlingVideoV3StandardTextToVideoParams,
+    FalKlingVideoV3StandardTextToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/v3/standard/text-to-video",
+    FalKlingVideoV3StandardTextToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/image-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoO3p4kImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalKlingVideoO3p4kImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoO3p4kImageToVideoResponse> {
-      return makeRequest<FalKlingVideoO3p4kImageToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/o3/4k/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoO3p4kImageToVideoRequestSchema,
-    }
+  const klingVideoO3p4kImageToVideo = jsonBody<
+    FalKlingVideoO3p4kImageToVideoParams,
+    FalKlingVideoO3p4kImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/4k/image-to-video",
+    FalKlingVideoO3p4kImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/reference-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoO3p4kReferenceToVideo = Object.assign(
-    async function referenceToVideo(
-      params: FalKlingVideoO3p4kReferenceToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoO3p4kReferenceToVideoResponse> {
-      return makeRequest<FalKlingVideoO3p4kReferenceToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/o3/4k/reference-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoO3p4kReferenceToVideoRequestSchema,
-    }
+  const klingVideoO3p4kReferenceToVideo = jsonBody<
+    FalKlingVideoO3p4kReferenceToVideoParams,
+    FalKlingVideoO3p4kReferenceToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/4k/reference-to-video",
+    FalKlingVideoO3p4kReferenceToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/kling-video/o3/4k/text-to-video
   // Docs: https://docs.fal.ai
-  const klingVideoO3p4kTextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalKlingVideoO3p4kTextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalKlingVideoO3p4kTextToVideoResponse> {
-      return makeRequest<FalKlingVideoO3p4kTextToVideoResponse>(
-        "POST",
-        "/fal-ai/kling-video/o3/4k/text-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalKlingVideoO3p4kTextToVideoRequestSchema,
-    }
+  const klingVideoO3p4kTextToVideo = jsonBody<
+    FalKlingVideoO3p4kTextToVideoParams,
+    FalKlingVideoO3p4kTextToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/kling-video/o3/4k/text-to-video",
+    FalKlingVideoO3p4kTextToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/veo3.1
   // Docs: https://docs.fal.ai
-  const veo3p1TextToVideo = Object.assign(
-    async function textToVideo(
-      params: FalVeo3p1TextToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalVeo3p1TextToVideoResponse> {
-      return makeRequest<FalVeo3p1TextToVideoResponse>(
-        "POST",
-        "/fal-ai/veo3.1",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalVeo3p1TextToVideoRequestSchema,
-    }
-  );
+  const veo3p1TextToVideo = jsonBody<
+    FalVeo3p1TextToVideoParams,
+    FalVeo3p1TextToVideoResponse
+  >("POST", "/fal-ai/veo3.1", FalVeo3p1TextToVideoRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/veo3.1/image-to-video
   // Docs: https://docs.fal.ai
-  const veo3p1ImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalVeo3p1ImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalVeo3p1ImageToVideoResponse> {
-      return makeRequest<FalVeo3p1ImageToVideoResponse>(
-        "POST",
-        "/fal-ai/veo3.1/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalVeo3p1ImageToVideoRequestSchema,
-    }
+  const veo3p1ImageToVideo = jsonBody<
+    FalVeo3p1ImageToVideoParams,
+    FalVeo3p1ImageToVideoResponse
+  >(
+    "POST",
+    "/fal-ai/veo3.1/image-to-video",
+    FalVeo3p1ImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/image-to-video
   // Docs: https://docs.fal.ai
-  const xaiGrokImagineVideoImageToVideo = Object.assign(
-    async function imageToVideo(
-      params: FalXaiGrokImagineVideoImageToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalXaiGrokImagineVideoImageToVideoResponse> {
-      return makeRequest<FalXaiGrokImagineVideoImageToVideoResponse>(
-        "POST",
-        "/xai/grok-imagine-video/image-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalXaiGrokImagineVideoImageToVideoRequestSchema,
-    }
+  const xaiGrokImagineVideoImageToVideo = jsonBody<
+    FalXaiGrokImagineVideoImageToVideoParams,
+    FalXaiGrokImagineVideoImageToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/image-to-video",
+    FalXaiGrokImagineVideoImageToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/reference-to-video
   // Docs: https://docs.fal.ai
-  const xaiGrokImagineVideoReferenceToVideo = Object.assign(
-    async function referenceToVideo(
-      params: FalXaiGrokImagineVideoReferenceToVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalXaiGrokImagineVideoReferenceToVideoResponse> {
-      return makeRequest<FalXaiGrokImagineVideoReferenceToVideoResponse>(
-        "POST",
-        "/xai/grok-imagine-video/reference-to-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
-    }
+  const xaiGrokImagineVideoReferenceToVideo = jsonBody<
+    FalXaiGrokImagineVideoReferenceToVideoParams,
+    FalXaiGrokImagineVideoReferenceToVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/reference-to-video",
+    FalXaiGrokImagineVideoReferenceToVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/extend-video
   // Docs: https://docs.fal.ai
-  const xaiGrokImagineVideoExtendVideo = Object.assign(
-    async function extendVideo(
-      params: FalXaiGrokImagineVideoExtendVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalXaiGrokImagineVideoExtendVideoResponse> {
-      return makeRequest<FalXaiGrokImagineVideoExtendVideoResponse>(
-        "POST",
-        "/xai/grok-imagine-video/extend-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalXaiGrokImagineVideoExtendVideoRequestSchema,
-    }
+  const xaiGrokImagineVideoExtendVideo = jsonBody<
+    FalXaiGrokImagineVideoExtendVideoParams,
+    FalXaiGrokImagineVideoExtendVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/extend-video",
+    FalXaiGrokImagineVideoExtendVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-video/edit-video
   // Docs: https://docs.fal.ai
-  const xaiGrokImagineVideoEditVideo = Object.assign(
-    async function editVideo(
-      params: FalXaiGrokImagineVideoEditVideoParams,
-      signal?: AbortSignal
-    ): Promise<FalXaiGrokImagineVideoEditVideoResponse> {
-      return makeRequest<FalXaiGrokImagineVideoEditVideoResponse>(
-        "POST",
-        "/xai/grok-imagine-video/edit-video",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalXaiGrokImagineVideoEditVideoRequestSchema,
-    }
+  const xaiGrokImagineVideoEditVideo = jsonBody<
+    FalXaiGrokImagineVideoEditVideoParams,
+    FalXaiGrokImagineVideoEditVideoResponse
+  >(
+    "POST",
+    "/xai/grok-imagine-video/edit-video",
+    FalXaiGrokImagineVideoEditVideoRequestSchema,
+    { base: runBaseURL }
   );
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/xai/grok-imagine-image
   // Docs: https://docs.fal.ai
   const xaiGrokImagineImage = Object.assign(
-    async function grokImagineImage(
-      params: FalXaiGrokImagineImageParams,
-      signal?: AbortSignal
-    ): Promise<FalXaiGrokImagineImageResponse> {
-      return makeRequest<FalXaiGrokImagineImageResponse>(
-        "POST",
-        "/xai/grok-imagine-image",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
+    jsonBody<FalXaiGrokImagineImageParams, FalXaiGrokImagineImageResponse>(
+      "POST",
+      "/xai/grok-imagine-image",
+      FalXaiGrokImagineImageRequestSchema,
+      { base: runBaseURL }
+    ),
     {
-      schema: FalXaiGrokImagineImageRequestSchema,
       edit: xaiGrokImagineImageEdit,
     }
   );
@@ -1627,66 +1223,34 @@ export function createFal(opts: FalOptions): FalProvider {
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/qwen-image-edit
   // Docs: https://docs.fal.ai
-  const qwenImageEdit = Object.assign(
-    async function edit(
-      params: FalQwenImageEditParams,
-      signal?: AbortSignal
-    ): Promise<FalQwenImageEditResponse> {
-      return makeRequest<FalQwenImageEditResponse>(
-        "POST",
-        "/fal-ai/qwen-image-edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalQwenImageEditRequestSchema,
-    }
-  );
+  const qwenImageEdit = jsonBody<
+    FalQwenImageEditParams,
+    FalQwenImageEditResponse
+  >("POST", "/fal-ai/qwen-image-edit", FalQwenImageEditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5/edit
   // Docs: https://docs.fal.ai
-  const gptImage1p5Edit = Object.assign(
-    async function edit(
-      params: FalGptImage1p5EditParams,
-      signal?: AbortSignal
-    ): Promise<FalGptImage1p5EditResponse> {
-      return makeRequest<FalGptImage1p5EditResponse>(
-        "POST",
-        "/fal-ai/gpt-image-1.5/edit",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
-    {
-      schema: FalGptImage1p5EditRequestSchema,
-    }
-  );
+  const gptImage1p5Edit = jsonBody<
+    FalGptImage1p5EditParams,
+    FalGptImage1p5EditResponse
+  >("POST", "/fal-ai/gpt-image-1.5/edit", FalGptImage1p5EditRequestSchema, {
+    base: runBaseURL,
+  });
 
   // sig-ok: stylistic dotPath divergence from URL
   // POST https://api.fal.ai/v1/fal-ai/gpt-image-1.5
   // Docs: https://docs.fal.ai
   const gptImage1p5 = Object.assign(
-    async function gptImage1p5(
-      params: FalGptImage1p5Params,
-      signal?: AbortSignal
-    ): Promise<FalGptImage1p5Response> {
-      return makeRequest<FalGptImage1p5Response>(
-        "POST",
-        "/fal-ai/gpt-image-1.5",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
+    jsonBody<FalGptImage1p5Params, FalGptImage1p5Response>(
+      "POST",
+      "/fal-ai/gpt-image-1.5",
+      FalGptImage1p5RequestSchema,
+      { base: runBaseURL }
+    ),
     {
-      schema: FalGptImage1p5RequestSchema,
       edit: gptImage1p5Edit,
     }
   );
@@ -1695,21 +1259,13 @@ export function createFal(opts: FalOptions): FalProvider {
   // POST https://api.fal.ai/v1/fal-ai/qwen-image
   // Docs: https://docs.fal.ai
   const qwenImage = Object.assign(
-    async function qwenImage(
-      params: FalQwenImageParams,
-      signal?: AbortSignal
-    ): Promise<FalQwenImageResponse> {
-      return makeRequest<FalQwenImageResponse>(
-        "POST",
-        "/fal-ai/qwen-image",
-        params as unknown as Record<string, unknown>,
-        signal,
-        undefined,
-        runBaseURL
-      );
-    },
+    jsonBody<FalQwenImageParams, FalQwenImageResponse>(
+      "POST",
+      "/fal-ai/qwen-image",
+      FalQwenImageRequestSchema,
+      { base: runBaseURL }
+    ),
     {
-      schema: FalQwenImageRequestSchema,
       edit: qwenImageEdit,
     }
   );
@@ -2002,9 +1558,7 @@ export function createFal(opts: FalOptions): FalProvider {
     },
   };
 
-  function buildLogsQueryParams(
-    params?: Record<string, unknown>
-  ): Record<string, unknown> {
+  function buildLogsQueryParams(params?: object): Record<string, unknown> {
     if (!params) return {};
     const query: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(params)) {
@@ -2028,7 +1582,7 @@ export function createFal(opts: FalOptions): FalProvider {
         ): Promise<AsyncIterable<FalLogEntry>> {
           const res = await makeStreamPostWithQuery(
             "/serverless/logs/stream",
-            buildLogsQueryParams(params as unknown as Record<string, unknown>),
+            buildLogsQueryParams(params),
             body,
             signal
           );
@@ -2187,7 +1741,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalWorkflowListResponse>(
         "GET",
         "/workflows",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -2217,7 +1771,7 @@ export function createFal(opts: FalOptions): FalProvider {
     return makeRequest<FalPricingResponse>(
       "GET",
       "/models/pricing",
-      params as unknown as Record<string, unknown>,
+      params,
       signal
     );
   };
@@ -2232,7 +1786,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalRequestsResponse>(
         "GET",
         "/models/requests/by-endpoint",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -2272,7 +1826,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalModelSearchResponse>(
         "GET",
         "/models",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -2288,7 +1842,7 @@ export function createFal(opts: FalOptions): FalProvider {
         return makeRequest<FalUsageResponse>(
           "GET",
           "/models/usage",
-          params as unknown as Record<string, unknown>,
+          params,
           signal
         );
       },
@@ -2302,7 +1856,7 @@ export function createFal(opts: FalOptions): FalProvider {
         return makeRequest<FalAnalyticsResponse>(
           "GET",
           "/models/analytics",
-          params as unknown as Record<string, unknown>,
+          params,
           signal
         );
       },
@@ -2443,7 +1997,7 @@ export function createFal(opts: FalOptions): FalProvider {
       return makeRequest<FalWorkflowListResponse>(
         "GET",
         "/workflows",
-        params as unknown as Record<string, unknown>,
+        params,
         signal
       );
     },
@@ -2481,7 +2035,7 @@ export function createFal(opts: FalOptions): FalProvider {
         return makeRequest<FalEstimateResponse>(
           "POST",
           "/models/pricing/estimate",
-          req as unknown as Record<string, unknown>,
+          req,
           signal
         );
       },
@@ -2623,7 +2177,7 @@ export function createFal(opts: FalOptions): FalProvider {
       ): Promise<AsyncIterable<FalLogEntry>> {
         const res = await makeStreamPostWithQuery(
           "/serverless/logs/stream",
-          buildLogsQueryParams(params as unknown as Record<string, unknown>),
+          buildLogsQueryParams(params),
           body,
           signal
         );

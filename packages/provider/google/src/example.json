@@ -12,7 +12,9 @@
           ]
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.publishers.google.models.generateContent": {
     "source": "google/generate-content",
@@ -34,14 +36,20 @@
         },
         "maxOutputTokens": 32
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1internal.retrieveUserQuota": {
     "source": "google/antigravity-usage",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1internal.retrieveUserQuotaSummary": {
     "source": "google/antigravity-quota-summary",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   }
 }

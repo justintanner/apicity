@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -18,45 +22,59 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "limit": 10,
       "provider": "CapSolver",
       "anonymized": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.characters": {
     "source": "google-flow/contracts",
     "payload": {
       "email": "user@example.com"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.jobs": {
     "source": "google-flow/contracts",
     "payload": {
       "options": "history"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.voices": {
     "source": "google-flow/contracts",
     "payload": {
       "email": "user@example.com",
       "source": "user"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.accounts": {
     "source": "google-flow/contracts",
     "payload": {
       "cookies": "SID=fixture;"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.accounts.captchaProviders": {
     "source": "google-flow/contracts",
     "payload": {
       "CapSolver": "provider-key"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.characters": {
     "source": "google-flow/contracts",
     "payload": {
       "displayName": "Ari",
       "imageReference_1": "media-1"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.images": {
     "source": "google-flow/contracts",
@@ -66,14 +84,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspectRatio": "1:1",
       "count": 1,
       "captchaRetry": 5
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.images.upscale": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "image-1",
       "resolution": "2k"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos": {
     "source": "google-flow/i2v",
@@ -82,7 +104,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "veo-3.1-quality",
       "aspectRatio": "16:9",
       "startImage": "test-asset-123"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos.concatenate": {
     "source": "google-flow/contracts",
@@ -97,7 +121,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "trimEnd": 1
         }
       ]
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos.extend": {
     "source": "google-flow/contracts",
@@ -105,20 +131,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "mediaGenerationId": "video-1",
       "prompt": "Continue the motion",
       "captchaOrder": "AntiCaptcha,CapSolver"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos.gif": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "video-1"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos.upscale": {
     "source": "google-flow/contracts",
     "payload": {
       "mediaGenerationId": "video-1",
       "resolution": "1080p"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.voices": {
     "source": "google-flow/contracts",
@@ -128,7 +160,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "displayName": "Narrator",
       "dialog": "Hello there",
       "voicePerformance": "Warm and clear"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

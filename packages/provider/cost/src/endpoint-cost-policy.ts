@@ -351,3 +351,25 @@ export function isEndpointExplicitlyClassified(
 ): boolean {
   return resolveEndpointCostPolicy(provider, method, dotPath) !== undefined;
 }
+
+/** Cost tiers an example runner must not execute without an explicit opt-in. */
+export const GATED_COST_TIERS: readonly EndpointCostTier[] = [
+  "expensive",
+  "prohibitive",
+];
+
+/**
+ * Whether an example for this endpoint may run by default (no opt-in required).
+ *
+ * Only `cheap` endpoints run by default. Expensive and prohibitive endpoints —
+ * and any unlisted/unknown endpoint, which classifies as prohibitive — are
+ * gated behind an explicit opt-in so example runners never incur real cost by
+ * default.
+ */
+export function shouldRunEndpointByDefault(
+  provider: string,
+  method: string,
+  dotPath: string
+): boolean {
+  return classifyEndpoint(provider, method, dotPath) === "cheap";
+}

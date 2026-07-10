@@ -9,6 +9,8 @@
           "content": "Say hello."
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 }

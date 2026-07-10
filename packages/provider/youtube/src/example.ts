@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -16,20 +20,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "part": "snippet",
       "mine": true
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET transcripts": {
     "source": "youtube/transcript-id",
     "payload": {
       "v": "dQw4w9WgXcQ"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET videos.list": {
     "source": "youtube/videos-list",
     "payload": {
       "part": "snippet",
       "id": "dQw4w9WgXcQ"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST videos.insert": {
     "source": "youtube/videos-insert",
@@ -68,7 +78,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "description": "Video de prueba de integracion"
         }
       }
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

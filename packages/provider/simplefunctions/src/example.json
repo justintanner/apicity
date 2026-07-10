@@ -5,7 +5,9 @@
       "format": "json",
       "limit": 3,
       "op": "snapshot"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.public.query": {
     "source": "simplefunctions/query-fed-rate-cut",
@@ -14,20 +16,26 @@
       "mode": "raw",
       "sources": "kalshi,polymarket",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.public.search": {
     "source": "simplefunctions/public-search-fed",
     "payload": {
       "q": "fed",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.v1.search": {
     "source": "simplefunctions/data-search-fed",
     "payload": {
       "q": "fed",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 }

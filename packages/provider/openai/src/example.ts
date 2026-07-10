@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -15,19 +19,25 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "openai/batches-list-limit",
     "payload": {
       "limit": 2
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.chat.completions": {
     "source": "openai/stored-completions-list-limit",
     "payload": {
       "limit": 1
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.fineTuning.jobs": {
     "source": "openai/fine-tuning-jobs-list",
     "payload": {
       "limit": 5
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.audio.speech": {
     "source": "openai/speech-hello",
@@ -36,7 +46,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "input": "Hello, world!",
       "voice": "alloy",
       "response_format": "mp3"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.chat.completions": {
     "source": "openai/chat-hello",
@@ -49,7 +61,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "temperature": 0
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.completions": {
     "source": "openai/completions-hello",
@@ -58,7 +72,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "Say this is a test",
       "max_tokens": 7,
       "temperature": 0
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.containers": {
     "source": "openai/containers-create",
@@ -72,7 +88,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "network_policy": {
         "type": "disabled"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.conversations": {
     "source": "openai/conversations-create",
@@ -86,14 +104,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "metadata": {
         "topic": "greeting"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.embeddings": {
     "source": "openai/embeddings-hello",
     "payload": {
       "model": "text-embedding-3-small",
       "input": "Hello world"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.evals": {
     "source": "openai/evals-create",
@@ -130,7 +152,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "metadata": {
         "source": "apicity"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.images.generations": {
     "source": "openai/images-generations",
@@ -139,14 +163,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "dall-e-2",
       "n": 1,
       "size": "256x256"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.moderations": {
     "source": "openai/moderations-hello",
     "payload": {
       "input": "The weather is nice today.",
       "model": "omni-moderation-latest"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.realtime.clientSecrets": {
     "source": "openai/realtime-client-secrets",
@@ -160,7 +188,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "model": "gpt-realtime",
         "instructions": "You are a concise test assistant."
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.responses": {
     "source": "openai/responses-hello",
@@ -169,14 +199,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "input": "Say hello in one sentence.",
       "temperature": 0,
       "max_output_tokens": 100
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.responses.inputTokens": {
     "source": "openai/responses-input-tokens",
     "payload": {
       "model": "gpt-4o-mini",
       "input": "Say hello in one sentence."
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.uploads": {
     "source": "openai/uploads-create",
@@ -189,7 +223,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "anchor": "created_at",
         "seconds": 3600
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.vectorStores": {
     "source": "openai/vector-stores-create",
@@ -203,7 +239,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "metadata": {
         "purpose": "integration-test"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

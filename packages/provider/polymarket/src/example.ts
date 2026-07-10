@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -15,140 +19,182 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "polymarket/clob-book",
     "payload": {
       "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET clob.lastTradePrice": {
     "source": "polymarket/clob-last-trade-price",
     "payload": {
       "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET clob.markets": {
     "source": "polymarket/gamma-markets-list",
     "payload": {
       "limit": 2,
       "closed": false
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET clob.midpoint": {
     "source": "polymarket/clob-midpoint",
     "payload": {
       "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET clob.price": {
     "source": "polymarket/clob-price",
     "payload": {
       "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025",
       "side": "BUY"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET clob.pricesHistory": {
     "source": "polymarket/clob-prices-history-interval",
     "payload": {
       "market": "78433024518676680431174478322854148606578065650008220678402966840627347604025",
       "interval": "1h"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET clob.spread": {
     "source": "polymarket/clob-spread",
     "payload": {
       "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.activity": {
     "source": "polymarket/data-activity",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.activity.combos": {
     "source": "polymarket/data-combo-activity",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.builders.leaderboard": {
     "source": "polymarket/data-builders-leaderboard",
     "payload": {
       "timePeriod": "DAY",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.builders.volume": {
     "source": "polymarket/data-builders-volume",
     "payload": {
       "timePeriod": "DAY"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.closedPositions": {
     "source": "polymarket/data-closed-positions",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.holders": {
     "source": "polymarket/data-holders",
     "payload": {
       "market": "0x384e2707bbb95da4bfa6f330fe7d5ccbec1c0a85e20be900cbf599987588e1a4",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.leaderboard": {
     "source": "polymarket/data-leaderboard",
     "payload": {
       "timePeriod": "DAY",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.liveVolume": {
     "source": "polymarket/data-live-volume",
     "payload": {
       "id": 16167
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.marketPositions": {
     "source": "polymarket/data-market-positions",
     "payload": {
       "market": "0x384e2707bbb95da4bfa6f330fe7d5ccbec1c0a85e20be900cbf599987588e1a4",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.positions": {
     "source": "polymarket/data-positions",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 2
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.positions.combos": {
     "source": "polymarket/data-combo-positions",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.traded": {
     "source": "polymarket/data-traded",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.trades": {
     "source": "polymarket/data-trades",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.value": {
     "source": "polymarket/data-value",
     "payload": {
       "user": "0xf9ac4c4ef54ee6010a28299ec1d616b63bf7806e"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET gamma.comments": {
     "source": "polymarket/gamma-comments-list",
@@ -156,33 +202,43 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "parent_entity_type": "Event",
       "parent_entity_id": 16167,
       "limit": 2
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET gamma.events": {
     "source": "polymarket/gamma-events-list",
     "payload": {
       "limit": 2,
       "closed": false
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET gamma.search": {
     "source": "polymarket/gamma-search",
     "payload": {
       "q": "trump",
       "limit_per_type": 2
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET gamma.series": {
     "source": "polymarket/gamma-series-list",
     "payload": {
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET gamma.tags": {
     "source": "polymarket/gamma-tags-list",
     "payload": {
       "limit": 2
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST clob.batchPricesHistory": {
     "source": "polymarket/clob-batch-prices-history",
@@ -192,7 +248,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "50346565575310273995396997144874891836871065259829083228393044602519086496922"
       ],
       "interval": "1h"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST clob.books": {
     "source": "polymarket/clob-books-batch",
@@ -203,7 +261,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       {
         "token_id": "50346565575310273995396997144874891836871065259829083228393044602519086496922"
       }
-    ]
+    ],
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST clob.lastTradesPrices": {
     "source": "polymarket/clob-last-trades-prices-batch",
@@ -211,7 +271,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       {
         "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025"
       }
-    ]
+    ],
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST clob.midpoints": {
     "source": "polymarket/clob-midpoints-batch",
@@ -222,7 +284,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       {
         "token_id": "50346565575310273995396997144874891836871065259829083228393044602519086496922"
       }
-    ]
+    ],
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST clob.prices": {
     "source": "polymarket/clob-prices-batch",
@@ -235,7 +299,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "token_id": "78433024518676680431174478322854148606578065650008220678402966840627347604025",
         "side": "SELL"
       }
-    ]
+    ],
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST clob.spreads": {
     "source": "polymarket/clob-spreads-batch",
@@ -246,7 +312,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       {
         "token_id": "50346565575310273995396997144874891836871065259829083228393044602519086496922"
       }
-    ]
+    ],
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

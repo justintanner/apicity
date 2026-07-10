@@ -19,7 +19,9 @@
           "content": "Now review this one the same way:\n```ts\nasync function readA… <truncated 346 chars>"
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.messages.countTokens": {
     "source": "anthropic/count-tokens",
@@ -31,6 +33,8 @@
           "content": "How many tokens does this sentence use?"
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 }

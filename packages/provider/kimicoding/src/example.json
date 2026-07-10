@@ -4,7 +4,9 @@
     "payload": {
       "model": "k2p5",
       "input": "Hello world"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST coding.v1.messages": {
     "source": "kimicoding/chat-hi",
@@ -18,6 +20,8 @@
         }
       ],
       "temperature": 0
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 }

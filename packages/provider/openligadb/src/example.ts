@@ -9,6 +9,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -17,55 +21,73 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getavailableleagues": {
     "source": "static:openligadb-public-catalog",
-    "payload": {}
+    "payload": {},
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getavailableleagues.bySeason": {
     "source": "static:openligadb-public-catalog",
     "payload": {
       "season": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getavailablesports": {
     "source": "static:openligadb-public-catalog",
-    "payload": {}
+    "payload": {},
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getavailableteams": {
     "source": "static:openligadb-public-catalog",
     "payload": {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getbltable": {
     "source": "static:openligadb-standings",
     "payload": {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getcurrentgroup": {
     "source": "static:openligadb-public-catalog",
     "payload": {
       "leagueShortcut": "bl1"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getgoalgetters": {
     "source": "static:openligadb-scorers",
     "payload": {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getgrouptable": {
     "source": "static:openligadb-standings",
     "payload": {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getlastchangedate": {
     "source": "static:openligadb-public-catalog",
@@ -73,20 +95,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024,
       "groupOrderId": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getmatchdata.byId": {
     "source": "static:openligadb-matchdata",
     "payload": {
       "matchId": 68720
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getmatchdata.byLeagueSeason": {
     "source": "static:openligadb-matchdata",
     "payload": {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getmatchdata.byLeagueSeasonGroup": {
     "source": "static:openligadb-matchdata",
@@ -94,7 +122,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024,
       "groupOrderId": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getmatchdata.byLeagueSeasonTeam": {
     "source": "static:openligadb-matchdata",
@@ -102,24 +132,32 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "leagueShortcut": "bl1",
       "leagueSeason": 2024,
       "teamFilterstring": "Bayern"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getmatchdata.byTeams": {
     "source": "static:openligadb-matchdata",
     "payload": {
       "teamId1": 16,
       "teamId2": 40
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET getresultinfos": {
     "source": "static:openligadb-public-catalog",
     "payload": {
       "leagueId": 4500
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET swagger.v1.swaggerJson": {
     "source": "static:openligadb-openapi-document",
-    "payload": {}
+    "payload": {},
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

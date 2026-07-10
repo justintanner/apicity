@@ -19,6 +19,7 @@ import { selectGreenPath } from "./lib/select-green-path.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const TSV_PATH = join(ROOT, "scripts/endpoint-docs.tsv");
+const COST_TIERS_PATH = join(ROOT, "scripts/endpoint-cost-tiers.tsv");
 const RECORDINGS_DIR = join(ROOT, "tests/recordings");
 const PROVIDERS_DIR = join(ROOT, "packages/provider");
 
@@ -165,6 +166,7 @@ await main();
 
 async function main() {
   const tsvRows = await loadTsv(TSV_PATH);
+  const tierMap = buildCostTierMap(await readFile(COST_TIERS_PATH, "utf8"));
   const harFiles = await findHarFiles(RECORDINGS_DIR);
   const candidatesByKey = new Map(); // "provider::METHOD <dotPath>" → candidate[]
   const unmatched = [];
@@ -286,6 +288,7 @@ async function main() {
     const srcDir = join(PROVIDERS_DIR, provider, "src");
     if (!existsSync(srcDir)) continue;
     const sorted = sortObjectKeys(examples);
+    annotateWithCostTier(sorted, provider, tierMap);
     const jsonOut = join(srcDir, "example.json");
     const tsOut = join(srcDir, "example.ts");
     const jsonNext = JSON.stringify(sorted, null, 2) + "\n";
@@ -525,6 +528,32 @@ function providerFromHarPath(harPath) {
   return provider;
 }
 
+// Parse scripts/endpoint-cost-tiers.tsv (the canonical per-endpoint cost
+// classification) into a (provider\tdotPath\tMETHOD) -> tier map.
+function buildCostTierMap(text) {
+  const map = new Map();
+  const lines = text.split("\n").filter(Boolean);
+  for (let i = 1; i < lines.length; i++) {
+    const [provider, dotPath, method, tier] = lines[i].split("\t");
+    map.set(`${provider}\t${dotPath}\t${method}`, tier);
+  }
+  return map;
+}
+
+// Hang the canonical cost tier and a fail-closed runByDefault flag off each
+// example so example runners gate expensive/prohibitive endpoints. Any
+// endpoint absent from the classification is treated as prohibitive.
+function annotateWithCostTier(examples, provider, tierMap) {
+  for (const [key, entry] of Object.entries(examples)) {
+    const sp = key.indexOf(" ");
+    const method = sp < 0 ? "" : key.slice(0, sp);
+    const dotPath = sp < 0 ? key : key.slice(sp + 1);
+    const tier = tierMap.get(`${provider}\t${dotPath}\t${method}`) ?? "prohibitive";
+    entry.tier = tier;
+    entry.runByDefault = tier === "cheap";
+  }
+}
+
 function renderExamplesTs(examples, provider) {
   const body = JSON.stringify(examples, null, 2);
   const sourceComment = STATIC_EXAMPLES_BY_PROVIDER[provider]
@@ -545,6 +574,10 @@ ${sourceComment}
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = ${body};

@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -16,33 +20,43 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.avgPrice": {
     "source": "binance/avg-price",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.depth": {
     "source": "binance/depth",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.exchangeInfo": {
     "source": "binance/exchange-info",
     "payload": {
       "symbol": "BTCUSDT",
       "showPermissionSets": false
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.executionRules": {
     "source": "binance/execution-rules",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.historicalBlockTrades": {
     "source": "binance/historical-block-trades",
@@ -50,14 +64,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "fromId": 1,
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.historicalTrades": {
     "source": "binance/historical-trades",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.klines": {
     "source": "binance/klines",
@@ -65,57 +83,75 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.referencePrice": {
     "source": "binance/reference-price",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.referencePrice.calculation": {
     "source": "binance/reference-price-calculation",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.ticker": {
     "source": "binance/ticker",
     "payload": {
       "symbol": "BTCUSDT",
       "windowSize": "1d"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.ticker.bookTicker": {
     "source": "binance/ticker-book-ticker",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.ticker.price": {
     "source": "binance/ticker-price",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.ticker.tradingDay": {
     "source": "binance/ticker-trading-day",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.ticker.twentyFourHr": {
     "source": "binance/ticker-24hr",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.trades": {
     "source": "binance/trades",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.v3.uiKlines": {
     "source": "binance/ui-klines",
@@ -123,7 +159,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.basis": {
     "source": "binance/coin-m-market-data",
@@ -132,13 +170,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "contractType": "PERPETUAL",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.deliveryPrice": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "pair": "BTCUSD"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.globalLongShortAccountRatio": {
     "source": "binance/coin-m-market-data",
@@ -146,7 +188,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "pair": "BTCUSD",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.openInterestHist": {
     "source": "binance/coin-m-market-data",
@@ -155,7 +199,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "contractType": "PERPETUAL",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.takerBuySellVol": {
     "source": "binance/coin-m-market-data",
@@ -164,7 +210,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "contractType": "PERPETUAL",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.topLongShortAccountRatio": {
     "source": "binance/coin-m-market-data",
@@ -172,7 +220,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "pair": "BTCUSD",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET coinMFutures.data.topLongShortPositionRatio": {
     "source": "binance/coin-m-market-data",
@@ -180,20 +230,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "pair": "BTCUSD",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.aggTrades": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.constituents": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.continuousKlines": {
     "source": "binance/coin-m-market-data",
@@ -202,21 +258,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "contractType": "PERPETUAL",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.depth": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.fundingRate": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.indexPriceKlines": {
     "source": "binance/coin-m-market-data",
@@ -224,7 +286,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "pair": "BTCUSD",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.klines": {
     "source": "binance/coin-m-market-data",
@@ -232,7 +296,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSD_PERP",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.markPriceKlines": {
     "source": "binance/coin-m-market-data",
@@ -240,19 +306,25 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSD_PERP",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.openInterest": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.premiumIndex": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.premiumIndexKlines": {
     "source": "binance/coin-m-market-data",
@@ -260,58 +332,76 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSD_PERP",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.ticker.bookTicker": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.ticker.price": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.ticker.twentyFourHr": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET dapi.v1.trades": {
     "source": "binance/coin-m-market-data",
     "payload": {
       "symbol": "BTCUSD_PERP",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.blockTrades": {
     "source": "binance/options-market-data",
     "payload": {
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.depth": {
     "source": "binance/options-market-data",
     "payload": {
       "symbol": "BTC-260626-140000-C",
       "limit": 10
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.exerciseHistory": {
     "source": "binance/options-market-data",
     "payload": {
       "underlying": "BTCUSDT",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.index": {
     "source": "binance/options-market-data",
     "payload": {
       "underlying": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.klines": {
     "source": "binance/options-market-data",
@@ -319,52 +409,68 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTC-260626-140000-C",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.mark": {
     "source": "binance/options-market-data",
     "payload": {
       "symbol": "BTC-260626-140000-C"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.openInterest": {
     "source": "binance/options-market-data",
     "payload": {
       "underlyingAsset": "BTC",
       "expiration": 260626
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.ticker": {
     "source": "binance/options-market-data",
     "payload": {
       "symbol": "BTC-260626-140000-C"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET eapi.v1.trades": {
     "source": "binance/options-market-data",
     "payload": {
       "symbol": "BTC-260626-140000-C",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.aggTrades": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.assetIndex": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "USDTUSD"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.constituents": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.continuousKlines": {
     "source": "binance/fapi-market-data",
@@ -373,21 +479,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "contractType": "PERPETUAL",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.depth": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 5
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.fundingRate": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.indexPriceKlines": {
     "source": "binance/fapi-market-data",
@@ -395,13 +507,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "pair": "BTCUSDT",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.insuranceBalance": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.klines": {
     "source": "binance/fapi-market-data",
@@ -409,7 +525,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.markPriceKlines": {
     "source": "binance/fapi-market-data",
@@ -417,19 +535,25 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.openInterest": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.premiumIndex": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.premiumIndexKlines": {
     "source": "binance/fapi-market-data",
@@ -437,44 +561,58 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "interval": "1m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.rpiDepth": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.symbolAdlRisk": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.ticker.bookTicker": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.ticker.twentyFourHr": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v1.trades": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET fapi.v2.ticker.price": {
     "source": "binance/fapi-market-data",
     "payload": {
       "symbol": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.basis": {
     "source": "binance/futures-data-market-data",
@@ -483,13 +621,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "contractType": "PERPETUAL",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.deliveryPrice": {
     "source": "binance/futures-data-market-data",
     "payload": {
       "pair": "BTCUSDT"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.globalLongShortAccountRatio": {
     "source": "binance/futures-data-market-data",
@@ -497,7 +639,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.openInterestHist": {
     "source": "binance/futures-data-market-data",
@@ -505,7 +649,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.takerlongshortRatio": {
     "source": "binance/futures-data-market-data",
@@ -513,7 +659,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.topLongShortAccountRatio": {
     "source": "binance/futures-data-market-data",
@@ -521,7 +669,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET futures.data.topLongShortPositionRatio": {
     "source": "binance/futures-data-market-data",
@@ -529,7 +679,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "symbol": "BTCUSDT",
       "period": "5m",
       "limit": 1
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

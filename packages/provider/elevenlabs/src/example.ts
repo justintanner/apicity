@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -15,7 +19,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "elevenlabs/audio-isolation",
     "payload": {
       "page_size": 1000
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.agentTesting.list": {
     "source": "elevenlabs/convai-agent-testing",
@@ -28,31 +34,41 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "sort_mode": "folders_first",
       "sharing_mode": "all"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.agents.list": {
     "source": "elevenlabs/convai-agents",
     "payload": {
       "page_size": 30
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.batchCalling.workspace": {
     "source": "elevenlabs/convai-batch-calling",
     "payload": {
       "limit": 3
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.conversation.getSignedUrl": {
     "source": "elevenlabs/convai-conversations",
     "payload": {
       "agent_id": "agent_7701kvak8r92e03921wqazqbb5kc"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.conversations.list": {
     "source": "elevenlabs/convai-conversations",
     "payload": {
       "page_size": 3
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.environmentVariables.list": {
     "source": "elevenlabs/convai-settings-secrets-env",
@@ -60,13 +76,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "label": "apicity_route_test_env_ac292ev28",
       "page_size": 30,
       "type": "string"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.knowledgeBase.list": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
       "page_size": 30
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.secrets.list": {
     "source": "elevenlabs/convai-settings-secrets-env",
@@ -74,64 +94,84 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 30,
       "dependency_limit": 5,
       "search": "apicity_route_test_secret"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.tags.list": {
     "source": "elevenlabs/convai-tags",
     "payload": {
       "page_size": 30
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.testInvocations.list": {
     "source": "elevenlabs/convai-agent-testing",
     "payload": {
       "agent_id": "agent_4801kw9vazcbedyt8wgke5n8z0x6",
       "page_size": 30
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.tools.list": {
     "source": "elevenlabs/convai-tools",
     "payload": {
       "page_size": 30
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.convai.users.list": {
     "source": "elevenlabs/convai-misc",
     "payload": {
       "page_size": 1,
       "sort_by": "last_contact_unix_secs"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.dubbing.list": {
     "source": "elevenlabs/dubbing",
     "payload": {
       "page_size": 50
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.sharedVoices": {
     "source": "elevenlabs/voice-library",
     "payload": {
       "page_size": 3
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.usage.characterStats": {
     "source": "elevenlabs/usage-character-stats",
     "payload": {
       "start_unix": 1685574000,
       "end_unix": 1688165999
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.workspace.groups.search": {
     "source": "elevenlabs/workspace-admin",
     "payload": {
       "name": "apicity"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v1.workspace.webhooks.list": {
     "source": "elevenlabs/workspace-admin",
     "payload": {
       "include_usages": false
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET v2.voices": {
     "source": "elevenlabs/voices",
@@ -139,19 +179,25 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "page_size": 1,
       "voice_type": "default",
       "include_total_count": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.agentTesting.folders.update": {
     "source": "elevenlabs/convai-agent-testing",
     "payload": {
       "name": "Apicity route test folder updated"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.agents.update": {
     "source": "elevenlabs/convai-agents",
     "payload": {
       "name": "Apicity agents route test (updated)"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.environmentVariables.update": {
     "source": "elevenlabs/convai-settings-secrets-env",
@@ -159,13 +205,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "values": {
         "production": "apicity-route-test"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.phoneNumbers.update": {
     "source": "elevenlabs/convai-phone-numbers",
     "payload": {
       "label": "Apicity phone-number route test (updated)"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.secrets.update": {
     "source": "elevenlabs/convai-settings-secrets-env",
@@ -173,14 +223,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "type": "update",
       "name": "apicity_route_test_secret_ac292ev28",
       "value": "updated-secret-value"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.tags.update": {
     "source": "elevenlabs/convai-tags",
     "payload": {
       "title": "apicity_route_test_mqzetota_updated",
       "description": null
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.tools.update": {
     "source": "elevenlabs/convai-tools",
@@ -194,7 +248,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "method": "GET"
         }
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.convai.whatsappAccounts.update": {
     "source": "elevenlabs/convai-telephony-integrations",
@@ -202,7 +258,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "assigned_agent_id": null,
       "enable_messaging": true,
       "enable_audio_message_response": false
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.productions.orders.update": {
     "source": "elevenlabs/productions-orders",
@@ -210,7 +268,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "request": {
         "name": "Spanish Dubs"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PATCH v1.serviceAccounts.apiKeys.update": {
     "source": "elevenlabs/service-accounts",
@@ -221,7 +281,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "character_limit": "no_update",
       "allowed_ips": "clear",
       "third_party_disable_allowed": "no_update"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.audioNative.content.fromUrl": {
     "source": "elevenlabs/audio-native-content-url",
@@ -229,7 +291,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "url": "https://elevenlabs.io/blog",
       "title": "Apicity Audio Native URL",
       "author": "Apicity"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.agentTesting.bulkMove": {
     "source": "elevenlabs/convai-agent-testing",
@@ -238,7 +302,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "test_7801kw9vb11jfs0vfpn8x9148vmn"
       ],
       "move_to": "tfld_4801kw9vb0v1ewp9h2c1dc7893yv"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.agentTesting.create": {
     "source": "elevenlabs/convai-agent-testing",
@@ -253,13 +319,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "success_condition": "The agent responds with a short greeting that mentions Apicity."
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.agentTesting.folders.create": {
     "source": "elevenlabs/convai-agent-testing",
     "payload": {
       "name": "Apicity route test folder"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.agentTesting.summaries": {
     "source": "elevenlabs/convai-agent-testing",
@@ -267,7 +337,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "test_ids": [
         "test_7801kw9vb11jfs0vfpn8x9148vmn"
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.agents.create": {
     "source": "elevenlabs/convai-agents",
@@ -285,7 +357,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "tags": [
         "apicity-test"
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.agents.runTests": {
     "source": "elevenlabs/convai-agent-testing",
@@ -296,7 +370,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "repeat_count": 1
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.environmentVariables.create": {
     "source": "elevenlabs/convai-settings-secrets-env",
@@ -306,7 +382,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "values": {
         "production": "apicity-route-test"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.exotel.outboundCall": {
     "source": "elevenlabs/convai-telephony-integrations",
@@ -317,21 +395,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "telephony_call_config": {
         "ringing_timeout_secs": 30
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.knowledgeBase.text": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
       "name": "Apicity KB route test (text)",
       "text": "Apicity is a TypeScript monorepo of standalone API provider packages."
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.knowledgeBase.url": {
     "source": "elevenlabs/convai-knowledge-base",
     "payload": {
       "name": "Apicity KB route test (url)",
       "url": "https://elevenlabs.io/docs/api-reference/introduction"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.llmUsage.calculate": {
     "source": "elevenlabs/convai-misc",
@@ -339,7 +423,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt_length": 1200,
       "number_of_pages": 2,
       "rag_enabled": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.phoneNumbers.create": {
     "source": "elevenlabs/convai-phone-numbers",
@@ -351,7 +437,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "address": "sip.apicity-route-test.invalid",
         "transport": "udp"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.secrets.create": {
     "source": "elevenlabs/convai-settings-secrets-env",
@@ -359,7 +447,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "type": "new",
       "name": "apicity_route_test_secret_ac292ev28",
       "value": "initial-secret-value"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.sipTrunk.outboundCall": {
     "source": "elevenlabs/convai-outbound-calls",
@@ -367,14 +457,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "agent_id": "apicity-route-test-agent",
       "agent_phone_number_id": "apicity-route-test-phone",
       "to_number": "+15005550006"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.tags.create": {
     "source": "elevenlabs/convai-tags",
     "payload": {
       "title": "apicity_route_test_mqzetota",
       "description": "Apicity route coverage tag."
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.testInvocations.resubmit": {
     "source": "elevenlabs/convai-agent-testing",
@@ -383,7 +477,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "trun_0101kw9vb2keef3bcbyjyk7djx81"
       ],
       "agent_id": "agent_4801kw9vazcbedyt8wgke5n8z0x6"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.tools.create": {
     "source": "elevenlabs/convai-tools",
@@ -397,7 +493,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "method": "GET"
         }
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.twilio.outboundCall": {
     "source": "elevenlabs/convai-outbound-calls",
@@ -405,7 +503,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "agent_id": "apicity-route-test-agent",
       "agent_phone_number_id": "apicity-route-test-phone",
       "to_number": "+15005550006"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.twilio.registerCall": {
     "source": "elevenlabs/convai-telephony-integrations",
@@ -419,7 +519,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "source": "apicity"
         }
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.whatsapp.outboundCall": {
     "source": "elevenlabs/convai-telephony-integrations",
@@ -429,7 +531,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "whatsapp_call_permission_request_template_name": "apicity_call_permission",
       "whatsapp_call_permission_request_template_language_code": "en_US",
       "agent_id": "apicity-route-test-agent"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.convai.whatsapp.outboundMessage": {
     "source": "elevenlabs/convai-telephony-integrations",
@@ -450,7 +554,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "agent_id": "apicity-route-test-agent"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.music": {
     "source": "elevenlabs/music-compose",
@@ -458,7 +564,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "calm lo-fi piano loop",
       "music_length_ms": 10000,
       "force_instrumental": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.music.detailed": {
     "source": "elevenlabs/music-detailed",
@@ -466,14 +574,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "calm lo-fi piano loop",
       "music_length_ms": 10000,
       "force_instrumental": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.music.plan": {
     "source": "elevenlabs/music-plan",
     "payload": {
       "prompt": "calm lo-fi piano loop",
       "music_length_ms": 10000
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.music.stream": {
     "source": "elevenlabs/music-stream",
@@ -481,13 +593,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "calm lo-fi piano loop",
       "music_length_ms": 10000,
       "force_instrumental": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.productions.orders.create": {
     "source": "elevenlabs/productions-orders",
     "payload": {
       "sandbox": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.productions.orders.items.upsert": {
     "source": "elevenlabs/productions-orders",
@@ -505,7 +621,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "include_source_captions": false
         }
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.serviceAccounts.apiKeys.create": {
     "source": "elevenlabs/service-accounts",
@@ -520,7 +638,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "203.0.113.10"
       ],
       "third_party_disable_allowed": null
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.soundGeneration": {
     "source": "elevenlabs/sound-generation",
@@ -528,7 +648,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "text": "soft ui click",
       "duration_seconds": 0.5,
       "prompt_influence": 0.3
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.studio.podcasts.create": {
     "source": "elevenlabs/studio",
@@ -544,28 +666,36 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "type": "text",
         "text": "Hello from apicity."
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.textToSpeech.stream": {
     "source": "elevenlabs/text-to-speech-stream",
     "payload": {
       "text": "Hello from the streaming endpoint.",
       "model_id": "eleven_multilingual_v2"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.textToSpeech.stream.withTimestamps": {
     "source": "elevenlabs/text-to-speech-stream-with-timestamps",
     "payload": {
       "text": "Streaming with timestamps.",
       "model_id": "eleven_multilingual_v2"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.textToSpeech.withTimestamps": {
     "source": "elevenlabs/text-to-speech-with-timestamps",
     "payload": {
       "text": "Timestamps please.",
       "model_id": "eleven_multilingual_v2"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.textToVoice": {
     "source": "elevenlabs/text-to-voice",
@@ -573,21 +703,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "voice_name": "Apicity Test Narrator",
       "voice_description": "A warm, friendly middle-aged narrator with a calm British accent.",
       "generated_voice_id": "4leCOcdTmRHiiAQF2IbG"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.textToVoice.design": {
     "source": "elevenlabs/text-to-voice",
     "payload": {
       "voice_description": "A warm, friendly middle-aged narrator with a calm British accent.",
       "auto_generate_text": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.textToVoice.remix": {
     "source": "elevenlabs/text-to-voice",
     "payload": {
       "voice_description": "Make it brighter and more energetic.",
       "auto_generate_text": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.voices.pvc": {
     "source": "elevenlabs/pvc-voice-create",
@@ -599,7 +735,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "language": "en",
         "accent": "en-US"
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.voices.pvc.samples": {
     "source": "elevenlabs/voice-pvc-sample-update",
@@ -609,20 +747,26 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "trim_start_time": null,
       "trim_end_time": null,
       "file_name": "apicity-sample.wav"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.voices.pvc.train": {
     "source": "elevenlabs/pvc-train",
     "payload": {
       "model_id": "eleven_turbo_v2"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.voices.settings.edit": {
     "source": "elevenlabs/voice-crud",
     "payload": {
       "stability": 0.4,
       "similarity_boost": 0.8
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.workspace.analytics.query.usageByProductOverTime": {
     "source": "elevenlabs/workspace-usage-by-product-over-time",
@@ -634,7 +778,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "product_type"
       ],
       "time_zone": "UTC"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.workspace.analytics.requests": {
     "source": "elevenlabs/workspace-analytics-requests",
@@ -642,7 +788,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "start_time": 4102444800000,
       "limit": 1,
       "sort": "asc"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "PUT v1.convai.agentTesting.update": {
     "source": "elevenlabs/convai-agent-testing",
@@ -658,7 +806,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "success_condition": "The agent responds with a short greeting that mentions Apicity.",
       "parent_folder_id": "tfld_4801kw9vb0v1ewp9h2c1dc7893yv"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

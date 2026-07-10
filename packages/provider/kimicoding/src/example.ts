@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -16,7 +20,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "model": "k2p5",
       "input": "Hello world"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST coding.v1.messages": {
     "source": "kimicoding/chat-hi",
@@ -30,7 +36,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "temperature": 0
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

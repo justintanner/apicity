@@ -8,96 +8,144 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
   "GET inference.v1.accounts": {
     "source": "fireworks/accounts-get",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.apiKeys.list": {
     "source": "fireworks/apikeys-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.batchInferenceJobs.list": {
     "source": "fireworks/batch-inference-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.datasets.list": {
     "source": "fireworks/datasets-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.deployedModels.list": {
     "source": "fireworks/deployedmodels-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.deploymentShapes.versions.list": {
     "source": "fireworks/deployment-shapes-versions-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.deployments.list": {
     "source": "fireworks/deployments-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.dpoJobs.list": {
     "source": "fireworks/dpo-jobs-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.evaluationJobs.list": {
     "source": "fireworks/evaluation-jobs-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.evaluators": {
     "source": "fireworks/evaluators-get",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.evaluators.list": {
     "source": "fireworks/evaluators-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.list": {
     "source": "fireworks/accounts-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.models": {
     "source": "fireworks/models-get",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.models.list": {
     "source": "fireworks/models-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.reinforcementFineTuningJobs": {
     "source": "fireworks/rft-jobs-get",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.reinforcementFineTuningJobs.list": {
     "source": "fireworks/rft-jobs-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.rlorTrainerJobs.list": {
     "source": "fireworks/rlor-trainer-jobs-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.secrets": {
     "source": "fireworks/secrets-get",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.secrets.list": {
     "source": "fireworks/secrets-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.supervisedFineTuningJobs.list": {
     "source": "fireworks/sft-jobs-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.users": {
     "source": "fireworks/users-get",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "GET inference.v1.accounts.users.list": {
     "source": "fireworks/users-list",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.accounts.rlorTrainerJobs.create": {
     "source": "fireworks/rlor-trainer-jobs-create",
@@ -110,14 +158,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "epochs": 1,
         "learningRate": 0.00001
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.accounts.rlorTrainerJobs.executeTrainStep": {
     "source": "fireworks/rlor-trainer-jobs-execute-step",
     "payload": {
       "dataset": "accounts/test-account/datasets/step-dataset",
       "outputModel": "accounts/test-account/models/step-output-model"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.chat.completions": {
     "source": "fireworks/chat-hello",
@@ -131,7 +183,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "temperature": 0,
       "max_tokens": 64
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.completions": {
     "source": "fireworks/completions-hello",
@@ -140,14 +194,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "The capital of France is",
       "max_tokens": 32,
       "temperature": 0
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.embeddings": {
     "source": "fireworks/embeddings-hello",
     "payload": {
       "model": "nomic-ai/nomic-embed-text-v1.5",
       "input": "Hello world"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.messages": {
     "source": "fireworks/messages-hello",
@@ -160,7 +218,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "max_tokens": 64
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.rerank": {
     "source": "fireworks/rerank-basic",
@@ -174,13 +234,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "top_n": 2,
       "return_documents": true
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.workflows.getResult": {
     "source": "fireworks/kontext-async-job",
     "payload": {
       "id": "d5622736-11b7-4d53-a061-29350fe7ec66"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST inference.v1.workflows.kontext": {
     "source": "fireworks/kontext-async-job",
@@ -189,7 +253,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A cat sitting on a windowsill",
       "seed": 123,
       "output_format": "png"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

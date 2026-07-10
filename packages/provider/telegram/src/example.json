@@ -4,6 +4,8 @@
     "payload": {
       "chat_id": "@apicity_fixture",
       "text": "apicity telegram HAR text 2026-06-06T16:29:37.784Z"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 }

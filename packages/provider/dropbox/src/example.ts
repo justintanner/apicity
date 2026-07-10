@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -15,11 +19,15 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "dropbox/check-user",
     "payload": {
       "query": "justin"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST users.getCurrentAccount": {
     "source": "dropbox/current-token-baseline",
-    "payload": null
+    "payload": null,
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

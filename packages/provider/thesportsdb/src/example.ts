@@ -9,42 +9,58 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
   "GET v1.allSports": {
     "source": "static:thesportsdb-v1-free-catalog",
-    "payload": {}
+    "payload": {},
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET v1.eventstv": {
     "source": "static:thesportsdb-v1-premium-tv-filter",
     "payload": {
       "channel": "Peacock_Premium"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET v1.searchTeams": {
     "source": "static:thesportsdb-v1-free-search",
     "payload": {
       "team": "Arsenal"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET v2.livescore.bySport": {
     "source": "static:thesportsdb-v2-premium-livescore",
     "payload": {
       "sport": "soccer"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET v2.schedule.next.league": {
     "source": "static:thesportsdb-v2-premium-schedule",
     "payload": {
       "idLeague": 4328
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET v2.search.team": {
     "source": "static:thesportsdb-v2-premium-search",
     "payload": {
       "teamName": "Manchester United"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

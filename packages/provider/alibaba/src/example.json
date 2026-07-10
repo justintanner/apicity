@@ -4,7 +4,9 @@
     "payload": {
       "action": "getPolicy",
       "model": "qwen-image-edit"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST api.v1.services.aigc.imageGeneration.generation": {
     "source": "alibaba/wan-image-t2i",
@@ -28,7 +30,9 @@
         "watermark": false,
         "thinking_mode": true
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST api.v1.services.aigc.multimodalGeneration.generation": {
     "source": "alibaba/qwen-image-edit-single",
@@ -49,7 +53,9 @@
           }
         ]
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST api.v1.services.aigc.videoGeneration.videoSynthesis": {
     "source": "alibaba/wan-videoedit",
@@ -69,7 +75,9 @@
         "prompt_extend": true,
         "watermark": true
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST compatibleMode.v1.chat.completions": {
     "source": "alibaba/chat-hello",
@@ -83,6 +91,8 @@
       ],
       "temperature": 0,
       "max_tokens": 64
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 }

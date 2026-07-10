@@ -9,6 +9,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -17,27 +21,37 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "filter": "public_url != null",
       "limit": 10
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST managementApi.v1.collections": {
     "source": "xai/collections-documents-add",
     "payload": {
       "collection_name": "test-collection-for-docs"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST managementApi.v1.collections.documents": {
     "source": "xai/collections-documents-add",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.batches": {
     "source": "xai/batch-get",
     "payload": {
       "name": "Get Test Batch"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.batches.cancel": {
     "source": "xai/batch-cancel",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.batches.requests": {
     "source": "xai/batch-requests",
@@ -58,7 +72,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           }
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.chat.completions": {
     "source": "xai/chat-hello",
@@ -71,7 +87,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "temperature": 0
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.documents.search": {
     "source": "xai/documents-search",
@@ -83,17 +101,23 @@ const EXAMPLES: Record<string, EndpointExample> = {
         ]
       },
       "limit": 5
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.files.publicUrl": {
     "source": "static:xai-files-public-url-create",
     "payload": {
       "expires_after": 86400
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.files.publicUrl.revoke": {
     "source": "static:xai-files-public-url-revoke",
-    "payload": {}
+    "payload": {},
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.images.edits": {
     "source": "xai/image-edit-single",
@@ -104,7 +128,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "url": "<inline image/jpeg data URL — replace with a real URL or upload>",
         "type": "image_url"
       }
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.images.generations": {
     "source": "xai/image-generate-basic",
@@ -112,21 +138,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A simple red apple on a white background",
       "model": "grok-imagine-image",
       "n": 1
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.realtime.clientSecrets": {
     "source": "xai/realtime-client-secrets",
     "payload": {
       "model": "grok-2",
       "voice": "echo"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.responses": {
     "source": "xai/responses-crud-create",
     "payload": {
       "model": "grok-4-fast",
       "input": "Hello!"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.responses.compact": {
     "source": "xai/responses-compact",
@@ -154,14 +186,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "content": "Through spontaneous symmetry breaking: the Higgs field has a nonzero vacuum value and particles acquire mass by coupling to it."
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.tokenizeText": {
     "source": "xai/tokenize-text",
     "payload": {
       "model": "grok-3",
       "text": "Hello world!"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.tts": {
     "source": "xai/tts-welcome",
@@ -169,7 +205,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "text": "Welcome to xAI. How can I help you today?",
       "voice_id": "eve",
       "language": "en"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST v1.videos.edits": {
     "source": "xai/video-edit",
@@ -179,7 +217,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "video": {
         "url": "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4"
       }
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos.extensions": {
     "source": "xai/video-extensions-basic",
@@ -190,7 +230,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "url": "https://vidgen.x.ai/xai-vidgen-bucket/xai-video-sample.mp4"
       },
       "duration": 5
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.videos.generations": {
     "source": "xai/video-text-to-video",
@@ -200,13 +242,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": 10,
       "aspect_ratio": "16:9",
       "resolution": "720p"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "PUT managementApi.v1.collections": {
     "source": "xai/collections-put-update",
     "payload": {
       "collection_name": "updated-collection-name"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

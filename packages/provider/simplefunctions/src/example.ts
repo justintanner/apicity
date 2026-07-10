@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -17,7 +21,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "format": "json",
       "limit": 3,
       "op": "snapshot"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.public.query": {
     "source": "simplefunctions/query-fed-rate-cut",
@@ -26,21 +32,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "mode": "raw",
       "sources": "kalshi,polymarket",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET api.public.search": {
     "source": "simplefunctions/public-search-fed",
     "payload": {
       "q": "fed",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "GET data.v1.search": {
     "source": "simplefunctions/data-search-fed",
     "payload": {
       "q": "fed",
       "limit": 3
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 

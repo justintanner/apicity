@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -21,7 +25,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "content": "Say hello."
         }
       ]
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

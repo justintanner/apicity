@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -15,56 +19,74 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "kie/flux-kontext-record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.generate.recordInfo": {
     "source": "kie/suno/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.gpt4oImage.recordInfo": {
     "source": "kie/gpt4o-image/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.jobs.recordInfo": {
     "source": "kie/bytedance-seedance-2",
     "payload": {
       "taskId": "49265b81be9607661c0246b892144776"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.lyrics.recordInfo": {
     "source": "kie/suno/lyrics-record-info",
     "payload": {
       "taskId": "apicity-test-nonexistent-lyrics-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.mj.recordInfo": {
     "source": "kie/mj/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-mj-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.runway.recordDetail": {
     "source": "kie/runway/record-detail-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.veo.get1080pVideo": {
     "source": "kie/veo/get-1080p-video",
     "payload": {
       "taskId": "apicity-test-veo-1080p-not-found",
       "index": 0
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET api.v1.veo.recordInfo": {
     "source": "kie/veo/record-info-not-found",
     "payload": {
       "taskId": "apicity-test-nonexistent-veo-task-id-do-not-record-real"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.fileBase64Upload": {
     "source": "kie/file-uploads/base64",
@@ -73,13 +95,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "uploadPath": "images/test-uploads",
       "fileName": "test-base64.png",
       "mimeType": "image/png"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.common.downloadUrl": {
     "source": "kie/download-url/convert",
     "payload": {
       "url": "https://cdn.kie.ai/files/sample-test-file.mp4"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.flux.kontext.generate": {
     "source": "kie/flux-kontext-generate",
@@ -88,7 +114,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspectRatio": "16:9",
       "model": "flux-kontext-pro",
       "outputFormat": "jpeg"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate": {
     "source": "kie/suno/generate-submit",
@@ -98,7 +126,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "instrumental": true,
       "customMode": false,
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.addInstrumental": {
     "source": "kie/suno/add-instrumental-submit",
@@ -109,7 +139,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "negativeTags": "distortion, harsh noise",
       "callBackUrl": "https://example.com/cb",
       "model": "V4_5PLUS"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.addVocals": {
     "source": "kie/suno/add-vocals-submit",
@@ -121,7 +153,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "negativeTags": "heavy metal, strong drum beats",
       "callBackUrl": "https://example.com/cb",
       "model": "V4_5PLUS"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.extend": {
     "source": "kie/suno/extend-bogus-audio-id",
@@ -134,7 +168,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "style": "Synthwave",
       "title": "Side B",
       "continueAt": 30
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.mashup": {
     "source": "kie/suno/mashup-submit",
@@ -146,7 +182,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "customMode": false,
       "model": "V4",
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.replaceSection": {
     "source": "kie/suno/replace-music-section-full-lyrics-validation",
@@ -159,7 +197,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "infillStartS": 10,
       "infillEndS": 20,
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.sounds": {
     "source": "kie/suno/sounds-generate-submit",
@@ -168,7 +208,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "V5",
       "soundLoop": true,
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.uploadCover": {
     "source": "kie/suno/upload-cover-bogus-url",
@@ -181,7 +223,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "callBackUrl": "https://example.com/cb",
       "style": "Synthwave",
       "title": "Cover Take"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.generate.uploadExtend": {
     "source": "kie/suno/upload-extend-bogus-url",
@@ -193,7 +237,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "model": "V5",
       "callBackUrl": "https://example.com/cb",
       "prompt": "Continue the chorus then resolve"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.gpt4oImage.generate": {
     "source": "kie/gpt4o-image-generate",
@@ -201,7 +247,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A cinematic night city poster with neon reflections on a rainy street.",
       "size": "3:2",
       "isEnhance": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.jobs.createTask": {
     "source": "kie/grok-video-upscale",
@@ -210,21 +258,27 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "input": {
         "task_id": "d43f0d0ab29f28fdfcf68a9dccbd7a42"
       }
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.lyrics": {
     "source": "kie/suno/lyrics-submit",
     "payload": {
       "prompt": "A short song about morning coffee",
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.midi.generate": {
     "source": "kie/suno/midi-bogus-task-id",
     "payload": {
       "taskId": "apicity-test-bogus-vocal-removal-task-id",
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.mj.generate": {
     "source": "kie/mj-generate",
@@ -236,7 +290,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "version": "7",
       "stylization": 100,
       "weirdness": 0
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.mp4.generate": {
     "source": "kie/suno/mp4-bogus-ids",
@@ -244,7 +300,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "taskId": "apicity-test-bogus-task-id",
       "audioId": "apicity-test-bogus-audio-id",
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.omni.audio.create": {
     "source": "kie/audio/gemini-omni-audio-create",
@@ -253,7 +311,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "name": "Apicity HAR Test Narrator",
       "voice_description": "A calm, clear, friendly voice for a short API smoke test.",
       "example_dialogue": "Hello from the Apicity Kie audio HAR test."
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.runway.extend": {
     "source": "kie/runway/extend-not-found",
@@ -261,7 +321,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "taskId": "apicity-test-nonexistent-task-id-do-not-record-real",
       "prompt": "Continue the scene with a slow zoom out.",
       "quality": "720p"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.runway.generate": {
     "source": "kie/runway-generate",
@@ -271,13 +333,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "quality": "720p",
       "aspectRatio": "16:9",
       "callBackUrl": "https://example.com/runway-callback"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.style.generate": {
     "source": "kie/suno/style-boost",
     "payload": {
       "content": "Pop, Mysterious"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.vocalRemoval.generate": {
     "source": "kie/suno/vocal-removal-bogus-ids",
@@ -286,7 +352,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "audioId": "apicity-test-bogus-audio-id",
       "callBackUrl": "https://example.com/cb",
       "type": "separate_vocal"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST api.v1.wav.generate": {
     "source": "kie/suno/wav-bogus-ids",
@@ -294,7 +362,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "taskId": "apicity-test-bogus-task-id",
       "audioId": "apicity-test-bogus-audio-id",
       "callBackUrl": "https://example.com/cb"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST claude.v1.messages": {
     "source": "kie/claude-chat-hello",
@@ -307,7 +377,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         }
       ],
       "stream": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

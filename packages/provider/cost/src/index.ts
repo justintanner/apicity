@@ -11,9 +11,11 @@ export {
 export type { CostTier, TierEstimate } from "./cost-tier";
 export {
   ENDPOINT_COST_POLICIES,
+  GATED_COST_TIERS,
   classifyEndpoint,
   resolveEndpointCostPolicy,
   isEndpointExplicitlyClassified,
+  shouldRunEndpointByDefault,
 } from "./endpoint-cost-policy";
 export type {
   EndpointCostTier,

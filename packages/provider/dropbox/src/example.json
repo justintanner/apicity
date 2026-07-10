@@ -3,10 +3,14 @@
     "source": "dropbox/check-user",
     "payload": {
       "query": "justin"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST users.getCurrentAccount": {
     "source": "dropbox/current-token-baseline",
-    "payload": null
+    "payload": null,
+    "tier": "cheap",
+    "runByDefault": true
   }
 }

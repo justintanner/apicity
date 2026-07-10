@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -15,39 +19,51 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "source": "fal/models-search",
     "payload": {
       "limit": 5
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.models.analytics": {
     "source": "fal/analytics",
     "payload": {
       "endpoint_id": "fal-ai/flux/dev"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.models.pricing": {
     "source": "fal/models-pricing",
     "payload": {
       "endpoint_id": "fal-ai/flux/dev"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.models.requests.byEndpoint": {
     "source": "fal/requests",
     "payload": {
       "endpoint_id": "fal-ai/flux/dev",
       "limit": 5
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.models.usage": {
     "source": "fal/models-usage-stats",
     "payload": {
       "endpoint_id": "fal-ai/flux/dev",
       "limit": 5
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "GET v1.workflows": {
     "source": "fal/workflows-list",
     "payload": {
       "limit": 3
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedSpeech.tts.v2": {
     "source": "fal/bytedance-seed-speech-tts-v2",
@@ -61,7 +77,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "pitch": 0,
       "language": "en",
       "voice_instruction": "Speak in a warm, cheerful tone."
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedance2p0.fast.imageToVideo": {
     "source": "fal/bytedance-seedance2p0-fast-image-to-video",
@@ -72,7 +90,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "4",
       "aspect_ratio": "1:1",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedance2p0.fast.textToVideo": {
     "source": "fal/bytedance-seedance2p0-fast-text-to-video",
@@ -82,7 +102,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "4",
       "aspect_ratio": "1:1",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedance2p0.imageToVideo": {
     "source": "fal/bytedance-seedance2p0-image-to-video",
@@ -93,7 +115,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "4",
       "aspect_ratio": "1:1",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedance2p0.textToVideo": {
     "source": "fal/bytedance-seedance2p0-text-to-video",
@@ -103,7 +127,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "4",
       "aspect_ratio": "1:1",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedream.v5.lite.edit": {
     "source": "fal/bytedance-seedream-v5-lite-edit",
@@ -114,7 +140,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "num_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST bytedance.seedream.v5.lite.textToImage": {
     "source": "fal/bytedance-seedream-v5-lite-text-to-image",
@@ -122,7 +150,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A photorealistic red fox sitting in a snowy forest clearing at golden hour",
       "num_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST falAi.elevenlabs.speechToText.scribeV2": {
     "source": "fal/elevenlabs-speech-to-text-scribe-v2",
@@ -131,7 +161,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "language_code": "eng",
       "tag_audio_events": true,
       "diarize": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST gptImage1p5": {
     "source": "fal/gpt-image-1.5",
@@ -141,7 +173,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_size": "1024x1024",
       "output_format": "png",
       "quality": "low"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST gptImage1p5.edit": {
     "source": "fal/gpt-image-1.5-edit",
@@ -153,7 +187,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "num_images": 1,
       "quality": "low",
       "output_format": "png"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST hunyuan.v3.instructEdit": {
     "source": "fal/hunyuan-image-v3-instruct-edit",
@@ -164,7 +200,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "num_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.o3p4k.imageToVideo": {
     "source": "fal/kling-video-o3p4k-image-to-video",
@@ -173,7 +211,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "the man waves at the camera as the wind blows his hair",
       "duration": "5",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.o3p4k.referenceToVideo": {
     "source": "fal/kling-video-o3p4k-reference-to-video",
@@ -183,7 +223,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "5",
       "generate_audio": false,
       "aspect_ratio": "16:9"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.o3p4k.textToVideo": {
     "source": "fal/kling-video-o3p4k-text-to-video",
@@ -192,7 +234,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspect_ratio": "16:9",
       "duration": "5",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.v3.pro.imageToVideo": {
     "source": "fal/kling-video-v3-pro-image-to-video",
@@ -201,7 +245,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "the man waves at the camera as the wind blows his hair",
       "duration": "5",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.v3.pro.textToVideo": {
     "source": "fal/kling-video-v3-pro-text-to-video",
@@ -210,7 +256,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspect_ratio": "1:1",
       "duration": "5",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.v3.standard.imageToVideo": {
     "source": "fal/kling-video-v3-standard-image-to-video",
@@ -219,7 +267,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "the man waves at the camera as the wind blows his hair",
       "duration": "5",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST klingVideo.v3.standard.textToVideo": {
     "source": "fal/kling-video-v3-standard-text-to-video",
@@ -228,7 +278,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspect_ratio": "1:1",
       "duration": "5",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBanana.edit": {
     "source": "fal/nano-banana-edit",
@@ -237,7 +289,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_urls": [
         "<inline image/jpeg data URL — replace with a real URL or upload>"
       ]
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBanana.textToImage": {
     "source": "fal/nano-banana",
@@ -247,7 +301,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspect_ratio": "1:1",
       "output_format": "png",
       "safety_tolerance": "4"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBanana2.edit": {
     "source": "fal/nano-banana-2-edit",
@@ -256,7 +312,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_urls": [
         "<inline image/jpeg data URL — replace with a real URL or upload>"
       ]
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBanana2.textToImage": {
     "source": "fal/nano-banana-2",
@@ -267,7 +325,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "output_format": "png",
       "safety_tolerance": "4",
       "resolution": "1K"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBanana2Lite.edit": {
     "source": "fal/nano-banana-2-lite-edit",
@@ -281,7 +341,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "output_format": "png",
       "safety_tolerance": "4",
       "limit_generations": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBanana2Lite.textToImage": {
     "source": "fal/nano-banana-2-lite",
@@ -292,7 +354,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "output_format": "png",
       "safety_tolerance": "4",
       "limit_generations": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBananaPro.edit": {
     "source": "fal/nano-banana-pro-edit",
@@ -301,7 +365,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_urls": [
         "<inline image/jpeg data URL — replace with a real URL or upload>"
       ]
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST nanoBananaPro.textToImage": {
     "source": "fal/nano-banana-pro",
@@ -312,7 +378,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "output_format": "png",
       "safety_tolerance": "4",
       "resolution": "1K"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST qwenImage": {
     "source": "fal/qwen-image",
@@ -322,7 +390,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_size": "square_hd",
       "output_format": "png",
       "num_inference_steps": 30
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST qwenImage.edit": {
     "source": "fal/qwen-image-edit",
@@ -330,7 +400,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "change the background to a red mercedes convertible on the california coastline at sunset",
       "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
       "num_images": 1
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST sora2.imageToVideo": {
     "source": "fal/sora-2-image-to-video",
@@ -339,7 +411,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
       "aspect_ratio": "16:9",
       "duration": 4
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST sora2.textToVideo": {
     "source": "fal/sora-2",
@@ -347,14 +421,18 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "A black lab swimming in an inground suburban swimming pool at sunset.",
       "aspect_ratio": "16:9",
       "duration": 4
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST storage.upload.initiate": {
     "source": "fal/storage-upload-initiate",
     "payload": {
       "file_name": "cat1.jpg",
       "content_type": "image/jpeg"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST v1.models.pricing.estimate": {
     "source": "fal/estimate-cost",
@@ -365,7 +443,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           "unit_quantity": 100
         }
       }
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST veo3p1.imageToVideo": {
     "source": "fal/veo3-1-image-to-video",
@@ -376,7 +456,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "4s",
       "resolution": "720p",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST veo3p1.textToVideo": {
     "source": "fal/veo3-1",
@@ -386,7 +468,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": "4s",
       "resolution": "720p",
       "generate_audio": false
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST wan.v2p7.edit": {
     "source": "fal/wan-v2p7-edit",
@@ -397,7 +481,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "num_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST wan.v2p7.imageToVideo": {
     "source": "fal/wan-v2p7-image-to-video",
@@ -406,7 +492,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_url": "<inline image/jpeg data URL — replace with a real URL or upload>",
       "resolution": "720p",
       "duration": 2
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST wan.v2p7.pro.edit": {
     "source": "fal/wan-v2p7-pro-edit",
@@ -417,7 +505,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "num_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST wan.v2p7.pro.textToImage": {
     "source": "fal/wan-v2p7-pro-text-to-image",
@@ -425,7 +515,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "An astronaut riding a horse in a photorealistic style.",
       "max_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST wan.v2p7.textToImage": {
     "source": "fal/wan-v2p7-text-to-image",
@@ -433,7 +525,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "An astronaut riding a horse in a photorealistic style.",
       "max_images": 1,
       "enable_safety_checker": true
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST wan.v2p7.textToVideo": {
     "source": "fal/wan-v2p7-text-to-video",
@@ -442,7 +536,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "resolution": "720p",
       "duration": 2,
       "aspect_ratio": "1:1"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST xai.grokImagineImage": {
     "source": "fal/xai-grok-imagine-image",
@@ -452,7 +548,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "aspect_ratio": "1:1",
       "resolution": "1k",
       "output_format": "jpeg"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST xai.grokImagineImage.edit": {
     "source": "fal/xai-grok-imagine-image-edit",
@@ -464,7 +562,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "image_urls": [
         "https://v3b.fal.media/files/b/0a8b911d/Abk8vStrvmSPlzUqI_NN3_image_043.png"
       ]
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST xai.grokImagineVideo.editVideo": {
     "source": "fal/xai-grok-imagine-video-edit-video",
@@ -472,7 +572,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "Colorize the video with warm sunset tones",
       "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
       "resolution": "480p"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST xai.grokImagineVideo.extendVideo": {
     "source": "fal/xai-grok-imagine-video-extend-video",
@@ -480,7 +582,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "prompt": "The camera slowly zooms out to reveal the city skyline at sunset",
       "video_url": "<inline video/mp4 data URL — replace with a real URL or upload>",
       "duration": 4
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST xai.grokImagineVideo.imageToVideo": {
     "source": "fal/xai-grok-imagine-video-image-to-video",
@@ -490,7 +594,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": 6,
       "aspect_ratio": "16:9",
       "resolution": "720p"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   },
   "POST xai.grokImagineVideo.referenceToVideo": {
     "source": "fal/xai-grok-imagine-video-reference-to-video",
@@ -502,7 +608,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "duration": 6,
       "aspect_ratio": "16:9",
       "resolution": "480p"
-    }
+    },
+    "tier": "prohibitive",
+    "runByDefault": false
   }
 };
 

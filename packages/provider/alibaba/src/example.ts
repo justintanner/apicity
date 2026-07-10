@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -16,7 +20,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "action": "getPolicy",
       "model": "qwen-image-edit"
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST api.v1.services.aigc.imageGeneration.generation": {
     "source": "alibaba/wan-image-t2i",
@@ -40,7 +46,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "watermark": false,
         "thinking_mode": true
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST api.v1.services.aigc.multimodalGeneration.generation": {
     "source": "alibaba/qwen-image-edit-single",
@@ -61,7 +69,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
           }
         ]
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST api.v1.services.aigc.videoGeneration.videoSynthesis": {
     "source": "alibaba/wan-videoedit",
@@ -81,7 +91,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
         "prompt_extend": true,
         "watermark": true
       }
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   },
   "POST compatibleMode.v1.chat.completions": {
     "source": "alibaba/chat-hello",
@@ -95,7 +107,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
       ],
       "temperature": 0,
       "max_tokens": 64
-    }
+    },
+    "tier": "expensive",
+    "runByDefault": false
   }
 };
 

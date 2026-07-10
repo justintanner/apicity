@@ -4,7 +4,9 @@
     "payload": {
       "media_id": "2050120900222296064",
       "command": "STATUS"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST v2.media.upload.initialize": {
     "source": "x/media-upload-initialize",
@@ -12,12 +14,16 @@
       "media_type": "video/mp4",
       "total_bytes": 64,
       "media_category": "tweet_video"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST v2.tweets": {
     "source": "x/tweets-create",
     "payload": {
       "text": "hello from @apicity/x"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 }

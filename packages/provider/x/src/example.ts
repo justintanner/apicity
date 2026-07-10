@@ -8,6 +8,10 @@
 export interface EndpointExample {
   source: string;
   payload: unknown;
+  /** Canonical cost tier of this endpoint (see @apicity/cost). */
+  tier: "cheap" | "expensive" | "prohibitive";
+  /** Whether an example runner may execute this by default (cheap only). */
+  runByDefault: boolean;
 }
 
 const EXAMPLES: Record<string, EndpointExample> = {
@@ -16,7 +20,9 @@ const EXAMPLES: Record<string, EndpointExample> = {
     "payload": {
       "media_id": "2050120900222296064",
       "command": "STATUS"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST v2.media.upload.initialize": {
     "source": "x/media-upload-initialize",
@@ -24,13 +30,17 @@ const EXAMPLES: Record<string, EndpointExample> = {
       "media_type": "video/mp4",
       "total_bytes": 64,
       "media_category": "tweet_video"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   },
   "POST v2.tweets": {
     "source": "x/tweets-create",
     "payload": {
       "text": "hello from @apicity/x"
-    }
+    },
+    "tier": "cheap",
+    "runByDefault": true
   }
 };
 
